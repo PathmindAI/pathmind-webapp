@@ -1,11 +1,10 @@
-package io.skymind.pathmind.views;
+package io.skymind.pathmind.ui.views;
 
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.*;
-import io.skymind.pathmind.data.User;
+import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.db.UserRepository;
 import io.skymind.pathmind.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver // , 
 		loginForm.getForm().setSubmit("Sign in >");
 		setI18n(loginForm);
 		setForgotPasswordButtonVisible(false);
-//		setAction("login");
 
 		addLoginListener(e ->
 		{
@@ -47,6 +45,7 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver // , 
 	@Override
 	public void beforeEnter(BeforeEnterEvent event)
 	{
+		// TODO -> Password needs to be encrypted with a one-way encryption algorithm.
 		if (securityService.isUserLoggedIn()) {
 			event.forwardTo(DashboardView.class);
 		} else {

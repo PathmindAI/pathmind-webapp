@@ -19,7 +19,7 @@ public class SecurityService
 
 	public boolean isAuthenticatedUser(String email, String password, UserRepository userRepository)
 	{
-		User user = userRepository.findUser(email, password);
+		User user = userRepository.findUserByEmailAndPassword(email, password);
 
 		if(user != null)
 			VaadinSession.getCurrent().setAttribute(User.class, user);
