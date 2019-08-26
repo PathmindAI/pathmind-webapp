@@ -5,6 +5,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -34,9 +36,10 @@ public class ExperimentRecentPanel extends VerticalLayout
 		);
 	}
 
+	// TODO -> Need to decide between styled labels and header elements.
 	private Component getTitleBar() {
 		return WrapperUtils.wrapLeftAndRightAligned(
-				new Label("Recent Experiments"),
+				new H3("Recent Experiments"),
 				new TextField("Search")
 		);
 	}
@@ -77,6 +80,8 @@ public class ExperimentRecentPanel extends VerticalLayout
 
 		grid.getElement().getStyle().set("padding-top", "20px");
 		grid.setItems(experiments);
+		grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+
 		return grid;
 	}
 
