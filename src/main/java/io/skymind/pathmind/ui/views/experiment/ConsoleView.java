@@ -85,6 +85,6 @@ public class ConsoleView extends VerticalLayout implements BasicViewInterface, H
 
 	// TODO -> Implement
 	private void updateScreen() {
-		consoleGrid.setItems(ConsoleEntry.getFakeData());
+		consoleGrid.setItems(ConsoleEntry.getFakeData(10));
 	}
 }

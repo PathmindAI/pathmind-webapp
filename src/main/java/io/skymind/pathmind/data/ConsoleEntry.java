@@ -27,11 +27,11 @@ public class ConsoleEntry
 
 	private static int count = 0;
 	// TODO -> Remove. Fake data for now.
-	public static List<ConsoleEntry> getFakeData() {
+	public static List<ConsoleEntry> getFakeData(int dataCount) {
 		count++;
 		return Stream.generate(() ->
 				new ConsoleEntry(count, "Some kind of action " + count, "status " + count, count, LocalDate.now()))
-				.limit(10)
+				.limit(dataCount)
 				.collect(Collectors.toList());
 	}
 

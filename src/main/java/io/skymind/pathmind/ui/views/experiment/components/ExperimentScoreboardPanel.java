@@ -24,7 +24,7 @@ public class ExperimentScoreboardPanel extends VerticalLayout
 				.setSortable(true);
 
 		grid.getElement().getStyle().set("padding-top", "20px");
-		grid.setItems(MockData.generateFakeData());
+		grid.setItems(MockData.generateFakeData(10));
 
 		return grid;
 	}

@@ -18,11 +18,11 @@ public class MockData
 
 	// TODO -> Delete fake data
 	private static int count = 0;
-	public static List<MockData> generateFakeData() {
+	public static List<MockData> generateFakeData(int dataCount) {
 		count++;
 		return Stream.generate(() ->
 				new MockData("Name " + count, Integer.toString(count)))
-				.limit(10)
+				.limit(dataCount)
 				.collect(Collectors.toList());
 	}
 
