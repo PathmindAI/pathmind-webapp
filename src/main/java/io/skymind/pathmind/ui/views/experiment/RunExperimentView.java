@@ -69,13 +69,14 @@ public class RunExperimentView extends VerticalLayout implements BasicViewInterf
 
 	// TODO -> Since I'm not sure exactly what the panels on the right are I'm going to make some big
 	// assumptions as to which Layout should wrap which one.
+	// TODO -> Hardcoded data.
 	@Override
 	public Component getMainContent() {
 		return WrapperUtils.wrapCenterAlignmentFullVertical(
 				WrapperUtils.wrapCenterAlignmentFullWidthHorizontal(
 					new ExperimentChartPanel(),
 					new ExperimentScoreboardPanel()),
-				new ExperimentRecentPanel(experimentRepository.findExperimentsByProjectId(1)) // TODO -> Hardcoded
+				new ExperimentRecentPanel(experimentRepository.findExperimentsByProjectId(1))
 		);
 	}
 

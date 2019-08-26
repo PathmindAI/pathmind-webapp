@@ -63,6 +63,7 @@ public class ConsoleView extends VerticalLayout implements BasicViewInterface, H
 		return WrapperUtils.wrapCenterAlignmentFullHorizontal(LabelFactory.createLabel("Console Ouput", CssMindPathStyles.PROJECT_TITLE));
 	}
 
+	// TODO -> Hardcoded data.
 	public Component getMainContent()
 	{
 		SplitLayout splitLayout = new SplitLayout(
