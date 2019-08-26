@@ -60,4 +60,9 @@ public class Project
 	public void setExperiments(List<Experiment> experiments) {
 		this.experiments = experiments;
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

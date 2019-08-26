@@ -16,6 +16,7 @@ CREATE TABLE Project(
 CREATE TABLE Experiment(
                 id bigint auto_increment,
                 project_id bigint unsigned not null,
+                name varchar(255),
                 date date,
                 run_type tinyint,
                 score int,

@@ -1,6 +1,8 @@
 package io.skymind.pathmind.ui.views.project;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -11,6 +13,7 @@ import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.views.BasicViewInterface;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,24 +22,21 @@ import java.util.List;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value="project", layout = MainLayout.class)
-public class ProjectView extends VerticalLayout implements HasUrlParameter<Long>
+public class ProjectView extends VerticalLayout implements BasicViewInterface, HasUrlParameter<Long>
 {
 	private Logger log = LogManager.getLogger(ProjectView.class);
 
+	@Autowired
 	private ProjectRepository projectRepository;
 
 	private ScreenTitlePanel screenTitlePanel = new ScreenTitlePanel("PROJECTS");
 
-	public ProjectView(@Autowired ProjectRepository projectRepository)
+	public ProjectView()
 	{
-		this.projectRepository = projectRepository;
-
-		add(new ActionMenu());
-		add(screenTitlePanel);
+		add(getActionMenu());
+		add(getTitlePanel());
 	}
 
-	// TODO -> Only allow navigation to this screen if there is a valid parameter
-	// TODO -> Implement what happens if we don't find a project.
 	@Override
 	public void setParameter(BeforeEvent event, Long projectId) {
 		projectRepository.findById(projectId)
@@ -49,5 +49,20 @@ public class ProjectView extends VerticalLayout implements HasUrlParameter<Long>
 		screenTitlePanel.setSubtitle(project.getName());
 		List<Experiment> experiments = project.getExperiments();
 		experiments.stream().forEach(experiment -> log.info(experiment.getId()));
+	}
+
+	@Override
+	public ActionMenu getActionMenu() {
+		return new ActionMenu();
+	}
+
+	@Override
+	public Component getTitlePanel() {
+		return screenTitlePanel;
+	}
+
+	@Override
+	public Component getMainContent() {
+		return new Label("TODO -> To implement");
 	}
 }

@@ -11,8 +11,12 @@ public class Experiment
 	private long id;
 
 	@NotNull
+	private String name;
+
+	@NotNull
 	private LocalDate date;
 
+	// TODO -> Should use the RunType enum that I've created and map it to the database.
 	@NotNull
 	private int runType;
 
@@ -26,8 +30,9 @@ public class Experiment
 	public Experiment() {
 	}
 
-	public Experiment(long id, @NotNull LocalDate date, @NotNull int runType, @NotNull int score) {
+	public Experiment(long id, @NotNull String name, @NotNull LocalDate date, @NotNull int runType, @NotNull int score) {
 		this.id = id;
+		this.name = name;
 		this.date = date;
 		this.runType = runType;
 		this.score = score;
@@ -63,6 +68,14 @@ public class Experiment
 
 	public void setScore(int score) {
 		this.score = score;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Project getProject() {
