@@ -1,8 +1,8 @@
 package io.skymind.pathmind.data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 public class User
@@ -10,13 +10,19 @@ public class User
 	@Id
 	private long id;
 
+	@Column(name = "NAME")
 	private String name;
 
 	@NotNull
+	@Column(name = "EMAIL")
 	private String email;
 
 	@NotNull
+	@Column(name = "PASSWORD")
 	private String password;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<Project> projects;
 
 	public User()
 	{
@@ -68,5 +74,13 @@ public class User
 	public void setPassword(String password)
 	{
 		this.password = password;
+	}
+
+	public List<Project> getProjects() {
+		return projects;
+	}
+
+	public void setProjects(List<Project> projects) {
+		this.projects = projects;
 	}
 }

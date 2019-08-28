@@ -7,7 +7,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -28,11 +27,11 @@ public class ExperimentRecentPanel extends VerticalLayout
 	private Grid<Experiment> grid = new Grid<>();
 
 	// TODO -> Hardcoded value to get fake experiment data.
-	public ExperimentRecentPanel(List<Experiment> experiments)
+	public ExperimentRecentPanel()
 	{
 		add(
 				getTitleBar(),
-				getRecentExperimentsGrid(experiments)
+				getRecentExperimentsGrid()
 		);
 	}
 
@@ -44,7 +43,7 @@ public class ExperimentRecentPanel extends VerticalLayout
 		);
 	}
 
-	private Grid<Experiment> getRecentExperimentsGrid(List<Experiment> experiments) {
+	private Grid<Experiment> getRecentExperimentsGrid() {
 		grid.addColumn(Experiment::getName)
 				.setHeader("Experiment")
 				.setAutoWidth(true)
@@ -79,10 +78,13 @@ public class ExperimentRecentPanel extends VerticalLayout
 				.setWidth(UIConstants.GRID_BUTTON_WIDTH);
 
 		grid.getElement().getStyle().set("padding-top", "20px");
-		grid.setItems(experiments);
 		grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
 		return grid;
+	}
+
+	public void setExperiments(List<Experiment> experiments) {
+			grid.setItems(experiments);
 	}
 
 	private ComponentRenderer<HorizontalLayout, Experiment> getAdditionalRunButtonRenderer() {

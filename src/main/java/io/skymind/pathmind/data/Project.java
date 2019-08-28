@@ -12,13 +12,19 @@ public class Project
 	private long id;
 
 	@NotNull
+	@Column(name = "NAME")
 	private String name;
 
 	@NotNull
+	@Column(name = "DATE_CREATED")
 	private LocalDate dateCreated;
 
 	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Experiment> experiments;
+
+	@ManyToOne
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
 	public Project() {
 	}
@@ -64,5 +70,13 @@ public class Project
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 }

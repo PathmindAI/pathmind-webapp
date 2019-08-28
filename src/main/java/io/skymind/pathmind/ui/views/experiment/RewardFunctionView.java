@@ -1,6 +1,7 @@
 package io.skymind.pathmind.ui.views.experiment;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.H3;
@@ -13,6 +14,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.constants.PathmindConstants;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.Reward;
 import io.skymind.pathmind.db.ProjectRepository;
@@ -21,6 +23,7 @@ import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.BasicViewInterface;
+import io.skymind.pathmind.ui.views.project.ProjectView;
 import io.skymind.pathmind.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,11 +54,13 @@ public class RewardFunctionView extends VerticalLayout implements BasicViewInter
 		setDefaultHorizontalComponentAlignment(Alignment.CENTER);
 	}
 
+	// TODO -> Implement the actual navigation to the new screen. For now it's a hardcoded value.
 	@Override
 	public ActionMenu getActionMenu() {
 		return new ActionMenu(
 			new Button("+ New Experiment"),
-			new Button("Test Run >")
+			new Button("Test Run >", click ->
+					UI.getCurrent().navigate(ProjectView.class, PathmindConstants.TODO_PARAMETER))
 		);
 	}
 
@@ -118,12 +123,16 @@ public class RewardFunctionView extends VerticalLayout implements BasicViewInter
 		return rightVerticalLayout;
 	}
 
+	// TODO -> Duplicate code for now as I refactor the code on my new understanding from the call yesterday.
 	@Override
 	public void setParameter(BeforeEvent event, Long projectId) {
-		projectRepository.findById(projectId)
-				.ifPresentOrElse(
-						project -> updateScreen(project),
-						() -> log.info("TODO -> Implement"));
+		Project project = projectRepository.getProject(projectId);
+		if(project == null) {
+			log.info("TODO -> Implement");
+			return;
+		} else {
+			updateScreen(project);
+		}
 	}
 
 	// TODO -> Fake data

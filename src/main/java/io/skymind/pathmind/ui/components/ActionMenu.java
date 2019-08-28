@@ -19,4 +19,10 @@ public class ActionMenu extends HorizontalLayout
 	  	addClassName("action-menu");
 	  	setJustifyContentMode(JustifyContentMode.CENTER);
 	}
+
+	public void setButtonVisible(Button button, boolean isVisible) {
+		getChildren()
+				.filter(b -> b.equals(button))
+				.forEach(b -> b.setVisible(isVisible));
+	}
 }

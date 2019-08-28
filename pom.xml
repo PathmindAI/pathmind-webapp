@@ -17,6 +17,10 @@
     <properties>
         <java.version>12</java.version>
         <vaadin.version>14.0.1</vaadin.version>
+        <db.driver>org.h2.Driver</db.driver>
+        <db.url>jdbc:h2:file:~/pathmindDB</db.url>
+        <db.username>sa</db.username>
+        <db.password></db.password>
     </properties>
 
     <dependencies>
@@ -39,6 +43,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jooq</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -79,8 +87,51 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>migrate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <url>${db.url}</url>
+                    <user>${db.username}</user>
+                    <locations>
+                        <location>filesystem:src/main/resources/db/migration</location>
+                    </locations>
+                </configuration>
+            </plugin>
+            <plugin>
+               <groupId>org.jooq</groupId>
+               <artifactId>jooq-codegen-maven</artifactId>
+                <executions>
+                   <execution>
+                       <phase>generate-sources</phase>
+                       <goals>
+                           <goal>generate</goal>
+                       </goals>
+                   </execution>
+               </executions>
+                <configuration>
+                   <jdbc>
+                       <url>${db.url}</url>
+                       <user>${db.username}</user>
+                   </jdbc>
+                    <generator>
+                        <database>
+                            <includes>.*</includes>
+                            <inputSchema>PATHMIND</inputSchema>
+                        </database>
+                        <target>
+                          <packageName>io.skymind.pathmind.data.db</packageName>
+                          <directory>target/generated-sources/jooq</directory>
+                        </target>
+                    </generator>
+               </configuration>
             </plugin>
         </plugins>
     </build>
