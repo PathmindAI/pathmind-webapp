@@ -1,20 +1,24 @@
 package io.skymind.pathmind.ui.views.project;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.BasicViewInterface;
+import io.skymind.pathmind.ui.views.errors.InvalidDataView;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentChartPanel;
-import io.skymind.pathmind.ui.views.experiment.components.ExperimentRecentPanel;
+import io.skymind.pathmind.ui.views.experiment.components.ExperimentPanel;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentScoreboardPanel;
 import io.skymind.pathmind.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
@@ -28,14 +32,18 @@ public class ProjectView extends VerticalLayout implements BasicViewInterface, H
 	private Logger log = LogManager.getLogger(ProjectView.class);
 
 	// TODO -> Implement correctly based on parameters passed into the view.
+	@Autowired
 	private ProjectRepository projectRepository;
+	@Autowired
+	private ExperimentRepository experimentRepository;
 
 	private ScreenTitlePanel screenTitlePanel = new ScreenTitlePanel("PROJECT");
-	private ExperimentRecentPanel experimentRecentPanel = new ExperimentRecentPanel();
+	private ExperimentPanel experimentPanel = new ExperimentPanel();
 
-	public ProjectView(@Autowired ProjectRepository projectRepository)
+//	public ProjectView(@Autowired ProjectRepository projectRepository)
+	public ProjectView()
 	{
-		this.projectRepository = projectRepository;
+//		this.projectRepository = projectRepository;
 
 		add(getActionMenu());
 		add(getTitlePanel());
@@ -61,30 +69,32 @@ public class ProjectView extends VerticalLayout implements BasicViewInterface, H
 
 	// TODO -> Since I'm not sure exactly what the panels on the right are I'm going to make some big
 	// assumptions as to which Layout should wrap which one.
-	// TODO -> Hardcoded data.
 	@Override
 	public Component getMainContent() {
 		return WrapperUtils.wrapCenterAlignmentFullVertical(
 				WrapperUtils.wrapCenterAlignmentFullWidthHorizontal(
 					new ExperimentChartPanel(),
 					new ExperimentScoreboardPanel()),
-				experimentRecentPanel
+				experimentPanel
 		);
 	}
 
-	// TODO -> Fake data
+	// TODO -> There is no validation to make sure the projectId is valid.
 	@Override
-	public void setParameter(BeforeEvent event, Long projectId) {
-		// TODO -> Implement as I transition the code to JOOQ.
-//		projectRepository.findById(1L).get().getExperiments();
-//		projectRepository.findById(projectId)
-//				.ifPresentOrElse(
-//						project -> updateScreen(project),
-//						() -> log.info("TODO -> Implement"));
+	public void setParameter(BeforeEvent event, Long projectId)
+	{
+		Project project = projectRepository.getProject(projectId);
+
+		if(project != null) {
+			updateScreen(project);
+		} else {
+			event.rerouteTo(InvalidDataView.class);
+		}
 	}
 
-	private void updateScreen(Project project) {
+	private void updateScreen(Project project)
+	{
 		screenTitlePanel.setSubtitle(project.getName());
-		experimentRecentPanel.setExperiments(project.getExperiments());
+		experimentPanel.setExperiments(experimentRepository.getExperimentsForProject(project.getId()));
 	}
 }

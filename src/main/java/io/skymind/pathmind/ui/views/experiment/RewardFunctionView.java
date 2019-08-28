@@ -7,9 +7,9 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.listbox.ListBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -37,7 +37,7 @@ public class RewardFunctionView extends VerticalLayout implements BasicViewInter
 
 	private Label projectLabel = LabelFactory.createLabel("", CssMindPathStyles.PROJECT_TITLE);
 
-	private ListBox<Reward> rewardsListBox = new ListBox<>();
+	private TextArea rewardsFunctionTextArea = new TextArea();
 
 	// TODO I assume we don't need this here and that the project, etc. are all retrieved from the Experiment
 	// or something along those lines but since I haven't yet setup the fake database schema for experiment
@@ -98,7 +98,7 @@ public class RewardFunctionView extends VerticalLayout implements BasicViewInter
 
 	// TODO -> Add rewardsListBox renderer
 	private Component getRewardsPanel() {
-		return rewardsListBox;
+		return rewardsFunctionTextArea;
 	}
 
 	private Component getBasicOptionsForm() {
@@ -137,12 +137,9 @@ public class RewardFunctionView extends VerticalLayout implements BasicViewInter
 
 	// TODO -> Fake data
 	private void updateScreen(Project project) {
-		rewardsListBox.setItems(
-				new Reward(1, "= formula"),
-				new Reward(2, "+= formula"),
-				new Reward(3, "-= formula"),
-				new Reward(4, "+= formula")
-		);
+		rewardsFunctionTextArea.setValue(
+				"reward = formulate\n" +
+				"reward += more math");
 		projectLabel.setText(project.getName());
 
 	}

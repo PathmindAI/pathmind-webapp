@@ -16,7 +16,7 @@ import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.BasicViewInterface;
 import io.skymind.pathmind.ui.views.experiment.components.ConsoleGrid;
-import io.skymind.pathmind.ui.views.experiment.components.ExperimentRecentPanel;
+import io.skymind.pathmind.ui.views.experiment.components.ExperimentPanel;
 import io.skymind.pathmind.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,7 +63,7 @@ public class ConsoleView extends VerticalLayout implements BasicViewInterface, H
 	{
 		SplitLayout splitLayout = new SplitLayout(
 				WrapperUtils.wrapCenterAlignmentFullVertical(consoleGrid),
-				WrapperUtils.wrapFullWidthHorizontal(new ExperimentRecentPanel()));
+				WrapperUtils.wrapFullWidthHorizontal(new ExperimentPanel()));
 
 		splitLayout.setOrientation(SplitLayout.Orientation.VERTICAL);
 		splitLayout.setSizeFull();

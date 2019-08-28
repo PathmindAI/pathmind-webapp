@@ -20,14 +20,14 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
-public class ExperimentRecentPanel extends VerticalLayout
+public class ExperimentPanel extends VerticalLayout
 {
-	private Logger log = LogManager.getLogger(ExperimentRecentPanel.class);
+	private Logger log = LogManager.getLogger(ExperimentPanel.class);
 
 	private Grid<Experiment> grid = new Grid<>();
 
 	// TODO -> Hardcoded value to get fake experiment data.
-	public ExperimentRecentPanel()
+	public ExperimentPanel()
 	{
 		add(
 				getTitleBar(),

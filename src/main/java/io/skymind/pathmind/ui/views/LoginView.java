@@ -6,14 +6,11 @@ import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.db.UserRepository;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 @Route("login")
 public class LoginView extends LoginOverlay implements BeforeEnterObserver // , AfterNavigationObserver
@@ -46,10 +43,13 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver // , 
 
 	// TODO -> Doing a second database call but we could do it as part of getting the user.
 	private void navigateToEntryView() {
+		UI.getCurrent().navigate(getRerouteClass());
+	}
+
+	private Class getRerouteClass() {
 		if(projectRepository.getProjectsForUser().isEmpty())
-			UI.getCurrent().navigate(NewProjectView.class);
-		else
-		   UI.getCurrent().navigate(DashboardView.class);
+			return NewProjectView.class;
+		return DashboardView.class;
 	}
 
 //	@Override
@@ -64,10 +64,10 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver // , 
 		// TODO -> Password needs to be encrypted with a one-way encryption algorithm.
 		// TODO -> We still need to check if the user has projects or not to determine where to forward them.
 		if (SecurityUtils.isUserLoggedIn()) {
-			navigateToEntryView();
+			event.forwardTo(getRerouteClass());
 			return;
 		}
-//			event.forwardTo(DashboardView.class);
+
 		// Just a quick sanity check.
 		if (!isOpened())
 			setOpened(true);
