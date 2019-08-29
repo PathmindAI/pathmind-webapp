@@ -8,7 +8,7 @@ import java.util.List;
 public class User
 {
 	@Id
-	private int id;
+	private long id;
 
 	@Column(name = "NAME")
 	private String name;
@@ -28,7 +28,7 @@ public class User
 	{
 	}
 
-	public User(int id, String name, @NotNull String email, @NotNull String password)
+	public User(long id, String name, @NotNull String email, @NotNull String password)
 	{
 		this.id = id;
 		this.name = name;
@@ -36,12 +36,12 @@ public class User
 		this.password = password;
 	}
 
-	public int getId()
+	public long getId()
 	{
 		return id;
 	}
 
-	public void setId(int id)
+	public void setId(long id)
 	{
 		this.id = id;
 	}

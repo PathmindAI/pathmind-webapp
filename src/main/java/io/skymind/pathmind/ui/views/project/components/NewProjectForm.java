@@ -7,7 +7,9 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.constants.ModelTimeUnit;
+import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.utils.UIConstants;
@@ -23,7 +25,7 @@ public class NewProjectForm extends VerticalLayout
 	private Button browseButton = new Button("Browse Files");
 	private Button dragAndDropButton = new Button("Drag and drop");
 
-	public NewProjectForm()
+	public NewProjectForm(Binder<Project> binder)
 	{
 		FormLayout form = new FormLayout();
 
@@ -35,6 +37,8 @@ public class NewProjectForm extends VerticalLayout
 		stepSizeTextfield.setWidthFull();
 		modelTimeUnitComboBox.setWidthFull();
 		dragAndDropButton.setWidthFull();
+
+		bindFields(binder);
 
 		modelTimeUnitComboBox.setItems(Arrays.asList(ModelTimeUnit.values()));
 
@@ -48,6 +52,12 @@ public class NewProjectForm extends VerticalLayout
 
 		setWidth(UIConstants.CENTERED_FORM_WIDTH);
 		setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
+	}
+
+	private void bindFields(Binder<Project> binder) {
+		binder.forField(projectNameTextField)
+				.asRequired("Project must have a name")
+				.bind(Project::getName, Project::setName);
 	}
 
 	public VerticalLayout getTitlePanel() {

@@ -13,7 +13,7 @@ public class RewardfunctionRepository
     @Autowired
     private DSLContext dslContext;
 
-    public List<Project> getRewardFunctionForExperiment(int experimentId) {
+    public List<Project> getRewardFunctionForExperiment(long experimentId) {
     	return null;
 //        return dslContext
 //            .selectFrom(PROJECT)

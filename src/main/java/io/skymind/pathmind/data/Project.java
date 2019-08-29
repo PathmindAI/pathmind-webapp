@@ -9,7 +9,7 @@ import java.util.List;
 public class Project
 {
 	@Id
-	private int id;
+	private long id;
 
 	@NotNull
 	@Column(name = "NAME")
@@ -29,17 +29,17 @@ public class Project
 	public Project() {
 	}
 
-	public Project(int id, @NotNull String name, @NotNull LocalDate dateCreated) {
+	public Project(long id, @NotNull String name, @NotNull LocalDate dateCreated) {
 		this.id = id;
 		this.name = name;
 		this.dateCreated = dateCreated;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
