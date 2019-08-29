@@ -35,14 +35,6 @@ public class DashboardView extends VerticalLayout implements BasicViewInterface
 	// to handle the case where the project list is empty.
 	public DashboardView(@Autowired ProjectRepository projectRepository)
 	{
-		// TODO -> Implement an actual real user validation check for logged in users. We basically should not need to implement
-		// this method anywhere, it should be automatic so no one forgets. But before even doing that I first need to determine
-		// the authentication method used overall and go from there.
-		if(!SecurityUtils.isUserLoggedIn()) {
-			UI.getCurrent().navigate(LoginView.class);
-			return;
-		}
-
 		this.projectRepository = projectRepository;
 
 		add(getActionMenu());
