@@ -9,7 +9,7 @@ import java.util.List;
 public class Experiment
 {
 	@Id
-	private long id;
+	private int id;
 
 	@NotNull
 	@Column(name = "NAME")
@@ -38,7 +38,7 @@ public class Experiment
 	public Experiment() {
 	}
 
-	public Experiment(long id, @NotNull String name, @NotNull LocalDate date, @NotNull int runType, @NotNull int score) {
+	public Experiment(int id, @NotNull String name, @NotNull LocalDate date, @NotNull int runType, @NotNull int score) {
 		this.id = id;
 		this.name = name;
 		this.date = date;
@@ -46,11 +46,11 @@ public class Experiment
 		this.score = score;
 	}
 
-	public long getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 

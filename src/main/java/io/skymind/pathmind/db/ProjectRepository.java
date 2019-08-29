@@ -16,7 +16,7 @@ public class ProjectRepository
     @Autowired
     private DSLContext dslContext;
 
-    public List<Project> getProjectsForUser(long userId) {
+    public List<Project> getProjectsForUser(int userId) {
         return dslContext
             .selectFrom(PROJECT)
             .where(PROJECT.USER_ID.eq(userId))
@@ -31,7 +31,7 @@ public class ProjectRepository
 			.fetchInto(Project.class);
     }
 
-    public Project getProject(long projectId) {
+    public Project getProject(int projectId) {
     	return dslContext
 			.selectFrom(PROJECT)
 			.where(PROJECT.ID.eq(projectId))

@@ -45,7 +45,6 @@ public class NewProjectForm extends VerticalLayout
 
 		add(getTitlePanel());
 		add(form);
-		add(new Label("test"));
 
 		setWidth(UIConstants.CENTERED_FORM_WIDTH);
 		setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);

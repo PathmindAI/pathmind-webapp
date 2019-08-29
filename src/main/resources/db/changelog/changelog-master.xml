@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="admin" id="1">
+        <createTable tableName="User">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="User"/>
+        </rollback>
+
+        <createTable tableName="Project">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints nullable="false" foreignKeyName="fk-project-user" references="User(id)"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="Project"/>
+        </rollback>
+
+        <createTable tableName="Experiment">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="project_id" type="INT">
+                <constraints nullable="false" foreignKeyName="fk-experiment-project" references="Project(id)"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="run_type" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="score" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="Experiment"/>
+        </rollback>
+
+        <createTable tableName="Rewardfunction">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="experiment_id" type="INT">
+                <constraints nullable="false" foreignKeyName="fk-rewardfunction-experiment" references="Experiment(id)"/>
+            </column>
+            <column name="function" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="RewardFunction"/>
+        </rollback>
+
+        <insert tableName="User">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="Steph"/>
+            <column name="email" value="steph@followsteph.com"/>
+            <column name="password" value="password"/>
+        </insert>
+        <insert tableName="User">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="Bob"/>
+            <column name="email" value="bob@skymind.io"/>
+            <column name="password" value="password"/>
+        </insert>
+
+        <insert tableName="Project">
+            <column name="id" valueNumeric="1"/>
+            <column name="user_id" valueNumeric="1"/>
+            <column name="name" value="Coffee Shop"/>
+            <column name="date_created" valueDate="2019-08-23"/>
+        </insert>
+        <insert tableName="Project">
+            <column name="id" valueNumeric="2"/>
+            <column name="user_id" valueNumeric="1"/>
+            <column name="name" value="Traffic Simulation"/>
+            <column name="date_created" valueDate="2019-08-24"/>
+        </insert>
+
+        <insert tableName="Experiment">
+            <column name="id" valueNumeric="1"/>
+            <column name="project_id" valueNumeric="1"/>
+            <column name="name" value="Experiment 1"/>
+            <column name="date" valueDate="2019-08-23"/>
+            <column name="run_type" valueNumeric="1"/>
+            <column name="score" valueNumeric="10"/>
+        </insert>
+        <insert tableName="Experiment">
+            <column name="id" valueNumeric="2"/>
+            <column name="project_id" valueNumeric="1"/>
+            <column name="name" value="Experiment 2"/>
+            <column name="date" valueDate="2019-08-23"/>
+            <column name="run_type" valueNumeric="2"/>
+            <column name="score" valueNumeric="20"/>
+        </insert>
+        <insert tableName="Experiment">
+            <column name="id" valueNumeric="3"/>
+            <column name="project_id" valueNumeric="1"/>
+            <column name="name" value="Experiment 3"/>
+            <column name="date" valueDate="2019-08-23"/>
+            <column name="run_type" valueNumeric="3"/>
+            <column name="score" valueNumeric="30"/>
+        </insert>
+
+        <insert tableName="Rewardfunction">
+            <column name="id" valueNumeric="1"/>
+            <column name="experiment_id" valueNumeric="1"/>
+            <column name="function" value="function"/>
+        </insert>
+    </changeSet>
+
+
+</databaseChangeLog>

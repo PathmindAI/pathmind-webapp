@@ -50,7 +50,7 @@ public class NewProjectView extends VerticalLayout implements BasicViewInterface
 
 	// TODO -> Implement properly. We need to pass a parameter, etc.
 	private void handleStartYourProjectClicked() {
-		UI.getCurrent().navigate(RewardFunctionView.class, 1L);
+		UI.getCurrent().navigate(RewardFunctionView.class, 1);
 	}
 
 	private void handleBackToImportClicked() {

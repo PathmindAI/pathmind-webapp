@@ -16,7 +16,6 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.constants.PathmindConstants;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.data.Reward;
 import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.LabelFactory;
@@ -31,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value = "rewardFunction", layout = MainLayout.class)
-public class RewardFunctionView extends VerticalLayout implements BasicViewInterface, HasUrlParameter<Long>
+public class RewardFunctionView extends VerticalLayout implements BasicViewInterface, HasUrlParameter<Integer>
 {
 	private Logger log = LogManager.getLogger(RewardFunctionView.class);
 
@@ -125,7 +124,7 @@ public class RewardFunctionView extends VerticalLayout implements BasicViewInter
 
 	// TODO -> Duplicate code for now as I refactor the code on my new understanding from the call yesterday.
 	@Override
-	public void setParameter(BeforeEvent event, Long projectId) {
+	public void setParameter(BeforeEvent event, Integer projectId) {
 		Project project = projectRepository.getProject(projectId);
 		if(project == null) {
 			log.info("TODO -> Implement");
