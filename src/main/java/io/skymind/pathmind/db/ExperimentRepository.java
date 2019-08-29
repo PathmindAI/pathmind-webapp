@@ -16,7 +16,7 @@ public class ExperimentRepository
 	@Autowired
 	private DSLContext dslContext;
 
-	public List<Experiment> getExperimentsForProject(long projectId) {
+	public List<Experiment> getExperimentsForProject(int projectId) {
 		return dslContext
 				.selectFrom(EXPERIMENT)
 				.where(EXPERIMENT.PROJECT_ID.eq(projectId))

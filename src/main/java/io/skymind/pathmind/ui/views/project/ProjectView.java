@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value="project", layout = MainLayout.class)
-public class ProjectView extends VerticalLayout implements BasicViewInterface, HasUrlParameter<Long>
+public class ProjectView extends VerticalLayout implements BasicViewInterface, HasUrlParameter<Integer>
 {
 	private Logger log = LogManager.getLogger(ProjectView.class);
 
@@ -81,7 +81,7 @@ public class ProjectView extends VerticalLayout implements BasicViewInterface, H
 
 	// TODO -> There is no validation to make sure the projectId is valid.
 	@Override
-	public void setParameter(BeforeEvent event, Long projectId)
+	public void setParameter(BeforeEvent event, Integer projectId)
 	{
 		Project project = projectRepository.getProject(projectId);
 
