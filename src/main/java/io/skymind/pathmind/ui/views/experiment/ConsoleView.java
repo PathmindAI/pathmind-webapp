@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value = "console", layout = MainLayout.class)
-public class ConsoleView extends VerticalLayout implements BasicViewInterface, HasUrlParameter<Integer>
+public class ConsoleView extends VerticalLayout implements BasicViewInterface, HasUrlParameter<Long>
 {
 	private Logger log = LogManager.getLogger(ConsoleView.class);
 
@@ -74,7 +74,7 @@ public class ConsoleView extends VerticalLayout implements BasicViewInterface, H
 
 	// TODO -> Parameter Validation
 	@Override
-	public void setParameter(BeforeEvent event, Integer projectId) {
+	public void setParameter(BeforeEvent event, Long projectId) {
 		updateScreen();
 	}
 

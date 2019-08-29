@@ -31,7 +31,7 @@ public class ProjectRepository
 			.fetchInto(Project.class);
     }
 
-    public Project getProject(int projectId) {
+    public Project getProject(long projectId) {
     	return dslContext
 			.selectFrom(PROJECT)
 			.where(PROJECT.ID.eq(projectId))
