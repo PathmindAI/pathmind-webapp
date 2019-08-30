@@ -10,6 +10,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.LocalDateRenderer;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.ProjectRepository;
@@ -26,16 +28,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value="dashboard", layout = MainLayout.class)
-public class DashboardView extends VerticalLayout implements BasicViewInterface
+public class DashboardView extends VerticalLayout implements BasicViewInterface, AfterNavigationObserver
 {
+	@Autowired
 	private ProjectRepository projectRepository;
+
+	private Grid<Project> projectGrid;
 
 	// TODO -> There should be projects if you select Dashboard but just in case we should have some additional logic
 	// to handle the case where the project list is empty.
-	public DashboardView(@Autowired ProjectRepository projectRepository)
+	public DashboardView()
 	{
-		this.projectRepository = projectRepository;
-
 		add(getActionMenu());
 		add(getTitlePanel());
 		add(getMainContent());
@@ -43,7 +46,7 @@ public class DashboardView extends VerticalLayout implements BasicViewInterface
 
 	public Component getMainContent()
 	{
-		Grid<Project> projectGrid = new Grid<>();
+		projectGrid = new Grid<>();
 
 		projectGrid.addColumn(Project::getName)
 				.setHeader("Name")
@@ -58,7 +61,6 @@ public class DashboardView extends VerticalLayout implements BasicViewInterface
 				.setHeader("Show Experiments")
 				.setWidth(UIConstants.GRID_BUTTON_WIDTH);
 
-		projectGrid.setItems(projectRepository.getProjectsForUser());
 		projectGrid.setWidth("700px");
 		projectGrid.setMaxWidth("700px");
 		projectGrid.setMaxHeight("500px");
@@ -91,5 +93,10 @@ public class DashboardView extends VerticalLayout implements BasicViewInterface
 	@Override
 	public Component getTitlePanel() {
 		return new ScreenTitlePanel("PROJECTS");
+	}
+
+	@Override
+	public void afterNavigation(AfterNavigationEvent event) {
+		projectGrid.setItems(projectRepository.getProjectsForUser());
 	}
 }

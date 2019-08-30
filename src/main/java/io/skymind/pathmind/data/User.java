@@ -28,14 +28,6 @@ public class User
 	{
 	}
 
-	public User(long id, String name, @NotNull String email, @NotNull String password)
-	{
-		this.id = id;
-		this.name = name;
-		this.email = email;
-		this.password = password;
-	}
-
 	public long getId()
 	{
 		return id;

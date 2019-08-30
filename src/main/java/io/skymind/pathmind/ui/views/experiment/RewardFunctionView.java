@@ -16,7 +16,9 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.constants.PathmindConstants;
 import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.data.RewardFunction;
 import io.skymind.pathmind.db.ProjectRepository;
+import io.skymind.pathmind.db.RewardFunctionRepository;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
@@ -44,6 +46,8 @@ public class RewardFunctionView extends VerticalLayout implements BasicViewInter
 	// confirm that the parameter is correctly wired up.
 	@Autowired
 	private ProjectRepository projectRepository;
+	@Autowired
+	private RewardFunctionRepository rewardFunctionRepository;
 
 	public RewardFunctionView() {
 		add(getActionMenu());
@@ -123,23 +127,23 @@ public class RewardFunctionView extends VerticalLayout implements BasicViewInter
 	}
 
 	// TODO -> Duplicate code for now as I refactor the code on my new understanding from the call yesterday.
+	// TODO -> Need to handle database failure exceptions.
 	@Override
-	public void setParameter(BeforeEvent event, Long projectId) {
-		Project project = projectRepository.getProject(projectId);
-		if(project == null) {
-			log.info("TODO -> Implement");
+	public void setParameter(BeforeEvent event, Long rewardFunctionId)
+	{
+		RewardFunction rewardFunction = rewardFunctionRepository.getRewardFunction(rewardFunctionId);
+		if(rewardFunction == null) {
+			log.info("INVALID -> Attempted to load RewardFunction: "+ rewardFunctionId);
 			return;
-		} else {
-			updateScreen(project);
 		}
+
+		updateScreen(
+				rewardFunction,
+				projectRepository.getProjectForRewardFunction(rewardFunctionId));
 	}
 
-	// TODO -> Fake data
-	private void updateScreen(Project project) {
-		rewardsFunctionTextArea.setValue(
-				"reward = formulate\n" +
-				"reward += more math");
+	private void updateScreen(RewardFunction rewardFunction, Project project) {
+		rewardsFunctionTextArea.setValue(rewardFunction.getFunction());
 		projectLabel.setText(project.getName());
-
 	}
 }

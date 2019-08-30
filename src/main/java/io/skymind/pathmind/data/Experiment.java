@@ -38,12 +38,12 @@ public class Experiment
 	public Experiment() {
 	}
 
-	public Experiment(long id, @NotNull String name, @NotNull LocalDate date, @NotNull int runType, @NotNull int score) {
-		this.id = id;
+	public Experiment(@NotNull String name, @NotNull LocalDate date, @NotNull int runType, @NotNull int score, Project project) {
 		this.name = name;
 		this.date = date;
 		this.runType = runType;
 		this.score = score;
+		this.project = project;
 	}
 
 	public long getId() {

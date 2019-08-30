@@ -8,8 +8,14 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.data.RewardFunction;
+import io.skymind.pathmind.data.utils.ExperimentUtils;
+import io.skymind.pathmind.data.utils.RewardFunctionUtils;
+import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
+import io.skymind.pathmind.db.RewardFunctionRepository;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
@@ -21,14 +27,16 @@ import io.skymind.pathmind.ui.views.project.components.NewProjectForm;
 import io.skymind.pathmind.utils.WrapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDate;
-
 @StyleSheet("frontend://styles/styles.css")
 @Route(value = "newProject", layout = MainLayout.class)
 public class NewProjectView extends VerticalLayout implements BasicViewInterface, StatusUpdater
 {
 	@Autowired
 	private ProjectRepository projectRepository;
+	@Autowired
+	private ExperimentRepository experimentRepository;
+	@Autowired
+	private RewardFunctionRepository rewardfunctionRepository;
 
 	private Project project = new Project();
 	private Binder<Project> binder = new Binder<>(Project.class);
@@ -82,10 +90,26 @@ public class NewProjectView extends VerticalLayout implements BasicViewInterface
 		ProjectFileCheckService.checkFile(this, "Error".equalsIgnoreCase(newProjectForm.getProjectName()));
 	}
 
-	// TODO -> Implement properly. We need to pass a parameter, etc.
-	private void handleStartYourProjectClicked() {
-		long projectId = projectRepository.insertProject(project);
-		UI.getCurrent().navigate(RewardFunctionView.class, projectId);
+	// TODO -> Need to implement proper JOOQ way of saving pojo hierarchy.
+	// TODO -> What style and philosophy do we want to use here?
+	private void handleStartYourProjectClicked()
+	{
+//		long rewardFunctionId = rewardfunctionRepository.insertRewardFunction(
+//				new RewardFunction(experimentRepository.insertExperiment(
+//						new Experiment(project.getName(), projectRepository.insertProject(project))))
+//		);
+
+		// TODO -> quick solution to setup the default data.
+
+		project.setId(projectRepository.insertProject(project));
+
+		Experiment experiment = ExperimentUtils.generateNewExperiment(project);
+		experiment.setId(experimentRepository.insertExperiment(experiment));
+
+		RewardFunction rewardfunction = RewardFunctionUtils.generateNewRewardFunction(experiment);
+		long rewardFunctionId = rewardfunctionRepository.insertRewardFunction(rewardfunction);
+
+		UI.getCurrent().navigate(RewardFunctionView.class, rewardFunctionId);
 	}
 
 	/**

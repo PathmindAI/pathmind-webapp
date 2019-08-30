@@ -1,5 +1,7 @@
 package io.skymind.pathmind.data;
 
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -27,12 +29,6 @@ public class Project
 	private User user;
 
 	public Project() {
-	}
-
-	public Project(long id, @NotNull String name, @NotNull LocalDate dateCreated) {
-		this.id = id;
-		this.name = name;
-		this.dateCreated = dateCreated;
 	}
 
 	public long getId() {

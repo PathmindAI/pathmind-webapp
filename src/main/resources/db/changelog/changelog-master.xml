@@ -67,9 +67,12 @@
             <dropTable tableName="Experiment"/>
         </rollback>
 
-        <createTable tableName="Rewardfunction">
+        <createTable tableName="Reward_Function">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
             </column>
             <column name="experiment_id" type="BIGINT">
                 <constraints nullable="false" foreignKeyName="fk-rewardfunction-experiment" references="Experiment(id)"/>
@@ -79,7 +82,7 @@
             </column>
         </createTable>
         <rollback>
-            <dropTable tableName="RewardFunction"/>
+            <dropTable tableName="Reward_Function"/>
         </rollback>
 
         <insert tableName="User">
@@ -133,9 +136,10 @@
             <column name="score" valueNumeric="30"/>
         </insert>
 
-        <insert tableName="Rewardfunction">
+        <insert tableName="Reward_Function">
             <column name="id" valueNumeric="1"/>
             <column name="experiment_id" valueNumeric="1"/>
+            <column name="name" value="Reward Function 1"/>
             <column name="function" value="function"/>
         </insert>
     </changeSet>

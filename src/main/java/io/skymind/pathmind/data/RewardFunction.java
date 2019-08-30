@@ -4,11 +4,12 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-public class Rewardfunction
+public class RewardFunction
 {
 	@Id
 	private int id;
 
+	// TODO -> remove name?
 	@NotNull
 	@Column(name = "NAME")
 	private String name;
@@ -21,11 +22,10 @@ public class Rewardfunction
 	@JoinColumn(name = "experiment_id", nullable = false)
 	private Experiment experiment;
 
-	public Rewardfunction() {
+	public RewardFunction() {
 	}
 
-	public Rewardfunction(int id, @NotNull String name, @NotNull String function, Experiment experiment) {
-		this.id = id;
+	public RewardFunction(@NotNull String name, @NotNull String function, Experiment experiment) {
 		this.name = name;
 		this.function = function;
 		this.experiment = experiment;

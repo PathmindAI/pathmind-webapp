@@ -1,12 +1,15 @@
 package io.skymind.pathmind.db;
 
 import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.data.db.tables.Experiment;
+import io.skymind.pathmind.data.db.tables.RewardFunction;
 import io.skymind.pathmind.security.SecurityUtils;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
@@ -36,6 +39,28 @@ public class ProjectRepository
     	return dslContext
 				.selectFrom(PROJECT)
 				.where(PROJECT.ID.eq(projectId))
+				.fetchOneInto(Project.class);
+	}
+
+	public Project getProjectForExperiment(long experimentId) {
+		return dslContext
+				.select()
+				.from(PROJECT)
+					.leftJoin(Experiment.EXPERIMENT)
+					.on(PROJECT.ID.eq(Experiment.EXPERIMENT.PROJECT_ID))
+				.where(Experiment.EXPERIMENT.ID.eq(experimentId))
+				.fetchOneInto(Project.class);
+	}
+
+	public Project getProjectForRewardFunction(long rewardFunctionId) {
+		return dslContext
+				.select(PROJECT.asterisk())
+				.from(PROJECT)
+					.leftJoin(Experiment.EXPERIMENT)
+					.on(PROJECT.ID.eq(Experiment.EXPERIMENT.PROJECT_ID))
+					.leftJoin(RewardFunction.REWARD_FUNCTION)
+					.on(Experiment.EXPERIMENT.ID.eq(RewardFunction.REWARD_FUNCTION.EXPERIMENT_ID))
+				.where(RewardFunction.REWARD_FUNCTION.ID.eq(rewardFunctionId))
 				.fetchOneInto(Project.class);
 	}
 
