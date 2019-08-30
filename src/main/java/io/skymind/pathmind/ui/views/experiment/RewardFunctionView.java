@@ -99,7 +99,6 @@ public class RewardFunctionView extends VerticalLayout implements BasicViewInter
 		);
 	}
 
-	// TODO -> Add rewardsListBox renderer
 	private Component getRewardsPanel() {
 		return rewardsFunctionTextArea;
 	}
@@ -126,8 +125,6 @@ public class RewardFunctionView extends VerticalLayout implements BasicViewInter
 		return rightVerticalLayout;
 	}
 
-	// TODO -> Duplicate code for now as I refactor the code on my new understanding from the call yesterday.
-	// TODO -> Need to handle database failure exceptions.
 	@Override
 	public void setParameter(BeforeEvent event, Long rewardFunctionId)
 	{

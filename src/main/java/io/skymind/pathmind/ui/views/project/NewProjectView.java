@@ -43,7 +43,6 @@ public class NewProjectView extends VerticalLayout implements BasicViewInterface
 
 	private UI ui;
 
-	// TODO -> Do we need to be able to handle interrupts on file check (back to import)?
 	private Button createProjectButton;
 	private Button backToImportButton;
 	private Button startYourProjectButton;
@@ -86,11 +85,9 @@ public class NewProjectView extends VerticalLayout implements BasicViewInterface
 		fileCheckPanel.setVisible(true);
 		backToImportButton.setEnabled(false);
 
-		// TODO -> If the project is equal to Error then add errors.
 		ProjectFileCheckService.checkFile(this, "Error".equalsIgnoreCase(newProjectForm.getProjectName()));
 	}
 
-	// TODO -> Need to implement proper JOOQ way of saving pojo hierarchy.
 	// TODO -> What style and philosophy do we want to use here?
 	private void handleStartYourProjectClicked()
 	{
@@ -98,8 +95,6 @@ public class NewProjectView extends VerticalLayout implements BasicViewInterface
 //				new RewardFunction(experimentRepository.insertExperiment(
 //						new Experiment(project.getName(), projectRepository.insertProject(project))))
 //		);
-
-		// TODO -> quick solution to setup the default data.
 
 		project.setId(projectRepository.insertProject(project));
 

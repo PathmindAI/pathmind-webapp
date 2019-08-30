@@ -13,7 +13,6 @@ public class UserRepository
     @Autowired
     private DSLContext dslContext;
 
-    // TODO -> Password needs to be encrypted with a one way encryption algorithm.
     public User getUserByEmailAndPassword(String email, String password) {
         return dslContext
             .selectFrom(USER)

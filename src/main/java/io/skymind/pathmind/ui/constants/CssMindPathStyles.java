@@ -1,6 +1,5 @@
 package io.skymind.pathmind.ui.constants;
 
-// TODO -> Clean up CSS as I learn more about what the screens do.
 public class CssMindPathStyles
 {
 	public static final String ACTION_BUTTON = "action-button";
@@ -16,6 +15,5 @@ public class CssMindPathStyles
 
 	public static final String CENTERED_FORM_LABEL = "centered-field-label";
 
-	// TODO -> This is being used for multiple things.
 	public static final String PROJECT_TITLE = "project-title-label";
 }

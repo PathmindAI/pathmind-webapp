@@ -19,7 +19,6 @@ public class Experiment
 	@Column(name = "DATE")
 	private LocalDate date;
 
-	// TODO -> Should use the RunType enum that I've created and map it to the database.
 	@NotNull
 	@Column(name = "RUN_TYPE")
 	private int runType;
@@ -27,6 +26,10 @@ public class Experiment
 	@NotNull
 	@Column(name = "SCORE")
 	private int score;
+
+	@NotNull
+	@Column(name = "reward_function")
+	private String rewardFunction;
 
 	@ManyToOne
 	@JoinColumn(name = "project_id", nullable = false)
@@ -38,11 +41,12 @@ public class Experiment
 	public Experiment() {
 	}
 
-	public Experiment(@NotNull String name, @NotNull LocalDate date, @NotNull int runType, @NotNull int score, Project project) {
+	public Experiment(@NotNull String name, @NotNull LocalDate date, @NotNull int runType, @NotNull int score, @NotNull String rewardFunction, Project project) {
 		this.name = name;
 		this.date = date;
 		this.runType = runType;
 		this.score = score;
+		this.rewardFunction = rewardFunction;
 		this.project = project;
 	}
 
@@ -100,5 +104,13 @@ public class Experiment
 
 	public void setRuns(List<Run> runs) {
 		this.runs = runs;
+	}
+
+	public String getRewardFunction() {
+		return rewardFunction;
+	}
+
+	public void setRewardFunction(String rewardFunction) {
+		this.rewardFunction = rewardFunction;
 	}
 }

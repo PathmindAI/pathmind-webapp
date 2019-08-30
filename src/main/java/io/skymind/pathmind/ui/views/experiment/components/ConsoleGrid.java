@@ -27,8 +27,6 @@ public class ConsoleGrid extends Grid<ConsoleEntry>
 		setSizeFull();
 		addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
-		// TODO -> Quick solution to deal with the splitPanel not displaying the ConsoleGrid. When I have time I will
-		// investigate why it's being blocked off.
 		setMinHeight("200px");
 	}
 }

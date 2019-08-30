@@ -31,7 +31,6 @@ public class RewardFunctionRepository
             .fetchOneInto(RewardFunction.class);
     }
 
-    // TODO
 	public long insertRewardFunction(RewardFunction rewardfunction) {
     	return dslContext
 				.insertInto(REWARD_FUNCTION)

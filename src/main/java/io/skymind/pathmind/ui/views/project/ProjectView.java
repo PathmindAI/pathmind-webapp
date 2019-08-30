@@ -31,7 +31,6 @@ public class ProjectView extends VerticalLayout implements BasicViewInterface, H
 {
 	private Logger log = LogManager.getLogger(ProjectView.class);
 
-	// TODO -> Implement correctly based on parameters passed into the view.
 	@Autowired
 	private ProjectRepository projectRepository;
 	@Autowired
@@ -79,7 +78,6 @@ public class ProjectView extends VerticalLayout implements BasicViewInterface, H
 		);
 	}
 
-	// TODO -> There is no validation to make sure the projectId is valid.
 	@Override
 	public void setParameter(BeforeEvent event, Long projectId)
 	{

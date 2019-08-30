@@ -28,7 +28,6 @@ public class ConsoleView extends VerticalLayout implements BasicViewInterface, H
 {
 	private Logger log = LogManager.getLogger(ConsoleView.class);
 
-	// TODO -> Only used to populate the screen with test data for now.
 	private ExperimentRepository experimentRepository;
 
 	private ConsoleGrid consoleGrid = new ConsoleGrid();
@@ -58,7 +57,6 @@ public class ConsoleView extends VerticalLayout implements BasicViewInterface, H
 		return WrapperUtils.wrapCenterAlignmentFullHorizontal(LabelFactory.createLabel("Console Ouput", CssMindPathStyles.PROJECT_TITLE));
 	}
 
-	// TODO -> Hardcoded data.
 	public Component getMainContent()
 	{
 		SplitLayout splitLayout = new SplitLayout(
@@ -72,13 +70,11 @@ public class ConsoleView extends VerticalLayout implements BasicViewInterface, H
 		return splitLayout;
 	}
 
-	// TODO -> Parameter Validation
 	@Override
 	public void setParameter(BeforeEvent event, Long projectId) {
 		updateScreen();
 	}
 
-	// TODO -> Implement
 	private void updateScreen() {
 		consoleGrid.setItems(ConsoleEntry.getFakeData(10));
 	}

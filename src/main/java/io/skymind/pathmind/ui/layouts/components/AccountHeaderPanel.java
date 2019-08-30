@@ -17,7 +17,6 @@ public class AccountHeaderPanel extends HorizontalLayout
 
 		add(userLabel, accountRouterLink, logoutButton);
 
-		// TODO -> CSS
 		getElement().getStyle().set("margin-left", "auto");
 		getElement().getStyle().set("padding-right", "20px");
 	}

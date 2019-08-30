@@ -4,8 +4,10 @@ import com.vaadin.flow.component.Component;
 import io.skymind.pathmind.security.framework.LoginCheckBeforeEnterEvent;
 import io.skymind.pathmind.ui.components.ActionMenu;
 
-// TODO -> To remove later since we don't want these methods to be public. It's more just to help remind myself what I need to implement
-// and to be consistent.
+/**
+ * Do NOT implement any default methods for this interface because a large part of it's goal is to remind
+ * the developer to implement these methods in all the views to keep the layout and coding consistent.
+ */
 public interface BasicViewInterface extends LoginCheckBeforeEnterEvent
 {
 	public ActionMenu getActionMenu();

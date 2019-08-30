@@ -26,7 +26,6 @@ public class ExperimentPanel extends VerticalLayout
 
 	private Grid<Experiment> grid = new Grid<>();
 
-	// TODO -> Hardcoded value to get fake experiment data.
 	public ExperimentPanel()
 	{
 		add(
@@ -35,7 +34,6 @@ public class ExperimentPanel extends VerticalLayout
 		);
 	}
 
-	// TODO -> Need to decide between styled labels and header elements.
 	private Component getTitleBar() {
 		return WrapperUtils.wrapLeftAndRightAligned(
 				new H3("Recent Experiments"),
@@ -115,7 +113,6 @@ public class ExperimentPanel extends VerticalLayout
 				});
 	}
 
-	// TODO -> Should be promoted to GridButtonFactory so that we use the same code but I'm skipping it due to limited time for now.
 	private ComponentRenderer<HorizontalLayout, Experiment> getGridButtonRenderer(ComponentEventListener<ClickEvent<Button>> clickListener) {
 		return new ComponentRenderer<>(experiment -> {
 			return GridButtonFactory.getGridButton(">", clickListener);

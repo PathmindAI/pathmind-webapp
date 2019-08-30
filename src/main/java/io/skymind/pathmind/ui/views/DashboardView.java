@@ -35,8 +35,6 @@ public class DashboardView extends VerticalLayout implements BasicViewInterface,
 
 	private Grid<Project> projectGrid;
 
-	// TODO -> There should be projects if you select Dashboard but just in case we should have some additional logic
-	// to handle the case where the project list is empty.
 	public DashboardView()
 	{
 		add(getActionMenu());

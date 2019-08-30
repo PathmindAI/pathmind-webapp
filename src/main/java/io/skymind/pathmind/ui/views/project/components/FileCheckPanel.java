@@ -54,7 +54,6 @@ public class FileCheckPanel extends VerticalLayout
 		);
 	}
 
-	// TODO -> Some css cleanup due to padding on the ListBox, etc. in terms of component alignment.
 	private HorizontalLayout getErrorsPanel()
 	{
 		errorsTextArea = new TextArea();
@@ -83,9 +82,6 @@ public class FileCheckPanel extends VerticalLayout
 		statusProgressBar.setValue(percentage);
 	}
 
-	// TODO -> Seems to add the errors at the end of the line rather then the next line.
-	// TODO -> If the error list is too long it could become a performance issue at which point
-	// 		   we'd be better off appending or looking at the possible options.
 	public void addError(String error) {
 		errorsPanel.setVisible(true);
 		errorsTextArea.setValue(error + "\n" + errorsTextArea.getValue());

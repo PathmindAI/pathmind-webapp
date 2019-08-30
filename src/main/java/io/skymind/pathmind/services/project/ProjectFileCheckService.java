@@ -8,8 +8,6 @@ public class ProjectFileCheckService
 {
 	private static final Logger log = LogManager.getLogger(ProjectFileCheckService.class);
 
-	// TODO -> To implement. Should be injected as well. I just did a quick test class to test the push on the progressbar.
-	// TODO -> Do we need to be able to handle interrupts?
 	// TODO -> Remove the showError flag, it's only for testing.
 	public static void checkFile(StatusUpdater statusUpdater, boolean isShowError) {
 		new Thread(() -> {

@@ -67,7 +67,6 @@ public class NewProjectForm extends VerticalLayout
 		);
 	}
 
-	// TODO -> Quick solution for testing until we fully implement the form
 	public String getProjectName() {
 		return projectNameTextField.getValue();
 	}

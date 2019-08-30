@@ -8,7 +8,6 @@ import io.skymind.pathmind.ui.views.LoginView;
 public interface LoginCheckBeforeEnterEvent extends BeforeEnterObserver
 {
 	default public void beforeEnter(BeforeEnterEvent event) {
-		// TODO -> We still need to check if the user has projects or not to determine where to forward them.
 		if(!SecurityUtils.isUserLoggedIn()) {
 			event.forwardTo(LoginView.class);
 		}

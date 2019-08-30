@@ -41,7 +41,6 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver // , 
 			setError(true);
 	}
 
-	// TODO -> Doing a second database call but we could do it as part of getting the user.
 	private void navigateToEntryView() {
 		UI.getCurrent().navigate(getRerouteClass());
 	}
@@ -52,17 +51,9 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver // , 
 		return DashboardView.class;
 	}
 
-//	@Override
-//	public void afterNavigation(AfterNavigationEvent event)
-//	{
-////		setError(event.getLocation().getQueryParameters().getParameters().containsKey("error"));
-//	}
-
 	@Override
 	public void beforeEnter(BeforeEnterEvent event)
 	{
-		// TODO -> Password needs to be encrypted with a one-way encryption algorithm.
-		// TODO -> We still need to check if the user has projects or not to determine where to forward them.
 		if (SecurityUtils.isUserLoggedIn()) {
 			event.forwardTo(getRerouteClass());
 			return;
