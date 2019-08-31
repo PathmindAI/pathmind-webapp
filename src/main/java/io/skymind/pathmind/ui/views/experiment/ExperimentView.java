@@ -21,6 +21,7 @@ import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.LabelFactory;
+import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.BasicViewInterface;
@@ -36,7 +37,7 @@ public class ExperimentView extends VerticalLayout implements BasicViewInterface
 {
 	private Logger log = LogManager.getLogger(ExperimentView.class);
 
-	private Label projectLabel = LabelFactory.createLabel("", CssMindPathStyles.PROJECT_TITLE);
+	private ScreenTitlePanel screenTitlePanel = new ScreenTitlePanel("PROJECT");
 
 	private TextArea rewardsFunctionTextArea = new TextArea();
 
@@ -51,6 +52,7 @@ public class ExperimentView extends VerticalLayout implements BasicViewInterface
 
 	public ExperimentView() {
 		add(getActionMenu());
+		add(getTitlePanel());
 		add(getMainContent());
 
 		setWidthFull();
@@ -71,7 +73,7 @@ public class ExperimentView extends VerticalLayout implements BasicViewInterface
 	// what to implement and a default would remove that ability.
 	@Override
 	public Component getTitlePanel() {
-		return null;
+		return screenTitlePanel;
 	}
 
 	// TODO -> Since I'm not sure exactly what the panels on the right are I'm going to make some big
@@ -85,7 +87,6 @@ public class ExperimentView extends VerticalLayout implements BasicViewInterface
 
 	private VerticalLayout getMainPanel() {
 		VerticalLayout mainVerticalLayout = new VerticalLayout(
-				projectLabel,
 				getBasicOptionsPanel(),
 				getRewardsPanel());
 		return mainVerticalLayout;
@@ -141,6 +142,6 @@ public class ExperimentView extends VerticalLayout implements BasicViewInterface
 
 	private void updateScreen(Experiment experiment, Project project) {
 		rewardsFunctionTextArea.setValue(experiment.getRewardFunction());
-		projectLabel.setText(project.getName());
+		screenTitlePanel.setSubtitle(project.getName());
 	}
 }
