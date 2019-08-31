@@ -15,10 +15,10 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.constants.PathmindConstants;
+import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.data.RewardFunction;
+import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
-import io.skymind.pathmind.db.RewardFunctionRepository;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
@@ -31,10 +31,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @StyleSheet("frontend://styles/styles.css")
-@Route(value = "rewardFunction", layout = MainLayout.class)
-public class RewardFunctionView extends VerticalLayout implements BasicViewInterface, HasUrlParameter<Long>
+@Route(value = "experiment", layout = MainLayout.class)
+public class ExperimentView extends VerticalLayout implements BasicViewInterface, HasUrlParameter<Long>
 {
-	private Logger log = LogManager.getLogger(RewardFunctionView.class);
+	private Logger log = LogManager.getLogger(ExperimentView.class);
 
 	private Label projectLabel = LabelFactory.createLabel("", CssMindPathStyles.PROJECT_TITLE);
 
@@ -47,9 +47,9 @@ public class RewardFunctionView extends VerticalLayout implements BasicViewInter
 	@Autowired
 	private ProjectRepository projectRepository;
 	@Autowired
-	private RewardFunctionRepository rewardFunctionRepository;
+	private ExperimentRepository experimentRepository;
 
-	public RewardFunctionView() {
+	public ExperimentView() {
 		add(getActionMenu());
 		add(getMainContent());
 
@@ -126,21 +126,21 @@ public class RewardFunctionView extends VerticalLayout implements BasicViewInter
 	}
 
 	@Override
-	public void setParameter(BeforeEvent event, Long rewardFunctionId)
+	public void setParameter(BeforeEvent event, Long experimentId)
 	{
-		RewardFunction rewardFunction = rewardFunctionRepository.getRewardFunction(rewardFunctionId);
-		if(rewardFunction == null) {
-			log.info("INVALID -> Attempted to load RewardFunction: "+ rewardFunctionId);
+		Experiment experiment = experimentRepository.getExperiment(experimentId);
+		if(experiment == null) {
+			log.info("INVALID -> Attempted to load Experiment: "+ experimentId);
 			return;
 		}
 
 		updateScreen(
-				rewardFunction,
-				projectRepository.getProjectForRewardFunction(rewardFunctionId));
+				experiment,
+				projectRepository.getProjectForExperiment(experimentId));
 	}
 
-	private void updateScreen(RewardFunction rewardFunction, Project project) {
-		rewardsFunctionTextArea.setValue(rewardFunction.getFunction());
+	private void updateScreen(Experiment experiment, Project project) {
+		rewardsFunctionTextArea.setValue(experiment.getRewardFunction());
 		projectLabel.setText(project.getName());
 	}
 }

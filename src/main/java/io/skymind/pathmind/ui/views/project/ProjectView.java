@@ -20,6 +20,7 @@ import io.skymind.pathmind.ui.views.errors.InvalidDataView;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentChartPanel;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentPanel;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentScoreboardPanel;
+import io.skymind.pathmind.ui.views.project.components.ProjectStatusPanel;
 import io.skymind.pathmind.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,13 +38,12 @@ public class ProjectView extends VerticalLayout implements BasicViewInterface, H
 	private ExperimentRepository experimentRepository;
 
 	private ScreenTitlePanel screenTitlePanel = new ScreenTitlePanel("PROJECT");
+	private ProjectStatusPanel projectStatusPanel = new ProjectStatusPanel();
+
 	private ExperimentPanel experimentPanel = new ExperimentPanel();
 
-//	public ProjectView(@Autowired ProjectRepository projectRepository)
 	public ProjectView()
 	{
-//		this.projectRepository = projectRepository;
-
 		add(getActionMenu());
 		add(getTitlePanel());
 		add(getMainContent());
@@ -55,7 +55,8 @@ public class ProjectView extends VerticalLayout implements BasicViewInterface, H
 	@Override
 	public ActionMenu getActionMenu() {
 		return new ActionMenu(
-			new Button("Stop")
+			new Button("+ Add Experiment"),
+			new Button("Full Run >")
 		);
 	}
 
@@ -63,15 +64,16 @@ public class ProjectView extends VerticalLayout implements BasicViewInterface, H
 	// what to implement and a default would remove that ability.
 	@Override
 	public Component getTitlePanel() {
-		return screenTitlePanel;
+		return WrapperUtils.wrapLeftAndRightAligned(screenTitlePanel, projectStatusPanel);
 	}
 
 	// TODO -> Since I'm not sure exactly what the panels on the right are I'm going to make some big
 	// assumptions as to which Layout should wrap which one.
 	@Override
 	public Component getMainContent() {
-		return WrapperUtils.wrapCenterAlignmentFullVertical(
-				WrapperUtils.wrapCenterAlignmentFullWidthHorizontal(
+
+		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
+				WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 					new ExperimentChartPanel(),
 					new ExperimentScoreboardPanel()),
 				experimentPanel

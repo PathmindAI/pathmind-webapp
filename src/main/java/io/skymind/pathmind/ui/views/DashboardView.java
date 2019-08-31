@@ -56,7 +56,7 @@ public class DashboardView extends VerticalLayout implements BasicViewInterface,
 				.setSortable(true)
 				.setWidth("275px");
 		projectGrid.addColumn(getProjectButton())
-				.setHeader("Show Experiments")
+				.setHeader("View Project")
 				.setWidth(UIConstants.GRID_BUTTON_WIDTH);
 
 		projectGrid.setWidth("700px");

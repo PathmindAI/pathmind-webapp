@@ -36,7 +36,7 @@ public class ExperimentPanel extends VerticalLayout
 
 	private Component getTitleBar() {
 		return WrapperUtils.wrapLeftAndRightAligned(
-				new H3("Recent Experiments"),
+				new H3("Experiments"),
 				new TextField("Search")
 		);
 	}

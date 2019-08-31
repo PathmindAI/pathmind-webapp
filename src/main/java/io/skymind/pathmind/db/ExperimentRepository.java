@@ -5,17 +5,22 @@ import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
-
 
 @Repository
 public class ExperimentRepository
 {
 	@Autowired
 	private DSLContext dslContext;
+
+    public Experiment getExperiment(long experimentId) {
+        return dslContext
+            .selectFrom(EXPERIMENT)
+            .where(EXPERIMENT.ID.eq(experimentId))
+            .fetchOneInto(Experiment.class);
+    }
 
 	public List<Experiment> getExperimentsForProject(long projectId) {
 		return dslContext
@@ -31,6 +36,7 @@ public class ExperimentRepository
 				.set(EXPERIMENT.DATE, experiment.getDate())
 				.set(EXPERIMENT.RUN_TYPE, experiment.getRunType())
 				.set(EXPERIMENT.SCORE, experiment.getScore())
+				.set(EXPERIMENT.REWARD_FUNCTION, experiment.getRewardFunction())
 				.set(EXPERIMENT.PROJECT_ID, experiment.getProject().getId())
 				.returning(EXPERIMENT.ID)
 				.fetchOne()

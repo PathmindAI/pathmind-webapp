@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 
 public class WrapperUtils
@@ -68,4 +69,21 @@ public class WrapperUtils
 		rightComponent.getElement().getStyle().set("margin-left", "auto");
 		return horizontalLayout;
 	}
+
+	public static SplitLayout wrapCenterAlignmentFullSplitLayoutVertical(Component primaryComponent, Component secondaryComponent) {
+		SplitLayout splitLayout = new SplitLayout(primaryComponent, secondaryComponent);
+		splitLayout.setOrientation(SplitLayout.Orientation.VERTICAL);
+		splitLayout.setSizeFull();
+		splitLayout.setSplitterPosition(50);
+		return splitLayout;
+	}
+
+	public static SplitLayout wrapCenterAlignmentFullSplitLayoutHorizontal(Component primaryComponent, Component secondaryComponent) {
+		SplitLayout splitLayout = new SplitLayout(primaryComponent, secondaryComponent);
+		splitLayout.setOrientation(SplitLayout.Orientation.HORIZONTAL);
+		splitLayout.setSizeFull();
+		splitLayout.setSplitterPosition(50);
+		return splitLayout;
+	}
+
 }

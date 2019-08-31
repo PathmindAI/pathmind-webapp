@@ -11,7 +11,7 @@ public class ExperimentScoreboardPanel extends VerticalLayout
 
 	public ExperimentScoreboardPanel()
 	{
-		add(new Label("Title"));
+		add(new Label("Scoreboard"));
 		add(getGrid());
 	}
 

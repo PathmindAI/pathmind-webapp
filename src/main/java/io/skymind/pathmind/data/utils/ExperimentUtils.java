@@ -16,6 +16,7 @@ public class ExperimentUtils
 				LocalDate.now(),
 				1,
 				1,
+				"Function =",
 				project);
 	}
 }

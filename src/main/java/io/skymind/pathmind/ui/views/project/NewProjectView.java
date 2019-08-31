@@ -10,18 +10,15 @@ import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.data.RewardFunction;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
-import io.skymind.pathmind.data.utils.RewardFunctionUtils;
 import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
-import io.skymind.pathmind.db.RewardFunctionRepository;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.BasicViewInterface;
-import io.skymind.pathmind.ui.views.experiment.RewardFunctionView;
+import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.project.components.FileCheckPanel;
 import io.skymind.pathmind.ui.views.project.components.NewProjectForm;
 import io.skymind.pathmind.utils.WrapperUtils;
@@ -35,8 +32,6 @@ public class NewProjectView extends VerticalLayout implements BasicViewInterface
 	private ProjectRepository projectRepository;
 	@Autowired
 	private ExperimentRepository experimentRepository;
-	@Autowired
-	private RewardFunctionRepository rewardfunctionRepository;
 
 	private Project project = new Project();
 	private Binder<Project> binder = new Binder<>(Project.class);
@@ -88,23 +83,13 @@ public class NewProjectView extends VerticalLayout implements BasicViewInterface
 		ProjectFileCheckService.checkFile(this, "Error".equalsIgnoreCase(newProjectForm.getProjectName()));
 	}
 
-	// TODO -> What style and philosophy do we want to use here?
 	private void handleStartYourProjectClicked()
 	{
-//		long rewardFunctionId = rewardfunctionRepository.insertRewardFunction(
-//				new RewardFunction(experimentRepository.insertExperiment(
-//						new Experiment(project.getName(), projectRepository.insertProject(project))))
-//		);
-
 		project.setId(projectRepository.insertProject(project));
-
 		Experiment experiment = ExperimentUtils.generateNewExperiment(project);
 		experiment.setId(experimentRepository.insertExperiment(experiment));
 
-		RewardFunction rewardfunction = RewardFunctionUtils.generateNewRewardFunction(experiment);
-		long rewardFunctionId = rewardfunctionRepository.insertRewardFunction(rewardfunction);
-
-		UI.getCurrent().navigate(RewardFunctionView.class, rewardFunctionId);
+		UI.getCurrent().navigate(ProjectView.class, project.getId());
 	}
 
 	/**
