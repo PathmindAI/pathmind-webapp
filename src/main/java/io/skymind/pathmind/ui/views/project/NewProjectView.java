@@ -105,6 +105,7 @@ public class NewProjectView extends VerticalLayout implements BasicViewInterface
 		}
 	}
 
+	// Test github close commit.
 	public ActionMenu getActionMenu()
 	{
 		createProjectButton = new Button("Create Project >", click -> handleCreateProjectClicked());
