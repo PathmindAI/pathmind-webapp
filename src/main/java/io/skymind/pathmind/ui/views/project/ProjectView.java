@@ -1,14 +1,12 @@
 package io.skymind.pathmind.ui.views.project;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
@@ -17,7 +15,7 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.BasicViewInterface;
 import io.skymind.pathmind.ui.views.errors.InvalidDataView;
-import io.skymind.pathmind.ui.views.experiment.components.ExperimentChartPanel;
+import io.skymind.pathmind.ui.views.project.components.ProjectChartPanel;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentPanel;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentScoreboardPanel;
 import io.skymind.pathmind.ui.views.project.components.ProjectStatusPanel;
@@ -25,6 +23,9 @@ import io.skymind.pathmind.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value="project", layout = MainLayout.class)
@@ -41,6 +42,7 @@ public class ProjectView extends VerticalLayout implements BasicViewInterface, H
 	private ProjectStatusPanel projectStatusPanel = new ProjectStatusPanel();
 
 	private ExperimentPanel experimentPanel = new ExperimentPanel();
+	private ProjectChartPanel projectChartPanel = new ProjectChartPanel();
 
 	public ProjectView()
 	{
@@ -74,7 +76,7 @@ public class ProjectView extends VerticalLayout implements BasicViewInterface, H
 
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
 				WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-					new ExperimentChartPanel(),
+					projectChartPanel,
 					new ExperimentScoreboardPanel()),
 				experimentPanel
 		);
@@ -96,5 +98,8 @@ public class ProjectView extends VerticalLayout implements BasicViewInterface, H
 	{
 		screenTitlePanel.setSubtitle(project.getName());
 		experimentPanel.setExperiments(experimentRepository.getExperimentsForProject(project.getId()));
+
+		// TODO -> to implement
+		projectChartPanel.setChartData(Arrays.asList(10, 40, 60, 20, 40, 50, 50, 10, 100, 80));
 	}
 }
