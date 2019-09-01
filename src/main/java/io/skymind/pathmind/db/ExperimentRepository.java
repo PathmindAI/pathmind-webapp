@@ -1,7 +1,9 @@
 package io.skymind.pathmind.db;
 
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.converters.RunTypeConverter;
 import org.jooq.DSLContext;
+import org.jooq.impl.EnumConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

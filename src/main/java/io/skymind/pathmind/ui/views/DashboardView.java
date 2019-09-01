@@ -75,9 +75,8 @@ public class DashboardView extends VerticalLayout implements BasicViewInterface,
 
 	private ComponentRenderer<HorizontalLayout, Project> getProjectButton()
 	{
-		return new ComponentRenderer<>(project -> {
-			return GridButtonFactory.getGridButton(">", click ->
-					UI.getCurrent().navigate(ProjectView.class, project.getId()));
+		return GridButtonFactory.getGridButtonRenderer(project -> {
+				UI.getCurrent().navigate(ProjectView.class, project.getId());
 		});
 	}
 

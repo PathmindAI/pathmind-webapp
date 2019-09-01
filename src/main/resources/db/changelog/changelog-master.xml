@@ -111,7 +111,7 @@
             <column name="name" value="Experiment 2"/>
             <column name="date" valueDate="2019-08-23"/>
             <column name="reward_function" value="function = some value 2"/>
-            <column name="run_type" valueNumeric="2"/>
+            <column name="run_type" valueNumeric="1"/>
             <column name="score" valueNumeric="20"/>
         </insert>
         <insert tableName="Experiment">
@@ -120,7 +120,7 @@
             <column name="name" value="Experiment 3"/>
             <column name="date" valueDate="2019-08-23"/>
             <column name="reward_function" value="function = some value 3"/>
-            <column name="run_type" valueNumeric="3"/>
+            <column name="run_type" valueNumeric="2"/>
             <column name="score" valueNumeric="30"/>
         </insert>
     </changeSet>

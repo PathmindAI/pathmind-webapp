@@ -1,9 +1,7 @@
-package io.skymind.pathmind.ui.views.experiment.components;
+package io.skymind.pathmind.ui.views.project.components;
 
-import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H3;
@@ -13,6 +11,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.ui.components.grid.GridButtonFactory;
+import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.utils.UIConstants;
 import io.skymind.pathmind.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
@@ -20,13 +19,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
-public class ExperimentPanel extends VerticalLayout
+public class ExperimentListPanel extends VerticalLayout
 {
-	private Logger log = LogManager.getLogger(ExperimentPanel.class);
+	private Logger log = LogManager.getLogger(ExperimentListPanel.class);
 
 	private Grid<Experiment> grid = new Grid<>();
 
-	public ExperimentPanel()
+	public ExperimentListPanel()
 	{
 		add(
 				getTitleBar(),
@@ -50,7 +49,7 @@ public class ExperimentPanel extends VerticalLayout
 				.setHeader("Date")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(Experiment::getRunType)
+		grid.addColumn(Experiment::getRunTypeEnum)
 				.setHeader("Run Type")
 				.setAutoWidth(true)
 				.setSortable(true);
@@ -67,7 +66,7 @@ public class ExperimentPanel extends VerticalLayout
 				.setFlexGrow(0)
 				.setWidth(UIConstants.GRID_BUTTON_WIDTH);
 		grid.addColumn(getEditRewardFunctionsButtonRenderer())
-				.setHeader("Edit Reward Functions")
+				.setHeader("Edit Experiment")
 				.setFlexGrow(0)
 				.setWidth(UIConstants.GRID_BUTTON_WIDTH);
 		grid.addColumn(getExportPolicyButtonRenderer())
@@ -86,36 +85,30 @@ public class ExperimentPanel extends VerticalLayout
 	}
 
 	private ComponentRenderer<HorizontalLayout, Experiment> getAdditionalRunButtonRenderer() {
-		return getGridButtonRenderer(click -> {
-					// TODO -> Implement
-					log.info("Additional Run clicked");
-				});
+		return GridButtonFactory.getGridButtonRenderer(experiment -> {
+			// TODO -> Implement
+			log.info("Additional Run clicked");
+		});
 	}
 
 	private ComponentRenderer<HorizontalLayout, Experiment> getConsoleOutputButtonRenderer() {
-		return getGridButtonRenderer(click -> {
-					// TODO -> Implement
-					log.info("Console output clicked");
-				});
+		return GridButtonFactory.getGridButtonRenderer(experiment -> {
+			// TODO -> Implement
+			log.info("Console output clicked");
+		});
 	}
 
 	private ComponentRenderer<HorizontalLayout, Experiment> getEditRewardFunctionsButtonRenderer() {
-		return getGridButtonRenderer(click -> {
-					// TODO -> Implement
-					log.info("Edit Reward Functions clicked");
-				});
+		return GridButtonFactory.getGridButtonRenderer(experiment -> {
+			UI.getCurrent().navigate(ExperimentView.class, experiment.getId());
+		});
 	}
 
 	private ComponentRenderer<HorizontalLayout, Experiment> getExportPolicyButtonRenderer() {
-		return getGridButtonRenderer(click -> {
-					// TODO -> Implement
-					log.info("Export Policy clicked");
-				});
-	}
-
-	private ComponentRenderer<HorizontalLayout, Experiment> getGridButtonRenderer(ComponentEventListener<ClickEvent<Button>> clickListener) {
-		return new ComponentRenderer<>(experiment -> {
-			return GridButtonFactory.getGridButton(">", clickListener);
+		return GridButtonFactory.getGridButtonRenderer(experiment -> {
+			// TODO -> Implement
+			log.info("Export Policy clicked");
 		});
 	}
+
 }

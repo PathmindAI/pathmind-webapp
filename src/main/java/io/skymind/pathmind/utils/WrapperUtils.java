@@ -5,7 +5,6 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 
 public class WrapperUtils
 {
@@ -33,6 +32,12 @@ public class WrapperUtils
 	public static HorizontalLayout wrapFullWidthHorizontal(Component... components) {
 		HorizontalLayout wrapper = wrapCenterAlignmentHorizontal(components);
 		wrapper.setWidthFull();
+		return wrapper;
+	}
+
+	public static VerticalLayout wrapFullSizeVertical(Component... components) {
+		VerticalLayout wrapper = new VerticalLayout(components);
+		wrapper.setSizeFull();
 		return wrapper;
 	}
 
@@ -71,18 +76,25 @@ public class WrapperUtils
 	}
 
 	public static SplitLayout wrapCenterAlignmentFullSplitLayoutVertical(Component primaryComponent, Component secondaryComponent) {
+		return wrapCenterAlignmentFullSplitLayoutVertical(primaryComponent, secondaryComponent, 50);
+	}
+
+	public static SplitLayout wrapCenterAlignmentFullSplitLayoutVertical(Component primaryComponent, Component secondaryComponent, double splitterPosition) {
 		SplitLayout splitLayout = new SplitLayout(primaryComponent, secondaryComponent);
 		splitLayout.setOrientation(SplitLayout.Orientation.VERTICAL);
 		splitLayout.setSizeFull();
-		splitLayout.setSplitterPosition(50);
 		return splitLayout;
 	}
 
 	public static SplitLayout wrapCenterAlignmentFullSplitLayoutHorizontal(Component primaryComponent, Component secondaryComponent) {
+		return wrapCenterAlignmentFullSplitLayoutHorizontal(primaryComponent, secondaryComponent, 50);
+	}
+
+	public static SplitLayout wrapCenterAlignmentFullSplitLayoutHorizontal(Component primaryComponent, Component secondaryComponent, double splitterPosition) {
 		SplitLayout splitLayout = new SplitLayout(primaryComponent, secondaryComponent);
 		splitLayout.setOrientation(SplitLayout.Orientation.HORIZONTAL);
 		splitLayout.setSizeFull();
-		splitLayout.setSplitterPosition(50);
+		splitLayout.setSplitterPosition(splitterPosition);
 		return splitLayout;
 	}
 

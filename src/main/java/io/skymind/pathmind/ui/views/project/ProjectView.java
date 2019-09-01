@@ -1,6 +1,7 @@
 package io.skymind.pathmind.ui.views.project;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -8,6 +9,7 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.ui.components.ActionMenu;
@@ -15,8 +17,9 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.BasicViewInterface;
 import io.skymind.pathmind.ui.views.errors.InvalidDataView;
+import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.project.components.ProjectChartPanel;
-import io.skymind.pathmind.ui.views.experiment.components.ExperimentPanel;
+import io.skymind.pathmind.ui.views.project.components.ExperimentListPanel;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentScoreboardPanel;
 import io.skymind.pathmind.ui.views.project.components.ProjectStatusPanel;
 import io.skymind.pathmind.utils.WrapperUtils;
@@ -24,7 +27,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 @StyleSheet("frontend://styles/styles.css")
@@ -38,10 +40,12 @@ public class ProjectView extends VerticalLayout implements BasicViewInterface, H
 	@Autowired
 	private ExperimentRepository experimentRepository;
 
+	private Project project;
+
 	private ScreenTitlePanel screenTitlePanel = new ScreenTitlePanel("PROJECT");
 	private ProjectStatusPanel projectStatusPanel = new ProjectStatusPanel();
 
-	private ExperimentPanel experimentPanel = new ExperimentPanel();
+	private ExperimentListPanel experimentPanel = new ExperimentListPanel();
 	private ProjectChartPanel projectChartPanel = new ProjectChartPanel();
 
 	public ProjectView()
@@ -57,9 +61,18 @@ public class ProjectView extends VerticalLayout implements BasicViewInterface, H
 	@Override
 	public ActionMenu getActionMenu() {
 		return new ActionMenu(
-			new Button("+ Add Experiment"),
+			getAddExperimentButton(),
 			new Button("Full Run >")
 		);
+	}
+
+	// TODO -> Exception handling with database.
+	private Button getAddExperimentButton() {
+		return new Button("+ Add Experiment", click -> {
+			UI.getCurrent().navigate(
+					ExperimentView.class,
+					ExperimentUtils.generateNewExperiment(project, experimentRepository));
+		});
 	}
 
 	// I do NOT want to implement a default interface because this is to remind me
@@ -85,7 +98,7 @@ public class ProjectView extends VerticalLayout implements BasicViewInterface, H
 	@Override
 	public void setParameter(BeforeEvent event, Long projectId)
 	{
-		Project project = projectRepository.getProject(projectId);
+		this.project = projectRepository.getProject(projectId);
 
 		if(project != null) {
 			updateScreen(project);

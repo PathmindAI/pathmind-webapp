@@ -150,6 +150,19 @@
                         <database>
                             <includes>.*</includes>
                             <inputSchema>PATHMIND</inputSchema>
+<!--                            <customTypes>-->
+<!--                                <customType>-->
+<!--                                    <name>io.skymind.pathmind.constants.RunType</name>-->
+<!--                                    <converter>io.skymind.pathmind.data.converters.RunTypeConverter</converter>-->
+<!--                                </customType>-->
+<!--                            </customTypes>-->
+<!--                            <forcedTypes>-->
+<!--                                <forcedType>-->
+<!--                                    <name>io.skymind.pathmind.constants.RunType</name>-->
+<!--                                    <expression>.*\run_type</expression>-->
+<!--                                    <types>.*</types>-->
+<!--                                </forcedType>-->
+<!--                            </forcedTypes>-->
                         </database>
                         <target>
                           <packageName>io.skymind.pathmind.data.db</packageName>

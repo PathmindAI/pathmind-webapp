@@ -1,12 +1,14 @@
 package io.skymind.pathmind.data;
 
+import io.skymind.pathmind.constants.RunType;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-public class Experiment
+public class Experiment implements Data
 {
 	@Id
 	private long id;
@@ -72,6 +74,15 @@ public class Experiment
 
 	public void setRunType(int runType) {
 		this.runType = runType;
+	}
+
+	// Issue #34 Properly convert EnumTypes with Converters in JOOQ
+	public RunType getRunTypeEnum() {
+		return RunType.getEnumFromValue(runType);
+	}
+
+	public void setRunTypeEnum(RunType runTypeEnum) {
+		this.runType = runTypeEnum.getValue();
 	}
 
 	public int getScore() {

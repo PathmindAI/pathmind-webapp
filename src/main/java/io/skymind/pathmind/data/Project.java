@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-public class Project
+public class Project implements Data
 {
 	@Id
 	private long id;

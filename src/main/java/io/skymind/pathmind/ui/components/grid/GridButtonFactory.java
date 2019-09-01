@@ -6,7 +6,11 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
+import io.skymind.pathmind.data.Data;
 import io.skymind.pathmind.utils.WrapperUtils;
+
+import java.util.function.Consumer;
 
 public class GridButtonFactory
 {
@@ -20,5 +24,11 @@ public class GridButtonFactory
 		Button button = new Button(text, clickListener);
 		button.setThemeName("tertiary-inline");
 		return WrapperUtils.wrapCenterAlignmentHorizontal(button);
+	}
+
+	public static ComponentRenderer getGridButtonRenderer(Consumer<Data> clickConsumer) {
+		return new ComponentRenderer<>(data -> {
+			return getGridButton(">", click -> clickConsumer.accept((Data)data));
+		});
 	}
 }

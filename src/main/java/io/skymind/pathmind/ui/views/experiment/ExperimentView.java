@@ -4,13 +4,9 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Hr;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
@@ -20,11 +16,11 @@ import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.ui.components.ActionMenu;
-import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.BasicViewInterface;
+import io.skymind.pathmind.ui.views.experiment.components.ExperimentFormPanel;
+import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.project.ProjectView;
 import io.skymind.pathmind.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
@@ -35,11 +31,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Route(value = "experiment", layout = MainLayout.class)
 public class ExperimentView extends VerticalLayout implements BasicViewInterface, HasUrlParameter<Long>
 {
+	private static final double DEFAULT_SPLIT_PANE_RATIO = 60;
+
 	private Logger log = LogManager.getLogger(ExperimentView.class);
 
 	private ScreenTitlePanel screenTitlePanel = new ScreenTitlePanel("PROJECT");
 
-	private TextArea rewardsFunctionTextArea = new TextArea();
+	private TextArea errorsTextArea = new TextArea("Errors");
+	private TextArea getObservationTextArea = new TextArea("getObservation");
+	private TextArea tipsTextArea = new TextArea("Tips");
 
 	// TODO I assume we don't need this here and that the project, etc. are all retrieved from the Experiment
 	// or something along those lines but since I haven't yet setup the fake database schema for experiment
@@ -50,12 +50,18 @@ public class ExperimentView extends VerticalLayout implements BasicViewInterface
 	@Autowired
 	private ExperimentRepository experimentRepository;
 
-	public ExperimentView() {
+	private Binder<Experiment> binder = new Binder<>(Experiment.class);
+
+	private RewardFunctionEditor rewardFunctionEditor = new RewardFunctionEditor();
+	private ExperimentFormPanel experimentFormPanel = new ExperimentFormPanel(binder);
+
+	public ExperimentView()
+	{
 		add(getActionMenu());
 		add(getTitlePanel());
 		add(getMainContent());
 
-		setWidthFull();
+		setSizeFull();
 		setDefaultHorizontalComponentAlignment(Alignment.CENTER);
 	}
 
@@ -80,50 +86,29 @@ public class ExperimentView extends VerticalLayout implements BasicViewInterface
 	// assumptions as to which Layout should wrap which one.
 	@Override
 	public Component getMainContent() {
-		return WrapperUtils.wrapCenterAlignmentFullHorizontal(
-				getMainPanel(),
-				getRightPanel());
+		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+				getLeftPanel(),
+				getRightPanel(),
+				DEFAULT_SPLIT_PANE_RATIO);
 	}
 
-	private VerticalLayout getMainPanel() {
-		VerticalLayout mainVerticalLayout = new VerticalLayout(
-				getBasicOptionsPanel(),
-				getRewardsPanel());
-		return mainVerticalLayout;
-	}
-
-	private VerticalLayout getBasicOptionsPanel() {
-		return new VerticalLayout(
-			new H3("Basic Options"),
-			getBasicOptionsForm(),
-			new H3("Reward Functions")
+	private VerticalLayout getLeftPanel() {
+		return WrapperUtils.wrapFullSizeVertical(
+				experimentFormPanel,
+				rewardFunctionEditor
 		);
 	}
 
-	private Component getRewardsPanel() {
-		return rewardsFunctionTextArea;
-	}
+	private VerticalLayout getRightPanel()
+	{
+		errorsTextArea.setSizeFull();
+		getObservationTextArea.setSizeFull();
+		tipsTextArea.setSizeFull();
 
-	private Component getBasicOptionsForm() {
-		return new HorizontalLayout(
-				new TextField("Observation Count"),
-				new TextField("Possible Actions Count"),
-				new TextField("Simulation Step Count")
-		);
-	}
-
-	private VerticalLayout getRightPanel() {
-		VerticalLayout rightVerticalLayout = new VerticalLayout(
-				new Label("Errors"),
-				new Hr(),
-				new Label("Something else"),
-				new Hr(),
-				new Label("Something else"),
-				new Hr(),
-				new Label("Something else"));
-		rightVerticalLayout.setHeightFull();
-		rightVerticalLayout.setWidth("300px");
-		return rightVerticalLayout;
+		return WrapperUtils.wrapFullSizeVertical(
+				errorsTextArea,
+				getObservationTextArea,
+				tipsTextArea);
 	}
 
 	@Override
@@ -141,7 +126,17 @@ public class ExperimentView extends VerticalLayout implements BasicViewInterface
 	}
 
 	private void updateScreen(Experiment experiment, Project project) {
-		rewardsFunctionTextArea.setValue(experiment.getRewardFunction());
+		binder.readBean(experiment);
+		rewardFunctionEditor.setRewardFunction(experiment.getRewardFunction());
 		screenTitlePanel.setSubtitle(project.getName());
+	}
+
+	private void save() {
+//				try {
+//			binder.writeBean(project);
+//			return true;
+//		} catch (ValidationException e) {
+//			return false;
+//		}
 	}
 }

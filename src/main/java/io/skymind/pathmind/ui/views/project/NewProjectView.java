@@ -8,7 +8,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.ExperimentRepository;
@@ -18,7 +17,6 @@ import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.BasicViewInterface;
-import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.project.components.FileCheckPanel;
 import io.skymind.pathmind.ui.views.project.components.NewProjectForm;
 import io.skymind.pathmind.utils.WrapperUtils;
@@ -86,9 +84,7 @@ public class NewProjectView extends VerticalLayout implements BasicViewInterface
 	private void handleStartYourProjectClicked()
 	{
 		project.setId(projectRepository.insertProject(project));
-		Experiment experiment = ExperimentUtils.generateNewExperiment(project);
-		experiment.setId(experimentRepository.insertExperiment(experiment));
-
+		ExperimentUtils.generateNewExperiment(project, experimentRepository);
 		UI.getCurrent().navigate(ProjectView.class, project.getId());
 	}
 
