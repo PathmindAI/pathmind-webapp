@@ -4,6 +4,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
+import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.views.AccountView;
 
 public class AccountHeaderPanel extends HorizontalLayout
@@ -12,7 +13,10 @@ public class AccountHeaderPanel extends HorizontalLayout
 
 		Label userLabel = new Label("Name");
 		RouterLink accountRouterLink = new RouterLink("Account", AccountView.class);
-		Button logoutButton = new Button("Logout");
+
+		Button logoutButton = new Button("Logout",
+				click -> SecurityUtils.logout());
+
 		logoutButton.setThemeName("tertiary-inline");
 
 		add(userLabel, accountRouterLink, logoutButton);
