@@ -11,6 +11,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.ui.components.grid.GridButtonFactory;
+import io.skymind.pathmind.ui.views.console.ConsoleView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.utils.UIConstants;
 import io.skymind.pathmind.utils.WrapperUtils;
@@ -93,8 +94,7 @@ public class ExperimentListPanel extends VerticalLayout
 
 	private ComponentRenderer<HorizontalLayout, Experiment> getConsoleOutputButtonRenderer() {
 		return GridButtonFactory.getGridButtonRenderer(experiment -> {
-			// TODO -> Implement
-			log.info("Console output clicked");
+			UI.getCurrent().navigate(ConsoleView.class, experiment.getId());
 		});
 	}
 

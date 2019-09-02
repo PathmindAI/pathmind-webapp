@@ -31,6 +31,16 @@ public class ExperimentRepository
 				.fetchInto(Experiment.class);
 	}
 
+	public List<Experiment> getOtherExperimentsForSameProject(long experimentId) {
+		return dslContext
+				.selectFrom(EXPERIMENT)
+				.where(EXPERIMENT.PROJECT_ID.eq(dslContext
+						.select(EXPERIMENT.PROJECT_ID)
+						.from(EXPERIMENT)
+						.where(EXPERIMENT.ID.eq(experimentId))))
+				.fetchInto(Experiment.class);
+	}
+
 	public long insertExperiment(Experiment experiment) {
     	return dslContext
 				.insertInto(EXPERIMENT)

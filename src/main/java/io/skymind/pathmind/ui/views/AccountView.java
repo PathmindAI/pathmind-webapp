@@ -10,6 +10,6 @@ public class AccountView extends VerticalLayout
 {
 	public AccountView()
 	{
-		add(new Label("Account"));
+		add(new Label("TODO -> Account"));
 	}
 }

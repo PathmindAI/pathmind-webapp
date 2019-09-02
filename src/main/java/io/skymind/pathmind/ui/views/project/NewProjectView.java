@@ -16,7 +16,7 @@ import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.views.BasicViewInterface;
+import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.project.components.FileCheckPanel;
 import io.skymind.pathmind.ui.views.project.components.NewProjectForm;
 import io.skymind.pathmind.utils.WrapperUtils;
@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value = "newProject", layout = MainLayout.class)
-public class NewProjectView extends VerticalLayout implements BasicViewInterface, StatusUpdater
+public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 {
 	@Autowired
 	private ProjectRepository projectRepository;
@@ -50,13 +50,8 @@ public class NewProjectView extends VerticalLayout implements BasicViewInterface
 	// TODO -> Logo and project title panel
 	public NewProjectView()
 	{
-		add(getActionMenu());
-		add(getMainContent());
-
+		super();
 		this.ui = UI.getCurrent();
-
-		setWidthFull();
-		setDefaultHorizontalComponentAlignment(Alignment.CENTER);
 	}
 
 	private void handleBackToImportClicked() {
@@ -102,7 +97,7 @@ public class NewProjectView extends VerticalLayout implements BasicViewInterface
 	}
 
 	// Test github close commit.
-	public ActionMenu getActionMenu()
+	protected ActionMenu getActionMenu()
 	{
 		createProjectButton = new Button("Create Project >", click -> handleCreateProjectClicked());
 		backToImportButton = new Button("< Back to Import", click -> handleBackToImportClicked());
@@ -121,7 +116,7 @@ public class NewProjectView extends VerticalLayout implements BasicViewInterface
 		return actionMenu;
 	}
 
-	public Component getMainContent()
+	protected Component getMainContent()
 	{
 		newProjectForm = new NewProjectForm(binder);
 		fileCheckPanel = new FileCheckPanel();
@@ -136,7 +131,7 @@ public class NewProjectView extends VerticalLayout implements BasicViewInterface
 	/**
 	 * The titles are in the individual panels as the title changes based on the state.
 	 */
-	public VerticalLayout getTitlePanel() {
+	protected VerticalLayout getTitlePanel() {
 		return null;
 	}
 

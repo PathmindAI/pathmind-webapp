@@ -7,11 +7,9 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.LocalDateRenderer;
-import com.vaadin.flow.router.AfterNavigationEvent;
-import com.vaadin.flow.router.AfterNavigationObserver;
+import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.ProjectRepository;
@@ -28,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value="dashboard", layout = MainLayout.class)
-public class DashboardView extends VerticalLayout implements BasicViewInterface, AfterNavigationObserver
+public class DashboardView extends PathMindDefaultView
 {
 	@Autowired
 	private ProjectRepository projectRepository;
@@ -37,12 +35,10 @@ public class DashboardView extends VerticalLayout implements BasicViewInterface,
 
 	public DashboardView()
 	{
-		add(getActionMenu());
-		add(getTitlePanel());
-		add(getMainContent());
+		super();
 	}
 
-	public Component getMainContent()
+	protected Component getMainContent()
 	{
 		projectGrid = new Grid<>();
 
@@ -64,7 +60,7 @@ public class DashboardView extends VerticalLayout implements BasicViewInterface,
 		projectGrid.setMaxHeight("500px");
 		projectGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
-		// TODO BUG -> I didn't have to really investigate but it looks like we may need
+		// BUG -> I didn't have to really investigate but it looks like we may need
 		// to do something special to get the full size content in the AppLayout component which
 		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
 		// Hence the workaround below:
@@ -81,19 +77,19 @@ public class DashboardView extends VerticalLayout implements BasicViewInterface,
 	}
 
 	@Override
-	public ActionMenu getActionMenu() {
+	protected ActionMenu getActionMenu() {
 		return new ActionMenu(
 				new Button("New Project", click ->
 						UI.getCurrent().navigate(NewProjectView.class)));
 	}
 
 	@Override
-	public Component getTitlePanel() {
+	protected Component getTitlePanel() {
 		return new ScreenTitlePanel("PROJECTS");
 	}
 
 	@Override
-	public void afterNavigation(AfterNavigationEvent event) {
+	protected void updateScreen(BeforeEnterEvent event) {
 		projectGrid.setItems(projectRepository.getProjectsForUser());
 	}
 }
