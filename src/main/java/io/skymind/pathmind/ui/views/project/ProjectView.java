@@ -8,25 +8,30 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.bus.data.ProjectUpdateStatus;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.services.project.ProjectRunService;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.errors.InvalidDataView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentScoreboardPanel;
 import io.skymind.pathmind.ui.views.project.components.ExperimentListPanel;
 import io.skymind.pathmind.ui.views.project.components.ProjectChartPanel;
 import io.skymind.pathmind.ui.views.project.components.ProjectStatusPanel;
-import io.skymind.pathmind.utils.WrapperUtils;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.projection.Accessor;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.UnicastProcessor;
 
 import java.util.Arrays;
 
@@ -50,17 +55,39 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	private ExperimentListPanel experimentPanel;
 	private ProjectChartPanel projectChartPanel;
 
-	public ProjectView()
+	private final UnicastProcessor<ProjectUpdateStatus> publisher;
+	private final Flux<ProjectUpdateStatus> consumer;
+
+	public ProjectView(UnicastProcessor<ProjectUpdateStatus> publisher, Flux<ProjectUpdateStatus> consumer)
 	{
 		super();
+
+		this.publisher = publisher;
+		this.consumer = consumer;
+
+		subscribeToEventBus(consumer);
+	}
+
+	private void subscribeToEventBus(Flux<ProjectUpdateStatus> consumer) {
+		consumer.filter(projectUpdateStatus -> projectId == projectUpdateStatus.getProjectId())
+				.subscribe(projectUpdateStatus ->
+						PushUtils.push(this, () -> {
+							projectChartPanel.addChartData(Integer.valueOf(projectUpdateStatus.getScoreValue()));
+						}));
 	}
 
 	@Override
 	protected ActionMenu getActionMenu() {
 		return new ActionMenu(
-			getAddExperimentButton(),
-			new Button("Full Run >")
+				getAddExperimentButton(),
+				getFullRunButton()
 		);
+	}
+
+	private Button getFullRunButton() {
+		return new Button("Full Run >", click -> {
+			ProjectRunService.fullRun(projectId, publisher);
+		});
 	}
 
 	// TODO -> Exception handling with database.

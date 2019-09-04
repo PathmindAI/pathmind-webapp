@@ -1,4 +1,4 @@
-package io.skymind.pathmind.utils;
+package io.skymind.pathmind.ui.utils;
 
 public class UIConstants
 {

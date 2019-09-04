@@ -19,7 +19,7 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.project.components.FileCheckPanel;
 import io.skymind.pathmind.ui.views.project.components.NewProjectForm;
-import io.skymind.pathmind.utils.WrapperUtils;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @StyleSheet("frontend://styles/styles.css")

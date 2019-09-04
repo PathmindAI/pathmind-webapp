@@ -19,7 +19,7 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.project.ProjectView;
 import io.skymind.pathmind.ui.views.project.components.ExperimentListPanel;
-import io.skymind.pathmind.utils.WrapperUtils;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -9,8 +9,8 @@ import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.textfield.TextArea;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
-import io.skymind.pathmind.utils.UIConstants;
-import io.skymind.pathmind.utils.WrapperUtils;
+import io.skymind.pathmind.ui.utils.UIConstants;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 
 public class FileCheckPanel extends VerticalLayout
 {

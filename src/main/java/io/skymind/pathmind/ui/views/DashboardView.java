@@ -20,8 +20,8 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
 import io.skymind.pathmind.ui.views.project.ProjectView;
 import io.skymind.pathmind.utils.DateUtils;
-import io.skymind.pathmind.utils.UIConstants;
-import io.skymind.pathmind.utils.WrapperUtils;
+import io.skymind.pathmind.ui.utils.UIConstants;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @StyleSheet("frontend://styles/styles.css")

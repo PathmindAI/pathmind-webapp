@@ -3,7 +3,6 @@ package io.skymind.pathmind.ui.views.project.components;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -12,8 +11,8 @@ import io.skymind.pathmind.constants.ModelTimeUnit;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
-import io.skymind.pathmind.utils.UIConstants;
-import io.skymind.pathmind.utils.WrapperUtils;
+import io.skymind.pathmind.ui.utils.UIConstants;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 
 import java.util.Arrays;
 

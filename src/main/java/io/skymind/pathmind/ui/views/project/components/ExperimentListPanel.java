@@ -13,8 +13,8 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.ui.components.grid.GridButtonFactory;
 import io.skymind.pathmind.ui.views.console.ConsoleView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.utils.UIConstants;
-import io.skymind.pathmind.utils.WrapperUtils;
+import io.skymind.pathmind.ui.utils.UIConstants;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -1,10 +1,11 @@
-package io.skymind.pathmind.utils;
+package io.skymind.pathmind.ui.utils;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import io.skymind.pathmind.ui.utils.UIConstants;
 
 public class WrapperUtils
 {
