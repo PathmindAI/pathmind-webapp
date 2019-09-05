@@ -11,6 +11,7 @@ import java.util.List;
 public class Experiment implements Data
 {
 	@Id
+	@Column(name = "ID")
 	private long id;
 
 	@NotNull
@@ -30,14 +31,14 @@ public class Experiment implements Data
 	private int score;
 
 	@NotNull
-	@Column(name = "reward_function")
+	@Column(name = "REWARD_FUNCTION")
 	private String rewardFunction;
 
 	@ManyToOne
-	@JoinColumn(name = "project_id", nullable = false)
+	@JoinColumn(name = "PROJECT_ID", nullable = false)
 	private Project project;
 
-	@OneToMany(mappedBy = "experiment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "EXPERIMENT", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Run> runs;
 
 	public Experiment() {

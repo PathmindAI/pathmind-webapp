@@ -2,7 +2,7 @@ package io.skymind.pathmind.security;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
-import io.skymind.pathmind.data.User;
+import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.UserRepository;
 import io.skymind.pathmind.ui.views.LoginView;
 
@@ -14,10 +14,10 @@ public class SecurityUtils
 
 	public static boolean isAuthenticatedUser(String email, String password, UserRepository userRepository)
 	{
-		User user = userRepository.getUserByEmailAndPassword(email, password);
+		PathmindUser user = userRepository.getUserByEmailAndPassword(email, password);
 
 		if(user != null)
-			VaadinSession.getCurrent().setAttribute(User.class, user);
+			VaadinSession.getCurrent().setAttribute(PathmindUser.class, user);
 		return user != null;
 	}
 
@@ -27,13 +27,13 @@ public class SecurityUtils
 	}
 
 	public static void logout() {
-		VaadinSession.getCurrent().setAttribute(User.class, null);
+		VaadinSession.getCurrent().setAttribute(PathmindUser.class, null);
 		UI.getCurrent().navigate(LoginView.class);
 	}
 
-	public static User getUser() {
-		if(VaadinSession.getCurrent().getAttribute(User.class) != null)
-			return VaadinSession.getCurrent().getAttribute(User.class);
+	public static PathmindUser getUser() {
+		if(VaadinSession.getCurrent().getAttribute(PathmindUser.class) != null)
+			return VaadinSession.getCurrent().getAttribute(PathmindUser.class);
 		return null;
 	}
 }

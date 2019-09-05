@@ -17,10 +17,11 @@
     <properties>
         <java.version>12</java.version>
         <vaadin.version>14.0.1</vaadin.version>
-        <db.driver>org.h2.Driver</db.driver>
-        <db.url>jdbc:h2:file:~/pathmindDB;INIT=CREATE SCHEMA IF NOT EXISTS PATHMIND</db.url>
-        <db.username>sa</db.username>
-        <db.password></db.password>
+<!--        <db.driver>${pathmind.db.driver}</db.driver>-->
+<!--        <db.url>${pathmind.db.url}</db.url>-->
+<!--        <db.schema>${pathmind.db.schema}</db.schema>-->
+<!--        <db.username>${pathmind.db.username}</db.username>-->
+<!--        <db.password>${pathmind.db.password}</db.password>-->
         <spring.boot.version>2.1.7.RELEASE</spring.boot.version>
     </properties>
 
@@ -74,12 +75,12 @@
             <groupId>org.vaadin.spring.extensions</groupId>
             <artifactId>vaadin-spring-ext-boot</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.199</version>
-            <scope>runtime</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.h2database</groupId>-->
+<!--            <artifactId>h2</artifactId>-->
+<!--            <version>1.4.199</version>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-charts-flow</artifactId>
@@ -88,6 +89,11 @@
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.6</version>
         </dependency>
     </dependencies>
 
@@ -120,6 +126,8 @@
                    <url>${db.url}</url>
                    <username>${db.username}</username>
                    <password>${db.password}</password>
+<!--                   <defaultSchemaName>${db.schema}</defaultSchemaName>-->
+<!--                   <changelogSchemaName>${db.schema}</changelogSchemaName>-->
                    <clearCheckSums>true</clearCheckSums>
                </configuration>
                <executions>
@@ -143,17 +151,24 @@
                    </execution>
                </executions>
                 <configuration>
-                   <jdbc>
-                       <url>${db.url}</url>
-                       <user>${db.username}</user>
+                    <jdbc>
+                        <url>${db.url}</url>
+                        <user>${db.username}</user>
+                        <password>${db.password}</password>
                    </jdbc>
                     <generator>
                         <generate>
                             <javaTimeTypes>true</javaTimeTypes>
                         </generate>
                         <database>
-                            <includes>.*</includes>
-                            <inputSchema>PATHMIND</inputSchema>
+                            <includes>
+                                PATHMIND_USER |
+                                EXPERIMENT |
+                                PROJECT |
+                                PM_FK.*
+                            </includes>
+
+<!--                            <inputSchema>${db.schema}</inputSchema>-->
 <!--                            <customTypes>-->
 <!--                                <customType>-->
 <!--                                    <name>io.skymind.pathmind.constants.RunType</name>-->
@@ -175,7 +190,52 @@
                     </generator>
                </configuration>
             </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<echo>Displaying value of pom.xml element</echo>
+								<echo>[db.driver] ${db.driver}</echo>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <db.driver>org.postgresql.Driver</db.driver>
+                <db.url>jdbc:postgresql://localhost:5432/PATHMIND</db.url>
+<!--                <db.schema>PATHMIND</db.schema>-->
+                <db.username>postgres</db.username>
+                <db.password>37iCIf83J0fTAOn2AUDQ</db.password>
+            </properties>
+        </profile>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <db.driver>org.postgresql.Driver</db.driver>
+                <db.url>jdbc:postgresql://localhost:5432/PATHMIND</db.url>
+<!--                <db.schema>PATHMIND</db.schema>-->
+                <db.username>postgres</db.username>
+                <db.password>37iCIf83J0fTAOn2AUDQ</db.password>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>

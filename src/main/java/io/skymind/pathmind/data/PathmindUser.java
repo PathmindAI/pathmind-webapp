@@ -5,9 +5,10 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
-public class User
+public class PathmindUser
 {
 	@Id
+	@Column(name = "ID")
 	private long id;
 
 	@Column(name = "NAME")
@@ -21,10 +22,10 @@ public class User
 	@Column(name = "PASSWORD")
 	private String password;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "PATHMIND_USER", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Project> projects;
 
-	public User()
+	public PathmindUser()
 	{
 	}
 

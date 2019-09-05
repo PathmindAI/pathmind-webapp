@@ -1,7 +1,7 @@
 package io.skymind.pathmind.db;
 
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.data.db.tables.Experiment;
+import io.skymind.pathmind.data.db.public_.tables.Experiment;
 import io.skymind.pathmind.security.SecurityUtils;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
-import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
+import static io.skymind.pathmind.data.db.public_.Tables.PROJECT;
+
 
 @Repository
 public class ProjectRepository
@@ -19,21 +20,24 @@ public class ProjectRepository
     private DSLContext dslContext;
 
     public List<Project> getProjectsForUser(long userId) {
+//    	return null;
         return dslContext
 				.selectFrom(PROJECT)
-				.where(PROJECT.USER_ID.eq(userId))
+				.where(PROJECT.PATHMIND_USER_ID.eq(userId))
 				.fetchInto(Project.class);
     }
 
     // Convenience method so we don't always need to pass in the userId
     public List<Project> getProjectsForUser() {
+//    	return null;
         return dslContext
 				.selectFrom(PROJECT)
-				.where(PROJECT.USER_ID.eq(SecurityUtils.getUser().getId()))
+				.where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUser().getId()))
 				.fetchInto(Project.class);
     }
 
     public Project getProject(long projectId) {
+//    	return null;
     	return dslContext
 				.selectFrom(PROJECT)
 				.where(PROJECT.ID.eq(projectId))
@@ -41,6 +45,7 @@ public class ProjectRepository
 	}
 
 	public Project getProjectForExperiment(long experimentId) {
+//    	return null;
 		return dslContext
 				.select(PROJECT.asterisk())
 				.from(PROJECT)
@@ -51,11 +56,12 @@ public class ProjectRepository
 	}
 
 	public long insertProject(Project project) {
+//    	return -1L;
     	return dslContext
 				.insertInto(PROJECT)
 				.set(PROJECT.NAME, project.getName())
 				.set(PROJECT.DATE_CREATED, LocalDate.now())
-				.set(PROJECT.USER_ID, SecurityUtils.getUser().getId())
+				.set(PROJECT.PATHMIND_USER_ID, SecurityUtils.getUser().getId())
 				.returning(PROJECT.ID)
 				.fetchOne()
 				.getValue(PROJECT.ID);

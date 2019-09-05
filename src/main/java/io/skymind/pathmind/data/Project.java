@@ -1,7 +1,5 @@
 package io.skymind.pathmind.data;
 
-import org.springframework.stereotype.Component;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -21,12 +19,12 @@ public class Project implements Data
 	@Column(name = "DATE_CREATED")
 	private LocalDate dateCreated;
 
-	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "PROJECT", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Experiment> experiments;
 
 	@ManyToOne
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
+	@JoinColumn(name = "PATHMIND_USER_ID", nullable = false)
+	private PathmindUser pathmindUser;
 
 	public Project() {
 	}
@@ -68,11 +66,11 @@ public class Project implements Data
 		return name;
 	}
 
-	public User getUser() {
-		return user;
+	public PathmindUser getPathmindUser() {
+		return pathmindUser;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setPathmindUser(PathmindUser pathmindUser) {
+		this.pathmindUser = pathmindUser;
 	}
 }

@@ -4,124 +4,126 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
-    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
     <changeSet author="admin" id="1">
-        <createTable tableName="User">
-            <column autoIncrement="true" name="id" type="BIGINT">
+
+        <createTable tableName="PATHMIND_USER">
+            <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="NAME" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="email" type="VARCHAR(255)">
+            <column name="EMAIL" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="password" type="VARCHAR(255)">
+            <column name="PASSWORD" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
         <rollback>
-            <dropTable tableName="User"/>
+            <dropTable tableName="PATHMIND_USER"/>
         </rollback>
 
-        <createTable tableName="Project">
-            <column autoIncrement="true" name="id" type="BIGINT">
+        <createTable tableName="PROJECT">
+            <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="user_id" type="BIGINT">
-                <constraints nullable="false" foreignKeyName="fk-project-user" references="User(id)"/>
+            <column name="PATHMIND_USER_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_PROJECT_PATHMIND_USER" references="PATHMIND_USER(ID)"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="NAME" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="date_created" type="DATE">
+            <column name="DATE_CREATED" type="DATE">
                 <constraints nullable="false"/>
             </column>
         </createTable>
         <rollback>
-            <dropTable tableName="Project"/>
+            <dropTable tableName="PROJECT"/>
         </rollback>
 
-        <createTable tableName="Experiment">
-            <column autoIncrement="true" name="id" type="BIGINT">
+        <createTable tableName="EXPERIMENT">
+            <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="project_id" type="BIGINT">
-                <constraints nullable="false" foreignKeyName="fk-experiment-project" references="Project(id)"/>
+            <column name="PROJECT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK-EXPERIMENT-PROJECT" references="PROJECT(ID)"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="NAME" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="date" type="DATE">
+            <column name="DATE" type="DATE">
                 <constraints nullable="false"/>
             </column>
-            <column name="reward_function" type="VARCHAR">
+            <column name="REWARD_FUNCTION" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
-            <column name="run_type" type="INT">
+            <column name="RUN_TYPE" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="score" type="INT">
+            <column name="SCORE" type="INT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
         <rollback>
-            <dropTable tableName="Experiment"/>
+            <dropTable tableName="EXPERIMENT"/>
         </rollback>
 
-        <insert tableName="User">
-            <column name="id" valueNumeric="1"/>
-            <column name="name" value="Steph"/>
-            <column name="email" value="steph@followsteph.com"/>
-            <column name="password" value="password"/>
+        <insert tableName="PATHMIND_USER">
+            <column name="ID" valueNumeric="1"/>
+            <column name="NAME" value="Steph"/>
+            <column name="EMAIL" value="steph@followsteph.com"/>
+            <column name="PASSWORD" value="password"/>
         </insert>
-        <insert tableName="User">
-            <column name="id" valueNumeric="2"/>
-            <column name="name" value="Bob"/>
-            <column name="email" value="bob@skymind.io"/>
-            <column name="password" value="password"/>
-        </insert>
-
-        <insert tableName="Project">
-            <column name="id" valueNumeric="1"/>
-            <column name="user_id" valueNumeric="1"/>
-            <column name="name" value="Coffee Shop"/>
-            <column name="date_created" valueDate="2019-08-23"/>
-        </insert>
-        <insert tableName="Project">
-            <column name="id" valueNumeric="2"/>
-            <column name="user_id" valueNumeric="1"/>
-            <column name="name" value="Traffic Simulation"/>
-            <column name="date_created" valueDate="2019-08-24"/>
+        <insert tableName="PATHMIND_USER">
+            <column name="ID" valueNumeric="2"/>
+            <column name="NAME" value="Bob"/>
+            <column name="EMAIL" value="bob@skymind.io"/>
+            <column name="PASSWORD" value="password"/>
         </insert>
 
-        <insert tableName="Experiment">
-            <column name="id" valueNumeric="1"/>
-            <column name="project_id" valueNumeric="1"/>
-            <column name="name" value="Experiment 1"/>
-            <column name="date" valueDate="2019-08-23"/>
-            <column name="reward_function" value="function = some value 1"/>
-            <column name="run_type" valueNumeric="1"/>
-            <column name="score" valueNumeric="10"/>
+        <insert tableName="PROJECT">
+            <column name="ID" valueNumeric="1"/>
+            <column name="PATHMIND_USER_ID" valueNumeric="1"/>
+            <column name="NAME" value="Coffee Shop"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
         </insert>
-        <insert tableName="Experiment">
-            <column name="id" valueNumeric="2"/>
-            <column name="project_id" valueNumeric="1"/>
-            <column name="name" value="Experiment 2"/>
-            <column name="date" valueDate="2019-08-23"/>
-            <column name="reward_function" value="function = some value 2"/>
-            <column name="run_type" valueNumeric="1"/>
-            <column name="score" valueNumeric="20"/>
+        <insert tableName="PROJECT">
+            <column name="ID" valueNumeric="2"/>
+            <column name="PATHMIND_USER_ID" valueNumeric="1"/>
+            <column name="NAME" value="Traffic Simulation"/>
+            <column name="DATE_CREATED" valueDate="2019-08-24"/>
         </insert>
-        <insert tableName="Experiment">
-            <column name="id" valueNumeric="3"/>
-            <column name="project_id" valueNumeric="1"/>
-            <column name="name" value="Experiment 3"/>
-            <column name="date" valueDate="2019-08-23"/>
-            <column name="reward_function" value="function = some value 3"/>
-            <column name="run_type" valueNumeric="2"/>
-            <column name="score" valueNumeric="30"/>
+
+        <insert tableName="EXPERIMENT">
+            <column name="ID" valueNumeric="1"/>
+            <column name="PROJECT_ID" valueNumeric="1"/>
+            <column name="NAME" value="Experiment 1"/>
+            <column name="DATE" valueDate="2019-08-23"/>
+            <column name="REWARD_FUNCTION" value="function = some value 1"/>
+            <column name="RUN_TYPE" valueNumeric="1"/>
+            <column name="SCORE" valueNumeric="10"/>
+        </insert>
+        <insert tableName="EXPERIMENT">
+            <column name="ID" valueNumeric="2"/>
+            <column name="PROJECT_ID" valueNumeric="1"/>
+            <column name="NAME" value="Experiment 2"/>
+            <column name="DATE" valueDate="2019-08-23"/>
+            <column name="REWARD_FUNCTION" value="function = some value 2"/>
+            <column name="RUN_TYPE" valueNumeric="1"/>
+            <column name="SCORE" valueNumeric="20"/>
+        </insert>
+        <insert tableName="EXPERIMENT">
+            <column name="ID" valueNumeric="3"/>
+            <column name="PROJECT_ID" valueNumeric="1"/>
+            <column name="NAME" value="Experiment 3"/>
+            <column name="DATE" valueDate="2019-08-23"/>
+            <column name="REWARD_FUNCTION" value="function = some value 3"/>
+            <column name="RUN_TYPE" valueNumeric="2"/>
+            <column name="SCORE" valueNumeric="30"/>
         </insert>
     </changeSet>
 
