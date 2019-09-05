@@ -5,7 +5,7 @@ import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import static io.skymind.pathmind.data.db.public_.Tables.PATHMIND_USER;
+import static io.skymind.pathmind.data.db.Tables.PATHMIND_USER;
 
 @Repository
 public class UserRepository

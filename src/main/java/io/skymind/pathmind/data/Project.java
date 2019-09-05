@@ -1,29 +1,21 @@
 package io.skymind.pathmind.data;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
-@Entity
 public class Project implements Data
 {
-	@Id
 	private long id;
 
 	@NotNull
-	@Column(name = "NAME")
 	private String name;
 
 	@NotNull
-	@Column(name = "DATE_CREATED")
 	private LocalDate dateCreated;
 
-	@OneToMany(mappedBy = "PROJECT", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Experiment> experiments;
 
-	@ManyToOne
-	@JoinColumn(name = "PATHMIND_USER_ID", nullable = false)
 	private PathmindUser pathmindUser;
 
 	public Project() {

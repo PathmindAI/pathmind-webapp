@@ -1,10 +1,10 @@
 package io.skymind.pathmind.ui.views;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ActionMenu;
@@ -13,9 +13,6 @@ import io.skymind.pathmind.ui.views.errors.ErrorView;
 import io.skymind.pathmind.ui.views.errors.InvalidDataView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Do NOT implement any default methods for this interface because a large part of it's goal is to remind
@@ -27,9 +24,13 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
 	public PathMindDefaultView()
 	{
-		add(getActionMenu());
-		add(getTitlePanel());
-		add(getMainContent());
+
+		final ActionMenu actionMenu = getActionMenu();
+		if(actionMenu != null) add(actionMenu);
+		final Component titlePanel = getTitlePanel();
+		if(titlePanel != null) add(titlePanel);
+		final Component mainContent = getMainContent();
+		if(mainContent != null) add(mainContent);
 
 		setSizeFull();
 		setDefaultHorizontalComponentAlignment(Alignment.CENTER);

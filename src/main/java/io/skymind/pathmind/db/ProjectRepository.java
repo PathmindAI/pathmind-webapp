@@ -1,7 +1,7 @@
 package io.skymind.pathmind.db;
 
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.data.db.public_.tables.Experiment;
+import io.skymind.pathmind.data.db.tables.Experiment;
 import io.skymind.pathmind.security.SecurityUtils;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
-import static io.skymind.pathmind.data.db.public_.Tables.PROJECT;
+import static io.skymind.pathmind.data.db.Tables.PROJECT;
 
 
 @Repository

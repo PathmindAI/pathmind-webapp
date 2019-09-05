@@ -17,12 +17,6 @@
     <properties>
         <java.version>12</java.version>
         <vaadin.version>14.0.1</vaadin.version>
-<!--        <db.driver>${pathmind.db.driver}</db.driver>-->
-<!--        <db.url>${pathmind.db.url}</db.url>-->
-<!--        <db.schema>${pathmind.db.schema}</db.schema>-->
-<!--        <db.username>${pathmind.db.username}</db.username>-->
-<!--        <db.password>${pathmind.db.password}</db.password>-->
-        <spring.boot.version>2.1.7.RELEASE</spring.boot.version>
     </properties>
 
     <repositories>
@@ -31,71 +25,6 @@
            <url>https://maven.vaadin.com/vaadin-addons</url>
         </repository>
     </repositories>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-spring-boot-starter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <version>${spring.boot.version}</version>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>${spring.boot.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>${spring.boot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jooq</artifactId>
-            <version>${spring.boot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>${spring.boot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <version>3.8.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.spring.extensions</groupId>
-            <artifactId>vaadin-spring-ext-boot</artifactId>
-        </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.h2database</groupId>-->
-<!--            <artifactId>h2</artifactId>-->
-<!--            <version>1.4.199</version>-->
-<!--            <scope>runtime</scope>-->
-<!--        </dependency>-->
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-charts-flow</artifactId>
-            <version>6.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.6</version>
-        </dependency>
-    </dependencies>
 
     <dependencyManagement>
         <dependencies>
@@ -114,6 +43,54 @@
         </dependencies>
     </dependencyManagement>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jooq</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.spring.extensions</groupId>
+            <artifactId>vaadin-spring-ext-boot</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-charts-flow</artifactId>
+            <version>6.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -122,12 +99,8 @@
                <version>3.8.0</version>
                <configuration>
                    <changeLogFile>src/main/resources/db/changelog/changelog-master.xml</changeLogFile>
-                   <driver>${db.driver}</driver>
-                   <url>${db.url}</url>
-                   <username>${db.username}</username>
-                   <password>${db.password}</password>
-<!--                   <defaultSchemaName>${db.schema}</defaultSchemaName>-->
-<!--                   <changelogSchemaName>${db.schema}</changelogSchemaName>-->
+                   <driver>org.postgresql.Driver</driver>
+                   <url>${DB_URL}</url>
                    <clearCheckSums>true</clearCheckSums>
                </configuration>
                <executions>
@@ -149,43 +122,38 @@
                            <goal>generate</goal>
                        </goals>
                    </execution>
-               </executions>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <scope>runtime</scope>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jooq</groupId>
+                        <artifactId>jooq-meta</artifactId>
+                        <version>${jooq.version}</version>
+                    </dependency>
+                </dependencies>
                 <configuration>
                     <jdbc>
-                        <url>${db.url}</url>
-                        <user>${db.username}</user>
-                        <password>${db.password}</password>
+                        <driver>org.postgresql.Driver</driver>
+                        <url>${DB_URL}</url>
                    </jdbc>
                     <generator>
                         <generate>
                             <javaTimeTypes>true</javaTimeTypes>
                         </generate>
                         <database>
-                            <includes>
-                                PATHMIND_USER |
-                                EXPERIMENT |
-                                PROJECT |
-                                PM_FK.*
-                            </includes>
-
-<!--                            <inputSchema>${db.schema}</inputSchema>-->
-<!--                            <customTypes>-->
-<!--                                <customType>-->
-<!--                                    <name>io.skymind.pathmind.constants.RunType</name>-->
-<!--                                    <converter>io.skymind.pathmind.data.converters.RunTypeConverter</converter>-->
-<!--                                </customType>-->
-<!--                            </customTypes>-->
-<!--                            <forcedTypes>-->
-<!--                                <forcedType>-->
-<!--                                    <name>io.skymind.pathmind.constants.RunType</name>-->
-<!--                                    <expression>.*\run_type</expression>-->
-<!--                                    <types>.*</types>-->
-<!--                                </forcedType>-->
-<!--                            </forcedTypes>-->
+                            <name>org.jooq.meta.postgres.PostgresDatabase</name>
+                            <includes>.*</includes>
+                            <excludes>Databasechangelog.*</excludes>
+                            <inputSchema>public</inputSchema>
                         </database>
                         <target>
                           <packageName>io.skymind.pathmind.data.db</packageName>
-                          <directory>target/generated-sources/jooq</directory>
+                          <directory>/src/main/java</directory>
                         </target>
                     </generator>
                </configuration>

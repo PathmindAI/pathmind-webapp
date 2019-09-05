@@ -29,7 +29,6 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.projection.Accessor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
 

@@ -2,43 +2,32 @@ package io.skymind.pathmind.data;
 
 import io.skymind.pathmind.constants.RunType;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
-@Entity
 public class Experiment implements Data
 {
-	@Id
-	@Column(name = "ID")
+
 	private long id;
 
-	@NotNull
-	@Column(name = "NAME")
+
 	private String name;
 
-	@NotNull
-	@Column(name = "DATE")
+
 	private LocalDate date;
 
 	@NotNull
-	@Column(name = "RUN_TYPE")
 	private int runType;
 
 	@NotNull
-	@Column(name = "SCORE")
 	private int score;
 
 	@NotNull
-	@Column(name = "REWARD_FUNCTION")
 	private String rewardFunction;
 
-	@ManyToOne
-	@JoinColumn(name = "PROJECT_ID", nullable = false)
 	private Project project;
 
-	@OneToMany(mappedBy = "EXPERIMENT", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Run> runs;
 
 	public Experiment() {

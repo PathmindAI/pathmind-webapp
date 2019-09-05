@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static io.skymind.pathmind.data.db.public_.tables.Experiment.EXPERIMENT;
+import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
 
 @Repository
 public class ExperimentRepository

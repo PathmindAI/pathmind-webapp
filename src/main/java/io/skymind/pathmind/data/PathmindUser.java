@@ -1,28 +1,21 @@
 package io.skymind.pathmind.data;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Entity
 public class PathmindUser
 {
-	@Id
-	@Column(name = "ID")
+
 	private long id;
 
-	@Column(name = "NAME")
 	private String name;
 
 	@NotNull
-	@Column(name = "EMAIL")
 	private String email;
 
 	@NotNull
-	@Column(name = "PASSWORD")
 	private String password;
 
-	@OneToMany(mappedBy = "PATHMIND_USER", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Project> projects;
 
 	public PathmindUser()

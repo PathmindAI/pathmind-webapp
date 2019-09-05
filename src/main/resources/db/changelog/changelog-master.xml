@@ -23,9 +23,6 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <rollback>
-            <dropTable tableName="PATHMIND_USER"/>
-        </rollback>
 
         <createTable tableName="PROJECT">
             <column autoIncrement="true" name="ID" type="BIGINT">
@@ -41,9 +38,6 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <rollback>
-            <dropTable tableName="PROJECT"/>
-        </rollback>
 
         <createTable tableName="EXPERIMENT">
             <column autoIncrement="true" name="ID" type="BIGINT">
@@ -68,9 +62,6 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <rollback>
-            <dropTable tableName="EXPERIMENT"/>
-        </rollback>
 
         <insert tableName="PATHMIND_USER">
             <column name="ID" valueNumeric="1"/>

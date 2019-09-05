@@ -1,16 +1,10 @@
 package io.skymind.pathmind.data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-@Entity
 public class Run
 {
-	@Id
 	private long id;
 
 	@NotNull
@@ -19,8 +13,6 @@ public class Run
 	@NotNull
 	private LocalDate date;
 
-	@ManyToOne
-	@JoinColumn(name = "experiment_id", nullable = false)
 	private Experiment experiment;
 
 	public Run() {
