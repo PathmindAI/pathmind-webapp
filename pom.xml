@@ -21,8 +21,8 @@
 
     <repositories>
         <repository>
-           <id>vaadin-addons</id>
-           <url>https://maven.vaadin.com/vaadin-addons</url>
+            <id>vaadin-addons</id>
+            <url>https://maven.vaadin.com/vaadin-addons</url>
         </repository>
     </repositories>
 
@@ -94,35 +94,19 @@
     <build>
         <plugins>
             <plugin>
-               <groupId>org.liquibase</groupId>
-               <artifactId>liquibase-maven-plugin</artifactId>
-               <version>3.8.0</version>
-               <configuration>
-                   <changeLogFile>src/main/resources/db/changelog/changelog-master.xml</changeLogFile>
-                   <driver>org.postgresql.Driver</driver>
-                   <url>${DB_URL}</url>
-                   <clearCheckSums>true</clearCheckSums>
-               </configuration>
-               <executions>
-                 <execution>
-                   <phase>process-resources</phase>
-                   <goals>
-                     <goal>update</goal>
-                   </goals>
-                 </execution>
-               </executions>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <changeLogFile>src/main/resources/db/changelog/changelog-master.xml</changeLogFile>
+                    <driver>org.postgresql.Driver</driver>
+                    <url>${DB_URL}</url>
+                    <clearCheckSums>true</clearCheckSums>
+                </configuration>
             </plugin>
             <plugin>
-               <groupId>org.jooq</groupId>
-               <artifactId>jooq-codegen-maven</artifactId>
-                <executions>
-                   <execution>
-                       <phase>generate-sources</phase>
-                       <goals>
-                           <goal>generate</goal>
-                       </goals>
-                   </execution>
-                </executions>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
                 <dependencies>
                     <dependency>
                         <groupId>org.postgresql</groupId>
@@ -140,7 +124,7 @@
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
                         <url>${DB_URL}</url>
-                   </jdbc>
+                    </jdbc>
                     <generator>
                         <generate>
                             <javaTimeTypes>true</javaTimeTypes>
@@ -152,31 +136,12 @@
                             <inputSchema>public</inputSchema>
                         </database>
                         <target>
-                          <packageName>io.skymind.pathmind.data.db</packageName>
-                          <directory>/src/main/java</directory>
+                            <packageName>io.skymind.pathmind.data.db</packageName>
+                            <directory>/src/main/java</directory>
                         </target>
                     </generator>
-               </configuration>
+                </configuration>
             </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
-				<executions>
-					<execution>
-						<phase>validate</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<tasks>
-								<echo>Displaying value of pom.xml element</echo>
-								<echo>[db.driver] ${db.driver}</echo>
-							</tasks>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
         </plugins>
     </build>
 
@@ -189,7 +154,7 @@
             <properties>
                 <db.driver>org.postgresql.Driver</db.driver>
                 <db.url>jdbc:postgresql://localhost:5432/PATHMIND</db.url>
-<!--                <db.schema>PATHMIND</db.schema>-->
+                <!--                <db.schema>PATHMIND</db.schema>-->
                 <db.username>postgres</db.username>
                 <db.password>37iCIf83J0fTAOn2AUDQ</db.password>
             </properties>
@@ -199,7 +164,7 @@
             <properties>
                 <db.driver>org.postgresql.Driver</db.driver>
                 <db.url>jdbc:postgresql://localhost:5432/PATHMIND</db.url>
-<!--                <db.schema>PATHMIND</db.schema>-->
+                <!--                <db.schema>PATHMIND</db.schema>-->
                 <db.username>postgres</db.username>
                 <db.password>37iCIf83J0fTAOn2AUDQ</db.password>
             </properties>
