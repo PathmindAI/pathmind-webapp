@@ -36,6 +36,11 @@ steps:
     contents: 'target/pathmind-*.jar'
     targetFolder: $(Build.ArtifactStagingDirectory)
 
+- task: CopyFiles@2
+  inputs:
+    contents: '*.pubxml'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+
 - task: PublishBuildArtifacts@1
   inputs:
     artifactName: 'drop'
