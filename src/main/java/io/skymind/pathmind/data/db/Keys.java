@@ -63,7 +63,7 @@ public class Keys {
     }
 
     private static class ForeignKeys0 {
-        public static final ForeignKey<ExperimentRecord, ProjectRecord> EXPERIMENT__PM_FK_EXPERIMENT_PROJECT = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.PROJECT_PKEY, Experiment.EXPERIMENT, "experiment__PM_FK-EXPERIMENT-PROJECT", Experiment.EXPERIMENT.PROJECT_ID);
+        public static final ForeignKey<ExperimentRecord, ProjectRecord> EXPERIMENT__PM_FK_EXPERIMENT_PROJECT = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.PROJECT_PKEY, Experiment.EXPERIMENT, "experiment__pm_fk_experiment_project", Experiment.EXPERIMENT.PROJECT_ID);
         public static final ForeignKey<ProjectRecord, PathmindUserRecord> PROJECT__PM_FK_PROJECT_PATHMIND_USER = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.PATHMIND_USER_PKEY, Project.PROJECT, "project__pm_fk_project_pathmind_user", Project.PROJECT.PATHMIND_USER_ID);
     }
 }

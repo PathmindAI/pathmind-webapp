@@ -15,7 +15,7 @@
     <description>Pathmind</description>
 
     <properties>
-        <java.version>12</java.version>
+        <java.version>11</java.version>
         <vaadin.version>14.0.1</vaadin.version>
     </properties>
 
