@@ -18,39 +18,50 @@ import java.util.Arrays;
 
 public class NewProjectForm extends VerticalLayout
 {
-	private TextField projectNameTextField = new TextField();
-	private TextField stepSizeTextfield = new TextField();
-	private ComboBox<ModelTimeUnit> modelTimeUnitComboBox = new ComboBox<>();
-	private Button browseButton = new Button("Browse Files");
-	private Button dragAndDropButton = new Button("Drag and drop");
+	private TextField projectNameTextField;
+	private TextField stepSizeTextfield;
+	private ComboBox<ModelTimeUnit> modelTimeUnitComboBox;
+	private Button browseButton;
+	private Button dragAndDropButton;
 
 	public NewProjectForm(Binder<Project> binder)
 	{
-		FormLayout form = new FormLayout();
+		setupFormFields();
+		bindFields(binder);
 
-		form.setWidth(UIConstants.CENTERED_FORM_WIDTH);
-		form.setMaxWidth(UIConstants.CENTERED_FORM_WIDTH);
-		form.setResponsiveSteps(new FormLayout.ResponsiveStep(UIConstants.CENTERED_FORM_WIDTH, 1, FormLayout.ResponsiveStep.LabelsPosition.ASIDE));
+		add(getTitlePanel());
+		add(getForm());
+
+		setWidth(UIConstants.CENTERED_FORM_WIDTH);
+		setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
+	}
+
+	private void setupFormFields() {
+		projectNameTextField = new TextField();
+		stepSizeTextfield = new TextField();
+		modelTimeUnitComboBox = new ComboBox<>();
+		browseButton = new Button("Browse Files");
+		dragAndDropButton = new Button("Drag and drop");
 
 		projectNameTextField.setWidthFull();
 		stepSizeTextfield.setWidthFull();
 		modelTimeUnitComboBox.setWidthFull();
 		dragAndDropButton.setWidthFull();
 
-		bindFields(binder);
-
 		modelTimeUnitComboBox.setItems(Arrays.asList(ModelTimeUnit.values()));
+	}
+
+	private FormLayout getForm() {
+		FormLayout form = new FormLayout();
+		form.setWidth(UIConstants.CENTERED_FORM_WIDTH);
+		form.setMaxWidth(UIConstants.CENTERED_FORM_WIDTH);
+		form.setResponsiveSteps(new FormLayout.ResponsiveStep(UIConstants.CENTERED_FORM_WIDTH, 1, FormLayout.ResponsiveStep.LabelsPosition.ASIDE));
 
 		form.addFormItem(projectNameTextField, "Project Name");
 		form.addFormItem(stepSizeTextfield, "Step Size");
 		form.addFormItem(modelTimeUnitComboBox, "Model Time Unit");
 		form.addFormItem(dragAndDropButton, browseButton);
-
-		add(getTitlePanel());
-		add(form);
-
-		setWidth(UIConstants.CENTERED_FORM_WIDTH);
-		setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
+		return form;
 	}
 
 	private void bindFields(Binder<Project> binder) {

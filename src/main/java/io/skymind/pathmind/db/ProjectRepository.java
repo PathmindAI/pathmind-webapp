@@ -20,7 +20,6 @@ public class ProjectRepository
     private DSLContext dslContext;
 
     public List<Project> getProjectsForUser(long userId) {
-//    	return null;
         return dslContext
 				.selectFrom(PROJECT)
 				.where(PROJECT.PATHMIND_USER_ID.eq(userId))
@@ -29,7 +28,6 @@ public class ProjectRepository
 
     // Convenience method so we don't always need to pass in the userId
     public List<Project> getProjectsForUser() {
-//    	return null;
         return dslContext
 				.selectFrom(PROJECT)
 				.where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUser().getId()))
@@ -37,7 +35,6 @@ public class ProjectRepository
     }
 
     public Project getProject(long projectId) {
-//    	return null;
     	return dslContext
 				.selectFrom(PROJECT)
 				.where(PROJECT.ID.eq(projectId))
@@ -45,7 +42,6 @@ public class ProjectRepository
 	}
 
 	public Project getProjectForExperiment(long experimentId) {
-//    	return null;
 		return dslContext
 				.select(PROJECT.asterisk())
 				.from(PROJECT)
@@ -56,7 +52,6 @@ public class ProjectRepository
 	}
 
 	public long insertProject(Project project) {
-//    	return -1L;
     	return dslContext
 				.insertInto(PROJECT)
 				.set(PROJECT.NAME, project.getName())

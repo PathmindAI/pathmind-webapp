@@ -16,7 +16,6 @@ public class ExperimentRepository
 	private DSLContext dslContext;
 
     public Experiment getExperiment(long experimentId) {
-//    	return null;
         return dslContext
             .selectFrom(EXPERIMENT)
             .where(EXPERIMENT.ID.eq(experimentId))
@@ -24,7 +23,6 @@ public class ExperimentRepository
     }
 
 	public List<Experiment> getExperimentsForProject(long projectId) {
-//    	return null;
 		return dslContext
 				.selectFrom(EXPERIMENT)
 				.where(EXPERIMENT.PROJECT_ID.eq(projectId))
@@ -32,7 +30,6 @@ public class ExperimentRepository
 	}
 
 	public List<Experiment> getOtherExperimentsForSameProject(long experimentId) {
-//    	return null;
 		return dslContext
 				.selectFrom(EXPERIMENT)
 				.where(EXPERIMENT.PROJECT_ID.eq(dslContext
@@ -43,7 +40,6 @@ public class ExperimentRepository
 	}
 
 	public long insertExperiment(Experiment experiment) {
-//    	return -1L;
     	return dslContext
 				.insertInto(EXPERIMENT)
 				.set(EXPERIMENT.NAME, experiment.getName())

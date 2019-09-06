@@ -31,8 +31,8 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 	@Autowired
 	private ExperimentRepository experimentRepository;
 
-	private Project project = new Project();
-	private Binder<Project> binder = new Binder<>(Project.class);
+	private Project project;
+	private Binder<Project> binder;
 
 	private UI ui;
 
@@ -52,6 +52,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 	{
 		super();
 		this.ui = UI.getCurrent();
+		this.project = new Project();
 	}
 
 	private void handleBackToImportClicked() {
@@ -118,6 +119,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 	protected Component getMainContent()
 	{
+		binder = new Binder<>(Project.class);
 		newProjectForm = new NewProjectForm(binder);
 		fileCheckPanel = new FileCheckPanel();
 

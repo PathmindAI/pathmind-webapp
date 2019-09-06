@@ -33,9 +33,13 @@ public class DashboardView extends PathMindDefaultView
 
 	private Grid<Project> projectGrid;
 
+	private UI ui;
+
 	public DashboardView()
 	{
 		super();
+
+		this.ui = UI.getCurrent();
 	}
 
 	protected Component getMainContent()
@@ -72,7 +76,7 @@ public class DashboardView extends PathMindDefaultView
 	private ComponentRenderer<HorizontalLayout, Project> getProjectButton()
 	{
 		return GridButtonFactory.getGridButtonRenderer(project -> {
-				UI.getCurrent().navigate(ProjectView.class, project.getId());
+				ui.navigate(ProjectView.class, project.getId());
 		});
 	}
 
@@ -80,7 +84,7 @@ public class DashboardView extends PathMindDefaultView
 	protected ActionMenu getActionMenu() {
 		return new ActionMenu(
 				new Button("New Project", click ->
-						UI.getCurrent().navigate(NewProjectView.class)));
+						ui.getCurrent().navigate(NewProjectView.class)));
 	}
 
 	@Override

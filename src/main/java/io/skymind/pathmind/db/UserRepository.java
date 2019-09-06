@@ -14,7 +14,6 @@ public class UserRepository
     private DSLContext dslContext;
 
     public PathmindUser getUserByEmailAndPassword(String email, String password) {
-//    	return null;
         return dslContext
             .selectFrom(PATHMIND_USER)
             .where(PATHMIND_USER.EMAIL.eq(email)
