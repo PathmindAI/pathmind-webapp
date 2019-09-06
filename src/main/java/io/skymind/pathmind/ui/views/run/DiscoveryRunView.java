@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.experiment;
+package io.skymind.pathmind.ui.views.run;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -11,6 +11,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.constants.PathmindConstants;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.ExperimentRepository;
@@ -19,23 +20,22 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentFormPanel;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.project.ProjectView;
-import io.skymind.pathmind.ui.utils.WrapperUtils;
-import io.skymind.pathmind.ui.views.run.DiscoveryRunConfirmationView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @StyleSheet("frontend://styles/styles.css")
-@Route(value = "experiment", layout = MainLayout.class)
-public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
+@Route(value = "discoveryRun", layout = MainLayout.class)
+public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 	private static final double DEFAULT_SPLIT_PANE_RATIO = 60;
 
-	private Logger log = LogManager.getLogger(ExperimentView.class);
+	private Logger log = LogManager.getLogger(DiscoveryRunView.class);
 
 	private long experimentId = -1;
 
@@ -61,7 +61,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private Button backToProjectButton;
 
-	public ExperimentView()
+	public DiscoveryRunView()
 	{
 		super();
 	}
@@ -75,7 +75,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				backToProjectButton,
 				new Button("+ New Experiment"),
 				new Button("Test Run >", click ->
-						UI.getCurrent().navigate(DiscoveryRunConfirmationView.class, experimentId))
+						UI.getCurrent().navigate(ProjectView.class, PathmindConstants.TODO_PARAMETER))
 		);
 	}
 
@@ -143,15 +143,5 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		screenTitlePanel.setSubtitle(project.getName());
 		backToProjectButton.addClickListener(click ->
 				UI.getCurrent().navigate(ProjectView.class, project.getId()));
-	}
-
-	private void save() {
-		// TODO -> Save should be done in a systematic way throughout the application.
-//				try {
-//			binder.writeBean(project);
-//			return true;
-//		} catch (ValidationException e) {
-//			return false;
-//		}
 	}
 }

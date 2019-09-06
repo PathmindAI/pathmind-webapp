@@ -57,6 +57,13 @@ public class WrapperUtils
 		return verticalLayout;
 	}
 
+	// TODO -> Move this to CSS.
+	public static VerticalLayout wrapCenteredFormVerticalBordered(Component... components) {
+		VerticalLayout verticalLayout = wrapCenteredFormVertical(components);
+		verticalLayout.getStyle().set("border", "solid 1px #ccc");
+		return verticalLayout;
+	}
+
 	public static HorizontalLayout wrapCenteredFormHorizontal(Component... components) {
 		HorizontalLayout horizontalLayout = new HorizontalLayout(components);
 		horizontalLayout.setWidth(UIConstants.CENTERED_FORM_WIDTH);

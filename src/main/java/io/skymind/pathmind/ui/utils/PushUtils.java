@@ -7,6 +7,6 @@ public class PushUtils
 {
 	public static void push(Component component, Command command) {
 		component.getUI().ifPresent(ui ->
-				ui.access(command));
+			ui.access(command));
 	}
 }
