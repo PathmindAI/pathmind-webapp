@@ -20,6 +20,8 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.project.components.FileCheckPanel;
 import io.skymind.pathmind.ui.views.project.components.NewProjectForm;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.ui.views.project.components.NewProjectLogoPanel;
+import io.skymind.pathmind.ui.views.project.components.NewProjectWizardStatusPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @StyleSheet("frontend://styles/styles.css")
@@ -42,6 +44,8 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 	private ActionMenu actionMenu;
 
+	private NewProjectLogoPanel logoPanel;
+	private NewProjectWizardStatusPanel statusPanel;
 	private NewProjectForm newProjectForm;
 	private FileCheckPanel fileCheckPanel;
 
@@ -120,12 +124,16 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 	protected Component getMainContent()
 	{
 		binder = new Binder<>(Project.class);
+		logoPanel = new NewProjectLogoPanel();
+		statusPanel = new NewProjectWizardStatusPanel();
 		newProjectForm = new NewProjectForm(binder);
 		fileCheckPanel = new FileCheckPanel();
 
 		fileCheckPanel.setVisible(false);
 
 		return WrapperUtils.wrapCenterAlignmentFullVertical(
+				logoPanel,
+				statusPanel,
 				newProjectForm,
 				fileCheckPanel);
 	}

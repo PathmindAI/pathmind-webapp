@@ -46,6 +46,7 @@ public class ExperimentRepository
 				.insertInto(EXPERIMENT)
 				.set(EXPERIMENT.NAME, experiment.getName())
 				.set(EXPERIMENT.DATE, experiment.getDate())
+				.set(EXPERIMENT.DURATION, experiment.getDuration())
 				.set(EXPERIMENT.RUN_TYPE, experiment.getRunType())
 				.set(EXPERIMENT.SCORE, experiment.getScore())
 				.set(EXPERIMENT.REWARD_FUNCTION, experiment.getRewardFunction())

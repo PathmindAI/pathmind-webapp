@@ -15,8 +15,9 @@ public class Project implements Data
 	private LocalDate dateCreated;
 
 	private List<Experiment> experiments;
-
 	private PathmindUser pathmindUser;
+
+	private LocalDate lastActivityDate;
 
 	public Project() {
 	}
@@ -64,5 +65,13 @@ public class Project implements Data
 
 	public void setPathmindUser(PathmindUser pathmindUser) {
 		this.pathmindUser = pathmindUser;
+	}
+
+	public LocalDate getLastActivityDate() {
+		return lastActivityDate;
+	}
+
+	public void setLastActivityDate(LocalDate lastActivityDate) {
+		this.lastActivityDate = lastActivityDate;
 	}
 }

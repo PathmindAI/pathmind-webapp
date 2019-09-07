@@ -56,6 +56,7 @@ public class ProjectRepository
 				.insertInto(PROJECT)
 				.set(PROJECT.NAME, project.getName())
 				.set(PROJECT.DATE_CREATED, LocalDate.now())
+				.set(PROJECT.LAST_ACTIVITY_DATE, LocalDate.now())
 				.set(PROJECT.PATHMIND_USER_ID, SecurityUtils.getUser().getId())
 				.returning(PROJECT.ID)
 				.fetchOne()

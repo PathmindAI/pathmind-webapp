@@ -8,6 +8,10 @@ import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 
+/**
+ * Left it in the code for now even though it's not used since we'll eventually need to be able to
+ * edit an Experiment's name and so on.
+ */
 public class ExperimentFormPanel extends VerticalLayout
 {
 	private static final String FORM_WIDTH = "400px";

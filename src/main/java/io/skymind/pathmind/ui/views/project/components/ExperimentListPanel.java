@@ -15,6 +15,7 @@ import io.skymind.pathmind.ui.views.console.ConsoleView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.utils.DateTimeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,16 +43,28 @@ public class ExperimentListPanel extends VerticalLayout
 	}
 
 	private Grid<Experiment> getRecentExperimentsGrid() {
-		grid.addColumn(Experiment::getName)
+		grid.addColumn(Experiment::getDate)
+				.setHeader("Completed")
+				.setAutoWidth(true)
+				.setSortable(true);
+		grid.addColumn(experiment -> "#" + experiment.getModelId())
+				.setHeader("Model")
+				.setAutoWidth(true)
+				.setSortable(true);
+		grid.addColumn(experiment -> "#" + experiment.getId())
 				.setHeader("Experiment")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(Experiment::getDate)
-				.setHeader("Date")
-				.setAutoWidth(true)
-				.setSortable(true);
+//		grid.addColumn(Experiment::getName)
+//				.setHeader("Experiment")
+//				.setAutoWidth(true)
+//				.setSortable(true);
 		grid.addColumn(Experiment::getRunTypeEnum)
 				.setHeader("Run Type")
+				.setAutoWidth(true)
+				.setSortable(true);
+		grid.addColumn(experiment -> DateTimeUtils.formatTime(experiment.getDuration()))
+				.setHeader("Duration")
 				.setAutoWidth(true)
 				.setSortable(true);
 		grid.addColumn(Experiment::getScore)

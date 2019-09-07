@@ -88,10 +88,7 @@ public class WrapperUtils
 	}
 
 	public static SplitLayout wrapCenterAlignmentFullSplitLayoutVertical(Component primaryComponent, Component secondaryComponent, double splitterPosition) {
-		SplitLayout splitLayout = new SplitLayout(primaryComponent, secondaryComponent);
-		splitLayout.setOrientation(SplitLayout.Orientation.VERTICAL);
-		splitLayout.setSizeFull();
-		return splitLayout;
+		return wrapCenterAlignmentFullSplitLayout(primaryComponent, secondaryComponent, splitterPosition, SplitLayout.Orientation.VERTICAL);
 	}
 
 	public static SplitLayout wrapCenterAlignmentFullSplitLayoutHorizontal(Component primaryComponent, Component secondaryComponent) {
@@ -99,8 +96,12 @@ public class WrapperUtils
 	}
 
 	public static SplitLayout wrapCenterAlignmentFullSplitLayoutHorizontal(Component primaryComponent, Component secondaryComponent, double splitterPosition) {
+		return wrapCenterAlignmentFullSplitLayout(primaryComponent, secondaryComponent, splitterPosition, SplitLayout.Orientation.HORIZONTAL);
+	}
+
+	private static SplitLayout wrapCenterAlignmentFullSplitLayout(Component primaryComponent, Component secondaryComponent, double splitterPosition, SplitLayout.Orientation orientation) {
 		SplitLayout splitLayout = new SplitLayout(primaryComponent, secondaryComponent);
-		splitLayout.setOrientation(SplitLayout.Orientation.HORIZONTAL);
+		splitLayout.setOrientation(orientation);
 		splitLayout.setSizeFull();
 		splitLayout.setSplitterPosition(splitterPosition);
 		return splitLayout;

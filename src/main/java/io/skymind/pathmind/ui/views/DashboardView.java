@@ -19,7 +19,7 @@ import io.skymind.pathmind.ui.components.grid.GridButtonFactory;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
 import io.skymind.pathmind.ui.views.project.ProjectView;
-import io.skymind.pathmind.utils.DateUtils;
+import io.skymind.pathmind.utils.DateTimeUtils;
 import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,16 +48,23 @@ public class DashboardView extends PathMindDefaultView
 
 		projectGrid.addColumn(Project::getName)
 				.setHeader("Name")
-				.setSortable(true)
-				.setWidth("275px");
+				.setSortable(true);
+//				.setWidth("275px");
 		projectGrid.addColumn(
-				new LocalDateRenderer<>(Project::getDateCreated, DateUtils.STANDARD_DATE_TIME_FOMATTER))
+				new LocalDateRenderer<>(Project::getDateCreated, DateTimeUtils.STANDARD_DATE_TIME_FOMATTER))
 				.setHeader("Date Created")
-				.setSortable(true)
-				.setWidth("275px");
-		projectGrid.addColumn(getProjectButton())
-				.setHeader("View Project")
-				.setWidth(UIConstants.GRID_BUTTON_WIDTH);
+				.setSortable(true);
+//				.setWidth("275px");
+		projectGrid.addColumn(
+				new LocalDateRenderer<>(Project::getLastActivityDate, DateTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+				.setHeader("Last Activity")
+				.setSortable(true);
+//				.setWidth("275px");
+
+		projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+		projectGrid.addSelectionListener(event ->
+				event.getFirstSelectedItem().ifPresent(selectedProject ->
+						UI.getCurrent().navigate(ProjectView.class, selectedProject.getId())));
 
 		projectGrid.setWidth("700px");
 		projectGrid.setMaxWidth("700px");
@@ -71,13 +78,6 @@ public class DashboardView extends PathMindDefaultView
 		HorizontalLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullHorizontal(projectGrid);
 		gridWrapper.getElement().getStyle().set("padding-top", "100px");
 		return gridWrapper;
-	}
-
-	private ComponentRenderer<HorizontalLayout, Project> getProjectButton()
-	{
-		return GridButtonFactory.getGridButtonRenderer(project -> {
-				ui.navigate(ProjectView.class, project.getId());
-		});
 	}
 
 	@Override

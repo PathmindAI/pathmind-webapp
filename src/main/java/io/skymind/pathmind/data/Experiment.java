@@ -1,5 +1,6 @@
 package io.skymind.pathmind.data;
 
+import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.constants.RunType;
 
 import javax.validation.constraints.NotNull;
@@ -8,20 +9,18 @@ import java.util.List;
 
 public class Experiment implements Data
 {
-
 	private long id;
-
-
 	private String name;
-
-
 	private LocalDate date;
 
 	@NotNull
 	private int runType;
-
 	@NotNull
 	private int score;
+
+	// TODO -> This needs to be properly implemented and stored in the database.
+	@NotNull
+	private int modelId;
 
 	@NotNull
 	private String rewardFunction;
@@ -30,16 +29,23 @@ public class Experiment implements Data
 
 	private List<Run> runs;
 
+	// TODO -> This needs to be properly implemented and stored in the database.
+	private Algorithm algorithm;
+	private long duration = 0;
+
 	public Experiment() {
 	}
 
-	public Experiment(@NotNull String name, @NotNull LocalDate date, @NotNull int runType, @NotNull int score, @NotNull String rewardFunction, Project project) {
+	public Experiment(@NotNull String name, @NotNull LocalDate date, @NotNull int runType, Algorithm algorithm, long duration, @NotNull int score, @NotNull String rewardFunction, Project project, @NotNull int modelId) {
 		this.name = name;
 		this.date = date;
 		this.runType = runType;
+		this.algorithm = algorithm;
+		this.duration = duration;
 		this.score = score;
 		this.rewardFunction = rewardFunction;
 		this.project = project;
+		this.modelId = modelId;
 	}
 
 	public long getId() {
@@ -113,5 +119,29 @@ public class Experiment implements Data
 
 	public void setRewardFunction(String rewardFunction) {
 		this.rewardFunction = rewardFunction;
+	}
+
+	public int getModelId() {
+		return modelId;
+	}
+
+	public void setModelId(int modelId) {
+		this.modelId = modelId;
+	}
+
+	public Algorithm getAlgorithm() {
+		return algorithm;
+	}
+
+	public void setAlgorithm(Algorithm algorithm) {
+		this.algorithm = algorithm;
+	}
+
+	public long getDuration() {
+		return duration;
+	}
+
+	public void setDuration(long duration) {
+		this.duration = duration;
 	}
 }

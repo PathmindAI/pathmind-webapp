@@ -57,7 +57,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private Binder<Experiment> binder;
 
 	private RewardFunctionEditor rewardFunctionEditor;
-	private ExperimentFormPanel experimentFormPanel;
 
 	private Button backToProjectButton;
 
@@ -90,26 +89,27 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	{
 		binder = new Binder<>(Experiment.class);
 
-		rewardFunctionEditor = new RewardFunctionEditor();
-		experimentFormPanel = new ExperimentFormPanel(binder);
-
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 				getLeftPanel(),
 				getRightPanel(),
 				DEFAULT_SPLIT_PANE_RATIO);
 	}
 
-	private VerticalLayout getLeftPanel() {
-		return WrapperUtils.wrapFullSizeVertical(
-				experimentFormPanel,
-				rewardFunctionEditor);
+	private Component getLeftPanel()
+	{
+		rewardFunctionEditor = new RewardFunctionEditor();
+
+		errorsTextArea = new TextArea("Errors");
+		errorsTextArea.setSizeFull();
+
+		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
+				rewardFunctionEditor,
+				WrapperUtils.wrapFullSizeVertical(errorsTextArea),
+				70);
 	}
 
 	private VerticalLayout getRightPanel()
 	{
-		errorsTextArea = new TextArea("Errors");
-		errorsTextArea.setSizeFull();
-
 		getObservationTextArea = new TextArea("getObservation");
 		getObservationTextArea.setSizeFull();
 
@@ -117,7 +117,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		tipsTextArea.setSizeFull();
 
 		return WrapperUtils.wrapFullSizeVertical(
-				errorsTextArea,
 				getObservationTextArea,
 				tipsTextArea);
 	}

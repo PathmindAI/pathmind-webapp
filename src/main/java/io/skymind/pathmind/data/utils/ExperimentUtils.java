@@ -1,5 +1,6 @@
 package io.skymind.pathmind.data.utils;
 
+import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
@@ -17,9 +18,12 @@ public class ExperimentUtils
 				project.getName(),
 				LocalDate.now(),
 				RunType.DiscoverRun.getValue(),
+				Algorithm.DQN,
+				374,
 				1,
 				"Function =",
-				project);
+				project,
+				1);
 	}
 
 	public static long generateNewExperiment(Project project, ExperimentRepository experimentRepository) {

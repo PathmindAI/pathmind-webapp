@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Project extends TableImpl<ProjectRecord> {
 
-    private static final long serialVersionUID = -692458532;
+    private static final long serialVersionUID = -225003425;
 
     /**
      * The reference instance of <code>public.project</code>
@@ -75,6 +75,11 @@ public class Project extends TableImpl<ProjectRecord> {
      * The column <code>public.project.date_created</code>.
      */
     public final TableField<ProjectRecord, LocalDate> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.LOCALDATE.nullable(false), this, "");
+
+    /**
+     * The column <code>public.project.last_activity_date</code>.
+     */
+    public final TableField<ProjectRecord, LocalDate> LAST_ACTIVITY_DATE = createField("last_activity_date", org.jooq.impl.SQLDataType.LOCALDATE.nullable(false), this, "");
 
     /**
      * Create a <code>public.project</code> table reference

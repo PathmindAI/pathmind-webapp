@@ -12,24 +12,13 @@ import java.util.List;
 
 public class ProjectChartPanel extends VerticalLayout
 {
-	// TODO -> I have no idea what these components should be or what they do.
-	private Label inputLabel = new Label("Input");
-	private Label arrowsLabel = new Label(" > < ");
-	private Label outputLabel = new Label("Output");
-
 	private Chart chart = new Chart(ChartType.SPLINE);
 	private ListSeries series = new ListSeries("Score");
 
 	public ProjectChartPanel()
 	{
 		setupChart();
-
-		add(
-				WrapperUtils.wrapCenteredFormHorizontal(
-					inputLabel,
-					arrowsLabel,
-					outputLabel),
-				chart);
+		add(chart);
 	}
 
 	private void setupChart() {

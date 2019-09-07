@@ -19,13 +19,12 @@ import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.PushUtils;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentScoreboardPanel;
 import io.skymind.pathmind.ui.views.project.components.ExperimentListPanel;
 import io.skymind.pathmind.ui.views.project.components.ProjectChartPanel;
-import io.skymind.pathmind.ui.views.project.components.ProjectStatusPanel;
-import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,7 @@ import java.util.Arrays;
 @Route(value="project", layout = MainLayout.class)
 public class ProjectView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
-	private Logger log = LogManager.getLogger(ProjectView.class);
+	private static Logger log = LogManager.getLogger(ProjectView.class);
 
 	@Autowired
 	private ProjectRepository projectRepository;
@@ -49,7 +48,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	private long projectId;
 
 	private ScreenTitlePanel screenTitlePanel;
-	private ProjectStatusPanel projectStatusPanel;
 
 	private ExperimentListPanel experimentPanel;
 	private ProjectChartPanel projectChartPanel;
@@ -103,8 +101,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	@Override
 	protected Component getTitlePanel() {
 		screenTitlePanel = new ScreenTitlePanel("PROJECT");
-		projectStatusPanel = new ProjectStatusPanel();
-		return WrapperUtils.wrapLeftAndRightAligned(screenTitlePanel, projectStatusPanel);
+		return screenTitlePanel;
 	}
 
 	// TODO -> Since I'm not sure exactly what the panels on the right are I'm going to make some big

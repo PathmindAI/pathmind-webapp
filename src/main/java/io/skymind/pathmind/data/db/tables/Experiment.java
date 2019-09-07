@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = -1085664990;
+    private static final long serialVersionUID = 1111806095;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -75,6 +75,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
      * The column <code>public.experiment.date</code>.
      */
     public final TableField<ExperimentRecord, LocalDate> DATE = createField("date", org.jooq.impl.SQLDataType.LOCALDATE.nullable(false), this, "");
+
+    /**
+     * The column <code>public.experiment.duration</code>.
+     */
+    public final TableField<ExperimentRecord, Long> DURATION = createField("duration", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.experiment.reward_function</code>.

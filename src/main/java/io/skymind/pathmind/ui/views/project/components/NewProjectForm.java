@@ -9,10 +9,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.constants.ModelTimeUnit;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.ui.components.LabelFactory;
-import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.utils.UIConstants;
-import io.skymind.pathmind.ui.utils.WrapperUtils;
 
 import java.util.Arrays;
 
@@ -29,7 +26,6 @@ public class NewProjectForm extends VerticalLayout
 		setupFormFields();
 		bindFields(binder);
 
-		add(getTitlePanel());
 		add(getForm());
 
 		setWidth(UIConstants.CENTERED_FORM_WIDTH);
@@ -68,13 +64,6 @@ public class NewProjectForm extends VerticalLayout
 		binder.forField(projectNameTextField)
 				.asRequired("Project must have a name")
 				.bind(Project::getName, Project::setName);
-	}
-
-	public VerticalLayout getTitlePanel() {
-		return WrapperUtils.wrapCenteredFormVertical(
-				LabelFactory.createLabel("Welcome to", CssMindPathStyles.SMALL_LIGHT_LABEL),
-				LabelFactory.createLabel("Pathmind", CssMindPathStyles.LOGO_LABEL)
-		);
 	}
 
 	public String getProjectName() {
