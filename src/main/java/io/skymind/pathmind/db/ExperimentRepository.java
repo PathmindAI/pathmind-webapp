@@ -41,8 +41,15 @@ public class ExperimentRepository
 				.fetchInto(Experiment.class);
 	}
 
+	// TODO -> Do we want to batch or is it ever only really going to be 1 experiment almost all the time?
+	// PERFORMANCE -> Database insert loop.
+	public void insertExperimentsForProject(Project project) {
+    	project.getExperiments().stream().forEach(experiment ->
+				insertExperiment(experiment));
+	}
+
 	public long insertExperiment(Experiment experiment) {
-    	return dslContext
+    	long experimentId = dslContext
 				.insertInto(EXPERIMENT)
 				.set(EXPERIMENT.NAME, experiment.getName())
 				.set(EXPERIMENT.DATE, experiment.getDate())
@@ -54,5 +61,7 @@ public class ExperimentRepository
 				.returning(EXPERIMENT.ID)
 				.fetchOne()
 				.getValue(EXPERIMENT.ID);
+    	experiment.setId(experimentId);
+    	return experimentId;
 	}
 }

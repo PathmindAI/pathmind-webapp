@@ -36,10 +36,10 @@ public class Experiment implements Data
 	public Experiment() {
 	}
 
-	public Experiment(@NotNull String name, @NotNull LocalDate date, @NotNull int runType, Algorithm algorithm, long duration, @NotNull int score, @NotNull String rewardFunction, Project project, @NotNull int modelId) {
+	public Experiment(@NotNull String name, @NotNull LocalDate date, @NotNull RunType runType, Algorithm algorithm, long duration, @NotNull int score, @NotNull String rewardFunction, Project project, @NotNull int modelId) {
 		this.name = name;
 		this.date = date;
-		this.runType = runType;
+		this.runType = runType.getValue();
 		this.algorithm = algorithm;
 		this.duration = duration;
 		this.score = score;

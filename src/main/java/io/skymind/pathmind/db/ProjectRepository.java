@@ -52,14 +52,19 @@ public class ProjectRepository
 	}
 
 	public long insertProject(Project project) {
-    	return dslContext
+    	long projectId = dslContext
 				.insertInto(PROJECT)
 				.set(PROJECT.NAME, project.getName())
 				.set(PROJECT.DATE_CREATED, LocalDate.now())
 				.set(PROJECT.LAST_ACTIVITY_DATE, LocalDate.now())
 				.set(PROJECT.PATHMIND_USER_ID, SecurityUtils.getUser().getId())
+				.set(PROJECT.NUMBER_OF_OBSERVATIONS, project.getNumberOfObservations())
+				.set(PROJECT.NUMBER_OF_POSSIBLE_ACTIONS, project.getNumberOfPossibleActions())
+				.set(PROJECT.GET_OBSERVATION_FOR_REWARD_FUNCTION, project.getGetObservationForRewardFunction())
 				.returning(PROJECT.ID)
 				.fetchOne()
 				.getValue(PROJECT.ID);
+    	project.setId(projectId);
+    	return projectId;
 	}
 }

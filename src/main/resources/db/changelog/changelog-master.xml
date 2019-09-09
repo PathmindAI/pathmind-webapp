@@ -40,6 +40,15 @@
             <column name="LAST_ACTIVITY_DATE" type="DATE">
                 <constraints nullable="false"/>
             </column>
+            <column name="NUMBER_OF_OBSERVATIONS" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NUMBER_OF_POSSIBLE_ACTIONS" type="DECIMAL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" type="VARCHAR(5096)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <createTable tableName="EXPERIMENT">
@@ -88,6 +97,9 @@
             <column name="NAME" value="Coffee Shop"/>
             <column name="DATE_CREATED" valueDate="2019-08-23"/>
             <column name="LAST_ACTIVITY_DATE" valueDate="2019-09-03"/>
+            <column name="NUMBER_OF_OBSERVATIONS" valueNumeric="3"/>
+            <column name="NUMBER_OF_POSSIBLE_ACTIONS" valueNumeric="5.0"/>
+            <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" value=""/>
         </insert>
         <insert tableName="PROJECT">
 <!--            <column name="ID" valueNumeric="2"/>-->
@@ -95,6 +107,9 @@
             <column name="NAME" value="Traffic Simulation"/>
             <column name="DATE_CREATED" valueDate="2019-08-24"/>
             <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-28"/>
+            <column name="NUMBER_OF_OBSERVATIONS" valueNumeric="3"/>
+            <column name="NUMBER_OF_POSSIBLE_ACTIONS" valueNumeric="5.0"/>
+            <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" value=""/>
         </insert>
 
         <insert tableName="EXPERIMENT">

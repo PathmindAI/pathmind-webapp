@@ -138,6 +138,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 		binder.readBean(experiment);
 
+		// TODO -> Need to fully use the binder here. Only partially used.
+		getObservationTextArea.setValue(project.getGetObservationForRewardFunction());
 		rewardFunctionEditor.setRewardFunction(experiment.getRewardFunction());
 		screenTitlePanel.setSubtitle(project.getName());
 		backToProjectButton.addClickListener(click ->

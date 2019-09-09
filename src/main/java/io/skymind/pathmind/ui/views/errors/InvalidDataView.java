@@ -22,7 +22,7 @@ public class InvalidDataView extends PathMindDefaultView
 
 	@Override
 	protected Component getMainContent() {
-		return WrapperUtils.wrapFullWidthHorizontal(
+		return WrapperUtils.wrapCenterFullWidthHorizontal(
 				new Label("This link is invalid.\nPlease contact Skymind if you believe this is an error."));
 	}
 

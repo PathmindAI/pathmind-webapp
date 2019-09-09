@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.views.project;
 
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -9,20 +10,23 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.data.utils.ExperimentUtils;
+import io.skymind.pathmind.data.utils.ProjectUtils;
 import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
-import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.project.components.FileCheckPanel;
-import io.skymind.pathmind.ui.views.project.components.NewProjectForm;
+import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
+import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
-import io.skymind.pathmind.ui.views.project.components.NewProjectLogoPanel;
-import io.skymind.pathmind.ui.views.project.components.NewProjectWizardStatusPanel;
+import io.skymind.pathmind.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.ui.views.project.components.NewProjectLogoWizardPanel;
+import io.skymind.pathmind.ui.views.project.components.wizard.*;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Arrays;
+import java.util.List;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value = "newProject", layout = MainLayout.class)
@@ -38,54 +42,22 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 	private UI ui;
 
-	private Button createProjectButton;
-	private Button backToImportButton;
-	private Button startYourProjectButton;
+	private NewProjectLogoWizardPanel logoPanel;
+	private NewProjectStatusWizardPanel statusPanel;
+	private CreateANewProjectWizardPanel createProjectPanel;
+	private PathminderHelperWizardPanel pathminderHelperWizardPanel;
+	private UploadModelWizardPanel uploadModelWizardPanel;
+	private ModelDetailsWizardPanel modelDetailsWizardPanel;
 
-	private ActionMenu actionMenu;
-
-	private NewProjectLogoPanel logoPanel;
-	private NewProjectWizardStatusPanel statusPanel;
-	private NewProjectForm newProjectForm;
-	private FileCheckPanel fileCheckPanel;
+	private List<Component> wizardPanels;
 
 	private boolean hasErrorsFileCheck = false;
 
-	// TODO -> Logo and project title panel
 	public NewProjectView()
 	{
 		super();
 		this.ui = UI.getCurrent();
-		this.project = new Project();
-	}
-
-	private void handleBackToImportClicked() {
-		setVisibleActionMenuButtons(true, false, false);
-		fileCheckPanel.setVisible(false);
-		fileCheckPanel.reset();
-		newProjectForm.setVisible(true);
-		backToImportButton.setEnabled(false);
-	}
-
-	private void handleCreateProjectClicked()
-	{
-		if(!isValidForm())
-			return;
-
-		hasErrorsFileCheck = false;
-		setVisibleActionMenuButtons(false, true, false);
-		newProjectForm.setVisible(false);
-		fileCheckPanel.setVisible(true);
-		backToImportButton.setEnabled(false);
-
-		ProjectFileCheckService.checkFile(this, "Error".equalsIgnoreCase(newProjectForm.getProjectName()));
-	}
-
-	private void handleStartYourProjectClicked()
-	{
-		project.setId(projectRepository.insertProject(project));
-		ExperimentUtils.generateNewExperiment(project, experimentRepository);
-		UI.getCurrent().navigate(ProjectView.class, project.getId());
+		this.project = ProjectUtils.generateNewDefaultProject();
 	}
 
 	/**
@@ -101,41 +73,75 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 		}
 	}
 
-	// Test github close commit.
-	protected ActionMenu getActionMenu()
-	{
-		createProjectButton = new Button("Create Project >", click -> handleCreateProjectClicked());
-		backToImportButton = new Button("< Back to Import", click -> handleBackToImportClicked());
-		startYourProjectButton = new Button("Start Your Project! >", click -> handleStartYourProjectClicked());
-
-		actionMenu = new ActionMenu(
-				createProjectButton,
-				backToImportButton,
-				startYourProjectButton);
-
-		// Can only be enabled once a file check has been completed.
-		backToImportButton.setEnabled(false);
-
-		setVisibleActionMenuButtons(true, false, false);
-
-		return actionMenu;
-	}
-
 	protected Component getMainContent()
 	{
 		binder = new Binder<>(Project.class);
-		logoPanel = new NewProjectLogoPanel();
-		statusPanel = new NewProjectWizardStatusPanel();
-		newProjectForm = new NewProjectForm(binder);
-		fileCheckPanel = new FileCheckPanel();
 
-		fileCheckPanel.setVisible(false);
+		logoPanel = new NewProjectLogoWizardPanel();
+		statusPanel = new NewProjectStatusWizardPanel();
+		createProjectPanel = new CreateANewProjectWizardPanel(binder);
+		pathminderHelperWizardPanel = new PathminderHelperWizardPanel();
+		uploadModelWizardPanel = new UploadModelWizardPanel();
+		modelDetailsWizardPanel = new ModelDetailsWizardPanel(binder);
 
-		return WrapperUtils.wrapCenterAlignmentFullVertical(
+		wizardPanels = Arrays.asList(
+				createProjectPanel,
+				pathminderHelperWizardPanel,
+				uploadModelWizardPanel,
+				modelDetailsWizardPanel);
+
+		setVisibleWizardPanel(createProjectPanel);
+
+		createProjectPanel.addButtonClickListener(click -> handleNewProjectClicked());
+		pathminderHelperWizardPanel.addButtonClickListener(click -> handleNextStepClicked());
+		uploadModelWizardPanel.addButtonClickListener(click -> handleUploadWizardClicked());
+		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked(click));
+
+		return WrapperUtils.wrapCenteredFormVertical(
 				logoPanel,
 				statusPanel,
-				newProjectForm,
-				fileCheckPanel);
+				createProjectPanel,
+				pathminderHelperWizardPanel,
+				uploadModelWizardPanel,
+				modelDetailsWizardPanel);
+	}
+
+	private void handleMoreDetailsClicked(ClickEvent<Button> click) {
+		ExceptionWrapperUtils.handleButtonClicked(() ->
+		{
+			if(!isValidForm())
+				return;
+
+			projectRepository.insertProject(project);
+			experimentRepository.insertExperimentsForProject(project);
+			UI.getCurrent().navigate(ExperimentView.class, project.getExperiments().get(0).getId());
+		});
+	}
+
+	private void handleUploadWizardClicked() {
+		uploadModelWizardPanel.showFileCheckPanel();
+		ProjectFileCheckService.checkFile(this, true);
+	}
+
+	private void handleNextStepClicked() {
+		setVisibleWizardPanel(uploadModelWizardPanel);
+		statusPanel.setUploadModel();
+	}
+
+	private void handleNewProjectClicked()
+	{
+		if(!isValidForm())
+			return;
+
+		pathminderHelperWizardPanel.setProjectName(project.getName());
+		uploadModelWizardPanel.setProjectName(project.getName());
+		setVisibleWizardPanel(pathminderHelperWizardPanel);
+		statusPanel.setPathmindHelper();
+	}
+
+	private void setVisibleWizardPanel(Component wizardPanel) {
+		wizardPanels.stream()
+				.forEach(panel -> panel.setVisible(panel.equals(wizardPanel)));
 	}
 
 	/**
@@ -145,40 +151,31 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 		return null;
 	}
 
-	private void setVisibleActionMenuButtons(
-			boolean isCreateProjectButtonVisible,
-			boolean isBackToImportProjectButtonVisible,
-			boolean isStartYourProjectButtonVisible)
-	{
-		actionMenu.setButtonVisible(createProjectButton, isCreateProjectButtonVisible);
-		actionMenu.setButtonVisible(backToImportButton, isBackToImportProjectButtonVisible);
-		actionMenu.setButtonVisible(startYourProjectButton, isStartYourProjectButtonVisible);
+	private Component getProjectView() {
+		return this;
 	}
 
 	@Override
 	public void updateStatus(double percentage) {
-		ui.access(() -> {
-			fileCheckPanel.updateProgressBar(percentage);
+//		PushUtils.push(getProjectView(), () -> {
+		PushUtils.push(ui, () -> {
+			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(percentage);
 		});
 	}
 
 	@Override
 	public void updateError(String error) {
-		ui.access(() -> {
-			fileCheckPanel.addError(error);
-			hasErrorsFileCheck = true;
-		});
+		// TODO -> Implement
 	}
 
 	@Override
 	public void done() {
-		ui.access(() -> {
-			fileCheckPanel.done();
-			if(hasErrorsFileCheck) {
-				backToImportButton.setEnabled(true);
-			} else {
-				setVisibleActionMenuButtons(false, false, true);
-			}
+//		PushUtils.push(getProjectView(), () -> {
+		PushUtils.push(ui, () -> {
+			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
+			setVisibleWizardPanel(modelDetailsWizardPanel);
+			binder.readBean(project);
+			statusPanel.setModelDetails();
 		});
 	}
 }

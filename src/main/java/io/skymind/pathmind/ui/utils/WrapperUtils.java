@@ -7,8 +7,16 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import io.skymind.pathmind.ui.utils.UIConstants;
 
+// TODO -> Clean up this class and have consistent naming structure. For now I'm just adding helper methods
+// until I get a fuller understanding of all what we need.
 public class WrapperUtils
 {
+	public static VerticalLayout wrapFullWidthVertical(Component... components) {
+		VerticalLayout wrapper = new VerticalLayout(components);
+		wrapper.setWidthFull();
+		return wrapper;
+	}
+
 	public static HorizontalLayout wrapCenterAlignmentHorizontal(Component... components) {
 		HorizontalLayout wrapper = new HorizontalLayout(components);
 		wrapper.setWidthFull();
@@ -30,8 +38,14 @@ public class WrapperUtils
 		return wrapper;
 	}
 
-	public static HorizontalLayout wrapFullWidthHorizontal(Component... components) {
+	public static HorizontalLayout wrapCenterFullWidthHorizontal(Component... components) {
 		HorizontalLayout wrapper = wrapCenterAlignmentHorizontal(components);
+		wrapper.setWidthFull();
+		return wrapper;
+	}
+
+	public static HorizontalLayout wrapFullWidthHorizontal(Component... components) {
+		HorizontalLayout wrapper = new HorizontalLayout(components);
 		wrapper.setWidthFull();
 		return wrapper;
 	}
@@ -43,10 +57,8 @@ public class WrapperUtils
 	}
 
 	public static VerticalLayout wrapCenterAlignmentFullVertical(Component... components) {
-		VerticalLayout verticalLayout = new VerticalLayout();
-		verticalLayout.setWidthFull();
+		VerticalLayout verticalLayout = wrapFullWidthVertical(components);
 		verticalLayout.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
-		verticalLayout.add(components);
 		return verticalLayout;
 	}
 

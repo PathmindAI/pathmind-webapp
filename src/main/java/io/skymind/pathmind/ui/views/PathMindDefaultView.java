@@ -3,6 +3,7 @@ package io.skymind.pathmind.ui.views;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -20,7 +21,7 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class PathMindDefaultView extends VerticalLayout implements BeforeEnterObserver
 {
-	private Logger log = LogManager.getLogger(PathMindDefaultView.class);
+	private static Logger log = LogManager.getLogger(PathMindDefaultView.class);
 
 	public PathMindDefaultView()
 	{

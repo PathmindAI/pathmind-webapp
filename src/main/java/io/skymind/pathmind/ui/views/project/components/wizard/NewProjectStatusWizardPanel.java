@@ -1,17 +1,16 @@
-package io.skymind.pathmind.ui.views.project.components;
+package io.skymind.pathmind.ui.views.project.components.wizard;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.ui.utils.GuiUtils;
-import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class NewProjectWizardStatusPanel extends VerticalLayout
+public class NewProjectStatusWizardPanel extends VerticalLayout
 {
 	private Label createANewProjectLabel = new Label("Create A New Project");
 	private Label pathmindHelperLabel = new Label("Pathmind Helper");
@@ -24,21 +23,24 @@ public class NewProjectWizardStatusPanel extends VerticalLayout
 			uploadModelLabel,
 			modelDetailsLabel);
 
-	public NewProjectWizardStatusPanel()
+	public NewProjectStatusWizardPanel()
 	{
-		HorizontalLayout statusBar = WrapperUtils.wrapCenteredFormHorizontal(steps.stream().toArray(Component[]::new));
-		statusBar.setJustifyContentMode(JustifyContentMode.EVENLY);
+		add(getStatusBar(), GuiUtils.getFullWidthHr());
 
 		// TODO -> All this should be done in proper CSS styles.
 		steps.stream().forEach(label -> label.getStyle().set("font-size", "11px"));
 
-		add(WrapperUtils.wrapCenteredFormVertical(
-					statusBar,
-					GuiUtils.getHr(UIConstants.CENTERED_FORM_WIDTH)));
-
-		setWidth(UIConstants.CENTERED_FORM_WIDTH);
+		setWidthFull();
+		setMargin(false);
 
 		setCreateANewProject();
+	}
+
+	private HorizontalLayout getStatusBar() {
+		HorizontalLayout statusBar = WrapperUtils.wrapCenteredFormHorizontal(steps.stream().toArray(Component[]::new));
+		statusBar.setWidthFull();
+		statusBar.setJustifyContentMode(JustifyContentMode.EVENLY);
+		return statusBar;
 	}
 
 	public void setCreateANewProject() {
