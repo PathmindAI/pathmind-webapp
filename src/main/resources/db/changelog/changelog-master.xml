@@ -78,22 +78,15 @@
             </column>
         </createTable>
 
+        <!-- Setup "Steph" - Demo User Data -->
         <insert tableName="PATHMIND_USER">
-<!--            <column name="ID" valueNumeric="1"/>-->
             <column name="NAME" value="Steph"/>
             <column name="EMAIL" value="steph@followsteph.com"/>
             <column name="PASSWORD" value="password"/>
         </insert>
-        <insert tableName="PATHMIND_USER">
-<!--            <column name="ID" valueNumeric="2"/>-->
-            <column name="NAME" value="Bob"/>
-            <column name="EMAIL" value="bob@skymind.io"/>
-            <column name="PASSWORD" value="password"/>
-        </insert>
 
         <insert tableName="PROJECT">
-<!--            <column name="ID" valueNumeric="1"/>-->
-            <column name="PATHMIND_USER_ID" valueNumeric="1"/>
+            <column name="PATHMIND_USER_ID" valueComputed="currval('pathmind_user_id_seq')"/>
             <column name="NAME" value="Coffee Shop"/>
             <column name="DATE_CREATED" valueDate="2019-08-23"/>
             <column name="LAST_ACTIVITY_DATE" valueDate="2019-09-03"/>
@@ -101,20 +94,9 @@
             <column name="NUMBER_OF_POSSIBLE_ACTIONS" valueNumeric="5.0"/>
             <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" value=""/>
         </insert>
-        <insert tableName="PROJECT">
-<!--            <column name="ID" valueNumeric="2"/>-->
-            <column name="PATHMIND_USER_ID" valueNumeric="1"/>
-            <column name="NAME" value="Traffic Simulation"/>
-            <column name="DATE_CREATED" valueDate="2019-08-24"/>
-            <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-28"/>
-            <column name="NUMBER_OF_OBSERVATIONS" valueNumeric="3"/>
-            <column name="NUMBER_OF_POSSIBLE_ACTIONS" valueNumeric="5.0"/>
-            <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" value=""/>
-        </insert>
 
         <insert tableName="EXPERIMENT">
-<!--            <column name="ID" valueNumeric="1"/>-->
-            <column name="PROJECT_ID" valueNumeric="1"/>
+            <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
             <column name="NAME" value="Experiment 1"/>
             <column name="DATE" valueDate="2019-08-23"/>
             <column name="DURATION" valueDate="500"/>
@@ -123,8 +105,7 @@
             <column name="SCORE" valueNumeric="10"/>
         </insert>
         <insert tableName="EXPERIMENT">
-<!--            <column name="ID" valueNumeric="2"/>-->
-            <column name="PROJECT_ID" valueNumeric="1"/>
+            <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
             <column name="NAME" value="Experiment 2"/>
             <column name="DATE" valueDate="2019-08-23"/>
             <column name="DURATION" valueDate="368"/>
@@ -133,8 +114,7 @@
             <column name="SCORE" valueNumeric="20"/>
         </insert>
         <insert tableName="EXPERIMENT">
-<!--            <column name="ID" valueNumeric="3"/>-->
-            <column name="PROJECT_ID" valueNumeric="1"/>
+            <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
             <column name="NAME" value="Experiment 3"/>
             <column name="DATE" valueDate="2019-08-23"/>
             <column name="DURATION" valueDate="13582"/>
@@ -143,21 +123,20 @@
             <column name="SCORE" valueNumeric="30"/>
         </insert>
 
-<!--        <alterSequence catalogName="cat"-->
-<!--                minValue="500"-->
-<!--                ordered="true"-->
-<!--                schemaName="public"-->
-<!--                sequenceName="pathmind_user_id_seq"/>-->
-<!--        <alterSequence catalogName="cat"-->
-<!--                minValue="500"-->
-<!--                ordered="true"-->
-<!--                schemaName="public"-->
-<!--                sequenceName="project_id_seq"/>-->
-<!--        <alterSequence catalogName="cat"-->
-<!--                minValue="500"-->
-<!--                ordered="true"-->
-<!--                schemaName="public"-->
-<!--                sequenceName="experiment_id_seq"/>-->
+        <insert tableName="PROJECT">
+            <column name="PATHMIND_USER_ID" valueComputed="currval('pathmind_user_id_seq')"/>
+            <column name="NAME" value="Traffic Simulation"/>
+            <column name="DATE_CREATED" valueDate="2019-08-24"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-28"/>
+            <column name="NUMBER_OF_OBSERVATIONS" valueNumeric="3"/>
+            <column name="NUMBER_OF_POSSIBLE_ACTIONS" valueNumeric="5.0"/>
+            <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" value=""/>
+        </insert>
 
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Bob"/>
+            <column name="EMAIL" value="bob@skymind.io"/>
+            <column name="PASSWORD" value="password"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>
