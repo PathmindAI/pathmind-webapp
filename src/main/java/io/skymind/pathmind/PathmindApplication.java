@@ -1,6 +1,6 @@
 package io.skymind.pathmind;
 
-import io.skymind.pathmind.bus.data.ProjectUpdateStatus;
+import io.skymind.pathmind.bus.PathmindBusEvent;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -15,11 +15,11 @@ public class PathmindApplication
 	}
 
 	@Bean
-	UnicastProcessor<ProjectUpdateStatus> publisher() {
+	UnicastProcessor<PathmindBusEvent> publisher() {
 		return UnicastProcessor.create();
 	}
 	@Bean
-	Flux<ProjectUpdateStatus> consumer(UnicastProcessor<ProjectUpdateStatus> publisher) {
+	Flux<PathmindBusEvent> consumer(UnicastProcessor<PathmindBusEvent> publisher) {
 		return publisher.replay(30).autoConnect();
 	}
 }

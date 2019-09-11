@@ -29,6 +29,7 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.run.components.PolicyPanel;
 import io.skymind.pathmind.ui.views.run.components.RunStatusPanel;
+import liquibase.changelog.ChangeSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,7 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 	private Logger log = LogManager.getLogger(DiscoveryRunConfirmationView.class);
 
 	private long experimentId = -1;
+	private Experiment experiment;
 
 	@Autowired
 	private ProjectRepository projectRepository;
@@ -60,8 +62,6 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 	private Button actionButton;
 
 	private UI ui;
-
-	private Instant start;
 
 	public DiscoveryRunConfirmationView()
 	{
@@ -114,11 +114,10 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 		runStatusPanel.setVisible(true);
 
 		// TODO -> Implement.
-		runStatusPanel.setRunStatus(RunStatus.Running);
-		runStatusPanel.setAlgorithmType(Algorithm.DQN);
-		runStatusPanel.setCompleted("In progress...");
-
-		start = Instant.now();
+		experiment.setStatusEnum(RunStatus.Running);
+		experiment.setAlgorithm(Algorithm.DQN);
+		experiment.setCompleted(RunStatus.Running);
+		experiment.startExperimentNow();
 
 		generateFakeData();
 	}
@@ -130,16 +129,18 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 				Random random = new Random();
 				for(int x=0; x<30; x++) {
 					Thread.sleep(300);
-					PushUtils.push(this, () ->
-							runStatusPanel.update(
-									random.nextInt(1000),
-									Duration.between(start, Instant.now()).toSeconds()));
-
+					PushUtils.push(this, () -> {
+							experiment.getScores().add(random.nextInt(1000));
+							runStatusPanel.update() ;
+					});
 				}
 				// Done.
 				PushUtils.push(this, () -> {
-						runStatusPanel.setRunStatus(RunStatus.Completed);
-						runStatusPanel.setCompleted("Completed");
+//						runStatusPanel.setRunStatus(RunStatus.Completed);
+//						runStatusPanel.setCompleted("Completed");
+					experiment.setStatusEnum(RunStatus.Completed);
+					experiment.setCompleted(RunStatus.Completed);
+					runStatusPanel.update();
 				});
 			} catch (Exception e) {
 				// All fake.
@@ -155,9 +156,10 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
 	{
-		Experiment experiment = experimentRepository.getExperiment(experimentId);
+		experiment = experimentRepository.getExperiment(experimentId);
 		if(experiment == null)
 			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
+		runStatusPanel.setExperiment(experiment);
 
 		Project project = projectRepository.getProjectForExperiment(experimentId);
 		screenTitlePanel.setSubtitle(project.getName());

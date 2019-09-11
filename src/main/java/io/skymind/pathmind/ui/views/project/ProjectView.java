@@ -4,18 +4,24 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.page.Push;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.bus.data.ProjectUpdateStatus;
+import com.vaadin.flow.shared.Registration;
+import com.vaadin.flow.spring.annotation.UIScope;
+import io.skymind.pathmind.bus.PathmindBusEvent;
+import io.skymind.pathmind.bus.BusEventType;
+import io.skymind.pathmind.bus.data.ExperimentUpdateBusEvent;
+import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
-import io.skymind.pathmind.services.project.ProjectRunService;
+import io.skymind.pathmind.services.experiment.ExperimentRunService;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -23,7 +29,7 @@ import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.ui.views.experiment.components.ExperimentScoreboardPanel;
+import io.skymind.pathmind.ui.views.experiment.components.ExperimentStatusDetailsPanel;
 import io.skymind.pathmind.ui.views.project.components.ExperimentListPanel;
 import io.skymind.pathmind.ui.views.project.components.ProjectChartPanel;
 import org.apache.logging.log4j.LogManager;
@@ -32,8 +38,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+@UIScope
 @StyleSheet("frontend://styles/styles.css")
 @Route(value="project", layout = MainLayout.class)
 public class ProjectView extends PathMindDefaultView implements HasUrlParameter<Long>
@@ -45,46 +55,50 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	@Autowired
 	private ExperimentRepository experimentRepository;
 
-	private Project project;
 	private long projectId;
+	private Project project;
+	private Experiment selectedExperiment;
 
 	private ScreenTitlePanel screenTitlePanel;
-
-	private ExperimentListPanel experimentPanel;
+	private ExperimentListPanel experimentListPanel;
 	private ProjectChartPanel projectChartPanel;
+	private ExperimentStatusDetailsPanel experimentStatusDetailsPanel;
 
-	private final UnicastProcessor<ProjectUpdateStatus> publisher;
-	private final Flux<ProjectUpdateStatus> consumer;
+	private final UnicastProcessor<PathmindBusEvent> publisher;
+	private final Flux<PathmindBusEvent> consumer;
 
-	public ProjectView(UnicastProcessor<ProjectUpdateStatus> publisher, Flux<ProjectUpdateStatus> consumer)
+	public ProjectView(UnicastProcessor<PathmindBusEvent> publisher, Flux<PathmindBusEvent> consumer)
 	{
 		super();
-
 		this.publisher = publisher;
 		this.consumer = consumer;
-
-		subscribeToEventBus(consumer);
 	}
 
-	private void subscribeToEventBus(Flux<ProjectUpdateStatus> consumer) {
-		consumer.filter(projectUpdateStatus -> projectId == projectUpdateStatus.getProjectId())
-				.subscribe(projectUpdateStatus ->
-						PushUtils.push(this, () -> {
-							projectChartPanel.addChartData(Integer.valueOf(projectUpdateStatus.getScoreValue()));
-						}));
+	@Override
+	protected void subscribeToEventBus() {
+		consumer.filter(busEvent -> busEvent.getEventType().equals(BusEventType.ExperimentUpdate))
+				.filter(busEvent -> (busEvent.getEventDataId() == selectedExperiment.getId()))
+				.subscribe(busEvent ->
+						pushValues(((ExperimentUpdateBusEvent)busEvent).getExperiment()));
+	}
+
+	private void pushValues(Experiment experiment) {
+		PushUtils.push(this, () -> {
+			projectChartPanel.update(experiment);
+			experimentStatusDetailsPanel.update(experiment);
+		});
 	}
 
 	@Override
 	protected ActionMenu getActionMenu() {
 		return new ActionMenu(
 				getAddExperimentButton(),
-				getFullRunButton()
-		);
+				getFullRunButton());
 	}
 
 	private Button getFullRunButton() {
 		return new Button("Full Run >", click -> {
-			ProjectRunService.fullRun(projectId, publisher);
+			ExperimentRunService.fullRun(selectedExperiment, publisher);
 		});
 	}
 
@@ -110,14 +124,21 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	@Override
 	protected Component getMainContent()
 	{
-		experimentPanel = new ExperimentListPanel();
+		experimentListPanel = new ExperimentListPanel();
 		projectChartPanel = new ProjectChartPanel();
+		experimentStatusDetailsPanel = new ExperimentStatusDetailsPanel();
+
+		experimentListPanel.addSelectionListener(experiment -> {
+			projectChartPanel.update(experiment);
+			experimentStatusDetailsPanel.update(experiment);
+			selectedExperiment = experiment;
+		});
 
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
 				WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 					projectChartPanel,
-					new ExperimentScoreboardPanel()),
-				experimentPanel
+					experimentStatusDetailsPanel),
+				experimentListPanel
 		);
 	}
 
@@ -127,6 +148,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		this.projectId = projectId;
 	}
 
+	@Override
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
 	{
 		this.project = projectRepository.getProject(projectId);
@@ -134,10 +156,26 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		if(project == null)
 			throw new InvalidDataException("Attempted to access Project : " + projectId);
 
+		List<Experiment> experiments = experimentRepository.getExperimentsForProject(project.getId());
+		// TODO -> implement all this in the repository.
+		project.setExperiments(experiments);
+
+		// TODO -> remove
+		selectedExperiment = project.getExperiments().get(0);
+		project.getExperiments().get(0).setStartTime(Instant.now().minusSeconds(600));
+
 		screenTitlePanel.setSubtitle(project.getName());
-		experimentPanel.setExperiments(experimentRepository.getExperimentsForProject(project.getId()));
+		experimentListPanel.setExperiments(experiments);
+		// https://vaadin.com/forum/thread/17527564/typeerror-cannot-read-property-dodeselector-of-undefined-vaadin-10
+		experimentListPanel.selectExperiment(selectedExperiment);
+
+		// TODO -> Remove once table selects the experiment since it should all be linked through events.
+		experimentStatusDetailsPanel.update(selectedExperiment);
+		projectChartPanel.update(selectedExperiment);
 
 		// TODO -> to implement
-		projectChartPanel.setChartData(Arrays.asList(10, 40, 60, 20, 40, 50, 50, 10, 100, 80));
+		ArrayList<Number> fakeScores = new ArrayList<>();
+		Arrays.asList(10, 40, 60, 20, 40, 50, 50, 10, 100, 80).stream()
+				.forEach(score -> selectedExperiment.getScores().add(score));
 	}
 }

@@ -1,5 +1,7 @@
 package io.skymind.pathmind.constants;
 
+import java.util.Arrays;
+
 public enum RunStatus
 {
 	NotStarted(1, "Not Started"),
@@ -20,5 +22,12 @@ public enum RunStatus
 
 	public int getValue() {
 		return id;
+	}
+
+	public static RunStatus getEnumFromValue(int value) {
+		return Arrays.stream(values())
+				.filter(runStatus -> runStatus.getValue() == value)
+				.findAny()
+				.get();
 	}
 }

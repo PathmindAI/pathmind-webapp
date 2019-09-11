@@ -55,6 +55,8 @@ public class ExperimentRepository
 				.set(EXPERIMENT.DATE, experiment.getDate())
 				.set(EXPERIMENT.DURATION, experiment.getDuration())
 				.set(EXPERIMENT.RUN_TYPE, experiment.getRunType())
+				// TODO -> Algorithm needs to be saved.
+//				.set(EXPERIMENT.ALGORITHM)
 				.set(EXPERIMENT.SCORE, experiment.getScore())
 				.set(EXPERIMENT.REWARD_FUNCTION, experiment.getRewardFunction())
 				.set(EXPERIMENT.PROJECT_ID, experiment.getProject().getId())

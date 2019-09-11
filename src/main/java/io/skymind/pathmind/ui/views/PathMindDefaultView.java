@@ -3,7 +3,6 @@ package io.skymind.pathmind.ui.views;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -25,14 +24,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
 	public PathMindDefaultView()
 	{
-
-		final ActionMenu actionMenu = getActionMenu();
-		if(actionMenu != null) add(actionMenu);
-		final Component titlePanel = getTitlePanel();
-		if(titlePanel != null) add(titlePanel);
-		final Component mainContent = getMainContent();
-		if(mainContent != null) add(mainContent);
-
 		setSizeFull();
 		setDefaultHorizontalComponentAlignment(Alignment.CENTER);
 	}
@@ -46,7 +37,12 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		}
 
 		try {
+			// If there is an exception in generating the screens we don't want to display any system related information to the user for security reasons.
+			addScreens();
+			// Update the screen based on the parameters if need be.
 			updateScreen(event);
+			// Must be after update because we generally need to filter the event based on the screen data
+			subscribeToEventBus();
 		} catch (InvalidDataException e) {
 			log.info("Invalid data attempt: " + e.getMessage());
 			event.rerouteTo(InvalidDataView.class);
@@ -54,6 +50,19 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 			log.error(e.getMessage(), e);
 			event.rerouteTo(ErrorView.class);
 		}
+	}
+
+	private void addScreens() {
+		final ActionMenu actionMenu = getActionMenu();
+		if(actionMenu != null) add(actionMenu);
+		final Component titlePanel = getTitlePanel();
+		if(titlePanel != null) add(titlePanel);
+		final Component mainContent = getMainContent();
+		if(mainContent != null) add(mainContent);
+	}
+
+	protected void subscribeToEventBus() {
+		// Do nothing by default.
 	}
 
 	protected ActionMenu getActionMenu() {

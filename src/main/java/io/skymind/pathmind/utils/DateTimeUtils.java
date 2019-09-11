@@ -8,6 +8,9 @@ public class DateTimeUtils
 
 	public static final String formatTime(long totalSeconds)
 	{
+		if(totalSeconds == 0)
+			return "0 sec";
+
 		long hours = totalSeconds / 3600;
 		long minutes = (totalSeconds % 3600) / 60;
 		long seconds = totalSeconds % 60;

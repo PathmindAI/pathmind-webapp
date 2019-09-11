@@ -1,15 +1,16 @@
 package io.skymind.pathmind.ui.views.project.components;
 
 import com.vaadin.flow.component.charts.Chart;
-import com.vaadin.flow.component.charts.model.*;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.charts.model.ChartType;
+import com.vaadin.flow.component.charts.model.Configuration;
+import com.vaadin.flow.component.charts.model.ListSeries;
+import com.vaadin.flow.component.charts.model.PlotOptionsSpline;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import io.skymind.pathmind.ui.utils.WrapperUtils;
-
-import java.util.ArrayList;
-import java.util.List;
+import io.skymind.pathmind.data.Experiment;
+import org.springframework.stereotype.Component;
 
 
+@Component
 public class ProjectChartPanel extends VerticalLayout
 {
 	private Chart chart = new Chart(ChartType.SPLINE);
@@ -29,12 +30,8 @@ public class ProjectChartPanel extends VerticalLayout
 		conf.setSeries(series);
 	}
 
-	public void setChartData(List<Number> data) {
-		// TIP -> I'm converting to an Arraylist just in case we use Arrays.asList() to set the data at which point the addChartData will fail.
-		series.setData(new ArrayList<Number>(data));
-	}
-
-	public void addChartData(Number data) {
-		series.addData(data);
+	public void update(Experiment experiment) {
+		series.setData(experiment.getScores());
+		chart.drawChart();
 	}
 }

@@ -1,6 +1,5 @@
 package io.skymind.pathmind.ui.views.project.components;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -9,18 +8,22 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.selection.SelectionListener;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.ui.components.grid.GridButtonFactory;
-import io.skymind.pathmind.ui.views.console.ConsoleView;
-import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.ui.views.console.ConsoleView;
+import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.utils.DateTimeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.function.Consumer;
 
+@Component
 public class ExperimentListPanel extends VerticalLayout
 {
 	private Logger log = LogManager.getLogger(ExperimentListPanel.class);
@@ -35,7 +38,7 @@ public class ExperimentListPanel extends VerticalLayout
 		);
 	}
 
-	private Component getTitleBar() {
+	private HorizontalLayout getTitleBar() {
 		return WrapperUtils.wrapLeftAndRightAligned(
 				new H3("Experiments"),
 				new TextField("Search")
@@ -55,10 +58,6 @@ public class ExperimentListPanel extends VerticalLayout
 				.setHeader("Experiment")
 				.setAutoWidth(true)
 				.setSortable(true);
-//		grid.addColumn(Experiment::getName)
-//				.setHeader("Experiment")
-//				.setAutoWidth(true)
-//				.setSortable(true);
 		grid.addColumn(Experiment::getRunTypeEnum)
 				.setHeader("Run Type")
 				.setAutoWidth(true)
@@ -94,8 +93,17 @@ public class ExperimentListPanel extends VerticalLayout
 		return grid;
 	}
 
+	public void addSelectionListener(Consumer<Experiment> consumer) {
+		grid.addSelectionListener(selectExperiment ->
+			consumer.accept(selectExperiment.getFirstSelectedItem().get()));
+	}
+
 	public void setExperiments(List<Experiment> experiments) {
-			grid.setItems(experiments);
+		grid.setItems(experiments);
+	}
+
+	public void selectExperiment(Experiment experiment) {
+		grid.select(experiment);
 	}
 
 	private ComponentRenderer<HorizontalLayout, Experiment> getAdditionalRunButtonRenderer() {
@@ -123,5 +131,4 @@ public class ExperimentListPanel extends VerticalLayout
 			log.info("Export Policy clicked");
 		});
 	}
-
 }

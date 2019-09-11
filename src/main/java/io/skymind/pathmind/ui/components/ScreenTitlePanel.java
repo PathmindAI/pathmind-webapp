@@ -2,10 +2,16 @@ package io.skymind.pathmind.ui.components;
 
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ScreenTitlePanel extends HorizontalLayout
 {
 	private Label subtitleLabel = new Label();
+	private Label titleLabel = new Label();
+
+	public ScreenTitlePanel() {
+	}
 
 	public ScreenTitlePanel(String title)
 	{
@@ -14,7 +20,7 @@ public class ScreenTitlePanel extends HorizontalLayout
 
 	public ScreenTitlePanel(String title, String subtitle)
 	{
-		Label titleLabel = new Label(title);
+		titleLabel.setText(title);
 		titleLabel.addClassName("section-label-title");
 		add(titleLabel);
 
@@ -25,5 +31,9 @@ public class ScreenTitlePanel extends HorizontalLayout
 
 	public void setSubtitle(String subtitle) {
 		subtitleLabel.setText(subtitle);
+	}
+
+	public void setTitle(String title) {
+		titleLabel.setText(title);
 	}
 }

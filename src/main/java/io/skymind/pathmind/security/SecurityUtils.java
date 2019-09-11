@@ -31,9 +31,8 @@ public class SecurityUtils
 		UI.getCurrent().navigate(LoginView.class);
 	}
 
+	// Will return null if no user is found in the session.
 	public static PathmindUser getUser() {
-		if(VaadinSession.getCurrent().getAttribute(PathmindUser.class) != null)
-			return VaadinSession.getCurrent().getAttribute(PathmindUser.class);
-		return null;
+		return VaadinSession.getCurrent().getAttribute(PathmindUser.class);
 	}
 }

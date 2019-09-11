@@ -139,4 +139,17 @@
             <column name="PASSWORD" value="password"/>
         </insert>
     </changeSet>
+
+    <changeSet author="admin" id="2">
+        <insert tableName="EXPERIMENT">
+            <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
+            <column name="NAME" value="Experiment 1"/>
+            <column name="DATE" valueDate="2019-08-23"/>
+            <column name="DURATION" valueDate="13582"/>
+            <column name="REWARD_FUNCTION" value="function = some value 3"/>
+            <column name="RUN_TYPE" valueNumeric="2"/>
+            <column name="SCORE" valueNumeric="30"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

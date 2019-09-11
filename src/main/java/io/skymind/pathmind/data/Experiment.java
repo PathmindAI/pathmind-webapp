@@ -1,10 +1,14 @@
 package io.skymind.pathmind.data;
 
 import io.skymind.pathmind.constants.Algorithm;
+import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 
 import javax.validation.constraints.NotNull;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Experiment implements Data
@@ -13,10 +17,17 @@ public class Experiment implements Data
 	private String name;
 	private LocalDate date;
 
+	// TODO -> Not stored anywhere for now.
+	private Instant startTime;
+	private Instant endTime;
+
 	@NotNull
 	private int runType;
 	@NotNull
 	private int score;
+
+	private int status = RunStatus.NotStarted.getValue();
+	private int completed = RunStatus.NotStarted.getValue();
 
 	// TODO -> This needs to be properly implemented and stored in the database.
 	@NotNull
@@ -30,8 +41,12 @@ public class Experiment implements Data
 	private List<Run> runs;
 
 	// TODO -> This needs to be properly implemented and stored in the database.
-	private Algorithm algorithm;
+	private Algorithm algorithm = Algorithm.DQN;
+
 	private long duration = 0;
+
+	// TODO -> What is the data?
+	private ArrayList<Number> scores = new ArrayList<Number>();
 
 	public Experiment() {
 	}
@@ -143,5 +158,103 @@ public class Experiment implements Data
 
 	public void setDuration(long duration) {
 		this.duration = duration;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	// Issue #34 Properly convert EnumTypes with Converters in JOOQ
+	public RunStatus getStatusEnum() {
+		return RunStatus.getEnumFromValue(status);
+	}
+
+	public void setStatusEnum(RunStatus runStatusEnum) {
+		this.status = runStatusEnum.getValue();
+	}
+
+	public int getCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(int completed) {
+		this.completed = completed;
+	}
+
+	// Issue #34 Properly convert EnumTypes with Converters in JOOQ
+	public RunStatus getCompletedEnum() {
+		return RunStatus.getEnumFromValue(completed);
+	}
+
+	public void setCompleted(RunStatus runStatusEnum) {
+		this.completed = runStatusEnum.getValue();
+	}
+
+	public Instant getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(Instant startTime) {
+		this.startTime = startTime;
+	}
+
+	public Instant getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(Instant endTime) {
+		this.endTime = endTime;
+	}
+
+	public void startExperimentNow() {
+		startTime = Instant.now();
+	}
+
+	public long getElapsedTime()
+	{
+		if(startTime == null)
+				return 0;
+
+		return endTime == null ?
+				Duration.between(startTime, Instant.now()).toSeconds() :
+				Duration.between(startTime, endTime).toSeconds();
+	}
+
+	public ArrayList<Number> getScores() {
+		return scores;
+	}
+
+	public void setScores(ArrayList<Number> scores) {
+		this.scores = scores;
+	}
+
+	public Number getLastScore() {
+		return scores.get(scores.size() - 1);
+	}
+
+	@Override
+	public String toString() {
+		return "Experiment{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", date=" + date +
+				", startTime=" + startTime +
+				", endTime=" + endTime +
+				", runType=" + runType +
+				", score=" + score +
+				", status=" + status +
+				", completed=" + completed +
+				", modelId=" + modelId +
+				", rewardFunction='" + rewardFunction + '\'' +
+				", project=" + project +
+				", runs=" + runs +
+				", algorithm=" + algorithm +
+				", duration=" + duration +
+				", scores=" + scores +
+				'}';
 	}
 }
