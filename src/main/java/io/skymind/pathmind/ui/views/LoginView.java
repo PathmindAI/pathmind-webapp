@@ -26,10 +26,9 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver // , 
 		LoginI18n loginForm = LoginI18n.createDefault();
 		loginForm.setHeader(new LoginI18n.Header());
 		loginForm.getHeader().setTitle("Pathmind");
-		loginForm.setForm(new LoginI18n.Form());
-		loginForm.getForm().setSubmit("Sign in >");
+		loginForm.setAdditionalInformation("By clicking Log In, you agree to Pathmind's Terms of Use and Privacy Policy");
+		loginForm.getForm().setUsername("Email");
 		setI18n(loginForm);
-		setForgotPasswordButtonVisible(false);
 
 		addLoginListener(e -> handleLogin(e));
 	}
