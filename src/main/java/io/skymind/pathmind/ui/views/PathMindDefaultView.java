@@ -40,11 +40,14 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
 		try {
 			// If there is an exception in generating the screens we don't want to display any system related information to the user for security reasons.
-			addScreens();
+			if(!isGenerated)
+				addScreens();
 			// Update the screen based on the parameters if need be.
 			updateScreen(event);
 			// Must be after update because we generally need to filter the event based on the screen data
-			subscribeToEventBus();
+			if(!isGenerated)
+				subscribeToEventBus();
+			isGenerated = true;
 		} catch (InvalidDataException e) {
 			log.info("Invalid data attempt: " + e.getMessage());
 			event.rerouteTo(InvalidDataView.class);
@@ -56,17 +59,12 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
 	private void addScreens()
 	{
-		if(isGenerated)
-			return;
-
 		final ActionMenu actionMenu = getActionMenu();
 		if(actionMenu != null) add(actionMenu);
 		final Component titlePanel = getTitlePanel();
 		if(titlePanel != null) add(titlePanel);
 		final Component mainContent = getMainContent();
 		if(mainContent != null) add(mainContent);
-
-		isGenerated = true;
 	}
 
 	protected void subscribeToEventBus() {
