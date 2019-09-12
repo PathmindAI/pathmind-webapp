@@ -22,6 +22,8 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 {
 	private static Logger log = LogManager.getLogger(PathMindDefaultView.class);
 
+	private boolean isGenerated = false;
+
 	public PathMindDefaultView()
 	{
 		setSizeFull();
@@ -52,13 +54,19 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		}
 	}
 
-	private void addScreens() {
+	private void addScreens()
+	{
+		if(isGenerated)
+			return;
+
 		final ActionMenu actionMenu = getActionMenu();
 		if(actionMenu != null) add(actionMenu);
 		final Component titlePanel = getTitlePanel();
 		if(titlePanel != null) add(titlePanel);
 		final Component mainContent = getMainContent();
 		if(mainContent != null) add(mainContent);
+
+		isGenerated = true;
 	}
 
 	protected void subscribeToEventBus() {
