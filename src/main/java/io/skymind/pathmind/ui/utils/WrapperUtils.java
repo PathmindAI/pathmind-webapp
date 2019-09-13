@@ -5,64 +5,30 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
-import io.skymind.pathmind.ui.utils.UIConstants;
 
 // TODO -> Clean up this class and have consistent naming structure. For now I'm just adding helper methods
 // until I get a fuller understanding of all what we need.
 public class WrapperUtils
 {
-	public static VerticalLayout wrapFullWidthVertical(Component... components) {
+	public static VerticalLayout wrapWidthFullVertical(Component... components) {
 		VerticalLayout wrapper = new VerticalLayout(components);
 		wrapper.setWidthFull();
 		return wrapper;
 	}
 
-	public static HorizontalLayout wrapCenterAlignmentHorizontal(Component... components) {
-		HorizontalLayout wrapper = new HorizontalLayout(components);
-		wrapper.setWidthFull();
-		wrapper.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-		return wrapper;
-	}
-
-	public static HorizontalLayout wrapCenterAlignmentFullHorizontal(Component... components) {
-		HorizontalLayout wrapper = wrapCenterAlignmentHorizontal(components);
-		wrapper.setSizeFull();
-		wrapper.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
-		return wrapper;
-	}
-
-	public static HorizontalLayout wrapCenterAlignmentFullWidthHorizontal(Component... components) {
-		HorizontalLayout wrapper = wrapCenterAlignmentHorizontal(components);
-		wrapper.setWidthFull();
-		wrapper.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
-		return wrapper;
-	}
-
-	public static HorizontalLayout wrapCenterFullWidthHorizontal(Component... components) {
-		HorizontalLayout wrapper = wrapCenterAlignmentHorizontal(components);
-		wrapper.setWidthFull();
-		return wrapper;
-	}
-
-	public static HorizontalLayout wrapFullWidthHorizontal(Component... components) {
-		HorizontalLayout wrapper = new HorizontalLayout(components);
-		wrapper.setWidthFull();
-		return wrapper;
-	}
-
-	public static VerticalLayout wrapFullSizeVertical(Component... components) {
+	public static VerticalLayout wrapSizeFullVertical(Component... components) {
 		VerticalLayout wrapper = new VerticalLayout(components);
 		wrapper.setSizeFull();
 		return wrapper;
 	}
 
-	public static VerticalLayout wrapCenterAlignmentFullVertical(Component... components) {
-		VerticalLayout verticalLayout = wrapFullWidthVertical(components);
+	public static VerticalLayout wrapWidthFullCenterVertical(Component... components) {
+		VerticalLayout verticalLayout = wrapWidthFullVertical(components);
 		verticalLayout.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
 		return verticalLayout;
 	}
 
-	public static VerticalLayout wrapCenteredFormVertical(Component... components) {
+	public static VerticalLayout wrapFormCenterVertical(Component... components) {
 		VerticalLayout verticalLayout = new VerticalLayout(components);
 		verticalLayout.setWidth(UIConstants.CENTERED_FORM_WIDTH);
 		verticalLayout.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
@@ -70,13 +36,33 @@ public class WrapperUtils
 	}
 
 	// TODO -> Move this to CSS.
-	public static VerticalLayout wrapCenteredFormVerticalBordered(Component... components) {
-		VerticalLayout verticalLayout = wrapCenteredFormVertical(components);
+	public static VerticalLayout wrapFormCenterBorderedVertical(Component... components) {
+		VerticalLayout verticalLayout = wrapFormCenterVertical(components);
 		verticalLayout.getStyle().set("border", "solid 1px #ccc");
 		return verticalLayout;
 	}
 
-	public static HorizontalLayout wrapCenteredFormHorizontal(Component... components) {
+	public static HorizontalLayout wrapWidthFullHorizontal(Component... components) {
+		HorizontalLayout wrapper = new HorizontalLayout(components);
+		wrapper.setWidthFull();
+		return wrapper;
+	}
+
+	public static HorizontalLayout wrapWidthFullCenterHorizontal(Component... components) {
+		HorizontalLayout wrapper = wrapWidthFullHorizontal(components);
+		wrapper.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+		return wrapper;
+	}
+
+	public static HorizontalLayout wrapSizeFullCenterHorizontal(Component... components) {
+		HorizontalLayout wrapper = new HorizontalLayout(components);
+		wrapper.setSizeFull();
+		wrapper.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+		wrapper.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+		return wrapper;
+	}
+
+	public static HorizontalLayout wrapFormCenterHorizontal(Component... components) {
 		HorizontalLayout horizontalLayout = new HorizontalLayout(components);
 		horizontalLayout.setWidth(UIConstants.CENTERED_FORM_WIDTH);
 		return horizontalLayout;
@@ -89,8 +75,7 @@ public class WrapperUtils
 	 */
 	public static HorizontalLayout wrapLeftAndRightAligned(Component leftComponent, Component rightComponent)
 	{
-		HorizontalLayout horizontalLayout = new HorizontalLayout(leftComponent, rightComponent);
-		horizontalLayout.setWidthFull();
+		HorizontalLayout horizontalLayout = wrapWidthFullHorizontal(leftComponent, rightComponent);
 		rightComponent.getElement().getStyle().set("margin-left", "auto");
 		return horizontalLayout;
 	}

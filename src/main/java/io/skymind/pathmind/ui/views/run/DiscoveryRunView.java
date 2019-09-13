@@ -100,7 +100,7 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 	}
 
 	private VerticalLayout getLeftPanel() {
-		return WrapperUtils.wrapFullSizeVertical(
+		return WrapperUtils.wrapSizeFullVertical(
 				experimentFormPanel,
 				rewardFunctionEditor);
 	}
@@ -116,7 +116,7 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 		tipsTextArea = new TextArea("Tips");
 		tipsTextArea.setSizeFull();
 
-		return WrapperUtils.wrapFullSizeVertical(
+		return WrapperUtils.wrapSizeFullVertical(
 				errorsTextArea,
 				getObservationTextArea,
 				tipsTextArea);

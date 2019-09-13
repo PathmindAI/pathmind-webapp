@@ -20,7 +20,6 @@ import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.components.ExperimentFormPanel;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.project.ProjectView;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -104,7 +103,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
 				rewardFunctionEditor,
-				WrapperUtils.wrapFullSizeVertical(errorsTextArea),
+				WrapperUtils.wrapSizeFullVertical(errorsTextArea),
 				70);
 	}
 
@@ -116,7 +115,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		tipsTextArea = new TextArea("Tips");
 		tipsTextArea.setSizeFull();
 
-		return WrapperUtils.wrapFullSizeVertical(
+		return WrapperUtils.wrapSizeFullVertical(
 				getObservationTextArea,
 				tipsTextArea);
 	}

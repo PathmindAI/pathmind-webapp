@@ -58,7 +58,7 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 	// what to implement and a default would remove that ability.
 	@Override
 	protected Component getTitlePanel() {
-		return WrapperUtils.wrapCenterFullWidthHorizontal(LabelFactory.createLabel("Console Ouput", CssMindPathStyles.PROJECT_TITLE));
+		return WrapperUtils.wrapWidthFullCenterHorizontal(LabelFactory.createLabel("Console Ouput", CssMindPathStyles.PROJECT_TITLE));
 	}
 
 	protected Component getMainContent()

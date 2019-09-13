@@ -4,24 +4,18 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinSession;
 import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.utils.FakeDataUtils;
 import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
-import io.skymind.pathmind.db.UserRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -30,13 +24,10 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.run.components.PolicyPanel;
 import io.skymind.pathmind.ui.views.run.components.RunStatusPanel;
-import liquibase.changelog.ChangeSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Random;
 
 @StyleSheet("frontend://styles/styles.css")
@@ -85,9 +76,9 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 
 		runStatusPanel.setVisible(false);
 
-		return WrapperUtils.wrapCenterAlignmentFullVertical(
+		return WrapperUtils.wrapWidthFullCenterVertical(
 			actionButton,
-			WrapperUtils.wrapCenteredFormVertical(
+			WrapperUtils.wrapFormCenterVertical(
 				policyPanel,
 				runStatusPanel
 			)

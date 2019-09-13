@@ -97,7 +97,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 		uploadModelWizardPanel.addButtonClickListener(click -> handleUploadWizardClicked());
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked(click));
 
-		return WrapperUtils.wrapCenteredFormVertical(
+		return WrapperUtils.wrapFormCenterVertical(
 				logoPanel,
 				statusPanel,
 				createProjectPanel,

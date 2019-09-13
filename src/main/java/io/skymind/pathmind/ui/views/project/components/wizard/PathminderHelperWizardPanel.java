@@ -24,7 +24,7 @@ public class PathminderHelperWizardPanel extends VerticalLayout
 				projectNameLabel,
 				GuiUtils.getFullWidthHr(),
 				getInstructionsDiv(),
-				WrapperUtils.wrapCenterFullWidthHorizontal(nextStepButton));
+				WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
 
 		getStyle().set("border", "1px solid #ccc");
 		setWidthFull();

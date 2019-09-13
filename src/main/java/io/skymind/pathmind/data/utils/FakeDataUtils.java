@@ -40,8 +40,9 @@ public class FakeDataUtils
 
 	public static void loadExperimentWithFakeData(Experiment experiment) {
 		experiment.setScores(FakeDataUtils.getFakeScores());
-		experiment.setStartTime(Instant.now().minusSeconds(RandomUtils.nextLong(0, 600)));
-		experiment.setStatusEnum(RunStatus.Running);
+		experiment.setStartTime(Instant.now());
+//		experiment.setStartTime(Instant.now().minusSeconds(RandomUtils.nextLong(0, 600)));
+//		experiment.setStatusEnum(RunStatus.Running);
 	}
 
 	public static Experiment generateFakeExperiment(Project project) {

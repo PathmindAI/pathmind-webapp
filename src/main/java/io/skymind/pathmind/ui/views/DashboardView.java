@@ -68,7 +68,7 @@ public class DashboardView extends PathMindDefaultView
 		// to do something special to get the full size content in the AppLayout component which
 		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
 		// Hence the workaround below:
-		HorizontalLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullHorizontal(projectGrid);
+		HorizontalLayout gridWrapper = WrapperUtils.wrapSizeFullCenterHorizontal(projectGrid);
 		gridWrapper.getElement().getStyle().set("padding-top", "100px");
 		return gridWrapper;
 	}

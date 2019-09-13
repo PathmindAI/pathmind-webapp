@@ -29,10 +29,10 @@ public class RunStatusPanel extends VerticalLayout
 	{
 		setSizeFull();
 
-		add(WrapperUtils.wrapCenteredFormVertical(
+		add(WrapperUtils.wrapFormCenterVertical(
 				getTitleBar(),
 				new Hr(),
-				WrapperUtils.wrapCenteredFormVerticalBordered(
+				WrapperUtils.wrapFormCenterBorderedVertical(
 					getScoreDisplay(),
 					getScoreChart()),
 				experimentStatusDetailsPanel

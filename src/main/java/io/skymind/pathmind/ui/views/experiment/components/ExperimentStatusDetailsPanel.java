@@ -52,7 +52,7 @@ public class ExperimentStatusDetailsPanel extends VerticalLayout
 		rightVerticalLayout.setDefaultHorizontalComponentAlignment(Alignment.START);
 		rightVerticalLayout.setPadding(false);
 
-		HorizontalLayout wrapper = WrapperUtils.wrapCenteredFormHorizontal(
+		HorizontalLayout wrapper = WrapperUtils.wrapFormCenterHorizontal(
 				leftVerticalLayout,
 				rightVerticalLayout);
 		wrapper.getStyle().set("padding-top", "10px");

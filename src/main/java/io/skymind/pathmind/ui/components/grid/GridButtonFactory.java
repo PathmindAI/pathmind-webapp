@@ -22,7 +22,7 @@ public class GridButtonFactory
 	public static HorizontalLayout getGridButton(String text, ComponentEventListener<ClickEvent<Button>> clickListener) {
 		Button button = new Button(text, clickListener);
 		button.setThemeName("tertiary-inline");
-		return WrapperUtils.wrapCenterAlignmentHorizontal(button);
+		return WrapperUtils.wrapWidthFullCenterHorizontal(button);
 	}
 
 	public static ComponentRenderer getGridButtonRenderer(Consumer<Data> clickConsumer) {

@@ -33,13 +33,13 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		setupForm();
 		setupGetObservationForRewardFunctionTextArea();
 
-		add(WrapperUtils.wrapFullWidthHorizontal(
+		add(WrapperUtils.wrapWidthFullHorizontal(
 				new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE),
 				GuiUtils.getLabel("Your model was successfully uploaded!", "16px", "bold")),
 				new Label("Let's add a few details."),
 				GuiUtils.getFullWidthHr(),
 				formPanel,
-				WrapperUtils.wrapCenterFullWidthHorizontal(nextStepButton));
+				WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
 
 		bindFields(binder);
 
@@ -85,7 +85,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 	}
 
 	private Component getObservationForRewardFunctionPanel() {
-		VerticalLayout wrapper = WrapperUtils.wrapFullWidthVertical(
+		VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
 				GuiUtils.getBoldLabel("getObservation for Reward Function"),
 				getObservationForRewardFunctionTextArea);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);

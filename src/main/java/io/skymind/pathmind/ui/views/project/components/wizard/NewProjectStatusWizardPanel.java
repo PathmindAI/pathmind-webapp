@@ -37,7 +37,7 @@ public class NewProjectStatusWizardPanel extends VerticalLayout
 	}
 
 	private HorizontalLayout getStatusBar() {
-		HorizontalLayout statusBar = WrapperUtils.wrapCenteredFormHorizontal(steps.stream().toArray(Component[]::new));
+		HorizontalLayout statusBar = WrapperUtils.wrapFormCenterHorizontal(steps.stream().toArray(Component[]::new));
 		statusBar.setWidthFull();
 		statusBar.setJustifyContentMode(JustifyContentMode.EVENLY);
 		return statusBar;

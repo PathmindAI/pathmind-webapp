@@ -25,7 +25,7 @@ public class CreateANewProjectWizardPanel extends VerticalLayout
 				GuiUtils.getSubtitleLabel("Projects organize your Pathmind Experiments based on your situation model"),
 				GuiUtils.getHeightSpacer("40px"),
 				projectNameTextField,
-				WrapperUtils.wrapCenterFullWidthHorizontal(createProjectButton));
+				WrapperUtils.wrapWidthFullCenterHorizontal(createProjectButton));
 
 		getStyle().set("border", "1px solid #ccc");
 

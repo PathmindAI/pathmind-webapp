@@ -42,7 +42,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 				getInstructionsDiv(),
 				uploadModelPanel,
 				fileCheckPanel,
-				WrapperUtils.wrapCenterFullWidthHorizontal(checkYourModelButton));
+				WrapperUtils.wrapWidthFullCenterHorizontal(checkYourModelButton));
 
 		checkYourModelButton.setVisible(false);
 		fileCheckPanel.setVisible(false);
@@ -52,9 +52,9 @@ public class UploadModelWizardPanel extends VerticalLayout
 	}
 
 	private void setupFileCheckPanel() {
-		fileCheckPanel = WrapperUtils.wrapCenterAlignmentFullVertical(
+		fileCheckPanel = WrapperUtils.wrapWidthFullCenterVertical(
 				fileCheckProgressBar,
-				WrapperUtils.wrapCenterFullWidthHorizontal(new Label("File check...")));
+				WrapperUtils.wrapWidthFullCenterHorizontal(new Label("File check...")));
 	}
 
 	private void setupUploadPanel()
@@ -68,7 +68,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 			checkYourModelButton.setVisible(true);
 		});
 
-		uploadModelPanel = WrapperUtils.wrapCenterAlignmentFullVertical(upload);
+		uploadModelPanel = WrapperUtils.wrapWidthFullCenterVertical(upload);
 	}
 
 	public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
