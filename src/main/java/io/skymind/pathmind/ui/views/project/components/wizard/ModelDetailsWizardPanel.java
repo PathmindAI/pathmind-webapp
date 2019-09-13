@@ -13,6 +13,7 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.ui.utils.GuiUtils;
+import io.skymind.pathmind.ui.utils.VaadinUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.project.binders.ProjectBinders;
 
@@ -20,16 +21,17 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 {
 	private VerticalLayout formPanel = new VerticalLayout();
 
-	private NumberField numberOfObservationsNumberField = new NumberField();
-	private NumberField numberOfPossibleActionsNumberField = new NumberField();
-	private TextArea getObservationForRewardFunctionTextArea = new TextArea();
+	private NumberField numberOfObservationsNumberField;
+	private NumberField numberOfPossibleActionsNumberField;
+	private TextArea getObservationForRewardFunctionTextArea;
 
 	private Button nextStepButton = new Button("Next Step");
 
-	public ModelDetailsWizardPanel(Binder<Project> binder) {
+	public ModelDetailsWizardPanel(Binder<Project> binder)
+	{
+		setupFields();
 		setupForm();
 		setupGetObservationForRewardFunctionTextArea();
-		setupDefaultValues();
 
 		add(WrapperUtils.wrapFullWidthHorizontal(
 				new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE),
@@ -45,12 +47,19 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		getStyle().set("border", "1px solid #ccc");
 	}
 
-	/**
-	 * This is required otherwise the binder doesn't work across multiple panels very well.
-	 */
-	private void setupDefaultValues() {
-		numberOfObservationsNumberField.setValue((double) Project.DEFAULT_NUMBER_OF_OBSERVATIONS);
-		numberOfPossibleActionsNumberField.setValue((double) Project.DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS);
+	private void setupFields()
+	{
+	 	numberOfObservationsNumberField = VaadinUtils.generateNumberField(
+	 			Project.MIN_NUMBER_OF_OBSERVATIONS,
+				Project.MAX_NUMBER_OF_OBSERVATIONS,
+				Project.DEFAULT_NUMBER_OF_OBSERVATIONS);
+
+		numberOfPossibleActionsNumberField = VaadinUtils.generateNumberField(
+				Project.MIN_NUMBER_OF_POSSIBLE_ACTIONS,
+				Project.MAX_NUMBER_OF_POSSIBLE_ACTIONS,
+				Project.DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS);
+
+		getObservationForRewardFunctionTextArea = new TextArea();
 		getObservationForRewardFunctionTextArea.setValue(Project.DEFAULT_GET_OBSERVATION_FOR_REWARD_FUNCTION);
 	}
 
