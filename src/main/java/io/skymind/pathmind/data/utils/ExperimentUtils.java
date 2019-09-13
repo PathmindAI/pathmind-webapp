@@ -6,6 +6,8 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.ExperimentRepository;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,5 +54,15 @@ public class ExperimentUtils
 		Experiment experiment = generateFakeExperiment(project);
 		experiment.setId(experimentRepository.insertExperiment(experiment));
 		return experiment.getId();
+	}
+
+	public static long getElapsedTime(Experiment experiment)
+	{
+		if(experiment.getStartTime() == null)
+			return 0;
+
+		return experiment.getEndTime() == null ?
+				Duration.between(experiment.getStartTime(), Instant.now()).toSeconds() :
+				Duration.between(experiment.getStartTime(), experiment.getEndTime()).toSeconds();
 	}
 }

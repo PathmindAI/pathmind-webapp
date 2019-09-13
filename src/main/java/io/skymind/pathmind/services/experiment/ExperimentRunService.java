@@ -4,6 +4,7 @@ import com.vaadin.flow.spring.annotation.UIScope;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.ExperimentUpdateBusEvent;
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.utils.FakeDataUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class ExperimentRunService
 				try {
 					for(int x=0; x<20; x++) {
 						// TODO -> Implement
-						experiment.getScores().add(RANDOM.nextInt(1000));
+						experiment.getScores().add(RANDOM.nextInt(FakeDataUtils.EXPERIMENT_SCORE_MAX));
 						publisher.onNext(new ExperimentUpdateBusEvent(experiment));
 						log.info("Update experiment score");
 						Thread.sleep(300);

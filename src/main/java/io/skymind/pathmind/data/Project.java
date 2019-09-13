@@ -12,12 +12,12 @@ public class Project implements Data
 	public static final long MAX_NUMBER_OF_OBSERVATIONS = 1000;
 
 	// TODO -> Implement. These are needed for validation purposes.
-	public static final BigDecimal MIN_NUMBER_OF_POSSIBLE_ACTIONS = new BigDecimal("0.1").setScale(1);
-	public static final BigDecimal MAX_NUMBER_OF_POSSIBLE_ACTIONS = new BigDecimal("1000.0").setScale(1);
+	public static final long MIN_NUMBER_OF_POSSIBLE_ACTIONS = 1;
+	public static final long MAX_NUMBER_OF_POSSIBLE_ACTIONS = 1000;
 
 	// TODO -> Implement
 	public static final long DEFAULT_NUMBER_OF_OBSERVATIONS = 3;
-	public static final BigDecimal DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS = new BigDecimal("5.0").setScale(1);
+	public static final long DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS = 5;
 	public static final String DEFAULT_GET_OBSERVATION_FOR_REWARD_FUNCTION = "Copy and paste your getObservation for reward function here so you" +
 			"can reference it while writing your reward function in the next step.";
 
@@ -35,7 +35,7 @@ public class Project implements Data
 	private LocalDate lastActivityDate;
 
 	private long numberOfObservations = DEFAULT_NUMBER_OF_OBSERVATIONS;
-	private BigDecimal numberOfPossibleActions = DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS;
+	private long numberOfPossibleActions = DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS;
 	private String getObservationForRewardFunction = "";
 
 	public Project() {
@@ -106,11 +106,11 @@ public class Project implements Data
 		return getObservationForRewardFunction;
 	}
 
-	public BigDecimal getNumberOfPossibleActions() {
+	public long getNumberOfPossibleActions() {
 		return numberOfPossibleActions;
 	}
 
-	public void setNumberOfPossibleActions(BigDecimal numberOfPossibleActions) {
+	public void setNumberOfPossibleActions(long numberOfPossibleActions) {
 		this.numberOfPossibleActions = numberOfPossibleActions;
 	}
 

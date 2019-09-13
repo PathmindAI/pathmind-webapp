@@ -5,6 +5,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.utils.DateTimeUtils;
 import org.apache.logging.log4j.LogManager;
@@ -75,7 +76,7 @@ public class ExperimentStatusDetailsPanel extends VerticalLayout
 	{
 		statusLabel.setText(experiment.getStatusEnum().toString());
 		runTypeLabel.setText(experiment.getRunTypeEnum().toString());
-		elapsedTimeLabel.setText(DateTimeUtils.formatTime(experiment.getElapsedTime()));
+		elapsedTimeLabel.setText(DateTimeUtils.formatTime(ExperimentUtils.getElapsedTime(experiment)));
 		completedLabel.setText(experiment.getCompletedEnum().toString());
 		algorithmLabel.setText(experiment.getAlgorithm().toString());
 	}

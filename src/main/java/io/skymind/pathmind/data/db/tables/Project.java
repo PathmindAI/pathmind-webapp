@@ -9,7 +9,6 @@ import io.skymind.pathmind.data.db.Keys;
 import io.skymind.pathmind.data.db.Public;
 import io.skymind.pathmind.data.db.tables.records.ProjectRecord;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Project extends TableImpl<ProjectRecord> {
 
-    private static final long serialVersionUID = -1280036470;
+    private static final long serialVersionUID = 1481782706;
 
     /**
      * The reference instance of <code>public.project</code>
@@ -90,7 +89,7 @@ public class Project extends TableImpl<ProjectRecord> {
     /**
      * The column <code>public.project.number_of_possible_actions</code>.
      */
-    public final TableField<ProjectRecord, BigDecimal> NUMBER_OF_POSSIBLE_ACTIONS = createField("number_of_possible_actions", org.jooq.impl.SQLDataType.NUMERIC.nullable(false), this, "");
+    public final TableField<ProjectRecord, Long> NUMBER_OF_POSSIBLE_ACTIONS = createField("number_of_possible_actions", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.project.get_observation_for_reward_function</code>.

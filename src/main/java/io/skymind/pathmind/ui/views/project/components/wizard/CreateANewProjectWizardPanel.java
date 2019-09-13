@@ -10,6 +10,7 @@ import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.ui.views.project.binders.ProjectBinders;
 
 public class CreateANewProjectWizardPanel extends VerticalLayout
 {
@@ -36,8 +37,6 @@ public class CreateANewProjectWizardPanel extends VerticalLayout
 	}
 
 	private void bindFields(Binder<Project> binder) {
-		binder.forField(projectNameTextField)
-				.asRequired("Project must have a name")
-				.bind(Project::getName, Project::setName);
+		ProjectBinders.bindProjectName(binder, projectNameTextField);
 	}
 }

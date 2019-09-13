@@ -30,13 +30,9 @@ public class DashboardView extends PathMindDefaultView
 
 	private Grid<Project> projectGrid;
 
-	private UI ui;
-
 	public DashboardView()
 	{
 		super();
-
-		this.ui = UI.getCurrent();
 	}
 
 	protected Component getMainContent()
@@ -81,7 +77,7 @@ public class DashboardView extends PathMindDefaultView
 	protected ActionMenu getActionMenu() {
 		return new ActionMenu(
 				new Button("New Project", click ->
-						ui.getCurrent().navigate(NewProjectView.class)));
+						UI.getCurrent().getCurrent().navigate(NewProjectView.class)));
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.selection.SelectionListener;
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.ui.components.grid.GridButtonFactory;
 import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -54,7 +55,7 @@ public class ExperimentListPanel extends VerticalLayout
 				.setHeader("Model")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(experiment -> "#" + experiment.getId())
+		grid.addColumn(Experiment::getName)
 				.setHeader("Experiment")
 				.setAutoWidth(true)
 				.setSortable(true);
@@ -62,7 +63,7 @@ public class ExperimentListPanel extends VerticalLayout
 				.setHeader("Run Type")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(experiment -> DateTimeUtils.formatTime(experiment.getDuration()))
+		grid.addColumn(experiment -> DateTimeUtils.formatTime(ExperimentUtils.getElapsedTime(experiment)))
 				.setHeader("Duration")
 				.setAutoWidth(true)
 				.setSortable(true);

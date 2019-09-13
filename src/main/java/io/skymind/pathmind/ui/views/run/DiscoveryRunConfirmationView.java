@@ -18,6 +18,7 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.utils.FakeDataUtils;
 import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.db.UserRepository;
@@ -130,7 +131,7 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 				for(int x=0; x<30; x++) {
 					Thread.sleep(300);
 					PushUtils.push(this, () -> {
-							experiment.getScores().add(random.nextInt(1000));
+							experiment.getScores().add(random.nextInt(FakeDataUtils.EXPERIMENT_SCORE_MAX));
 							runStatusPanel.update() ;
 					});
 				}

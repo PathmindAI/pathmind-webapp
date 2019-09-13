@@ -7,6 +7,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.ui.views.experiment.binders.ExperimentBinders;
 
 /**
  * Left it in the code for now even though it's not used since we'll eventually need to be able to
@@ -40,11 +41,7 @@ public class ExperimentFormPanel extends VerticalLayout
 	// TODO -> The mapping between RunType enum and value should be done at the database level using JOOQ Enum converters:
 	// https://www.jooq.org/doc/3.0/manual/sql-execution/fetching/data-type-conversion/
 	private void bindFields(Binder<Experiment> binder) {
-		binder.forField(nameTextField)
-				.asRequired("Experiment must have a name")
-				.bind(Experiment::getName, Experiment::setName);
-		binder.forField(runTypeComboBox)
-				.asRequired("Run Type must be selected")
-				.bind(Experiment::getRunTypeEnum, Experiment::setRunTypeEnum);
+		ExperimentBinders.bindName(binder, nameTextField);
+		ExperimentBinders.bindRunType(binder, runTypeComboBox);
 	}
 }

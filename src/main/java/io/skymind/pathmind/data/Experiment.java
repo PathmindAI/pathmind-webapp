@@ -46,7 +46,7 @@ public class Experiment implements Data
 	private long duration = 0;
 
 	// TODO -> What is the data?
-	private ArrayList<Number> scores = new ArrayList<Number>();
+	private List<Number> scores = new ArrayList<Number>();
 
 	public Experiment() {
 	}
@@ -214,21 +214,11 @@ public class Experiment implements Data
 		startTime = Instant.now();
 	}
 
-	public long getElapsedTime()
-	{
-		if(startTime == null)
-				return 0;
-
-		return endTime == null ?
-				Duration.between(startTime, Instant.now()).toSeconds() :
-				Duration.between(startTime, endTime).toSeconds();
-	}
-
-	public ArrayList<Number> getScores() {
+	public List<Number> getScores() {
 		return scores;
 	}
 
-	public void setScores(ArrayList<Number> scores) {
+	public void setScores(List<Number> scores) {
 		this.scores = scores;
 	}
 

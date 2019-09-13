@@ -7,6 +7,7 @@ import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -51,6 +52,7 @@ public class ProjectRepository
 				.fetchOneInto(Project.class);
 	}
 
+	// TODO -> Database table for project needs to adjust the types for NumberOfObservations and NumberOfPossibleActions
 	public long insertProject(Project project) {
     	long projectId = dslContext
 				.insertInto(PROJECT)

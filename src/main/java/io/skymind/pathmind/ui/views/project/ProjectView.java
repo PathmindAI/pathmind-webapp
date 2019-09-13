@@ -4,20 +4,19 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.spring.annotation.UIScope;
-import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.BusEventType;
+import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.ExperimentUpdateBusEvent;
+import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
+import io.skymind.pathmind.data.utils.FakeDataUtils;
 import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -32,6 +31,7 @@ import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentStatusDetailsPanel;
 import io.skymind.pathmind.ui.views.project.components.ExperimentListPanel;
 import io.skymind.pathmind.ui.views.project.components.ProjectChartPanel;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,6 @@ import reactor.core.publisher.UnicastProcessor;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @UIScope
@@ -84,7 +83,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
 	private void pushValues(Experiment experiment) {
 		PushUtils.push(this, () -> {
-			projectChartPanel.update(experiment);
+//			projectChartPanel.update(experiment);
 			experimentStatusDetailsPanel.update(experiment);
 		});
 	}
@@ -125,11 +124,12 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	protected Component getMainContent()
 	{
 		experimentListPanel = new ExperimentListPanel();
-		projectChartPanel = new ProjectChartPanel();
+		projectChartPanel = new ProjectChartPanel(consumer);
 		experimentStatusDetailsPanel = new ExperimentStatusDetailsPanel();
 
 		experimentListPanel.addSelectionListener(experiment -> {
-			projectChartPanel.update(experiment);
+			// TODO -> Highlight selected row in chart.
+//			projectChartPanel.update(experiment);
 			experimentStatusDetailsPanel.update(experiment);
 			selectedExperiment = experiment;
 		});
@@ -156,26 +156,32 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		if(project == null)
 			throw new InvalidDataException("Attempted to access Project : " + projectId);
 
-		List<Experiment> experiments = experimentRepository.getExperimentsForProject(project.getId());
 		// TODO -> implement all this in the repository.
-		project.setExperiments(experiments);
+//		List<Experiment> experiments = experimentRepository.getExperimentsForProject(project.getId());
+//		project.setExperiments(experiments);
+		project.setExperiments(new ArrayList<Experiment>());
+		loadProjectWithFakeExperimentData();
 
-		// TODO -> remove
+		// TODO -> Fake. For now just select the first one. We should be doing grid.select and let the change propogate.
 		selectedExperiment = project.getExperiments().get(0);
-		project.getExperiments().get(0).setStartTime(Instant.now().minusSeconds(600));
 
 		screenTitlePanel.setSubtitle(project.getName());
-		experimentListPanel.setExperiments(experiments);
+		experimentListPanel.setExperiments(project.getExperiments());
 		// https://vaadin.com/forum/thread/17527564/typeerror-cannot-read-property-dodeselector-of-undefined-vaadin-10
 		experimentListPanel.selectExperiment(selectedExperiment);
 
 		// TODO -> Remove once table selects the experiment since it should all be linked through events.
 		experimentStatusDetailsPanel.update(selectedExperiment);
-		projectChartPanel.update(selectedExperiment);
+		projectChartPanel.update(project);
+	}
 
-		// TODO -> to implement
-		ArrayList<Number> fakeScores = new ArrayList<>();
-		Arrays.asList(10, 40, 60, 20, 40, 50, 50, 10, 100, 80).stream()
-				.forEach(score -> selectedExperiment.getScores().add(score));
+		// TODO -> Quick solution to fake a lot of data for testing chart.
+	private void loadProjectWithFakeExperimentData()
+	{
+		while(project.getExperiments().size() < 45)
+			project.getExperiments().add(FakeDataUtils.generateFakeExperiment(project));
+
+		project.getExperiments().stream()
+				.forEach(experiment -> FakeDataUtils.loadExperimentWithFakeData(experiment));
 	}
 }

@@ -140,4 +140,11 @@
         </insert>
     </changeSet>
 
+    <changeSet author="admin" id="2">
+        <modifyDataType
+            tableName="PROJECT"
+            columnName="NUMBER_OF_POSSIBLE_ACTIONS"
+            newDataType="BIGINT"/>
+    </changeSet>
+
 </databaseChangeLog>
