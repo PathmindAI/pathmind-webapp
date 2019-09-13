@@ -32,8 +32,9 @@ public class FakeDataUtils
 
 	public static List<Number> getFakeScores() {
 		ArrayList<Number> scores = new ArrayList<>();
+		int multiplier = RandomUtils.nextInt(1, 10);
 		for(int x=0; x<20; x++)
-			scores.add(RandomUtils.nextInt(0, EXPERIMENT_SCORE_MAX));
+			scores.add(RandomUtils.nextInt(0, EXPERIMENT_SCORE_MAX) * multiplier);
 		return scores;
 	}
 
