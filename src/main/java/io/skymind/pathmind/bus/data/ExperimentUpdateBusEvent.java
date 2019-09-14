@@ -3,6 +3,7 @@ package io.skymind.pathmind.bus.data;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.BusEventType;
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Project;
 
 public class ExperimentUpdateBusEvent implements PathmindBusEvent
 {
@@ -26,7 +27,15 @@ public class ExperimentUpdateBusEvent implements PathmindBusEvent
 		return experiment;
 	}
 
+	public long getProjectId() {
+		return experiment.getProjectId();
+	}
+
 	public void setExperiment(Experiment experiment) {
 		this.experiment = experiment;
+	}
+
+	public boolean isForProject(Project project) {
+		return experiment.getProjectId() == project.getId();
 	}
 }

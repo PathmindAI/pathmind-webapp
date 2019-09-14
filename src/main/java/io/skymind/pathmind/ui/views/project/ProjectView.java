@@ -12,7 +12,6 @@ import com.vaadin.flow.spring.annotation.UIScope;
 import io.skymind.pathmind.bus.BusEventType;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.ExperimentUpdateBusEvent;
-import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
@@ -31,16 +30,13 @@ import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentStatusDetailsPanel;
 import io.skymind.pathmind.ui.views.project.components.ExperimentListPanel;
 import io.skymind.pathmind.ui.views.project.components.ProjectChartPanel;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
 
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.List;
 
 @UIScope
 @StyleSheet("frontend://styles/styles.css")
@@ -123,7 +119,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	@Override
 	protected Component getMainContent()
 	{
-		experimentListPanel = new ExperimentListPanel();
+		experimentListPanel = new ExperimentListPanel(consumer);
 		projectChartPanel = new ProjectChartPanel(consumer);
 		experimentStatusDetailsPanel = new ExperimentStatusDetailsPanel();
 
@@ -166,7 +162,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		selectedExperiment = project.getExperiments().get(0);
 
 		screenTitlePanel.setSubtitle(project.getName());
-		experimentListPanel.setExperiments(project.getExperiments());
+		experimentListPanel.update(project);
 		// https://vaadin.com/forum/thread/17527564/typeerror-cannot-read-property-dodeselector-of-undefined-vaadin-10
 		experimentListPanel.selectExperiment(selectedExperiment);
 

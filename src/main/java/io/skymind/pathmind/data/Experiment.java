@@ -247,4 +247,8 @@ public class Experiment implements Data
 				", scores=" + scores +
 				'}';
 	}
+
+	public long getProjectId() {
+		return project.getId();
+	}
 }

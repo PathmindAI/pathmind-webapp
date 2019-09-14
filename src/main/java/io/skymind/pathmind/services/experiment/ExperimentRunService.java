@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.experiment;
 import com.vaadin.flow.spring.annotation.UIScope;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.ExperimentUpdateBusEvent;
+import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.utils.FakeDataUtils;
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +28,7 @@ public class ExperimentRunService
 	public static void fullRun(Experiment experiment, UnicastProcessor<PathmindBusEvent> publisher) {
 		new Thread(() -> {
 				try {
+					experiment.setStatusEnum(RunStatus.Running);
 					for(int x=0; x<20; x++) {
 						// TODO -> Implement
 						experiment.getScores().add(RANDOM.nextInt(FakeDataUtils.EXPERIMENT_SCORE_MAX));
@@ -34,6 +36,10 @@ public class ExperimentRunService
 						log.info("Update experiment score");
 						Thread.sleep(300);
 					}
+
+					experiment.setStatusEnum(RunStatus.Running);
+					publisher.onNext(new ExperimentUpdateBusEvent(experiment));
+
 				} catch (InterruptedException e) {
 					log.error(e.getMessage(), e);
 				} finally {

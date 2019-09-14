@@ -9,6 +9,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.bus.PathmindBusEvent;
+import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.services.ConsoleService;
@@ -23,6 +25,7 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Flux;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value = "console", layout = MainLayout.class)
@@ -35,22 +38,31 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 	@Autowired
 	private ProjectRepository projectRepository;
 
+	private Flux<PathmindBusEvent> consumer;
+
 	private TextArea consoleTextArea;
 	private ExperimentListPanel experimentListPanel;
 
-	private long projectId;
+	private Project project;
 	private long experimentId;
 
-	public ConsoleView()
+	public ConsoleView(Flux<PathmindBusEvent> consumer)
 	{
 		super();
+		this.consumer = consumer;
+	}
+
+	@Override
+	protected void subscribeToEventBus() {
+		// TODO -> Implement
+		// consumer.
 	}
 
 	@Override
 	protected ActionMenu getActionMenu() {
 		return new ActionMenu(
 			new Button("< Back", click ->
-					UI.getCurrent().navigate(ProjectView.class, projectId))
+					UI.getCurrent().navigate(ProjectView.class, project.getId()))
 		);
 	}
 
@@ -65,7 +77,7 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 	{
 		consoleTextArea = new TextArea();
 		consoleTextArea.setSizeFull();
-		experimentListPanel = new ExperimentListPanel();
+		experimentListPanel = new ExperimentListPanel(consumer);
 
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
 				consoleTextArea,
@@ -79,8 +91,9 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 	}
 
 	protected void updateScreen(BeforeEnterEvent event) {
-		projectId = projectRepository.getProjectForExperiment(experimentId).getId();
+		// TODO -> Need to load experiments for project due to new changes in the data model.
+		project = projectRepository.getProjectForExperiment(experimentId);
 		consoleTextArea.setValue(ConsoleService.getConsoleLogForExperiment(experimentId));
-		experimentListPanel.setExperiments(experimentRepository.getOtherExperimentsForSameProject(experimentId));
+		experimentListPanel.update(project);
 	}
 }
