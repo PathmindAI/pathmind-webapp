@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = 1111806095;
+    private static final long serialVersionUID = -1391581375;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -60,11 +60,6 @@ public class Experiment extends TableImpl<ExperimentRecord> {
      * The column <code>public.experiment.id</code>.
      */
     public final TableField<ExperimentRecord, Long> ID = createField("id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
-
-    /**
-     * The column <code>public.experiment.project_id</code>.
-     */
-    public final TableField<ExperimentRecord, Long> PROJECT_ID = createField("project_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.experiment.name</code>.
@@ -95,6 +90,16 @@ public class Experiment extends TableImpl<ExperimentRecord> {
      * The column <code>public.experiment.score</code>.
      */
     public final TableField<ExperimentRecord, Integer> SCORE = createField("score", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.experiment.model_id</code>.
+     */
+    public final TableField<ExperimentRecord, Long> MODEL_ID = createField("model_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+
+    /**
+     * The column <code>public.experiment.notes</code>.
+     */
+    public final TableField<ExperimentRecord, String> NOTES = createField("notes", org.jooq.impl.SQLDataType.CLOB.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::text", org.jooq.impl.SQLDataType.CLOB)), this, "");
 
     /**
      * Create a <code>public.experiment</code> table reference
@@ -166,11 +171,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
      */
     @Override
     public List<ForeignKey<ExperimentRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ExperimentRecord, ?>>asList(Keys.EXPERIMENT__PM_FK_EXPERIMENT_PROJECT);
+        return Arrays.<ForeignKey<ExperimentRecord, ?>>asList(Keys.EXPERIMENT__PM_FK_EXPERIMENT_MODEL);
     }
 
-    public Project project() {
-        return new Project(this, Keys.EXPERIMENT__PM_FK_EXPERIMENT_PROJECT);
+    public Model model() {
+        return new Model(this, Keys.EXPERIMENT__PM_FK_EXPERIMENT_MODEL);
     }
 
     /**

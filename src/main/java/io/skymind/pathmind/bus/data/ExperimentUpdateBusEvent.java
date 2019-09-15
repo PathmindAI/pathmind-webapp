@@ -27,15 +27,15 @@ public class ExperimentUpdateBusEvent implements PathmindBusEvent
 		return experiment;
 	}
 
-	public long getProjectId() {
-		return experiment.getProjectId();
-	}
+//	public long getProjectId() {
+//		return experiment.getProjectId();
+//	}
 
 	public void setExperiment(Experiment experiment) {
 		this.experiment = experiment;
 	}
 
-	public boolean isForProject(Project project) {
-		return experiment.getProjectId() == project.getId();
-	}
+//	public boolean isForProject(Project project) {
+//		return experiment.getProjectId() == project.getId();
+//	}
 }

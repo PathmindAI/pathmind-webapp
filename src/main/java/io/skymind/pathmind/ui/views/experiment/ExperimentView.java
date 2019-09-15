@@ -57,7 +57,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private RewardFunctionEditor rewardFunctionEditor;
 
-	private Button backToProjectButton;
+	private Button backToExperimentsButton;
 
 	public ExperimentView()
 	{
@@ -67,10 +67,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Override
 	protected ActionMenu getActionMenu()
 	{
-		backToProjectButton = new Button("< Back to Project");
+		backToExperimentsButton = new Button("< Back to Experiments");
 
 		return new ActionMenu(
-				backToProjectButton,
+				backToExperimentsButton,
 				new Button("+ New Experiment"),
 				new Button("Test Run >", click ->
 						UI.getCurrent().navigate(DiscoveryRunConfirmationView.class, experimentId))
@@ -141,8 +141,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		getObservationTextArea.setValue(project.getGetObservationForRewardFunction());
 		rewardFunctionEditor.setRewardFunction(experiment.getRewardFunction());
 		screenTitlePanel.setSubtitle(project.getName());
-		backToProjectButton.addClickListener(click ->
-				UI.getCurrent().navigate(ProjectView.class, project.getId()));
+		backToExperimentsButton.addClickListener(click ->
+				UI.getCurrent().navigate(ExperimentsView.class, experiment.getModelId()));
 	}
 
 	private void save() {

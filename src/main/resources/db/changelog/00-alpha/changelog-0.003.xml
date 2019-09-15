@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet author="admin" id="3">
+
+        <!-- Since there should be no test data anyways I'll save the time of trying to move it down a layer -->
+        <!-- Deleting data as well so that all the ID's match up nicely -->
+        <delete tableName="EXPERIMENT"/>
+        <delete tableName="PROJECT"/>
+        <delete tableName="PATHMIND_USER"/>
+
+        <createTable tableName="MODEL">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+              <column name="PROJECT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_MODEL_PROJECT" references="PROJECT(ID)"/>
+            </column>
+          <column name="NAME" type="VARCHAR(255)" defaultValue="Initial Model Revision">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_CREATED" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_ACTIVITY_DATE" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Since there should be no test data anyways I'll save the time of trying to move it down a layer -->
+        <dropForeignKeyConstraint baseTableName="EXPERIMENT" constraintName="PM_FK_EXPERIMENT_PROJECT"/>
+        <dropColumn tableName="EXPERIMENT" columnName="PROJECT_ID"/>
+        <addColumn tableName="EXPERIMENT">
+            <column name="MODEL_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_EXPERIMENT_MODEL" references="MODEL(ID)"/>
+            </column>
+            <column name="NOTES" type="TEXT" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+       <!-- At this point I'm assuming the score is json data -->
+        <createTable tableName="RUN">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="EXPERIMENT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_RUN_EXPERIMENT" references="EXPERIMENT(ID)"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RUN_TYPE" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="START_DATETIME" type="DATETIME"/>
+            <column name="SCORE" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="POLICY">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="RUN_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_POLICY_RUN" references="RUN(ID)"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Steph"/>
+            <column name="EMAIL" value="steph@followsteph.com"/>
+            <column name="PASSWORD" value="password"/>
+        </insert>
+
+        <!-- Coffee Shop project -->
+        <insert tableName="PROJECT">
+            <column name="PATHMIND_USER_ID" valueComputed="currval('pathmind_user_id_seq')"/>
+            <column name="NAME" value="Coffee Shop"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-09-03"/>
+            <column name="NUMBER_OF_OBSERVATIONS" valueNumeric="3"/>
+            <column name="NUMBER_OF_POSSIBLE_ACTIONS" valueNumeric="5"/>
+            <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" value=""/>
+        </insert>
+
+        <insert tableName="MODEL">
+            <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-23"/>
+        </insert>
+
+        <insert tableName="EXPERIMENT">
+            <column name="MODEL_ID" valueComputed="currval('model_id_seq')"/>
+            <column name="NAME" value="Experiment 1"/>
+            <column name="DATE" valueDate="2019-08-23"/>
+            <column name="DURATION" valueDate="0"/>
+            <column name="REWARD_FUNCTION" value="function = some value 3"/>
+            <column name="RUN_TYPE" valueNumeric="1"/>
+            <column name="SCORE" valueNumeric="0"/>
+        </insert>
+
+        <insert tableName="MODEL">
+            <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
+            <column name="NAME" value="Model #2"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-23"/>
+        </insert>
+
+        <insert tableName="EXPERIMENT">
+            <column name="MODEL_ID" valueComputed="currval('model_id_seq')"/>
+            <column name="NAME" value="Experiment 1"/>
+            <column name="DATE" valueDate="2019-08-23"/>
+            <column name="DURATION" valueDate="0"/>
+            <column name="REWARD_FUNCTION" value="function = some value 3"/>
+            <column name="RUN_TYPE" valueNumeric="1"/>
+            <column name="SCORE" valueNumeric="0"/>
+        </insert>
+
+        <insert tableName="MODEL">
+            <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
+            <column name="NAME" value="Model #3"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-23"/>
+        </insert>
+
+        <insert tableName="EXPERIMENT">
+            <column name="MODEL_ID" valueComputed="currval('model_id_seq')"/>
+            <column name="NAME" value="Experiment 1"/>
+            <column name="DATE" valueDate="2019-08-23"/>
+            <column name="DURATION" valueDate="0"/>
+            <column name="REWARD_FUNCTION" value="function = some value 3"/>
+            <column name="RUN_TYPE" valueNumeric="1"/>
+            <column name="SCORE" valueNumeric="0"/>
+        </insert>
+
+        <!-- Traffic Simulation project -->
+        <insert tableName="PROJECT">
+            <column name="PATHMIND_USER_ID" valueComputed="currval('pathmind_user_id_seq')"/>
+            <column name="NAME" value="Traffic Simulation"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-09-03"/>
+            <column name="NUMBER_OF_OBSERVATIONS" valueNumeric="3"/>
+            <column name="NUMBER_OF_POSSIBLE_ACTIONS" valueNumeric="5"/>
+            <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" value=""/>
+        </insert>
+
+        <insert tableName="MODEL">
+            <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-23"/>
+        </insert>
+
+        <insert tableName="EXPERIMENT">
+            <column name="MODEL_ID" valueComputed="currval('model_id_seq')"/>
+            <column name="NAME" value="Experiment 1"/>
+            <column name="DATE" valueDate="2019-08-23"/>
+            <column name="DURATION" valueDate="0"/>
+            <column name="REWARD_FUNCTION" value="function = some value 3"/>
+            <column name="RUN_TYPE" valueNumeric="1"/>
+            <column name="SCORE" valueNumeric="0"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Bob"/>
+            <column name="EMAIL" value="bob@skymind.io"/>
+            <column name="PASSWORD" value="password"/>
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>

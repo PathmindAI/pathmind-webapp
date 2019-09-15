@@ -17,44 +17,44 @@ public class ExperimentUtils
 	private ExperimentUtils() {
 	}
 
-	public static List<Experiment> generateNewDefaultExpirementList(Project project) {
-		ArrayList<Experiment> experiments = new ArrayList<>();
-		experiments.add(generateNewDefaultExperiment(project));
-		return experiments;
-	}
+//	public static List<Experiment> generateNewDefaultExpirementList(Model model) {
+//		ArrayList<Experiment> experiments = new ArrayList<>();
+//		experiments.add(generateNewDefaultExperiment(project));
+//		return experiments;
+//	}
+//
+//	// TODO -> Correctly implement the default values for a new Project.
+//	public static Experiment generateNewDefaultExperiment(Project project) {
+//		return new Experiment(
+//				"Experiment 1",
+//				LocalDate.now(),
+//				RunType.TestRun,
+//				Algorithm.DQN,
+//				0,
+//				0,
+//				"",
+//				project,
+//				0);
+//	}
+//
+//	public static Experiment generateFakeExperiment(Project project) {
+//		return new Experiment(
+//				project.getName(),
+//				LocalDate.now(),
+//				RunType.DiscoverRun,
+//				Algorithm.DQN,
+//				374,
+//				1,
+//				"Function =",
+//				project,
+//				1);
+//	}
 
-	// TODO -> Correctly implement the default values for a new Project.
-	public static Experiment generateNewDefaultExperiment(Project project) {
-		return new Experiment(
-				"Experiment 1",
-				LocalDate.now(),
-				RunType.TestRun,
-				Algorithm.DQN,
-				0,
-				0,
-				"",
-				project,
-				0);
-	}
-
-	public static Experiment generateFakeExperiment(Project project) {
-		return new Experiment(
-				project.getName(),
-				LocalDate.now(),
-				RunType.DiscoverRun,
-				Algorithm.DQN,
-				374,
-				1,
-				"Function =",
-				project,
-				1);
-	}
-
-	public static long generateFakeExperiment(Project project, ExperimentRepository experimentRepository) {
-		Experiment experiment = generateFakeExperiment(project);
-		experiment.setId(experimentRepository.insertExperiment(experiment));
-		return experiment.getId();
-	}
+//	public static long generateFakeExperiment(Project project, ExperimentRepository experimentRepository) {
+//		Experiment experiment = generateFakeExperiment(project);
+//		experiment.setId(experimentRepository.insertExperiment(experiment));
+//		return experiment.getId();
+//	}
 
 	public static long getElapsedTime(Experiment experiment)
 	{

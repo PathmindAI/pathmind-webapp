@@ -45,16 +45,16 @@ public class FakeDataUtils
 //		experiment.setStatusEnum(RunStatus.Running);
 	}
 
-	public static Experiment generateFakeExperiment(Project project) {
-		return new Experiment(
-				"Experiment " + (project.getExperiments().size() + 1),
-				LocalDate.now(),
-				RunType.TestRun,
-				Algorithm.DQN,
-				0,
-				0,
-				"RF",
-				project,
-				1);
-	}
+//	public static Experiment generateFakeExperiment(Project project) {
+//		return new Experiment(
+//				"Experiment " + (project.getExperiments().size() + 1),
+//				LocalDate.now(),
+//				RunType.TestRun,
+//				Algorithm.DQN,
+//				0,
+//				0,
+//				"RF",
+//				project,
+//				1);
+//	}
 }

@@ -3,7 +3,7 @@ package io.skymind.pathmind.data;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-public class Run
+public class Run implements Data
 {
 	private long id;
 
@@ -25,6 +25,7 @@ public class Run
 		this.experiment = experiment;
 	}
 
+	@Override
 	public long getId() {
 		return id;
 	}

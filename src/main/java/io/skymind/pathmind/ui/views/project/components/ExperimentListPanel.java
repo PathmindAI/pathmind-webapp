@@ -49,7 +49,8 @@ public class ExperimentListPanel extends VerticalLayout
 	private void subscribeToEventBus(Flux<PathmindBusEvent> consumer) {
 		consumer
 			.filter(busEvent -> busEvent.isEventType(BusEventType.ExperimentUpdate))
-			.filter(busEvent -> ((ExperimentUpdateBusEvent)busEvent).isForProject(project))
+			// TODO -> DATA MODEL -> In case of new experiments for project
+//			.filter(busEvent -> ((ExperimentUpdateBusEvent)busEvent).isForProject(project))
 			.subscribe(busEvent ->
 				updateExperiment(((ExperimentUpdateBusEvent)busEvent).getExperiment()));
 
@@ -64,7 +65,8 @@ public class ExperimentListPanel extends VerticalLayout
 
 	public void update(Project project) {
 		this.project = project;
-		grid.setItems(project.getExperiments());
+		// TODO -> DATA MODEL
+//		grid.setItems(project.getExperiments());
 	}
 
 	private HorizontalLayout getTitleBar() {

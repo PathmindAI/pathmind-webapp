@@ -10,6 +10,8 @@ import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.db.UserRepository;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
+import io.skymind.pathmind.ui.views.project.ProjectView;
+import io.skymind.pathmind.ui.views.project.ProjectsView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route("login")
@@ -47,7 +49,7 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver // , 
 	private Class getRerouteClass() {
 		if(projectRepository.getProjectsForUser().isEmpty())
 			return NewProjectView.class;
-		return DashboardView.class;
+		return ProjectsView.class;
 	}
 
 	@Override

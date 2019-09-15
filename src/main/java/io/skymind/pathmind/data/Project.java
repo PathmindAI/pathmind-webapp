@@ -29,7 +29,7 @@ public class Project implements Data
 	@NotNull
 	private LocalDate dateCreated;
 
-	private List<Experiment> experiments;
+//	private List<Experiment> experiments;
 	private PathmindUser pathmindUser;
 
 	private LocalDate lastActivityDate;
@@ -65,14 +65,14 @@ public class Project implements Data
 		this.dateCreated = dateCreated;
 	}
 
-	public List<Experiment> getExperiments() {
-		return experiments;
-	}
-
-	public void setExperiments(List<Experiment> experiments) {
-		this.experiments = experiments;
-	}
-
+//	public List<Experiment> getExperiments() {
+//		return experiments;
+//	}
+//
+//	public void setExperiments(List<Experiment> experiments) {
+//		this.experiments = experiments;
+//	}
+//
 	@Override
 	public String toString() {
 		return name;

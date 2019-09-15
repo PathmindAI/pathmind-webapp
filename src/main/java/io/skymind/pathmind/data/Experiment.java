@@ -29,14 +29,13 @@ public class Experiment implements Data
 	private int status = RunStatus.NotStarted.getValue();
 	private int completed = RunStatus.NotStarted.getValue();
 
-	// TODO -> This needs to be properly implemented and stored in the database.
 	@NotNull
-	private int modelId;
+	private long modelId;
 
 	@NotNull
 	private String rewardFunction;
 
-	private Project project;
+	private Model model;
 
 	private List<Run> runs;
 
@@ -51,7 +50,7 @@ public class Experiment implements Data
 	public Experiment() {
 	}
 
-	public Experiment(@NotNull String name, @NotNull LocalDate date, @NotNull RunType runType, Algorithm algorithm, long duration, @NotNull int score, @NotNull String rewardFunction, Project project, @NotNull int modelId) {
+	public Experiment(@NotNull String name, @NotNull LocalDate date, @NotNull RunType runType, Algorithm algorithm, long duration, @NotNull int score, @NotNull String rewardFunction, Model model, @NotNull long modelId) {
 		this.name = name;
 		this.date = date;
 		this.runType = runType.getValue();
@@ -59,7 +58,7 @@ public class Experiment implements Data
 		this.duration = duration;
 		this.score = score;
 		this.rewardFunction = rewardFunction;
-		this.project = project;
+		this.model = model;
 		this.modelId = modelId;
 	}
 
@@ -112,14 +111,6 @@ public class Experiment implements Data
 		this.name = name;
 	}
 
-	public Project getProject() {
-		return project;
-	}
-
-	public void setProject(Project project) {
-		this.project = project;
-	}
-
 	public List<Run> getRuns() {
 		return runs;
 	}
@@ -136,11 +127,11 @@ public class Experiment implements Data
 		this.rewardFunction = rewardFunction;
 	}
 
-	public int getModelId() {
+	public long getModelId() {
 		return modelId;
 	}
 
-	public void setModelId(int modelId) {
+	public void setModelId(long modelId) {
 		this.modelId = modelId;
 	}
 
@@ -240,7 +231,7 @@ public class Experiment implements Data
 				", completed=" + completed +
 				", modelId=" + modelId +
 				", rewardFunction='" + rewardFunction + '\'' +
-				", project=" + project +
+				", model=" + model +
 				", runs=" + runs +
 				", algorithm=" + algorithm +
 				", duration=" + duration +
@@ -248,7 +239,11 @@ public class Experiment implements Data
 				'}';
 	}
 
-	public long getProjectId() {
-		return project.getId();
+	public Model getModel() {
+		return model;
+	}
+
+	public void setModel(Model model) {
+		this.model = model;
 	}
 }

@@ -1,9 +1,9 @@
 package io.skymind.pathmind.ui.views.project;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -14,8 +14,6 @@ import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.ExperimentUpdateBusEvent;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.data.utils.ExperimentUtils;
-import io.skymind.pathmind.data.utils.FakeDataUtils;
 import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -26,7 +24,6 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentStatusDetailsPanel;
 import io.skymind.pathmind.ui.views.project.components.ExperimentListPanel;
 import io.skymind.pathmind.ui.views.project.components.ProjectChartPanel;
@@ -100,9 +97,11 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	// TODO -> Exception handling with database.
 	private Button getAddExperimentButton() {
 		return new Button("+ Add Experiment", click -> {
-			UI.getCurrent().navigate(
-					ExperimentView.class,
-					ExperimentUtils.generateFakeExperiment(project, experimentRepository));
+			// TODO -> DATA MODEL
+			Notification.show("TODO");
+//			UI.getCurrent().navigate(
+//					ExperimentView.class,
+//					ExperimentUtils.generateFakeExperiment(project, experimentRepository));
 		});
 	}
 
@@ -155,29 +154,33 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		// TODO -> implement all this in the repository.
 //		List<Experiment> experiments = experimentRepository.getExperimentsForProject(project.getId());
 //		project.setExperiments(experiments);
-		project.setExperiments(new ArrayList<Experiment>());
-		loadProjectWithFakeExperimentData();
 
-		// TODO -> Fake. For now just select the first one. We should be doing grid.select and let the change propogate.
-		selectedExperiment = project.getExperiments().get(0);
+		// TODO -> DATA MODEL -> All has to be redone with the new data models.
 
-		screenTitlePanel.setSubtitle(project.getName());
-		experimentListPanel.update(project);
-		// https://vaadin.com/forum/thread/17527564/typeerror-cannot-read-property-dodeselector-of-undefined-vaadin-10
-		experimentListPanel.selectExperiment(selectedExperiment);
-
-		// TODO -> Remove once table selects the experiment since it should all be linked through events.
-		experimentStatusDetailsPanel.update(selectedExperiment);
-		projectChartPanel.update(project);
+//		project.setExperiments(new ArrayList<Experiment>());
+//		loadProjectWithFakeExperimentData();
+//
+//		// TODO -> Fake. For now just select the first one. We should be doing grid.select and let the change propogate.
+//		selectedExperiment = project.getExperiments().get(0);
+//
+//		screenTitlePanel.setSubtitle(project.getName());
+//		experimentListPanel.update(project);
+//		// https://vaadin.com/forum/thread/17527564/typeerror-cannot-read-property-dodeselector-of-undefined-vaadin-10
+//		experimentListPanel.selectExperiment(selectedExperiment);
+//
+//		// TODO -> Remove once table selects the experiment since it should all be linked through events.
+//		experimentStatusDetailsPanel.update(selectedExperiment);
+//		projectChartPanel.update(project);
 	}
 
 		// TODO -> Quick solution to fake a lot of data for testing chart.
 	private void loadProjectWithFakeExperimentData()
 	{
-		while(project.getExperiments().size() < 45)
-			project.getExperiments().add(FakeDataUtils.generateFakeExperiment(project));
-
-		project.getExperiments().stream()
-				.forEach(experiment -> FakeDataUtils.loadExperimentWithFakeData(experiment));
+		// TODO -> DATA MODEL
+//		while(project.getExperiments().size() < 45)
+//			project.getExperiments().add(FakeDataUtils.generateFakeExperiment(project));
+//
+//		project.getExperiments().stream()
+//				.forEach(experiment -> FakeDataUtils.loadExperimentWithFakeData(experiment));
 	}
 }

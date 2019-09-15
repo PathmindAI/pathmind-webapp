@@ -37,7 +37,8 @@ public class ProjectChartPanel extends VerticalLayout
 			.filter(busEvent -> project != null)
 //			.filter(busEvent -> busEvent.isEventTypes(BusEventType.ProjectUpdate, BusEventType.ExperimentUpdate))
 			.filter(busEvent -> busEvent.isEventType(BusEventType.ExperimentUpdate))
-			.filter(busEvent -> ((ExperimentUpdateBusEvent)busEvent).isForProject(project))
+			// TODO -> DATA MODEL -> In case of new experiments for project
+//			.filter(busEvent -> ((ExperimentUpdateBusEvent)busEvent).isForProject(project))
 			.subscribe(busEvent ->
 				updateChart(busEvent));
 	}
@@ -70,25 +71,30 @@ public class ProjectChartPanel extends VerticalLayout
 	private void update(Experiment updatedExperiment)
 	{
 		// Replace if already an existing experiment.
-		project.setExperiments(
-				project.getExperiments().stream()
-						.map(experiment -> experiment.getId() == updatedExperiment.getId() ? experiment : updatedExperiment)
-						.collect(Collectors.toList()));
 
-		// Add if it's a new experiment
-		project.getExperiments().stream()
-				.filter(experiment -> experiment.getId() != updatedExperiment.getId())
-				.findAny().ifPresent(experiment -> project.getExperiments().add(experiment));
+		// TODO -> DATA MODEL
 
-		update(project);
+//		project.setExperiments(
+//				project.getExperiments().stream()
+//						.map(experiment -> experiment.getId() == updatedExperiment.getId() ? experiment : updatedExperiment)
+//						.collect(Collectors.toList()));
+//
+//		// Add if it's a new experiment
+//		project.getExperiments().stream()
+//				.filter(experiment -> experiment.getId() != updatedExperiment.getId())
+//				.findAny().ifPresent(experiment -> project.getExperiments().add(experiment));
+//
+//		update(project);
 	}
 
-	public void update(Project project) {
-		this.project = project;
-		chart.getConfiguration().setSeries(
-				project.getExperiments().stream()
-						.map(experiment -> new ListSeries(experiment.getName(), experiment.getScores()))
-						.collect(Collectors.toList()));
-		chart.drawChart();
+	public void update(Project project)
+	{
+		// TODO -> DATA MODEL
+// 		this.project = project;
+//		chart.getConfiguration().setSeries(
+//				project.getExperiments().stream()
+//						.map(experiment -> new ListSeries(experiment.getName(), experiment.getScores()))
+//						.collect(Collectors.toList()));
+//		chart.drawChart();
 	}
 }

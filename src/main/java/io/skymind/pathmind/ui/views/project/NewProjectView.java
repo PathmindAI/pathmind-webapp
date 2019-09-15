@@ -17,6 +17,7 @@ import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
@@ -106,15 +107,19 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 				modelDetailsWizardPanel);
 	}
 
-	private void handleMoreDetailsClicked(ClickEvent<Button> click) {
+	private void handleMoreDetailsClicked(ClickEvent<Button> click)
+	{
 		ExceptionWrapperUtils.handleButtonClicked(() ->
 		{
 			if(!isValidForm())
 				return;
 
-			projectRepository.insertProject(project);
-			experimentRepository.insertExperimentsForProject(project);
-			UI.getCurrent().navigate(ExperimentView.class, project.getExperiments().get(0).getId());
+			NotificationUtils.showTodoNotification();
+
+			// TODO -> DATA MODEL -> Need to insert model, experiment, etc. Looking to consolidate things in the project repository
+//			projectRepository.insertProject(project);
+//			experimentRepository.insertExperimentsForProject(project);
+//			UI.getCurrent().navigate(ExperimentView.class, project.getExperiments().get(0).getId());
 		});
 	}
 

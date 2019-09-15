@@ -2,15 +2,16 @@ package io.skymind.pathmind.db;
 
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.db.tables.Experiment;
+import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.security.SecurityUtils;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import static io.skymind.pathmind.data.db.Tables.MODEL;
 import static io.skymind.pathmind.data.db.Tables.PROJECT;
 
 
@@ -46,8 +47,10 @@ public class ProjectRepository
 		return dslContext
 				.select(PROJECT.asterisk())
 				.from(PROJECT)
+					.leftJoin(Model.MODEL)
+						.on(PROJECT.ID.eq(Model.MODEL.PROJECT_ID))
 					.leftJoin(Experiment.EXPERIMENT)
-					.on(PROJECT.ID.eq(Experiment.EXPERIMENT.PROJECT_ID))
+						.on(MODEL.ID.eq(Experiment.EXPERIMENT.MODEL_ID))
 				.where(Experiment.EXPERIMENT.ID.eq(experimentId))
 				.fetchOneInto(Project.class);
 	}

@@ -12,7 +12,8 @@ public class ProjectUtils
 	public static Project generateNewDefaultProject() {
 		Project project = new Project();
 		project.setPathmindUser(SecurityUtils.getUser());
-		project.setExperiments(ExperimentUtils.generateNewDefaultExpirementList(project));
+		// TODO -> DATA MODEL
+//		project.setExperiments(ExperimentUtils.generateNewDefaultExpirementList(project));
 		return project;
 	}
 }

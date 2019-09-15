@@ -5,8 +5,11 @@ package io.skymind.pathmind.data.db;
 
 
 import io.skymind.pathmind.data.db.tables.Experiment;
+import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
+import io.skymind.pathmind.data.db.tables.Policy;
 import io.skymind.pathmind.data.db.tables.Project;
+import io.skymind.pathmind.data.db.tables.Run;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +35,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -707317019;
+    private static final long serialVersionUID = 1740932503;
 
     /**
      * The reference instance of <code>public</code>
@@ -45,14 +48,29 @@ public class Public extends SchemaImpl {
     public final Experiment EXPERIMENT = io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
 
     /**
+     * The table <code>public.model</code>.
+     */
+    public final Model MODEL = io.skymind.pathmind.data.db.tables.Model.MODEL;
+
+    /**
      * The table <code>public.pathmind_user</code>.
      */
     public final PathmindUser PATHMIND_USER = io.skymind.pathmind.data.db.tables.PathmindUser.PATHMIND_USER;
 
     /**
+     * The table <code>public.policy</code>.
+     */
+    public final Policy POLICY = io.skymind.pathmind.data.db.tables.Policy.POLICY;
+
+    /**
      * The table <code>public.project</code>.
      */
     public final Project PROJECT = io.skymind.pathmind.data.db.tables.Project.PROJECT;
+
+    /**
+     * The table <code>public.run</code>.
+     */
+    public final Run RUN = io.skymind.pathmind.data.db.tables.Run.RUN;
 
     /**
      * No further instances allowed
@@ -80,7 +98,10 @@ public class Public extends SchemaImpl {
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
             Experiment.EXPERIMENT,
+            Model.MODEL,
             PathmindUser.PATHMIND_USER,
-            Project.PROJECT);
+            Policy.POLICY,
+            Project.PROJECT,
+            Run.RUN);
     }
 }
