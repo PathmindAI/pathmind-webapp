@@ -10,8 +10,6 @@ public class AnylogicFileCheckResult implements FileCheckResult{
     private List<String> zipContentFileNames;
     private List<String> definedHelpers;
 
-
-
     @Override
     public boolean isFileCheckComplete() {
 
@@ -19,7 +17,7 @@ public class AnylogicFileCheckResult implements FileCheckResult{
     }
 
     @Override
-    public boolean isCheckSuccessful() {
+    public boolean isFileCheckSuccessful() {
         return false;
     }
 
@@ -51,10 +49,6 @@ public class AnylogicFileCheckResult implements FileCheckResult{
     @Override
     public List<String> getDefinedHelpers() {
         return this.definedHelpers;
-    }
-
-    @Override
-    public void setCheckSuccessful(boolean checkSuccessful) {
     }
 
     @Override

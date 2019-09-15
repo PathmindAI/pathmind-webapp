@@ -5,14 +5,13 @@ import java.util.List;
 public interface FileCheckResult {
 
     public boolean isFileCheckComplete();
-    public boolean isCheckSuccessful();
+    public boolean isFileCheckSuccessful();
     public boolean isCorrectFileType();
     public boolean isModelJarFilePresent();
     public boolean isHelperPresent();
     public boolean isHelperUnique();
     public List<String> getZipContentFileNames();
     public List<String> getDefinedHelpers();
-    public void  setCheckSuccessful(boolean checkSuccessful);
     public void  setCorrectFileType(boolean correctFileType);
     public void  setModelJarFilePresent(boolean modelJarFilePresent);
     public void setZipContentFileNames(List<String>  zipContentFileNames);
