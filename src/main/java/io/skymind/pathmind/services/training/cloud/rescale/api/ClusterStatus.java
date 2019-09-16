@@ -4,28 +4,43 @@ import javax.validation.constraints.NotNull;
 
 class ClusterStatus {
     @NotNull
-    private final String content;
+    private String content;
     @NotNull
-    private final String labelClass;
-    private final boolean useLabel;
+    private String labelClass;
+    private boolean useLabel;
 
-    @NotNull
-    public final String getContent() {
-        return this.content;
-    }
-
-    @NotNull
-    public final String getLabelClass() {
-        return this.labelClass;
-    }
-
-    public final boolean getUseLabel() {
-        return this.useLabel;
-    }
+    // for deserialization
+    public ClusterStatus(){}
 
     public ClusterStatus(@NotNull String content, @NotNull String labelClass, boolean useLabel) {
         this.content = content;
         this.labelClass = labelClass;
+        this.useLabel = useLabel;
+    }
+
+    @NotNull
+    public String getContent() {
+        return this.content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    @NotNull
+    public String getLabelClass() {
+        return this.labelClass;
+    }
+
+    public void setLabelClass(String labelClass) {
+        this.labelClass = labelClass;
+    }
+
+    public boolean getUseLabel() {
+        return this.useLabel;
+    }
+
+    public void setUseLabel(boolean useLabel) {
         this.useLabel = useLabel;
     }
 }

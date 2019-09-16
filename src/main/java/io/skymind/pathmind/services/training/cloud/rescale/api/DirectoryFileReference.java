@@ -4,22 +4,34 @@ import javax.validation.constraints.NotNull;
 
 class DirectoryFileReference {
    @NotNull
-   private final String path;
+   private String path;
    @NotNull
-   private final String resource;
+   private String resource;
 
-   @NotNull
-   public final String getPath() {
-      return this.path;
-   }
 
-   @NotNull
-   public final String getResource() {
-      return this.resource;
-   }
+   // for deserialization
+   private DirectoryFileReference(){}
 
    public DirectoryFileReference(@NotNull String path, @NotNull String resource) {
       this.path = path;
+      this.resource = resource;
+   }
+
+   @NotNull
+   public String getPath() {
+      return this.path;
+   }
+
+   public void setPath(String path) {
+      this.path = path;
+   }
+
+   @NotNull
+   public String getResource() {
+      return this.resource;
+   }
+
+   public void setResource(String resource) {
       this.resource = resource;
    }
 }

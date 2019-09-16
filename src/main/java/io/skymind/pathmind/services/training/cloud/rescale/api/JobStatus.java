@@ -7,30 +7,45 @@ import java.time.LocalDateTime;
 
 public class JobStatus {
    @NotNull
-   private final String status;
+   private String status;
    @NotNull
-   private final LocalDateTime statusDate;
+   private LocalDateTime statusDate;
    @Nullable
-   private final String statusReason;
+   private String statusReason;
 
-   @NotNull
-   public final String getStatus() {
-      return this.status;
-   }
-
-   @NotNull
-   public final LocalDateTime getStatusDate() {
-      return this.statusDate;
-   }
-
-   @Nullable
-   public final String getStatusReason() {
-      return this.statusReason;
-   }
+   // for deserialization
+   private JobStatus(){}
 
    public JobStatus(@NotNull String status, @NotNull LocalDateTime statusDate, @Nullable String statusReason) {
       this.status = status;
       this.statusDate = statusDate;
+      this.statusReason = statusReason;
+   }
+
+   @NotNull
+   public String getStatus() {
+      return this.status;
+   }
+
+   public void setStatus(String status) {
+      this.status = status;
+   }
+
+   @NotNull
+   public LocalDateTime getStatusDate() {
+      return this.statusDate;
+   }
+
+   public void setStatusDate(LocalDateTime statusDate) {
+      this.statusDate = statusDate;
+   }
+
+   @Nullable
+   public String getStatusReason() {
+      return this.statusReason;
+   }
+
+   public void setStatusReason(@Nullable String statusReason) {
       this.statusReason = statusReason;
    }
 }

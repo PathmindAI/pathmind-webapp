@@ -3,27 +3,33 @@ package io.skymind.pathmind.services.training.cloud.rescale.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
 public class RescaleRestApiClient {
+    private static final Logger log = LoggerFactory.getLogger(RescaleRestApiClient.class);
     private final String platformRegion;
     private final String apiKey;
     private final ObjectMapper objectMapper;
@@ -41,8 +47,15 @@ public class RescaleRestApiClient {
 
         client = webClientBuilder
                 .baseUrl("https://" + platformRegion + "/api/v2")
-                .defaultHeader("Authorization", "Token $apiKey")
+                //.baseUrl("http://127.0.0.1:8000/api/v2")
+                .defaultHeader("Authorization", "Token "+apiKey)
                 .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .filter(ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
+                            log.info("Request: {} {}", clientRequest.method(), clientRequest.url());
+                            clientRequest.headers().forEach((name, values) -> values.forEach(value -> log.info("{}={}", name, value)));
+                            return Mono.just(clientRequest);
+                        })
+                )
                 .build();
     }
 
@@ -58,6 +71,7 @@ public class RescaleRestApiClient {
                 .post().uri("/jobs/")
                 .contentType(MediaType.APPLICATION_JSON).body(Mono.just(job), Job.class)
                 .retrieve()
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
                 .bodyToMono(Job.class).block();
     }
 
@@ -144,16 +158,16 @@ public class RescaleRestApiClient {
     /**
      * Uses a different client library to work around the fact that rescale doesn't support `Transfer-Encoding: chunked`
      * for file uploads and WebClient doesn't properly support not using it for file uploads
+     *
+     * TODO: Test if upload with indefinite size works, or if we must create an input stream reader body type that knows about filesize
      */
-    public RescaleFile fileUpload(File content) throws IOException {
-        if(!content.exists()) {throw  new IllegalArgumentException("The to be uploaded file $content does not exist!"); }
-
+    public RescaleFile fileUpload(InputStream content, String filename) throws IOException {
         final CloseableHttpClient client = HttpClients.custom().setDefaultHeaders(Arrays.asList(
-                new BasicHeader("Authorization", "Token $apiKey")
+                new BasicHeader("Authorization", "Token "+apiKey)
         )).build();
         final HttpPost post = new HttpPost("https://" + platformRegion + "/api/v2/files/contents/");
         post.setEntity(MultipartEntityBuilder.create()
-                .addBinaryBody("file", content)
+                .addBinaryBody("file", content, ContentType.APPLICATION_OCTET_STREAM, filename)
                 .build());
 
         final CloseableHttpResponse resp = client.execute(post);

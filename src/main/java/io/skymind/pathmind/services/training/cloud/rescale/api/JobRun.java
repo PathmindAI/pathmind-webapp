@@ -8,65 +8,23 @@ import java.util.List;
 
 class JobRun {
    @Nullable
-   private final LocalDateTime dateCompleted;
+   private LocalDateTime dateCompleted;
    @Nullable
-   private final LocalDateTime dateInserted;
-   private final int displayOrder;
+   private LocalDateTime dateInserted;
+   private int displayOrder;
    @NotNull
-   private final String id;
-   private final boolean isOptimal;
-   private final int outputFileCount;
-   private final int outputFileSize;
+   private String id;
+   private boolean isOptimal;
+   private int outputFileCount;
+   private int outputFileSize;
    @Nullable
-   private final String parent;
-   private final int type;
+   private String parent;
+   private int type;
    @NotNull
-   private final List<Variable> variables;
+   private List<Variable> variables;
 
-   @Nullable
-   public final LocalDateTime getDateCompleted() {
-      return this.dateCompleted;
-   }
-
-   @Nullable
-   public final LocalDateTime getDateInserted() {
-      return this.dateInserted;
-   }
-
-   public final int getDisplayOrder() {
-      return this.displayOrder;
-   }
-
-   @NotNull
-   public final String getId() {
-      return this.id;
-   }
-
-   public final boolean isOptimal() {
-      return this.isOptimal;
-   }
-
-   public final int getOutputFileCount() {
-      return this.outputFileCount;
-   }
-
-   public final int getOutputFileSize() {
-      return this.outputFileSize;
-   }
-
-   @Nullable
-   public final String getParent() {
-      return this.parent;
-   }
-
-   public final int getType() {
-      return this.type;
-   }
-
-   @NotNull
-   public final List getVariables() {
-      return this.variables;
-   }
+   // for deserialization
+   private JobRun(){}
 
    public JobRun(@Nullable LocalDateTime dateCompleted, @Nullable LocalDateTime dateInserted, int displayOrder, @NotNull String id, boolean isOptimal, int outputFileCount, int outputFileSize, @Nullable String parent, int type, @NotNull List<Variable> variables) {
       this.dateCompleted = dateCompleted;
@@ -78,6 +36,91 @@ class JobRun {
       this.outputFileSize = outputFileSize;
       this.parent = parent;
       this.type = type;
+      this.variables = variables;
+   }
+
+   @Nullable
+   public LocalDateTime getDateCompleted() {
+      return this.dateCompleted;
+   }
+
+   public void setDateCompleted(@Nullable LocalDateTime dateCompleted) {
+      this.dateCompleted = dateCompleted;
+   }
+
+   @Nullable
+   public LocalDateTime getDateInserted() {
+      return this.dateInserted;
+   }
+
+   public void setDateInserted(@Nullable LocalDateTime dateInserted) {
+      this.dateInserted = dateInserted;
+   }
+
+   public int getDisplayOrder() {
+      return this.displayOrder;
+   }
+
+   public void setDisplayOrder(int displayOrder) {
+      this.displayOrder = displayOrder;
+   }
+
+   @NotNull
+   public String getId() {
+      return this.id;
+   }
+
+   public void setId(String id) {
+      this.id = id;
+   }
+
+   public boolean isOptimal() {
+      return this.isOptimal;
+   }
+
+   public void setOptimal(boolean optimal) {
+      isOptimal = optimal;
+   }
+
+   public int getOutputFileCount() {
+      return this.outputFileCount;
+   }
+
+   public void setOutputFileCount(int outputFileCount) {
+      this.outputFileCount = outputFileCount;
+   }
+
+   public int getOutputFileSize() {
+      return this.outputFileSize;
+   }
+
+   public void setOutputFileSize(int outputFileSize) {
+      this.outputFileSize = outputFileSize;
+   }
+
+   @Nullable
+   public String getParent() {
+      return this.parent;
+   }
+
+   public void setParent(@Nullable String parent) {
+      this.parent = parent;
+   }
+
+   public int getType() {
+      return this.type;
+   }
+
+   public void setType(int type) {
+      this.type = type;
+   }
+
+   @NotNull
+   public List getVariables() {
+      return this.variables;
+   }
+
+   public void setVariables(List<Variable> variables) {
       this.variables = variables;
    }
 }

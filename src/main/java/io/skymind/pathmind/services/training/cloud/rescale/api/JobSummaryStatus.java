@@ -4,30 +4,45 @@ import javax.validation.constraints.NotNull;
 
 class JobSummaryStatus {
     @NotNull
-    private final String content;
+    private String content;
     @NotNull
-    private final String labelClass;
+    private String labelClass;
     @NotNull
-    private final String useLabel;
+    private String useLabel;
 
-    @NotNull
-    public final String getContent() {
-        return this.content;
-    }
-
-    @NotNull
-    public final String getLabelClass() {
-        return this.labelClass;
-    }
-
-    @NotNull
-    public final String getUseLabel() {
-        return this.useLabel;
-    }
+    // for deserialization
+    private JobSummaryStatus(){}
 
     public JobSummaryStatus(@NotNull String content, @NotNull String labelClass, @NotNull String useLabel) {
         this.content = content;
         this.labelClass = labelClass;
+        this.useLabel = useLabel;
+    }
+
+    @NotNull
+    public String getContent() {
+        return this.content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    @NotNull
+    public String getLabelClass() {
+        return this.labelClass;
+    }
+
+    public void setLabelClass(String labelClass) {
+        this.labelClass = labelClass;
+    }
+
+    @NotNull
+    public String getUseLabel() {
+        return this.useLabel;
+    }
+
+    public void setUseLabel(String useLabel) {
         this.useLabel = useLabel;
     }
 }

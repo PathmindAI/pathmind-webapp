@@ -3,77 +3,33 @@ package io.skymind.pathmind.services.training.cloud.rescale.api;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
 import java.util.List;
 
-class Job {
+public class Job {
    @NotNull
-   private final String name;
+   private String name;
    @NotNull
-   private final List<JobAnalysis> jobanalyses;
+   private List<JobAnalysis> jobanalyses;
    @Nullable
-   private final String id;
+   private String id;
    @Nullable
-   private final String paramFile;
+   private String paramFile;
    @Nullable
-   private final String caseFile;
+   private String caseFile;
    @Nullable
-   private final List resourceFilters;
+   private List resourceFilters;
    @NotNull
-   private final List jobvariables;
-   private final boolean isTemplateDryRun;
-   private final boolean includeNominalRun;
+   private List jobvariables;
+   private boolean isTemplateDryRun;
+   private boolean includeNominalRun;
    @Nullable
-   private final Integer monteCarloIterations;
+   private Integer monteCarloIterations;
 
-   @NotNull
-   public final String getName() {
-      return this.name;
-   }
+   // for deserialization
+   private Job(){}
 
-   @NotNull
-   public final List getJobanalyses() {
-      return this.jobanalyses;
-   }
-
-   @Nullable
-   public final String getId() {
-      return this.id;
-   }
-
-   @Nullable
-   public final String getParamFile() {
-      return this.paramFile;
-   }
-
-   @Nullable
-   public final String getCaseFile() {
-      return this.caseFile;
-   }
-
-   @Nullable
-   public final List getResourceFilters() {
-      return this.resourceFilters;
-   }
-
-   @NotNull
-   public final List getJobvariables() {
-      return this.jobvariables;
-   }
-
-   public final boolean isTemplateDryRun() {
-      return this.isTemplateDryRun;
-   }
-
-   public final boolean getIncludeNominalRun() {
-      return this.includeNominalRun;
-   }
-
-   @Nullable
-   public final Integer getMonteCarloIterations() {
-      return this.monteCarloIterations;
-   }
-
-   public Job(@NotNull String name, @NotNull List jobanalyses, @Nullable String id, @Nullable String paramFile, @Nullable String caseFile, @Nullable List resourceFilters, @NotNull List jobvariables, boolean isTemplateDryRun, boolean includeNominalRun, @Nullable Integer monteCarloIterations) {
+   public Job(@NotNull String name, @NotNull List<JobAnalysis> jobanalyses, @Nullable String id, @Nullable String paramFile, @Nullable String caseFile, @Nullable List resourceFilters, @NotNull List jobvariables, boolean isTemplateDryRun, boolean includeNominalRun, @Nullable Integer monteCarloIterations) {
       this.name = name;
       this.jobanalyses = jobanalyses;
       this.id = id;
@@ -83,6 +39,108 @@ class Job {
       this.jobvariables = jobvariables;
       this.isTemplateDryRun = isTemplateDryRun;
       this.includeNominalRun = includeNominalRun;
+      this.monteCarloIterations = monteCarloIterations;
+   }
+
+   public static Job create(@NotNull String name, JobAnalysis analysis){
+      return new Job(
+              name,
+              Collections.singletonList(analysis),
+              null,
+              null,
+              null,
+              null,
+              Collections.emptyList(),
+              false,
+              false,
+              null);
+   }
+
+   @NotNull
+   public String getName() {
+      return this.name;
+   }
+
+   public void setName(String name) {
+      this.name = name;
+   }
+
+   @NotNull
+   public List getJobanalyses() {
+      return this.jobanalyses;
+   }
+
+   public void setJobanalyses(List<JobAnalysis> jobanalyses) {
+      this.jobanalyses = jobanalyses;
+   }
+
+   @Nullable
+   public String getId() {
+      return this.id;
+   }
+
+   public void setId(@Nullable String id) {
+      this.id = id;
+   }
+
+   @Nullable
+   public String getParamFile() {
+      return this.paramFile;
+   }
+
+   public void setParamFile(@Nullable String paramFile) {
+      this.paramFile = paramFile;
+   }
+
+   @Nullable
+   public String getCaseFile() {
+      return this.caseFile;
+   }
+
+   public void setCaseFile(@Nullable String caseFile) {
+      this.caseFile = caseFile;
+   }
+
+   @Nullable
+   public List getResourceFilters() {
+      return this.resourceFilters;
+   }
+
+   public void setResourceFilters(@Nullable List resourceFilters) {
+      this.resourceFilters = resourceFilters;
+   }
+
+   @NotNull
+   public List getJobvariables() {
+      return this.jobvariables;
+   }
+
+   public void setJobvariables(List jobvariables) {
+      this.jobvariables = jobvariables;
+   }
+
+   public boolean isTemplateDryRun() {
+      return this.isTemplateDryRun;
+   }
+
+   public void setTemplateDryRun(boolean templateDryRun) {
+      isTemplateDryRun = templateDryRun;
+   }
+
+   public boolean getIncludeNominalRun() {
+      return this.includeNominalRun;
+   }
+
+   public void setIncludeNominalRun(boolean includeNominalRun) {
+      this.includeNominalRun = includeNominalRun;
+   }
+
+   @Nullable
+   public Integer getMonteCarloIterations() {
+      return this.monteCarloIterations;
+   }
+
+   public void setMonteCarloIterations(@Nullable Integer monteCarloIterations) {
       this.monteCarloIterations = monteCarloIterations;
    }
 }

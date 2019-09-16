@@ -10,6 +10,7 @@ import java.util.List;
 @JsonIgnoreProperties(
         ignoreUnknown = true
 )
+public
 class RescaleFile {
    /**
     * 1 = inpute file,
@@ -23,101 +24,34 @@ class RescaleFile {
     * 10 = temporary file
     */
 
-   private final int typeId;
+   private int typeId;
    @NotNull
-   private final String id;
+   private String id;
    @NotNull
-   private final String name;
-   private final boolean isUploaded;
-   private final boolean isDeleted;
-   private final boolean viewInBrowser;
+   private String name;
+   private boolean isUploaded;
+   private boolean isDeleted;
+   private boolean viewInBrowser;
    @NotNull
-   private final LocalDateTime dateUploaded;
+   private LocalDateTime dateUploaded;
    @Nullable
-   private final String relativePath;
+   private String relativePath;
    @NotNull
-   private final String downloadUrl;
+   private String downloadUrl;
    @NotNull
-   private final String path;
+   private String path;
    @NotNull
-   private final List<String> sharedWith;
+   private List<String> sharedWith;
    @NotNull
-   private final String owner;
+   private String owner;
    @NotNull
-   private final String encodedEncryptionKey;
-   private final int decryptedSize;
+   private String encodedEncryptionKey;
+   private int decryptedSize;
    @NotNull
-   private final String md5;
+   private String md5;
 
-   public final int getTypeId() {
-      return this.typeId;
-   }
-
-   @NotNull
-   public final String getId() {
-      return this.id;
-   }
-
-   @NotNull
-   public final String getName() {
-      return this.name;
-   }
-
-   public final boolean isUploaded() {
-      return this.isUploaded;
-   }
-
-   public final boolean isDeleted() {
-      return this.isDeleted;
-   }
-
-   public final boolean getViewInBrowser() {
-      return this.viewInBrowser;
-   }
-
-   @NotNull
-   public final LocalDateTime getDateUploaded() {
-      return this.dateUploaded;
-   }
-
-   @Nullable
-   public final String getRelativePath() {
-      return this.relativePath;
-   }
-
-   @NotNull
-   public final String getDownloadUrl() {
-      return this.downloadUrl;
-   }
-
-   @NotNull
-   public final String getPath() {
-      return this.path;
-   }
-
-   @NotNull
-   public final List getSharedWith() {
-      return this.sharedWith;
-   }
-
-   @NotNull
-   public final String getOwner() {
-      return this.owner;
-   }
-
-   @NotNull
-   public final String getEncodedEncryptionKey() {
-      return this.encodedEncryptionKey;
-   }
-
-   public final int getDecryptedSize() {
-      return this.decryptedSize;
-   }
-
-   @NotNull
-   public final String getMd5() {
-      return this.md5;
-   }
+   // for deserialization
+   private RescaleFile(){}
 
    public RescaleFile(int typeId, @NotNull String id, @NotNull String name, boolean isUploaded, boolean isDeleted, boolean viewInBrowser, @NotNull LocalDateTime dateUploaded, @Nullable String relativePath, @NotNull String downloadUrl, @NotNull String path, @NotNull List<String> sharedWith, @NotNull String owner, @NotNull String encodedEncryptionKey, int decryptedSize, @NotNull String md5) {
       this.typeId = typeId;
@@ -134,6 +68,136 @@ class RescaleFile {
       this.owner = owner;
       this.encodedEncryptionKey = encodedEncryptionKey;
       this.decryptedSize = decryptedSize;
+      this.md5 = md5;
+   }
+
+   public int getTypeId() {
+      return this.typeId;
+   }
+
+   public void setTypeId(int typeId) {
+      this.typeId = typeId;
+   }
+
+   @NotNull
+   public String getId() {
+      return this.id;
+   }
+
+   public void setId(String id) {
+      this.id = id;
+   }
+
+   @NotNull
+   public String getName() {
+      return this.name;
+   }
+
+   public void setName(String name) {
+      this.name = name;
+   }
+
+   public boolean isUploaded() {
+      return this.isUploaded;
+   }
+
+   public void setUploaded(boolean uploaded) {
+      isUploaded = uploaded;
+   }
+
+   public boolean isDeleted() {
+      return this.isDeleted;
+   }
+
+   public void setDeleted(boolean deleted) {
+      isDeleted = deleted;
+   }
+
+   public boolean getViewInBrowser() {
+      return this.viewInBrowser;
+   }
+
+   public void setViewInBrowser(boolean viewInBrowser) {
+      this.viewInBrowser = viewInBrowser;
+   }
+
+   @NotNull
+   public LocalDateTime getDateUploaded() {
+      return this.dateUploaded;
+   }
+
+   public void setDateUploaded(LocalDateTime dateUploaded) {
+      this.dateUploaded = dateUploaded;
+   }
+
+   @Nullable
+   public String getRelativePath() {
+      return this.relativePath;
+   }
+
+   public void setRelativePath(@Nullable String relativePath) {
+      this.relativePath = relativePath;
+   }
+
+   @NotNull
+   public String getDownloadUrl() {
+      return this.downloadUrl;
+   }
+
+   public void setDownloadUrl(String downloadUrl) {
+      this.downloadUrl = downloadUrl;
+   }
+
+   @NotNull
+   public String getPath() {
+      return this.path;
+   }
+
+   public void setPath(String path) {
+      this.path = path;
+   }
+
+   @NotNull
+   public List getSharedWith() {
+      return this.sharedWith;
+   }
+
+   public void setSharedWith(List<String> sharedWith) {
+      this.sharedWith = sharedWith;
+   }
+
+   @NotNull
+   public String getOwner() {
+      return this.owner;
+   }
+
+   public void setOwner(String owner) {
+      this.owner = owner;
+   }
+
+   @NotNull
+   public String getEncodedEncryptionKey() {
+      return this.encodedEncryptionKey;
+   }
+
+   public void setEncodedEncryptionKey(String encodedEncryptionKey) {
+      this.encodedEncryptionKey = encodedEncryptionKey;
+   }
+
+   public int getDecryptedSize() {
+      return this.decryptedSize;
+   }
+
+   public void setDecryptedSize(int decryptedSize) {
+      this.decryptedSize = decryptedSize;
+   }
+
+   @NotNull
+   public String getMd5() {
+      return this.md5;
+   }
+
+   public void setMd5(String md5) {
       this.md5 = md5;
    }
 }
