@@ -46,7 +46,7 @@ public class RescaleExecutionProviderTest {
         );
 
         final JobSpec spec = new JobSpec(
-                0, 0, 0, "", "", "reward = -(before[0] - after[0]);", 4, 8, 100, env, RunType.TEST
+                0, 0, 0, "", "", "reward = -(before[0] - after[0]);", 4, 8, 100, env, RunType.TEST, null
         );
 
         System.out.println("provider.execute(spec, env) = " + provider.execute(spec));

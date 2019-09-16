@@ -1,6 +1,7 @@
 package io.skymind.pathmind.services.training;
 
 import java.io.InputStream;
+import java.util.function.Supplier;
 
 public class JobSpec {
     private final int userId;
@@ -18,8 +19,9 @@ public class JobSpec {
     private final ExecutionEnvironment env;
 
     private final RunType type;
+    private final Supplier<InputStream> modelFileSupplier;
 
-    public JobSpec(int userId, int modelId, int experimentId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type) {
+    public JobSpec(int userId, int modelId, int experimentId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, Supplier<InputStream> modelFileSupplier) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
@@ -31,6 +33,7 @@ public class JobSpec {
         this.iterations = iterations;
         this.env = env;
         this.type = type;
+        this.modelFileSupplier = modelFileSupplier;
     }
 
     public int getUserId() {
@@ -78,8 +81,7 @@ public class JobSpec {
     }
 
     public InputStream getModelInputStream() {
-        //TODO
-        return null;
+        return modelFileSupplier.get();
     }
 
     public ExecutionEnvironment getEnv() {
