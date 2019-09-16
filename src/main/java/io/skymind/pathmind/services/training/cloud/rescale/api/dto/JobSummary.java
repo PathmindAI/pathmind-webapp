@@ -1,4 +1,4 @@
-package io.skymind.pathmind.services.training.cloud.rescale.api;
+package io.skymind.pathmind.services.training.cloud.rescale.api.dto;
 
 import org.springframework.lang.Nullable;
 
@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
-class JobSummary {
+public class JobSummary {
     @Nullable
     private ClusterStatus clusterStatusDisplay;
     @NotNull

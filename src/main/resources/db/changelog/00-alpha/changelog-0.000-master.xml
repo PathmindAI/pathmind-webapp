@@ -19,4 +19,6 @@
         <!-- Improved the data model mapping to the database -->
 <!--        <include file="changelog-0.004.xml" relativeToChangelogFile="true"/>-->
 
+        <include file="changelog-20190916-pdubs.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

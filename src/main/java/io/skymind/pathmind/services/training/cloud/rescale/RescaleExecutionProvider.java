@@ -2,19 +2,18 @@ package io.skymind.pathmind.services.training.cloud.rescale;
 
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
-import io.skymind.pathmind.services.training.metadata.ExecutionProviderMetaDataService;
 import io.skymind.pathmind.services.training.JobSpec;
-import io.skymind.pathmind.services.training.cloud.rescale.api.*;
+import io.skymind.pathmind.services.training.cloud.rescale.api.RescaleRestApiClient;
+import io.skymind.pathmind.services.training.cloud.rescale.api.dto.*;
+import io.skymind.pathmind.services.training.metadata.ExecutionProviderMetaDataService;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,12 +47,14 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public String execute(JobSpec job, ExecutionEnvironment env) {
+    public String execute(JobSpec job) {
         List<String> instructions = new ArrayList<>();
         List<FileReference> files = new ArrayList<>();
 
         // Get model file id, either uploading it if necessary, or just collecting it form the spec if available
         String modelId = uploadModelIfNeeded(job);
+
+        final ExecutionEnvironment env = job.getEnv();
 
         // Set up which files are needed, and how to install them
         installRllib(env.getRllibVersion(), instructions, files);
@@ -73,6 +74,72 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
         // Start actual execution of the job
         return startTrainingRun(job, instructions, files);
+    }
+
+    @Override
+    public void stop(String jobHandle) {
+        client.jobStop(jobHandle);
+    }
+
+    @Override
+    public Map<String, String> progress(String jobHandle) {
+        final List<JobStatus> statuses = client.jobStatusHistory(jobHandle).getResults();
+        if(statuses.size() > 0){
+            if(statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))){
+                // Job is done, we have to look at finished files
+                return client.outputFiles(jobHandle, "1").getResults()
+                        .parallelStream()
+                        .filter(it -> it.getPath().endsWith("progress.csv"))
+                        .map(it -> {
+                            final String key = new File(it.getPath()).getParent();
+                            final String contents = new String(client.fileContents(it.getId()));
+                            return Map.entry(key, contents);
+                        })
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+            }else if(statuses.stream().anyMatch(it -> it.getStatus().equals("Executing"))){
+                // Job is still running, we have to tail files
+                return client.tailFiles(jobHandle, "1")
+                        .parallelStream()
+                        .filter(it -> it.getPath().endsWith("progress.csv"))
+                        .map(it -> {
+                            final String key = new File(it.getPath()).getParent();
+                            final String contents = new String(client.tail(jobHandle, "1", it.getPath()));
+                            return Map.entry(key, contents);
+                        })
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            }
+        }
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public byte[] policy(String jobHandle, String trainingRun) {
+        final List<JobStatus> statuses = client.jobStatusHistory(jobHandle).getResults();
+        if(statuses.size() > 0){
+            if(statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))){
+                return client.outputFiles(jobHandle, "1").getResults()
+                        .stream()
+                        .filter(it -> it.getPath().endsWith(trainingRun+".zip"))
+                        .map(it -> client.fileContents(it.getId()))
+                        .findFirst().orElseGet(() -> null);
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public String console(String jobHandle) {
+        final List<JobStatus> statuses = client.jobStatusHistory(jobHandle).getResults();
+        if(statuses.size() > 0){
+            if(statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))){
+               return client.consoleOutput(jobHandle, "1");
+            }else if(statuses.stream().anyMatch(it -> it.getStatus().equals("Executing"))){
+                return client.tailConsole(jobHandle, "1");
+            }
+        }
+        return null;
     }
 
 
@@ -231,6 +298,4 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 throw new IllegalArgumentException("Unsupported Pathmind Helper Version: "+pathmindHelperVersion);
         }
     }
-
-
 }

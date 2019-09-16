@@ -1,4 +1,4 @@
-package io.skymind.pathmind.services.training.cloud.rescale.api;
+package io.skymind.pathmind.services.training.cloud.rescale.api.dto;
 
 import org.springframework.lang.Nullable;
 
@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
 
-class PagedResult<T> {
+public class PagedResult<T> {
     @NotNull
     private int count;
     @Nullable

@@ -1,6 +1,7 @@
 package io.skymind.pathmind.services.training.cloud.rescale.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.services.training.cloud.rescale.api.dto.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -108,14 +109,20 @@ public class RescaleRestApiClient {
                 .bodyToMono(new ParameterizedTypeReference<PagedResult<JobStatus>>(){}).block();
     }
 
+    public PagedResult<JobStatus> jobClusterStatusHistory(String jobId){
+        return client.get().uri("/jobs/"+jobId+"/cluster_statuses/")
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<PagedResult<JobStatus>>(){}).block();
+    }
+
     public PagedResult<JobRun> jobRuns(String jobId){
         return client.get().uri("/jobs/"+jobId+"/runs/")
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<PagedResult<JobRun>>(){}).block();
     }
 
-    public List<DirectoryFileReference> directoryContent(String jobId, String run){
-        return  client.get().uri("/jobs/"+jobId+"/runs/"+run+"/directory-contents/?page_size=1000")
+    public List<DirectoryFileReference> tailFiles(String jobId, String run){
+        return  client.get().uri("/jobs/"+jobId+"/runs/"+run+"/directory-contents/?page_size=9999")
                 .retrieve()
                 .bodyToFlux(DirectoryFileReference.class)
                 .toStream().collect(Collectors.toList());

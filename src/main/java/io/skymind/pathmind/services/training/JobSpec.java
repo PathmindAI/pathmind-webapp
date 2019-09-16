@@ -15,9 +15,11 @@ public class JobSpec {
     private final int observations;
     private final int iterations;
 
+    private final ExecutionEnvironment env;
+
     private final RunType type;
 
-    public JobSpec(int userId, int modelId, int experimentId, String variables, String reset, String reward, int actions, int observations, int iterations, RunType type) {
+    public JobSpec(int userId, int modelId, int experimentId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
@@ -27,6 +29,7 @@ public class JobSpec {
         this.actions = actions;
         this.observations = observations;
         this.iterations = iterations;
+        this.env = env;
         this.type = type;
     }
 
@@ -77,5 +80,9 @@ public class JobSpec {
     public InputStream getModelInputStream() {
         //TODO
         return null;
+    }
+
+    public ExecutionEnvironment getEnv() {
+        return env;
     }
 }

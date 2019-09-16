@@ -1,4 +1,4 @@
-package io.skymind.pathmind.services.training.cloud.rescale.api;
+package io.skymind.pathmind.services.training.cloud.rescale.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.lang.Nullable;

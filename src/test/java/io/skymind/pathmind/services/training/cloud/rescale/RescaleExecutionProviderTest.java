@@ -10,11 +10,13 @@ import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import org.apache.commons.lang3.NotImplementedException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
 
+@Ignore
 public class RescaleExecutionProviderTest {
 
     @Test
@@ -37,17 +39,17 @@ public class RescaleExecutionProviderTest {
         };
         final RescaleExecutionProvider provider = new RescaleExecutionProvider(client, metaDataService);
 
-        final JobSpec spec = new JobSpec(
-                0, 0, 0, "", "", "reward = -(before[0] - after[0]);", 4, 8, 100, RunType.TEST
-        );
-
         final ExecutionEnvironment env = new ExecutionEnvironment(
                 AnyLogic.VERSION_8_5,
                 PathmindHelper.VERSION_0_0_24,
                 RLLib.VERSION_0_7_0
         );
 
-        System.out.println("provider.execute(spec, env) = " + provider.execute(spec, env));
+        final JobSpec spec = new JobSpec(
+                0, 0, 0, "", "", "reward = -(before[0] - after[0]);", 4, 8, 100, env, RunType.TEST
+        );
+
+        System.out.println("provider.execute(spec, env) = " + provider.execute(spec));
 
     }
 

@@ -1,4 +1,4 @@
-package io.skymind.pathmind.services.training.cloud.rescale.api;
+package io.skymind.pathmind.services.training.cloud.rescale.api.dto;
 
 import javax.validation.constraints.NotNull;
 
