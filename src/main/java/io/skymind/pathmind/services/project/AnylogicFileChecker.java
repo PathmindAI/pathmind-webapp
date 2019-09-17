@@ -14,6 +14,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+import io.skymind.pathmind.utils.FileUtils;
 public class AnylogicFileChecker implements FileChecker {
     private static final Logger log = LogManager.getLogger(AnylogicFileChecker.class);
     private static final int BUFFER = 1024;
