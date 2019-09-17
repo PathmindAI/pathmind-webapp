@@ -15,6 +15,7 @@ public class Experiment implements Data
 {
 	private long id;
 	private String name;
+	// TODO -> Rename to dateCreated
 	private LocalDate date;
 
 	// TODO -> Not stored anywhere for now.
@@ -47,10 +48,13 @@ public class Experiment implements Data
 	// TODO -> What is the data?
 	private List<Number> scores = new ArrayList<Number>();
 
+	// TODO -> To implement
+	private String notes = "Todo";
+
 	public Experiment() {
 	}
 
-	public Experiment(@NotNull String name, @NotNull LocalDate date, @NotNull RunType runType, Algorithm algorithm, long duration, @NotNull int score, @NotNull String rewardFunction, Model model, @NotNull long modelId) {
+	public Experiment(@NotNull String name, @NotNull LocalDate date, @NotNull RunType runType, Algorithm algorithm, long duration, @NotNull int score, @NotNull String rewardFunction, Model model, @NotNull long modelId, String notes) {
 		this.name = name;
 		this.date = date;
 		this.runType = runType.getValue();
@@ -60,6 +64,7 @@ public class Experiment implements Data
 		this.rewardFunction = rewardFunction;
 		this.model = model;
 		this.modelId = modelId;
+		this.notes = notes;
 	}
 
 	public long getId() {
@@ -245,5 +250,13 @@ public class Experiment implements Data
 
 	public void setModel(Model model) {
 		this.model = model;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 }

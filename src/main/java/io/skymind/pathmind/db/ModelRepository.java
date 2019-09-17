@@ -21,4 +21,12 @@ public class ModelRepository
 				.where(MODEL.PROJECT_ID.eq(projectId))
 				.fetchInto(Model.class);
     }
+
+    public long getProjectIdForModel(long modelId) {
+    	return dslContext
+				.select(MODEL.PROJECT_ID)
+				.from(MODEL)
+				.where(MODEL.ID.eq(modelId))
+				.fetchOneInto(Long.class);
+	}
 }

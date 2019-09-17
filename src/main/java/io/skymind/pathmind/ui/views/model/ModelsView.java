@@ -14,13 +14,16 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.db.ModelRepository;
+import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
+import io.skymind.pathmind.ui.views.project.ProjectsView;
 import io.skymind.pathmind.utils.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -81,7 +84,9 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	@Override
 	protected ActionMenu getActionMenu() {
 		return new ActionMenu(
-				new Button("New Model", click ->
+				new Button("Back to Projects", click ->
+						UI.getCurrent().navigate(ProjectsView.class)),
+				new Button("Upload Model", click ->
 						NotificationUtils.showTodoNotification()));
 //						UI.getCurrent().getCurrent().navigate(NewProjectView.class)));
 	}

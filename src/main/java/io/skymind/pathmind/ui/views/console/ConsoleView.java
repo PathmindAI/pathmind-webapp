@@ -94,6 +94,7 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 		// TODO -> Need to load experiments for project due to new changes in the data model.
 		project = projectRepository.getProjectForExperiment(experimentId);
 		consoleTextArea.setValue(ConsoleService.getConsoleLogForExperiment(experimentId));
-		experimentListPanel.update(project);
+		// TODO => Update the experiment list panel. This is probably no longer on the project level...
+//		experimentListPanel.update(project);
 	}
 }
