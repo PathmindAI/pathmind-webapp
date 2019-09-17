@@ -83,9 +83,10 @@ public class RunStatusPanel extends VerticalLayout
 	// TODO -> Elapsed time should show seconds then minutes and seconds, and so on.
 	public void update() {
 //		series.addData(newChartData);
-		series.setData(experiment.getScores());
+		// TODO -> Implement with new data model.
+//		series.setData(experiment.getScores());
 //		scoreLabel.setText(newChartData.toString());
-		scoreLabel.setText(experiment.getLastScore().toString());
+//		scoreLabel.setText(experiment.getLastScore().toString());
 //		experimentStatusDetailsPanel.setExperiment(experiment);
 		experimentStatusDetailsPanel.update(experiment);
 	}

@@ -28,20 +28,21 @@ public class ExperimentRunService
 	public static void fullRun(Experiment experiment, UnicastProcessor<PathmindBusEvent> publisher) {
 		new Thread(() -> {
 				try {
-					experiment.setStatusEnum(RunStatus.Running);
-					for(int x=0; x<20; x++) {
-						// TODO -> Implement
-						experiment.getScores().add(RANDOM.nextInt(FakeDataUtils.EXPERIMENT_SCORE_MAX));
-						publisher.onNext(new ExperimentUpdateBusEvent(experiment));
-						log.info("Update experiment score");
-						Thread.sleep(300);
-					}
+					// TODO -> Implement with new data model.
+//					experiment.setStatusEnum(RunStatus.Running);
+//					for(int x=0; x<20; x++) {
+//						// TODO -> Implement
+//						experiment.getScores().add(RANDOM.nextInt(FakeDataUtils.EXPERIMENT_SCORE_MAX));
+//						publisher.onNext(new ExperimentUpdateBusEvent(experiment));
+//						log.info("Update experiment score");
+//						Thread.sleep(300);
+//					}
+//
+//					experiment.setStatusEnum(RunStatus.Running);
+//					publisher.onNext(new ExperimentUpdateBusEvent(experiment));
 
-					experiment.setStatusEnum(RunStatus.Running);
-					publisher.onNext(new ExperimentUpdateBusEvent(experiment));
-
-				} catch (InterruptedException e) {
-					log.error(e.getMessage(), e);
+//				} catch (InterruptedException e) {
+//					log.error(e.getMessage(), e);
 				} finally {
 					log.info("fullRun : completed");
 				}

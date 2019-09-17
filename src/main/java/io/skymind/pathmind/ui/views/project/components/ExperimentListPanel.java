@@ -73,8 +73,8 @@ public class ExperimentListPanel extends VerticalLayout
 				.setHeader("Experiment")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(Experiment::getDate)
-				.setHeader("Completed")
+		grid.addColumn(Experiment::getDateCreated)
+				.setHeader("Date Created")
 				.setAutoWidth(true)
 				.setSortable(true);
 //		grid.addColumn(experiment -> "#" + experiment.getModelId())
@@ -82,9 +82,9 @@ public class ExperimentListPanel extends VerticalLayout
 //				.setAutoWidth(true)
 //				.setSortable(true);
 		// TODO -> Is the RunType correct here?
-		grid.addColumn(Experiment::getRunTypeEnum)
+		grid.addColumn(Experiment::getTestRunEnum)
 				.setHeader("Test Run")
-				.setAutoWidth(true)
+ 				.setAutoWidth(true)
 				.setSortable(true);
 		grid.addColumn(experiment -> "Todo")
 				.setHeader("Discovery Run")
@@ -94,7 +94,7 @@ public class ExperimentListPanel extends VerticalLayout
 				.setHeader("Full Run")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(experiment -> "Todo")
+		grid.addColumn(Experiment::getNotes)
 				.setHeader("Notes")
 				.setAutoWidth(true)
 				.setSortable(true);

@@ -10,6 +10,7 @@ import io.skymind.pathmind.data.db.Public;
 import io.skymind.pathmind.data.db.tables.records.ProjectRecord;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Project extends TableImpl<ProjectRecord> {
 
-    private static final long serialVersionUID = 1481782706;
+    private static final long serialVersionUID = 1605087433;
 
     /**
      * The reference instance of <code>public.project</code>
@@ -72,29 +73,14 @@ public class Project extends TableImpl<ProjectRecord> {
     public final TableField<ProjectRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
-     * The column <code>public.project.date_created</code>.
-     */
-    public final TableField<ProjectRecord, LocalDate> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.LOCALDATE.nullable(false), this, "");
-
-    /**
      * The column <code>public.project.last_activity_date</code>.
      */
     public final TableField<ProjectRecord, LocalDate> LAST_ACTIVITY_DATE = createField("last_activity_date", org.jooq.impl.SQLDataType.LOCALDATE.nullable(false), this, "");
 
     /**
-     * The column <code>public.project.number_of_observations</code>.
+     * The column <code>public.project.date_created</code>.
      */
-    public final TableField<ProjectRecord, Long> NUMBER_OF_OBSERVATIONS = createField("number_of_observations", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
-
-    /**
-     * The column <code>public.project.number_of_possible_actions</code>.
-     */
-    public final TableField<ProjectRecord, Long> NUMBER_OF_POSSIBLE_ACTIONS = createField("number_of_possible_actions", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
-
-    /**
-     * The column <code>public.project.get_observation_for_reward_function</code>.
-     */
-    public final TableField<ProjectRecord, String> GET_OBSERVATION_FOR_REWARD_FUNCTION = createField("get_observation_for_reward_function", org.jooq.impl.SQLDataType.VARCHAR(5096).nullable(false), this, "");
+    public final TableField<ProjectRecord, LocalDateTime> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
 
     /**
      * Create a <code>public.project</code> table reference

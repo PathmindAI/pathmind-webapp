@@ -58,11 +58,14 @@ public class ExperimentUtils
 
 	public static long getElapsedTime(Experiment experiment)
 	{
-		if(experiment.getStartTime() == null)
-			return 0;
+		// TODO -> Implement with new data model.
+		return 0;
 
-		return experiment.getEndTime() == null ?
-				Duration.between(experiment.getStartTime(), Instant.now()).toSeconds() :
-				Duration.between(experiment.getStartTime(), experiment.getEndTime()).toSeconds();
+//		if(experiment.getStartTime() == null)
+//			return 0;
+//
+//		return experiment.getEndTime() == null ?
+//				Duration.between(experiment.getStartTime(), Instant.now()).toSeconds() :
+//				Duration.between(experiment.getStartTime(), experiment.getEndTime()).toSeconds();
 	}
 }

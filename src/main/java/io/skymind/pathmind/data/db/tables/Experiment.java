@@ -9,7 +9,7 @@ import io.skymind.pathmind.data.db.Keys;
 import io.skymind.pathmind.data.db.Public;
 import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = -1391581375;
+    private static final long serialVersionUID = 978905711;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -67,11 +67,6 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     public final TableField<ExperimentRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
-     * The column <code>public.experiment.date</code>.
-     */
-    public final TableField<ExperimentRecord, LocalDate> DATE = createField("date", org.jooq.impl.SQLDataType.LOCALDATE.nullable(false), this, "");
-
-    /**
      * The column <code>public.experiment.duration</code>.
      */
     public final TableField<ExperimentRecord, Long> DURATION = createField("duration", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
@@ -82,16 +77,6 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     public final TableField<ExperimentRecord, String> REWARD_FUNCTION = createField("reward_function", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
 
     /**
-     * The column <code>public.experiment.run_type</code>.
-     */
-    public final TableField<ExperimentRecord, Integer> RUN_TYPE = createField("run_type", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
-
-    /**
-     * The column <code>public.experiment.score</code>.
-     */
-    public final TableField<ExperimentRecord, Integer> SCORE = createField("score", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
-
-    /**
      * The column <code>public.experiment.model_id</code>.
      */
     public final TableField<ExperimentRecord, Long> MODEL_ID = createField("model_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
@@ -100,6 +85,16 @@ public class Experiment extends TableImpl<ExperimentRecord> {
      * The column <code>public.experiment.notes</code>.
      */
     public final TableField<ExperimentRecord, String> NOTES = createField("notes", org.jooq.impl.SQLDataType.CLOB.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::text", org.jooq.impl.SQLDataType.CLOB)), this, "");
+
+    /**
+     * The column <code>public.experiment.date_created</code>.
+     */
+    public final TableField<ExperimentRecord, LocalDateTime> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+
+    /**
+     * The column <code>public.experiment.test_run</code>.
+     */
+    public final TableField<ExperimentRecord, Integer> TEST_RUN = createField("test_run", org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>public.experiment</code> table reference

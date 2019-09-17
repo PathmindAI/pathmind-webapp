@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -147505064;
+    private static final long serialVersionUID = -681857872;
 
     /**
      * The reference instance of <code>public.run</code>
@@ -74,7 +74,7 @@ public class Run extends TableImpl<RunRecord> {
     /**
      * The column <code>public.run.run_type</code>.
      */
-    public final TableField<RunRecord, Integer> RUN_TYPE = createField("run_type", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+    public final TableField<RunRecord, Integer> RUN_TYPE = createField("run_type", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * The column <code>public.run.start_datetime</code>.
@@ -85,6 +85,16 @@ public class Run extends TableImpl<RunRecord> {
      * The column <code>public.run.score</code>.
      */
     public final TableField<RunRecord, String> SCORE = createField("score", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
+
+    /**
+     * The column <code>public.run.algorithm</code>.
+     */
+    public final TableField<RunRecord, Integer> ALGORITHM = createField("algorithm", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.run.end_datetime</code>.
+     */
+    public final TableField<RunRecord, LocalDateTime> END_DATETIME = createField("end_datetime", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
 
     /**
      * Create a <code>public.run</code> table reference

@@ -19,14 +19,14 @@ public class ExperimentFormPanel extends VerticalLayout
 	private static final String FORM_MIN_HEIGHT = "200px";
 
 	private TextField nameTextField = new TextField("Name");
-	private ComboBox<RunType> runTypeComboBox = new ComboBox<>("Run Type", RunType.values());
+//	private ComboBox<RunType> runTypeComboBox = new ComboBox<>("Run Type", RunType.values());
 
 	// TODO -> Add binder
 	public ExperimentFormPanel(Binder<Experiment> binder)
 	{
 		FormLayout form = new FormLayout(
-				nameTextField,
-				runTypeComboBox
+				nameTextField
+//				runTypeComboBox
 		);
 
 		bindFields(binder);
@@ -42,6 +42,6 @@ public class ExperimentFormPanel extends VerticalLayout
 	// https://www.jooq.org/doc/3.0/manual/sql-execution/fetching/data-type-conversion/
 	private void bindFields(Binder<Experiment> binder) {
 		ExperimentBinders.bindName(binder, nameTextField);
-		ExperimentBinders.bindRunType(binder, runTypeComboBox);
+//		ExperimentBinders.bindRunType(binder, runTypeComboBox);
 	}
 }

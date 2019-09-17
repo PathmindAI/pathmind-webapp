@@ -14,9 +14,9 @@ public class ExperimentBinders
 				.bind(Experiment::getName, Experiment::setName);
 	}
 
-	public static void bindRunType(Binder<Experiment> binder, ComboBox<RunType> runTypeComboBox) {
-		binder.forField(runTypeComboBox)
-				.asRequired("Run Type must be selected")
-				.bind(Experiment::getRunTypeEnum, Experiment::setRunTypeEnum);
-	}
+//	public static void bindRunType(Binder<Experiment> binder, ComboBox<RunType> runTypeComboBox) {
+//		binder.forField(runTypeComboBox)
+//				.asRequired("Run Type must be selected")
+//				.bind(Experiment::getRunTypeEnum, Experiment::setRunTypeEnum);
+//	}
 }

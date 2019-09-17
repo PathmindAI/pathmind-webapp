@@ -9,6 +9,109 @@
 
     <changeSet author="admin" id="4">
 
+        <!-- Adding more complete set of fields for the user -->
+        <addColumn tableName="PATHMIND_USER">
+            <column name="ACCOUNT_TYPE" type="INT" defaultValue="0"/>
+            <column name="FIRSTNAME" type="VARCHAR(255)"/>
+            <column name="LASTNAME" type="VARCHAR(255)"/>
+            <column name="ADDRESS" type="VARCHAR(255)"/>
+            <column name="CITY" type="VARCHAR(255)"/>
+            <column name="STATE" type="VARCHAR(255)"/>
+           <column name="COUNTRY" type="VARCHAR(255)"/>
+            <column name="ZIP" type="VARCHAR(255)"/>
+        </addColumn>
+
+        <update tableName="PATHMIND_USER">
+            <column name="FIRSTNAME" value=""/>
+        </update>
+        <update tableName="PATHMIND_USER">
+            <column name="LASTNAME" value=""/>
+        </update>
+        <update tableName="PATHMIND_USER">
+            <column name="ADDRESS" value=""/>
+        </update>
+        <update tableName="PATHMIND_USER">
+            <column name="CITY" value=""/>
+        </update>
+        <update tableName="PATHMIND_USER">
+            <column name="STATE" value=""/>
+        </update>
+        <update tableName="PATHMIND_USER">
+            <column name="COUNTRY" value=""/>
+        </update>
+        <update tableName="PATHMIND_USER">
+            <column name="ZIP" value=""/>
+        </update>
+
+        <addNotNullConstraint tableName="PATHMIND_USER" columnName="FIRSTNAME"/>
+        <addNotNullConstraint tableName="PATHMIND_USER" columnName="LASTNAME"/>
+        <addNotNullConstraint tableName="PATHMIND_USER" columnName="ADDRESS"/>
+        <addNotNullConstraint tableName="PATHMIND_USER" columnName="CITY"/>
+        <addNotNullConstraint tableName="PATHMIND_USER" columnName="STATE"/>
+        <addNotNullConstraint tableName="PATHMIND_USER" columnName="COUNTRY"/>
+        <addNotNullConstraint tableName="PATHMIND_USER" columnName="ZIP"/>
+
+        <!-- Dropping and moving columns that should be on the model layer -->
+        <dropColumn tableName="PROJECT" columnName="NUMBER_OF_OBSERVATIONS"/>
+        <dropColumn tableName="PROJECT" columnName="NUMBER_OF_POSSIBLE_ACTIONS"/>
+        <dropColumn tableName="PROJECT" columnName="GET_OBSERVATION_FOR_REWARD_FUNCTION"/>
+
+        <addColumn tableName="PROJECT">
+            <column name="DATE_CREATED_TEMP" type="DATETIME" />
+        </addColumn>
+        <sql>UPDATE PROJECT SET DATE_CREATED_TEMP = DATE_CREATED</sql>
+        <dropColumn tableName="PROJECT" columnName="DATE_CREATED" />
+        <renameColumn tableName="PROJECT" oldColumnName="DATE_CREATED_TEMP" newColumnName="DATE_CREATED" />
+
+        <!-- Adding (moving) columns from project to model table -->
+        <addColumn tableName="MODEL">
+            <column name="NUMBER_OF_OBSERVATIONS" type="BIGINT"/>
+            <column name="NUMBER_OF_POSSIBLE_ACTIONS" type="DECIMAL"/>
+            <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" type="VARCHAR(5096)"/>
+        </addColumn>
+
+        <update tableName="MODEL">
+            <column name="NUMBER_OF_OBSERVATIONS" valueNumeric="3"/>
+            <column name="NUMBER_OF_POSSIBLE_ACTIONS" valueNumeric="5"/>
+            <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" value=""/>
+        </update>
+
+        <addNotNullConstraint tableName="MODEL" columnName="NUMBER_OF_OBSERVATIONS"/>
+        <addNotNullConstraint tableName="MODEL" columnName="NUMBER_OF_POSSIBLE_ACTIONS"/>
+        <addNotNullConstraint tableName="MODEL" columnName="GET_OBSERVATION_FOR_REWARD_FUNCTION"/>
+
+        <addColumn tableName="MODEL">
+            <column name="DATE_CREATED_TEMP" type="DATETIME" />
+        </addColumn>
+        <sql>UPDATE MODEL SET DATE_CREATED_TEMP = DATE_CREATED</sql>
+        <dropColumn tableName="MODEL" columnName="DATE_CREATED" />
+        <renameColumn tableName="MODEL" oldColumnName="DATE_CREATED_TEMP" newColumnName="DATE_CREATED" />
+
+        <!-- Altering experiment table with new understanding -->
+        <renameColumn tableName="EXPERIMENT" oldColumnName="DATE" newColumnName="DATE_CREATED"/>
+
+        <dropColumn tableName="EXPERIMENT" columnName="RUN_TYPE" />
+        <dropColumn tableName="EXPERIMENT" columnName="SCORE" />
+
+        <addColumn tableName="EXPERIMENT">
+            <column name="DATE_CREATED_TEMP" type="DATETIME" />
+            <column name="TEST_RUN" type="INT" defaultValueNumeric="1"/>
+        </addColumn>
+        <sql>UPDATE EXPERIMENT SET DATE_CREATED_TEMP = DATE_CREATED</sql>
+        <dropColumn tableName="EXPERIMENT" columnName="DATE_CREATED" />
+        <renameColumn tableName="EXPERIMENT" oldColumnName="DATE_CREATED_TEMP" newColumnName="DATE_CREATED" />
+
+        <!-- Altering run table with new understanding -->
+        <addColumn tableName="RUN">
+            <column name="ALGORITHM" type="INT" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="END_DATETIME" type="DATETIME"/>
+        </addColumn>
+
+        <dropDefaultValue tableName="RUN" columnName="RUN_TYPE"/>
+        <addDefaultValue tableName="RUN" columnName="RUN_TYPE" defaultValueNumeric="1"/>
+
     </changeSet>
 
 </databaseChangeLog>

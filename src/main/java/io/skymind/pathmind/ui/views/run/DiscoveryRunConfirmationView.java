@@ -106,10 +106,10 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 		runStatusPanel.setVisible(true);
 
 		// TODO -> Implement.
-		experiment.setStatusEnum(RunStatus.Running);
-		experiment.setAlgorithm(Algorithm.DQN);
-		experiment.setCompleted(RunStatus.Running);
-		experiment.startExperimentNow();
+//		experiment.setStatusEnum(RunStatus.Running);
+//		experiment.setAlgorithm(Algorithm.DQN);
+//		experiment.setCompleted(RunStatus.Running);
+//		experiment.startExperimentNow();
 
 		generateFakeData();
 	}
@@ -122,16 +122,16 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 				for(int x=0; x<30; x++) {
 					Thread.sleep(300);
 					PushUtils.push(this, () -> {
-							experiment.getScores().add(random.nextInt(FakeDataUtils.EXPERIMENT_SCORE_MAX));
+						// TODO -> Re-implement with new data model.
+//							experiment.getScores().add(random.nextInt(FakeDataUtils.EXPERIMENT_SCORE_MAX));
 							runStatusPanel.update() ;
 					});
 				}
 				// Done.
 				PushUtils.push(this, () -> {
-//						runStatusPanel.setRunStatus(RunStatus.Completed);
-//						runStatusPanel.setCompleted("Completed");
-					experiment.setStatusEnum(RunStatus.Completed);
-					experiment.setCompleted(RunStatus.Completed);
+					// TODO -> Re-implement with new data model.
+//					experiment.setStatusEnum(RunStatus.Completed);
+//					experiment.setCompleted(RunStatus.Completed);
 					runStatusPanel.update();
 				});
 			} catch (Exception e) {

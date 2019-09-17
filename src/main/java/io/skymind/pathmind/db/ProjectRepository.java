@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static io.skymind.pathmind.data.db.Tables.MODEL;
@@ -57,19 +58,18 @@ public class ProjectRepository
 
 	// TODO -> Database table for project needs to adjust the types for NumberOfObservations and NumberOfPossibleActions
 	public long insertProject(Project project) {
-    	long projectId = dslContext
-				.insertInto(PROJECT)
-				.set(PROJECT.NAME, project.getName())
-				.set(PROJECT.DATE_CREATED, LocalDate.now())
-				.set(PROJECT.LAST_ACTIVITY_DATE, LocalDate.now())
-				.set(PROJECT.PATHMIND_USER_ID, SecurityUtils.getUser().getId())
-				.set(PROJECT.NUMBER_OF_OBSERVATIONS, project.getNumberOfObservations())
-				.set(PROJECT.NUMBER_OF_POSSIBLE_ACTIONS, project.getNumberOfPossibleActions())
-				.set(PROJECT.GET_OBSERVATION_FOR_REWARD_FUNCTION, project.getGetObservationForRewardFunction())
-				.returning(PROJECT.ID)
-				.fetchOne()
-				.getValue(PROJECT.ID);
-    	project.setId(projectId);
-    	return projectId;
+    	// TODO -> Needs to be re-implemented and adjusted for the new data models.
+		return -1;
+//    	long projectId = dslContext
+//				.insertInto(PROJECT)
+//				.set(PROJECT.NAME, project.getName())
+//				.set(PROJECT.DATE_CREATED, LocalDateTime.now())
+//				.set(PROJECT.LAST_ACTIVITY_DATE, LocalDate.now())
+//				.set(PROJECT.PATHMIND_USER_ID, SecurityUtils.getUser().getId())
+//				.returning(PROJECT.ID)
+//				.fetchOne()
+//				.getValue(PROJECT.ID);
+//    	project.setId(projectId);
+//    	return projectId;
 	}
 }
