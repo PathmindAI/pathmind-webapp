@@ -22,6 +22,10 @@ public class NotificationUtils
 		showCenteredSimpleNotification("Todo    ", Style.Todo);
 	}
 
+	public static void showTodoNotification(String text) {
+		showCenteredSimpleNotification("Todo    : " + text, Style.Todo);
+	}
+
 	public static void showCenteredSimpleNotification(String text, Style style) {
 		Label contentLabel = new Label(text);
 		applyStyle(contentLabel, style);

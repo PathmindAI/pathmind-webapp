@@ -1,28 +1,19 @@
 package io.skymind.pathmind.data;
 
+import io.skymind.pathmind.constants.RunType;
+
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public class Run implements Data
 {
 	private long id;
-
-	@NotNull
 	private String name;
-
-	@NotNull
+	private int runType;
 	private LocalDate date;
-
-	private Experiment experiment;
+	private long experimentId;
 
 	public Run() {
-	}
-
-	public Run(long id, @NotNull String name, @NotNull LocalDate date, Experiment experiment) {
-		this.id = id;
-		this.name = name;
-		this.date = date;
-		this.experiment = experiment;
 	}
 
 	@Override
@@ -50,11 +41,33 @@ public class Run implements Data
 		this.date = date;
 	}
 
-	public Experiment getExperiment() {
-		return experiment;
+	public int getRunType() {
+		return runType;
 	}
 
-	public void setExperiment(Experiment experiment) {
-		this.experiment = experiment;
+	public void setRunType(int runType) {
+		this.runType = runType;
+	}
+
+	/**
+	 * TODO -> Convert to a JOOQ converter.
+	 */
+	public void setRunTypeEnum(RunType runTypeEnum) {
+		this.runType = runTypeEnum.getValue();
+	}
+
+	/**
+	 * TODO -> Convert to a JOOQ converter.
+	 */
+	public RunType getRunTypeEnum() {
+		return RunType.getEnumFromValue(runType);
+	}
+
+	public long getExperimentId() {
+		return experimentId;
+	}
+
+	public void setExperimentId(long experimentId) {
+		this.experimentId = experimentId;
 	}
 }

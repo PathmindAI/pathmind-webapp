@@ -21,7 +21,7 @@ import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.ui.views.project.components.NewProjectLogoWizardPanel;
 import io.skymind.pathmind.ui.views.project.components.wizard.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,12 +114,14 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 			if(!isValidForm())
 				return;
 
-			NotificationUtils.showTodoNotification();
+			NotificationUtils.showTodoNotification("Save project");
+
 
 			// TODO -> DATA MODEL -> Need to insert model, experiment, etc. Looking to consolidate things in the project repository
 //			projectRepository.insertProject(project);
 //			experimentRepository.insertExperimentsForProject(project);
-//			UI.getCurrent().navigate(ExperimentView.class, project.getExperiments().get(0).getId());
+			// TODO -> Send to new experiment ID rather than 4L
+			UI.getCurrent().navigate(NewExperimentView.class, 4L);
 		});
 	}
 

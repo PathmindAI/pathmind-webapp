@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -681857872;
+    private static final long serialVersionUID = -598766020;
 
     /**
      * The reference instance of <code>public.run</code>
@@ -80,16 +80,6 @@ public class Run extends TableImpl<RunRecord> {
      * The column <code>public.run.start_datetime</code>.
      */
     public final TableField<RunRecord, LocalDateTime> START_DATETIME = createField("start_datetime", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
-
-    /**
-     * The column <code>public.run.score</code>.
-     */
-    public final TableField<RunRecord, String> SCORE = createField("score", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
-
-    /**
-     * The column <code>public.run.algorithm</code>.
-     */
-    public final TableField<RunRecord, Integer> ALGORITHM = createField("algorithm", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * The column <code>public.run.end_datetime</code>.

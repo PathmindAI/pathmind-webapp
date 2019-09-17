@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = -374424601;
+    private static final long serialVersionUID = -2037691920;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -69,6 +69,22 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.name</code>.
      */
     public final TableField<PolicyRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+
+    /**
+     * The column <code>public.policy.algorithm</code>.
+     */
+    public final TableField<PolicyRecord, Integer> ALGORITHM = createField("algorithm", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using {@literal <deprecationOnUnknownTypes/>} in your code generator configuration.
+     */
+    @java.lang.Deprecated
+    public final TableField<PolicyRecord, Object> SCORE = createField("score", org.jooq.impl.SQLDataType.OTHER, this, "");
+
+    /**
+     * The column <code>public.policy.hyper_parameters</code>.
+     */
+    public final TableField<PolicyRecord, byte[]> HYPER_PARAMETERS = createField("hyper_parameters", org.jooq.impl.SQLDataType.BLOB, this, "");
 
     /**
      * Create a <code>public.policy</code> table reference

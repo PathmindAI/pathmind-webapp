@@ -19,4 +19,7 @@
         <!-- Improved the data model mapping to the database according to https://docs.google.com/document/d/1FxRjOE6fW2nseu7myk6K6iGNEErmK38zoEMcNdD155M/edit?ts=5d8017fe# -->
         <include file="changelog-0.004.xml" relativeToChangelogFile="true"/>
 
+        <!-- Further adjustments after discussions from the above document -->
+        <include file="changelog-0.005.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
