@@ -21,7 +21,7 @@ public class ProjectFileCheckService
 							log.info("Error : " + x);
 							statusUpdater.updateError("Error : " + x);
 						}*/
-					    File file = new File("D:/pathmind/CoffeeShopAnylogic Exported.zip");
+					    File file = new File("/home/local/JMANDIGITAL/radhakrishnan/Downloads/CoffeeShopAnylogic Exported.zip");
 					    AnylogicFileChecker anylogicfileChecker =new AnylogicFileChecker();
 					    anylogicfileChecker.performFileCheck(file);
 						Thread.sleep(300);
