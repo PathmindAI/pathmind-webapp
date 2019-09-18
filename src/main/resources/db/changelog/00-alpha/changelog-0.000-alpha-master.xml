@@ -22,4 +22,7 @@
         <!-- Further adjustments after discussions from the above document -->
         <include file="changelog-0.005.xml" relativeToChangelogFile="true"/>
 
+        <!-- Small cleanup changes that were missed -->
+        <include file="changelog-0.006.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

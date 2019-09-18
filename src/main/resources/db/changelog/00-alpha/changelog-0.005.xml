@@ -9,7 +9,7 @@
 
     <changeSet author="admin" id="5">
 
-        <!-- Move the score and algorithm columns to the policy table -->
+        <!-- Move the score and algorithm columns to the policy table as well as adding hyper params to the policy table -->
         <dropColumn tableName="RUN" columnName="SCORE"/>
         <dropColumn tableName="RUN" columnName="ALGORITHM"/>
 
@@ -18,9 +18,6 @@
                 <constraints nullable="false"/>
             </column>
             <column name="SCORE" type="json"/>
-        </addColumn>
-
-        <addColumn tableName="POLICY">
             <column name="HYPER_PARAMETERS" type="bytea"/>
         </addColumn>
 

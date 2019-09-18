@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet author="admin" id="6">
+
+        <!-- Changing type for last acitivty date for the project to datetime -->
+        <addColumn tableName="PROJECT">
+            <column name="LAST_ACTIVITY_DATE_TEMP" type="DATETIME" />
+        </addColumn>
+        <sql>UPDATE PROJECT SET LAST_ACTIVITY_DATE_TEMP = LAST_ACTIVITY_DATE</sql>
+        <dropColumn tableName="PROJECT" columnName="LAST_ACTIVITY_DATE" />
+        <renameColumn tableName="PROJECT" oldColumnName="LAST_ACTIVITY_DATE_TEMP" newColumnName="LAST_ACTIVITY_DATE" />
+
+        <!-- Changing type for last acitivty date for the model to datetime -->
+        <addColumn tableName="MODEL">
+            <column name="LAST_ACTIVITY_DATE_TEMP" type="DATETIME" />
+        </addColumn>
+        <sql>UPDATE MODEL SET LAST_ACTIVITY_DATE_TEMP = LAST_ACTIVITY_DATE</sql>
+        <dropColumn tableName="MODEL" columnName="LAST_ACTIVITY_DATE" />
+        <renameColumn tableName="MODEL" oldColumnName="LAST_ACTIVITY_DATE_TEMP" newColumnName="LAST_ACTIVITY_DATE" />
+
+        <!-- Adding the file column to both the model and policy tables -->
+        <addColumn tableName="MODEL">
+            <column name="FILE" type="bytea"/>
+        </addColumn>
+        <addColumn tableName="POLICY">
+            <column name="FILE" type="bytea"/>
+        </addColumn>
+
+        <!-- Changing the NUMBER_OF_POSSIBLE_ACTIONS column in the Model table to be an Integer rather than a BigDecimal -->
+        <modifyDataType tableName="MODEL" columnName="NUMBER_OF_POSSIBLE_ACTIONS" newDataType="INT"/>
+        <!-- Changing the NUMBER_OF_OBSERVATIONS column in the Model table to be an Integer as well -->
+        <modifyDataType tableName="MODEL" columnName="NUMBER_OF_OBSERVATIONS" newDataType="INT"/>
+
+    </changeSet>
+
+</databaseChangeLog>

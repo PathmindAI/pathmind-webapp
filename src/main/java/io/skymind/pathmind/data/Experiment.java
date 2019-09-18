@@ -9,11 +9,13 @@ public class Experiment implements Data
 {
 	private long id;
 	private String name;
+	private long duration;
 	private LocalDateTime dateCreated;
 	private String rewardFunction;
 	private int testRun;
-	private long modelId;
 	private String notes = "Todo";
+
+	private long modelId;
 
 	private List<Run> runs;
 
@@ -112,5 +114,13 @@ public class Experiment implements Data
 
 	public int getTestRun() {
 		return testRun;
+	}
+
+	public long getDuration() {
+		return duration;
+	}
+
+	public void setDuration(long duration) {
+		this.duration = duration;
 	}
 }

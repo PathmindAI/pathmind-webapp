@@ -8,8 +8,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.db.ExperimentRepository;
-import io.skymind.pathmind.db.ModelRepository;
+import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -27,7 +27,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	@Autowired
 	private ExperimentRepository experimentRepository;
 	@Autowired
-	private ModelRepository modelRepository;
+	private ModelDAO modelDAO;
 
 	private long modelId;
 
@@ -60,7 +60,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		return new ActionMenu(
 				new Button("Back to Models", click ->
 						ExceptionWrapperUtils.handleButtonClicked(() -> {
-							UI.getCurrent().navigate(ModelsView.class, modelRepository.getProjectIdForModel(modelId));
+							UI.getCurrent().navigate(ModelsView.class, modelDAO.getProjectIdForModel(modelId));
 						})),
 				new Button("New Experiment", click ->
 						NotificationUtils.showTodoNotification()));

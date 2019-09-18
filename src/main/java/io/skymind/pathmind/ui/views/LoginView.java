@@ -6,22 +6,24 @@ import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.db.ProjectRepository;
-import io.skymind.pathmind.db.UserRepository;
+import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
-import io.skymind.pathmind.ui.views.project.ProjectView;
 import io.skymind.pathmind.ui.views.project.ProjectsView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route("login")
 public class LoginView extends LoginOverlay implements BeforeEnterObserver // , AfterNavigationObserver
 {
-	@Autowired
-	private UserRepository userRepository;
+//	@Autowired
+//	private UserRepository userRepository;
 
 	@Autowired
-	private ProjectRepository projectRepository;
+	private UserDAO userDAO;
+
+	@Autowired
+	private ProjectDAO projectDAO;
 
 	public LoginView()
 	{
@@ -36,7 +38,7 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver // , 
 	}
 
 	private void handleLogin(LoginEvent e) {
-		if(SecurityUtils.isAuthenticatedUser(e.getUsername(), e.getPassword(), userRepository))
+		if(SecurityUtils.isAuthenticatedUser(e.getUsername(), e.getPassword(), userDAO))
 			navigateToEntryView();
 		else
 			setError(true);
@@ -47,7 +49,7 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver // , 
 	}
 
 	private Class getRerouteClass() {
-		if(projectRepository.getProjectsForUser().isEmpty())
+		if(projectDAO.getProjectsForUser(SecurityUtils.getUserId()).isEmpty())
 			return NewProjectView.class;
 		return ProjectsView.class;
 	}

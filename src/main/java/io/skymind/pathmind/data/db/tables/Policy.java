@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = -2037691920;
+    private static final long serialVersionUID = -332759022;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -85,6 +85,11 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.hyper_parameters</code>.
      */
     public final TableField<PolicyRecord, byte[]> HYPER_PARAMETERS = createField("hyper_parameters", org.jooq.impl.SQLDataType.BLOB, this, "");
+
+    /**
+     * The column <code>public.policy.file</code>.
+     */
+    public final TableField<PolicyRecord, byte[]> FILE = createField("file", org.jooq.impl.SQLDataType.BLOB, this, "");
 
     /**
      * Create a <code>public.policy</code> table reference

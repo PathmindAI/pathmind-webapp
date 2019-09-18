@@ -13,8 +13,8 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.db.ExperimentRepository;
-import io.skymind.pathmind.db.ProjectRepository;
+import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -39,7 +39,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private ScreenTitlePanel screenTitlePanel;
 
 	@Autowired
-	private ProjectRepository projectRepository;
+	private ProjectDAO projectDAO;
 	@Autowired
 	private ExperimentRepository experimentRepository;
 
@@ -107,7 +107,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		if(experiment == null)
 			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
 
-		Project project = projectRepository.getProjectForExperiment(experimentId);
+		Project project = projectDAO.getProjectForExperiment(experimentId);
 
 		screenTitlePanel.setSubtitle(project.getName());
 		backToExperimentsButton.addClickListener(click ->

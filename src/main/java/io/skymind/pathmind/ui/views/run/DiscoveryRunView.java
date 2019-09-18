@@ -14,8 +14,8 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.constants.PathmindConstants;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.db.ExperimentRepository;
-import io.skymind.pathmind.db.ProjectRepository;
+import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -50,7 +50,7 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 	// since I don't fully understand the hierarchy I'm just going to pull the project name directly to
 	// confirm that the parameter is correctly wired up.
 	@Autowired
-	private ProjectRepository projectRepository;
+	private ProjectDAO projectDAO;
 	@Autowired
 	private ExperimentRepository experimentRepository;
 
@@ -135,7 +135,7 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 		if(experiment == null)
 			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
 
-		Project project = projectRepository.getProjectForExperiment(experimentId);
+		Project project = projectDAO.getProjectForExperiment(experimentId);
 
 		binder.readBean(experiment);
 

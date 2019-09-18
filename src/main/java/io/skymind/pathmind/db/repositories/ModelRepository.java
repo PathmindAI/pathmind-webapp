@@ -1,4 +1,4 @@
-package io.skymind.pathmind.db;
+package io.skymind.pathmind.db.repositories;
 
 import io.skymind.pathmind.data.Model;
 import org.jooq.DSLContext;
@@ -28,5 +28,21 @@ public class ModelRepository
 				.from(MODEL)
 				.where(MODEL.ID.eq(modelId))
 				.fetchOneInto(Long.class);
+	}
+
+	protected long insertModel(Model model) {
+    	long modelId = dslContext
+				.insertInto(MODEL)
+				.set(MODEL.NAME, model.getName())
+				.set(MODEL.DATE_CREATED, model.getDateCreated())
+				.set(MODEL.LAST_ACTIVITY_DATE, model.getLastActivityDate())
+				.set(MODEL.NUMBER_OF_OBSERVATIONS, model.getNumberOfObservations())
+				.set(MODEL.NUMBER_OF_POSSIBLE_ACTIONS, model.getNumberOfPossibleActions())
+				.set(MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, model.getGetObservationForRewardFunction())
+				.returning(MODEL.ID)
+				.fetchOne()
+				.getValue(MODEL.ID);
+    	model.setId(modelId);
+    	return modelId;
 	}
 }

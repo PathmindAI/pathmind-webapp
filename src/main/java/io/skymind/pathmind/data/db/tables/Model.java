@@ -9,8 +9,6 @@ import io.skymind.pathmind.data.db.Keys;
 import io.skymind.pathmind.data.db.Public;
 import io.skymind.pathmind.data.db.tables.records.ModelRecord;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = 1429684492;
+    private static final long serialVersionUID = -800803427;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -74,19 +72,14 @@ public class Model extends TableImpl<ModelRecord> {
     public final TableField<ModelRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.field("'Initial Model Revision'::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
-     * The column <code>public.model.last_activity_date</code>.
-     */
-    public final TableField<ModelRecord, LocalDate> LAST_ACTIVITY_DATE = createField("last_activity_date", org.jooq.impl.SQLDataType.LOCALDATE.nullable(false), this, "");
-
-    /**
      * The column <code>public.model.number_of_observations</code>.
      */
-    public final TableField<ModelRecord, Long> NUMBER_OF_OBSERVATIONS = createField("number_of_observations", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ModelRecord, Integer> NUMBER_OF_OBSERVATIONS = createField("number_of_observations", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.model.number_of_possible_actions</code>.
      */
-    public final TableField<ModelRecord, BigDecimal> NUMBER_OF_POSSIBLE_ACTIONS = createField("number_of_possible_actions", org.jooq.impl.SQLDataType.NUMERIC.nullable(false), this, "");
+    public final TableField<ModelRecord, Integer> NUMBER_OF_POSSIBLE_ACTIONS = createField("number_of_possible_actions", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.model.get_observation_for_reward_function</code>.
@@ -97,6 +90,16 @@ public class Model extends TableImpl<ModelRecord> {
      * The column <code>public.model.date_created</code>.
      */
     public final TableField<ModelRecord, LocalDateTime> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+
+    /**
+     * The column <code>public.model.last_activity_date</code>.
+     */
+    public final TableField<ModelRecord, LocalDateTime> LAST_ACTIVITY_DATE = createField("last_activity_date", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+
+    /**
+     * The column <code>public.model.file</code>.
+     */
+    public final TableField<ModelRecord, byte[]> FILE = createField("file", org.jooq.impl.SQLDataType.BLOB, this, "");
 
     /**
      * Create a <code>public.model</code> table reference

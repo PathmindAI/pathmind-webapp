@@ -13,8 +13,8 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.db.ExperimentRepository;
-import io.skymind.pathmind.db.ProjectRepository;
+import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -42,19 +42,19 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private TextArea errorsTextArea;
 	private TextArea getObservationTextArea;
 	private TextArea tipsTextArea;
+	private RewardFunctionEditor rewardFunctionEditor;
 
 	// TODO I assume we don't need this here and that the project, etc. are all retrieved from the Experiment
 	// or something along those lines but since I haven't yet setup the fake database schema for experiment
 	// since I don't fully understand the hierarchy I'm just going to pull the project name directly to
 	// confirm that the parameter is correctly wired up.
 	@Autowired
-	private ProjectRepository projectRepository;
+	private ProjectDAO projectDAO;
 	@Autowired
 	private ExperimentRepository experimentRepository;
 
+	// TODO -> Add binder for the project other data fields outside of the experiment object.
 	private Binder<Experiment> binder;
-
-	private RewardFunctionEditor rewardFunctionEditor;
 
 	private Button backToExperimentsButton;
 
@@ -132,16 +132,16 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		if(experiment == null)
 			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
 
-		Project project = projectRepository.getProjectForExperiment(experimentId);
+		Project project = projectDAO.getProjectForExperiment(experimentId);
 
 		binder.readBean(experiment);
 
 		// TODO -> Need to fully use the binder here. Only partially used.
-		getObservationTextArea.setValue(project.getGetObservationForRewardFunction());
-		rewardFunctionEditor.setRewardFunction(experiment.getRewardFunction());
-		screenTitlePanel.setSubtitle(project.getName());
-		backToExperimentsButton.addClickListener(click ->
-				UI.getCurrent().navigate(ExperimentsView.class, experiment.getModelId()));
+//		getObservationTextArea.setValue(project.getGetObservationForRewardFunction());
+//		rewardFunctionEditor.setRewardFunction(experiment.getRewardFunction());
+//		screenTitlePanel.setSubtitle(project.getName());
+//		backToExperimentsButton.addClickListener(click ->
+//				UI.getCurrent().navigate(ExperimentsView.class, experiment.getModelId()));
 	}
 
 	private void save() {

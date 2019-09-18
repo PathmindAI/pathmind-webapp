@@ -1,4 +1,4 @@
-package io.skymind.pathmind.db;
+package io.skymind.pathmind.db.repositories;
 
 import io.skymind.pathmind.data.PathmindUser;
 import org.jooq.DSLContext;

@@ -7,18 +7,16 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.data.renderer.LocalDateRenderer;
+import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
-import io.skymind.pathmind.db.ModelRepository;
-import io.skymind.pathmind.db.ProjectRepository;
+import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
@@ -32,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ModelsView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 	@Autowired
-	private ModelRepository modelRepository;
+	private ModelDAO modelDAO;
 
 	private long projectId;
 
@@ -52,12 +50,12 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 				.setSortable(true);
 //				.setWidth("275px");
 		modelGrid.addColumn(
-				new LocalDateRenderer<>(Model::getDateCreated, DateTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+				new LocalDateTimeRenderer<>(Model::getDateCreated, DateTimeUtils.STANDARD_DATE_TIME_FOMATTER))
 				.setHeader("Date Created")
 				.setSortable(true);
 //				.setWidth("275px");
 		modelGrid.addColumn(
-				new LocalDateRenderer<>(Model::getLastActivityDate, DateTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+				new LocalDateTimeRenderer<>(Model::getLastActivityDate, DateTimeUtils.STANDARD_DATE_TIME_FOMATTER))
 				.setHeader("Last Activity")
 				.setSortable(true);
 //				.setWidth("275px");
@@ -98,7 +96,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) {
-		modelGrid.setItems(modelRepository.getModelsForProject(projectId));
+		modelGrid.setItems(modelDAO.getModelsForProject(projectId));
 	}
 
 	@Override

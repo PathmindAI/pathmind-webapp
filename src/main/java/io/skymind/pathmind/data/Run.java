@@ -4,13 +4,15 @@ import io.skymind.pathmind.constants.RunType;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Run implements Data
 {
 	private long id;
 	private String name;
 	private int runType;
-	private LocalDate date;
+	private LocalDateTime startDateTime;
+	private LocalDateTime endDateTime;
 	private long experimentId;
 
 	public Run() {
@@ -31,14 +33,6 @@ public class Run implements Data
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public LocalDate getDate() {
-		return date;
-	}
-
-	public void setDate(LocalDate date) {
-		this.date = date;
 	}
 
 	public int getRunType() {
@@ -69,5 +63,21 @@ public class Run implements Data
 
 	public void setExperimentId(long experimentId) {
 		this.experimentId = experimentId;
+	}
+
+	public LocalDateTime getStartDateTime() {
+		return startDateTime;
+	}
+
+	public void setStartDateTime(LocalDateTime startDateTime) {
+		this.startDateTime = startDateTime;
+	}
+
+	public LocalDateTime getEndDateTime() {
+		return endDateTime;
+	}
+
+	public void setEndDateTime(LocalDateTime endDateTime) {
+		this.endDateTime = endDateTime;
 	}
 }
