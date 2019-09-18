@@ -5,35 +5,42 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ProjectFileCheckService
 {
 	private static final Logger log = LogManager.getLogger(ProjectFileCheckService.class);
 
 	// TODO -> Remove the showError flag, it's only for testing.
-	public static void checkFile(StatusUpdater statusUpdater, boolean isShowError) {
-		new Thread(() -> {
-				try {
-			/*		for(int x=0; x<10; x++) {
-						log.info("Checking : " + x*10 + "% done");
-						statusUpdater.updateStatus(x/10D);
-						if(isShowError && (x == 5 || x == 8)) {
-							log.info("Error : " + x);
-							statusUpdater.updateError("Error : " + x);
-						}*/
-					    File file = new File("/home/local/JMANDIGITAL/radhakrishnan/Downloads/CoffeeShopAnylogic Exported.zip");
-					    AnylogicFileChecker anylogicfileChecker =new AnylogicFileChecker();
-					    anylogicfileChecker.performFileCheck(file);
-						Thread.sleep(300);
-					//}
-				} catch (InterruptedException e) {
-					log.error(e.getMessage(), e);
-					statusUpdater.updateError("File check interrupted.");
-				} finally {
-					log.info("Checking : completed");
-					statusUpdater.done();
-				}
-		}).start();
+	public static void checkFile(StatusUpdater statusUpdater, boolean isShowError) throws IOException {
+
+
+		Properties props = new Properties();
+		props.load(ProjectFileCheckService.class.getClassLoader().getResourceAsStream("application.properties"));
+		int threadPoolSize = Integer.parseInt(props.getProperty("poolsize"));
+
+
+		Runnable runnable = () -> {
+			try{
+				File file = new File("/home/local/JMANDIGITAL/prithvi/projects/nidrive/testmodel/CoffeeShopAnylogicExported.zip");
+				AnylogicFileChecker anylogicfileChecker =new AnylogicFileChecker();
+				anylogicfileChecker.performFileCheck(file);
+				Thread.sleep(300);
+			}
+		 catch (InterruptedException e) {
+			log.error(e.getMessage(), e);
+			statusUpdater.updateError("File check interrupted.");
+		} finally {
+			log.info("Checking : completed");
+			statusUpdater.done();
+		}
+		};
+
+		ExecutorService executor = Executors.newFixedThreadPool(threadPoolSize);
+		executor.submit(runnable);
 
 	}
 

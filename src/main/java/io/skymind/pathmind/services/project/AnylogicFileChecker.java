@@ -46,11 +46,14 @@ public class AnylogicFileChecker implements FileChecker {
             }
         }catch(Exception e ){
            log.error("Exception in checking jar file "+e);
-        }finally {anylogicFileCheckResult.setFileCheckComplete(true);
-
+        }finally {
+            anylogicFileCheckResult.setFileCheckComplete(true);
             jarTempDir.delete();
         }
         anylogicFileCheckResult.setFileCheckComplete(true);
+        List<String> result = anylogicFileCheckResult.getDefinedHelpers();
+        result.stream()
+                .forEach(System.out::println);
         return anylogicFileCheckResult;
     }
 
@@ -80,7 +83,7 @@ public class AnylogicFileChecker implements FileChecker {
                     fileNameList.add(zipEntry.getName());
                     if(zipEntry.getName().toLowerCase().indexOf(searchFileName) != -1){
                         unZippedJar= unzipFile(zippedFile,searchFileName);
-                        log.error("modelJar PATH file : " + unZippedJar.getAbsolutePath());
+                        log.info("modelJar PATH file : " + unZippedJar.getAbsolutePath());
                     }
                 }
                 anylogicFileCheckResult.setZipContentFileNames(fileNameList);
@@ -121,7 +124,7 @@ public class AnylogicFileChecker implements FileChecker {
 
         try {
             jarFile = new ZipFile(unZippedJar);
-            log.error("jarFile Name : " + jarFile.getName());
+            log.info("jarFile Name : " + jarFile.getName());
             anylogicFileCheckResult.setModelJarFilePresent(true);
         } catch (ZipException ioe) {
             log.error("Error opening jar file" + ioe);

@@ -25,6 +25,7 @@ import io.skymind.pathmind.ui.views.project.components.NewProjectLogoWizardPanel
 import io.skymind.pathmind.ui.views.project.components.wizard.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -94,7 +95,13 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 		createProjectPanel.addButtonClickListener(click -> handleNewProjectClicked());
 		pathminderHelperWizardPanel.addButtonClickListener(click -> handleNextStepClicked());
-		uploadModelWizardPanel.addButtonClickListener(click -> handleUploadWizardClicked());
+		uploadModelWizardPanel.addButtonClickListener(click -> {
+			try {
+				handleUploadWizardClicked();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked(click));
 
 		return WrapperUtils.wrapCenteredFormVertical(
@@ -118,7 +125,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 		});
 	}
 
-	private void handleUploadWizardClicked() {
+	private void handleUploadWizardClicked() throws IOException {
 		uploadModelWizardPanel.showFileCheckPanel();
 		ProjectFileCheckService.checkFile(this, true);
 	}
