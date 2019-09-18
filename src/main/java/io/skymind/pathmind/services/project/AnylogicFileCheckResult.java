@@ -18,7 +18,7 @@ public class AnylogicFileCheckResult implements FileCheckResult{
 
     @Override
     public boolean isFileCheckSuccessful() {
-        return false;
+        return isCorrectFileType() && isModelJarFilePresent() && isHelperPresent() && isHelperUnique();
     }
 
     @Override
@@ -72,6 +72,9 @@ public class AnylogicFileCheckResult implements FileCheckResult{
 
     @Override
     public void setDefinedHelpers(List<String> definedHelpers) { this.definedHelpers = definedHelpers; }
+
+    @Override
+    public void setFileCheckComplete(boolean fileCheckComplete) { this.fileCheckComplete = fileCheckComplete; }
 
 
 }
