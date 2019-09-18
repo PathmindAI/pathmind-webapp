@@ -14,6 +14,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+import io.skymind.pathmind.utils.FileUtils;
 public class AnylogicFileChecker implements FileChecker {
     private static final Logger log = LogManager.getLogger(AnylogicFileChecker.class);
     private static final int BUFFER = 1024;
@@ -125,9 +126,13 @@ public class AnylogicFileChecker implements FileChecker {
     }
 
     // To check the existence of pathmind helpers check
+    //Used static value for file path for unjarred model
     private void checkHelpers(File file, AnylogicFileCheckResult anylogicFileCheckResult) {
-
-        //anylogicFileCheckResult.setDefinedHelpers();
+        List<String> listOfFiles = FileUtils.listFiles("/tmp/af2edc57-7255-4cd0-85bc-ec1cd59eee6712494912324244030621/model");
+        ClassPrinter cp = new ClassPrinter();
+        List<String> listOfHelpers = cp.byteParser(listOfFiles);
+        System.out.println(listOfHelpers);
+        anylogicFileCheckResult.setDefinedHelpers(listOfHelpers);
 
     }
 
