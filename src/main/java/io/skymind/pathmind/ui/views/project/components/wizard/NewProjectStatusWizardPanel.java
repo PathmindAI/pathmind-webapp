@@ -4,7 +4,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
-import io.skymind.pathmind.ui.utils.GuiUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +23,7 @@ public class NewProjectStatusWizardPanel extends VerticalLayout
 
 	public NewProjectStatusWizardPanel()
 	{
-		add(getStatusBar(), GuiUtils.getFullWidthHr());
+		add(getStatusBar());
 
 		setWidthFull();
 		setMargin(false);
