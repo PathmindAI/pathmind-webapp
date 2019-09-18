@@ -42,7 +42,6 @@ public class ClassPrinter extends ClassVisitor {
         return null;
     }
     public void visitEnd() {
-        System.out.println("}");
     }
     public List<String> byteParser(List<String> classFiles) {
         try {

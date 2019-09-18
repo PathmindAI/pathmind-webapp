@@ -5,10 +5,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.UUID;
+import java.nio.file.Path;
+
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -130,11 +132,18 @@ public class AnylogicFileChecker implements FileChecker {
     // To check the existence of pathmind helpers check
     //Used static value for file path for unjarred model
     private void checkHelpers(File file, AnylogicFileCheckResult anylogicFileCheckResult) {
-        List<String> listOfFiles = FileUtils.listFiles("/tmp/af2edc57-7255-4cd0-85bc-ec1cd59eee6712494912324244030621/model");
-        ClassPrinter cp = new ClassPrinter();
-        List<String> listOfHelpers = cp.byteParser(listOfFiles);
-        System.out.println(listOfHelpers);
-        anylogicFileCheckResult.setDefinedHelpers(listOfHelpers);
+        File unJarred =null;
+        try {
+            unJarred = extractArchive(file);
+            List<String> listOfFiles = FileUtils.listFiles(unJarred.toString());
+            ClassPrinter cp = new ClassPrinter();
+            List<String> listOfHelpers = cp.byteParser(listOfFiles);
+            anylogicFileCheckResult.setDefinedHelpers(listOfHelpers);
+            anylogicFileCheckResult.isHelperPresent();
+            anylogicFileCheckResult.isHelperUnique();
+        } catch (IOException ioe){
+            log.error("Error unJarred jar file" + ioe);
+        }
 
     }
 
@@ -180,6 +189,37 @@ public class AnylogicFileChecker implements FileChecker {
             e.printStackTrace();
         }
         return jarTempDir;
+    }
+
+    private File extractArchive(File archiveFile) throws IOException{
+        File destDir = new File(archiveFile.getParent());
+        try {
+            JarFile jar = new JarFile(archiveFile);
+            Enumeration enumEntries = jar.entries();
+            while (enumEntries.hasMoreElements()) {
+                JarEntry file = (JarEntry) enumEntries.nextElement();
+                File fileDir = new File(destDir + File.separator + file.getName());
+                if(!fileDir.exists())
+                {
+                    fileDir.getParentFile().mkdirs();
+                    fileDir = new File(destDir, file.getName());
+                }
+                if (file.isDirectory()) {
+                    continue;
+                }
+                InputStream is = jar.getInputStream(file);
+                FileOutputStream fos = new FileOutputStream(fileDir);
+                while (is.available() > 0) {
+                    fos.write(is.read());
+                }
+                fos.close();
+                is.close();
+            }
+            jar.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        return destDir;
     }
 }
 

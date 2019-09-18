@@ -33,12 +33,20 @@ public class AnylogicFileCheckResult implements FileCheckResult{
 
     @Override
     public boolean isHelperPresent() {
-        return false;
+        if(this.definedHelpers.size()>0){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean isHelperUnique() {
-        return false;
+        if(this.definedHelpers.size()==1){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
