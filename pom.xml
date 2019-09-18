@@ -112,6 +112,13 @@
             <version>2.4.0</version>
         </dependency>
 
+        <!-- Requires Vaadin 13 Compat mode to be enabled! -->
+        <dependency>
+            <groupId>com.juicy</groupId>
+            <artifactId>juicyaceeditor</artifactId>
+            <version>1.0.9</version>
+        </dependency>
+
     </dependencies>
 
     <build>

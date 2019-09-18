@@ -1,22 +1,35 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
+import com.juicy.JuicyAceEditor;
+import com.juicy.mode.JuicyAceMode;
+import com.juicy.theme.JuicyAceTheme;
+import com.vaadin.flow.component.AbstractCompositeField;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextArea;
 
 /**
  * Created as it's own component so that we can easily swap in AceEditor later with minimal code impact.
  */
-public class RewardFunctionEditor extends VerticalLayout
+public class RewardFunctionEditor extends AbstractCompositeField<VerticalLayout, RewardFunctionEditor, String>
 {
-	private TextArea rewardFunctionTextArea = new TextArea("Write Your Reward Function");
+	private JuicyAceEditor editor = new JuicyAceEditor();
 
 	public RewardFunctionEditor() {
-		setSizeFull();
-		rewardFunctionTextArea.setSizeFull();
-		add(rewardFunctionTextArea);
+		super("");
+
+		getContent().setSizeFull();
+		editor.setSizeFull();
+		editor.setTheme(JuicyAceTheme.eclipse);
+		editor.setMode(JuicyAceMode.java);
+
+		getContent().add(
+				new Label("Write Your Reward Function"),
+				editor
+		);
 	}
 
-	public void setRewardFunction(String rewardFunction) {
-		rewardFunctionTextArea.setValue(rewardFunction);
+	@Override
+	protected void setPresentationValue(String s) {
+		editor.setValue(s);
 	}
 }

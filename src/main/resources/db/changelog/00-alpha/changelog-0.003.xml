@@ -106,7 +106,6 @@
             <column name="MODEL_ID" valueComputed="currval('model_id_seq')"/>
             <column name="NAME" value="Experiment 1"/>
             <column name="DATE" valueDate="2019-08-23"/>
-            <column name="DURATION" valueDate="0"/>
             <column name="REWARD_FUNCTION" value="function = some value 3"/>
             <column name="RUN_TYPE" valueNumeric="1"/>
             <column name="SCORE" valueNumeric="0"/>
@@ -123,7 +122,6 @@
             <column name="MODEL_ID" valueComputed="currval('model_id_seq')"/>
             <column name="NAME" value="Experiment 1"/>
             <column name="DATE" valueDate="2019-08-23"/>
-            <column name="DURATION" valueDate="0"/>
             <column name="REWARD_FUNCTION" value="function = some value 3"/>
             <column name="RUN_TYPE" valueNumeric="1"/>
             <column name="SCORE" valueNumeric="0"/>
@@ -140,7 +138,6 @@
             <column name="MODEL_ID" valueComputed="currval('model_id_seq')"/>
             <column name="NAME" value="Experiment 1"/>
             <column name="DATE" valueDate="2019-08-23"/>
-            <column name="DURATION" valueDate="0"/>
             <column name="REWARD_FUNCTION" value="function = some value 3"/>
             <column name="RUN_TYPE" valueNumeric="1"/>
             <column name="SCORE" valueNumeric="0"/>
@@ -167,7 +164,6 @@
             <column name="MODEL_ID" valueComputed="currval('model_id_seq')"/>
             <column name="NAME" value="Experiment 1"/>
             <column name="DATE" valueDate="2019-08-23"/>
-            <column name="DURATION" valueDate="0"/>
             <column name="REWARD_FUNCTION" value="function = some value 3"/>
             <column name="RUN_TYPE" valueNumeric="1"/>
             <column name="SCORE" valueNumeric="0"/>

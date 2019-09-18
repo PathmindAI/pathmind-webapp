@@ -91,7 +91,12 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 		binder = new Binder<>(Experiment.class);
 
 		rewardFunctionEditor = new RewardFunctionEditor();
+		binder.forField(rewardFunctionEditor)
+				.bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
+
+
 		experimentFormPanel = new ExperimentFormPanel(binder);
+
 
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 				getLeftPanel(),
@@ -139,7 +144,7 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 
 		binder.readBean(experiment);
 
-		rewardFunctionEditor.setRewardFunction(experiment.getRewardFunction());
+		//rewardFunctionEditor.setRewardFunction(experiment.getRewardFunction());
 		screenTitlePanel.setSubtitle(project.getName());
 		backToProjectButton.addClickListener(click ->
 				UI.getCurrent().navigate(ProjectView.class, project.getId()));

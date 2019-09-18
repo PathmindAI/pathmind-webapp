@@ -65,9 +65,6 @@
             <column name="DATE" type="DATE">
                 <constraints nullable="false"/>
             </column>
-            <column name="DURATION" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
             <column name="REWARD_FUNCTION" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
@@ -100,7 +97,6 @@
             <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
             <column name="NAME" value="Experiment 1"/>
             <column name="DATE" valueDate="2019-08-23"/>
-            <column name="DURATION" valueDate="500"/>
             <column name="REWARD_FUNCTION" value="function = some value 1"/>
             <column name="RUN_TYPE" valueNumeric="1"/>
             <column name="SCORE" valueNumeric="10"/>
@@ -109,7 +105,6 @@
             <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
             <column name="NAME" value="Experiment 2"/>
             <column name="DATE" valueDate="2019-08-23"/>
-            <column name="DURATION" valueDate="368"/>
             <column name="REWARD_FUNCTION" value="function = some value 2"/>
             <column name="RUN_TYPE" valueNumeric="1"/>
             <column name="SCORE" valueNumeric="20"/>
@@ -118,7 +113,6 @@
             <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
             <column name="NAME" value="Experiment 3"/>
             <column name="DATE" valueDate="2019-08-23"/>
-            <column name="DURATION" valueDate="13582"/>
             <column name="REWARD_FUNCTION" value="function = some value 3"/>
             <column name="RUN_TYPE" valueNumeric="2"/>
             <column name="SCORE" valueNumeric="30"/>
