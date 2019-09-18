@@ -1,5 +1,7 @@
 package io.skymind.pathmind.services.training;
 
+import io.skymind.pathmind.constants.RunStatus;
+
 import java.util.Map;
 
 public interface ExecutionProvider {
@@ -18,6 +20,13 @@ public interface ExecutionProvider {
      * @param jobHandle Job Handle
      */
     public void stop(String jobHandle);
+
+    /**
+     * Collect the status of the training job identified by the given job handle.
+     * @param jobHandle Job Handle
+     * @return The current status
+     */
+    public RunStatus status(String jobHandle);
 
     /**
      * Collects the current progress of the training job identified by the given job handle.

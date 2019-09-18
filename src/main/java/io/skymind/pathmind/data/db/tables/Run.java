@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -147505064;
+    private static final long serialVersionUID = 1151695921;
 
     /**
      * The reference instance of <code>public.run</code>
@@ -85,6 +85,11 @@ public class Run extends TableImpl<RunRecord> {
      * The column <code>public.run.score</code>.
      */
     public final TableField<RunRecord, String> SCORE = createField("score", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
+
+    /**
+     * The column <code>public.run.status</code>.
+     */
+    public final TableField<RunRecord, Integer> STATUS = createField("status", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>public.run</code> table reference

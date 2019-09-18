@@ -47,4 +47,11 @@ public class PostgresExecutionProviderMetaDataService implements ExecutionProvid
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void delete(Class<?> providerClazz, String key) {
+        ctx.deleteFrom(tbl)
+                .where(tbl.PROVIDER_CLASS.eq(providerClazz.getCanonicalName()).and(tbl.KEY.eq(key)));
+
+    }
 }

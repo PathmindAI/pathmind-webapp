@@ -36,8 +36,13 @@ public class RescaleExecutionProviderTest {
                 );
                 return (T)map.get(key);
             }
+
+            @Override
+            public void delete(Class<?> providerClazz, String key) {
+                throw new NotImplementedException("Not needed here");
+            }
         };
-        final RescaleExecutionProvider provider = new RescaleExecutionProvider(client, metaDataService);
+        final RescaleExecutionProvider provider = new RescaleExecutionProvider(client, new RescaleMetaDataService(metaDataService));
 
         final ExecutionEnvironment env = new ExecutionEnvironment(
                 AnyLogic.VERSION_8_5,
@@ -46,7 +51,7 @@ public class RescaleExecutionProviderTest {
         );
 
         final JobSpec spec = new JobSpec(
-                0, 0, 0, "", "", "reward = -(before[0] - after[0]);", 4, 8, 100, env, RunType.TEST, null
+                0, 0, 0, 0, "", "", "reward = -(before[0] - after[0]);", 4, 8, 100, env, RunType.TEST, null
         );
 
         System.out.println("provider.execute(spec, env) = " + provider.execute(spec));

@@ -1,5 +1,7 @@
 package io.skymind.pathmind.services.training;
 
+import io.skymind.pathmind.services.training.progress.Progress;
+import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
@@ -11,7 +13,7 @@ import static org.junit.Assert.*;
 public class ProgressInterpreterTest {
     @Test
     public void testInterpreter(){
-        final ProgressInterpreter.Progress progress = ProgressInterpreter.interpret(Map.entry(name, fileContents));
+        final Progress progress = ProgressInterpreter.interpret(Map.entry(name, fileContents));
 
         assertEquals("PPO", progress.getAlgorithm());
         assertEquals(LocalDateTime.parse("2019-08-05_13-56-45", DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss")), progress.getStartedAt());

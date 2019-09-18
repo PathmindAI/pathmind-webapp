@@ -1,11 +1,11 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
+import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.cloud.rescale.api.RescaleRestApiClient;
 import io.skymind.pathmind.services.training.cloud.rescale.api.dto.*;
-import io.skymind.pathmind.services.training.metadata.ExecutionProviderMetaDataService;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
@@ -39,9 +39,9 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     );
 
     private final RescaleRestApiClient client;
-    private final ExecutionProviderMetaDataService metaDataService;
+    private final RescaleMetaDataService metaDataService;
 
-    public RescaleExecutionProvider(RescaleRestApiClient client, ExecutionProviderMetaDataService metaDataService) {
+    public RescaleExecutionProvider(RescaleRestApiClient client, RescaleMetaDataService metaDataService) {
         this.client = client;
         this.metaDataService = metaDataService;
     }
@@ -73,7 +73,9 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
 
         // Start actual execution of the job
-        return startTrainingRun(job, instructions, files);
+        final String rescaleJobId = startTrainingRun(job, instructions, files);
+        metaDataService.put(metaDataService.runIdKey(job.getRunId()), rescaleJobId);
+        return rescaleJobId;
     }
 
     @Override
@@ -82,48 +84,66 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public Map<String, String> progress(String jobHandle) {
+    public RunStatus status(String jobHandle) {
         final List<JobStatus> statuses = client.jobStatusHistory(jobHandle).getResults();
-        if(statuses.size() > 0){
-            if(statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))){
-                // Job is done, we have to look at finished files
-                return client.outputFiles(jobHandle, "1").getResults()
-                        .parallelStream()
-                        .filter(it -> it.getPath().endsWith("progress.csv"))
-                        .map(it -> {
-                            final String key = new File(it.getPath()).getParent();
-                            final String contents = new String(client.fileContents(it.getId()));
-                            return Map.entry(key, contents);
-                        })
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            }else if(statuses.stream().anyMatch(it -> it.getStatus().equals("Executing"))){
-                // Job is still running, we have to tail files
-                return client.tailFiles(jobHandle, "1")
-                        .parallelStream()
-                        .filter(it -> it.getPath().endsWith("progress.csv"))
-                        .map(it -> {
-                            final String key = new File(it.getPath()).getParent();
-                            final String contents = new String(client.tail(jobHandle, "1", it.getPath()));
-                            return Map.entry(key, contents);
-                        })
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        if (statuses.size() > 0) {
+            if (statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))) {
+                final JobStatus status = statuses.stream().filter(it -> it.getStatus().equals("Completed")).findFirst().get();
+                if (status.getStatusReason().equals("Completed successfully")) {
+                    return RunStatus.Completed;
+                } else {
+                    return RunStatus.Error;
+                }
+            } else if (statuses.stream().anyMatch(it -> it.getStatus().equals("Executing"))) {
+                return RunStatus.Running;
             }
         }
+
+        return RunStatus.Starting;
+    }
+
+    @Override
+    public Map<String, String> progress(String jobHandle) {
+        final RunStatus runStatus = status(jobHandle);
+        if (runStatus.equals(RunStatus.Completed)) {
+            // Job is done, we have to look at finished files
+            return client.outputFiles(jobHandle, "1").getResults()
+                    .parallelStream()
+                    .filter(it -> it.getPath().endsWith("progress.csv"))
+                    .map(it -> {
+                        final String key = new File(it.getPath()).getParent();
+                        final String contents = new String(client.fileContents(it.getId()));
+                        return Map.entry(key, contents);
+                    })
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        } else if (runStatus.equals(RunStatus.Running)) {
+            // Job is still running, we have to tail files
+            return client.tailFiles(jobHandle, "1")
+                    .parallelStream()
+                    .filter(it -> it.getPath().endsWith("progress.csv"))
+                    .map(it -> {
+                        final String key = new File(it.getPath()).getParent();
+                        final String contents = new String(client.tail(jobHandle, "1", it.getPath()));
+                        return Map.entry(key, contents);
+                    })
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        }
+
         return Collections.emptyMap();
     }
 
     @Override
     public byte[] policy(String jobHandle, String trainingRun) {
-        final List<JobStatus> statuses = client.jobStatusHistory(jobHandle).getResults();
-        if(statuses.size() > 0){
-            if(statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))){
-                return client.outputFiles(jobHandle, "1").getResults()
-                        .stream()
-                        .filter(it -> it.getPath().endsWith(trainingRun+".zip"))
-                        .map(it -> client.fileContents(it.getId()))
-                        .findFirst().orElseGet(() -> null);
-            }
+        final RunStatus runStatus = status(jobHandle);
+
+        if (runStatus.equals(RunStatus.Completed)) {
+            return client.outputFiles(jobHandle, "1").getResults()
+                    .stream()
+                    .filter(it -> it.getPath().endsWith(trainingRun + ".zip"))
+                    .map(it -> client.fileContents(it.getId()))
+                    .findFirst().orElseGet(() -> null);
         }
 
         return null;
@@ -131,14 +151,14 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     @Override
     public String console(String jobHandle) {
-        final List<JobStatus> statuses = client.jobStatusHistory(jobHandle).getResults();
-        if(statuses.size() > 0){
-            if(statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))){
-               return client.consoleOutput(jobHandle, "1");
-            }else if(statuses.stream().anyMatch(it -> it.getStatus().equals("Executing"))){
-                return client.tailConsole(jobHandle, "1");
-            }
+        final RunStatus runStatus = status(jobHandle);
+
+        if (runStatus.equals(RunStatus.Completed)) {
+            return client.consoleOutput(jobHandle, "1");
+        } else if (runStatus.equals(RunStatus.Running)) {
+            return client.tailConsole(jobHandle, "1");
         }
+
         return null;
     }
 
@@ -147,16 +167,16 @@ public class RescaleExecutionProvider implements ExecutionProvider {
      * Get Model file from database if it wasn't uploaded yet.
      */
     private String uploadModelIfNeeded(JobSpec job) {
-        final String fileKey = "modelFileId:" + job.getModelId();
-        String fileId = metaDataService.get(this.getClass(), fileKey, String.class);
-        if(fileId == null){
+        final String fileKey = metaDataService.modelFileKey(job.getModelId());
+        String fileId = metaDataService.get(fileKey, String.class);
+        if (fileId == null) {
             final RescaleFile rescaleFile;
             try {
                 rescaleFile = client.fileUpload(job.getModelInputStream(), "model.zip");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            metaDataService.put(this.getClass(), fileKey, rescaleFile.getId());
+            metaDataService.put(fileKey, rescaleFile.getId());
             fileId = rescaleFile.getId();
         }
 
@@ -165,7 +185,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     private String startTrainingRun(JobSpec job, List<String> instructions, List<FileReference> files) {
         final Job rescaleJob = Job.create(
-                "user-" + job.getUserId() + "-model-" + job.getModelId() + "-rllib-" + job.getExperimentId(),
+                String.format("user-%d-model-%d-rllib-%d-run-%d", job.getUserId(), job.getModelId(), job.getExperimentId(), job.getRunId()),
                 JobAnalysis.create(String.join(" ;\n", instructions), files)
         );
 
@@ -184,8 +204,8 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     }
 
 
-    private String var(String name, String value){
-        return "export "+name+"='"+value.replace("'", "\\'")+"'; ";
+    private String var(String name, String value) {
+        return "export " + name + "='" + value.replace("'", "\\'") + "'; ";
     }
 
     private void setupVariables(JobSpec job, List<String> instructions) {
@@ -225,7 +245,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     }
 
     private void installRllib(RLLib rllibVersion, List<String> instructions, List<FileReference> files) {
-        switch (rllibVersion){
+        switch (rllibVersion) {
             case VERSION_0_7_0:
                 instructions.addAll(Arrays.asList(
                         // Setup JVM
@@ -249,23 +269,23 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "mkdir work;",
                         "cd work;",
                         "unzip ../nativerl-1.0.0-SNAPSHOT-bin.zip;" +
-                        "rm ../nativerl-1.0.0-SNAPSHOT-bin.zip;" +
-                        "mv nativerl-bin/* .;" +
-                        "mv examples/train.sh .;",
+                                "rm ../nativerl-1.0.0-SNAPSHOT-bin.zip;" +
+                                "mv nativerl-bin/* .;" +
+                                "mv examples/train.sh .;",
                         "cd .."
-                        ));
+                ));
                 files.addAll(rllibMap.getOrDefault(rllibVersion, List.of())
                         .stream()
                         .map(it -> new FileReference(it, false))
                         .collect(Collectors.toList()));
                 break;
             default:
-                throw new IllegalArgumentException("Unsupported RLLib Version: "+rllibVersion);
+                throw new IllegalArgumentException("Unsupported RLLib Version: " + rllibVersion);
         }
     }
 
     private void installAnyLogic(AnyLogic anylogicVersion, List<String> instructions, List<FileReference> files) {
-        switch (anylogicVersion){
+        switch (anylogicVersion) {
             case VERSION_8_5:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip;",
@@ -279,12 +299,12 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         .collect(Collectors.toList()));
                 break;
             default:
-                throw new IllegalArgumentException("Unsupported AnyLogic Version: "+anylogicVersion);
+                throw new IllegalArgumentException("Unsupported AnyLogic Version: " + anylogicVersion);
         }
     }
 
     private void installHelper(PathmindHelper pathmindHelperVersion, List<String> instructions, List<FileReference> files) {
-        switch (pathmindHelperVersion){
+        switch (pathmindHelperVersion) {
             case VERSION_0_0_24:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/;"
@@ -295,7 +315,9 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         .collect(Collectors.toList()));
                 break;
             default:
-                throw new IllegalArgumentException("Unsupported Pathmind Helper Version: "+pathmindHelperVersion);
+                throw new IllegalArgumentException("Unsupported Pathmind Helper Version: " + pathmindHelperVersion);
         }
     }
+
+
 }

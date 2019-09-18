@@ -7,6 +7,7 @@ public class JobSpec {
     private final int userId;
     private final int modelId;
     private final int experimentId;
+    private final int runId;
 
     private final String variables;
     private final String reset;
@@ -21,10 +22,11 @@ public class JobSpec {
     private final RunType type;
     private final Supplier<InputStream> modelFileSupplier;
 
-    public JobSpec(int userId, int modelId, int experimentId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, Supplier<InputStream> modelFileSupplier) {
+    public JobSpec(int userId, int modelId, int experimentId, int runId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, Supplier<InputStream> modelFileSupplier) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
+        this.runId = runId;
         this.variables = variables;
         this.reset = reset;
         this.reward = reward;
@@ -86,5 +88,9 @@ public class JobSpec {
 
     public ExecutionEnvironment getEnv() {
         return env;
+    }
+
+    public int getRunId() {
+        return runId;
     }
 }

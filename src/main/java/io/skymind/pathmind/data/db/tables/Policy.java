@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = -374424601;
+    private static final long serialVersionUID = 1761932275;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -69,6 +69,17 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.name</code>.
      */
     public final TableField<PolicyRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+
+    /**
+     * The column <code>public.policy.external_id</code>.
+     */
+    public final TableField<PolicyRecord, String> EXTERNAL_ID = createField("external_id", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
+
+    /**
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using {@literal <deprecationOnUnknownTypes/>} in your code generator configuration.
+     */
+    @java.lang.Deprecated
+    public final TableField<PolicyRecord, Object> PROGRESS = createField("progress", org.jooq.impl.DefaultDataType.getDefaultDataType("\"pg_catalog\".\"jsonb\""), this, "");
 
     /**
      * Create a <code>public.policy</code> table reference
@@ -116,7 +127,7 @@ public class Policy extends TableImpl<PolicyRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.POLICY_PKEY);
+        return Arrays.<Index>asList(Indexes.POLICY_PKEY, Indexes.POLICY_RUN_ID_EXTERNAL_ID_KEY);
     }
 
     /**
@@ -132,7 +143,7 @@ public class Policy extends TableImpl<PolicyRecord> {
      */
     @Override
     public List<UniqueKey<PolicyRecord>> getKeys() {
-        return Arrays.<UniqueKey<PolicyRecord>>asList(Keys.POLICY_PKEY);
+        return Arrays.<UniqueKey<PolicyRecord>>asList(Keys.POLICY_PKEY, Keys.POLICY_RUN_ID_EXTERNAL_ID_KEY);
     }
 
     /**
