@@ -30,7 +30,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7<Long, Long, String, Integer, LocalDateTime, LocalDateTime, Integer> {
 
-    private static final long serialVersionUID = -441664533;
+    private static final long serialVersionUID = -601843835;
 
     /**
      * Setter for <code>public.run.id</code>.
@@ -89,30 +89,30 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     }
 
     /**
-     * Setter for <code>public.run.start_datetime</code>.
+     * Setter for <code>public.run.started_at</code>.
      */
-    public void setStartDatetime(LocalDateTime value) {
+    public void setStartedAt(LocalDateTime value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>public.run.start_datetime</code>.
+     * Getter for <code>public.run.started_at</code>.
      */
-    public LocalDateTime getStartDatetime() {
+    public LocalDateTime getStartedAt() {
         return (LocalDateTime) get(4);
     }
 
     /**
-     * Setter for <code>public.run.end_datetime</code>.
+     * Setter for <code>public.run.stopped_at</code>.
      */
-    public void setEndDatetime(LocalDateTime value) {
+    public void setStoppedAt(LocalDateTime value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>public.run.end_datetime</code>.
+     * Getter for <code>public.run.stopped_at</code>.
      */
-    public LocalDateTime getEndDatetime() {
+    public LocalDateTime getStoppedAt() {
         return (LocalDateTime) get(5);
     }
 
@@ -199,7 +199,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Field<LocalDateTime> field5() {
-        return Run.RUN.START_DATETIME;
+        return Run.RUN.STARTED_AT;
     }
 
     /**
@@ -207,7 +207,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Field<LocalDateTime> field6() {
-        return Run.RUN.END_DATETIME;
+        return Run.RUN.STOPPED_AT;
     }
 
     /**
@@ -255,7 +255,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public LocalDateTime component5() {
-        return getStartDatetime();
+        return getStartedAt();
     }
 
     /**
@@ -263,7 +263,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public LocalDateTime component6() {
-        return getEndDatetime();
+        return getStoppedAt();
     }
 
     /**
@@ -311,7 +311,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public LocalDateTime value5() {
-        return getStartDatetime();
+        return getStartedAt();
     }
 
     /**
@@ -319,7 +319,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public LocalDateTime value6() {
-        return getEndDatetime();
+        return getStoppedAt();
     }
 
     /**
@@ -371,7 +371,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public RunRecord value5(LocalDateTime value) {
-        setStartDatetime(value);
+        setStartedAt(value);
         return this;
     }
 
@@ -380,7 +380,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public RunRecord value6(LocalDateTime value) {
-        setEndDatetime(value);
+        setStoppedAt(value);
         return this;
     }
 
@@ -422,15 +422,15 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     /**
      * Create a detached, initialised RunRecord
      */
-    public RunRecord(Long id, Long experimentId, String name, Integer runType, LocalDateTime startDatetime, LocalDateTime endDatetime, Integer status) {
+    public RunRecord(Long id, Long experimentId, String name, Integer runType, LocalDateTime startedAt, LocalDateTime stoppedAt, Integer status) {
         super(Run.RUN);
 
         set(0, id);
         set(1, experimentId);
         set(2, name);
         set(3, runType);
-        set(4, startDatetime);
-        set(5, endDatetime);
+        set(4, startedAt);
+        set(5, stoppedAt);
         set(6, status);
     }
 }

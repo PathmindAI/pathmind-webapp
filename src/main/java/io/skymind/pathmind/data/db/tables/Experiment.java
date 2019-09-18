@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = -809449022;
+    private static final long serialVersionUID = -927908809;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -62,6 +62,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     public final TableField<ExperimentRecord, Long> ID = createField("id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
+     * The column <code>public.experiment.model_id</code>.
+     */
+    public final TableField<ExperimentRecord, Long> MODEL_ID = createField("model_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+
+    /**
      * The column <code>public.experiment.name</code>.
      */
     public final TableField<ExperimentRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
@@ -72,24 +77,14 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     public final TableField<ExperimentRecord, String> REWARD_FUNCTION = createField("reward_function", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
 
     /**
-     * The column <code>public.experiment.model_id</code>.
-     */
-    public final TableField<ExperimentRecord, Long> MODEL_ID = createField("model_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
-
-    /**
-     * The column <code>public.experiment.notes</code>.
-     */
-    public final TableField<ExperimentRecord, String> NOTES = createField("notes", org.jooq.impl.SQLDataType.CLOB.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::text", org.jooq.impl.SQLDataType.CLOB)), this, "");
-
-    /**
      * The column <code>public.experiment.date_created</code>.
      */
-    public final TableField<ExperimentRecord, LocalDateTime> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+    public final TableField<ExperimentRecord, LocalDateTime> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
 
     /**
-     * The column <code>public.experiment.test_run</code>.
+     * The column <code>public.experiment.last_activity_date</code>.
      */
-    public final TableField<ExperimentRecord, Integer> TEST_RUN = createField("test_run", org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+    public final TableField<ExperimentRecord, LocalDateTime> LAST_ACTIVITY_DATE = createField("last_activity_date", org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
 
     /**
      * Create a <code>public.experiment</code> table reference

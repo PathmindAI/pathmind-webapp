@@ -8,24 +8,14 @@ import io.skymind.pathmind.data.db.Indexes;
 import io.skymind.pathmind.data.db.Keys;
 import io.skymind.pathmind.data.db.Public;
 import io.skymind.pathmind.data.db.tables.records.RunRecord;
+import org.jooq.*;
+import org.jooq.impl.DSL;
+import org.jooq.impl.TableImpl;
 
+import javax.annotation.Generated;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.annotation.Generated;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Index;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.UniqueKey;
-import org.jooq.impl.DSL;
-import org.jooq.impl.TableImpl;
 
 
 /**
@@ -41,7 +31,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -1423383787;
+    private static final long serialVersionUID = 1620984951;
 
     /**
      * The reference instance of <code>public.run</code>
@@ -74,17 +64,17 @@ public class Run extends TableImpl<RunRecord> {
     /**
      * The column <code>public.run.run_type</code>.
      */
-    public final TableField<RunRecord, Integer> RUN_TYPE = createField("run_type", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+    public final TableField<RunRecord, Integer> RUN_TYPE = createField("run_type", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
-     * The column <code>public.run.start_datetime</code>.
+     * The column <code>public.run.started_at</code>.
      */
-    public final TableField<RunRecord, LocalDateTime> START_DATETIME = createField("start_datetime", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+    public final TableField<RunRecord, LocalDateTime> STARTED_AT = createField("started_at", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
 
     /**
-     * The column <code>public.run.end_datetime</code>.
+     * The column <code>public.run.stopped_at</code>.
      */
-    public final TableField<RunRecord, LocalDateTime> END_DATETIME = createField("end_datetime", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+    public final TableField<RunRecord, LocalDateTime> STOPPED_AT = createField("stopped_at", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
 
     /**
      * The column <code>public.run.status</code>.

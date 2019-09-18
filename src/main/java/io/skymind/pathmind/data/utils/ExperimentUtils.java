@@ -1,6 +1,5 @@
 package io.skymind.pathmind.data.utils;
 
-import io.skymind.pathmind.constants.TestRun;
 import io.skymind.pathmind.data.Experiment;
 
 import java.time.LocalDateTime;
@@ -15,7 +14,6 @@ public class ExperimentUtils
 		Experiment experiment = new Experiment();
 		experiment.setName("Experiment #" + experimentNumber);
 		experiment.setDateCreated(LocalDateTime.now());
-		experiment.setTestRunEnum(TestRun.Draft);
 		return experiment;
 	}
 

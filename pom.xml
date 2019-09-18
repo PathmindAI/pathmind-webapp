@@ -170,6 +170,7 @@
                             <includes>.*</includes>
                             <excludes>Databasechangelog.*</excludes>
                             <inputSchema>public</inputSchema>
+                            <recordTimestampFields>LAST_ACTIVITY_DATE</recordTimestampFields>
                         </database>
                         <target>
                             <packageName>io.skymind.pathmind.data.db</packageName>
