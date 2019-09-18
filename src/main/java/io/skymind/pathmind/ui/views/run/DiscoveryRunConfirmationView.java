@@ -8,14 +8,11 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.constants.Algorithm;
-import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.data.utils.FakeDataUtils;
-import io.skymind.pathmind.db.ExperimentRepository;
-import io.skymind.pathmind.db.ProjectRepository;
+import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -43,7 +40,7 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 	private Experiment experiment;
 
 	@Autowired
-	private ProjectRepository projectRepository;
+	private ProjectDAO projectDAO;
 	@Autowired
 	private ExperimentRepository experimentRepository;
 
@@ -106,10 +103,10 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 		runStatusPanel.setVisible(true);
 
 		// TODO -> Implement.
-		experiment.setStatusEnum(RunStatus.Running);
-		experiment.setAlgorithm(Algorithm.DQN);
-		experiment.setCompleted(RunStatus.Running);
-		experiment.startExperimentNow();
+//		experiment.setStatusEnum(RunStatus.Running);
+//		experiment.setAlgorithm(Algorithm.DQN);
+//		experiment.setCompleted(RunStatus.Running);
+//		experiment.startExperimentNow();
 
 		generateFakeData();
 	}
@@ -122,16 +119,16 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 				for(int x=0; x<30; x++) {
 					Thread.sleep(300);
 					PushUtils.push(this, () -> {
-							experiment.getScores().add(random.nextInt(FakeDataUtils.EXPERIMENT_SCORE_MAX));
+						// TODO -> Re-implement with new data model.
+//							experiment.getScores().add(random.nextInt(FakeDataUtils.EXPERIMENT_SCORE_MAX));
 							runStatusPanel.update() ;
 					});
 				}
 				// Done.
 				PushUtils.push(this, () -> {
-//						runStatusPanel.setRunStatus(RunStatus.Completed);
-//						runStatusPanel.setCompleted("Completed");
-					experiment.setStatusEnum(RunStatus.Completed);
-					experiment.setCompleted(RunStatus.Completed);
+					// TODO -> Re-implement with new data model.
+//					experiment.setStatusEnum(RunStatus.Completed);
+//					experiment.setCompleted(RunStatus.Completed);
 					runStatusPanel.update();
 				});
 			} catch (Exception e) {
@@ -153,7 +150,7 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
 		runStatusPanel.setExperiment(experiment);
 
-		Project project = projectRepository.getProjectForExperiment(experimentId);
+		Project project = projectDAO.getProjectForExperiment(experimentId);
 		screenTitlePanel.setSubtitle(project.getName());
 	}
 }

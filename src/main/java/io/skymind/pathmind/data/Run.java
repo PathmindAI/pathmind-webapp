@@ -1,28 +1,21 @@
 package io.skymind.pathmind.data;
 
+import io.skymind.pathmind.constants.RunType;
+
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Run implements Data
 {
 	private long id;
-
-	@NotNull
 	private String name;
-
-	@NotNull
-	private LocalDate date;
-
-	private Experiment experiment;
+	private int runType;
+	private LocalDateTime startDateTime;
+	private LocalDateTime endDateTime;
+	private long experimentId;
 
 	public Run() {
-	}
-
-	public Run(long id, @NotNull String name, @NotNull LocalDate date, Experiment experiment) {
-		this.id = id;
-		this.name = name;
-		this.date = date;
-		this.experiment = experiment;
 	}
 
 	@Override
@@ -42,19 +35,49 @@ public class Run implements Data
 		this.name = name;
 	}
 
-	public LocalDate getDate() {
-		return date;
+	public int getRunType() {
+		return runType;
 	}
 
-	public void setDate(LocalDate date) {
-		this.date = date;
+	public void setRunType(int runType) {
+		this.runType = runType;
 	}
 
-	public Experiment getExperiment() {
-		return experiment;
+	/**
+	 * TODO -> Convert to a JOOQ converter.
+	 */
+	public void setRunTypeEnum(RunType runTypeEnum) {
+		this.runType = runTypeEnum.getValue();
 	}
 
-	public void setExperiment(Experiment experiment) {
-		this.experiment = experiment;
+	/**
+	 * TODO -> Convert to a JOOQ converter.
+	 */
+	public RunType getRunTypeEnum() {
+		return RunType.getEnumFromValue(runType);
+	}
+
+	public long getExperimentId() {
+		return experimentId;
+	}
+
+	public void setExperimentId(long experimentId) {
+		this.experimentId = experimentId;
+	}
+
+	public LocalDateTime getStartDateTime() {
+		return startDateTime;
+	}
+
+	public void setStartDateTime(LocalDateTime startDateTime) {
+		this.startDateTime = startDateTime;
+	}
+
+	public LocalDateTime getEndDateTime() {
+		return endDateTime;
+	}
+
+	public void setEndDateTime(LocalDateTime endDateTime) {
+		this.endDateTime = endDateTime;
 	}
 }

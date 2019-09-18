@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.run;
+package io.skymind.pathmind.ui.views.experiment;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -11,7 +11,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.constants.PathmindConstants;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
@@ -20,22 +19,21 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.components.ExperimentFormPanel;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
-import io.skymind.pathmind.ui.views.project.ProjectView;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.ui.views.run.DiscoveryRunConfirmationView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @StyleSheet("frontend://styles/styles.css")
-@Route(value = "discoveryRun", layout = MainLayout.class)
-public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParameter<Long>
+@Route(value = "newExperiment", layout = MainLayout.class)
+public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 	private static final double DEFAULT_SPLIT_PANE_RATIO = 60;
 
-	private Logger log = LogManager.getLogger(DiscoveryRunView.class);
+	private Logger log = LogManager.getLogger(NewExperimentView.class);
 
 	private long experimentId = -1;
 
@@ -44,6 +42,7 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 	private TextArea errorsTextArea;
 	private TextArea getObservationTextArea;
 	private TextArea tipsTextArea;
+	private RewardFunctionEditor rewardFunctionEditor;
 
 	// TODO I assume we don't need this here and that the project, etc. are all retrieved from the Experiment
 	// or something along those lines but since I haven't yet setup the fake database schema for experiment
@@ -54,14 +53,12 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 	@Autowired
 	private ExperimentRepository experimentRepository;
 
+	// TODO -> Add binder for the project other data fields outside of the experiment object.
 	private Binder<Experiment> binder;
 
-	private RewardFunctionEditor rewardFunctionEditor;
-	private ExperimentFormPanel experimentFormPanel;
+	private Button backToExperimentsButton;
 
-	private Button backToProjectButton;
-
-	public DiscoveryRunView()
+	public NewExperimentView()
 	{
 		super();
 	}
@@ -69,13 +66,13 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 	@Override
 	protected ActionMenu getActionMenu()
 	{
-		backToProjectButton = new Button("< Back to Project");
+		backToExperimentsButton = new Button("< Back to Experiments");
 
 		return new ActionMenu(
-				backToProjectButton,
+				backToExperimentsButton,
 				new Button("+ New Experiment"),
 				new Button("Test Run >", click ->
-						UI.getCurrent().navigate(ProjectView.class, PathmindConstants.TODO_PARAMETER))
+						UI.getCurrent().navigate(DiscoveryRunConfirmationView.class, experimentId))
 		);
 	}
 
@@ -90,26 +87,27 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 	{
 		binder = new Binder<>(Experiment.class);
 
-		rewardFunctionEditor = new RewardFunctionEditor();
-		experimentFormPanel = new ExperimentFormPanel(binder);
-
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 				getLeftPanel(),
 				getRightPanel(),
 				DEFAULT_SPLIT_PANE_RATIO);
 	}
 
-	private VerticalLayout getLeftPanel() {
-		return WrapperUtils.wrapSizeFullVertical(
-				experimentFormPanel,
-				rewardFunctionEditor);
+	private Component getLeftPanel()
+	{
+		rewardFunctionEditor = new RewardFunctionEditor();
+
+		errorsTextArea = new TextArea("Errors");
+		errorsTextArea.setSizeFull();
+
+		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
+				rewardFunctionEditor,
+				WrapperUtils.wrapSizeFullVertical(errorsTextArea),
+				70);
 	}
 
 	private VerticalLayout getRightPanel()
 	{
-		errorsTextArea = new TextArea("Errors");
-		errorsTextArea.setSizeFull();
-
 		getObservationTextArea = new TextArea("getObservation");
 		getObservationTextArea.setSizeFull();
 
@@ -117,7 +115,6 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 		tipsTextArea.setSizeFull();
 
 		return WrapperUtils.wrapSizeFullVertical(
-				errorsTextArea,
 				getObservationTextArea,
 				tipsTextArea);
 	}
@@ -139,9 +136,21 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 
 		binder.readBean(experiment);
 
-		rewardFunctionEditor.setRewardFunction(experiment.getRewardFunction());
-		screenTitlePanel.setSubtitle(project.getName());
-		backToProjectButton.addClickListener(click ->
-				UI.getCurrent().navigate(ProjectView.class, project.getId()));
+		// TODO -> Need to fully use the binder here. Only partially used.
+//		getObservationTextArea.setValue(project.getGetObservationForRewardFunction());
+//		rewardFunctionEditor.setRewardFunction(experiment.getRewardFunction());
+//		screenTitlePanel.setSubtitle(project.getName());
+//		backToExperimentsButton.addClickListener(click ->
+//				UI.getCurrent().navigate(ExperimentsView.class, experiment.getModelId()));
+	}
+
+	private void save() {
+		// TODO -> Save should be done in a systematic way throughout the application.
+//				try {
+//			binder.writeBean(project);
+//			return true;
+//		} catch (ValidationException e) {
+//			return false;
+//		}
 	}
 }

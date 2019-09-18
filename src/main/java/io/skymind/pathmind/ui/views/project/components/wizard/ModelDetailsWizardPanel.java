@@ -11,11 +11,11 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
-import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.data.Model;
+import io.skymind.pathmind.ui.binders.ModelBinders;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
-import io.skymind.pathmind.ui.views.project.binders.ProjectBinders;
 
 public class ModelDetailsWizardPanel extends VerticalLayout
 {
@@ -27,7 +27,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private Button nextStepButton = new Button("Next Step");
 
-	public ModelDetailsWizardPanel(Binder<Project> binder)
+	public ModelDetailsWizardPanel(Binder<Model> binder)
 	{
 		setupFields();
 		setupForm();
@@ -50,23 +50,23 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 	private void setupFields()
 	{
 	 	numberOfObservationsNumberField = VaadinUtils.generateNumberField(
-	 			Project.MIN_NUMBER_OF_OBSERVATIONS,
-				Project.MAX_NUMBER_OF_OBSERVATIONS,
-				Project.DEFAULT_NUMBER_OF_OBSERVATIONS);
+	 			Model.MIN_NUMBER_OF_OBSERVATIONS,
+				Model.MAX_NUMBER_OF_OBSERVATIONS,
+				Model.DEFAULT_NUMBER_OF_OBSERVATIONS);
 
 		numberOfPossibleActionsNumberField = VaadinUtils.generateNumberField(
-				Project.MIN_NUMBER_OF_POSSIBLE_ACTIONS,
-				Project.MAX_NUMBER_OF_POSSIBLE_ACTIONS,
-				Project.DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS);
+				Model.MIN_NUMBER_OF_POSSIBLE_ACTIONS,
+				Model.MAX_NUMBER_OF_POSSIBLE_ACTIONS,
+				Model.DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS);
 
 		getObservationForRewardFunctionTextArea = new TextArea();
-		getObservationForRewardFunctionTextArea.setValue(Project.DEFAULT_GET_OBSERVATION_FOR_REWARD_FUNCTION);
+		getObservationForRewardFunctionTextArea.setValue(Model.DEFAULT_GET_OBSERVATION_FOR_REWARD_FUNCTION);
 	}
 
-	private void bindFields(Binder<Project> binder) {
-		ProjectBinders.bindNumberOfObservations(binder, numberOfObservationsNumberField);
-		ProjectBinders.bindNumberOfPossibleActions(binder, numberOfPossibleActionsNumberField);
-		ProjectBinders.bindGetObservationForRewardFunction(binder, getObservationForRewardFunctionTextArea);
+	private void bindFields(Binder<Model> binder) {
+		ModelBinders.bindNumberOfObservations(binder, numberOfObservationsNumberField);
+		ModelBinders.bindNumberOfPossibleActions(binder, numberOfPossibleActionsNumberField);
+		ModelBinders.bindGetObservationForRewardFunction(binder, getObservationForRewardFunctionTextArea);
 	}
 
 	public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {

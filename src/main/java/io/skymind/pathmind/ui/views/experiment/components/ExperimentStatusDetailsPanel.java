@@ -74,10 +74,11 @@ public class ExperimentStatusDetailsPanel extends VerticalLayout
 
 	public void update(Experiment experiment)
 	{
-		statusLabel.setText(experiment.getStatusEnum().toString());
-		runTypeLabel.setText(experiment.getRunTypeEnum().toString());
-		elapsedTimeLabel.setText(DateTimeUtils.formatTime(ExperimentUtils.getElapsedTime(experiment)));
-		completedLabel.setText(experiment.getCompletedEnum().toString());
-		algorithmLabel.setText(experiment.getAlgorithm().toString());
+		// TODO -> New data model.
+//		statusLabel.setText(experiment.getStatusEnum().toString());
+//		runTypeLabel.setText(experiment.getRunTypeEnum().toString());
+//		elapsedTimeLabel.setText(DateTimeUtils.formatTime(ExperimentUtils.getElapsedTime(experiment)));
+//		completedLabel.setText(experiment.getCompletedEnum().toString());
+//		algorithmLabel.setText(experiment.getAlgorithm().toString());
 	}
 }

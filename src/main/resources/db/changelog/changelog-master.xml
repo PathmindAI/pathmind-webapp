@@ -9,5 +9,6 @@
         logicalFilePath="changelog-master.xml"
 >
         <!-- All changes for the initial database schema for the alpha demo -->
-        <include file="00-alpha/changelog-0.000-master.xml" relativeToChangelogFile="true"/>
+        <include file="00-alpha/changelog-0.000-alpha-master.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

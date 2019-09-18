@@ -7,11 +7,12 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.data.renderer.LocalDateRenderer;
+import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.db.ProjectRepository;
+import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -26,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DashboardView extends PathMindDefaultView
 {
 	@Autowired
-	private ProjectRepository projectRepository;
+	private ProjectDAO projectDAO;
 
 	private Grid<Project> projectGrid;
 
@@ -44,12 +45,12 @@ public class DashboardView extends PathMindDefaultView
 				.setSortable(true);
 //				.setWidth("275px");
 		projectGrid.addColumn(
-				new LocalDateRenderer<>(Project::getDateCreated, DateTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+				new LocalDateTimeRenderer<>(Project::getDateCreated, DateTimeUtils.STANDARD_DATE_TIME_FOMATTER))
 				.setHeader("Date Created")
 				.setSortable(true);
 //				.setWidth("275px");
 		projectGrid.addColumn(
-				new LocalDateRenderer<>(Project::getLastActivityDate, DateTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+				new LocalDateTimeRenderer<>(Project::getLastActivityDate, DateTimeUtils.STANDARD_DATE_TIME_FOMATTER))
 				.setHeader("Last Activity")
 				.setSortable(true);
 //				.setWidth("275px");
@@ -87,6 +88,6 @@ public class DashboardView extends PathMindDefaultView
 
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) {
-		projectGrid.setItems(projectRepository.getProjectsForUser());
+		projectGrid.setItems(projectDAO.getProjectsForUser(SecurityUtils.getUserId()));
 	}
 }

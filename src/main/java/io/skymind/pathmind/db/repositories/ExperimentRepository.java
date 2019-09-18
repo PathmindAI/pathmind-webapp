@@ -1,4 +1,4 @@
-package io.skymind.pathmind.db;
+package io.skymind.pathmind.db.repositories;
 
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
@@ -56,7 +56,7 @@ public class ExperimentRepository
 //				insertExperiment(experiment));
 //	}
 
-	public long insertExperiment(Experiment experiment) {
+	protected long insertExperiment(Experiment experiment) {
     	// TODO -> DATA MODEL
     	return -1;
 //    	long experimentId = dslContext

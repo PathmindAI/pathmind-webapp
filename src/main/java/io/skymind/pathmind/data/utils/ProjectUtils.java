@@ -3,17 +3,18 @@ package io.skymind.pathmind.data.utils;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.security.SecurityUtils;
 
+import java.time.LocalDateTime;
+
 public class ProjectUtils
 {
 	private ProjectUtils() {
 	}
 
-	// TODO -> Correctly implement the default values for a new Project.
 	public static Project generateNewDefaultProject() {
 		Project project = new Project();
-		project.setPathmindUser(SecurityUtils.getUser());
-		// TODO -> DATA MODEL
-//		project.setExperiments(ExperimentUtils.generateNewDefaultExpirementList(project));
+		project.setDateCreated(LocalDateTime.now());
+		project.setLastActivityDate(LocalDateTime.now());
+		project.setPathmindUserId(SecurityUtils.getUserId());
 		return project;
 	}
 }

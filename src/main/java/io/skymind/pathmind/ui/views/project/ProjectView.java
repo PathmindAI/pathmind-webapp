@@ -14,8 +14,8 @@ import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.ExperimentUpdateBusEvent;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.db.ExperimentRepository;
-import io.skymind.pathmind.db.ProjectRepository;
+import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.services.experiment.ExperimentRunService;
 import io.skymind.pathmind.ui.components.ActionMenu;
@@ -33,8 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
 
-import java.util.ArrayList;
-
 @UIScope
 @StyleSheet("frontend://styles/styles.css")
 @Route(value="project", layout = MainLayout.class)
@@ -43,7 +41,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	private static Logger log = LogManager.getLogger(ProjectView.class);
 
 	@Autowired
-	private ProjectRepository projectRepository;
+	private ProjectDAO projectDAO;
 	@Autowired
 	private ExperimentRepository experimentRepository;
 
@@ -146,7 +144,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
 	{
-		this.project = projectRepository.getProject(projectId);
+		this.project = projectDAO.getProject(projectId);
 
 		if(project == null)
 			throw new InvalidDataException("Attempted to access Project : " + projectId);
