@@ -8,23 +8,13 @@ import io.skymind.pathmind.data.db.Indexes;
 import io.skymind.pathmind.data.db.Keys;
 import io.skymind.pathmind.data.db.Public;
 import io.skymind.pathmind.data.db.tables.records.PolicyRecord;
-
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.Generated;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Index;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.UniqueKey;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
+
+import javax.annotation.Generated;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -40,7 +30,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = 1761932275;
+    private static final long serialVersionUID = 1461293841;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -80,6 +70,11 @@ public class Policy extends TableImpl<PolicyRecord> {
      */
     @java.lang.Deprecated
     public final TableField<PolicyRecord, Object> PROGRESS = createField("progress", org.jooq.impl.DefaultDataType.getDefaultDataType("\"pg_catalog\".\"jsonb\""), this, "");
+
+    /**
+     * The column <code>public.policy.file</code>.
+     */
+    public final TableField<PolicyRecord, byte[]> FILE = createField("file", org.jooq.impl.SQLDataType.BLOB, this, "");
 
     /**
      * Create a <code>public.policy</code> table reference

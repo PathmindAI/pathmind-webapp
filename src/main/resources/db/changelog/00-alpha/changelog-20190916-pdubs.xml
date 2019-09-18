@@ -37,10 +37,19 @@
             <column name="EXTERNAL_ID" type="NVARCHAR">
                 <constraints nullable="false" />
             </column>
-            <column name="progress" type="JSONB">
+            <column name="PROGRESS" type="JSONB">
             </column>
         </addColumn>
         <addUniqueConstraint tableName="POLICY" columnNames="RUN_ID, EXTERNAL_ID" />
+    </changeSet>
+
+    <changeSet author="pdubs" id="20190918-2">
+        <addColumn tableName="POLICY">
+            <column name="FILE" type="BYTEA" />
+        </addColumn>
+        <addColumn tableName="MODEL">
+            <column name="FILE" type="BYTEA" />
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog>
