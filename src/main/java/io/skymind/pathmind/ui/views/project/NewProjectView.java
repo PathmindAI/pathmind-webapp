@@ -7,7 +7,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
@@ -63,12 +62,13 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 	{
 		super();
 		this.ui = UI.getCurrent();
-		this.project = ProjectUtils.generateNewDefaultProject();
-		this.model = ModelUtils.generateNewDefaultModel();
 	}
 
 	protected Component getMainContent()
 	{
+		this.project = ProjectUtils.generateNewDefaultProject();
+		this.model = ModelUtils.generateNewDefaultModel();
+
 		projectBinder = new Binder<>(Project.class);
 		modelBinder = new Binder<>(Model.class);
 
@@ -76,7 +76,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 		statusPanel = new NewProjectStatusWizardPanel();
 		createProjectPanel = new CreateANewProjectWizardPanel(projectBinder);
 		pathminderHelperWizardPanel = new PathminderHelperWizardPanel();
-		uploadModelWizardPanel = new UploadModelWizardPanel();
+		uploadModelWizardPanel = new UploadModelWizardPanel(model);
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
 
 		wizardPanels = Arrays.asList(
@@ -109,18 +109,9 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 			if(!FormUtils.isValidForm(modelBinder, model))
 				return;
 
-			NotificationUtils.showTodoNotification("Save project");
+			final long experimentId = projectDAO.setupNewProject(project, model);
 
-			// TODO -> DATA MODEL -> Need to insert model, experiment, etc. Looking to consolidate things in the project repository
-			projectDAO.saveNewProject(project);
-//			long projectId = projectDAO.insertProject(project);
-//			model.setProjectId(projectId);
-//			modelRepository.insertModel()
-			// HERE HERE HERE
-
-			//			experimentRepository.insertExperimentsForProject(project);
-			// TODO -> Send to new experiment ID rather than 4L
-			UI.getCurrent().navigate(NewExperimentView.class, 4L);
+			UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 		});
 	}
 

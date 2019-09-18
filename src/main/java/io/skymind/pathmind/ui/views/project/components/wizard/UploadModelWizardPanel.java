@@ -10,14 +10,18 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+
 public class UploadModelWizardPanel extends VerticalLayout
 {
 	private static Logger log = LogManager.getLogger(UploadModelWizardPanel.class);
+	private final Model model;
 
 	private Label projectNameLabel = new Label();
 
@@ -29,8 +33,10 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private ProgressBar fileCheckProgressBar = new ProgressBar();
 	private VerticalLayout fileCheckPanel;
 
-	public UploadModelWizardPanel()
+	public UploadModelWizardPanel(Model model)
 	{
+		this.model = model;
+
 		projectNameLabel.getStyle().set("margin-top", "0px");
 
 		setupUploadPanel();
@@ -63,9 +69,15 @@ public class UploadModelWizardPanel extends VerticalLayout
 		upload = new Upload(buffer);
 
 		upload.addSucceededListener(event -> {
-			// TODO -> Implement
-			log.info("Upload completed");
-			checkYourModelButton.setVisible(true);
+			try {
+				final byte[] bytes = buffer.getInputStream().readAllBytes();
+				model.setFile(bytes);
+
+				log.info("Upload completed");
+				checkYourModelButton.setVisible(true);
+			} catch (IOException e) {
+				log.error("Upload failed", e);
+			}
 		});
 
 		uploadModelPanel = WrapperUtils.wrapWidthFullCenterVertical(upload);

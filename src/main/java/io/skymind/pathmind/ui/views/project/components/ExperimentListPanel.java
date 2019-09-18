@@ -10,7 +10,6 @@ import io.skymind.pathmind.bus.BusEventType;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.ExperimentUpdateBusEvent;
 import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -81,11 +80,6 @@ public class ExperimentListPanel extends VerticalLayout
 //				.setHeader("Model")
 //				.setAutoWidth(true)
 //				.setSortable(true);
-		// TODO -> Is the RunType correct here?
-		grid.addColumn(Experiment::getTestRunEnum)
-				.setHeader("Test Run")
- 				.setAutoWidth(true)
-				.setSortable(true);
 		grid.addColumn(experiment -> "Todo")
 				.setHeader("Discovery Run")
 				.setAutoWidth(true)

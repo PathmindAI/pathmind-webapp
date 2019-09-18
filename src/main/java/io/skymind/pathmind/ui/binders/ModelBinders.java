@@ -5,7 +5,6 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.ui.converter.DoubleToIntegerConverter;
-import io.skymind.pathmind.ui.converter.DoubleToLongConverter;
 
 public class ModelBinders
 {

@@ -4,6 +4,7 @@
 package io.skymind.pathmind.data.db;
 
 
+import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.Experiment;
 import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
@@ -26,6 +27,11 @@ import javax.annotation.Generated;
 )
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
+
+    /**
+     * The table <code>public.execution_provider_meta_data</code>.
+     */
+    public static final ExecutionProviderMetaData EXECUTION_PROVIDER_META_DATA = io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA;
 
     /**
      * The table <code>public.experiment</code>.

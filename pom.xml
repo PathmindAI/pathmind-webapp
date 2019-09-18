@@ -89,6 +89,36 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
+
+        <!-- for WebClient, as RestTemplate is deprecated -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+        <!-- WebClient does only chunked uploads, but the server we are talking to doesn't understand that -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.supercsv</groupId>
+            <artifactId>super-csv</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+
+        <!-- Requires Vaadin 13 Compat mode to be enabled! -->
+        <dependency>
+            <groupId>com.juicy</groupId>
+            <artifactId>juicyaceeditor</artifactId>
+            <version>1.0.9</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -108,7 +138,6 @@
                     <changeLogFile>src/main/resources/db/changelog/changelog-master.xml</changeLogFile>
                     <driver>org.postgresql.Driver</driver>
                     <url>${DB_URL}</url>
-                    <clearCheckSums>true</clearCheckSums>
                 </configuration>
             </plugin>
             <plugin>
@@ -141,6 +170,7 @@
                             <includes>.*</includes>
                             <excludes>Databasechangelog.*</excludes>
                             <inputSchema>public</inputSchema>
+                            <recordTimestampFields>LAST_ACTIVITY_DATE</recordTimestampFields>
                         </database>
                         <target>
                             <packageName>io.skymind.pathmind.data.db</packageName>

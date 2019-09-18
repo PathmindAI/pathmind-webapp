@@ -8,24 +8,14 @@ import io.skymind.pathmind.data.db.Indexes;
 import io.skymind.pathmind.data.db.Keys;
 import io.skymind.pathmind.data.db.Public;
 import io.skymind.pathmind.data.db.tables.records.ProjectRecord;
+import org.jooq.*;
+import org.jooq.impl.DSL;
+import org.jooq.impl.TableImpl;
 
+import javax.annotation.Generated;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.annotation.Generated;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Index;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.UniqueKey;
-import org.jooq.impl.DSL;
-import org.jooq.impl.TableImpl;
 
 
 /**
@@ -41,7 +31,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Project extends TableImpl<ProjectRecord> {
 
-    private static final long serialVersionUID = 1876663574;
+    private static final long serialVersionUID = -605075532;
 
     /**
      * The reference instance of <code>public.project</code>
@@ -74,12 +64,12 @@ public class Project extends TableImpl<ProjectRecord> {
     /**
      * The column <code>public.project.date_created</code>.
      */
-    public final TableField<ProjectRecord, LocalDateTime> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+    public final TableField<ProjectRecord, LocalDateTime> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
 
     /**
      * The column <code>public.project.last_activity_date</code>.
      */
-    public final TableField<ProjectRecord, LocalDateTime> LAST_ACTIVITY_DATE = createField("last_activity_date", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+    public final TableField<ProjectRecord, LocalDateTime> LAST_ACTIVITY_DATE = createField("last_activity_date", org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
 
     /**
      * Create a <code>public.project</code> table reference

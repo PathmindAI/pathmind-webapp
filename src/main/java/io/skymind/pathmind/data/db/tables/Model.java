@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = -800803427;
+    private static final long serialVersionUID = -334209861;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -72,6 +72,16 @@ public class Model extends TableImpl<ModelRecord> {
     public final TableField<ModelRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.field("'Initial Model Revision'::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
+     * The column <code>public.model.date_created</code>.
+     */
+    public final TableField<ModelRecord, LocalDateTime> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
+
+    /**
+     * The column <code>public.model.last_activity_date</code>.
+     */
+    public final TableField<ModelRecord, LocalDateTime> LAST_ACTIVITY_DATE = createField("last_activity_date", org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
+
+    /**
      * The column <code>public.model.number_of_observations</code>.
      */
     public final TableField<ModelRecord, Integer> NUMBER_OF_OBSERVATIONS = createField("number_of_observations", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
@@ -84,17 +94,7 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.get_observation_for_reward_function</code>.
      */
-    public final TableField<ModelRecord, String> GET_OBSERVATION_FOR_REWARD_FUNCTION = createField("get_observation_for_reward_function", org.jooq.impl.SQLDataType.VARCHAR(5096).nullable(false), this, "");
-
-    /**
-     * The column <code>public.model.date_created</code>.
-     */
-    public final TableField<ModelRecord, LocalDateTime> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
-
-    /**
-     * The column <code>public.model.last_activity_date</code>.
-     */
-    public final TableField<ModelRecord, LocalDateTime> LAST_ACTIVITY_DATE = createField("last_activity_date", org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+    public final TableField<ModelRecord, String> GET_OBSERVATION_FOR_REWARD_FUNCTION = createField("get_observation_for_reward_function", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
      * The column <code>public.model.file</code>.

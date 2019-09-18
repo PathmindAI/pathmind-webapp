@@ -96,8 +96,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Component getLeftPanel()
 	{
 		rewardFunctionEditor = new RewardFunctionEditor();
+		binder.forField(rewardFunctionEditor)
+				.bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
 
 		errorsTextArea = new TextArea("Errors");
+		errorsTextArea.setEnabled(false);
 		errorsTextArea.setSizeFull();
 
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
@@ -110,9 +113,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	{
 		getObservationTextArea = new TextArea("getObservation");
 		getObservationTextArea.setSizeFull();
+		getObservationTextArea.setEnabled(false);
 
 		tipsTextArea = new TextArea("Tips");
 		tipsTextArea.setSizeFull();
+		tipsTextArea.setEnabled(false);
 
 		return WrapperUtils.wrapSizeFullVertical(
 				getObservationTextArea,
@@ -127,6 +132,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
 	{
+		log.error("updating");
 		Experiment experiment = experimentRepository.getExperiment(experimentId);
 
 		if(experiment == null)

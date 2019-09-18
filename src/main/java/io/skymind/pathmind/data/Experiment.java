@@ -99,15 +99,6 @@ public class Experiment implements Data
 		this.notes = notes;
 	}
 
-	public TestRun getTestRunEnum() {
-		return TestRun.getEnumFromValue(testRun);
-	}
-
-	// TODO -> Temp solution to deal with JOOQ conversion exceptions
-	public void setTestRunEnum(TestRun testRun) {
-		this.testRun = testRun.getValue();
-	}
-
 	public void setTestRun(int testRun) {
 		this.testRun = testRun;
 	}

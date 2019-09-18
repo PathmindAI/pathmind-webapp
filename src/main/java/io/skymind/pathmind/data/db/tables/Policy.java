@@ -8,23 +8,13 @@ import io.skymind.pathmind.data.db.Indexes;
 import io.skymind.pathmind.data.db.Keys;
 import io.skymind.pathmind.data.db.Public;
 import io.skymind.pathmind.data.db.tables.records.PolicyRecord;
-
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.Generated;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Index;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.UniqueKey;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
+
+import javax.annotation.Generated;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -40,7 +30,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = -332759022;
+    private static final long serialVersionUID = 1127290257;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -66,25 +56,20 @@ public class Policy extends TableImpl<PolicyRecord> {
     public final TableField<PolicyRecord, Long> RUN_ID = createField("run_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
+     * The column <code>public.policy.external_id</code>.
+     */
+    public final TableField<PolicyRecord, String> EXTERNAL_ID = createField("external_id", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
+
+    /**
      * The column <code>public.policy.name</code>.
      */
     public final TableField<PolicyRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
-     * The column <code>public.policy.algorithm</code>.
-     */
-    public final TableField<PolicyRecord, Integer> ALGORITHM = createField("algorithm", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
-
-    /**
      * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using {@literal <deprecationOnUnknownTypes/>} in your code generator configuration.
      */
     @java.lang.Deprecated
-    public final TableField<PolicyRecord, Object> SCORE = createField("score", org.jooq.impl.SQLDataType.OTHER, this, "");
-
-    /**
-     * The column <code>public.policy.hyper_parameters</code>.
-     */
-    public final TableField<PolicyRecord, byte[]> HYPER_PARAMETERS = createField("hyper_parameters", org.jooq.impl.SQLDataType.BLOB, this, "");
+    public final TableField<PolicyRecord, Object> PROGRESS = createField("progress", org.jooq.impl.DefaultDataType.getDefaultDataType("\"pg_catalog\".\"jsonb\""), this, "");
 
     /**
      * The column <code>public.policy.file</code>.
@@ -137,7 +122,7 @@ public class Policy extends TableImpl<PolicyRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.POLICY_PKEY);
+        return Arrays.<Index>asList(Indexes.POLICY_PKEY, Indexes.POLICY_RUN_ID_EXTERNAL_ID_KEY);
     }
 
     /**
@@ -153,7 +138,7 @@ public class Policy extends TableImpl<PolicyRecord> {
      */
     @Override
     public List<UniqueKey<PolicyRecord>> getKeys() {
-        return Arrays.<UniqueKey<PolicyRecord>>asList(Keys.POLICY_PKEY);
+        return Arrays.<UniqueKey<PolicyRecord>>asList(Keys.POLICY_PKEY, Keys.POLICY_RUN_ID_EXTERNAL_ID_KEY);
     }
 
     /**

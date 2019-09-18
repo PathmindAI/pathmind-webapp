@@ -4,6 +4,7 @@
 package io.skymind.pathmind.data.db;
 
 
+import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.Experiment;
 import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
@@ -35,12 +36,17 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 1740932503;
+    private static final long serialVersionUID = 695891085;
 
     /**
      * The reference instance of <code>public</code>
      */
     public static final Public PUBLIC = new Public();
+
+    /**
+     * The table <code>public.execution_provider_meta_data</code>.
+     */
+    public final ExecutionProviderMetaData EXECUTION_PROVIDER_META_DATA = io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA;
 
     /**
      * The table <code>public.experiment</code>.
@@ -97,6 +103,7 @@ public class Public extends SchemaImpl {
 
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
+            ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA,
             Experiment.EXPERIMENT,
             Model.MODEL,
             PathmindUser.PATHMIND_USER,

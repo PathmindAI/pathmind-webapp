@@ -22,7 +22,7 @@ public class CreateANewProjectWizardPanel extends VerticalLayout
 		projectNameTextField.setWidthFull();
 
 		add(new H3("Start a New Project!"),
-				GuiUtils.getSubtitleLabel("Projects organize your Pathmind Experiments based on your situation model"),
+				GuiUtils.getSubtitleLabel("Projects organize your Pathmind Experiments based on your AnyLogic model"),
 				GuiUtils.getHeightSpacer("40px"),
 				projectNameTextField,
 				WrapperUtils.wrapWidthFullCenterHorizontal(createProjectButton));
