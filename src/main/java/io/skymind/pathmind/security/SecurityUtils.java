@@ -4,8 +4,9 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
-import io.skymind.pathmind.db.repositories.UserRepository;
 import io.skymind.pathmind.ui.views.LoginView;
+
+import javax.naming.AuthenticationException;
 
 public class SecurityUtils
 {
@@ -39,6 +40,11 @@ public class SecurityUtils
 
 	// TODO -> Deal with errors if no user is found in the session.
 	public static long getUserId() {
-		return getUser().getId();
+		final PathmindUser user = getUser();
+		if(user == null){
+			throw new RuntimeException(new AuthenticationException("User not authenticated!"));
+		}else{
+			return user.getId();
+		}
 	}
 }

@@ -86,6 +86,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private Component getObservationForRewardFunctionPanel() {
 		VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
+				new Label("Copy your Observation for Reward function in here for easy reference."),
 				GuiUtils.getBoldLabel("getObservation for Reward Function"),
 				getObservationForRewardFunctionTextArea);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);

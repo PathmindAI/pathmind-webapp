@@ -22,7 +22,7 @@ import io.skymind.pathmind.ui.views.project.ProjectView;
 import io.skymind.pathmind.utils.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@StyleSheet("frontend://styles/styles.css")
+
 @Route(value="dashboard", layout = MainLayout.class)
 public class DashboardView extends PathMindDefaultView
 {

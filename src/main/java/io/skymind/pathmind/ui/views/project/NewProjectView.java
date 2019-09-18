@@ -7,7 +7,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
@@ -63,12 +62,13 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 	{
 		super();
 		this.ui = UI.getCurrent();
-		this.project = ProjectUtils.generateNewDefaultProject();
-		this.model = ModelUtils.generateNewDefaultModel();
 	}
 
 	protected Component getMainContent()
 	{
+		this.project = ProjectUtils.generateNewDefaultProject();
+		this.model = ModelUtils.generateNewDefaultModel();
+
 		projectBinder = new Binder<>(Project.class);
 		modelBinder = new Binder<>(Model.class);
 
