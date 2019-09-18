@@ -16,4 +16,5 @@ public interface FileCheckResult {
     public void  setModelJarFilePresent(boolean modelJarFilePresent);
     public void setZipContentFileNames(List<String>  zipContentFileNames);
     public void setDefinedHelpers(List<String>  definedHelpers);
+    public void setFileCheckComplete(boolean fileCheckComplete);
 }
