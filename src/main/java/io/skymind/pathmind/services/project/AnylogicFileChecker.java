@@ -28,6 +28,7 @@ public class AnylogicFileChecker implements FileChecker {
     public FileCheckResult performFileCheck(File file) {
 
         AnylogicFileCheckResult anylogicFileCheckResult = new AnylogicFileCheckResult();
+        anylogicFileCheckResult.setFileCheckComplete(false);
         try {
             //To check the file exist and does the server have permission to read
             if (file.exists() && file.isFile() && file.canRead() && file.canExecute()) {
@@ -44,10 +45,12 @@ public class AnylogicFileChecker implements FileChecker {
                 log.info("model.jar does not exist");
             }
         }catch(Exception e ){
-           log.error("Exception in checkeing jar file "+e);
-        }finally {
+           log.error("Exception in checking jar file "+e);
+        }finally {anylogicFileCheckResult.setFileCheckComplete(true);
+
             jarTempDir.delete();
         }
+        anylogicFileCheckResult.setFileCheckComplete(true);
         return anylogicFileCheckResult;
     }
 
@@ -172,7 +175,7 @@ public class AnylogicFileChecker implements FileChecker {
                 String name = zipEntry.getName();
                 long size = zipEntry.getSize();
                 long compressedSize = zipEntry.getCompressedSize();
-                log.info("name: %-20s | size: %6d | compressed size: %6d\n",
+                log.info("name:- {} | size:- {} | compressed size:- {}\n",
                         name, size, compressedSize);
 
                 if(zipEntry.getName().toLowerCase().indexOf(searchFileName) != -1){
