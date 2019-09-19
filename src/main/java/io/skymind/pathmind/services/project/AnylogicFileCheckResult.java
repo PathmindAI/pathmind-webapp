@@ -2,7 +2,7 @@ package io.skymind.pathmind.services.project;
 
 import java.util.List;
 
-public class AnylogicFileCheckResult implements FileCheckResult{
+public class AnylogicFileCheckResult implements FileCheckResult {
 
     private boolean fileCheckComplete;
     private boolean correctFileType;
@@ -33,7 +33,7 @@ public class AnylogicFileCheckResult implements FileCheckResult{
 
     @Override
     public boolean isHelperPresent() {
-        if(this.definedHelpers.size()>0){
+        if (this.definedHelpers.size() > 0) {
             return true;
         } else {
             return false;
@@ -42,7 +42,7 @@ public class AnylogicFileCheckResult implements FileCheckResult{
 
     @Override
     public boolean isHelperUnique() {
-        if(this.definedHelpers.size()==1){
+        if (this.definedHelpers.size() == 1) {
             return true;
         } else {
             return false;
@@ -60,21 +60,30 @@ public class AnylogicFileCheckResult implements FileCheckResult{
     }
 
     @Override
-    public void setCorrectFileType(boolean correctFileType) { this.correctFileType = correctFileType;
+    public void setCorrectFileType(boolean correctFileType) {
+        this.correctFileType = correctFileType;
 
     }
 
     @Override
-    public void setModelJarFilePresent(boolean modelJarFilePresent) {this.modelJarFilePresent = modelJarFilePresent;}
+    public void setModelJarFilePresent(boolean modelJarFilePresent) {
+        this.modelJarFilePresent = modelJarFilePresent;
+    }
 
     @Override
-    public void setZipContentFileNames(List<String> zipContentFileNames) { this.zipContentFileNames = zipContentFileNames; }
+    public void setZipContentFileNames(List<String> zipContentFileNames) {
+        this.zipContentFileNames = zipContentFileNames;
+    }
 
     @Override
-    public void setDefinedHelpers(List<String> definedHelpers) { this.definedHelpers = definedHelpers; }
+    public void setDefinedHelpers(List<String> definedHelpers) {
+        this.definedHelpers = definedHelpers;
+    }
 
     @Override
-    public void setFileCheckComplete(boolean fileCheckComplete) { this.fileCheckComplete = fileCheckComplete; }
+    public void setFileCheckComplete(boolean fileCheckComplete) {
+        this.fileCheckComplete = fileCheckComplete;
+    }
 
 
 }

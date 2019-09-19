@@ -4,9 +4,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -17,12 +19,15 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import io.skymind.pathmind.utils.FileUtils;
+
 public class AnylogicFileChecker implements FileChecker {
     private static final Logger log = LogManager.getLogger(AnylogicFileChecker.class);
     private static final int BUFFER = 1024;
-    String uuid = UUID.randomUUID().toString();
+    private String uuid = UUID.randomUUID().toString();
     private File unZippedJar;
     private File jarTempDir = null;
+    private String searchFileName = "model.jar";
+    private Path tempPath = null;
 
     @Override
     public FileCheckResult performFileCheck(File file) {
@@ -33,67 +38,58 @@ public class AnylogicFileChecker implements FileChecker {
             //To check the file exist and does the server have permission to read
             if (file.exists() && file.isFile() && file.canRead() && file.canExecute()) {
                 log.info("File exists and it is readable:");
+                unZippedJar = checkZipFile(file, anylogicFileCheckResult);
+                if (unZippedJar != null) {
+                    checkJarFile(unZippedJar, anylogicFileCheckResult);
+                    if (anylogicFileCheckResult.isModelJarFilePresent())
+                        checkHelpers(unZippedJar, anylogicFileCheckResult);
+                } else {
+                    log.error("model.jar does not exist");
+                }
             } else {
-                log.info("File does not exist or no read permission");
+                log.error("File does not exist or no read permission");
             }
-            unZippedJar = checkZipFile(file, anylogicFileCheckResult);
-            if (unZippedJar != null) {
-                checkJarFile(unZippedJar, anylogicFileCheckResult);
-                if (anylogicFileCheckResult.isModelJarFilePresent())
-                    checkHelpers(unZippedJar, anylogicFileCheckResult);
-            } else {
-                log.info("model.jar does not exist");
-            }
-        }catch(Exception e ){
-           log.error("Exception in checking jar file "+e);
-        }finally {
+        } catch (Exception e) {
+            log.error("Exception in checking jar file " + e);
+        } finally {
             anylogicFileCheckResult.setFileCheckComplete(true);
-            jarTempDir.delete();
+            try {
+                deleteTempDirectory();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         anylogicFileCheckResult.setFileCheckComplete(true);
-        List<String> result = anylogicFileCheckResult.getDefinedHelpers();
-        result.stream()
-                .forEach(System.out::println);
         return anylogicFileCheckResult;
     }
 
 
     private File checkZipFile(File file, AnylogicFileCheckResult anylogicFileCheckResult) {
 
-       log.info("{} :- CheckZip File Started", uuid );
+        log.info("{} :- CheckZip File Started", uuid);
 
         // To Check if the Zip file is a valid
-        ZipFile zipfile = null;
-        String searchFileName = "model.jar";
+        ZipFile zipFile = null;
         File zippedFile = file;
 
-        File unZippedJar =null;
+        File unZippedJar = null;
         boolean isJarExist = false;
         try {
-            zipfile = new ZipFile(file);
+            zipFile = new ZipFile(file);
             anylogicFileCheckResult.setCorrectFileType(true);
-           try {
-                ZipFile zipFile = new ZipFile(zippedFile);
-                Enumeration<?> enu = zipFile.entries();
-                List<String> fileNameList= new ArrayList<>();
-                while (enu.hasMoreElements()) {
-                    ZipEntry zipEntry = (ZipEntry) enu.nextElement();
-                    String name = zipEntry.getName();
-                    log.info(zipEntry.getName());
-                    fileNameList.add(zipEntry.getName());
-                    if(zipEntry.getName().toLowerCase().indexOf(searchFileName) != -1){
-                        unZippedJar= unzipFile(zippedFile,searchFileName);
-                        log.info("modelJar PATH file : " + unZippedJar.getAbsolutePath());
-                    }
+            Enumeration<?> enu = zipFile.entries();
+            List<String> fileNameList = new ArrayList<>();
+            while (enu.hasMoreElements()) {
+                ZipEntry zipEntry = (ZipEntry) enu.nextElement();
+                String name = zipEntry.getName();
+                log.info(zipEntry.getName());
+                fileNameList.add(zipEntry.getName());
+                if (zipEntry.getName().toLowerCase().indexOf(searchFileName) != -1) {
+                    unZippedJar = unzipFile(zippedFile, searchFileName);
+                    log.info("modelJar PATH file : " + unZippedJar.getAbsolutePath());
                 }
-                anylogicFileCheckResult.setZipContentFileNames(fileNameList);
-                zipFile.close();
-
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-
-
+            anylogicFileCheckResult.setZipContentFileNames(fileNameList);
         } catch (ZipException ioe) {
             log.error("Error opening zip file" + ioe);
             anylogicFileCheckResult.setCorrectFileType(false);
@@ -102,15 +98,15 @@ public class AnylogicFileChecker implements FileChecker {
             anylogicFileCheckResult.setCorrectFileType(false);
         } finally {
             try {
-                if (zipfile != null) {
-                    zipfile.close();
-                    zipfile = null;
+                if (zipFile != null) {
+                    zipFile.close();
+                    zipFile = null;
                 }
             } catch (IOException ioe) {
                 log.error("Error opening zip file" + ioe);
             }
+            log.info("{} :- CheckZip File Completed", uuid);
         }
-        log.info("{} :- CheckZip File Completed", uuid );
         return unZippedJar;
     }
 
@@ -118,7 +114,7 @@ public class AnylogicFileChecker implements FileChecker {
     // To Check if the model.jar is a valid
     private void checkJarFile(File unZippedJar, AnylogicFileCheckResult anylogicFileCheckResult) {
 
-         log.info("{} :- checkJarFile Started", uuid );
+        log.info("{} :- checkJarFile Started", uuid);
         // To Check if the Jar file is a valid
         ZipFile jarFile = null;
 
@@ -142,37 +138,35 @@ public class AnylogicFileChecker implements FileChecker {
                 log.error("Error opening jar file" + ioe);
             }
         }
-        log.info("{} :- checkJarFile Completed", uuid );
+        log.info("{} :- checkJarFile Completed", uuid);
     }
 
     // To check the existence of pathmind helpers check
     //Used static value for file path for unjarred model
     private void checkHelpers(File file, AnylogicFileCheckResult anylogicFileCheckResult) {
-        File unJarred =null;
+        File unJarred = null;
         try {
-            log.info("{} :- checkHelpers Started", uuid );
+            log.info("{} :- checkHelpers Started", uuid);
             unJarred = extractArchive(file);
             List<String> listOfFiles = FileUtils.listFiles(unJarred.toString());
             ClassPrinter cp = new ClassPrinter();
             List<String> listOfHelpers = cp.byteParser(listOfFiles);
             anylogicFileCheckResult.setDefinedHelpers(listOfHelpers);
-            anylogicFileCheckResult.isHelperPresent();
-            anylogicFileCheckResult.isHelperUnique();
-            log.info("{} :- checkHelpers Completed", uuid );
-        } catch (IOException ioe){
+            log.info("{} :- checkHelpers Completed", uuid);
+        } catch (IOException ioe) {
             log.error("Error unJarred jar file" + ioe);
         }
 
     }
 
 
-    private File unzipFile(File zippedFile,String searchFileName) throws IOException {
-        log.info("{} :- unzipFile Started", uuid );
-          try {
+    private File unzipFile(File zippedFile, String searchFileName) throws IOException {
+        log.info("{} :- unzipFile Started", uuid);
+        try {
             ZipFile zipFile = new ZipFile(zippedFile);
             Enumeration<?> enu = zipFile.entries();
 
-              while (enu.hasMoreElements()) {
+            while (enu.hasMoreElements()) {
                 ZipEntry zipEntry = (ZipEntry) enu.nextElement();
 
                 String name = zipEntry.getName();
@@ -181,17 +175,16 @@ public class AnylogicFileChecker implements FileChecker {
                 log.info("name:- {} | size:- {} | compressed size:- {}\n",
                         name, size, compressedSize);
 
-                if(zipEntry.getName().toLowerCase().indexOf(searchFileName) != -1){
-
-                   jarTempDir = new File( Files.createTempDirectory(uuid).toString() );
+                if (zipEntry.getName().toLowerCase().indexOf(searchFileName) != -1) {
+                    tempPath = Files.createTempDirectory(uuid);
+                    jarTempDir = new File(String.valueOf(tempPath));
                     if (!jarTempDir.exists()) {
                         jarTempDir.mkdir();
                     }
                     InputStream inputStream = zipFile.getInputStream(zipEntry);
                     jarTempDir = new File(jarTempDir + "/" + searchFileName);
                     FileOutputStream fos = new FileOutputStream(jarTempDir);
-                    log.info("Temp Directory ----:"+jarTempDir);
-
+                    log.info("temporary directory path----:" + jarTempDir);
                     byte[] bytes = new byte[1024];
                     int length;
                     while ((length = inputStream.read(bytes)) >= 0) {
@@ -199,18 +192,17 @@ public class AnylogicFileChecker implements FileChecker {
                     }
                     inputStream.close();
                     fos.close();
-
                 }
             }
             zipFile.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        log.info("{} :- unzipFile Completed", uuid );
+        log.info("{} :- unzipFile Completed", uuid);
         return jarTempDir;
     }
 
-    private File extractArchive(File archiveFile) throws IOException{
+    private File extractArchive(File archiveFile) throws IOException {
         File destDir = new File(archiveFile.getParent());
         try {
             JarFile jar = new JarFile(archiveFile);
@@ -218,8 +210,7 @@ public class AnylogicFileChecker implements FileChecker {
             while (enumEntries.hasMoreElements()) {
                 JarEntry file = (JarEntry) enumEntries.nextElement();
                 File fileDir = new File(destDir + File.separator + file.getName());
-                if(!fileDir.exists())
-                {
+                if (!fileDir.exists()) {
                     fileDir.getParentFile().mkdirs();
                     fileDir = new File(destDir, file.getName());
                 }
@@ -233,12 +224,39 @@ public class AnylogicFileChecker implements FileChecker {
                 }
                 fos.close();
                 is.close();
+
             }
             jar.close();
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return destDir;
+    }
+
+    private void deleteTempDirectory()
+            throws IOException {
+/*        Path pathToBeDeleted = tempPath;
+        log.info("Path -----------------"+tempPath);
+        Files.walk(pathToBeDeleted)
+                .sorted(Comparator.reverseOrder())
+                .map(Path::toFile)
+                .forEach(File::delete);*/
+        Path dir = tempPath;
+        log.info("Deleting existing recording [{}]", dir);
+        Path pathToBeDeleted = Paths.get(String.valueOf(dir));
+        if (Files.exists(pathToBeDeleted)) {
+            Files.walk(pathToBeDeleted)
+                    .map(Path::toFile)
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(File::delete);
+
+            try {
+                Files.deleteIfExists(pathToBeDeleted);
+            } catch (DirectoryNotEmptyException e) {
+                log.info("Directory does not only contain cq4 files, not deleted");
+            }
+        }
+
     }
 }
 

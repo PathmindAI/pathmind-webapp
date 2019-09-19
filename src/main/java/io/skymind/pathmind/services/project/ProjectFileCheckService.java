@@ -10,38 +10,40 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ProjectFileCheckService
-{
-	private static final Logger log = LogManager.getLogger(ProjectFileCheckService.class);
+public class ProjectFileCheckService {
+    private static final Logger log = LogManager.getLogger(ProjectFileCheckService.class);
 
-	// TODO -> Remove the showError flag, it's only for testing.
-	public static void checkFile(StatusUpdater statusUpdater, boolean isShowError) throws IOException {
-
-
-		Properties props = new Properties();
-		props.load(ProjectFileCheckService.class.getClassLoader().getResourceAsStream("application.properties"));
-		int threadPoolSize = Integer.parseInt(props.getProperty("poolsize"));
+    // TODO -> Remove the showError flag, it's only for testing.
+    public static void checkFile(StatusUpdater statusUpdater, boolean isShowError) throws IOException {
 
 
-		Runnable runnable = () -> {
-			try{
-				File file = new File("D:/pathmind/CoffeeShopAnylogic Exported.zip");
-				AnylogicFileChecker anylogicfileChecker =new AnylogicFileChecker();
-				anylogicfileChecker.performFileCheck(file);
-				Thread.sleep(300);
-			}
-		 catch (InterruptedException e) {
-			log.error(e.getMessage(), e);
-			statusUpdater.updateError("File check interrupted.");
-		} finally {
-			log.info("Checking : completed");
-			statusUpdater.done();
-		}
-		};
+        Properties props = new Properties();
+        props.load(ProjectFileCheckService.class.getClassLoader().getResourceAsStream("application.properties"));
+        int threadPoolSize = Integer.parseInt(props.getProperty("poolsize"));
 
-		ExecutorService executor = Executors.newFixedThreadPool(threadPoolSize);
-		executor.submit(runnable);
 
-	}
+        Runnable runnable = () -> {
+            try {
+                File file = new File("D:/pathmind/CoffeeShopAnylogic Exported.zip");
+                AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker();
+                anylogicfileChecker.performFileCheck(file);
+                //Thread.sleep(300);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                statusUpdater.updateError("File check interrupted.");
+            } finally {
+                log.info("Checking : completed");
+                statusUpdater.done();
+            }
+        };
+
+        ExecutorService executor = checkerExecutorService(threadPoolSize);
+        executor.submit(runnable);
+    }
+
+    private static ExecutorService checkerExecutorService(int threadPoolSize) {
+        ExecutorService executor = Executors.newFixedThreadPool(threadPoolSize);
+        return executor;
+    }
 
 }
