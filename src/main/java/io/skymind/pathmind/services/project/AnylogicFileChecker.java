@@ -236,16 +236,16 @@ public class AnylogicFileChecker implements FileChecker {
 
     private void deleteTempDirectory() {
 
-        //get parent folder of model.jar
+      /*  //get parent folder of model.jar
         File file = new File(jarTempDir.getParent());
 
         //Delete files recursively
-        boolean result = FileSystemUtils.deleteRecursively(file);
+       // boolean result = FileSystemUtils.deleteRecursively(file);
 
         if (!result) {
             log.error("error in folder delete");
 
-        }
+        }*/
 
     }
 }

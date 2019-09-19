@@ -13,6 +13,7 @@ import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ProjectUtils;
 import io.skymind.pathmind.db.ExperimentRepository;
 import io.skymind.pathmind.db.ProjectRepository;
+import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -37,6 +38,8 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 	private ProjectRepository projectRepository;
 	@Autowired
 	private ExperimentRepository experimentRepository;
+	@Autowired
+	private ProjectFileCheckService projectFileCheckService ;
 
 	private Project project;
 	private Binder<Project> binder;
@@ -127,7 +130,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 	private void handleUploadWizardClicked() throws IOException {
 		uploadModelWizardPanel.showFileCheckPanel();
-		ProjectFileCheckService.checkFile(this, true);
+		projectFileCheckService.checkFile(this);
 	}
 
 	private void handleNextStepClicked() {
@@ -184,5 +187,11 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 			binder.readBean(project);
 			statusPanel.setModelDetails();
 		});
+	}
+
+	@Override
+	public void fileCheckComplete(FileCheckResult anylogicFileCheckResult) {
+		//TODO : Get result and show erros on screen or result on screen.
+
 	}
 }
