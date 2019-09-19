@@ -25,7 +25,7 @@ public class ProjectFileCheckService
 
 		Runnable runnable = () -> {
 			try{
-				File file = new File("/home/local/JMANDIGITAL/prithvi/projects/nidrive/testmodel/CoffeeShopAnylogicExported.zip");
+				File file = new File("D:/pathmind/CoffeeShopAnylogic Exported.zip");
 				AnylogicFileChecker anylogicfileChecker =new AnylogicFileChecker();
 				anylogicfileChecker.performFileCheck(file);
 				Thread.sleep(300);
