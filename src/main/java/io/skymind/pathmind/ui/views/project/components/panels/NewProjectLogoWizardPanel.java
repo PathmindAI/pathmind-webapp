@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.project.components;
+package io.skymind.pathmind.ui.views.project.components.panels;
 
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.ui.components.LabelFactory;

@@ -1,9 +1,14 @@
 package io.skymind.pathmind.ui.views.experiment;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
@@ -11,14 +16,16 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -39,19 +46,18 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private ScreenTitlePanel screenTitlePanel;
 
+	private Label projectLabel;
+	private Label runTypeLabel;
+	private Label modelRevisionLabel;
+	private Label experimentLabel;
+
 	private TextArea errorsTextArea;
 	private TextArea getObservationTextArea;
 	private TextArea tipsTextArea;
 	private RewardFunctionEditor rewardFunctionEditor;
 
-	// TODO I assume we don't need this here and that the project, etc. are all retrieved from the Experiment
-	// or something along those lines but since I haven't yet setup the fake database schema for experiment
-	// since I don't fully understand the hierarchy I'm just going to pull the project name directly to
-	// confirm that the parameter is correctly wired up.
 	@Autowired
-	private ProjectDAO projectDAO;
-	@Autowired
-	private ExperimentRepository experimentRepository;
+	private ExperimentDAO experimentDAO;
 
 	// TODO -> Add binder for the project other data fields outside of the experiment object.
 	private Binder<Experiment> binder;
@@ -120,8 +126,38 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		tipsTextArea.setEnabled(false);
 
 		return WrapperUtils.wrapSizeFullVertical(
+				getTopStatusPanel(),
 				getObservationTextArea,
-				tipsTextArea);
+				tipsTextArea,
+				getActionButtons());
+	}
+
+	private Component getTopStatusPanel()
+	{
+		projectLabel = new Label();
+		runTypeLabel = new Label();
+		modelRevisionLabel = new Label();
+		experimentLabel = new Label();
+
+		FormLayout formLayout = new FormLayout();
+		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("100px", 4, FormLayout.ResponsiveStep.LabelsPosition.TOP));
+
+		formLayout.addFormItem(projectLabel, "Project");
+		formLayout.addFormItem(runTypeLabel, "Run Type");
+		formLayout.addFormItem(modelRevisionLabel, "Model Revision");
+		formLayout.addFormItem(experimentLabel, "Experiment");
+
+		return formLayout;
+	}
+
+	private HorizontalLayout getActionButtons() {
+		return WrapperUtils.wrapWidthFullHorizontal(
+				new Button("+ New Experiment", click -> UI.getCurrent().navigate(NewExperimentView.class)),
+				new Button("Save Draft", click -> handleSaveDraftClicked()));
+	}
+
+	private void handleSaveDraftClicked() {
+		NotificationUtils.showTodoNotification();
 	}
 
 	@Override
@@ -133,21 +169,23 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
 	{
 		log.error("updating");
-		Experiment experiment = experimentRepository.getExperiment(experimentId);
+		Experiment experiment = experimentDAO.getExperiment(experimentId);
 
 		if(experiment == null)
 			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
 
-		Project project = projectDAO.getProjectForExperiment(experimentId);
-
+		// TODO -> Need to load getObservations panel
 		binder.readBean(experiment);
 
-		// TODO -> Need to fully use the binder here. Only partially used.
-//		getObservationTextArea.setValue(project.getGetObservationForRewardFunction());
-//		rewardFunctionEditor.setRewardFunction(experiment.getRewardFunction());
-//		screenTitlePanel.setSubtitle(project.getName());
-//		backToExperimentsButton.addClickListener(click ->
-//				UI.getCurrent().navigate(ExperimentsView.class, experiment.getModelId()));
+		screenTitlePanel.setSubtitle(experiment.getProject().getName());
+		updateTopStatusPanel(experiment);
+	}
+
+	private void updateTopStatusPanel(Experiment experiment) {
+		projectLabel.setText(experiment.getProject().getName());
+		runTypeLabel.setText(RunType.TestRun.name());
+		modelRevisionLabel.setText(experiment.getModel().getName());
+		experimentLabel.setText(experiment.getName());
 	}
 
 	private void save() {

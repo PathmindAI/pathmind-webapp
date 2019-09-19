@@ -1,11 +1,15 @@
 package io.skymind.pathmind.db.repositories;
 
-import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.*;
 import org.jooq.DSLContext;
+import org.jooq.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static io.skymind.pathmind.data.db.Tables.*;
 
 @Repository
 public class PolicyRepository
@@ -14,24 +18,33 @@ public class PolicyRepository
     private DSLContext dslContext;
 
     public List<Policy> getPoliciesForUser(long userId) {
-        // TODO -> Implement
-        return null;
+        Result<?> result = dslContext
+                .select(POLICY.asterisk())
+                .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
+                .select(EXPERIMENT.ID, EXPERIMENT.NAME)
+                .select(MODEL.ID, MODEL.NAME)
+                .select(PROJECT.ID, PROJECT.NAME)
+				.from(POLICY)
+					.leftJoin(RUN)
+						.on(RUN.ID.eq(POLICY.RUN_ID))
+					.leftJoin(EXPERIMENT)
+						.on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
+					.leftJoin(MODEL)
+						.on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+					.leftJoin(PROJECT)
+						.on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+					.leftJoin(PATHMIND_USER)
+						.on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
+				.where(PATHMIND_USER.ID.eq(userId))
+				.fetch();
+
+        return result.stream().map(record -> {
+        	Policy policy = record.into(POLICY).into(Policy.class);
+			policy.setRun(record.into(RUN).into(Run.class));
+			policy.setExperiment(record.into(EXPERIMENT).into(Experiment.class));
+			policy.setModel(record.into(MODEL).into(Model.class));
+			policy.setProject(record.into(PROJECT).into(Project.class));
+			return policy;
+		}).collect(Collectors.toList());
     }
-
-//    public List<Model> getRunsForUser(long userId) {
-//        return dslContext
-//                .select(RUN.asterisk())
-//                .select(MODEL.NAME)
-//			    .from(RUN)
-//				.where(MODEL.PROJECT_ID.eq(projectId))
-//				.fetchInto(Model.class);
-//    }
-
-//    public long getProjectIdForModel(long modelId) {
-//    	return dslContext
-//				.select(MODEL.PROJECT_ID)
-//				.from(MODEL)
-//				.where(MODEL.ID.eq(modelId))
-//				.fetchOneInto(Long.class);
-//	}
 }

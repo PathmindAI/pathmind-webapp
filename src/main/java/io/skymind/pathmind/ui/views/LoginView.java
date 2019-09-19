@@ -13,7 +13,6 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
-import io.skymind.pathmind.ui.views.project.ProjectsView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route("login")
@@ -21,9 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @HtmlImport("frontend://styles/shared-styles.html")
 public class LoginView extends LoginOverlay implements BeforeEnterObserver // , AfterNavigationObserver
 {
-//	@Autowired
-//	private UserRepository userRepository;
-
 	@Autowired
 	private UserDAO userDAO;
 
@@ -57,7 +53,7 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver // , 
 	private Class getRerouteClass() {
 		if(projectDAO.getProjectsForUser(SecurityUtils.getUserId()).isEmpty())
 			return NewProjectView.class;
-		return ProjectsView.class;
+		return DashboardView.class;
 	}
 
 	@Override

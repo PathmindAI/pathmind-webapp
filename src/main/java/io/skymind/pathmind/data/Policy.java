@@ -6,16 +6,16 @@ public class Policy implements Data
 {
 	private long id;
 	private long runId;
+	private String externalId;
 	private String name;
-	private int algorithm;
-	private String score;
-	private byte[] hyperParameters;
+	private String progress;
 	private byte[] file;
 
 	// Helper GUI attributes not stored in the database
-	private String projectName;
-	private String modelName;
-	private String experimentName;
+	private Project project;
+	private Model model;
+	private Experiment experiment;
+	private Run run;
 
 	@Override
 	public long getId() {
@@ -42,38 +42,20 @@ public class Policy implements Data
 		this.name = name;
 	}
 
-	public int getAlgorithm() {
-		return algorithm;
+	public String getExternalId() {
+		return externalId;
 	}
 
-	public void setAlgorithm(int algorithm) {
-		this.algorithm = algorithm;
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 
-	// TODO -> Implement JOOQ converter
-	public Algorithm getAlgorithmEnum() {
-		return Algorithm.getEnumFromValue(algorithm);
+	public String getProgress() {
+		return progress;
 	}
 
-	// TODO -> Implement JOOQ converter
-	public void setAlgorithEnum(Algorithm algorithEnum) {
-		this.algorithm = algorithEnum.getValue();
-	}
-
-	public String getScore() {
-		return score;
-	}
-
-	public void setScore(String score) {
-		this.score = score;
-	}
-
-	public byte[] getHyperParameters() {
-		return hyperParameters;
-	}
-
-	public void setHyperParameters(byte[] hyperParameters) {
-		this.hyperParameters = hyperParameters;
+	public void setProgress(String progress) {
+		this.progress = progress;
 	}
 
 	public byte[] getFile() {
@@ -84,27 +66,35 @@ public class Policy implements Data
 		this.file = file;
 	}
 
-	public String getProjectName() {
-		return projectName;
+	public Project getProject() {
+		return project;
 	}
 
-	public void setProjectName(String projectName) {
-		this.projectName = projectName;
+	public void setProject(Project project) {
+		this.project = project;
 	}
 
-	public String getModelName() {
-		return modelName;
+	public Model getModel() {
+		return model;
 	}
 
-	public void setModelName(String modelName) {
-		this.modelName = modelName;
+	public void setModel(Model model) {
+		this.model = model;
 	}
 
-	public String getExperimentName() {
-		return experimentName;
+	public Experiment getExperiment() {
+		return experiment;
 	}
 
-	public void setExperimentName(String experimentName) {
-		this.experimentName = experimentName;
+	public void setExperiment(Experiment experiment) {
+		this.experiment = experiment;
+	}
+
+	public Run getRun() {
+		return run;
+	}
+
+	public void setRun(Run run) {
+		this.run = run;
 	}
 }

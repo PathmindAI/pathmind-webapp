@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.project.components;
+package io.skymind.pathmind.ui.views.project.components.panels;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -88,10 +88,11 @@ public class ExperimentListPanel extends VerticalLayout
 				.setHeader("Full Run")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(Experiment::getNotes)
-				.setHeader("Notes")
-				.setAutoWidth(true)
-				.setSortable(true);
+		// TODO -> Notes no longer exists on the Experiment level
+//		grid.addColumn(Experiment::getNotes)
+//				.setHeader("Notes")
+//				.setAutoWidth(true)
+//				.setSortable(true);
 
 //		grid.addColumn(experiment -> DateTimeUtils.formatTime(ExperimentUtils.getElapsedTime(experiment)))
 //				.setHeader("Duration")

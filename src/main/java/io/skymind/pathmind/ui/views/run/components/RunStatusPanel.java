@@ -13,7 +13,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
-import io.skymind.pathmind.ui.views.experiment.components.ExperimentStatusDetailsPanel;
 
 public class RunStatusPanel extends VerticalLayout
 {
@@ -23,7 +22,7 @@ public class RunStatusPanel extends VerticalLayout
 	private ListSeries series = new ListSeries("Score");
 
 	private Label scoreLabel = new Label("0");
-	private ExperimentStatusDetailsPanel experimentStatusDetailsPanel = new ExperimentStatusDetailsPanel();
+	private RunStatusDetailsPanel experimentStatusDetailsPanel = new RunStatusDetailsPanel();
 
 	public RunStatusPanel(RunType runType)
 	{
@@ -76,7 +75,7 @@ public class RunStatusPanel extends VerticalLayout
 	// that's the case then why not just use the status field.
 	public void setExperiment(Experiment experiment) {
 		this.experiment = experiment;
-		experimentStatusDetailsPanel.update(experiment);
+//		experimentStatusDetailsPanel.update(experiment);
 	}
 
 	// TODO -> Implement
@@ -88,6 +87,6 @@ public class RunStatusPanel extends VerticalLayout
 //		scoreLabel.setText(newChartData.toString());
 //		scoreLabel.setText(experiment.getLastScore().toString());
 //		experimentStatusDetailsPanel.setExperiment(experiment);
-		experimentStatusDetailsPanel.update(experiment);
+//		experimentStatusDetailsPanel.update(experiment);
 	}
 }

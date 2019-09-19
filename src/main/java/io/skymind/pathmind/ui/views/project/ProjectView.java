@@ -21,12 +21,13 @@ import io.skymind.pathmind.services.experiment.ExperimentRunService;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.components.ExperimentStatusDetailsPanel;
-import io.skymind.pathmind.ui.views.project.components.ExperimentListPanel;
-import io.skymind.pathmind.ui.views.project.components.ProjectChartPanel;
+import io.skymind.pathmind.ui.views.run.components.RunStatusDetailsPanel;
+import io.skymind.pathmind.ui.views.project.components.panels.ExperimentListPanel;
+import io.skymind.pathmind.ui.views.project.components.panels.ProjectChartPanel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	private ScreenTitlePanel screenTitlePanel;
 	private ExperimentListPanel experimentListPanel;
 	private ProjectChartPanel projectChartPanel;
-	private ExperimentStatusDetailsPanel experimentStatusDetailsPanel;
+	private RunStatusDetailsPanel experimentStatusDetailsPanel;
 
 	private final UnicastProcessor<PathmindBusEvent> publisher;
 	private final Flux<PathmindBusEvent> consumer;
@@ -75,7 +76,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	private void pushValues(Experiment experiment) {
 		PushUtils.push(this, () -> {
 //			projectChartPanel.update(experiment);
-			experimentStatusDetailsPanel.update(experiment);
+//			experimentStatusDetailsPanel.update(experiment);
+			NotificationUtils.showTodoNotification("Update run status panel");
 		});
 	}
 
@@ -118,12 +120,13 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	{
 		experimentListPanel = new ExperimentListPanel(consumer);
 		projectChartPanel = new ProjectChartPanel(consumer);
-		experimentStatusDetailsPanel = new ExperimentStatusDetailsPanel();
+		experimentStatusDetailsPanel = new RunStatusDetailsPanel();
 
 		experimentListPanel.addSelectionListener(experiment -> {
 			// TODO -> Highlight selected row in chart.
 //			projectChartPanel.update(experiment);
-			experimentStatusDetailsPanel.update(experiment);
+			NotificationUtils.showTodoNotification();
+//			experimentStatusDetailsPanel.update(experiment);
 			selectedExperiment = experiment;
 		});
 

@@ -1,14 +1,17 @@
 package io.skymind.pathmind.db.repositories;
 
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
+import static io.skymind.pathmind.data.db.tables.Model.MODEL;
 import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
 
 @Repository
@@ -18,10 +21,22 @@ public class ExperimentRepository
 	private DSLContext dslContext;
 
     public Experiment getExperiment(long experimentId) {
-        return dslContext
-            .selectFrom(EXPERIMENT)
+        Record record = dslContext
+            .select(EXPERIMENT.asterisk())
+			.select(MODEL.ID, MODEL.NAME)
+			.select(PROJECT.ID, PROJECT.NAME)
+			.from(EXPERIMENT)
+			.leftJoin(MODEL)
+				.on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+			.leftJoin(PROJECT)
+				.on(PROJECT.ID.eq(MODEL.PROJECT_ID))
             .where(EXPERIMENT.ID.eq(experimentId))
-            .fetchOneInto(Experiment.class);
+            .fetchOne();
+
+        Experiment experiment = record.into(EXPERIMENT).into(Experiment.class);
+        experiment.setModel(record.into(MODEL).into(Model.class));
+        experiment.setProject(record.into(PROJECT).into(Project.class));
+        return experiment;
     }
 
 	public List<Experiment> getExperimentsForModel(long modelId) {
@@ -30,31 +45,6 @@ public class ExperimentRepository
 				.where(EXPERIMENT.MODEL_ID.eq(modelId))
 				.fetchInto(Experiment.class);
 	}
-
-//	public List<Experiment> getExperimentsForProject(long projectId) {
-//		return dslContext
-//				.selectFrom(EXPERIMENT)
-//				.where(EXPERIMENT.PROJECT_ID.eq(projectId))
-//				.fetchInto(Experiment.class);
-//	}
-//
-//	public List<Experiment> getOtherExperimentsForSameProject(long experimentId) {
-//		return dslContext
-//				.selectFrom(EXPERIMENT)
-//				.where(EXPERIMENT.PROJECT_ID.eq(dslContext
-//						.select(EXPERIMENT.PROJECT_ID)
-//						.from(EXPERIMENT)
-//						.where(EXPERIMENT.ID.eq(experimentId))))
-//				.fetchInto(Experiment.class);
-//	}
-
-	// TODO -> Do we want to batch or is it ever only really going to be 1 experiment almost all the time?
-	// PERFORMANCE -> Database insert loop.
-	// TODO -> DATA MODEL
-// 	public void insertExperimentsForProject(Project project) {
-//    	project.getExperiments().stream().forEach(experiment ->
-//				insertExperiment(experiment));
-//	}
 
 	protected long insertExperiment(Experiment experiment) {
     	// TODO -> DATA MODEL

@@ -22,7 +22,7 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
 import io.skymind.pathmind.ui.views.project.ProjectsView;
-import io.skymind.pathmind.utils.DateTimeUtils;
+import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @StyleSheet("frontend://styles/styles.css")
@@ -50,12 +50,12 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 				.setSortable(true);
 //				.setWidth("275px");
 		modelGrid.addColumn(
-				new LocalDateTimeRenderer<>(Model::getDateCreated, DateTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+				new LocalDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
 				.setHeader("Date Created")
 				.setSortable(true);
 //				.setWidth("275px");
 		modelGrid.addColumn(
-				new LocalDateTimeRenderer<>(Model::getLastActivityDate, DateTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+				new LocalDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
 				.setHeader("Last Activity")
 				.setSortable(true);
 //				.setWidth("275px");

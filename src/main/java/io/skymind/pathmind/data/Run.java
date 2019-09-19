@@ -1,9 +1,8 @@
 package io.skymind.pathmind.data;
 
+import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Run implements Data
@@ -11,9 +10,10 @@ public class Run implements Data
 	private long id;
 	private String name;
 	private int runType;
-	private LocalDateTime startDateTime;
-	private LocalDateTime endDateTime;
+	private LocalDateTime startedAt;
+	private LocalDateTime stoppedAt;
 	private long experimentId;
+	private int status;
 
 	public Run() {
 	}
@@ -65,19 +65,35 @@ public class Run implements Data
 		this.experimentId = experimentId;
 	}
 
-	public LocalDateTime getStartDateTime() {
-		return startDateTime;
+	public LocalDateTime getStartedAt() {
+		return startedAt;
 	}
 
-	public void setStartDateTime(LocalDateTime startDateTime) {
-		this.startDateTime = startDateTime;
+	public void setStartedAt(LocalDateTime startedAt) {
+		this.startedAt = startedAt;
 	}
 
-	public LocalDateTime getEndDateTime() {
-		return endDateTime;
+	public LocalDateTime getStoppedAt() {
+		return stoppedAt;
 	}
 
-	public void setEndDateTime(LocalDateTime endDateTime) {
-		this.endDateTime = endDateTime;
+	public void setStoppedAt(LocalDateTime stoppedAt) {
+		this.stoppedAt = stoppedAt;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public RunStatus getStatusEnum() {
+		return RunStatus.getEnumFromValue(status);
+	}
+
+	public void setStatusEnum(RunStatus runStatus) {
+		this.status = runStatus.getValue();
 	}
 }

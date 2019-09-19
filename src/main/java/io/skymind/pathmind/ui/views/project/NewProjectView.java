@@ -21,7 +21,7 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.*;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
-import io.skymind.pathmind.ui.views.project.components.NewProjectLogoWizardPanel;
+import io.skymind.pathmind.ui.views.project.components.panels.NewProjectLogoWizardPanel;
 import io.skymind.pathmind.ui.views.project.components.wizard.*;
 import org.springframework.beans.factory.annotation.Autowired;
 

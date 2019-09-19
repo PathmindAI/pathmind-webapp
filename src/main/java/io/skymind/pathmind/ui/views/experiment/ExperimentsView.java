@@ -17,7 +17,7 @@ import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.model.ModelsView;
-import io.skymind.pathmind.ui.views.project.components.ExperimentListPanel;
+import io.skymind.pathmind.ui.views.project.components.panels.ExperimentListPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @StyleSheet("frontend://styles/styles.css")

@@ -16,17 +16,4 @@ public class ExperimentUtils
 		experiment.setDateCreated(LocalDateTime.now());
 		return experiment;
 	}
-
-	public static long getElapsedTime(Experiment experiment)
-	{
-		// TODO -> Implement with new data model.
-		return 0;
-
-//		if(experiment.getStartTime() == null)
-//			return 0;
-//
-//		return experiment.getEndTime() == null ?
-//				Duration.between(experiment.getStartTime(), Instant.now()).toSeconds() :
-//				Duration.between(experiment.getStartTime(), experiment.getEndTime()).toSeconds();
-	}
 }

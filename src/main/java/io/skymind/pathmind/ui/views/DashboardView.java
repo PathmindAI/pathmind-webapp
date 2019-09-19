@@ -3,23 +3,24 @@ package io.skymind.pathmind.ui.views;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.constants.Algorithm;
+import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.utils.RunUtils;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
-import io.skymind.pathmind.ui.views.project.ProjectView;
-import io.skymind.pathmind.utils.DateTimeUtils;
+import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -27,9 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DashboardView extends PathMindDefaultView
 {
 	@Autowired
-	private ProjectDAO projectDAO;
+	private PolicyDAO policyDAO;
 
-	private Grid<Project> projectGrid;
+	private Grid<Policy> policyGrid;
 
 	public DashboardView()
 	{
@@ -38,38 +39,51 @@ public class DashboardView extends PathMindDefaultView
 
 	protected Component getMainContent()
 	{
-		projectGrid = new Grid<>();
+		policyGrid = new Grid<>();
 
-		projectGrid.addColumn(Project::getName)
-				.setHeader("Name")
+		policyGrid.addColumn(policy -> policy.getRun().getStatusEnum())
+				.setHeader("Status")
 				.setSortable(true);
-//				.setWidth("275px");
-		projectGrid.addColumn(
-				new LocalDateTimeRenderer<>(Project::getDateCreated, DateTimeUtils.STANDARD_DATE_TIME_FOMATTER))
-				.setHeader("Date Created")
+		policyGrid.addColumn(policy -> policy.getProject().getName())
+				.setHeader("Project")
 				.setSortable(true);
-//				.setWidth("275px");
-		projectGrid.addColumn(
-				new LocalDateTimeRenderer<>(Project::getLastActivityDate, DateTimeUtils.STANDARD_DATE_TIME_FOMATTER))
-				.setHeader("Last Activity")
+		policyGrid.addColumn(policy -> policy.getModel().getName())
+				.setHeader("Model")
 				.setSortable(true);
-//				.setWidth("275px");
+		policyGrid.addColumn(policy -> policy.getExperiment().getName())
+				.setHeader("Experiment")
+				.setSortable(true);
+		policyGrid.addColumn(policy -> policy.getRun().getRunTypeEnum())
+				.setHeader("Run Type")
+				.setSortable(true);
+		// TODO -> For now it's hardcoded as DQN since that's the only option.
+		policyGrid.addColumn(policy -> Algorithm.DQN)
+				.setHeader("Algorithm")
+				.setSortable(true);
+		policyGrid.addColumn(policy -> DateAndTimeUtils.formatTime(RunUtils.getElapsedTime(policy.getRun())))
+				.setHeader("Duration")
+				.setSortable(true);
+		policyGrid.addColumn(
+				new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+				.setHeader("Completed")
+				.setSortable(true);
 
-		projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-		projectGrid.addSelectionListener(event ->
-				event.getFirstSelectedItem().ifPresent(selectedProject ->
-						UI.getCurrent().navigate(ProjectView.class, selectedProject.getId())));
+		policyGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+		policyGrid.addSelectionListener(event ->
+				event.getFirstSelectedItem().ifPresent(selectedPolicy ->
+						NotificationUtils.showTodoNotification("Where do we go when we click on this?")));
+//						UI.getCurrent().navigate(RunView.class, selectedPolicy.getId())));
 
-		projectGrid.setWidth("700px");
-		projectGrid.setMaxWidth("700px");
-		projectGrid.setMaxHeight("500px");
-		projectGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+		// TODO -> CSS styles
+		policyGrid.setWidth("80%");
+		policyGrid.setMaxHeight("500px");
+		policyGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
 		// BUG -> I didn't have to really investigate but it looks like we may need
 		// to do something special to get the full size content in the AppLayout component which
 		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
 		// Hence the workaround below:
-		HorizontalLayout gridWrapper = WrapperUtils.wrapSizeFullCenterHorizontal(projectGrid);
+		HorizontalLayout gridWrapper = WrapperUtils.wrapSizeFullCenterHorizontal(policyGrid);
 		gridWrapper.getElement().getStyle().set("padding-top", "100px");
 		return gridWrapper;
 	}
@@ -83,11 +97,11 @@ public class DashboardView extends PathMindDefaultView
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("PROJECTS");
+		return new ScreenTitlePanel("DASHBOARD");
 	}
 
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) {
-		projectGrid.setItems(projectDAO.getProjectsForUser(SecurityUtils.getUserId()));
+		policyGrid.setItems(policyDAO.getPoliciesForUser(SecurityUtils.getUserId()));
 	}
 }
