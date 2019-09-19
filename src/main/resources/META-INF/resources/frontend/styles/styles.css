@@ -1,3 +1,8 @@
+#nav-main-links, #nav-account-links, #nav-main-links a, #nav-account-links a, .nav-logout-button  {
+    color: var(--lumo-header-text-color);
+    line-height: 31px;
+}
+
 .section-label-title {
     font-size: 22px;
     font-weight: bold;

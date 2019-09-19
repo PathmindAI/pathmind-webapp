@@ -12,6 +12,8 @@ import java.util.*;
 public class ProgressInterpreter {
     public static Progress interpret(Map.Entry<String, String> entry){
         final Progress progress = new Progress();
+        progress.setId(entry.getKey());
+
         final HashMap<String, String> hyperParameters = new HashMap<>();
 
         StringBuilder buffer = new StringBuilder();
@@ -56,7 +58,6 @@ public class ProgressInterpreter {
         final String dateTime = buffer.toString().substring(0, 19);
         final LocalDateTime time = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss"));
         progress.setStartedAt(time);
-        progress.setId(buffer.substring(20));
 
 
         try {

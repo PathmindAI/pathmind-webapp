@@ -1,13 +1,13 @@
 package io.skymind.pathmind.ui.views.experiment;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -18,17 +18,15 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
-import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.run.DiscoveryRunConfirmationView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -72,13 +70,16 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	@Override
 	protected ActionMenu getActionMenu()
 	{
-		backToExperimentsButton = new Button("< Back to Experiments");
+		backToExperimentsButton = new Button("Back to Experiments", new Icon(VaadinIcon.CHEVRON_LEFT));
 
+		final Button testRunButton = new Button("Test Run", new Icon(VaadinIcon.CHEVRON_RIGHT), click ->
+				UI.getCurrent().navigate(DiscoveryRunConfirmationView.class, experimentId));
+		testRunButton.setIconAfterText(true);
+		final Button newExperimentButton = new Button("New Experiment", new Icon(VaadinIcon.PLUS));
 		return new ActionMenu(
 				backToExperimentsButton,
-				new Button("+ New Experiment"),
-				new Button("Test Run >", click ->
-						UI.getCurrent().navigate(DiscoveryRunConfirmationView.class, experimentId))
+				newExperimentButton,
+				testRunButton
 		);
 	}
 
@@ -151,9 +152,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private HorizontalLayout getActionButtons() {
+		final Button newExperimentButton = new Button("New Experiment", new Icon(VaadinIcon.PLUS), click -> UI.getCurrent().navigate(NewExperimentView.class));
+		final Button saveDraftButton = new Button("Save Draft", new Icon(VaadinIcon.FILE), click -> handleSaveDraftClicked());
 		return WrapperUtils.wrapWidthFullHorizontal(
-				new Button("+ New Experiment", click -> UI.getCurrent().navigate(NewExperimentView.class)),
-				new Button("Save Draft", click -> handleSaveDraftClicked()));
+				newExperimentButton,
+				saveDraftButton);
 	}
 
 	private void handleSaveDraftClicked() {

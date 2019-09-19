@@ -21,6 +21,6 @@ public class SectionsHeaderPanel extends HorizontalLayout
 				new RouterLink("Learn", LearnView.class));
 		add(sectionsHorizontalLayout);
 
-		getElement().getStyle().set("padding-left", "20px");
+		sectionsHorizontalLayout.setId("nav-main-links");
 	}
 }

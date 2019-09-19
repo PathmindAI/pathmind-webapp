@@ -5,6 +5,8 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -53,7 +55,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Override
 	protected ActionMenu getActionMenu()
 	{
-		backToExperimentsButton = new Button("< Back to Experiments");
+		backToExperimentsButton = new Button("Back to Experiments", new Icon(VaadinIcon.CHEVRON_LEFT));
 
 		return new ActionMenu(
 				backToExperimentsButton

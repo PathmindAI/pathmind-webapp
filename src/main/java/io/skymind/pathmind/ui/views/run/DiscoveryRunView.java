@@ -4,6 +4,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
@@ -69,13 +71,14 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 	@Override
 	protected ActionMenu getActionMenu()
 	{
-		backToProjectButton = new Button("< Back to Project");
+		backToProjectButton = new Button("Back to Project", new Icon(VaadinIcon.CHEVRON_LEFT));
 
+		final Button testRunButton = new Button("Test Run",  new Icon(VaadinIcon.CHEVRON_RIGHT), click ->
+				UI.getCurrent().navigate(ProjectView.class, PathmindConstants.TODO_PARAMETER));
 		return new ActionMenu(
 				backToProjectButton,
-				new Button("+ New Experiment"),
-				new Button("Test Run >", click ->
-						UI.getCurrent().navigate(ProjectView.class, PathmindConstants.TODO_PARAMETER))
+				new Button("New Experiment", new Icon(VaadinIcon.PLUS)),
+				testRunButton
 		);
 	}
 
