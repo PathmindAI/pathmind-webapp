@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import org.objectweb.asm.*;
 
-public class ClassPrinter extends ClassVisitor {
+public class ByteCodeAnalyzer extends ClassVisitor {
 
     List<String> qualifiedClasses = new ArrayList<String>();
     public String qualifiedClassName;
 
 
-    public ClassPrinter() {
+    public ByteCodeAnalyzer() {
         super(Opcodes.ASM7);
     }
     public void visit(int version, int access, String name,
@@ -43,15 +43,19 @@ public class ClassPrinter extends ClassVisitor {
     }
     public void visitEnd() {
     }
-    public List<String> byteParser(List<String> classFiles) {
-        try {
-            for (String classFile : classFiles) {
-                InputStream in=new FileInputStream(classFile);
+
+    public List<String> byteParser(List<String> classFiles) throws IOException {
+        InputStream in = null;
+        for (String classFile : classFiles) {
+            try{
+                in=new FileInputStream(classFile);
                 ClassReader cr = new ClassReader(in);;
                 cr.accept(this, 0);
+            }catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                in.close();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return this.qualifiedClasses;
     }

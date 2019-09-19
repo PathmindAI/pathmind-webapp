@@ -4,19 +4,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 import io.skymind.pathmind.utils.FileUtils;
 import org.springframework.util.FileSystemUtils;
@@ -54,14 +50,11 @@ public class AnylogicFileChecker implements FileChecker {
             log.error("Exception in checking jar file " + e);
         } finally {
             anylogicFileCheckResult.setFileCheckComplete(true);
-
             deleteTempDirectory();
-
         }
         anylogicFileCheckResult.setFileCheckComplete(true);
         return anylogicFileCheckResult;
     }
-
 
     private File checkZipFile(File file, AnylogicFileCheckResult anylogicFileCheckResult) {
 
@@ -148,8 +141,8 @@ public class AnylogicFileChecker implements FileChecker {
             log.info("{} :- checkHelpers Started", uuid);
             unJarred = extractArchive(file);
             List<String> listOfFiles = FileUtils.listFiles(unJarred.toString());
-            ClassPrinter cp = new ClassPrinter();
-            List<String> listOfHelpers = cp.byteParser(listOfFiles);
+            ByteCodeAnalyzer byteCodeAnalyzer = new ByteCodeAnalyzer();
+            List<String> listOfHelpers = byteCodeAnalyzer.byteParser(listOfFiles);
             anylogicFileCheckResult.setDefinedHelpers(listOfHelpers);
             log.info("{} :- checkHelpers Completed", uuid);
         } catch (IOException ioe) {
@@ -206,10 +199,9 @@ public class AnylogicFileChecker implements FileChecker {
         try {
             JarFile jar = new JarFile(archiveFile);
             Enumeration enumEntries = jar.entries();
-            File fileDir = null;
             while (enumEntries.hasMoreElements()) {
                 JarEntry file = (JarEntry) enumEntries.nextElement();
-                fileDir = new File(destDir + File.separator + file.getName());
+                File fileDir = new File(destDir + File.separator + file.getName());
                 if (!fileDir.exists()) {
                     fileDir.getParentFile().mkdirs();
                     fileDir = new File(destDir, file.getName());
@@ -224,8 +216,6 @@ public class AnylogicFileChecker implements FileChecker {
                 }
                 fos.close();
                 is.close();
-                fileDir = null;
-
             }
             jar.close();
         } catch (IOException e) {
@@ -236,16 +226,16 @@ public class AnylogicFileChecker implements FileChecker {
 
     private void deleteTempDirectory() {
 
-      /*  //get parent folder of model.jar
+        //get parent folder of model.jar
         File file = new File(jarTempDir.getParent());
 
         //Delete files recursively
-       // boolean result = FileSystemUtils.deleteRecursively(file);
+        boolean result = FileSystemUtils.deleteRecursively(file);
 
         if (!result) {
             log.error("error in folder delete");
 
-        }*/
+        }
 
     }
 }
