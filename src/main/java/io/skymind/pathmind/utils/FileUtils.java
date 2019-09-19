@@ -15,6 +15,7 @@ public class FileUtils {
         try (Stream<Path> walk = Files.walk(Paths.get(filePath))) {
             result = walk.map(x -> x.toString())
                     .filter(f -> f.endsWith(".class")).collect(Collectors.toList());
+            walk.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

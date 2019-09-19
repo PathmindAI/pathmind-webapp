@@ -19,6 +19,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import io.skymind.pathmind.utils.FileUtils;
+import org.springframework.util.FileSystemUtils;
 
 public class AnylogicFileChecker implements FileChecker {
     private static final Logger log = LogManager.getLogger(AnylogicFileChecker.class);
@@ -53,11 +54,9 @@ public class AnylogicFileChecker implements FileChecker {
             log.error("Exception in checking jar file " + e);
         } finally {
             anylogicFileCheckResult.setFileCheckComplete(true);
-            try {
-                deleteTempDirectory();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+            deleteTempDirectory();
+
         }
         anylogicFileCheckResult.setFileCheckComplete(true);
         return anylogicFileCheckResult;
@@ -207,9 +206,10 @@ public class AnylogicFileChecker implements FileChecker {
         try {
             JarFile jar = new JarFile(archiveFile);
             Enumeration enumEntries = jar.entries();
+            File fileDir = null;
             while (enumEntries.hasMoreElements()) {
                 JarEntry file = (JarEntry) enumEntries.nextElement();
-                File fileDir = new File(destDir + File.separator + file.getName());
+                fileDir = new File(destDir + File.separator + file.getName());
                 if (!fileDir.exists()) {
                     fileDir.getParentFile().mkdirs();
                     fileDir = new File(destDir, file.getName());
@@ -224,6 +224,7 @@ public class AnylogicFileChecker implements FileChecker {
                 }
                 fos.close();
                 is.close();
+                fileDir = null;
 
             }
             jar.close();
@@ -233,28 +234,17 @@ public class AnylogicFileChecker implements FileChecker {
         return destDir;
     }
 
-    private void deleteTempDirectory()
-            throws IOException {
-/*        Path pathToBeDeleted = tempPath;
-        log.info("Path -----------------"+tempPath);
-        Files.walk(pathToBeDeleted)
-                .sorted(Comparator.reverseOrder())
-                .map(Path::toFile)
-                .forEach(File::delete);*/
-        Path dir = tempPath;
-        log.info("Deleting existing recording [{}]", dir);
-        Path pathToBeDeleted = Paths.get(String.valueOf(dir));
-        if (Files.exists(pathToBeDeleted)) {
-            Files.walk(pathToBeDeleted)
-                    .map(Path::toFile)
-                    .sorted(Comparator.reverseOrder())
-                    .forEach(File::delete);
+    private void deleteTempDirectory() {
 
-            try {
-                Files.deleteIfExists(pathToBeDeleted);
-            } catch (DirectoryNotEmptyException e) {
-                log.info("Directory does not only contain cq4 files, not deleted");
-            }
+        //get parent folder of model.jar
+        File file = new File(jarTempDir.getParent());
+
+        //Delete files recursively
+        boolean result = FileSystemUtils.deleteRecursively(file);
+
+        if (!result) {
+            log.error("error in folder delete");
+
         }
 
     }
