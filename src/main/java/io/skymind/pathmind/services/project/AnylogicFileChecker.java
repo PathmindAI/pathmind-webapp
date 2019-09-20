@@ -19,7 +19,6 @@ import org.springframework.util.FileSystemUtils;
 
 public class AnylogicFileChecker implements FileChecker {
     private static final Logger log = LogManager.getLogger(AnylogicFileChecker.class);
-    private static final int BUFFER = 1024;
     private String uuid = UUID.randomUUID().toString();
     private File jarTempDir = null;
 
@@ -40,13 +39,13 @@ public class AnylogicFileChecker implements FileChecker {
                         checkHelpers(unZippedJar, anylogicFileCheckResult);
                 }
                 if (unZippedJar == null && anylogicFileCheckResult.isCorrectFileType()) {
-                    log.error((CharSequence) "model.jar does not exist");
+                    log.error("model.jar does not exist");
                 }
             } else {
-                log.error((CharSequence) "File does not exist or no read permission");
+                log.error("File does not exist or no read permission");
             }
         } catch (Exception e) {
-            log.error((CharSequence) "Exception in checking jar file ", e);
+            log.error("Exception in checking jar file ", e);
         } finally {
             anylogicFileCheckResult.setFileCheckComplete(true);
             if (jarTempDir != null) deleteTempDirectory();
@@ -60,23 +59,22 @@ public class AnylogicFileChecker implements FileChecker {
         String searchFileName = "model.jar";
         // To Check if the Zip file is a valid
         File unZippedJar = null;
-        boolean isJarExist = false;
         try (ZipFile zipFile = new ZipFile(file)) {
             anylogicFileCheckResult.setCorrectFileType(true);
             Enumeration<?> enu = zipFile.entries();
             List<String> fileNameList = new ArrayList<>();
             while (enu.hasMoreElements()) {
                 ZipEntry zipEntry = (ZipEntry) enu.nextElement();
-                String name = zipEntry.getName();
                 log.info(zipEntry.getName());
                 fileNameList.add(zipEntry.getName());
                 if (zipEntry.getName().toLowerCase().indexOf(searchFileName) != -1) {
                     unZippedJar = unzipFile(file, searchFileName);
+                    log.debug("unzipped jar path {} :-", unZippedJar.getAbsolutePath());
                 }
             }
             anylogicFileCheckResult.setZipContentFileNames(fileNameList);
         } catch (ZipException ioe) {
-            log.error((CharSequence) "Invalid zip file :", ioe);
+            log.error("Invalid zip file :", ioe);
         }
         log.info("{} :- CheckZip File Completed", uuid);
         return unZippedJar;
@@ -90,10 +88,10 @@ public class AnylogicFileChecker implements FileChecker {
         try (ZipFile jarFile = new ZipFile(unZippedJar)) {
             anylogicFileCheckResult.setModelJarFilePresent(true);
         } catch (ZipException ioe) {
-            log.error((CharSequence) "Error opening jar file", ioe);
+            log.error("Error opening jar file", ioe);
             anylogicFileCheckResult.setModelJarFilePresent(false);
         } catch (IOException e) {
-            log.error((CharSequence) "Error opening jar file", e);
+            log.error("Error opening jar file", e);
             anylogicFileCheckResult.setModelJarFilePresent(false);
         }
         log.info("{} :- checkJarFile Completed", uuid);
@@ -110,13 +108,13 @@ public class AnylogicFileChecker implements FileChecker {
             List<String> listOfHelpers = byteCodeAnalyzer.byteParser(listOfFiles);
             anylogicFileCheckResult.setDefinedHelpers(listOfHelpers);
         } catch (IOException ioe) {
-            log.error((CharSequence) "Error unJarred jar file", ioe);
+            log.error("Error unJarred jar file", ioe);
         }
         log.info("{} :- checkHelpers Completed", uuid);
     }
 
 
-    private File unzipFile(File zippedFile, String searchFileName) throws IOException {
+    private File unzipFile(File zippedFile, String searchFileName) {
         log.info("{} :- unzipFile Started", uuid);
         try (ZipFile zipFile = new ZipFile(zippedFile)) {
             Enumeration<?> enu = zipFile.entries();
@@ -125,8 +123,8 @@ public class AnylogicFileChecker implements FileChecker {
                 String name = zipEntry.getName();
                 long size = zipEntry.getSize();
                 long compressedSize = zipEntry.getCompressedSize();
-                //log.info("name:- {} | size:- {} | compressed size:- {}\n",
-                //  name, size, compressedSize);
+                log.debug("name:- {} | size:- {} | compressed size:- {}\n",
+                        name, size, compressedSize);
                 if (zipEntry.getName().toLowerCase().indexOf(searchFileName) != -1) {
                     Path tempPath = Files.createTempDirectory(uuid);
                     jarTempDir = new File(String.valueOf(tempPath));
@@ -135,6 +133,7 @@ public class AnylogicFileChecker implements FileChecker {
                     }
                     InputStream inputStream = zipFile.getInputStream(zipEntry);
                     jarTempDir = new File(jarTempDir + "/" + searchFileName);
+                    log.debug("unzipped jar path {} :-", jarTempDir);
                     FileOutputStream fos = new FileOutputStream(jarTempDir);
                     byte[] bytes = new byte[1024];
                     int length;
@@ -146,13 +145,13 @@ public class AnylogicFileChecker implements FileChecker {
                 }
             }
         } catch (IOException e) {
-            log.error((CharSequence) "error during unzipping file :", e);
+            log.error("error during unzipping file :", e);
         }
         log.info("{} :- unzipFile Completed", uuid);
         return jarTempDir;
     }
 
-    private File extractArchive(File archiveFile) throws IOException {
+    private File extractArchive(File archiveFile) {
         log.info("{} :- extractArchive file Started", uuid);
         File destDir = new File(archiveFile.getParent());
         try (JarFile jar = new JarFile(archiveFile)) {
@@ -173,11 +172,11 @@ public class AnylogicFileChecker implements FileChecker {
                         fileOutputStream.write(inputStream.read());
                     }
                 } catch (Exception e) {
-                    log.error((CharSequence) "error while read/write jar files content", e);
+                    log.error("error while read/write jar files content", e);
                 }
             }
         } catch (IOException e) {
-            log.error((CharSequence) "error while extract jar files", e);
+            log.error("error while extract jar files", e);
         }
         return destDir;
     }
@@ -188,7 +187,7 @@ public class AnylogicFileChecker implements FileChecker {
         //Delete files recursively
         boolean result = FileSystemUtils.deleteRecursively(file);
         if (!result) {
-            log.error((CharSequence) "error in folder delete");
+            log.error("error in folder delete");
         }
     }
 }

@@ -61,7 +61,7 @@ public class ByteCodeAnalyzer extends ClassVisitor {
                 ClassReader cr = new ClassReader(inputStream);
                 cr.accept(this, 0);
             } catch (IOException e) {
-                log.error((CharSequence) e.getMessage(), e);
+                log.error("error while reading classes", e);
 
             }
         }
