@@ -20,10 +20,11 @@ public class ExperimentRepository
 	@Autowired
 	private DSLContext dslContext;
 
+	// We only include the getObservationForRewardFunction in case it's a new experiment (or in draft mode).
     public Experiment getExperiment(long experimentId) {
         Record record = dslContext
             .select(EXPERIMENT.asterisk())
-			.select(MODEL.ID, MODEL.NAME)
+			.select(MODEL.ID, MODEL.NAME, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION)
 			.select(PROJECT.ID, PROJECT.NAME)
 			.from(EXPERIMENT)
 			.leftJoin(MODEL)
@@ -44,6 +45,14 @@ public class ExperimentRepository
 				.selectFrom(EXPERIMENT)
 				.where(EXPERIMENT.MODEL_ID.eq(modelId))
 				.fetchInto(Experiment.class);
+	}
+
+	public void updateRewardFunction(Experiment experiment) {
+    	dslContext
+				.update(EXPERIMENT)
+				.set(EXPERIMENT.REWARD_FUNCTION, experiment.getRewardFunction())
+				.where(EXPERIMENT.ID.eq(experiment.getId()))
+				.execute();
 	}
 
 	protected long insertExperiment(Experiment experiment) {

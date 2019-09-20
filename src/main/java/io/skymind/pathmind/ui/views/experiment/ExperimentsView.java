@@ -31,7 +31,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	private long modelId;
 
-//	private Grid<Experiment> experimentGrid;
 	private ExperimentListPanel experimentListPanel;
 
 	public ExperimentsView()
@@ -45,13 +44,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		experimentListPanel.addSelectionListener(selectedExperiment ->
 				UI.getCurrent().navigate(ExperimentView.class, selectedExperiment.getId()));
 
-		// BUG -> I didn't have to really investigate but it looks like we may need
-		// to do something special to get the full size content in the AppLayout component which
-		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
-		// Hence the workaround below:
-//		HorizontalLayout gridWrapper = WrapperUtils.wrapSizeFullCenterHorizontal(experimentGrid);
-//		gridWrapper.getElement().getStyle().set("padding-top", "100px");
-//		return gridWrapper;
 		return experimentListPanel;
 	}
 

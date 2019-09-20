@@ -15,8 +15,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.db.repositories.ExperimentRepository;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -24,6 +23,8 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
+import io.skymind.pathmind.ui.views.experiment.components.TrainingsListPanel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +41,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private ScreenTitlePanel screenTitlePanel;
 
+	private RewardFunctionEditor rewardFunctionEditor;
+	private TrainingsListPanel trainingsListPanel;
+
 	@Autowired
-	private ProjectDAO projectDAO;
-	@Autowired
-	private ExperimentRepository experimentRepository;
+	private ExperimentDAO experimentDAO;
 
 	private Button backToExperimentsButton;
 
@@ -79,18 +81,24 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private Component getLeftPanel()
 	{
+		trainingsListPanel = new TrainingsListPanel();
+
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
 				new Label("Chart"),
-				new Label("List of Runs"));
+				trainingsListPanel);
 	}
 
 	private VerticalLayout getRightPanel()
 	{
+		rewardFunctionEditor = new RewardFunctionEditor();
+		rewardFunctionEditor.setReadonly(true);
+		rewardFunctionEditor.setSizeFull();
+
 		return WrapperUtils.wrapSizeFullVertical(
 				new Button("Start"),
 				new Label("Status panel"),
-				new Label("Reward Function"),
-				new HorizontalLayout(
+				rewardFunctionEditor,
+				WrapperUtils.wrapWidthFullCenterHorizontal(
 						new Button("New Experiment", click -> NotificationUtils.showTodoNotification()),
 						new Button("Export Policy", click -> NotificationUtils.showTodoNotification())
 				));
@@ -104,14 +112,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
 	{
-		Experiment experiment = experimentRepository.getExperiment(experimentId);
+		Experiment experiment = experimentDAO.getExperiment(experimentId);
 
 		if(experiment == null)
 			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
 
-		Project project = projectDAO.getProjectForExperiment(experimentId);
+		screenTitlePanel.setSubtitle(experiment.getProject().getName());
 
-		screenTitlePanel.setSubtitle(project.getName());
+		rewardFunctionEditor.setValue(experiment.getRewardFunction());
+
 		backToExperimentsButton.addClickListener(click ->
 				UI.getCurrent().navigate(ExperimentsView.class, experiment.getModelId()));
 	}

@@ -105,7 +105,7 @@
             </column>
             <column name="NAME" type="VARCHAR(255)">
                 <constraints nullable="false"/>
-            </column>
+             </column>
             <column name="REWARD_FUNCTION" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>

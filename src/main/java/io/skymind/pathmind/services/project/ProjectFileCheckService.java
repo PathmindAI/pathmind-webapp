@@ -1,33 +1,46 @@
 package io.skymind.pathmind.services.project;
 
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class ProjectFileCheckService
-{
-	private static final Logger log = LogManager.getLogger(ProjectFileCheckService.class);
+import java.io.File;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 
-	// TODO -> Remove the showError flag, it's only for testing.
-	public static void checkFile(StatusUpdater statusUpdater, boolean isShowError) {
-		new Thread(() -> {
-				try {
-					for(int x=0; x<10; x++) {
-						log.info("Checking : " + x*10 + "% done");
-						statusUpdater.updateStatus(x/10D);
-						if(isShowError && (x == 5 || x == 8)) {
-							log.info("Error : " + x);
-							statusUpdater.updateError("Error : " + x);
-						}
-						Thread.sleep(300);
-					}
-				} catch (InterruptedException e) {
-					log.error(e.getMessage(), e);
-					statusUpdater.updateError("File check interrupted.");
-				} finally {
-					log.info("Checking : completed");
-					statusUpdater.done();
-				}
-		}).start();
-	}
+@Service
+public class ProjectFileCheckService {
+    private static final Logger log = LogManager.getLogger(ProjectFileCheckService.class);
+
+    @Autowired
+    ExecutorService checkerExecutorService;
+
+    public void checkFile(StatusUpdater statusUpdater, byte[] data) {
+
+        Runnable runnable = () -> {
+            try {
+                File tempFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
+                try {
+                    FileUtils.writeByteArrayToFile(tempFile, data);
+
+                    AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker();
+                    //Result set here.
+                    statusUpdater.fileCheckComplete(anylogicfileChecker.performFileCheck(tempFile));
+                } finally {
+                    tempFile.delete();
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                statusUpdater.updateError("File check interrupted.");
+            } finally {
+                log.info("Checking : completed");
+                statusUpdater.done();
+            }
+        };
+        checkerExecutorService.submit(runnable);
+    }
+
 }

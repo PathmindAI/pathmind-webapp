@@ -18,19 +18,20 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.NotificationUtils;
-import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.ui.utils.*;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.run.DiscoveryRunConfirmationView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.ValidationUtils;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value = "newExperiment", layout = MainLayout.class)
@@ -41,6 +42,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Logger log = LogManager.getLogger(NewExperimentView.class);
 
 	private long experimentId = -1;
+	private Experiment experiment;
 
 	private ScreenTitlePanel screenTitlePanel;
 
@@ -57,7 +59,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	@Autowired
 	private ExperimentDAO experimentDAO;
 
-	// TODO -> Add binder for the project other data fields outside of the experiment object.
 	private Binder<Experiment> binder;
 
 	private Button backToExperimentsButton;
@@ -71,15 +72,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	protected ActionMenu getActionMenu()
 	{
 		backToExperimentsButton = new Button("Back to Experiments", new Icon(VaadinIcon.CHEVRON_LEFT));
+		backToExperimentsButton.addClickListener(click -> NotificationUtils.showTodoNotification());
 
-		final Button testRunButton = new Button("Test Run", new Icon(VaadinIcon.CHEVRON_RIGHT), click ->
-				UI.getCurrent().navigate(DiscoveryRunConfirmationView.class, experimentId));
-		testRunButton.setIconAfterText(true);
-		final Button newExperimentButton = new Button("New Experiment", new Icon(VaadinIcon.PLUS));
 		return new ActionMenu(
-				backToExperimentsButton,
-				newExperimentButton,
-				testRunButton
+				backToExperimentsButton
 		);
 	}
 
@@ -104,14 +100,18 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	{
 		rewardFunctionEditor = new RewardFunctionEditor();
 		binder.forField(rewardFunctionEditor)
+				.asRequired()
 				.bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
 
 		errorsTextArea = new TextArea("Errors");
 		errorsTextArea.setEnabled(false);
 		errorsTextArea.setSizeFull();
+		errorsTextArea.setReadOnly(true);
 
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
-				rewardFunctionEditor,
+				WrapperUtils.wrapSizeFullVertical(
+						new Label("Write your reward functions"),
+						rewardFunctionEditor),
 				WrapperUtils.wrapSizeFullVertical(errorsTextArea),
 				70);
 	}
@@ -121,16 +121,50 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		getObservationTextArea = new TextArea("getObservation");
 		getObservationTextArea.setSizeFull();
 		getObservationTextArea.setEnabled(false);
+		getObservationTextArea.setReadOnly(true);
 
 		tipsTextArea = new TextArea("Tips");
 		tipsTextArea.setSizeFull();
 		tipsTextArea.setEnabled(false);
+		tipsTextArea.setReadOnly(true);
 
 		return WrapperUtils.wrapSizeFullVertical(
+				getTopButtonPanel(),
 				getTopStatusPanel(),
-				getObservationTextArea,
 				tipsTextArea,
+				getObservationTextArea,
 				getActionButtons());
+	}
+
+	private Component getTopButtonPanel()
+	{
+		final Button startRunButton = new Button("Start", new Icon(VaadinIcon.CHEVRON_RIGHT),
+				click -> handleStartRunButtonClicked());
+		startRunButton.setIconAfterText(true);
+
+		return WrapperUtils.wrapWidthFullCenterVertical(
+				startRunButton,
+				new Label("Start Test Run"));
+	}
+
+	private void handleStartRunButtonClicked() {
+		ExceptionWrapperUtils.handleButtonClicked(() ->
+		{
+			// TODO -> Case #78 -> How do we validate the Reward Function?
+			NotificationUtils.showTodoNotification("Case #78 -> How do we validate the Reward Function?\n " +
+					"https://github.com/SkymindIO/pathmind-webapp/issues/78");
+			if(!FormUtils.isValidForm(binder, experiment))
+				return;
+
+			// TODO -> Save a Run and Policy to the database
+			NotificationUtils.showTodoNotification("Save Run and Policy to the database");
+
+			// TODO -> Case #71 -> Define exactly what last activity represents
+			NotificationUtils.showTodoNotification("Case #71 -> Define exactly what last activity represents\n" +
+				"https://github.com/SkymindIO/pathmind-webapp/issues/71");
+
+			UI.getCurrent().navigate(DiscoveryRunConfirmationView.class, experimentId);
+		});
 	}
 
 	private Component getTopStatusPanel()
@@ -151,16 +185,59 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		return formLayout;
 	}
 
-	private HorizontalLayout getActionButtons() {
-		final Button newExperimentButton = new Button("New Experiment", new Icon(VaadinIcon.PLUS), click -> UI.getCurrent().navigate(NewExperimentView.class));
-		final Button saveDraftButton = new Button("Save Draft", new Icon(VaadinIcon.FILE), click -> handleSaveDraftClicked());
-		return WrapperUtils.wrapWidthFullHorizontal(
+	private HorizontalLayout getActionButtons()
+	{
+		final Button newExperimentButton = new Button("New Experiment", new Icon(VaadinIcon.PLUS),
+				click -> handleNewExperimentClicked());
+		final Button saveDraftButton = new Button("Save Draft", new Icon(VaadinIcon.FILE),
+				click -> handleSaveDraftClicked());
+
+		return WrapperUtils.wrapWidthFullCenterHorizontal(
 				newExperimentButton,
 				saveDraftButton);
 	}
 
+	private static long experimentCounter = 1;
+
+	private void handleNewExperimentClicked()
+	{
+		// TODO -> Case #79 -> How do we get the name? Id number?
+		NotificationUtils.showTodoNotification("Case 79 -> Default naming scheme\n" +
+				"https://github.com/SkymindIO/pathmind-webapp/issues/79");
+
+		// TODO -> Case #80 -> Do we use the same reward function from the experiment we're on as a default value?
+		NotificationUtils.showTodoNotification("Case 80 -> Can we use the same reward function as a default value for the reward function of the new experiment?\n" +
+				"I'm assuming we use what's currently in the reward function editor. And if so should we first validate or just proceed anyways?\n" +
+				"https://github.com/SkymindIO/pathmind-webapp/issues/80");
+
+		// TODO -> Case #71 -> Define exactly what last activity represents
+		NotificationUtils.showTodoNotification("Case #71 -> Define exactly what last activity represents\n" +
+				"https://github.com/SkymindIO/pathmind-webapp/issues/71");
+
+		Experiment newExperiment = ExperimentUtils.generateNewDefaultExperiment(experiment, "Todo Experiment " + experimentCounter++, rewardFunctionEditor.getValue());
+		long newExperimentId = experimentDAO.setupNewExperiment(newExperiment);
+		UI.getCurrent().navigate(NewExperimentView.class, newExperimentId);
+	}
+
 	private void handleSaveDraftClicked() {
-		NotificationUtils.showTodoNotification();
+		ExceptionWrapperUtils.handleButtonClicked(() ->
+		{
+			// TODO -> Case #78 -> How do we validate the Reward Function?
+			NotificationUtils.showTodoNotification("Case #78 -> How do we validate the Reward Function?\n " +
+					"https://github.com/SkymindIO/pathmind-webapp/issues/78");
+			if(!FormUtils.isValidForm(binder, experiment))
+				return;
+
+			// TODO -> Case #71 -> Define exactly what last activity represents
+			NotificationUtils.showTodoNotification("Case #71 -> Define exactly what last activity represents\n" +
+					"https://github.com/SkymindIO/pathmind-webapp/issues/71");
+
+			// TODO -> Case #81 -> What exactly happens when we save?
+			NotificationUtils.showTodoNotification("Case #81 -> What exactly happens when we save?\n" +
+					"https://github.com/SkymindIO/pathmind-webapp/issues/81");
+			experimentDAO.updateRewardFunction(experiment);
+			NotificationUtils.showCenteredSimpleNotification("Draft successfully saved", NotificationUtils.Style.Success);
+		});
 	}
 
 	@Override
@@ -171,16 +248,15 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
 	{
-		log.error("updating");
-		Experiment experiment = experimentDAO.getExperiment(experimentId);
+		experiment = experimentDAO.getExperiment(experimentId);
 
 		if(experiment == null)
 			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
 
-		// TODO -> Need to load getObservations panel
 		binder.readBean(experiment);
 
 		screenTitlePanel.setSubtitle(experiment.getProject().getName());
+		getObservationTextArea.setValue(experiment.getModel().getGetObservationForRewardFunction());
 		updateTopStatusPanel(experiment);
 	}
 
@@ -189,15 +265,5 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		runTypeLabel.setText(RunType.TestRun.name());
 		modelRevisionLabel.setText(experiment.getModel().getName());
 		experimentLabel.setText(experiment.getName());
-	}
-
-	private void save() {
-		// TODO -> Save should be done in a systematic way throughout the application.
-//				try {
-//			binder.writeBean(project);
-//			return true;
-//		} catch (ValidationException e) {
-//			return false;
-//		}
 	}
 }
