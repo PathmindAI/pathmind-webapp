@@ -29,12 +29,8 @@ public class PathmindApplication
 		return publisher.replay(30).autoConnect();
 	}
 
-	@Value("${pathmind.filecheck.poolsize}")
-	public String poolSize;
-
 	@Bean
-	public ExecutorService checkerExecutorService() {
-		int threadPoolSize = Integer.parseInt(poolSize);
-		return Executors.newFixedThreadPool(threadPoolSize);
+	public ExecutorService checkerExecutorService(@Value("${pathmind.filecheck.poolsize}") int poolSize) {
+			return Executors.newFixedThreadPool(poolSize);
 	}
 }

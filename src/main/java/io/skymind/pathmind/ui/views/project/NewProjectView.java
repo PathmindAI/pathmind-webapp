@@ -94,11 +94,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 		createProjectPanel.addButtonClickListener(click -> handleNewProjectClicked());
 		pathminderHelperWizardPanel.addButtonClickListener(click -> handleNextStepClicked());
 		uploadModelWizardPanel.addButtonClickListener(click -> {
-			try {
 				handleUploadWizardClicked();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		});
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked(click));
 
@@ -125,7 +121,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 		});
 	}
 
-	private void handleUploadWizardClicked() throws IOException {
+	private void handleUploadWizardClicked()  {
 		uploadModelWizardPanel.showFileCheckPanel();
 		projectFileCheckService.checkFile(this, model.getFile());
 	}
