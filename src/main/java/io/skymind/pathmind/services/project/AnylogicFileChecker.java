@@ -54,7 +54,7 @@ public class AnylogicFileChecker implements FileChecker {
         return anylogicFileCheckResult;
     }
 
-    private File checkZipFile(File file, AnylogicFileCheckResult anylogicFileCheckResult) throws IOException {
+    File checkZipFile(File file, AnylogicFileCheckResult anylogicFileCheckResult) throws IOException {
         log.info("{} :- CheckZip File Started", uuid);
         String searchFileName = "model.jar";
         // To Check if the Zip file is a valid
@@ -74,15 +74,14 @@ public class AnylogicFileChecker implements FileChecker {
             }
             anylogicFileCheckResult.setZipContentFileNames(fileNameList);
         } catch (ZipException ioe) {
-            log.error("Invalid zip file :", ioe);
+            log.error("Invalid input file format :", ioe);
         }
         log.info("{} :- CheckZip File Completed", uuid);
         return unZippedJar;
     }
 
-
     // To Check if the model.jar is a valid
-    private void checkJarFile(File unZippedJar, AnylogicFileCheckResult anylogicFileCheckResult) {
+    void checkJarFile(File unZippedJar, AnylogicFileCheckResult anylogicFileCheckResult) {
         log.info("{} :- checkJarFile Started", uuid);
         // To Check if the Jar file is a valid
         try (ZipFile jarFile = new ZipFile(unZippedJar)) {
@@ -98,8 +97,7 @@ public class AnylogicFileChecker implements FileChecker {
     }
 
     // To check the existence of pathmind helpers check
-    //Used static value for file path for unjarred model
-    private void checkHelpers(File file, AnylogicFileCheckResult anylogicFileCheckResult) {
+    void checkHelpers(File file, AnylogicFileCheckResult anylogicFileCheckResult) {
         log.info("{} :- checkHelpers Started", uuid);
         try {
             File unJarred = extractArchive(file);
