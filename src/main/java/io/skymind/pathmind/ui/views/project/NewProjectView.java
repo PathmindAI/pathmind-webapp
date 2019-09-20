@@ -12,6 +12,7 @@ import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ModelUtils;
 import io.skymind.pathmind.data.utils.ProjectUtils;
+import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
@@ -25,6 +26,7 @@ import io.skymind.pathmind.ui.views.project.components.panels.NewProjectLogoWiza
 import io.skymind.pathmind.ui.views.project.components.wizard.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,6 +40,8 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 	private ModelDAO modelDAO;
 	@Autowired
 	private ExperimentRepository experimentRepository;
+	@Autowired
+	private ProjectFileCheckService projectFileCheckService ;
 
 	private Project project;
 	private Model model;
@@ -89,7 +93,9 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 		createProjectPanel.addButtonClickListener(click -> handleNewProjectClicked());
 		pathminderHelperWizardPanel.addButtonClickListener(click -> handleNextStepClicked());
-		uploadModelWizardPanel.addButtonClickListener(click -> handleUploadWizardClicked());
+		uploadModelWizardPanel.addButtonClickListener(click -> {
+				handleUploadWizardClicked();
+		});
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked(click));
 
 		return WrapperUtils.wrapFormCenterVertical(
@@ -115,9 +121,9 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 		});
 	}
 
-	private void handleUploadWizardClicked() {
+	private void handleUploadWizardClicked()  {
 		uploadModelWizardPanel.showFileCheckPanel();
-		ProjectFileCheckService.checkFile(this, true);
+		projectFileCheckService.checkFile(this, model.getFile());
 	}
 
 	private void handleNextStepClicked() {
@@ -175,5 +181,11 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 			modelBinder.readBean(model);
 			statusPanel.setModelDetails();
 		});
+	}
+
+	@Override
+	public void fileCheckComplete(FileCheckResult anylogicFileCheckResult) {
+		//TODO : Get result and show erros on screen or result on screen.
+
 	}
 }
