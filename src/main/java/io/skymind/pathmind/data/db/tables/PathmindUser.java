@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PathmindUser extends TableImpl<PathmindUserRecord> {
 
-    private static final long serialVersionUID = 1016864398;
+    private static final long serialVersionUID = -779923524;
 
     /**
      * The reference instance of <code>public.pathmind_user</code>
@@ -74,6 +74,46 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
      * The column <code>public.pathmind_user.password</code>.
      */
     public final TableField<PathmindUserRecord, String> PASSWORD = createField("password", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+
+    /**
+     * The column <code>public.pathmind_user.account_type</code>.
+     */
+    public final TableField<PathmindUserRecord, Integer> ACCOUNT_TYPE = createField("account_type", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.pathmind_user.firstname</code>.
+     */
+    public final TableField<PathmindUserRecord, String> FIRSTNAME = createField("firstname", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>public.pathmind_user.lastname</code>.
+     */
+    public final TableField<PathmindUserRecord, String> LASTNAME = createField("lastname", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>public.pathmind_user.address</code>.
+     */
+    public final TableField<PathmindUserRecord, String> ADDRESS = createField("address", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>public.pathmind_user.city</code>.
+     */
+    public final TableField<PathmindUserRecord, String> CITY = createField("city", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>public.pathmind_user.state</code>.
+     */
+    public final TableField<PathmindUserRecord, String> STATE = createField("state", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>public.pathmind_user.country</code>.
+     */
+    public final TableField<PathmindUserRecord, String> COUNTRY = createField("country", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>public.pathmind_user.zip</code>.
+     */
+    public final TableField<PathmindUserRecord, String> ZIP = createField("zip", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * Create a <code>public.pathmind_user</code> table reference

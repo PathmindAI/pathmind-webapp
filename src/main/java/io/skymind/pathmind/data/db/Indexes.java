@@ -4,9 +4,13 @@
 package io.skymind.pathmind.data.db;
 
 
+import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.Experiment;
+import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
+import io.skymind.pathmind.data.db.tables.Policy;
 import io.skymind.pathmind.data.db.tables.Project;
+import io.skymind.pathmind.data.db.tables.Run;
 
 import javax.annotation.Generated;
 
@@ -32,17 +36,29 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
+    public static final Index EXECUTION_PROVIDER_META_DATA_PKEY = Indexes0.EXECUTION_PROVIDER_META_DATA_PKEY;
+    public static final Index EXECUTION_PROVIDER_META_DATA_PROVIDER_CLASS_KEY_KEY = Indexes0.EXECUTION_PROVIDER_META_DATA_PROVIDER_CLASS_KEY_KEY;
     public static final Index EXPERIMENT_PKEY = Indexes0.EXPERIMENT_PKEY;
+    public static final Index MODEL_PKEY = Indexes0.MODEL_PKEY;
     public static final Index PATHMIND_USER_PKEY = Indexes0.PATHMIND_USER_PKEY;
+    public static final Index POLICY_PKEY = Indexes0.POLICY_PKEY;
+    public static final Index POLICY_RUN_ID_EXTERNAL_ID_KEY = Indexes0.POLICY_RUN_ID_EXTERNAL_ID_KEY;
     public static final Index PROJECT_PKEY = Indexes0.PROJECT_PKEY;
+    public static final Index RUN_PKEY = Indexes0.RUN_PKEY;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
     // -------------------------------------------------------------------------
 
     private static class Indexes0 {
+        public static Index EXECUTION_PROVIDER_META_DATA_PKEY = Internal.createIndex("execution_provider_meta_data_pkey", ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, new OrderField[] { ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.ID }, true);
+        public static Index EXECUTION_PROVIDER_META_DATA_PROVIDER_CLASS_KEY_KEY = Internal.createIndex("execution_provider_meta_data_provider_class_key_key", ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, new OrderField[] { ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.PROVIDER_CLASS, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.KEY }, true);
         public static Index EXPERIMENT_PKEY = Internal.createIndex("experiment_pkey", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.ID }, true);
+        public static Index MODEL_PKEY = Internal.createIndex("model_pkey", Model.MODEL, new OrderField[] { Model.MODEL.ID }, true);
         public static Index PATHMIND_USER_PKEY = Internal.createIndex("pathmind_user_pkey", PathmindUser.PATHMIND_USER, new OrderField[] { PathmindUser.PATHMIND_USER.ID }, true);
+        public static Index POLICY_PKEY = Internal.createIndex("policy_pkey", Policy.POLICY, new OrderField[] { Policy.POLICY.ID }, true);
+        public static Index POLICY_RUN_ID_EXTERNAL_ID_KEY = Internal.createIndex("policy_run_id_external_id_key", Policy.POLICY, new OrderField[] { Policy.POLICY.RUN_ID, Policy.POLICY.EXTERNAL_ID }, true);
         public static Index PROJECT_PKEY = Internal.createIndex("project_pkey", Project.PROJECT, new OrderField[] { Project.PROJECT.ID }, true);
+        public static Index RUN_PKEY = Internal.createIndex("run_pkey", Run.RUN, new OrderField[] { Run.RUN.ID }, true);
     }
 }

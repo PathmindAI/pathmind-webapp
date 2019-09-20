@@ -7,22 +7,22 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.data.utils.ModelUtils;
 import io.skymind.pathmind.data.utils.ProjectUtils;
-import io.skymind.pathmind.db.ExperimentRepository;
-import io.skymind.pathmind.db.ProjectRepository;
 import io.skymind.pathmind.services.project.FileCheckResult;
+import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
-import io.skymind.pathmind.ui.utils.PushUtils;
-import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.ui.utils.*;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.ui.views.project.components.NewProjectLogoWizardPanel;
+import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.ui.views.project.components.panels.NewProjectLogoWizardPanel;
 import io.skymind.pathmind.ui.views.project.components.wizard.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,14 +35,19 @@ import java.util.List;
 public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 {
 	@Autowired
-	private ProjectRepository projectRepository;
+	private ProjectDAO projectDAO;
+	@Autowired
+	private ModelDAO modelDAO;
 	@Autowired
 	private ExperimentRepository experimentRepository;
 	@Autowired
 	private ProjectFileCheckService projectFileCheckService ;
 
 	private Project project;
-	private Binder<Project> binder;
+	private Model model;
+
+	private Binder<Project> projectBinder;
+	private Binder<Model> modelBinder;
 
 	private UI ui;
 
@@ -61,32 +66,22 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 	{
 		super();
 		this.ui = UI.getCurrent();
-		this.project = ProjectUtils.generateNewDefaultProject();
-	}
-
-	/**
-	 * I put it in a method because the screenflow is not yet stable enough and I suspect we may need to reference
-	 * in more than one place.
-	 */
-	private boolean isValidForm() {
-		try {
-			binder.writeBean(project);
-			return true;
-		} catch (ValidationException e) {
-			return false;
-		}
 	}
 
 	protected Component getMainContent()
 	{
-		binder = new Binder<>(Project.class);
+		this.project = ProjectUtils.generateNewDefaultProject();
+		this.model = ModelUtils.generateNewDefaultModel();
+
+		projectBinder = new Binder<>(Project.class);
+		modelBinder = new Binder<>(Model.class);
 
 		logoPanel = new NewProjectLogoWizardPanel();
 		statusPanel = new NewProjectStatusWizardPanel();
-		createProjectPanel = new CreateANewProjectWizardPanel(binder);
+		createProjectPanel = new CreateANewProjectWizardPanel(projectBinder);
 		pathminderHelperWizardPanel = new PathminderHelperWizardPanel();
-		uploadModelWizardPanel = new UploadModelWizardPanel();
-		modelDetailsWizardPanel = new ModelDetailsWizardPanel(binder);
+		uploadModelWizardPanel = new UploadModelWizardPanel(model);
+		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
 
 		wizardPanels = Arrays.asList(
 				createProjectPanel,
@@ -107,7 +102,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 		});
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked(click));
 
-		return WrapperUtils.wrapCenteredFormVertical(
+		return WrapperUtils.wrapFormCenterVertical(
 				logoPanel,
 				statusPanel,
 				createProjectPanel,
@@ -116,15 +111,17 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 				modelDetailsWizardPanel);
 	}
 
-	private void handleMoreDetailsClicked(ClickEvent<Button> click) {
+	private void handleMoreDetailsClicked(ClickEvent<Button> click)
+	{
 		ExceptionWrapperUtils.handleButtonClicked(() ->
 		{
-			if(!isValidForm())
+			// Project has already passed validations in a previous panel of the wizard.
+			if(!FormUtils.isValidForm(modelBinder, model))
 				return;
 
-			projectRepository.insertProject(project);
-			experimentRepository.insertExperimentsForProject(project);
-			UI.getCurrent().navigate(ExperimentView.class, project.getExperiments().get(0).getId());
+			final long experimentId = projectDAO.setupNewProject(project, model);
+
+			UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 		});
 	}
 
@@ -140,7 +137,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 	private void handleNewProjectClicked()
 	{
-		if(!isValidForm())
+		if(!FormUtils.isValidForm(projectBinder, project))
 			return;
 
 		pathminderHelperWizardPanel.setProjectName(project.getName());
@@ -184,7 +181,8 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 		PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
 			setVisibleWizardPanel(modelDetailsWizardPanel);
-			binder.readBean(project);
+			projectBinder.readBean(project);
+			modelBinder.readBean(model);
 			statusPanel.setModelDetails();
 		});
 	}

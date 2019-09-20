@@ -4,6 +4,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
@@ -14,8 +16,8 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.constants.PathmindConstants;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.db.ExperimentRepository;
-import io.skymind.pathmind.db.ProjectRepository;
+import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -50,7 +52,7 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 	// since I don't fully understand the hierarchy I'm just going to pull the project name directly to
 	// confirm that the parameter is correctly wired up.
 	@Autowired
-	private ProjectRepository projectRepository;
+	private ProjectDAO projectDAO;
 	@Autowired
 	private ExperimentRepository experimentRepository;
 
@@ -69,13 +71,14 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 	@Override
 	protected ActionMenu getActionMenu()
 	{
-		backToProjectButton = new Button("< Back to Project");
+		backToProjectButton = new Button("Back to Project", new Icon(VaadinIcon.CHEVRON_LEFT));
 
+		final Button testRunButton = new Button("Test Run",  new Icon(VaadinIcon.CHEVRON_RIGHT), click ->
+				UI.getCurrent().navigate(ProjectView.class, PathmindConstants.TODO_PARAMETER));
 		return new ActionMenu(
 				backToProjectButton,
-				new Button("+ New Experiment"),
-				new Button("Test Run >", click ->
-						UI.getCurrent().navigate(ProjectView.class, PathmindConstants.TODO_PARAMETER))
+				new Button("New Experiment", new Icon(VaadinIcon.PLUS)),
+				testRunButton
 		);
 	}
 
@@ -91,7 +94,12 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 		binder = new Binder<>(Experiment.class);
 
 		rewardFunctionEditor = new RewardFunctionEditor();
+		binder.forField(rewardFunctionEditor)
+				.bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
+
+
 		experimentFormPanel = new ExperimentFormPanel(binder);
+
 
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 				getLeftPanel(),
@@ -100,7 +108,7 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 	}
 
 	private VerticalLayout getLeftPanel() {
-		return WrapperUtils.wrapFullSizeVertical(
+		return WrapperUtils.wrapSizeFullVertical(
 				experimentFormPanel,
 				rewardFunctionEditor);
 	}
@@ -116,7 +124,7 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 		tipsTextArea = new TextArea("Tips");
 		tipsTextArea.setSizeFull();
 
-		return WrapperUtils.wrapFullSizeVertical(
+		return WrapperUtils.wrapSizeFullVertical(
 				errorsTextArea,
 				getObservationTextArea,
 				tipsTextArea);
@@ -135,11 +143,11 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 		if(experiment == null)
 			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
 
-		Project project = projectRepository.getProjectForExperiment(experimentId);
+		Project project = projectDAO.getProjectForExperiment(experimentId);
 
 		binder.readBean(experiment);
 
-		rewardFunctionEditor.setRewardFunction(experiment.getRewardFunction());
+		//rewardFunctionEditor.setRewardFunction(experiment.getRewardFunction());
 		screenTitlePanel.setSubtitle(project.getName());
 		backToProjectButton.addClickListener(click ->
 				UI.getCurrent().navigate(ProjectView.class, project.getId()));

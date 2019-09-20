@@ -4,9 +4,13 @@
 package io.skymind.pathmind.data.db;
 
 
+import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.Experiment;
+import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
+import io.skymind.pathmind.data.db.tables.Policy;
 import io.skymind.pathmind.data.db.tables.Project;
+import io.skymind.pathmind.data.db.tables.Run;
 
 import javax.annotation.Generated;
 
@@ -25,9 +29,19 @@ import javax.annotation.Generated;
 public class Tables {
 
     /**
+     * The table <code>public.execution_provider_meta_data</code>.
+     */
+    public static final ExecutionProviderMetaData EXECUTION_PROVIDER_META_DATA = io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA;
+
+    /**
      * The table <code>public.experiment</code>.
      */
     public static final Experiment EXPERIMENT = io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
+
+    /**
+     * The table <code>public.model</code>.
+     */
+    public static final Model MODEL = io.skymind.pathmind.data.db.tables.Model.MODEL;
 
     /**
      * The table <code>public.pathmind_user</code>.
@@ -35,7 +49,17 @@ public class Tables {
     public static final PathmindUser PATHMIND_USER = io.skymind.pathmind.data.db.tables.PathmindUser.PATHMIND_USER;
 
     /**
+     * The table <code>public.policy</code>.
+     */
+    public static final Policy POLICY = io.skymind.pathmind.data.db.tables.Policy.POLICY;
+
+    /**
      * The table <code>public.project</code>.
      */
     public static final Project PROJECT = io.skymind.pathmind.data.db.tables.Project.PROJECT;
+
+    /**
+     * The table <code>public.run</code>.
+     */
+    public static final Run RUN = io.skymind.pathmind.data.db.tables.Run.RUN;
 }

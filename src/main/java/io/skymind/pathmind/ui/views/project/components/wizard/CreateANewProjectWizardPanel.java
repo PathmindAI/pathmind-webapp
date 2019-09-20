@@ -10,6 +10,7 @@ import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.ui.binders.ProjectBinders;
 
 public class CreateANewProjectWizardPanel extends VerticalLayout
 {
@@ -21,10 +22,10 @@ public class CreateANewProjectWizardPanel extends VerticalLayout
 		projectNameTextField.setWidthFull();
 
 		add(new H3("Start a New Project!"),
-				GuiUtils.getSubtitleLabel("Projects organize your Pathmind Experiments based on your situation model"),
+				GuiUtils.getSubtitleLabel("Projects organize your Pathmind Experiments based on your AnyLogic model"),
 				GuiUtils.getHeightSpacer("40px"),
 				projectNameTextField,
-				WrapperUtils.wrapCenterFullWidthHorizontal(createProjectButton));
+				WrapperUtils.wrapWidthFullCenterHorizontal(createProjectButton));
 
 		getStyle().set("border", "1px solid #ccc");
 
@@ -36,8 +37,6 @@ public class CreateANewProjectWizardPanel extends VerticalLayout
 	}
 
 	private void bindFields(Binder<Project> binder) {
-		binder.forField(projectNameTextField)
-				.asRequired("Project must have a name")
-				.bind(Project::getName, Project::setName);
+		ProjectBinders.bindProjectName(binder, projectNameTextField);
 	}
 }

@@ -1,41 +1,46 @@
 package io.skymind.pathmind.ui.views;
 
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.db.ProjectRepository;
-import io.skymind.pathmind.db.UserRepository;
+import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.lumo.Lumo;
+import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route("login")
+@Theme(Lumo.class)
+@HtmlImport("frontend://styles/shared-styles.html")
 public class LoginView extends LoginOverlay implements BeforeEnterObserver // , AfterNavigationObserver
 {
 	@Autowired
-	private UserRepository userRepository;
+	private UserDAO userDAO;
 
 	@Autowired
-	private ProjectRepository projectRepository;
+	private ProjectDAO projectDAO;
 
 	public LoginView()
 	{
+		setId("pathmind-login");
 		LoginI18n loginForm = LoginI18n.createDefault();
 		loginForm.setHeader(new LoginI18n.Header());
 		loginForm.getHeader().setTitle("Pathmind");
-		loginForm.setForm(new LoginI18n.Form());
-		loginForm.getForm().setSubmit("Sign in >");
+		loginForm.setAdditionalInformation("By clicking Log In, you agree to Pathmind's Terms of Use and Privacy Policy");
+		loginForm.getForm().setUsername("Email");
 		setI18n(loginForm);
-		setForgotPasswordButtonVisible(false);
 
 		addLoginListener(e -> handleLogin(e));
 	}
 
 	private void handleLogin(LoginEvent e) {
-		if(SecurityUtils.isAuthenticatedUser(e.getUsername(), e.getPassword(), userRepository))
+		if(SecurityUtils.isAuthenticatedUser(e.getUsername(), e.getPassword(), userDAO))
 			navigateToEntryView();
 		else
 			setError(true);
@@ -46,7 +51,7 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver // , 
 	}
 
 	private Class getRerouteClass() {
-		if(projectRepository.getProjectsForUser().isEmpty())
+		if(projectDAO.getProjectsForUser(SecurityUtils.getUserId()).isEmpty())
 			return NewProjectView.class;
 		return DashboardView.class;
 	}

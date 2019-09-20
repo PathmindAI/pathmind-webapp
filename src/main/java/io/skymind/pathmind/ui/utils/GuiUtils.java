@@ -2,11 +2,14 @@ package io.skymind.pathmind.ui.utils;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
+import io.skymind.pathmind.ui.components.SearchBox;
 
 public class GuiUtils
 {
@@ -63,5 +66,11 @@ public class GuiUtils
 		layout.setPadding(false);
 		layout.setMargin(false);
 		layout.setSpacing(false);
+	}
+
+	public static HorizontalLayout getTitleAndSearchBoxBar(String title, SearchBox searchBox) {
+		return WrapperUtils.wrapLeftAndRightAligned(
+				new Label(title),
+				searchBox);
 	}
 }

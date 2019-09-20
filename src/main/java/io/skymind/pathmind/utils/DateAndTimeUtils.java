@@ -2,10 +2,14 @@ package io.skymind.pathmind.utils;
 
 import java.time.format.DateTimeFormatter;
 
-public class DateTimeUtils
+public class DateAndTimeUtils
 {
 	public static final DateTimeFormatter STANDARD_DATE_TIME_FOMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+	/**
+	 * We could use org.apache.commons.lang3.time.DurationFormatUtils but it seems overkill for what we need and I didn't want to spend the time
+	 * to figure out how to conditionally printout the hours, minutes, and seconds.
+	 */
 	public static final String formatTime(long totalSeconds)
 	{
 		if(totalSeconds == 0)

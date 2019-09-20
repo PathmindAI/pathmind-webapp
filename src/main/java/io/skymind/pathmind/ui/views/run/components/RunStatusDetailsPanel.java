@@ -1,12 +1,12 @@
-package io.skymind.pathmind.ui.views.experiment.components;
+package io.skymind.pathmind.ui.views.run.components;
 
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
-import io.skymind.pathmind.utils.DateTimeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -14,9 +14,9 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
 @Component
-public class ExperimentStatusDetailsPanel extends VerticalLayout
+public class RunStatusDetailsPanel extends VerticalLayout
 {
-	private static Logger log = LogManager.getLogger(ExperimentStatusDetailsPanel.class);
+	private static Logger log = LogManager.getLogger(RunStatusDetailsPanel.class);
 
 	private Label statusLabel = new Label(RunStatus.NotStarted.toString());
 	private Label runTypeLabel = new Label();
@@ -24,7 +24,7 @@ public class ExperimentStatusDetailsPanel extends VerticalLayout
 	private Label completedLabel = new Label();
 	public Label algorithmLabel = new Label();
 
-	public ExperimentStatusDetailsPanel()
+	public RunStatusDetailsPanel()
 	{
 		Label[] labels = Arrays.asList(
 			getElementLabel("Status"),
@@ -51,7 +51,7 @@ public class ExperimentStatusDetailsPanel extends VerticalLayout
 		rightVerticalLayout.setDefaultHorizontalComponentAlignment(Alignment.START);
 		rightVerticalLayout.setPadding(false);
 
-		HorizontalLayout wrapper = WrapperUtils.wrapCenteredFormHorizontal(
+		HorizontalLayout wrapper = WrapperUtils.wrapFormCenterHorizontal(
 				leftVerticalLayout,
 				rightVerticalLayout);
 		wrapper.getStyle().set("padding-top", "10px");
@@ -71,12 +71,13 @@ public class ExperimentStatusDetailsPanel extends VerticalLayout
 				label.getStyle().set("margin-top", "0px"));
 	}
 
-	public void update(Experiment experiment)
+	public void update(Run run)
 	{
-		statusLabel.setText(experiment.getStatusEnum().toString());
-		runTypeLabel.setText(experiment.getRunTypeEnum().toString());
-		elapsedTimeLabel.setText(DateTimeUtils.formatTime(experiment.getElapsedTime()));
-		completedLabel.setText(experiment.getCompletedEnum().toString());
-		algorithmLabel.setText(experiment.getAlgorithm().toString());
+		// TODO -> New data model.
+//		statusLabel.setText(experiment.getStatusEnum().toString());
+//		runTypeLabel.setText(experiment.getRunTypeEnum().toString());
+//		elapsedTimeLabel.setText(DateTimeUtils.formatTime(ExperimentUtils.getElapsedTime(experiment)));
+//		completedLabel.setText(experiment.getCompletedEnum().toString());
+//		algorithmLabel.setText(experiment.getAlgorithm().toString());
 	}
 }

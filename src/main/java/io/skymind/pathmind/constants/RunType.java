@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 public enum RunType
 {
-    DiscoverRun(1, "Discovery Run"),
-    TestRun(2, "Test Run");
+    TestRun(1, "Test Run"),
+    DiscoverRun(2, "Discovery Run");
 
 	private int id;
     private String name;

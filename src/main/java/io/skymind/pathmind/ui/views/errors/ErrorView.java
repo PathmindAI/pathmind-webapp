@@ -21,7 +21,7 @@ public class ErrorView extends PathMindDefaultView
 
 	@Override
 	protected Component getMainContent() {
-		return WrapperUtils.wrapCenterAlignmentFullVertical(
+		return WrapperUtils.wrapWidthFullCenterVertical(
 				new Label("An unexpected error occurred. Please contact Skymind for assistance."));
 	}
 }

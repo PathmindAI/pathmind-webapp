@@ -9,7 +9,7 @@ import io.skymind.pathmind.data.db.Keys;
 import io.skymind.pathmind.data.db.Public;
 import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = 1111806095;
+    private static final long serialVersionUID = -927908809;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -62,9 +62,9 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     public final TableField<ExperimentRecord, Long> ID = createField("id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
-     * The column <code>public.experiment.project_id</code>.
+     * The column <code>public.experiment.model_id</code>.
      */
-    public final TableField<ExperimentRecord, Long> PROJECT_ID = createField("project_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ExperimentRecord, Long> MODEL_ID = createField("model_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.experiment.name</code>.
@@ -72,29 +72,19 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     public final TableField<ExperimentRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
-     * The column <code>public.experiment.date</code>.
-     */
-    public final TableField<ExperimentRecord, LocalDate> DATE = createField("date", org.jooq.impl.SQLDataType.LOCALDATE.nullable(false), this, "");
-
-    /**
-     * The column <code>public.experiment.duration</code>.
-     */
-    public final TableField<ExperimentRecord, Long> DURATION = createField("duration", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
-
-    /**
      * The column <code>public.experiment.reward_function</code>.
      */
     public final TableField<ExperimentRecord, String> REWARD_FUNCTION = createField("reward_function", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
 
     /**
-     * The column <code>public.experiment.run_type</code>.
+     * The column <code>public.experiment.date_created</code>.
      */
-    public final TableField<ExperimentRecord, Integer> RUN_TYPE = createField("run_type", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<ExperimentRecord, LocalDateTime> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
 
     /**
-     * The column <code>public.experiment.score</code>.
+     * The column <code>public.experiment.last_activity_date</code>.
      */
-    public final TableField<ExperimentRecord, Integer> SCORE = createField("score", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<ExperimentRecord, LocalDateTime> LAST_ACTIVITY_DATE = createField("last_activity_date", org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
 
     /**
      * Create a <code>public.experiment</code> table reference
@@ -166,11 +156,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
      */
     @Override
     public List<ForeignKey<ExperimentRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ExperimentRecord, ?>>asList(Keys.EXPERIMENT__PM_FK_EXPERIMENT_PROJECT);
+        return Arrays.<ForeignKey<ExperimentRecord, ?>>asList(Keys.EXPERIMENT__PM_FK_EXPERIMENT_MODEL);
     }
 
-    public Project project() {
-        return new Project(this, Keys.EXPERIMENT__PM_FK_EXPERIMENT_PROJECT);
+    public Model model() {
+        return new Model(this, Keys.EXPERIMENT__PM_FK_EXPERIMENT_MODEL);
     }
 
     /**

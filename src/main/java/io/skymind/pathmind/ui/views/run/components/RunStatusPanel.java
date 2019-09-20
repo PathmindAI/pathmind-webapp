@@ -13,7 +13,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
-import io.skymind.pathmind.ui.views.experiment.components.ExperimentStatusDetailsPanel;
 
 public class RunStatusPanel extends VerticalLayout
 {
@@ -23,16 +22,16 @@ public class RunStatusPanel extends VerticalLayout
 	private ListSeries series = new ListSeries("Score");
 
 	private Label scoreLabel = new Label("0");
-	private ExperimentStatusDetailsPanel experimentStatusDetailsPanel = new ExperimentStatusDetailsPanel();
+	private RunStatusDetailsPanel experimentStatusDetailsPanel = new RunStatusDetailsPanel();
 
 	public RunStatusPanel(RunType runType)
 	{
 		setSizeFull();
 
-		add(WrapperUtils.wrapCenteredFormVertical(
+		add(WrapperUtils.wrapFormCenterVertical(
 				getTitleBar(),
 				new Hr(),
-				WrapperUtils.wrapCenteredFormVerticalBordered(
+				WrapperUtils.wrapFormCenterBorderedVertical(
 					getScoreDisplay(),
 					getScoreChart()),
 				experimentStatusDetailsPanel
@@ -76,17 +75,18 @@ public class RunStatusPanel extends VerticalLayout
 	// that's the case then why not just use the status field.
 	public void setExperiment(Experiment experiment) {
 		this.experiment = experiment;
-		experimentStatusDetailsPanel.update(experiment);
+//		experimentStatusDetailsPanel.update(experiment);
 	}
 
 	// TODO -> Implement
 	// TODO -> Elapsed time should show seconds then minutes and seconds, and so on.
 	public void update() {
 //		series.addData(newChartData);
-		series.setData(experiment.getScores());
+		// TODO -> Implement with new data model.
+//		series.setData(experiment.getScores());
 //		scoreLabel.setText(newChartData.toString());
-		scoreLabel.setText(experiment.getLastScore().toString());
+//		scoreLabel.setText(experiment.getLastScore().toString());
 //		experimentStatusDetailsPanel.setExperiment(experiment);
-		experimentStatusDetailsPanel.update(experiment);
+//		experimentStatusDetailsPanel.update(experiment);
 	}
 }

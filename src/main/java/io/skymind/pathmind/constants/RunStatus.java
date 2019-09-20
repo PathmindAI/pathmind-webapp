@@ -4,9 +4,11 @@ import java.util.Arrays;
 
 public enum RunStatus
 {
-	NotStarted(1, "Not Started"),
+	NotStarted(0, "Not Started"),
+	Starting(1, "Starting"),
 	Running(2, "Running"),
-	Completed(2, "Completed");
+	Completed(3, "Completed"),
+	Error(4, "Error");
 
 	private int id;
 	private String name;

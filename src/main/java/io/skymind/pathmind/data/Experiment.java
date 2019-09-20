@@ -1,107 +1,33 @@
 package io.skymind.pathmind.data;
 
-import io.skymind.pathmind.constants.Algorithm;
-import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.constants.RunType;
+import io.skymind.pathmind.constants.TestRun;
 
-import javax.validation.constraints.NotNull;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Experiment implements Data
 {
 	private long id;
+	private long modelId;
 	private String name;
-	private LocalDate date;
-
-	// TODO -> Not stored anywhere for now.
-	private Instant startTime;
-	private Instant endTime;
-
-	@NotNull
-	private int runType;
-	@NotNull
-	private int score;
-
-	private int status = RunStatus.NotStarted.getValue();
-	private int completed = RunStatus.NotStarted.getValue();
-
-	// TODO -> This needs to be properly implemented and stored in the database.
-	@NotNull
-	private int modelId;
-
-	@NotNull
 	private String rewardFunction;
+	private LocalDateTime dateCreated;
+	private LocalDateTime lastActivityDate;
 
+	// Helper GUI attributes not stored in the database
 	private Project project;
-
-	private List<Run> runs;
-
-	// TODO -> This needs to be properly implemented and stored in the database.
-	private Algorithm algorithm = Algorithm.DQN;
-
-	private long duration = 0;
-
-	// TODO -> What is the data?
-	private ArrayList<Number> scores = new ArrayList<Number>();
+	private Model model;
 
 	public Experiment() {
 	}
 
-	public Experiment(@NotNull String name, @NotNull LocalDate date, @NotNull RunType runType, Algorithm algorithm, long duration, @NotNull int score, @NotNull String rewardFunction, Project project, @NotNull int modelId) {
-		this.name = name;
-		this.date = date;
-		this.runType = runType.getValue();
-		this.algorithm = algorithm;
-		this.duration = duration;
-		this.score = score;
-		this.rewardFunction = rewardFunction;
-		this.project = project;
-		this.modelId = modelId;
-	}
-
+	@Override
 	public long getId() {
 		return id;
 	}
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public LocalDate getDate() {
-		return date;
-	}
-
-	public void setDate(LocalDate date) {
-		this.date = date;
-	}
-
-	public int getRunType() {
-		return runType;
-	}
-
-	public void setRunType(int runType) {
-		this.runType = runType;
-	}
-
-	// Issue #34 Properly convert EnumTypes with Converters in JOOQ
-	public RunType getRunTypeEnum() {
-		return RunType.getEnumFromValue(runType);
-	}
-
-	public void setRunTypeEnum(RunType runTypeEnum) {
-		this.runType = runTypeEnum.getValue();
-	}
-
-	public int getScore() {
-		return score;
-	}
-
-	public void setScore(int score) {
-		this.score = score;
 	}
 
 	public String getName() {
@@ -112,22 +38,6 @@ public class Experiment implements Data
 		this.name = name;
 	}
 
-	public Project getProject() {
-		return project;
-	}
-
-	public void setProject(Project project) {
-		this.project = project;
-	}
-
-	public List<Run> getRuns() {
-		return runs;
-	}
-
-	public void setRuns(List<Run> runs) {
-		this.runs = runs;
-	}
-
 	public String getRewardFunction() {
 		return rewardFunction;
 	}
@@ -136,125 +46,43 @@ public class Experiment implements Data
 		this.rewardFunction = rewardFunction;
 	}
 
-	public int getModelId() {
+	public LocalDateTime getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(LocalDateTime dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+
+	public LocalDateTime getLastActivityDate() {
+		return lastActivityDate;
+	}
+
+	public void setLastActivityDate(LocalDateTime lastActivityDate) {
+		this.lastActivityDate = lastActivityDate;
+	}
+
+	public long getModelId() {
 		return modelId;
 	}
 
-	public void setModelId(int modelId) {
+	public void setModelId(long modelId) {
 		this.modelId = modelId;
 	}
 
-	public Algorithm getAlgorithm() {
-		return algorithm;
+	public Project getProject() {
+		return project;
 	}
 
-	public void setAlgorithm(Algorithm algorithm) {
-		this.algorithm = algorithm;
+	public void setProject(Project project) {
+		this.project = project;
 	}
 
-	public long getDuration() {
-		return duration;
+	public Model getModel() {
+		return model;
 	}
 
-	public void setDuration(long duration) {
-		this.duration = duration;
-	}
-
-	public int getStatus() {
-		return status;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	// Issue #34 Properly convert EnumTypes with Converters in JOOQ
-	public RunStatus getStatusEnum() {
-		return RunStatus.getEnumFromValue(status);
-	}
-
-	public void setStatusEnum(RunStatus runStatusEnum) {
-		this.status = runStatusEnum.getValue();
-	}
-
-	public int getCompleted() {
-		return completed;
-	}
-
-	public void setCompleted(int completed) {
-		this.completed = completed;
-	}
-
-	// Issue #34 Properly convert EnumTypes with Converters in JOOQ
-	public RunStatus getCompletedEnum() {
-		return RunStatus.getEnumFromValue(completed);
-	}
-
-	public void setCompleted(RunStatus runStatusEnum) {
-		this.completed = runStatusEnum.getValue();
-	}
-
-	public Instant getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(Instant startTime) {
-		this.startTime = startTime;
-	}
-
-	public Instant getEndTime() {
-		return endTime;
-	}
-
-	public void setEndTime(Instant endTime) {
-		this.endTime = endTime;
-	}
-
-	public void startExperimentNow() {
-		startTime = Instant.now();
-	}
-
-	public long getElapsedTime()
-	{
-		if(startTime == null)
-				return 0;
-
-		return endTime == null ?
-				Duration.between(startTime, Instant.now()).toSeconds() :
-				Duration.between(startTime, endTime).toSeconds();
-	}
-
-	public ArrayList<Number> getScores() {
-		return scores;
-	}
-
-	public void setScores(ArrayList<Number> scores) {
-		this.scores = scores;
-	}
-
-	public Number getLastScore() {
-		return scores.get(scores.size() - 1);
-	}
-
-	@Override
-	public String toString() {
-		return "Experiment{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", date=" + date +
-				", startTime=" + startTime +
-				", endTime=" + endTime +
-				", runType=" + runType +
-				", score=" + score +
-				", status=" + status +
-				", completed=" + completed +
-				", modelId=" + modelId +
-				", rewardFunction='" + rewardFunction + '\'' +
-				", project=" + project +
-				", runs=" + runs +
-				", algorithm=" + algorithm +
-				", duration=" + duration +
-				", scores=" + scores +
-				'}';
+	public void setModel(Model model) {
+		this.model = model;
 	}
 }
