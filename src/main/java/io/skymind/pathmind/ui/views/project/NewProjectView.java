@@ -127,7 +127,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 	private void handleUploadWizardClicked() throws IOException {
 		uploadModelWizardPanel.showFileCheckPanel();
-		projectFileCheckService.checkFile(this);
+		projectFileCheckService.checkFile(this, model.getFile());
 	}
 
 	private void handleNextStepClicked() {
