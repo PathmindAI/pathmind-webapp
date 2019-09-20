@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
+import io.skymind.pathmind.data.db.tables.records.ExecutionProviderMetaDataRecord;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Service;
 
@@ -37,14 +38,18 @@ public class PostgresExecutionProviderMetaDataService implements ExecutionProvid
 
     @Override
     public <T> T get(Class<?> providerClazz, String key, Class<T> type) {
-        final String value = ctx.selectFrom(tbl)
+        final ExecutionProviderMetaDataRecord record = ctx.selectFrom(tbl)
                 .where(tbl.PROVIDER_CLASS.eq(providerClazz.getCanonicalName()).and(tbl.KEY.eq(key)))
-                .fetchOne().get(tbl.KEY, String.class);
-
-        try {
-            return mapper.readValue(value, type);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+                .fetchOne();
+        if(record != null) {
+            final String value = record.get(tbl.KEY, String.class);
+            try {
+                return mapper.readValue(value, type);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }else{
+            return null;
         }
     }
 
