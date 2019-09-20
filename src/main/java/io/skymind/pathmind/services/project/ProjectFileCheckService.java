@@ -19,25 +19,27 @@ public class ProjectFileCheckService {
     ExecutorService checkerExecutorService;
 
     public void checkFile(StatusUpdater statusUpdater, byte[] data) {
-
         Runnable runnable = () -> {
             try {
+                statusUpdater.updateStatus(0);
                 File tempFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
                 try {
                     FileUtils.writeByteArrayToFile(tempFile, data);
 
                     AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker();
                     //Result set here.
-                    statusUpdater.fileCheckComplete(anylogicfileChecker.performFileCheck(tempFile));
+                    final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
+                    if(result.isFileCheckComplete() && result.isFileCheckSuccessful()){
+                        statusUpdater.fileSuccessfullyVerified();
+                    }
                 } finally {
                     tempFile.delete();
                 }
             } catch (Exception e) {
-                log.error(e.getMessage(), e);
+                log.error("File check interrupted.", e);
                 statusUpdater.updateError("File check interrupted.");
             } finally {
                 log.info("Checking : completed");
-                statusUpdater.done();
             }
         };
         checkerExecutorService.submit(runnable);

@@ -1,21 +1,26 @@
 package io.skymind.pathmind.services.project;
 
+import io.skymind.pathmind.ui.components.status.StatusUpdater;
+import io.skymind.pathmind.utils.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.util.FileSystemUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
-
-import io.skymind.pathmind.utils.FileUtils;
-import org.springframework.util.FileSystemUtils;
 
 public class AnylogicFileChecker implements FileChecker {
     private static final Logger log = LogManager.getLogger(AnylogicFileChecker.class);
@@ -23,7 +28,7 @@ public class AnylogicFileChecker implements FileChecker {
     private File jarTempDir = null;
 
     @Override
-    public FileCheckResult performFileCheck(File file) {
+    public FileCheckResult performFileCheck(StatusUpdater statusUpdater, File file) {
         log.info("{} :- performFileCheck Started", uuid);
         File unZippedJar;
         AnylogicFileCheckResult anylogicFileCheckResult = new AnylogicFileCheckResult();
@@ -33,19 +38,31 @@ public class AnylogicFileChecker implements FileChecker {
             if (file.exists() && file.isFile() && file.canRead() && file.canExecute()) {
                 log.info("File exists and it is readable:");
                 unZippedJar = checkZipFile(file, anylogicFileCheckResult);
+                statusUpdater.updateStatus(0.10);
                 if (unZippedJar != null) {
                     checkJarFile(unZippedJar, anylogicFileCheckResult);
-                    if (anylogicFileCheckResult.isModelJarFilePresent())
+                    statusUpdater.updateStatus(0.50);
+                    if (anylogicFileCheckResult.isModelJarFilePresent()) {
                         checkHelpers(unZippedJar, anylogicFileCheckResult);
+                        statusUpdater.updateStatus(0.90);
+                    }
                 }
-                if (unZippedJar == null && anylogicFileCheckResult.isCorrectFileType()) {
-                    log.error("model.jar does not exist");
+                if (unZippedJar == null){
+                    if( anylogicFileCheckResult.isCorrectFileType()) {
+                        log.error("model.jar does not exist");
+                        statusUpdater.updateError("model.jar does not exist");
+                    }else{
+                        log.error("File could not be unzipped.");
+                        statusUpdater.updateError("File could not be unzipped.");
+                    }
                 }
             } else {
                 log.error("File does not exist or no read permission");
+                statusUpdater.updateError("File does not exist or no read permission");
             }
         } catch (Exception e) {
             log.error("Exception in checking jar file ", e);
+            statusUpdater.updateError("Exception in checking jar file: "+e.getMessage());
         } finally {
             anylogicFileCheckResult.setFileCheckComplete(true);
             if (jarTempDir != null) deleteTempDirectory();

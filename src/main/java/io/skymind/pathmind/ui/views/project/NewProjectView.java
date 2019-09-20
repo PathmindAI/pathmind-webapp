@@ -12,21 +12,23 @@ import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ModelUtils;
 import io.skymind.pathmind.data.utils.ProjectUtils;
-import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
+import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.*;
+import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
+import io.skymind.pathmind.ui.utils.FormUtils;
+import io.skymind.pathmind.ui.utils.PushUtils;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.ui.views.project.components.panels.NewProjectLogoWizardPanel;
 import io.skymind.pathmind.ui.views.project.components.wizard.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -160,7 +162,6 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 	@Override
 	public void updateStatus(double percentage) {
-//		PushUtils.push(getProjectView(), () -> {
 		PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(percentage);
 		});
@@ -168,11 +169,14 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 	@Override
 	public void updateError(String error) {
-		// TODO -> Implement
+		PushUtils.push(ui, () -> {
+			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
+			uploadModelWizardPanel.setError(error);
+		});
 	}
 
 	@Override
-	public void done() {
+	public void fileSuccessfullyVerified() {
 //		PushUtils.push(getProjectView(), () -> {
 		PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);

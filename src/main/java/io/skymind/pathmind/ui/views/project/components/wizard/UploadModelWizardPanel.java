@@ -2,12 +2,14 @@ package io.skymind.pathmind.ui.views.project.components.wizard;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
+import com.vaadin.flow.component.progressbar.ProgressBarVariant;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import io.skymind.pathmind.data.Model;
@@ -32,6 +34,8 @@ public class UploadModelWizardPanel extends VerticalLayout
 
 	private ProgressBar fileCheckProgressBar = new ProgressBar();
 	private VerticalLayout fileCheckPanel;
+
+	private Text error;
 
 	public UploadModelWizardPanel(Model model)
 	{
@@ -58,9 +62,11 @@ public class UploadModelWizardPanel extends VerticalLayout
 	}
 
 	private void setupFileCheckPanel() {
+		error = new Text("");
 		fileCheckPanel = WrapperUtils.wrapWidthFullCenterVertical(
 				fileCheckProgressBar,
-				WrapperUtils.wrapWidthFullCenterHorizontal(new Label("File check...")));
+				WrapperUtils.wrapWidthFullCenterHorizontal(new Label("File check...")),
+				error);
 	}
 
 	private void setupUploadPanel()
@@ -121,9 +127,20 @@ public class UploadModelWizardPanel extends VerticalLayout
 		upload.setVisible(false);
 		fileCheckPanel.setVisible(true);
 		checkYourModelButton.setVisible(false);
+		setFileCheckStatusProgressBarValue(0);
 	}
 
 	public void setFileCheckStatusProgressBarValue(double value) {
+		if(value == 0.0){
+			fileCheckProgressBar.removeThemeVariants(ProgressBarVariant.LUMO_ERROR);
+			this.error.setText("");
+		}
 		fileCheckProgressBar.setValue(value);
+	}
+
+	public void setError(String error) {
+		fileCheckProgressBar.addThemeVariants(ProgressBarVariant.LUMO_ERROR);
+		this.error.setText(error);
+		upload.setVisible(true);
 	}
 }
