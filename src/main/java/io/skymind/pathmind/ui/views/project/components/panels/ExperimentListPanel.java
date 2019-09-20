@@ -10,6 +10,8 @@ import io.skymind.pathmind.bus.BusEventType;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.ExperimentUpdateBusEvent;
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.ui.components.SearchBox;
+import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,10 +63,9 @@ public class ExperimentListPanel extends VerticalLayout
 	}
 
 	private HorizontalLayout getTitleBar() {
-		return WrapperUtils.wrapLeftAndRightAligned(
-				new H3("Experiments"),
-				new TextField("Search")
-		);
+		return GuiUtils.getTitleAndSearchBoxBar(
+				"Experiments",
+				new SearchBox());
 	}
 
 	private Grid<Experiment> getRecentExperimentsGrid() {

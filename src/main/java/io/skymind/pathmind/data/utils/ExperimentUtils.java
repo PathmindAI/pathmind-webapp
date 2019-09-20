@@ -16,4 +16,13 @@ public class ExperimentUtils
 		experiment.setDateCreated(LocalDateTime.now());
 		return experiment;
 	}
+
+	public static Experiment generateNewDefaultExperiment(Experiment experiment, String name, String rewardFunction) {
+		Experiment newExperiment = new Experiment();
+		newExperiment.setDateCreated(LocalDateTime.now());
+		newExperiment.setModelId(experiment.getModelId());
+		newExperiment.setName(name);
+		newExperiment.setRewardFunction(rewardFunction);
+		return experiment;
+	}
 }

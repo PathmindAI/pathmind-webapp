@@ -7,8 +7,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 public class NotificationUtils
 {
-	enum Style {
+	public enum Style {
 		Simple,
+		Success,
 		Warn,
 		Error,
 		Todo
@@ -40,6 +41,9 @@ public class NotificationUtils
 	// TODO -> Remove and either put in CSS or just remove alltogether
 	private static void applyStyle(Label label, Style style) {
 		switch(style) {
+			case Success:
+				label.getStyle().set("color", "green");
+				return;
 			case Warn:
 				label.getStyle().set("color", "orange");
 				return;

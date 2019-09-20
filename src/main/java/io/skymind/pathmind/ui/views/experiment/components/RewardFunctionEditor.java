@@ -9,27 +9,16 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
  * Created as it's own component so that we can easily swap in AceEditor later with minimal code impact.
+ * I extended it so that binding code etc, would work as expected and be consistent with other components.
  */
-public class RewardFunctionEditor extends AbstractCompositeField<VerticalLayout, RewardFunctionEditor, String>
+public class RewardFunctionEditor extends JuicyAceEditor
 {
-	private JuicyAceEditor editor = new JuicyAceEditor();
+	public RewardFunctionEditor()
+	{
+		super();
 
-	public RewardFunctionEditor() {
-		super("");
-
-		getContent().setSizeFull();
-		editor.setSizeFull();
-		editor.setTheme(JuicyAceTheme.eclipse);
-		editor.setMode(JuicyAceMode.java);
-
-		getContent().add(
-				new Label("Write Your Reward Function"),
-				editor
-		);
-	}
-
-	@Override
-	protected void setPresentationValue(String s) {
-		editor.setValue(s);
+		setSizeFull();
+		setTheme(JuicyAceTheme.eclipse);
+		setMode(JuicyAceMode.java);
 	}
 }
