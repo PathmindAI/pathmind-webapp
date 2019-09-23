@@ -13,9 +13,13 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.data.utils.FakeDataUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -23,11 +27,13 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
-import io.skymind.pathmind.ui.views.experiment.components.TrainingsListPanel;
+import io.skymind.pathmind.ui.views.experiment.components.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Flux;
+
+import java.util.List;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value = "experiment", layout = MainLayout.class)
@@ -37,11 +43,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private Logger log = LogManager.getLogger(ExperimentView.class);
 
+	private final Flux<PathmindBusEvent> consumer;
+
 	private long experimentId = -1;
 
 	private ScreenTitlePanel screenTitlePanel;
 
+	private PolicyHighlightPanel policyHighlightPanel;
+	private PolicyStatusDetailsPanel policyStatusDetailsPanel;
 	private RewardFunctionEditor rewardFunctionEditor;
+	private PolicyChartPanel policyChartPanel;
 	private TrainingsListPanel trainingsListPanel;
 
 	@Autowired
@@ -49,9 +60,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private Button backToExperimentsButton;
 
-	public ExperimentView()
+	public ExperimentView(Flux<PathmindBusEvent> consumer)
 	{
 		super();
+		this.consumer = consumer;
 	}
 
 	@Override
@@ -82,9 +94,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private Component getLeftPanel()
 	{
 		trainingsListPanel = new TrainingsListPanel();
+		trainingsListPanel.addSelectionListener(selectedPolicy -> {
+			policyHighlightPanel.update(selectedPolicy);
+			policyStatusDetailsPanel.update(selectedPolicy);
+			policyChartPanel.update(selectedPolicy);
+		});
+
+		policyChartPanel = new PolicyChartPanel(consumer);
 
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
-				new Label("Chart"),
+				policyChartPanel,
 				trainingsListPanel);
 	}
 
@@ -94,9 +113,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		rewardFunctionEditor.setReadonly(true);
 		rewardFunctionEditor.setSizeFull();
 
+		policyHighlightPanel = new PolicyHighlightPanel();
+		policyStatusDetailsPanel = new PolicyStatusDetailsPanel();
+
 		return WrapperUtils.wrapSizeFullVertical(
-				new Button("Start"),
-				new Label("Status panel"),
+				WrapperUtils.wrapWidthFullCenterHorizontal(
+						new Button("Start")),
+				policyHighlightPanel,
+				policyStatusDetailsPanel,
 				rewardFunctionEditor,
 				WrapperUtils.wrapWidthFullCenterHorizontal(
 						new Button("New Experiment", click -> NotificationUtils.showTodoNotification()),
@@ -120,6 +144,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		screenTitlePanel.setSubtitle(experiment.getProject().getName());
 
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
+
+		// TODO -> How do we get the list of policies?
+		trainingsListPanel.update(FakeDataUtils.generateFakePoliciesForExperiment(experimentId));
 
 		backToExperimentsButton.addClickListener(click ->
 				UI.getCurrent().navigate(ExperimentsView.class, experiment.getModelId()));

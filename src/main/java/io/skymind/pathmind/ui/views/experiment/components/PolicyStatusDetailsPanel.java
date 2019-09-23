@@ -1,10 +1,10 @@
-package io.skymind.pathmind.ui.views.run.components;
+package io.skymind.pathmind.ui.views.experiment.components;
 
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
@@ -14,28 +14,27 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
 @Component
-public class RunStatusDetailsPanel extends VerticalLayout
+public class PolicyStatusDetailsPanel extends VerticalLayout
 {
-	private static Logger log = LogManager.getLogger(RunStatusDetailsPanel.class);
+	private static Logger log = LogManager.getLogger(PolicyStatusDetailsPanel.class);
 
 	private Label statusLabel = new Label(RunStatus.NotStarted.toString());
+	// TODO -> Should be swapping back and forth between Label and ProgressBar.
+	private Label runProgressLabel = new Label();
 	private Label runTypeLabel = new Label();
 	private Label elapsedTimeLabel = new Label();
-	private Label completedLabel = new Label();
-	public Label algorithmLabel = new Label();
 
-	public RunStatusDetailsPanel()
+	public PolicyStatusDetailsPanel()
 	{
 		Label[] labels = Arrays.asList(
 			getElementLabel("Status"),
+			getElementLabel(""),
 			getElementLabel("Run Type"),
-			getElementLabel("Elapsed"),
-			getElementLabel("Completed"),
-			getElementLabel("Algorithm"))
+			getElementLabel("Elapsed"))
 				.stream().toArray(Label[]::new);
 
 		removeTopMargins(labels);
-		removeTopMargins(statusLabel, runTypeLabel, elapsedTimeLabel, completedLabel, algorithmLabel);
+		removeTopMargins(statusLabel, runProgressLabel, runTypeLabel, elapsedTimeLabel);
 
 		VerticalLayout leftVerticalLayout = new VerticalLayout(labels);
 		leftVerticalLayout.setHorizontalComponentAlignment(Alignment.END, labels);
@@ -44,10 +43,9 @@ public class RunStatusDetailsPanel extends VerticalLayout
 
 		VerticalLayout rightVerticalLayout = new VerticalLayout(
 				statusLabel,
+				runProgressLabel,
 				runTypeLabel,
-				elapsedTimeLabel,
-				completedLabel,
-				algorithmLabel);
+				elapsedTimeLabel);
 		rightVerticalLayout.setDefaultHorizontalComponentAlignment(Alignment.START);
 		rightVerticalLayout.setPadding(false);
 
@@ -71,13 +69,11 @@ public class RunStatusDetailsPanel extends VerticalLayout
 				label.getStyle().set("margin-top", "0px"));
 	}
 
-	public void update(Run run)
+	public void update(Policy policy)
 	{
-		// TODO -> New data model.
-//		statusLabel.setText(experiment.getStatusEnum().toString());
-//		runTypeLabel.setText(experiment.getRunTypeEnum().toString());
-//		elapsedTimeLabel.setText(DateTimeUtils.formatTime(ExperimentUtils.getElapsedTime(experiment)));
-//		completedLabel.setText(experiment.getCompletedEnum().toString());
-//		algorithmLabel.setText(experiment.getAlgorithm().toString());
+		statusLabel.setText(policy.getRun().getStatusEnum().name());
+		runProgressLabel.setText("TODO");
+		runTypeLabel.setText(policy.getRun().getRunTypeEnum().name());
+		elapsedTimeLabel.setText("TODO");
 	}
 }

@@ -19,10 +19,7 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.run.components.PolicyPanel;
 import io.skymind.pathmind.ui.views.run.components.RunStatusPanel;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Random;
@@ -34,8 +31,6 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 	private static final String START = "Start";
 	private static final String STOP = "Stop";
 
-	private Logger log = LogManager.getLogger(DiscoveryRunConfirmationView.class);
-
 	private long experimentId = -1;
 	private Experiment experiment;
 
@@ -45,7 +40,6 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 	private ExperimentRepository experimentRepository;
 
 	private ScreenTitlePanel screenTitlePanel;
-	private PolicyPanel policyPanel;
 	private RunStatusPanel runStatusPanel;
 
 	private Button actionButton;
@@ -68,7 +62,6 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 	protected Component getMainContent()
 	{
 		actionButton = new Button(START, click -> handleActionButtonClicked());
-		policyPanel = new PolicyPanel();
 		runStatusPanel = new RunStatusPanel(RunType.TestRun);
 
 		runStatusPanel.setVisible(false);
@@ -76,7 +69,6 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 		return WrapperUtils.wrapWidthFullCenterVertical(
 			actionButton,
 			WrapperUtils.wrapFormCenterVertical(
-				policyPanel,
 				runStatusPanel
 			)
 		);
@@ -99,7 +91,6 @@ public class DiscoveryRunConfirmationView extends PathMindDefaultView implements
 	private void handleStartButtonClicked()
 	{
 		actionButton.setText(STOP);
-		policyPanel.setVisible(false);
 		runStatusPanel.setVisible(true);
 
 		// TODO -> Implement.

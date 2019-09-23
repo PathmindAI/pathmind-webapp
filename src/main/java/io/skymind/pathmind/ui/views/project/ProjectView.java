@@ -25,9 +25,9 @@ import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.run.components.RunStatusDetailsPanel;
+import io.skymind.pathmind.ui.views.experiment.components.PolicyStatusDetailsPanel;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentListPanel;
-import io.skymind.pathmind.ui.views.project.components.panels.ProjectChartPanel;
+import io.skymind.pathmind.ui.views.experiment.components.PolicyChartPanel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +52,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
 	private ScreenTitlePanel screenTitlePanel;
 	private ExperimentListPanel experimentListPanel;
-	private ProjectChartPanel projectChartPanel;
-	private RunStatusDetailsPanel experimentStatusDetailsPanel;
+	private PolicyChartPanel projectChartPanel;
+	private PolicyStatusDetailsPanel experimentStatusDetailsPanel;
 
 	private final UnicastProcessor<PathmindBusEvent> publisher;
 	private final Flux<PathmindBusEvent> consumer;
@@ -119,8 +119,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	protected Component getMainContent()
 	{
 		experimentListPanel = new ExperimentListPanel(consumer);
-		projectChartPanel = new ProjectChartPanel(consumer);
-		experimentStatusDetailsPanel = new RunStatusDetailsPanel();
+		projectChartPanel = new PolicyChartPanel(consumer);
+		experimentStatusDetailsPanel = new PolicyStatusDetailsPanel();
 
 		experimentListPanel.addSelectionListener(experiment -> {
 			// TODO -> Highlight selected row in chart.

@@ -9,6 +9,9 @@ import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 public class TrainingsListPanel extends VerticalLayout
 {
 	private SearchBox searchBox = new SearchBox();
@@ -27,7 +30,7 @@ public class TrainingsListPanel extends VerticalLayout
 		// TODO -> Cases #83, #83, #85, and #86 -> Where do specific columns come from?
 		NotificationUtils.showTodoNotification("Cases #83, #83, #85, and #86 -> Where do specific columns come from?");
 
-		grid.addColumn(policy -> "Status TODO")
+		grid.addColumn(policy -> policy.getRun().getStatusEnum().name())
 				.setHeader("Status")
 				.setAutoWidth(true)
 				.setSortable(true);
@@ -43,7 +46,7 @@ public class TrainingsListPanel extends VerticalLayout
 				.setHeader("Policy")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(policy -> "Run Type todo")
+		grid.addColumn(policy -> policy.getRun().getRunTypeEnum().name())
 				.setHeader("Run Type")
 				.setAutoWidth(true)
 				.setSortable(true);
@@ -56,12 +59,27 @@ public class TrainingsListPanel extends VerticalLayout
 				.setAutoWidth(true)
 				.setSortable(true);
 
+		grid.addSelectionListener(selectedPolicy -> {
+
+		});
+
 		return grid;
+	}
+
+	public void addSelectionListener(Consumer<Policy> consumer) {
+		grid.addSelectionListener(selectionPolicy ->
+				consumer.accept(selectionPolicy.getFirstSelectedItem().get()));
 	}
 
 	private HorizontalLayout getTitleAndSearchBoxBar() {
 		return GuiUtils.getTitleAndSearchBoxBar(
 				"Trainings",
 				searchBox);
+	}
+
+	public void update(List<Policy> policies) {
+		grid.setItems(policies);
+		if(!policies.isEmpty())
+			grid.select(policies.get(0));
 	}
 }
