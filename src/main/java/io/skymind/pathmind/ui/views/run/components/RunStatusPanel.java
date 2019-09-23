@@ -13,6 +13,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.ui.views.experiment.components.PolicyStatusDetailsPanel;
 
 public class RunStatusPanel extends VerticalLayout
 {
@@ -22,7 +23,7 @@ public class RunStatusPanel extends VerticalLayout
 	private ListSeries series = new ListSeries("Score");
 
 	private Label scoreLabel = new Label("0");
-	private RunStatusDetailsPanel experimentStatusDetailsPanel = new RunStatusDetailsPanel();
+	private PolicyStatusDetailsPanel experimentStatusDetailsPanel = new PolicyStatusDetailsPanel();
 
 	public RunStatusPanel(RunType runType)
 	{
@@ -44,7 +45,7 @@ public class RunStatusPanel extends VerticalLayout
 				new HorizontalLayout(
 						new Label("Model #1 (TODO)"),
 						new Label("Experiment #1 (TODO)")),
-				new Label("Discovert Run (TODO)")
+				new Label("Discovery Run (TODO)")
 		);
 	}
 

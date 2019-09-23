@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.project.components.panels;
+package io.skymind.pathmind.ui.views.experiment.components;
 
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
@@ -8,7 +8,9 @@ import io.skymind.pathmind.bus.BusEventType;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.ExperimentUpdateBusEvent;
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.data.utils.FakeDataUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -17,13 +19,13 @@ import java.util.stream.Collectors;
 
 
 @Component
-public class ProjectChartPanel extends VerticalLayout
+public class PolicyChartPanel extends VerticalLayout
 {
 	private Chart chart = new Chart(ChartType.SPLINE);
 
-	private Project project;
+	private Policy policy;
 
-	public ProjectChartPanel(Flux<PathmindBusEvent> consumer)
+	public PolicyChartPanel(Flux<PathmindBusEvent> consumer)
 	{
 		setupChart();
 		add(chart);
@@ -34,9 +36,9 @@ public class ProjectChartPanel extends VerticalLayout
 	// TODO -> Project != null is due to how the components are generated with the eventBus.
 	private void subscribeToEventBus(Flux<PathmindBusEvent> consumer) {
 		consumer
-			.filter(busEvent -> project != null)
+			.filter(busEvent -> policy != null)
 //			.filter(busEvent -> busEvent.isEventTypes(BusEventType.ProjectUpdate, BusEventType.ExperimentUpdate))
-			.filter(busEvent -> busEvent.isEventType(BusEventType.ExperimentUpdate))
+			.filter(busEvent -> busEvent.isEventType(BusEventType.PolicyUpdate))
 			// TODO -> DATA MODEL -> In case of new experiments for project
 //			.filter(busEvent -> ((ExperimentUpdateBusEvent)busEvent).isForProject(project))
 			.subscribe(busEvent ->
@@ -65,7 +67,7 @@ public class ProjectChartPanel extends VerticalLayout
 //	}
 
 	private void setupChart() {
-		chart.getConfiguration().setTitle("Project chart");
+		chart.getConfiguration().setTitle("Reward Score");
 	}
 
 	private void update(Experiment updatedExperiment)
@@ -87,14 +89,12 @@ public class ProjectChartPanel extends VerticalLayout
 //		update(project);
 	}
 
-	public void update(Project project)
+	public void update(Policy policy)
 	{
-		// TODO -> DATA MODEL
-// 		this.project = project;
-//		chart.getConfiguration().setSeries(
-//				project.getExperiments().stream()
-//						.map(experiment -> new ListSeries(experiment.getName(), experiment.getScores()))
-//						.collect(Collectors.toList()));
-//		chart.drawChart();
+		this.policy = policy;
+
+		chart.getConfiguration().setSeries(new ListSeries(
+				FakeDataUtils.generateFakePolicyChartScores()));
+		chart.drawChart();
 	}
 }

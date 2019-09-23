@@ -24,14 +24,15 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.*;
+import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
+import io.skymind.pathmind.ui.utils.FormUtils;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
-import io.skymind.pathmind.ui.views.run.DiscoveryRunConfirmationView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.ValidationUtils;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value = "newExperiment", layout = MainLayout.class)
@@ -163,7 +164,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			NotificationUtils.showTodoNotification("Case #71 -> Define exactly what last activity represents\n" +
 				"https://github.com/SkymindIO/pathmind-webapp/issues/71");
 
-			UI.getCurrent().navigate(DiscoveryRunConfirmationView.class, experimentId);
+			UI.getCurrent().navigate(ExperimentView.class, experimentId);
 		});
 	}
 

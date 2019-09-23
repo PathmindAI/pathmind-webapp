@@ -24,7 +24,6 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.components.ExperimentFormPanel;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.project.ProjectView;
 import org.apache.logging.log4j.LogManager;
@@ -59,7 +58,6 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 	private Binder<Experiment> binder;
 
 	private RewardFunctionEditor rewardFunctionEditor;
-	private ExperimentFormPanel experimentFormPanel;
 
 	private Button backToProjectButton;
 
@@ -98,9 +96,6 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 				.bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
 
 
-		experimentFormPanel = new ExperimentFormPanel(binder);
-
-
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 				getLeftPanel(),
 				getRightPanel(),
@@ -109,7 +104,6 @@ public class DiscoveryRunView extends PathMindDefaultView implements HasUrlParam
 
 	private VerticalLayout getLeftPanel() {
 		return WrapperUtils.wrapSizeFullVertical(
-				experimentFormPanel,
 				rewardFunctionEditor);
 	}
 
