@@ -3,6 +3,11 @@
     line-height: 31px;
 }
 
+.navbar-logo {
+    width: 144px;
+    height: 31px;
+}
+
 .section-label-title {
     font-size: 22px;
     font-weight: bold;
