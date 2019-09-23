@@ -1,5 +1,5 @@
 
-package io.skymind.pathmind.services.training;
+package io.skymind.pathmind.services.training.db.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

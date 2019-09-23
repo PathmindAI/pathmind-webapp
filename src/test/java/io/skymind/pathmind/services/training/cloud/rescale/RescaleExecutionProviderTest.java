@@ -5,7 +5,7 @@ import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.RunType;
 import io.skymind.pathmind.services.training.cloud.rescale.api.RescaleRestApiClient;
-import io.skymind.pathmind.services.training.metadata.ExecutionProviderMetaDataService;
+import io.skymind.pathmind.services.training.db.metadata.ExecutionProviderMetaDataService;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;

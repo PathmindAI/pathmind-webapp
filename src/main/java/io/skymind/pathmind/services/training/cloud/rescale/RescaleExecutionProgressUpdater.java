@@ -2,7 +2,7 @@ package io.skymind.pathmind.services.training.cloud.rescale;
 
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
-import io.skymind.pathmind.services.training.RunUpdateService;
+import io.skymind.pathmind.services.training.db.integration.RunUpdateService;
 import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import org.slf4j.Logger;

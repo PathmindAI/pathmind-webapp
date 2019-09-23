@@ -1,4 +1,4 @@
-package io.skymind.pathmind.services.training.metadata;
+package io.skymind.pathmind.services.training.db.metadata;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

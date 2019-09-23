@@ -1,4 +1,4 @@
-package io.skymind.pathmind.services.training.metadata;
+package io.skymind.pathmind.services.training.db.metadata;
 
 public interface ExecutionProviderMetaDataService {
     public void put(Class<?> providerClazz, String key, Object value);

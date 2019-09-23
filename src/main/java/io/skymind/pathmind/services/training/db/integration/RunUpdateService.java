@@ -1,4 +1,4 @@
-package io.skymind.pathmind.services.training;
+package io.skymind.pathmind.services.training.db.integration;
 
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.services.training.progress.Progress;

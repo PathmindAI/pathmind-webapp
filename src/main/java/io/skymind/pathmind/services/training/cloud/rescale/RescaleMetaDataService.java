@@ -1,6 +1,6 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
-import io.skymind.pathmind.services.training.metadata.ExecutionProviderMetaDataService;
+import io.skymind.pathmind.services.training.db.metadata.ExecutionProviderMetaDataService;
 import org.springframework.stereotype.Service;
 
 @Service
