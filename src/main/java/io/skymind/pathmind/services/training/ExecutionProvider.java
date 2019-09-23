@@ -1,6 +1,7 @@
 package io.skymind.pathmind.services.training;
 
 import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 
 import java.util.Map;
 
@@ -39,8 +40,10 @@ public interface ExecutionProvider {
      *
      * The training run keys typically contain all tuned training parameters and a unique id.
      *
+     * To interpret the results of this method take a look at {@link ProgressInterpreter}.
+     *
      * @param jobHandle Job Handle
-     * @return Map of training run to the contents of its policy file
+     * @return Map of training run to the contents of its progress file
      */
     public Map<String, String> progress(String jobHandle);
 
