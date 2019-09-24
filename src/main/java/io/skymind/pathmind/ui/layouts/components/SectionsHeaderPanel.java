@@ -13,7 +13,7 @@ public class SectionsHeaderPanel extends HorizontalLayout
 	{
 		HorizontalLayout sectionsHorizontalLayout = new HorizontalLayout();
 		final Image logo = new Image("frontend/images/pathmind-logo.png", "Skymind Logo");
-		logo.getStyle().set("width", "9em");
+		logo.addClassName("navbar-logo");
 		sectionsHorizontalLayout.add(
 				logo,
 				new RouterLink("Dashboard", DashboardView.class),
