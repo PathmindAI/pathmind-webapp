@@ -26,7 +26,6 @@ import ch.qos.logback.core.read.ListAppender;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AnylogicFileCheckerTest {
-
     private File validFile =new File("./src/test/resources/static/CoffeeShopAnylogicExported.zip");
     private File inValidFile =new File("./src/test/resources/static/CoffeeShop.zip");
     private File invalidFormat = new File("./src/test/resources/static/Sample.txt");
@@ -90,8 +89,8 @@ public class AnylogicFileCheckerTest {
         fileLogger.addAppender(listAppender);
         anylogicFileChecker.checkZipFile(corruptedType, anylogicFileCheckResult);
         List<ILoggingEvent> logsList = listAppender.list;
-        assertThat(logsList.get(1).getLevel(),is(equalTo(Level.ERROR)));
-        assertThat(logsList.get(1).getMessage(),is(equalTo("Invalid input file format :")));
+        assertThat(logsList.get(1).getLevel(), is(equalTo(Level.ERROR)));
+        assertThat(logsList.get(1).getMessage(), is(equalTo("Invalid input file format :")));
     }
 
     @Before
@@ -114,8 +113,8 @@ public class AnylogicFileCheckerTest {
         anylogicFileChecker.checkJarFile(invalidFormat, anylogicFileCheckResult);
         assertThat(anylogicFileCheckResult.isModelJarFilePresent(), is(equalTo(false)));
         List<ILoggingEvent> logsList = listAppender.list;
-        assertThat(logsList.get(1).getLevel(),is(equalTo(Level.ERROR)));
-        assertThat(logsList.get(1).getMessage(),is(equalTo("Error opening jar file")));
+        assertThat(logsList.get(1).getLevel(), is(equalTo(Level.ERROR)));
+        assertThat(logsList.get(1).getMessage(), is(equalTo("Error opening jar file")));
     }
 
     @Before
@@ -144,7 +143,7 @@ public class AnylogicFileCheckerTest {
         anylogicFileChecker.checkHelpers(invalidFormat, anylogicFileCheckResult);
         List<ILoggingEvent> logsList = listAppender.list;
         assertThat(anylogicFileCheckResult.getDefinedHelpers(), is(equalTo(definedHelpers)));
-        assertThat(logsList.get(2).getLevel(),is(equalTo(Level.ERROR)));
-        assertThat(logsList.get(2).getMessage(),is(equalTo("error while extract jar files")));
+        assertThat(logsList.get(2).getLevel(), is(equalTo(Level.ERROR)));
+        assertThat(logsList.get(2).getMessage(), is(equalTo("error while extract jar files")));
     }
 }

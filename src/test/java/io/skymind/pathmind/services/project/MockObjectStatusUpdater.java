@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 public class MockObjectStatusUpdater implements StatusUpdater {
     private static final Logger log = LogManager.getLogger(MockObjectStatusUpdater.class);
+
     @Override
     public void updateStatus(double percentage) {
         log.info("Update status");
