@@ -1,11 +1,9 @@
 package io.skymind.pathmind.services.project;
 
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
-import io.skymind.pathmind.ui.views.project.NewProjectView;
-import org.junit.FixMethodOrder;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
@@ -27,26 +25,23 @@ import ch.qos.logback.core.read.ListAppender;
 
 
 @RunWith(MockitoJUnitRunner.class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AnylogicFileCheckerTest {
 
     private File validFile =new File("./src/test/resources/static/CoffeeShopAnylogicExported.zip");
     private File inValidFile =new File("./src/test/resources/static/CoffeeShop.zip");
-    private File invalidFormat = new File("./src/test/resources/static/Deployments_Screen.PNG");
+    private File invalidFormat = new File("./src/test/resources/static/Sample.txt");
+    private File corruptedType = new File("./src/test/resources/static/corrupted.zip");
     private static ThreadLocal<File> jarFile = new ThreadLocal<File>();
-
 
     AnylogicFileCheckResult anylogicFileCheckResult = new AnylogicFileCheckResult();
 
     StatusUpdater statusUpdater = new MockObjectStatusUpdater();
 
-
     @InjectMocks
     AnylogicFileChecker anylogicFileChecker;
 
-
     @Test
-    public void performFileCheck_Success() {
+    public void testPerformFileCheckSuccess() {
         AnylogicFileCheckResult testFileCheckResult = new AnylogicFileCheckResult();
         List<String> definedHelpers = new ArrayList<>();
         List<String> fileNameList = new ArrayList<>();
@@ -73,41 +68,45 @@ public class AnylogicFileCheckerTest {
     }
 
     @Test
-    public void performFileCheck_Fail() {
+    public void testPerformFileCheckFail() {
         FileCheckResult fileCheckResult = anylogicFileChecker.performFileCheck(statusUpdater,inValidFile);
         assertThat(fileCheckResult.isFileCheckComplete(), is(equalTo(true)));
         assertThat(fileCheckResult.isCorrectFileType(), is(equalTo(false)));
     }
 
     @Test
-    public void TestA_checkZipFile_Success() throws IOException{
+    public void testCheckZipFileSuccess() throws IOException{
         File unZippedJar = anylogicFileChecker.checkZipFile(validFile, anylogicFileCheckResult);
         jarFile.set(unZippedJar);
-        System.out.println(jarFile);
         assertThat(unZippedJar,anExistingFileOrDirectory());
         assertThat(unZippedJar, aFileWithCanonicalPath(containsString("model.jar")));
     }
 
     @Test
-    public void TestB_checkZipFile_Fail() throws IOException{
+    public void testCheckZipFileFail() throws IOException{
         Logger fileLogger = (Logger) LoggerFactory.getLogger(AnylogicFileChecker.class);
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
         listAppender.start();
         fileLogger.addAppender(listAppender);
-        anylogicFileChecker.checkZipFile(invalidFormat, anylogicFileCheckResult);
+        anylogicFileChecker.checkZipFile(corruptedType, anylogicFileCheckResult);
         List<ILoggingEvent> logsList = listAppender.list;
         assertThat(logsList.get(1).getLevel(),is(equalTo(Level.ERROR)));
         assertThat(logsList.get(1).getMessage(),is(equalTo("Invalid input file format :")));
     }
 
+    @Before
+    public void beforeCheckJarFile() throws IOException{
+        testCheckZipFileSuccess();
+    }
+
     @Test
-    public void TestC_checkJarFile_Success(){
+    public void testCheckJarFileSuccess(){
         anylogicFileChecker.checkJarFile(jarFile.get(), anylogicFileCheckResult);
         assertThat(anylogicFileCheckResult.isModelJarFilePresent(), is(equalTo(true)));
     }
 
     @Test
-    public void TestD_checkJarFile_Fail(){
+    public void testCheckJarFileFail(){
         Logger fileLogger = (Logger) LoggerFactory.getLogger(AnylogicFileChecker.class);
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
         listAppender.start();
@@ -119,8 +118,13 @@ public class AnylogicFileCheckerTest {
         assertThat(logsList.get(1).getMessage(),is(equalTo("Error opening jar file")));
     }
 
+    @Before
+    public void beforeCheckHelpers() throws IOException{
+        testCheckZipFileSuccess();
+    }
+
     @Test
-    public void TestE_checkHelpers_Success(){
+    public void testCheckHelpersSuccess(){
         AnylogicFileCheckResult testFileCheckResult = new AnylogicFileCheckResult();
         List<String> definedHelpers = new ArrayList<>();
         definedHelpers.add("coffeeshop/Main##pathmindHelper");
@@ -131,7 +135,7 @@ public class AnylogicFileCheckerTest {
     }
 
     @Test
-    public void TestF_checkHelpers_Fail(){
+    public void testCheckHelpersFail(){
         Logger fileLogger = (Logger) LoggerFactory.getLogger(AnylogicFileChecker.class);
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
         List<String> definedHelpers = new ArrayList<>();

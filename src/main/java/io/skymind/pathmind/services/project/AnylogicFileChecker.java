@@ -6,10 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.FileSystemUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -76,23 +73,30 @@ public class AnylogicFileChecker implements FileChecker {
         String searchFileName = "model.jar";
         // To Check if the Zip file is a valid
         File unZippedJar = null;
-        try (ZipFile zipFile = new ZipFile(file)) {
-            anylogicFileCheckResult.setCorrectFileType(true);
-            Enumeration<?> enu = zipFile.entries();
-            List<String> fileNameList = new ArrayList<>();
-            while (enu.hasMoreElements()) {
-                ZipEntry zipEntry = (ZipEntry) enu.nextElement();
-                log.info(zipEntry.getName());
-                fileNameList.add(zipEntry.getName());
-                if (zipEntry.getName().toLowerCase().indexOf(searchFileName) != -1) {
-                    unZippedJar = unzipFile(file, searchFileName);
-                    log.debug("unzipped jar path {} :-", unZippedJar.getAbsolutePath());
+        InputStream iStream = new FileInputStream(file);
+        boolean isValidZip = FileUtils.detectDocType(iStream);
+        if(isValidZip){
+            try (ZipFile zipFile = new ZipFile(file)) {
+                anylogicFileCheckResult.setCorrectFileType(true);
+                Enumeration<?> enu = zipFile.entries();
+                List<String> fileNameList = new ArrayList<>();
+                while (enu.hasMoreElements()) {
+                    ZipEntry zipEntry = (ZipEntry) enu.nextElement();
+                    log.info(zipEntry.getName());
+                    fileNameList.add(zipEntry.getName());
+                    if (zipEntry.getName().toLowerCase().indexOf(searchFileName) != -1) {
+                        unZippedJar = unzipFile(file, searchFileName);
+                        log.debug("unzipped jar path {} :-", unZippedJar.getAbsolutePath());
+                    }
                 }
+                anylogicFileCheckResult.setZipContentFileNames(fileNameList);
+            } catch (ZipException ioe) {
+                log.error("Invalid input file format :", ioe);
             }
-            anylogicFileCheckResult.setZipContentFileNames(fileNameList);
-        } catch (ZipException ioe) {
-            log.error("Invalid input file format :", ioe);
+        } else {
+            log.error("Invalid input file format :");
         }
+
         log.info("{} :- CheckZip File Completed", uuid);
         return unZippedJar;
     }
