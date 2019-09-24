@@ -5,6 +5,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.HasDynamicTitle;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ActionMenu;
@@ -18,7 +19,7 @@ import org.apache.logging.log4j.Logger;
  * Do NOT implement any default methods for this interface because a large part of it's goal is to remind
  * the developer to implement these methods in all the views to keep the layout and coding consistent.
  */
-public abstract class PathMindDefaultView extends VerticalLayout implements BeforeEnterObserver
+public abstract class PathMindDefaultView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle
 {
 	private static Logger log = LogManager.getLogger(PathMindDefaultView.class);
 
@@ -84,5 +85,10 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 	}
 
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
+	}
+
+	@Override
+	public String getPageTitle() {
+		return "Pathmind";
 	}
 }
