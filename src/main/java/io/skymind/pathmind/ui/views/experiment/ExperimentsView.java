@@ -16,6 +16,7 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.model.ModelsView;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentListPanel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	{
 		experimentListPanel = new ExperimentListPanel();
 		experimentListPanel.addSelectionListener(selectedExperiment ->
-				UI.getCurrent().navigate(ExperimentView.class, selectedExperiment.getId()));
+				UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(selectedExperiment)));
 
 		return experimentListPanel;
 	}
@@ -66,6 +67,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) {
+		// TODO -> Only handles the happy path, no error checking that the modelId is valid.
 		experimentListPanel.update(experimentRepository.getExperimentsForModel(modelId));
 	}
 

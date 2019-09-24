@@ -2,6 +2,9 @@ package io.skymind.pathmind.data;
 
 import io.skymind.pathmind.constants.Algorithm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Policy implements Data
 {
 	private long id;
@@ -10,6 +13,9 @@ public class Policy implements Data
 	private String name;
 	private String progress;
 	private byte[] file;
+
+	// TODO -> Temporary location where the chart data is located until scores is defined with json data)
+	private ArrayList<Number> scores = new ArrayList<>();
 
 	// Helper GUI attributes not stored in the database
 	private Project project;
@@ -96,5 +102,9 @@ public class Policy implements Data
 
 	public void setRun(Run run) {
 		this.run = run;
+	}
+
+	public List<Number> getScores() {
+		return scores;
 	}
 }

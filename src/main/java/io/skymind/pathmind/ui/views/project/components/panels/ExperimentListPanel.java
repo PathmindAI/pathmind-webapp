@@ -2,17 +2,14 @@ package io.skymind.pathmind.ui.views.project.components.panels;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import io.skymind.pathmind.bus.BusEventType;
 import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.bus.data.ExperimentUpdateBusEvent;
+import io.skymind.pathmind.bus.data.PolicyUpdateBusEvent;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.utils.GuiUtils;
-import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -36,20 +33,22 @@ public class ExperimentListPanel extends VerticalLayout
 	public ExperimentListPanel(Flux<PathmindBusEvent> consumer)
 	{
 		this();
-		subscribeToEventBus(consumer);
+	// TODO -> Steph
+//		subscribeToEventBus(consumer);
 	}
 
-	private void subscribeToEventBus(Flux<PathmindBusEvent> consumer) {
-		consumer
-			.filter(busEvent -> busEvent.isEventType(BusEventType.ExperimentUpdate))
-			// TODO -> DATA MODEL -> In case of new experiments for project
-//			.filter(busEvent -> ((ExperimentUpdateBusEvent)busEvent).isForProject(project))
-			.subscribe(busEvent ->
-				update(((ExperimentUpdateBusEvent)busEvent).getExperiment()));
-
-		// TODO -> We may need subscribe to the project as well depending on the requirements and possible
-		// changes to a project over time. I don't know enough create a subscriber to make it worthwhile yet.
-	}
+	// TODO -> Steph
+//	private void subscribeToEventBus(Flux<PathmindBusEvent> consumer) {
+//		consumer
+//			.filter(busEvent -> busEvent.isEventType(BusEventType.ExperimentUpdate))
+//			// TODO -> DATA MODEL -> In case of new experiments for project
+////			.filter(busEvent -> ((ExperimentUpdateBusEvent)busEvent).isForProject(project))
+//			.subscribe(busEvent ->
+//				update(((PolicyUpdateBusEvent)busEvent).getPolicy()));
+//
+//		// TODO -> We may need subscribe to the project as well depending on the requirements and possible
+//		// changes to a project over time. I don't know enough create a subscriber to make it worthwhile yet.
+//	}
 
 	public void update(Experiment experiment) {
 		// TODO -> Implement.

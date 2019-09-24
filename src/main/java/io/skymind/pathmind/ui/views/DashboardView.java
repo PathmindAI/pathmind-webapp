@@ -19,6 +19,8 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,8 +73,7 @@ public class DashboardView extends PathMindDefaultView
 		policyGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
 		policyGrid.addSelectionListener(event ->
 				event.getFirstSelectedItem().ifPresent(selectedPolicy ->
-						NotificationUtils.showTodoNotification("Where do we go when we click on this?")));
-//						UI.getCurrent().navigate(RunView.class, selectedPolicy.getId())));
+						UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(selectedPolicy))));
 
 		// TODO -> CSS styles
 		policyGrid.setWidth("80%");

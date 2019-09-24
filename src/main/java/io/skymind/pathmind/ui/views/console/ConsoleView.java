@@ -20,9 +20,9 @@ import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.project.ProjectView;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentListPanel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,8 +64,8 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 	protected ActionMenu getActionMenu() {
 		return new ActionMenu(
 			new Button("Back", new Icon(VaadinIcon.CHEVRON_LEFT), click ->
-					UI.getCurrent().navigate(ProjectView.class, project.getId()))
-		);
+					NotificationUtils.showTodoNotification()
+		));
 	}
 
 	// I do NOT want to implement a default interface because this is to remind me

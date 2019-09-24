@@ -68,7 +68,9 @@ public class FakeDataUtils
 			policy.setId(x);
 			policy.setName("Policy " + x);
 			policy.setRun(run);
-			policy.setRunId(1);
+			policy.setRunId(run.getId());
+			policy.setExperiment(generateFakeExperimentForRun(run.getId()));
+			policy.getScores().addAll(FakeDataUtils.generateFakePolicyChartScores());
 			policies.add(policy);
 		}
 		return policies;
@@ -82,6 +84,13 @@ public class FakeDataUtils
 		run.setStatusEnum(RunStatus.Running);
 		run.setId(1);
 		return run;
+	}
+
+	public static Experiment generateFakeExperimentForRun(long runId) {
+		Experiment experiment = new Experiment();
+		experiment.setId(1);
+		experiment.setName("Experiment 1");
+		return experiment;
 	}
 
 	public static List<Number> generateFakePolicyChartScores() {

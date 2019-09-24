@@ -1,6 +1,7 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSingleSelectionModel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.constants.Algorithm;
@@ -22,13 +23,15 @@ public class TrainingsListPanel extends VerticalLayout
 		add(getTitleAndSearchBoxBar());
 		add(getTrainingsGrid());
 
+		// Always force at least one item to be selected.
+		((GridSingleSelectionModel<Policy>)grid.getSelectionModel()).setDeselectAllowed(false);
+
 		setSizeFull();
 	}
 
 	private Grid<Policy> getTrainingsGrid()
 	{
-		// TODO -> Cases #83, #83, #85, and #86 -> Where do specific columns come from?
-		NotificationUtils.showTodoNotification("Cases #83, #83, #85, and #86 -> Where do specific columns come from?");
+		// TODO -> Paul -> Cases #83, #83, #85, and #86 -> Where do specific columns come from?
 
 		grid.addColumn(policy -> policy.getRun().getStatusEnum().name())
 				.setHeader("Status")
@@ -59,10 +62,6 @@ public class TrainingsListPanel extends VerticalLayout
 				.setAutoWidth(true)
 				.setSortable(true);
 
-		grid.addSelectionListener(selectedPolicy -> {
-
-		});
-
 		return grid;
 	}
 
@@ -77,9 +76,18 @@ public class TrainingsListPanel extends VerticalLayout
 				searchBox);
 	}
 
-	public void update(List<Policy> policies) {
+	public void update(List<Policy> policies, long defaultSelectedPolicyId)
+	{
 		grid.setItems(policies);
-		if(!policies.isEmpty())
+
+		if(!policies.isEmpty() && defaultSelectedPolicyId < 0) {
 			grid.select(policies.get(0));
+		} else {
+			Policy selectedPolicy = policies.stream()
+					.filter(policy -> policy.getId() == defaultSelectedPolicyId)
+					.findAny()
+					.get();
+			grid.select(selectedPolicy);
+		}
 	}
 }

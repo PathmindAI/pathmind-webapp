@@ -30,6 +30,7 @@ import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
+import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,7 +165,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			NotificationUtils.showTodoNotification("Case #71 -> Define exactly what last activity represents\n" +
 				"https://github.com/SkymindIO/pathmind-webapp/issues/71");
 
-			UI.getCurrent().navigate(ExperimentView.class, experimentId);
+			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
 		});
 	}
 
