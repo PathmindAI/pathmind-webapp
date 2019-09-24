@@ -38,7 +38,7 @@ public class AnylogicFileCheckerTest {
 
     AnylogicFileCheckResult anylogicFileCheckResult = new AnylogicFileCheckResult();
 
-    StatusUpdater statusUpdater = new NewProjectView();
+    StatusUpdater statusUpdater = new MockObjectStatusUpdater();
 
 
     @InjectMocks
