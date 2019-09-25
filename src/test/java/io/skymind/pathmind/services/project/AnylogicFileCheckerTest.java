@@ -14,9 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.io.FileMatchers.*;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.io.FileMatchers.anExistingFileOrDirectory;
+import static org.hamcrest.io.FileMatchers.aFileWithCanonicalPath;
+
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.containsString;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -30,11 +33,11 @@ public class AnylogicFileCheckerTest {
     private File inValidFile =new File("./src/test/resources/static/CoffeeShop.zip");
     private File invalidFormat = new File("./src/test/resources/static/Sample.txt");
     private File corruptedType = new File("./src/test/resources/static/corrupted.zip");
-    private static ThreadLocal<File> jarFile = new ThreadLocal<File>();
+    private static ThreadLocal<File> jarFile = new ThreadLocal<>();
 
-    AnylogicFileCheckResult anylogicFileCheckResult = new AnylogicFileCheckResult();
+    private AnylogicFileCheckResult anylogicFileCheckResult = new AnylogicFileCheckResult();
 
-    StatusUpdater statusUpdater = new MockObjectStatusUpdater();
+    private StatusUpdater statusUpdater = new MockObjectStatusUpdater();
 
     @InjectMocks
     AnylogicFileChecker anylogicFileChecker;
@@ -77,7 +80,7 @@ public class AnylogicFileCheckerTest {
     public void testCheckZipFileSuccess() throws IOException{
         File unZippedJar = anylogicFileChecker.checkZipFile(validFile, anylogicFileCheckResult);
         jarFile.set(unZippedJar);
-        assertThat(unZippedJar,anExistingFileOrDirectory());
+        assertThat(unZippedJar, anExistingFileOrDirectory());
         assertThat(unZippedJar, aFileWithCanonicalPath(containsString("model.jar")));
     }
 
