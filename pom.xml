@@ -130,10 +130,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
-            <artifactId>tika-parsers</artifactId>
+            <artifactId>tika-core</artifactId>
             <version>1.20</version>
         </dependency>
     </dependencies>
+
 
     <build>
         <plugins>

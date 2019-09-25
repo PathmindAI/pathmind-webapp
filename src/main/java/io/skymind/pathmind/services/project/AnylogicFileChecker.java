@@ -6,7 +6,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.FileSystemUtils;
 
-import java.io.*;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -44,11 +49,11 @@ public class AnylogicFileChecker implements FileChecker {
                         statusUpdater.updateStatus(0.90);
                     }
                 }
-                if (unZippedJar == null){
-                    if( anylogicFileCheckResult.isCorrectFileType()) {
+                if (unZippedJar == null) {
+                    if (anylogicFileCheckResult.isCorrectFileType()) {
                         log.error("model.jar does not exist");
                         statusUpdater.updateError("model.jar does not exist");
-                    }else{
+                    } else {
                         log.error("File could not be unzipped.");
                         statusUpdater.updateError("File could not be unzipped.");
                     }
@@ -59,7 +64,7 @@ public class AnylogicFileChecker implements FileChecker {
             }
         } catch (Exception e) {
             log.error("Exception in checking jar file ", e);
-            statusUpdater.updateError("Exception in checking jar file: "+e.getMessage());
+            statusUpdater.updateError("Exception in checking jar file: " + e.getMessage());
         } finally {
             anylogicFileCheckResult.setFileCheckComplete(true);
             if (jarTempDir != null) deleteTempDirectory();
@@ -73,9 +78,11 @@ public class AnylogicFileChecker implements FileChecker {
         String searchFileName = "model.jar";
         // To Check if the Zip file is a valid
         File unZippedJar = null;
-        InputStream iStream = new FileInputStream(file);
-        boolean isValidZip = FileUtils.detectDocType(iStream);
-        if(isValidZip){
+        boolean isValidZip;
+        try (InputStream iStream = new FileInputStream(file)) {
+            isValidZip = FileUtils.detectDocType(iStream);
+        }
+        if (isValidZip) {
             try (ZipFile zipFile = new ZipFile(file)) {
                 anylogicFileCheckResult.setCorrectFileType(true);
                 Enumeration<?> enu = zipFile.entries();
