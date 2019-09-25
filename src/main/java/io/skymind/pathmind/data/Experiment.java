@@ -17,6 +17,7 @@ public class Experiment implements Data
 	// Helper GUI attributes not stored in the database
 	private Project project;
 	private Model model;
+	private List<Policy> policies;
 
 	public Experiment() {
 	}
@@ -84,5 +85,13 @@ public class Experiment implements Data
 
 	public void setModel(Model model) {
 		this.model = model;
+	}
+
+	public List<Policy> getPolicies() {
+		return policies;
+	}
+
+	public void setPolicies(List<Policy> policies) {
+		this.policies = policies;
 	}
 }

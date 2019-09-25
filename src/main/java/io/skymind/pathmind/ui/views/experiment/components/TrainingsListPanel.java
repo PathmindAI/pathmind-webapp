@@ -5,23 +5,27 @@ import com.vaadin.flow.component.grid.GridSingleSelectionModel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.constants.Algorithm;
+import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.utils.GuiUtils;
-import io.skymind.pathmind.ui.utils.NotificationUtils;
+import io.skymind.pathmind.ui.views.policy.components.PolicySearchBox;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public class TrainingsListPanel extends VerticalLayout
 {
-	private SearchBox searchBox = new SearchBox();
-	private Grid<Policy> grid = new Grid<>();
+	private PolicySearchBox searchBox;
+	private Grid<Policy> grid;
+
+	private Experiment experiment;
 
 	public TrainingsListPanel()
 	{
+		setupGrid();
+		setupSearchBox();
+
 		add(getTitleAndSearchBoxBar());
-		add(getTrainingsGrid());
+		add(grid);
 
 		// Always force at least one item to be selected.
 		((GridSingleSelectionModel<Policy>)grid.getSelectionModel()).setDeselectAllowed(false);
@@ -29,10 +33,11 @@ public class TrainingsListPanel extends VerticalLayout
 		setSizeFull();
 	}
 
-	private Grid<Policy> getTrainingsGrid()
+	private void setupGrid()
 	{
-		// TODO -> Paul -> Cases #83, #83, #85, and #86 -> Where do specific columns come from?
+		grid = new Grid<>();
 
+		// TODO -> Paul -> Cases #83, #83, #85, and #86 -> Where do specific columns come from?
 		grid.addColumn(policy -> policy.getRun().getStatusEnum().name())
 				.setHeader("Status")
 				.setAutoWidth(true)
@@ -61,13 +66,11 @@ public class TrainingsListPanel extends VerticalLayout
 				.setHeader("Notes")
 				.setAutoWidth(true)
 				.setSortable(true);
-
-		return grid;
 	}
 
 	public void addSelectionListener(Consumer<Policy> consumer) {
 		grid.addSelectionListener(selectionPolicy ->
-				consumer.accept(selectionPolicy.getFirstSelectedItem().get()));
+				selectionPolicy.getFirstSelectedItem().ifPresent(p -> consumer.accept(p)));
 	}
 
 	private HorizontalLayout getTitleAndSearchBoxBar() {
@@ -76,14 +79,20 @@ public class TrainingsListPanel extends VerticalLayout
 				searchBox);
 	}
 
-	public void update(List<Policy> policies, long defaultSelectedPolicyId)
-	{
-		grid.setItems(policies);
+	private void setupSearchBox() {
+		searchBox = new PolicySearchBox(grid, () -> experiment.getPolicies(), true);
+	}
 
-		if(!policies.isEmpty() && defaultSelectedPolicyId < 0) {
-			grid.select(policies.get(0));
+	public void update(Experiment experiment, long defaultSelectedPolicyId)
+	{
+		this.experiment = experiment;
+
+		grid.setItems(experiment.getPolicies());
+
+		if(!experiment.getPolicies().isEmpty() && defaultSelectedPolicyId < 0) {
+			grid.select(experiment.getPolicies().get(0));
 		} else {
-			Policy selectedPolicy = policies.stream()
+			Policy selectedPolicy = experiment.getPolicies().stream()
 					.filter(policy -> policy.getId() == defaultSelectedPolicyId)
 					.findAny()
 					.get();

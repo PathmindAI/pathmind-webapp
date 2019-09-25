@@ -6,7 +6,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
@@ -14,13 +14,19 @@ import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ActionMenu;
+import io.skymind.pathmind.ui.components.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.ui.views.TodoView;
 import io.skymind.pathmind.ui.views.model.ModelsView;
+import io.skymind.pathmind.ui.views.project.components.ProjectSearchBox;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value="projects", layout = MainLayout.class)
@@ -29,6 +35,10 @@ public class ProjectsView extends PathMindDefaultView
 	@Autowired
 	private ProjectDAO projectDAO;
 
+	private List<Project> projects;
+
+	private ProjectSearchBox searchBox;
+	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Project> projectGrid;
 
 	public ProjectsView()
@@ -38,40 +48,61 @@ public class ProjectsView extends PathMindDefaultView
 
 	protected Component getMainContent()
 	{
+		setupTabPanel();
+		setupProjectGrid();
+		setupSearchBox();
+
+		// BUG -> I didn't have to really investigate but it looks like we may need
+		// to do something special to get the full size content in the AppLayout component which
+		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
+		// Hence the workaround below:
+		VerticalLayout gridWrapper = WrapperUtils.wrapCenterVertical(
+				UIConstants.CENTERED_TABLE_WIDTH,
+				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
+				archivesTabPanel,
+				projectGrid);
+		gridWrapper.getElement().getStyle().set("padding-top", "100px");
+		return gridWrapper;
+	}
+
+	private void setupSearchBox() {
+		searchBox = new ProjectSearchBox(projectGrid, () -> getProjects());
+	}
+
+	private void setupTabPanel() {
+		archivesTabPanel = new ArchivesTabPanel("Projects",
+				() -> UI.getCurrent().navigate(TodoView.class));
+	}
+
+	private void setupProjectGrid()
+	{
 		projectGrid = new Grid<>();
 
 		projectGrid.addColumn(Project::getName)
 				.setHeader("Name")
 				.setSortable(true);
-//				.setWidth("275px");
 		projectGrid.addColumn(
 				new LocalDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
 				.setHeader("Date Created")
 				.setSortable(true);
-//				.setWidth("275px");
 		projectGrid.addColumn(
 				new LocalDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
 				.setHeader("Last Activity")
 				.setSortable(true);
-//				.setWidth("275px");
 
 		projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
 		projectGrid.addSelectionListener(event ->
 				event.getFirstSelectedItem().ifPresent(selectedProject ->
 						UI.getCurrent().navigate(ModelsView.class, selectedProject.getId())));
 
-		projectGrid.setWidth("700px");
-		projectGrid.setMaxWidth("700px");
+		projectGrid.setWidth(UIConstants.CENTERED_TABLE_WIDTH);
+		projectGrid.setMaxWidth(UIConstants.CENTERED_TABLE_WIDTH);
 		projectGrid.setMaxHeight("500px");
 		projectGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+	}
 
-		// BUG -> I didn't have to really investigate but it looks like we may need
-		// to do something special to get the full size content in the AppLayout component which
-		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
-		// Hence the workaround below:
-		HorizontalLayout gridWrapper = WrapperUtils.wrapSizeFullCenterHorizontal(projectGrid);
-		gridWrapper.getElement().getStyle().set("padding-top", "100px");
-		return gridWrapper;
+	private List<Project> getProjects() {
+		return projects;
 	}
 
 	@Override
@@ -87,7 +118,15 @@ public class ProjectsView extends PathMindDefaultView
 	}
 
 	@Override
-	protected void updateScreen(BeforeEnterEvent event) {
-		projectGrid.setItems(projectDAO.getProjectsForUser(SecurityUtils.getUserId()));
+	protected void updateScreen(BeforeEnterEvent event)
+	{
+		projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId());
+
+		if(projects == null || projects.isEmpty()) {
+			UI.getCurrent().navigate(NewProjectView.class);
+			return;
+		}
+
+		projectGrid.setItems(projects);
 	}
 }

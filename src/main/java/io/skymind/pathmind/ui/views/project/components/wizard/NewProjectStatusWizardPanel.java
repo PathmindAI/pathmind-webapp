@@ -1,67 +1,46 @@
 package io.skymind.pathmind.ui.views.project.components.wizard;
 
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
-
-import java.util.Arrays;
-import java.util.List;
+import io.skymind.pathmind.ui.components.TabPanel;
 
 public class NewProjectStatusWizardPanel extends VerticalLayout
 {
-	private Tab createANewProjectLabel = new Tab("Create A New Project");
-	private Tab pathmindHelperLabel = new Tab("Pathmind Helper");
-	private Tab uploadModelLabel = new Tab("Upload Model");
-	private Tab modelDetailsLabel = new Tab("Model Details");
+	private static final String CREATE_A_NEW_PROJECT = "Create A New Project";
+	private static final String PATHMIND_HELPER = "Pathmind Helper";
+	private static final String UPLOAD_MODEL = "Upload Model";
+	private static final String MODEL_DETAILS = "Model Details";
 
-	private List<Tab> steps = Arrays.asList(
-			createANewProjectLabel,
-			pathmindHelperLabel,
-			uploadModelLabel,
-			modelDetailsLabel);
+	private TabPanel tabPanel = new TabPanel(
+			CREATE_A_NEW_PROJECT,
+			PATHMIND_HELPER,
+			UPLOAD_MODEL,
+			MODEL_DETAILS);
 
 	public NewProjectStatusWizardPanel()
 	{
-		add(getStatusBar());
+		tabPanel.addThemeVariants(TabsVariant.LUMO_EQUAL_WIDTH_TABS, TabsVariant.LUMO_CENTERED);
+		tabPanel.setEnabled(false);
+
+		add(tabPanel);
 
 		setWidthFull();
 		setMargin(false);
-
-		setCreateANewProject();
-	}
-
-	private Tabs getStatusBar() {
-		Tabs statusBar = new Tabs(steps.toArray(new Tab[0]));
-		statusBar.setWidthFull();
-		statusBar.addThemeVariants(TabsVariant.LUMO_SMALL, TabsVariant.LUMO_EQUAL_WIDTH_TABS, TabsVariant.LUMO_CENTERED);
-		steps.forEach(it -> {
-			it.setEnabled(false);
-			it.setVisible(true);
-			it.getStyle().set("color", "inherit");
-		});
-		return statusBar;
 	}
 
 	public void setCreateANewProject() {
-		setStep(createANewProjectLabel);
+		tabPanel.setTab(CREATE_A_NEW_PROJECT);
 	}
 
 	public void setPathmindHelper() {
-		setStep(pathmindHelperLabel);
+		tabPanel.setTab(PATHMIND_HELPER);
 	}
 
 	public void setUploadModel() {
-		setStep(uploadModelLabel);
+		tabPanel.setTab(UPLOAD_MODEL);
 	}
 
 	public void setModelDetails() {
-		setStep(modelDetailsLabel);
-	}
-
-	private void setStep(Tab activeButton) {
-		steps.forEach(it -> {
-			it.setSelected(it.equals(activeButton));
-		});
+		tabPanel.setTab(MODEL_DETAILS);
 	}
 }

@@ -110,7 +110,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			policy = selectedPolicy;
 			policyHighlightPanel.update(selectedPolicy);
 			policyStatusDetailsPanel.update(selectedPolicy);
-			policyChartPanel.update(selectedPolicy);
+			policyChartPanel.highlightPolicy(selectedPolicy);
 			setActionButtonValue(selectedPolicy);
 		});
 
@@ -202,12 +202,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		if(experiment == null)
 			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
 
-		screenTitlePanel.setSubtitle(experiment.getProject().getName());
+		experiment.setPolicies(FakeDataUtils.generateFakePoliciesForExperiment(experiment));
 
+		screenTitlePanel.setSubtitle(experiment.getProject().getName());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
+		policyChartPanel.update(experiment);
 
 		// TODO -> How do we get the list of policies?
-		trainingsListPanel.update(FakeDataUtils.generateFakePoliciesForExperiment(experimentId), policyId);
+		trainingsListPanel.update(experiment, policyId);
 
 		backToExperimentsButton.addClickListener(click ->
 				UI.getCurrent().navigate(ExperimentsView.class, experiment.getModelId()));

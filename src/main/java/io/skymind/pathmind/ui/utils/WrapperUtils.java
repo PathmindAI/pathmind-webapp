@@ -35,6 +35,13 @@ public class WrapperUtils
 		return verticalLayout;
 	}
 
+	public static VerticalLayout wrapCenterVertical(String width, Component... components) {
+		VerticalLayout verticalLayout = new VerticalLayout(components);
+		verticalLayout.setWidth(width);
+		verticalLayout.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
+		return verticalLayout;
+	}
+
 	// TODO -> Move this to CSS.
 	public static VerticalLayout wrapFormCenterBorderedVertical(Component... components) {
 		VerticalLayout verticalLayout = wrapFormCenterVertical(components);
@@ -77,6 +84,13 @@ public class WrapperUtils
 	{
 		HorizontalLayout horizontalLayout = wrapWidthFullHorizontal(leftComponent, rightComponent);
 		rightComponent.getElement().getStyle().set("margin-left", "auto");
+		return horizontalLayout;
+	}
+
+	public static HorizontalLayout wrapWidthFullRightHorizontal(Component... components)
+	{
+		HorizontalLayout horizontalLayout = wrapWidthFullHorizontal(components);
+		horizontalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 		return horizontalLayout;
 	}
 

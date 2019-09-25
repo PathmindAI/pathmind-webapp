@@ -12,6 +12,7 @@ import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.views.errors.ErrorView;
 import io.skymind.pathmind.ui.views.errors.InvalidDataView;
+import io.skymind.pathmind.utils.PathmindUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -89,6 +90,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
 	@Override
 	public String getPageTitle() {
-		return "Pathmind";
+		return PathmindUtils.getPageTitle();
 	}
 }
