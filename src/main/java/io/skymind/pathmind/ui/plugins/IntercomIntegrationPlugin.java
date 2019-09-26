@@ -15,6 +15,7 @@ public class IntercomIntegrationPlugin
 		UI.getCurrent().getPage().addJavaScript(getJSFile(), LoadMode.EAGER);
 	}
 
+	// TODO -> Leaving as just Strings that are not static final since I expect this to be adjusted soon.
 	private static final String getJSFile() {
 		try {
 			switch (System.getenv("env")) {
