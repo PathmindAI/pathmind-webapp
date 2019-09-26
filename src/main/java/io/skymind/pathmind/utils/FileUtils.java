@@ -2,26 +2,42 @@ package io.skymind.pathmind.utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.io.*;
+import org.apache.tika.Tika;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FileUtils {
     private static final Logger log = LogManager.getLogger(FileUtils.class);
-    public static List<String> listFiles(String filePath){
-        List<String> result = new ArrayList<String>();
-        try (Stream<Path> walk = Files.walk(Paths.get(filePath))) {
-            result = walk.map(x -> x.toString())
-                    .filter(f -> f.endsWith(".class")).collect(Collectors.toList());
-            walk.close();
-        } catch (IOException e) {
-            log.error("error while filter class files", e);
+
+    public static List<String> listFiles(String filePath) {
+        Path path = Paths.get(filePath);
+        boolean isDir = Files.isDirectory(path);
+        List<String> result = new ArrayList<>();
+        if (isDir) {
+            try (Stream<Path> walk = Files.walk(Paths.get(filePath))) {
+                result = walk.map(x -> x.toString())
+                        .filter(f -> f.endsWith(".class")).collect(Collectors.toList());
+            } catch (IOException e) {
+                log.error("error while filter class files", e);
+            }
+        } else {
+            log.error("Invalid input file path");
         }
         return result;
+    }
+
+    public static boolean detectDocType(InputStream stream)
+            throws IOException {
+        Tika tika = new Tika();
+        return tika.detect(stream).equals("application/zip");
+
     }
 }
