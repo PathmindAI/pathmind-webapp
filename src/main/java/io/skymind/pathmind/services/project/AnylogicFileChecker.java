@@ -35,7 +35,7 @@ public class AnylogicFileChecker implements FileChecker {
         anylogicFileCheckResult.setFileCheckComplete(false);
         try {
             //To check the file exist and does the server have permission to read
-            if (file.exists() && file.isFile() && file.canRead() && file.canExecute()) {
+            if (file.exists() && file.isFile() && file.canRead()) {
                 log.info("File exists and it is readable:");
                 unZippedJar = checkZipFile(file, anylogicFileCheckResult);
                 statusUpdater.updateStatus(0.10);

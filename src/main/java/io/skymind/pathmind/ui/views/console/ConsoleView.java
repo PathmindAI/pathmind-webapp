@@ -1,7 +1,6 @@
 package io.skymind.pathmind.ui.views.console;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.icon.Icon;
@@ -16,14 +15,13 @@ import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.services.ConsoleService;
-import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.project.ProjectView;
-import io.skymind.pathmind.ui.views.project.components.panels.ExperimentListPanel;
+import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +41,7 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 	private Flux<PathmindBusEvent> consumer;
 
 	private TextArea consoleTextArea;
-	private ExperimentListPanel experimentListPanel;
+	private ExperimentGrid experimentListPanel;
 
 	private Project project;
 	private long experimentId;
@@ -60,14 +58,6 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 		// consumer.
 	}
 
-	@Override
-	protected ActionMenu getActionMenu() {
-		return new ActionMenu(
-			new Button("Back", new Icon(VaadinIcon.CHEVRON_LEFT), click ->
-					UI.getCurrent().navigate(ProjectView.class, project.getId()))
-		);
-	}
-
 	// I do NOT want to implement a default interface because this is to remind me
 	// what to implement and a default would remove that ability.
 	@Override
@@ -79,7 +69,7 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 	{
 		consoleTextArea = new TextArea();
 		consoleTextArea.setSizeFull();
-		experimentListPanel = new ExperimentListPanel(consumer);
+		experimentListPanel = new ExperimentGrid();
 
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
 				consoleTextArea,

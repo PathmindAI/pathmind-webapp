@@ -21,7 +21,6 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
-import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
@@ -30,6 +29,7 @@ import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
+import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,17 +67,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	public NewExperimentView()
 	{
 		super();
-	}
-
-	@Override
-	protected ActionMenu getActionMenu()
-	{
-		backToExperimentsButton = new Button("Back to Experiments", new Icon(VaadinIcon.CHEVRON_LEFT));
-		backToExperimentsButton.addClickListener(click -> NotificationUtils.showTodoNotification());
-
-		return new ActionMenu(
-				backToExperimentsButton
-		);
 	}
 
 	@Override
@@ -164,7 +153,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			NotificationUtils.showTodoNotification("Case #71 -> Define exactly what last activity represents\n" +
 				"https://github.com/SkymindIO/pathmind-webapp/issues/71");
 
-			UI.getCurrent().navigate(ExperimentView.class, experimentId);
+			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
 		});
 	}
 

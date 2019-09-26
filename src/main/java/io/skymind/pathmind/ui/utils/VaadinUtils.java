@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.utils;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.textfield.NumberField;
 
 public class VaadinUtils
@@ -14,5 +15,12 @@ public class VaadinUtils
 		numberField.setMax(max);
 		numberField.setValue((double)value);
 		return numberField;
+	}
+
+	/**
+	 * Until Vaadin has the ability to get the view names https://github.com/vaadin/flow/issues/1897 this is a workaround.
+	 */
+	public static String getViewName() {
+		return UI.getCurrent().getInternals().getActiveViewLocation().getFirstSegment();
 	}
 }

@@ -7,6 +7,14 @@ The other parts of Pathmind (NativeRL, Pathmind Helper) can be currently still b
 * [NativeRL](https://github.com/SkymindIO/skil-somatic-cloud/tree/master/nativerl)
 * [Pathmind Helper](https://github.com/SkymindIO/skil-somatic-cloud/tree/master/PathmindPolicyHelper)
 
+## Tech stack
+- **UI Framework:** Vaadin 14 (running in compatibility mode to Vaadin 13)
+- **Dependency Injection / Application Container:** Spring Boot 2
+- **Database:** PostgreSQL 10
+- **Build:** Maven
+- **Deployment:** Azure
+- **Database Migrations:** Liquibase
+
 
 ## Setup
 

@@ -60,29 +60,32 @@ public class FakeDataUtils
 //				1);
 //	}
 
-	public static List<Policy> generateFakePoliciesForExperiment(long experimentId) {
+	public static List<Policy> generateFakePoliciesForExperiment(Experiment experiment) {
 		ArrayList<Policy> policies = new ArrayList<>();
-		Run run = generateFakeRunForExperiment(experimentId);
+		Run run = generateFakeRunForExperiment(experiment);
 		for(int x=1; x<=10; x++) {
 			Policy policy = new Policy();
 			policy.setId(x);
 			policy.setName("Policy " + x);
 			policy.setRun(run);
-			policy.setRunId(1);
+			policy.setRunId(run.getId());
+			policy.setExperiment(experiment);
+			policy.getScores().addAll(FakeDataUtils.generateFakePolicyChartScores());
 			policies.add(policy);
 		}
 		return policies;
 	}
 
-	public static Run generateFakeRunForExperiment(long experimentId) {
+	public static Run generateFakeRunForExperiment(Experiment experiment) {
 		Run run = new Run();
-		run.setExperimentId(experimentId);
+		run.setExperimentId(experiment.getId());
 		run.setName("Run 1");
 		run.setRunTypeEnum(RunType.TestRun);
 		run.setStatusEnum(RunStatus.Running);
 		run.setId(1);
 		return run;
 	}
+
 
 	public static List<Number> generateFakePolicyChartScores() {
 		int chartSize = getRandomInt(50);
