@@ -7,13 +7,14 @@ public class Model implements Data
 {
 	// TODO -> Implement. These are needed for validation purposes.
 	public static final int MIN_NUMBER_OF_OBSERVATIONS = 1;
-	public static final int MAX_NUMBER_OF_OBSERVATIONS = 1000;
+	public static final int MAX_NUMBER_OF_OBSERVATIONS = 10000; // a 100*100 field doesn't seem that outlandish
 
 	// TODO -> Implement. These are needed for validation purposes.
 	public static final int MIN_NUMBER_OF_POSSIBLE_ACTIONS = 1;
 	public static final int MAX_NUMBER_OF_POSSIBLE_ACTIONS = 1000;
 
 	// TODO -> Implement
+	// It doesn't really make sense to have defaults for this. -- pdubs 2019-09-26
 	public static final int DEFAULT_NUMBER_OF_OBSERVATIONS = 3;
 	public static final int DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS = 5;
 	public static final String DEFAULT_GET_OBSERVATION_FOR_REWARD_FUNCTION = "Copy and paste your getObservation for reward function here so you" +

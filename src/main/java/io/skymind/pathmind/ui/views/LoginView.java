@@ -2,14 +2,12 @@ package io.skymind.pathmind.ui.views;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.HtmlImport;
-import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.shared.ui.LoadMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import io.skymind.pathmind.db.dao.ProjectDAO;
@@ -33,7 +31,7 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver, HasD
 	@Autowired
 	private ProjectDAO projectDAO;
 
-	public LoginView()
+	public LoginView(IntercomIntegrationPlugin intercomIntegrationPlugin)
 	{
 		setId("pathmind-login");
 		LoginI18n loginForm = LoginI18n.createDefault();
@@ -45,7 +43,7 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver, HasD
 
 		addLoginListener(e -> handleLogin(e));
 
-		IntercomIntegrationPlugin.addPluginToPage();
+		intercomIntegrationPlugin.addPluginToPage();
 	}
 
 	private void handleLogin(LoginEvent e) {

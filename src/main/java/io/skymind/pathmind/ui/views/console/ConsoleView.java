@@ -1,10 +1,7 @@
 package io.skymind.pathmind.ui.views.console;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -18,7 +15,6 @@ import io.skymind.pathmind.services.ConsoleService;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
@@ -85,7 +81,7 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 	protected void updateScreen(BeforeEnterEvent event) {
 		// TODO -> Need to load experiments for project due to new changes in the data model.
 		project = projectDAO.getProjectForExperiment(experimentId);
-		consoleTextArea.setValue(ConsoleService.getConsoleLogForExperiment(experimentId));
+		consoleTextArea.setValue(ConsoleService.getConsoleLogForRun(experimentId));
 		// TODO => Update the experiment list panel. This is probably no longer on the project level...
 //		experimentListPanel.update(project);
 	}

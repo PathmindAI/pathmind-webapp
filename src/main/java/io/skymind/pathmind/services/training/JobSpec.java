@@ -12,7 +12,8 @@ public class JobSpec {
     private final String variables;
     private final String reset;
     private final String reward;
-    private final String metrics = ""; // TODO
+    private final String metrics = ""; // Disabled for now. Proper Metrics support will probably need a bit of
+                                       // re-engineering across the webapp, Pathmind Helper and NativeRL
     private final int actions;
     private final int observations;
     private final int iterations;

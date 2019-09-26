@@ -5,7 +5,7 @@ import java.util.Random;
 public class ConsoleService
 {
 	// TODO -> Implement.
-	public static String getConsoleLogForExperiment(long experimentId)
+	public static String getConsoleLogForRun(long runId)
 	{
 		Random random = new Random();
 
