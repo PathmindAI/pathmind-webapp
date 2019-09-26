@@ -11,11 +11,15 @@ public class ScreenTitlePanel extends HorizontalLayout
 	private Label titleLabel = new Label();
 
 	public ScreenTitlePanel() {
+		this("");
 	}
 
 	public ScreenTitlePanel(String title)
 	{
 		this(title, "");
+		setWidthFull();
+		setJustifyContentMode(JustifyContentMode.CENTER);
+	 	addClassName("action-menu");
 	}
 
 	public ScreenTitlePanel(String title, String subtitle)

@@ -4,7 +4,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -14,7 +13,6 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
-import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -90,18 +88,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		experimentGrid = new ExperimentGrid();
 		experimentGrid.addSelectionListener(selectedExperiment ->
 				UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(selectedExperiment.getFirstSelectedItem().get())));
-	}
-
-	@Override
-	protected ActionMenu getActionMenu() {
-		return new ActionMenu(
-				new Button("Back to Models", click ->
-						ExceptionWrapperUtils.handleButtonClicked(() -> {
-							UI.getCurrent().navigate(ModelsView.class, modelDAO.getProjectIdForModel(modelId));
-						})),
-				new Button("New Experiment", click ->
-						NotificationUtils.showTodoNotification()));
-//						UI.getCurrent().getCurrent().navigate(NewProjectView.class)));
 	}
 
 	@Override

@@ -8,17 +8,13 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
-import io.skymind.pathmind.bus.BusEventType;
 import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.bus.data.PolicyUpdateBusEvent;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.FakeDataUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.services.run.RunService;
-import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
@@ -67,8 +63,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Autowired
 	private ExperimentDAO experimentDAO;
 
-	private Button backToExperimentsButton;
-
 	private Button actionButton;
 
 	public ExperimentView(UnicastProcessor<PathmindBusEvent> publisher, Flux<PathmindBusEvent> consumer)
@@ -76,16 +70,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		super();
 		this.publisher = publisher;
 		this.consumer = consumer;
-	}
-
-	@Override
-	protected ActionMenu getActionMenu()
-	{
-		backToExperimentsButton = new Button("Back to Experiments", new Icon(VaadinIcon.CHEVRON_LEFT));
-
-		return new ActionMenu(
-				backToExperimentsButton
-		);
 	}
 
 	@Override
@@ -113,6 +97,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			policyChartPanel.highlightPolicy(selectedPolicy);
 			setActionButtonValue(selectedPolicy);
 		});
+
+		// Only show policies that have been filtered/searched in the charts
+		trainingsListPanel.addSearchListener(policies -> policyChartPanel.filter(policies));
 
 		policyChartPanel = new PolicyChartPanel(consumer);
 
@@ -210,8 +197,5 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 		// TODO -> How do we get the list of policies?
 		trainingsListPanel.update(experiment, policyId);
-
-		backToExperimentsButton.addClickListener(click ->
-				UI.getCurrent().navigate(ExperimentsView.class, experiment.getModelId()));
 	}
 }

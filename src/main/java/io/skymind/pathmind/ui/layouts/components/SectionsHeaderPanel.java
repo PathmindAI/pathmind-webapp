@@ -3,8 +3,8 @@ package io.skymind.pathmind.ui.layouts.components;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
-import io.skymind.pathmind.ui.views.DashboardView;
-import io.skymind.pathmind.ui.views.LearnView;
+import io.skymind.pathmind.ui.views.dashboard.DashboardView;
+import io.skymind.pathmind.ui.views.learn.LearnView;
 import io.skymind.pathmind.ui.views.project.ProjectsView;
 
 public class SectionsHeaderPanel extends HorizontalLayout

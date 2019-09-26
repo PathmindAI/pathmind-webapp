@@ -1,7 +1,5 @@
 package io.skymind.pathmind.data;
 
-import io.skymind.pathmind.constants.Algorithm;
-
 import java.util.ArrayList;
 import java.util.List;
 

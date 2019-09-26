@@ -4,7 +4,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 
 @Route(value="todo", layout = MainLayout.class)
@@ -13,13 +12,6 @@ public class TodoView extends PathMindDefaultView
 	public TodoView()
 	{
 		super();
-	}
-
-	@Override
-	protected ActionMenu getActionMenu() {
-		return new ActionMenu(
-				new Button("TODO -> Implement")
-		);
 	}
 
 	@Override

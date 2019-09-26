@@ -21,7 +21,6 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
-import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
@@ -68,17 +67,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	public NewExperimentView()
 	{
 		super();
-	}
-
-	@Override
-	protected ActionMenu getActionMenu()
-	{
-		backToExperimentsButton = new Button("Back to Experiments", new Icon(VaadinIcon.CHEVRON_LEFT));
-		backToExperimentsButton.addClickListener(click -> NotificationUtils.showTodoNotification());
-
-		return new ActionMenu(
-				backToExperimentsButton
-		);
 	}
 
 	@Override

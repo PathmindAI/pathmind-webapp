@@ -10,6 +10,7 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.views.policy.components.PolicySearchBox;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class TrainingsListPanel extends VerticalLayout
@@ -79,6 +80,10 @@ public class TrainingsListPanel extends VerticalLayout
 				searchBox);
 	}
 
+	public void addSearchListener(Consumer<List<Policy>> searchConsumer) {
+		searchBox.addSearchListener(searchConsumer);
+	}
+
 	private void setupSearchBox() {
 		searchBox = new PolicySearchBox(grid, () -> experiment.getPolicies(), true);
 	}
@@ -92,11 +97,12 @@ public class TrainingsListPanel extends VerticalLayout
 		if(!experiment.getPolicies().isEmpty() && defaultSelectedPolicyId < 0) {
 			grid.select(experiment.getPolicies().get(0));
 		} else {
-			Policy selectedPolicy = experiment.getPolicies().stream()
+			experiment.getPolicies().stream()
 					.filter(policy -> policy.getId() == defaultSelectedPolicyId)
 					.findAny()
-					.get();
-			grid.select(selectedPolicy);
+					.ifPresentOrElse(
+							policy -> grid.select(policy),
+							() -> grid.select(experiment.getPolicies().get(0)));
 		}
 	}
 }

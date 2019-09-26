@@ -7,7 +7,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
 import io.skymind.pathmind.security.SecurityUtils;
-import io.skymind.pathmind.ui.views.AccountView;
+import io.skymind.pathmind.ui.views.account.AccountView;
 
 public class AccountHeaderPanel extends HorizontalLayout
 {

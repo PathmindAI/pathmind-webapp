@@ -15,7 +15,6 @@ import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.services.ConsoleService;
-import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -57,14 +56,6 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 	protected void subscribeToEventBus() {
 		// TODO -> Implement
 		// consumer.
-	}
-
-	@Override
-	protected ActionMenu getActionMenu() {
-		return new ActionMenu(
-			new Button("Back", new Icon(VaadinIcon.CHEVRON_LEFT), click ->
-					NotificationUtils.showTodoNotification()
-		));
 	}
 
 	// I do NOT want to implement a default interface because this is to remind me

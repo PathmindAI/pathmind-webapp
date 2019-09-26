@@ -2,17 +2,21 @@ package io.skymind.pathmind.ui.views;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.HtmlImport;
+import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.shared.ui.LoadMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.security.SecurityUtils;
+import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
+import io.skymind.pathmind.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
 import io.skymind.pathmind.utils.PathmindUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Route("login")
 @Theme(Lumo.class)
 @HtmlImport("frontend://styles/shared-styles.html")
+//@JavaScript("frontend://javascript/intercomIntegration.js")
 public class LoginView extends LoginOverlay implements BeforeEnterObserver, HasDynamicTitle
 {
 	@Autowired
@@ -39,6 +44,8 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver, HasD
 		setI18n(loginForm);
 
 		addLoginListener(e -> handleLogin(e));
+
+		IntercomIntegrationPlugin.addPluginToPage();
 	}
 
 	private void handleLogin(LoginEvent e) {

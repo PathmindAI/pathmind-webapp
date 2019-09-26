@@ -13,7 +13,6 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.security.SecurityUtils;
-import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -103,13 +102,6 @@ public class ProjectsView extends PathMindDefaultView
 
 	private List<Project> getProjects() {
 		return projects;
-	}
-
-	@Override
-	protected ActionMenu getActionMenu() {
-		return new ActionMenu(
-				new Button("New Project", click ->
-						UI.getCurrent().getCurrent().navigate(NewProjectView.class)));
 	}
 
 	@Override

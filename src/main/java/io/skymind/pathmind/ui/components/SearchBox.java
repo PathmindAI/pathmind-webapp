@@ -21,6 +21,8 @@ public abstract class SearchBox<T> extends HorizontalLayout
 	private TextField searchTextField = new TextField();
 	private Button searchButton = new Button(new Icon(VaadinIcon.SEARCH));
 
+	private Consumer<List<T>> searchConsumer;
+
 	private Grid<T> grid;
 	private Supplier<List<T>> itemListSupplier;
 	private BiPredicate<T, String> isMatch;
@@ -48,6 +50,10 @@ public abstract class SearchBox<T> extends HorizontalLayout
 		add(searchTextField, searchButton);
 	}
 
+	public void addSearchListener(Consumer<List<T>> searchConsumer) {
+		this.searchConsumer = searchConsumer;
+	}
+
 	public void search() {
 		if(StringUtils.isEmpty(searchTextField.getValue())) {
 			updateGrid(itemListSupplier.get());
@@ -60,6 +66,8 @@ public abstract class SearchBox<T> extends HorizontalLayout
 
 	private void updateGrid(List<T> results) {
 		grid.setItems(results);
+		if(searchConsumer != null)
+			searchConsumer.accept(results);
 		if(isSelectFirstOnSearch && results.size() > 0)
 			grid.select(results.get(0));
 	}

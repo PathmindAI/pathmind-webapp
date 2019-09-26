@@ -15,7 +15,6 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
-import io.skymind.pathmind.ui.components.ActionMenu;
 import io.skymind.pathmind.ui.components.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -104,16 +103,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		modelGrid.setMaxWidth(UIConstants.CENTERED_TABLE_WIDTH);
 		modelGrid.setMaxHeight("500px");
 		modelGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-	}
-
-	@Override
-	protected ActionMenu getActionMenu() {
-		return new ActionMenu(
-				new Button("Back to Projects", click ->
-						UI.getCurrent().navigate(ProjectsView.class)),
-				new Button("Upload Model", click ->
-						NotificationUtils.showTodoNotification()));
-//						UI.getCurrent().getCurrent().navigate(NewProjectView.class)));
 	}
 
 	public List<Model> getModels() {
