@@ -2,32 +2,14 @@ package io.skymind.pathmind.data;
 
 import java.time.LocalDateTime;
 
-public class Project implements Data
+public class Project extends Data
 {
-	private long id;
-	private String name;
 	private LocalDateTime dateCreated;
 	private LocalDateTime lastActivityDate;
 
 	private long pathmindUserId;
 
 	public Project() {
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public LocalDateTime getDateCreated() {
@@ -54,3 +36,4 @@ public class Project implements Data
 		this.pathmindUserId = pathmindUserId;
 	}
 }
+

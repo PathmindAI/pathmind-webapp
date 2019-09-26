@@ -1,15 +1,11 @@
 package io.skymind.pathmind.data;
 
-import io.skymind.pathmind.constants.TestRun;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class Experiment implements Data
+public class Experiment extends Data
 {
-	private long id;
 	private long modelId;
-	private String name;
 	private String rewardFunction;
 	private LocalDateTime dateCreated;
 	private LocalDateTime lastActivityDate;
@@ -20,23 +16,6 @@ public class Experiment implements Data
 	private List<Policy> policies;
 
 	public Experiment() {
-	}
-
-	@Override
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getRewardFunction() {

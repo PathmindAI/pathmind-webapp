@@ -5,10 +5,8 @@ import io.skymind.pathmind.constants.RunType;
 
 import java.time.LocalDateTime;
 
-public class Run implements Data
+public class Run extends Data
 {
-	private long id;
-	private String name;
 	private int runType;
 	private LocalDateTime startedAt;
 	private LocalDateTime stoppedAt;
@@ -16,23 +14,6 @@ public class Run implements Data
 	private int status;
 
 	public Run() {
-	}
-
-	@Override
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public int getRunType() {

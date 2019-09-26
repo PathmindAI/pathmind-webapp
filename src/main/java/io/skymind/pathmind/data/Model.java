@@ -3,7 +3,7 @@ package io.skymind.pathmind.data;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class Model implements Data
+public class Model extends Data
 {
 	// TODO -> Implement. These are needed for validation purposes.
 	public static final int MIN_NUMBER_OF_OBSERVATIONS = 1;
@@ -22,29 +22,19 @@ public class Model implements Data
 
 	public static final String DEFAULT_INITIAL_MODEL_NAME = "Initial Model Revision";
 
-	private long id;
-	private String name;
 	private LocalDateTime dateCreated;
 	private LocalDateTime lastActivityDate;
 	private int numberOfObservations = DEFAULT_NUMBER_OF_OBSERVATIONS;
 	private int numberOfPossibleActions = DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS;
 	private String getObservationForRewardFunction = "";
 	private byte[] file;
+	private boolean isArchived = false;
 
 	private long projectId;
 
 	private List<Experiment> experiments;
 
 	public Model() {
-	}
-
-	@Override
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
 	}
 
 	public List<Experiment> getExperiments() {
@@ -61,14 +51,6 @@ public class Model implements Data
 
 	public void setProjectId(long projectId) {
 		this.projectId = projectId;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public LocalDateTime getLastActivityDate() {

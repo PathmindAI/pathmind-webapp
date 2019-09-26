@@ -3,12 +3,10 @@ package io.skymind.pathmind.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Policy implements Data
+public class Policy extends Data
 {
-	private long id;
 	private long runId;
 	private String externalId;
-	private String name;
 	private String progress;
 	private byte[] file;
 
@@ -21,29 +19,12 @@ public class Policy implements Data
 	private Experiment experiment;
 	private Run run;
 
-	@Override
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
 	public long getRunId() {
 		return runId;
 	}
 
 	public void setRunId(long runId) {
 		this.runId = runId;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getExternalId() {
