@@ -10,17 +10,16 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
-import io.skymind.pathmind.ui.components.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
+import io.skymind.pathmind.ui.components.buttons.BackButton;
+import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
-import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.TodoView;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentSearchBox;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.model.ModelsView;
@@ -36,7 +35,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	@Autowired
 	private ExperimentRepository experimentRepository;
 	@Autowired
-	private ModelDAO modelDAO;
+	private ExperimentDAO experimentDAO;
 
 	private long modelId;
 	private List<Experiment> experiments;
@@ -54,20 +53,31 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	protected Component getMainContent()
 	{
-		setupTabPanel();
 		setupExperimentListPanel();
+		setupTabPanel();
 		setupSearchBox();
 		setupGetObservationTextArea();
 
-		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-			WrapperUtils.wrapSizeFullVertical(
-					WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-					archivesTabPanel,
-					experimentGrid),
-			WrapperUtils.wrapSizeFullVertical(
-					getObservationTextArea
-			),
-			70);
+		return WrapperUtils.wrapWidthFullCenterVertical(
+				WrapperUtils.wrapWidthFullCenterHorizontal(getBackToModelsButton()),
+				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
+				archivesTabPanel,
+				WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+						WrapperUtils.wrapSizeFullVertical(
+								experimentGrid),
+						WrapperUtils.wrapSizeFullVertical(
+								getObservationTextArea
+						),70),
+				WrapperUtils.wrapWidthFullCenterHorizontal(new NewExperimentButton(experimentDAO, modelId)));
+	}
+
+	/**
+	 * Using any experiment's getProject().getId() since they should all be the same. I'm assuming at this point
+	 * that there has to be at least one experiment to be able to get here.
+	 */
+	private Button getBackToModelsButton() {
+		return new BackButton("Back to Models",
+				click -> UI.getCurrent().navigate(ModelsView.class, experiments.get(0).getProject().getId()));
 	}
 
 	private void setupGetObservationTextArea() {
@@ -80,8 +90,10 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	}
 
 	private void setupTabPanel() {
-		archivesTabPanel = new ArchivesTabPanel("Experiments",
-				() -> UI.getCurrent().navigate(TodoView.class));
+		archivesTabPanel = new ArchivesTabPanel<Experiment>(
+				"Experiments",
+				experimentGrid,
+				this::getExperiments);
 	}
 
 	private void setupExperimentListPanel() {
@@ -100,13 +112,14 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	}
 
 	@Override
-	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
-	{
+	protected void loadData() throws InvalidDataException {
 		experiments = experimentRepository.getExperimentsForModel(modelId);
-
 		if(experiments == null || experiments.isEmpty())
 			throw new InvalidDataException("Attempted to access Experiments for Model: " + modelId);
+	}
 
+	@Override
+	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
 		experimentGrid.setItems(experiments);
 	}
 

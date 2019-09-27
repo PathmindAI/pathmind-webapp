@@ -2,7 +2,6 @@ package io.skymind.pathmind.ui.views.project;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -12,14 +11,14 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
-import io.skymind.pathmind.ui.components.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.TodoView;
 import io.skymind.pathmind.ui.views.model.ModelsView;
 import io.skymind.pathmind.ui.views.project.components.ProjectSearchBox;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
@@ -47,19 +46,16 @@ public class ProjectsView extends PathMindDefaultView
 
 	protected Component getMainContent()
 	{
-		setupTabPanel();
 		setupProjectGrid();
+		setupTabPanel();
 		setupSearchBox();
 
-		// BUG -> I didn't have to really investigate but it looks like we may need
-		// to do something special to get the full size content in the AppLayout component which
-		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
-		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapCenterVertical(
 				UIConstants.CENTERED_TABLE_WIDTH,
 				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
 				archivesTabPanel,
 				projectGrid);
+
 		gridWrapper.getElement().getStyle().set("padding-top", "100px");
 		return gridWrapper;
 	}
@@ -69,8 +65,10 @@ public class ProjectsView extends PathMindDefaultView
 	}
 
 	private void setupTabPanel() {
-		archivesTabPanel = new ArchivesTabPanel("Projects",
-				() -> UI.getCurrent().navigate(TodoView.class));
+		archivesTabPanel = new ArchivesTabPanel<Project>(
+				"Projects",
+				projectGrid,
+				this::getProjects);
 	}
 
 	private void setupProjectGrid()
@@ -80,12 +78,10 @@ public class ProjectsView extends PathMindDefaultView
 		projectGrid.addColumn(Project::getName)
 				.setHeader("Name")
 				.setSortable(true);
-		projectGrid.addColumn(
-				new LocalDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
 				.setHeader("Date Created")
 				.setSortable(true);
-		projectGrid.addColumn(
-				new LocalDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
 				.setHeader("Last Activity")
 				.setSortable(true);
 
@@ -110,15 +106,17 @@ public class ProjectsView extends PathMindDefaultView
 	}
 
 	@Override
-	protected void updateScreen(BeforeEnterEvent event)
-	{
+	protected void loadData() throws InvalidDataException {
 		projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId());
-
 		if(projects == null || projects.isEmpty()) {
 			UI.getCurrent().navigate(NewProjectView.class);
 			return;
 		}
+	}
 
+	@Override
+	protected void updateScreen(BeforeEnterEvent event)
+	{
 		projectGrid.setItems(projects);
 	}
 }

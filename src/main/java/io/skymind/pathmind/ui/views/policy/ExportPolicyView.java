@@ -97,13 +97,15 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	}
 
 	@Override
-	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
-	{
+	protected void loadData() throws InvalidDataException {
 		policy = policyDAO.getPolicy(policyId);
-
 		if(policy == null)
 			throw new InvalidDataException("Attempted to access Policy: " + policyId);
+	}
 
+	@Override
+	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
+	{
 		// TODO -> Paul -> Do we need to do anything else here?
 	}
 }

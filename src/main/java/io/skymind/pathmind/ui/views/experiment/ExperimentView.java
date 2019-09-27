@@ -16,6 +16,7 @@ import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.services.run.RunService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -51,6 +52,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private long experimentId = -1;
 	private long policyId = -1;
 	private Policy policy;
+	private Experiment experiment;
 
 	private ScreenTitlePanel screenTitlePanel;
 
@@ -125,18 +127,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				policyStatusDetailsPanel,
 				rewardFunctionEditor,
 				WrapperUtils.wrapWidthFullCenterHorizontal(
-						new Button("New Experiment", click -> handleNewExperimentClicked()),
+						new NewExperimentButton(experimentDAO, experiment.getModelId(), ""),
 						new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()))
 				));
 	}
-
-	private void handleNewExperimentClicked() {
-		// TODO -> Paul -> The new Experiment needs to first be created so that we have the experimentId that NewExperimentView requires.
-
-		final long experimentId = experimentDAO.setupNewClonedExperiment(policy.getExperiment());
-		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
-	}
-
 	// TODO -> I don't fully understand the button logic, including when it's muted from just the screenshots.
 	private void setActionButtonValue(Policy policy) {
 		switch(policy.getRun().getRunTypeEnum()) {
@@ -182,15 +176,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	@Override
-	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
-	{
-		Experiment experiment = experimentDAO.getExperiment(experimentId);
-
+	protected void loadData() throws InvalidDataException {
+		experiment = experimentDAO.getExperiment(experimentId);
 		if(experiment == null)
 			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
-
 		experiment.setPolicies(FakeDataUtils.generateFakePoliciesForExperiment(experiment));
+	}
 
+	@Override
+	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
+	{
 		screenTitlePanel.setSubtitle(experiment.getProject().getName());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		policyChartPanel.update(experiment);

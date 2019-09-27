@@ -17,12 +17,12 @@ public class ExperimentUtils
 		return experiment;
 	}
 
-	public static Experiment generateNewDefaultExperiment(Experiment experiment, String name, String rewardFunction) {
+	public static Experiment generateNewDefaultExperiment(long modelId, String name, String rewardFunction) {
 		Experiment newExperiment = new Experiment();
 		newExperiment.setDateCreated(LocalDateTime.now());
-		newExperiment.setModelId(experiment.getModelId());
+		newExperiment.setModelId(modelId);
 		newExperiment.setName(name);
 		newExperiment.setRewardFunction(rewardFunction);
-		return experiment;
+		return newExperiment;
 	}
 }

@@ -40,6 +40,8 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		}
 
 		try {
+			// Before we do anything we should first load the data from the database in case there is an issue such as an InvalidDataException
+			loadData();
 			// If there is an exception in generating the screens we don't want to display any system related information to the user for security reasons.
 			if(!isGenerated)
 				addScreens();
@@ -56,6 +58,10 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 			log.error(e.getMessage(), e);
 			event.rerouteTo(ErrorView.class);
 		}
+	}
+
+	protected void loadData() throws InvalidDataException{
+		// Do nothing by default.
 	}
 
 	private void addScreens()

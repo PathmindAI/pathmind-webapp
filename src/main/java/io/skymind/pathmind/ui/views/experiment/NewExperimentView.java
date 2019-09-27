@@ -18,10 +18,10 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
 import io.skymind.pathmind.ui.utils.FormUtils;
@@ -177,36 +177,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private HorizontalLayout getActionButtons()
 	{
-		final Button newExperimentButton = new Button("New Experiment", new Icon(VaadinIcon.PLUS),
-				click -> handleNewExperimentClicked());
+		final NewExperimentButton newExperimentButton = new NewExperimentButton(
+				experimentDAO,
+				experiment.getModelId(),
+				rewardFunctionEditor.getValue());
+
 		final Button saveDraftButton = new Button("Save Draft", new Icon(VaadinIcon.FILE),
 				click -> handleSaveDraftClicked());
 
 		return WrapperUtils.wrapWidthFullCenterHorizontal(
 				newExperimentButton,
 				saveDraftButton);
-	}
-
-	private static long experimentCounter = 1;
-
-	private void handleNewExperimentClicked()
-	{
-		// TODO -> Case #79 -> How do we get the name? Id number?
-		NotificationUtils.showTodoNotification("Case 79 -> Default naming scheme\n" +
-				"https://github.com/SkymindIO/pathmind-webapp/issues/79");
-
-		// TODO -> Case #80 -> Do we use the same reward function from the experiment we're on as a default value?
-		NotificationUtils.showTodoNotification("Case 80 -> Can we use the same reward function as a default value for the reward function of the new experiment?\n" +
-				"I'm assuming we use what's currently in the reward function editor. And if so should we first validate or just proceed anyways?\n" +
-				"https://github.com/SkymindIO/pathmind-webapp/issues/80");
-
-		// TODO -> Case #71 -> Define exactly what last activity represents
-		NotificationUtils.showTodoNotification("Case #71 -> Define exactly what last activity represents\n" +
-				"https://github.com/SkymindIO/pathmind-webapp/issues/71");
-
-		Experiment newExperiment = ExperimentUtils.generateNewDefaultExperiment(experiment, "Todo Experiment " + experimentCounter++, rewardFunctionEditor.getValue());
-		long newExperimentId = experimentDAO.setupNewExperiment(newExperiment);
-		UI.getCurrent().navigate(NewExperimentView.class, newExperimentId);
 	}
 
 	private void handleSaveDraftClicked() {
@@ -236,13 +217,15 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	@Override
-	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
-	{
+	protected void loadData() throws InvalidDataException {
 		experiment = experimentDAO.getExperiment(experimentId);
-
 		if(experiment == null)
 			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
+	}
 
+	@Override
+	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
+	{
 		binder.readBean(experiment);
 
 		screenTitlePanel.setSubtitle(experiment.getProject().getName());
