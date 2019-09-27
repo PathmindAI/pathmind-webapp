@@ -172,7 +172,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         if (fileId == null) {
             final RescaleFile rescaleFile;
             try {
-                rescaleFile = client.fileUpload(job.getModelInputStream(), "model.zip");
+                rescaleFile = client.fileUpload(job.getModelFile(), "model.zip");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -197,15 +197,15 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     private void cleanup(JobSpec job, List<String> instructions) {
         instructions.addAll(Arrays.asList(
-                "mv policy.zip ..;",
-                "cd ..;",
-                "rm -rf work conda jdk8u222-b10;"
+                "mv policy.zip ..",
+                "cd ..",
+                "rm -rf work conda jdk8u222-b10"
         ));
     }
 
 
     private String var(String name, String value) {
-        return "export " + name + "='" + value.replace("'", "\\'") + "'; ";
+        return "export " + name + "='" + value.replace("'", "\\'") + "'";
     }
 
     private void setupVariables(JobSpec job, List<String> instructions) {
@@ -219,28 +219,33 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 var("MAX_ITERATIONS", String.valueOf(job.getIterations())),
                 var("RANDOM_SEED", "1"),
                 var("MAX_REWARD_MEAN", String.valueOf(Integer.MAX_VALUE)), // disabled for now
-                var("TEST_ITERATIONS", "0") // disabled for now
+                var("TEST_ITERATIONS", "0"), // disabled for now
+
+                // Still has to be set, but doesn't actually do something, needs to be removed from train.sh
+                var("STEP_TIME", "1"),
+                var("STOP_TIME", "420"),
+                var("TIME_UNIT", "MINUTE")
         ));
     }
 
     private void runTraining(JobSpec job, List<String> instructions) {
         instructions.addAll(Arrays.asList(
                 // ensure empty files are there as needed
-                "echo > setup.sh;",
-                "mkdir -p database;",
-                "touch database/db.properties;",
+                "echo > setup.sh",
+                "mkdir -p database",
+                "touch database/db.properties",
 
                 // actually start training
-                "source train.sh;"
+                "source train.sh"
         ));
     }
 
     private void installModel(String modelId, List<String> instructions, List<FileReference> files) {
         files.add(new FileReference(modelId, false));
         instructions.addAll(Arrays.asList(
-                "cd work;",
-                "unzip ../model.zip;",
-                "rm ../model.zip;"
+                "cd work",
+                "unzip ../model.zip",
+                "rm ../model.zip"
         ));
     }
 
@@ -249,29 +254,29 @@ public class RescaleExecutionProvider implements ExecutionProvider {
             case VERSION_0_7_0:
                 instructions.addAll(Arrays.asList(
                         // Setup JVM
-                        "tar xf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz;",
-                        "rm -rf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz;",
-                        "export JAVA_HOME=`pwd`/jdk8u222-b10;",
-                        "export JDK_HOME=$JAVA_HOME;",
-                        "export JRE_HOME=$JAVA_HOME/jre;",
-                        "export PATH=$JAVA_HOME/bin:$PATH;",
-                        "export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH;",
+                        "tar xf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
+                        "rm -rf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
+                        "export JAVA_HOME=`pwd`/jdk8u222-b10",
+                        "export JDK_HOME=$JAVA_HOME",
+                        "export JRE_HOME=$JAVA_HOME/jre",
+                        "export PATH=$JAVA_HOME/bin:$PATH",
+                        "export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH",
 
                         // Setup Anaconda
-                        "mkdir conda;",
-                        "cd conda;",
-                        "tar xf ../rllibpack.tar.gz;",
-                        "rm ../rllibpack.tar.gz;",
-                        "source bin/activate;",
-                        "cd ..;",
+                        "mkdir conda",
+                        "cd conda",
+                        "tar xf ../rllibpack.tar.gz",
+                        "rm ../rllibpack.tar.gz",
+                        "source bin/activate",
+                        "cd ..",
 
                         // Setup NativeRL
-                        "mkdir work;",
-                        "cd work;",
-                        "unzip ../nativerl-1.0.0-SNAPSHOT-bin.zip;" +
-                                "rm ../nativerl-1.0.0-SNAPSHOT-bin.zip;" +
-                                "mv nativerl-bin/* .;" +
-                                "mv examples/train.sh .;",
+                        "mkdir work",
+                        "cd work",
+                        "unzip ../nativerl-1.0.0-SNAPSHOT-bin.zip",
+                        "rm ../nativerl-1.0.0-SNAPSHOT-bin.zip",
+                        "mv nativerl-bin/* .",
+                        "mv examples/train.sh .",
                         "cd .."
                 ));
                 files.addAll(rllibMap.getOrDefault(rllibVersion, List.of())
@@ -288,10 +293,10 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         switch (anylogicVersion) {
             case VERSION_8_5:
                 instructions.addAll(Arrays.asList(
-                        "unzip baseEnv.zip;",
-                        "rm baseEnv.zip;",
-                        "mv baseEnv/* work/;",
-                        "rm -r baseEnv;"
+                        "unzip baseEnv.zip",
+                        "rm baseEnv.zip",
+                        "mv baseEnv/* work/",
+                        "rm -r baseEnv"
                 ));
                 files.addAll(anylogicMap.getOrDefault(anylogicVersion, List.of())
                         .stream()
@@ -307,7 +312,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         switch (pathmindHelperVersion) {
             case VERSION_0_0_24:
                 instructions.addAll(Arrays.asList(
-                        "mv PathmindPolicy.jar work/lib/;"
+                        "mv PathmindPolicy.jar work/lib/"
                 ));
                 files.addAll(pathmindHelperMap.getOrDefault(pathmindHelperVersion, List.of())
                         .stream()

@@ -3,20 +3,16 @@ package io.skymind.pathmind.ui.views.experiment.components;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
-import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.ListSeries;
-import com.vaadin.flow.component.charts.model.Series;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -50,6 +46,8 @@ public class PolicyChartPanel extends VerticalLayout
 	{
 		// TODO -> Do we need to keep experiment up to date if there are new policies, etc.? I don't believe it's necessary
 		// but we should confirm it.
+		// During a training run, additional policies will be created, i.e. for a discovery run, the policies will
+		// be created as they actually start training. -- pdubs, 20190927
 
 		chart.getConfiguration().getSeries().stream()
 				.filter(series -> series.getName().equals(updatedPolicy.getName()))

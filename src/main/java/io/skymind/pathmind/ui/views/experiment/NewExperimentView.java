@@ -12,6 +12,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -21,6 +22,7 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.services.RewardValidationService;
+import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -59,6 +61,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	@Autowired
 	private ExperimentDAO experimentDAO;
+
+	@Autowired
+	private TrainingService trainingService;
 
 	private Binder<Experiment> binder;
 
@@ -102,6 +107,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		});
 		binder.forField(rewardFunctionEditor)
 				.asRequired()
+				.withValidator((value, _context) -> {
+					final List<String> errors = RewardValidationService.validateRewardFunction(value);
+					if(errors.size() == 0){
+						return ValidationResult.ok();
+					}else{
+						return ValidationResult.error("Reward Function has compile errors!");
+					}
+				})
 				.bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
 
 
@@ -148,14 +161,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private void handleStartRunButtonClicked() {
 		ExceptionWrapperUtils.handleButtonClicked(() ->
 		{
-			// TODO -> Case #78 -> How do we validate the Reward Function?
-			NotificationUtils.showTodoNotification("Case #78 -> How do we validate the Reward Function?\n " +
-					"https://github.com/SkymindIO/pathmind-webapp/issues/78");
 			if(!FormUtils.isValidForm(binder, experiment))
 				return;
 
-			// TODO -> Save a Run and Policy to the database
-			NotificationUtils.showTodoNotification("Save Run and Policy to the database");
+			trainingService.startTestRun(experiment);
 
 			// TODO -> Case #71 -> Define exactly what last activity represents
 			NotificationUtils.showTodoNotification("Case #71 -> Define exactly what last activity represents\n" +

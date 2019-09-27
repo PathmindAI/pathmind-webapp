@@ -38,7 +38,7 @@ public class RewardValidationService {
 
     private static String fillInTemplate(String rewardFunction){
         // This should be as close to the actual code that we are using for training as possible.
-        return "package interconnected_call_centers_ai;\n" +
+        return "package pathmind;\n" +
                 "import ai.skymind.nativerl.*;\n" +
                 "import com.anylogic.engine.*;\n" +
                 "import java.io.File;\n" +

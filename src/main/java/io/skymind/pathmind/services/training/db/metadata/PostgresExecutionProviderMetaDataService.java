@@ -6,6 +6,7 @@ import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.records.ExecutionProviderMetaDataRecord;
 import org.jooq.DSLContext;
+import org.jooq.JSON;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -26,11 +27,12 @@ public class PostgresExecutionProviderMetaDataService implements ExecutionProvid
     @Override
     public void put(Class<?> providerClazz, String key, Object value) {
         try {
-            ctx.insertInto(tbl)
-                    .set(tbl.PROVIDER_CLASS, providerClazz.getCanonicalName())
-                    .set(tbl.KEY, key)
-                    .set(tbl.VALUE, mapper.writeValueAsString(value))
-                    .execute();
+            final ExecutionProviderMetaDataRecord record = tbl.newRecord();
+            record.setProviderClass(providerClazz.getCanonicalName());
+            record.setKey(key);
+            record.setValue(JSON.valueOf(mapper.writeValueAsString(value)));
+            record.attach(ctx.configuration());
+            record.store();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -42,7 +44,7 @@ public class PostgresExecutionProviderMetaDataService implements ExecutionProvid
                 .where(tbl.PROVIDER_CLASS.eq(providerClazz.getCanonicalName()).and(tbl.KEY.eq(key)))
                 .fetchOne();
         if(record != null) {
-            final String value = record.get(tbl.KEY, String.class);
+            final String value = record.getValue().toString();
             try {
                 return mapper.readValue(value, type);
             } catch (IOException e) {

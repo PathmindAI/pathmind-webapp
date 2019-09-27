@@ -1,9 +1,9 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.JobSpec;
-import io.skymind.pathmind.services.training.RunType;
 import io.skymind.pathmind.services.training.cloud.rescale.api.RescaleRestApiClient;
 import io.skymind.pathmind.services.training.db.metadata.ExecutionProviderMetaDataService;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
@@ -51,7 +51,7 @@ public class RescaleExecutionProviderTest {
         );
 
         final JobSpec spec = new JobSpec(
-                0, 0, 0, 0, "", "", "reward = -(before[0] - after[0]);", 4, 8, 100, env, RunType.TEST, null
+                0, 0, 0, 0, "", "", "reward = -(before[0] - after[0]);", 4, 8, 100, env, RunType.TestRun, null
         );
 
         System.out.println("provider.execute(spec, env) = " + provider.execute(spec));

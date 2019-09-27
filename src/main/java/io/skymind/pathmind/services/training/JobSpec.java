@@ -1,13 +1,14 @@
 package io.skymind.pathmind.services.training;
 
-import java.io.InputStream;
+import io.skymind.pathmind.constants.RunType;
+
 import java.util.function.Supplier;
 
 public class JobSpec {
-    private final int userId;
-    private final int modelId;
-    private final int experimentId;
-    private final int runId;
+    private final long userId;
+    private final long modelId;
+    private final long experimentId;
+    private final long runId;
 
     private final String variables;
     private final String reset;
@@ -21,9 +22,9 @@ public class JobSpec {
     private final ExecutionEnvironment env;
 
     private final RunType type;
-    private final Supplier<InputStream> modelFileSupplier;
+    private final Supplier<byte[]> modelFileSupplier;
 
-    public JobSpec(int userId, int modelId, int experimentId, int runId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, Supplier<InputStream> modelFileSupplier) {
+    public JobSpec(long userId, long modelId, long experimentId, long runId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, Supplier<byte[]> modelFileSupplier) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
@@ -39,15 +40,15 @@ public class JobSpec {
         this.modelFileSupplier = modelFileSupplier;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public int getModelId() {
+    public long getModelId() {
         return modelId;
     }
 
-    public int getExperimentId() {
+    public long getExperimentId() {
         return experimentId;
     }
 
@@ -83,7 +84,7 @@ public class JobSpec {
         return type;
     }
 
-    public InputStream getModelInputStream() {
+    public byte[] getModelFile() {
         return modelFileSupplier.get();
     }
 
@@ -91,7 +92,7 @@ public class JobSpec {
         return env;
     }
 
-    public int getRunId() {
+    public long getRunId() {
         return runId;
     }
 }
