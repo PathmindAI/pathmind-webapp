@@ -1,13 +1,10 @@
 package io.skymind.pathmind;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.utils.ObjectMapperHolder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
 
@@ -33,10 +30,5 @@ public class PathmindApplication
 	@Bean
 	public ExecutorService checkerExecutorService(@Value("${pathmind.filecheck.poolsize}") int poolSize) {
 			return Executors.newFixedThreadPool(poolSize);
-	}
-
-	@Bean
-	public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
-		return ObjectMapperHolder.getJsonMapper();
 	}
 }
