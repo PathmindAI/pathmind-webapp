@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.services.training.progress.Progress;
 import org.jooq.DSLContext;
+import org.jooq.JSONB;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,13 +39,13 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
         for (Progress progress : progresses) {
             try {
-                final String serialized = mapper.writeValueAsString(progress);
+                final JSONB jsonb = JSONB.valueOf(mapper.writeValueAsString(progress));
 
                 ctx.insertInto(POLICY)
                         .columns(POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS)
-                        .values(runId, progress.getId(), serialized)
+                        .values(runId, progress.getId(), jsonb)
                         .onDuplicateKeyUpdate()
-                        .set(POLICY.PROGRESS, serialized)
+                        .set(POLICY.PROGRESS, jsonb)
                         .execute();
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
