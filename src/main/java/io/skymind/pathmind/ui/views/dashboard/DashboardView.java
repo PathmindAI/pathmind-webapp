@@ -12,6 +12,7 @@ import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -114,8 +115,13 @@ public class DashboardView extends PathMindDefaultView
 	}
 
 	@Override
-	protected void updateScreen(BeforeEnterEvent event) {
+	protected void loadData() throws InvalidDataException {
+		// Policies can never be null since it's not a url generated query.
 		policies = policyDAO.getPoliciesForUser(SecurityUtils.getUserId());
+	}
+
+	@Override
+	protected void updateScreen(BeforeEnterEvent event) {
 		dashboardGrid.setItems(policies);
 	}
 }

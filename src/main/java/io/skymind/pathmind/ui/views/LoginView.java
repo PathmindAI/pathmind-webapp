@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Route("login")
 @Theme(Lumo.class)
 @HtmlImport("frontend://styles/shared-styles.html")
-//@JavaScript("frontend://javascript/intercomIntegration.js")
 public class LoginView extends LoginOverlay implements BeforeEnterObserver, HasDynamicTitle
 {
 	@Autowired
