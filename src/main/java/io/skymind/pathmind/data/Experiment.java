@@ -3,7 +3,7 @@ package io.skymind.pathmind.data;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class Experiment extends Data
+public class Experiment extends ArchivableData
 {
 	private long modelId;
 	private String rewardFunction;

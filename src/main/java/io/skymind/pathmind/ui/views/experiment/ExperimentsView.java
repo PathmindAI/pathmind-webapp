@@ -42,7 +42,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	private List<Experiment> experiments;
 
 	private ExperimentGrid experimentGrid;
-
 	private TextArea getObservationTextArea;
 
 	public ExperimentsView()

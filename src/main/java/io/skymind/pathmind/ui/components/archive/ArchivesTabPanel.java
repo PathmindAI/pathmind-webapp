@@ -1,7 +1,7 @@
 package io.skymind.pathmind.ui.components.archive;
 
 import com.vaadin.flow.component.grid.Grid;
-import io.skymind.pathmind.data.Data;
+import io.skymind.pathmind.data.ArchivableData;
 import io.skymind.pathmind.ui.components.TabPanel;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class ArchivesTabPanel<T> extends TabPanel
 		setAlignItems(Alignment.START);
 
 		// Add archive column to grid as the last column.
-		grid.addComponentColumn(data -> gettArchivesButton(grid, getItems, (Data) data))
+		grid.addComponentColumn(data -> gettArchivesButton(grid, getItems, (ArchivableData) data))
 				.setHeader("Archive")
 				.setSortable(false);
 
@@ -39,7 +39,7 @@ public class ArchivesTabPanel<T> extends TabPanel
 		});
 	}
 
-	private ArchivesButton<T> gettArchivesButton(Grid<T> grid, Supplier<List<T>> getItems, Data data) {
+	private ArchivesButton<T> gettArchivesButton(Grid<T> grid, Supplier<List<T>> getItems, ArchivableData data) {
 		return new ArchivesButton<T>(grid, data, isArchived -> getFilteredModels(getItems.get(), isArchived));
 	}
 
@@ -49,7 +49,7 @@ public class ArchivesTabPanel<T> extends TabPanel
 
 	private List<T> getFilteredModels(List<T> data, boolean isArchived) {
 		return data.stream()
-				.filter(d -> ((Data)d).isArchived() == isArchived)
+				.filter(d -> ((ArchivableData)d).isArchived() == isArchived)
 				.collect(Collectors.toList());
 	}
 }
