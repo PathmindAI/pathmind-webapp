@@ -117,6 +117,7 @@ public class RewardValidationService {
                 "\n" +
                 "// START CUSTOM RESET 0119724160\n" +
                 rewardFunction +
+                "\n" +
                 "// END CUSTOM RESET 0119724160\n" +
                 "\n" +
                 "        return (float)reward;\n" +
