@@ -21,6 +21,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -172,9 +173,25 @@ public class RescaleRestApiClient {
         final CloseableHttpClient client = HttpClients.custom().setDefaultHeaders(Arrays.asList(
                 new BasicHeader("Authorization", "Token "+apiKey)
         )).build();
+
         final HttpPost post = new HttpPost("https://" + platformRegion + "/api/v2/files/contents/");
         post.setEntity(MultipartEntityBuilder.create()
                 .addBinaryBody("file", content, ContentType.APPLICATION_OCTET_STREAM, filename)
+                .build());
+
+        final CloseableHttpResponse resp = client.execute(post);
+
+        return objectMapper.readValue(resp.getEntity().getContent(), RescaleFile.class);
+    }
+
+    public RescaleFile fileUpload(File file, String filename) throws IOException {
+        final CloseableHttpClient client = HttpClients.custom().setDefaultHeaders(Arrays.asList(
+                new BasicHeader("Authorization", "Token "+apiKey)
+        )).build();
+
+        final HttpPost post = new HttpPost("https://" + platformRegion + "/api/v2/files/contents/");
+        post.setEntity(MultipartEntityBuilder.create()
+                .addBinaryBody("file", file, ContentType.MULTIPART_FORM_DATA, filename)
                 .build());
 
         final CloseableHttpResponse resp = client.execute(post);
