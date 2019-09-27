@@ -14,6 +14,8 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.ui.components.SearchBox;
+import io.skymind.pathmind.ui.components.archive.ArchivesButton;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.UIConstants;
@@ -35,8 +37,6 @@ public class ProjectsView extends PathMindDefaultView
 
 	private List<Project> projects;
 
-	private ProjectSearchBox searchBox;
-	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Project> projectGrid;
 
 	public ProjectsView()
@@ -47,25 +47,23 @@ public class ProjectsView extends PathMindDefaultView
 	protected Component getMainContent()
 	{
 		setupProjectGrid();
-		setupTabPanel();
-		setupSearchBox();
 
 		VerticalLayout gridWrapper = WrapperUtils.wrapCenterVertical(
 				UIConstants.CENTERED_TABLE_WIDTH,
-				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-				archivesTabPanel,
+				WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
+				getTabbedPanel(),
 				projectGrid);
 
 		gridWrapper.getElement().getStyle().set("padding-top", "100px");
 		return gridWrapper;
 	}
 
-	private void setupSearchBox() {
-		searchBox = new ProjectSearchBox(projectGrid, () -> getProjects());
+	private SearchBox<Project> getSearchBox() {
+		return new ProjectSearchBox(projectGrid, () -> getProjects());
 	}
 
-	private void setupTabPanel() {
-		archivesTabPanel = new ArchivesTabPanel<Project>(
+	private ArchivesTabPanel getTabbedPanel() {
+		return new ArchivesTabPanel<Project>(
 				"Projects",
 				projectGrid,
 				this::getProjects);

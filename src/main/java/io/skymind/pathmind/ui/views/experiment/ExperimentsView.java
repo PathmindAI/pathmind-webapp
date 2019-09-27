@@ -14,6 +14,7 @@ import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.BackButton;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
@@ -40,8 +41,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	private long modelId;
 	private List<Experiment> experiments;
 
-	private ArchivesTabPanel archivesTabPanel;
-	private ExperimentSearchBox searchBox;
 	private ExperimentGrid experimentGrid;
 
 	private TextArea getObservationTextArea;
@@ -54,14 +53,12 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	protected Component getMainContent()
 	{
 		setupExperimentListPanel();
-		setupTabPanel();
-		setupSearchBox();
 		setupGetObservationTextArea();
 
 		return WrapperUtils.wrapWidthFullCenterVertical(
 				WrapperUtils.wrapWidthFullCenterHorizontal(getBackToModelsButton()),
-				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-				archivesTabPanel,
+				WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
+				getArchivesTabPanel(),
 				WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 						WrapperUtils.wrapSizeFullVertical(
 								experimentGrid),
@@ -85,12 +82,12 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		getObservationTextArea.setSizeFull();
 	}
 
-	private void setupSearchBox() {
-		searchBox = new ExperimentSearchBox(experimentGrid, () -> getExperiments());
+	private SearchBox getSearchBox() {
+		return new ExperimentSearchBox(experimentGrid, () -> getExperiments());
 	}
 
-	private void setupTabPanel() {
-		archivesTabPanel = new ArchivesTabPanel<Experiment>(
+	private ArchivesTabPanel getArchivesTabPanel() {
+		return new ArchivesTabPanel<Experiment>(
 				"Experiments",
 				experimentGrid,
 				this::getExperiments);

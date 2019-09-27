@@ -15,6 +15,7 @@ import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.UIConstants;
@@ -37,8 +38,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	private long projectId;
 	private List<Model> models;
 
-	private ModelSearchBox searchBox;
-	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
 
 	public ModelsView()
@@ -49,8 +48,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	protected Component getMainContent()
 	{
 		setupGrid();
-		setupTabPanel();
-		setupSearchBox();
 
 		// BUG -> I didn't have to really investigate but it looks like we may need
 		// to do something special to get the full size content in the AppLayout component which
@@ -58,22 +55,22 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapCenterVertical(
 				UIConstants.CENTERED_TABLE_WIDTH,
-				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-				archivesTabPanel,
+				WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
+				getArchivesTabPanel(),
 				modelGrid);
 		gridWrapper.getElement().getStyle().set("padding-top", "100px");
 		return gridWrapper;
 	}
 
-	private void setupTabPanel() {
-		archivesTabPanel = new ArchivesTabPanel<Model>(
+	private ArchivesTabPanel getArchivesTabPanel() {
+		return new ArchivesTabPanel<Model>(
 				"Models",
 				modelGrid,
 				this::getModels);
 	}
 
-	private void setupSearchBox() {
-		searchBox = new ModelSearchBox(modelGrid, () -> getModels());
+	private SearchBox getSearchBox() {
+		return new ModelSearchBox(modelGrid, () -> getModels());
 	}
 
 	private void setupGrid()
