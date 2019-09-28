@@ -6,6 +6,7 @@ import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.records.ExecutionProviderMetaDataRecord;
 import org.jooq.DSLContext;
+import org.jooq.JSON;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class PostgresExecutionProviderMetaDataService implements ExecutionProvid
             ctx.insertInto(tbl)
                     .set(tbl.PROVIDER_CLASS, providerClazz.getCanonicalName())
                     .set(tbl.KEY, key)
-                    .set(tbl.VALUE, mapper.writeValueAsString(value))
+                    .set(tbl.VALUE, JSON.valueOf(mapper.writeValueAsString(value)))
                     .execute();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

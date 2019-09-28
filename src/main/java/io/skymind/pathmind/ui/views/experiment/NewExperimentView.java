@@ -20,19 +20,19 @@ import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
-import io.skymind.pathmind.ui.utils.FormUtils;
-import io.skymind.pathmind.ui.utils.NotificationUtils;
-import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.ui.utils.*;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @StyleSheet("frontend://styles/styles.css")
 @Route(value = "newExperiment", layout = MainLayout.class)
@@ -88,15 +88,23 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Component getLeftPanel()
 	{
+		errorsTextArea = new TextArea("Errors");
+		errorsTextArea.setReadOnly(true);
+		errorsTextArea.setSizeFull();
+		errorsTextArea.setReadOnly(true);
+
 		rewardFunctionEditor = new RewardFunctionEditor();
+		rewardFunctionEditor.addValueChangeListener(changeEvent -> {
+			final List<String> errors = RewardValidationService.validateRewardFunction(changeEvent.getValue());
+			PushUtils.push(UI.getCurrent(), () -> {
+				errorsTextArea.setValue(String.join("\n", errors));
+			});
+		});
 		binder.forField(rewardFunctionEditor)
 				.asRequired()
 				.bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
 
-		errorsTextArea = new TextArea("Errors");
-		errorsTextArea.setEnabled(false);
-		errorsTextArea.setSizeFull();
-		errorsTextArea.setReadOnly(true);
+
 
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
 				WrapperUtils.wrapSizeFullVertical(
@@ -110,12 +118,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	{
 		getObservationTextArea = new TextArea("getObservation");
 		getObservationTextArea.setSizeFull();
-		getObservationTextArea.setEnabled(false);
+		getObservationTextArea.setReadOnly(true);
 		getObservationTextArea.setReadOnly(true);
 
 		tipsTextArea = new TextArea("Tips");
 		tipsTextArea.setSizeFull();
-		tipsTextArea.setEnabled(false);
+		tipsTextArea.setReadOnly(true);
 		tipsTextArea.setReadOnly(true);
 
 		return WrapperUtils.wrapSizeFullVertical(
@@ -226,7 +234,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
 	{
-		binder.readBean(experiment);
+		binder.setBean(experiment);
 
 		screenTitlePanel.setSubtitle(experiment.getProject().getName());
 		getObservationTextArea.setValue(experiment.getModel().getGetObservationForRewardFunction());
