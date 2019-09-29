@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
  * Do NOT implement any default methods for this interface because a large part of it's goal is to remind
  * the developer to implement these methods in all the views to keep the layout and coding consistent.
  */
-public abstract class PathMindDefaultView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle
+public class PathMindDefaultView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle
 {
 	private static Logger log = LogManager.getLogger(PathMindDefaultView.class);
 
