@@ -61,7 +61,7 @@ public class TrainingService {
                 exp.getRewardFunction(),
                 model.getNumberOfPossibleActions(),
                 model.getNumberOfObservations(),
-                50, // Max 100 iterations for a test run
+                100, // Max 100 iterations for a test run
                 executionEnvironment,
                 RunType.TestRun,
                 () ->modelDAO.getModelFile(model.getId()),
@@ -90,7 +90,7 @@ public class TrainingService {
                 exp.getRewardFunction(),
                 model.getNumberOfPossibleActions(),
                 model.getNumberOfObservations(),
-                50, // Max 100 iterations for a test run
+                100, // Max 100 iterations for a test run
                 executionEnvironment,
                 RunType.TestRun,
                 () ->modelDAO.getModelFile(model.getId()),
