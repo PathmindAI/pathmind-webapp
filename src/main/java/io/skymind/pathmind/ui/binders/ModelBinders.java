@@ -26,7 +26,7 @@ public class ModelBinders
 				.asRequired("Number of Possible Actions is required")
 				.withValidator(numberOfPossibleActions ->
 								numberOfPossibleActions >= Model.MIN_NUMBER_OF_POSSIBLE_ACTIONS && numberOfPossibleActions <= Model.MAX_NUMBER_OF_POSSIBLE_ACTIONS,
-						"Number of observations must be between: " + Model.MIN_NUMBER_OF_OBSERVATIONS + " and " + Model.MAX_NUMBER_OF_OBSERVATIONS)
+						"Number of possible actions must be between: " + Model.MIN_NUMBER_OF_POSSIBLE_ACTIONS + " and " + Model.MAX_NUMBER_OF_POSSIBLE_ACTIONS)
 				.bind(Model::getNumberOfPossibleActions, Model::setNumberOfPossibleActions);
 	}
 
