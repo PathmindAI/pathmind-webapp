@@ -39,6 +39,12 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
                 final List<Progress> progresses = rawProgress.entrySet().stream().map(ProgressInterpreter::interpret).collect(Collectors.toList());
 
                 updateService.updateRun(runId, status, progresses);
+                if(status == RunStatus.Completed){
+                    for (Progress progress : progresses) {
+                        final byte[] policy = provider.policy(rescaleJobId, progress.getId());
+                        updateService.savePolicyFile(runId, progress.getId(), policy);
+                    }
+                }
             }else{
                 log.error("Run {} marked as executing but no rescale run id found for it.", runId);
             }

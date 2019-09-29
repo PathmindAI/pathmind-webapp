@@ -3,26 +3,36 @@ package io.skymind.pathmind.services.training.db.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.bus.PathmindBusEvent;
+import io.skymind.pathmind.bus.data.PolicyUpdateBusEvent;
 import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.services.training.progress.Progress;
+import io.skymind.pathmind.services.training.progress.RewardScore;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
+import org.jooq.impl.DSL;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.UnicastProcessor;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.data.db.Tables.POLICY;
-import static io.skymind.pathmind.data.db.Tables.RUN;
+import static io.skymind.pathmind.data.db.Tables.*;
 
 @Service
 public class RunUpdateServiceImpl implements RunUpdateService {
     private final DSLContext ctx;
     private final ObjectMapper mapper;
+    private final UnicastProcessor<PathmindBusEvent> publisher;
 
-    public RunUpdateServiceImpl(DSLContext ctx, ObjectMapper mapper){
+    public RunUpdateServiceImpl(DSLContext ctx, ObjectMapper mapper, UnicastProcessor<PathmindBusEvent> publisher){
         this.ctx = ctx;
         this.mapper = mapper;
+        this.publisher = publisher;
     }
 
     @Override
@@ -30,27 +40,50 @@ public class RunUpdateServiceImpl implements RunUpdateService {
         return ctx.select(RUN.ID).from(RUN).where(RUN.STATUS.eq(RunStatus.Starting.getValue()).or(RUN.STATUS.eq(RunStatus.Running.getValue()))).fetch(RUN.ID);
     }
 
+    private Experiment getExperiment(long runId){
+        return ctx.selectFrom(EXPERIMENT).where(EXPERIMENT.ID.in(DSL.select(RUN.EXPERIMENT_ID).from(RUN).where(RUN.ID.eq(runId)))).fetchOneInto(Experiment.class);
+    }
+
     @Override
     @Transactional
     public void updateRun(long runId, RunStatus status, List<Progress> progresses) {
         ctx.update(RUN)
                 .set(RUN.STATUS, status.getValue())
+                .set(RUN.STOPPED_AT, RunStatus.isRunning(status) ? null : LocalDateTime.now())
+                .where(RUN.ID.eq(runId))
                 .execute();
 
         for (Progress progress : progresses) {
             try {
-                final JSONB jsonb = JSONB.valueOf(mapper.writeValueAsString(progress));
+                final JSONB serialized = JSONB.valueOf(mapper.writeValueAsString(progress));
 
                 ctx.insertInto(POLICY)
-                        .columns(POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS)
-                        .values(runId, progress.getId(), jsonb)
-                        .onDuplicateKeyUpdate()
-                        .set(POLICY.PROGRESS, jsonb)
+                        .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS)
+                        .values(progress.getId(), runId, progress.getId(), serialized)
+                        .onConflict(POLICY.RUN_ID, POLICY.EXTERNAL_ID)
+                        .doUpdate()
+                        .set(POLICY.PROGRESS, serialized)
                         .execute();
+
+                final Policy policy = new Policy();
+                policy.setRunId(runId);
+                policy.setExternalId(progress.getId());
+                policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
+                policy.setExperiment(getExperiment(runId));
+                publisher.onNext(new PolicyUpdateBusEvent(policy));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         }
-
     }
+
+    @Override
+    @Transactional
+    public void savePolicyFile(long runId, String externalId, byte[] policyFile) {
+        ctx.update(POLICY)
+            .set(POLICY.FILE, policyFile)
+            .where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.eq(externalId)))
+            .execute();
+    }
+
 }

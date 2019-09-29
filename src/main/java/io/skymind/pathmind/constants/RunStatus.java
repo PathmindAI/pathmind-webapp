@@ -32,4 +32,8 @@ public enum RunStatus
 				.findAny()
 				.get();
 	}
+
+	public static boolean isRunning(RunStatus status){
+		return status == RunStatus.Starting || status == RunStatus.Running;
+	}
 }
