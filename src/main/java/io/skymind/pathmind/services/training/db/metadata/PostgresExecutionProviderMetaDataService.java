@@ -43,7 +43,7 @@ public class PostgresExecutionProviderMetaDataService implements ExecutionProvid
                 .where(tbl.PROVIDER_CLASS.eq(providerClazz.getCanonicalName()).and(tbl.KEY.eq(key)))
                 .fetchOne();
         if(record != null) {
-            final String value = record.get(tbl.KEY, String.class);
+            final String value = record.getValue().toString();
             try {
                 return mapper.readValue(value, type);
             } catch (IOException e) {

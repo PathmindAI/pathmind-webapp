@@ -169,7 +169,7 @@ public class RescaleRestApiClient {
      *
      * TODO: Test if upload with indefinite size works, or if we must create an input stream reader body type that knows about filesize
      */
-    public RescaleFile fileUpload(InputStream content, String filename) throws IOException {
+    public RescaleFile fileUpload(byte[] content, String filename) throws IOException {
         final CloseableHttpClient client = HttpClients.custom().setDefaultHeaders(Arrays.asList(
                 new BasicHeader("Authorization", "Token "+apiKey)
         )).build();

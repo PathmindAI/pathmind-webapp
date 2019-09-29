@@ -24,7 +24,7 @@ public class RescaleMetaDataService {
         metaDataService.delete(RescaleExecutionProvider.class, key);
     }
 
-    public String modelFileKey(int modelId){
+    public String modelFileKey(long modelId){
         return "modelFileId:" + modelId;
     }
 
