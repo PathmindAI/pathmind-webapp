@@ -2,6 +2,7 @@ package io.skymind.pathmind.services.training;
 
 import io.skymind.pathmind.constants.RunType;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 public class JobSpec {
@@ -24,7 +25,11 @@ public class JobSpec {
     private final RunType type;
     private final Supplier<byte[]> modelFileSupplier;
 
-    public JobSpec(long userId, long modelId, long experimentId, long runId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, Supplier<byte[]> modelFileSupplier) {
+    private final List<Double> learningRates;
+    private final List<Double> gammas;
+    private final List<Integer> batchSizes;
+
+    public JobSpec(long userId, long modelId, long experimentId, long runId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, Supplier<byte[]> modelFileSupplier, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
@@ -38,6 +43,9 @@ public class JobSpec {
         this.env = env;
         this.type = type;
         this.modelFileSupplier = modelFileSupplier;
+        this.learningRates = learningRates;
+        this.gammas = gammas;
+        this.batchSizes = batchSizes;
     }
 
     public long getUserId() {
@@ -94,5 +102,17 @@ public class JobSpec {
 
     public long getRunId() {
         return runId;
+    }
+
+    public List<Double> getLearningRates() {
+        return learningRates;
+    }
+
+    public List<Double> getGammas() {
+        return gammas;
+    }
+
+    public List<Integer> getBatchSizes() {
+        return batchSizes;
     }
 }

@@ -149,12 +149,30 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Component getTopButtonPanel()
 	{
-		final Button startRunButton = new Button("Start", new Icon(VaadinIcon.CHEVRON_RIGHT),
+		final Button startRunButton = new Button("Start (TEST RUN)", new Icon(VaadinIcon.CHEVRON_RIGHT),
 				click -> handleStartRunButtonClicked());
 		startRunButton.setIconAfterText(true);
 
+
+		// TODO: Make Discovery available from after a test run only
+		final Button startDiscoveryButton = new Button("Start (Discovery RUN)", new Icon(VaadinIcon.CHEVRON_RIGHT),
+				click -> {
+					ExceptionWrapperUtils.handleButtonClicked(() ->
+					{
+						if(!FormUtils.isValidForm(binder, experiment))
+							return;
+
+						trainingService.startDiscoveryRun(experiment);
+						UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+					});
+				});
+		startDiscoveryButton.setIconAfterText(true);
+
+
+
 		return WrapperUtils.wrapWidthFullCenterVertical(
 				startRunButton,
+				startDiscoveryButton,
 				new Label("Start Test Run"));
 	}
 

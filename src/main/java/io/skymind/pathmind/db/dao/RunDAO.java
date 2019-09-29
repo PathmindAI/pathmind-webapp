@@ -10,6 +10,8 @@ import io.skymind.pathmind.db.repositories.RunRepository;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+
 @Repository
 public class RunDAO extends RunRepository
 {
@@ -33,6 +35,9 @@ public class RunDAO extends RunRepository
     }
 
     public void markAsStarting(long runId){
-        ctx.update(Tables.RUN).set(Tables.RUN.STATUS, RunStatus.Starting.getValue()).where(Tables.RUN.ID.eq(runId)).execute();
+        ctx.update(Tables.RUN).
+                set(Tables.RUN.STATUS, RunStatus.Starting.getValue())
+                .set(Tables.RUN.STARTED_AT, LocalDateTime.now())
+                .where(Tables.RUN.ID.eq(runId)).execute();
     }
 }

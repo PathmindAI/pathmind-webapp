@@ -33,7 +33,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     private static final Map<RLLib, List<String>> rllibMap = Map.of(
             RLLib.VERSION_0_7_0, Arrays.asList(
                     "LZAENb", // conda
-                    "doRCLd", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-08-22
+                    "yDsrpg", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-09-29
                     "fDRBHd"  // OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz
             )
     );
@@ -112,7 +112,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                     .parallelStream()
                     .filter(it -> it.getPath().endsWith("progress.csv"))
                     .map(it -> {
-                        final String key = new File(it.getPath()).getParent();
+                        final String key = new File(it.getPath()).getParentFile().getName();
                         final String contents = new String(client.fileContents(it.getId()));
                         return Map.entry(key, contents);
                     })
@@ -124,7 +124,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                     .parallelStream()
                     .filter(it -> it.getPath().endsWith("progress.csv"))
                     .map(it -> {
-                        final String key = new File(it.getPath()).getParent();
+                        final String key = new File(it.getPath()).getParentFile().getName();
                         final String contents = new String(client.tail(jobHandle, "1", it.getPath()));
                         return Map.entry(key, contents);
                     })
@@ -141,7 +141,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         if (runStatus.equals(RunStatus.Completed)) {
             return client.outputFiles(jobHandle, "1").getResults()
                     .stream()
-                    .filter(it -> it.getPath().endsWith(trainingRun + ".zip"))
+                    .filter(it -> it.getPath().endsWith("policy_" + trainingRun + ".zip"))
                     .map(it -> client.fileContents(it.getId()))
                     .findFirst().orElseGet(() -> null);
         }
@@ -195,14 +195,6 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         return created.getId();
     }
 
-    private void cleanup(JobSpec job, List<String> instructions) {
-        instructions.addAll(Arrays.asList(
-                "mv policy.zip ..",
-                "cd ..",
-                "rm -rf work conda jdk8u222-b10"
-        ));
-    }
-
 
     private String var(String name, String value) {
         return "export " + name + "='" + value.replace("'", "\\'") + "'";
@@ -221,6 +213,11 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 var("MAX_REWARD_MEAN", String.valueOf(Integer.MAX_VALUE)), // disabled for now
                 var("TEST_ITERATIONS", "0"), // disabled for now
 
+                // Not yet picked up by training script
+                var("LEARNING_RATES", job.getLearningRates().stream().map(Object::toString).collect(Collectors.joining(","))),
+                var("GAMMAS", job.getGammas().stream().map(Object::toString).collect(Collectors.joining(","))),
+                var("BATCH_SIZES", job.getBatchSizes().stream().map(Object::toString).collect(Collectors.joining(","))),
+
                 // Still has to be set, but doesn't actually do something, needs to be removed from train.sh
                 var("STEP_TIME", "1"),
                 var("STOP_TIME", "420"),
@@ -236,7 +233,25 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 "touch database/db.properties",
 
                 // actually start training
-                "source train.sh"
+                "source train.sh",
+
+                // temporary workaround, as train.sh as it is in nativerl with id doRCLd, only takes care of a single policy file
+                // by doing this here, we can iterate a bit quicker
+                "mkdir -p ../output",
+                "for DIR in `find \"$OUTPUT_DIR\" -iname model -type d`; do \n" +
+                        "  cd $DIR;\n" +
+                        "  mkdir -p $OLDPWD/../output/$(basename `dirname $DIR`)/;\n" +
+                        "  cp ../progress.csv $OLDPWD/../output/$(basename `dirname $DIR`)/; \n"+
+                        "  zip -r $OLDPWD/../output/policy_$(basename `dirname $DIR`).zip .;\n" +
+                        "  cd $OLDPWD;\n" +
+                "done"
+        ));
+    }
+
+    private void cleanup(JobSpec job, List<String> instructions) {
+        instructions.addAll(Arrays.asList(
+                "cd ..",
+                "rm -rf work conda jdk8u222-b10"
         ));
     }
 
