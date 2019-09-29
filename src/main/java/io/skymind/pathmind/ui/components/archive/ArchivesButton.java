@@ -6,7 +6,7 @@ import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import io.skymind.pathmind.data.Data;
+import io.skymind.pathmind.data.ArchivableData;
 
 import java.util.List;
 import java.util.function.Function;
@@ -17,7 +17,7 @@ import java.util.function.Function;
  */
 public class ArchivesButton<T> extends Button
 {
-	public ArchivesButton(Grid<T> grid, Data data, Function<Boolean, List<T>> getFilteredData)
+	public ArchivesButton(Grid<T> grid, ArchivableData data, Function<Boolean, List<T>> getFilteredData)
 	{
 		super();
 
@@ -38,7 +38,7 @@ public class ArchivesButton<T> extends Button
 
 	// TODO -> Paul -> Could you please look into adjusting the button so that it only shows up when the mouse hovers over it. The
 	// following link shows the CSS needed: https://stackoverflow.com/questions/5210033/using-only-css-show-div-on-hover-over-a
-	private void setupButton(Data data) {
+	private void setupButton(ArchivableData data) {
 		Icon archiveIcon = new Icon(data.isArchived() ? VaadinIcon.CARET_SQUARE_UP_O : VaadinIcon.CARET_SQUARE_DOWN_O);
 		archiveIcon.setSize("40px");
 		setIcon(archiveIcon);
@@ -47,7 +47,7 @@ public class ArchivesButton<T> extends Button
 
 	// Weird looking logic but it's so that we stay on the same page once you reverse the archive value. We also
 	// need to set the items here so that the item is removed from the table.
-	private void changeArchiveStatus(Grid<T> grid, Data data, Function<Boolean, List<T>> getFilteredData) {
+	private void changeArchiveStatus(Grid<T> grid, ArchivableData data, Function<Boolean, List<T>> getFilteredData) {
 		data.setArchived(!data.isArchived());
 		grid.setItems(getFilteredData.apply(!data.isArchived()));
 	}

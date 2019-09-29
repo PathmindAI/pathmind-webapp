@@ -3,7 +3,7 @@ package io.skymind.pathmind.data;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class Model extends Data
+public class Model extends ArchivableData
 {
 	// TODO -> Implement. These are needed for validation purposes.
 	public static final int MIN_NUMBER_OF_OBSERVATIONS = 1;
@@ -28,21 +28,9 @@ public class Model extends Data
 	private int numberOfPossibleActions = DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS;
 	private String getObservationForRewardFunction = "";
 	private byte[] file;
-	private boolean isArchived = false;
-
 	private long projectId;
 
-	private List<Experiment> experiments;
-
 	public Model() {
-	}
-
-	public List<Experiment> getExperiments() {
-		return experiments;
-	}
-
-	public void setExperiments(List<Experiment> experiments) {
-		this.experiments = experiments;
 	}
 
 	public long getProjectId() {

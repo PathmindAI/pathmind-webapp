@@ -27,12 +27,11 @@ public class PostgresExecutionProviderMetaDataService implements ExecutionProvid
     @Override
     public void put(Class<?> providerClazz, String key, Object value) {
         try {
-            final ExecutionProviderMetaDataRecord record = tbl.newRecord();
-            record.setProviderClass(providerClazz.getCanonicalName());
-            record.setKey(key);
-            record.setValue(JSON.valueOf(mapper.writeValueAsString(value)));
-            record.attach(ctx.configuration());
-            record.store();
+            ctx.insertInto(tbl)
+                    .set(tbl.PROVIDER_CLASS, providerClazz.getCanonicalName())
+                    .set(tbl.KEY, key)
+                    .set(tbl.VALUE, JSON.valueOf(mapper.writeValueAsString(value)))
+                    .execute();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

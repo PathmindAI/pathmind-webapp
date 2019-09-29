@@ -2,7 +2,7 @@ package io.skymind.pathmind.data;
 
 import java.time.LocalDateTime;
 
-public class Project extends Data
+public class Project extends ArchivableData
 {
 	private LocalDateTime dateCreated;
 	private LocalDateTime lastActivityDate;
