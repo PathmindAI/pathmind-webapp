@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 import io.skymind.pathmind.bus.PathmindBusEvent;
@@ -12,6 +13,7 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.services.run.RunService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
@@ -20,6 +22,7 @@ import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.*;
+import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -65,6 +68,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Autowired
 	private PolicyDAO policyDAO;
+
+	@Autowired
+	private TrainingService trainingService;
 
 	private Button actionButton;
 
@@ -122,15 +128,28 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 		actionButton = new Button(ActionButtonState.Start.name(), click -> handleActionButtonClicked());
 
+		// TODO: Put this in the appropriate place
+		Button runFullTraining = new Button("RUN FULL TRAINING", click -> {
+			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
+			trainingService.startFullRun(experiment, policy);
+			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+		});
+
+
+		final HorizontalLayout buttons = WrapperUtils.wrapWidthFullCenterHorizontal(
+				new NewExperimentButton(experimentDAO, experiment.getModelId(), "TODO")
+		);
+		if(policyDAO.hasPolicyFile(policyId)){
+			final Button exportPolicyButton = new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()));
+			buttons.add(exportPolicyButton);
+		}
+
 		return WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullCenterHorizontal(actionButton),
+				WrapperUtils.wrapWidthFullCenterHorizontal(actionButton, runFullTraining),
 				policyHighlightPanel,
 				policyStatusDetailsPanel,
 				rewardFunctionEditor,
-				WrapperUtils.wrapWidthFullCenterHorizontal(
-						new NewExperimentButton(experimentDAO, experiment.getModelId(), ""),
-						new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()))
-				));
+				buttons);
 	}
 	// TODO -> I don't fully understand the button logic, including when it's muted from just the screenshots.
 	private void setActionButtonValue(Policy policy) {
