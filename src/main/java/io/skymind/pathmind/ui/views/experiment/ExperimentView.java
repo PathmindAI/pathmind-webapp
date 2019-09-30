@@ -4,15 +4,13 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.utils.FakeDataUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.services.run.RunService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -64,6 +62,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Autowired
 	private ExperimentDAO experimentDAO;
+
+	@Autowired
+	private PolicyDAO policyDAO;
 
 	private Button actionButton;
 
@@ -180,7 +181,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		experiment = experimentDAO.getExperiment(experimentId);
 		if(experiment == null)
 			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
-		experiment.setPolicies(FakeDataUtils.generateFakePoliciesForExperiment(experiment));
+		experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
 	}
 
 	@Override
