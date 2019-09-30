@@ -36,6 +36,9 @@ import reactor.core.publisher.UnicastProcessor;
 @Route(value = "experiment", layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<String>
 {
+
+	private Button exportPolicyButton;
+
 	private enum ActionButtonState {
 		Start, Next, Stop
 	}
@@ -105,6 +108,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			policyStatusDetailsPanel.update(selectedPolicy);
 			policyChartPanel.highlightPolicy(selectedPolicy);
 			setActionButtonValue(selectedPolicy);
+			exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
 		});
 
 		// Only show policies that have been filtered/searched in the charts
@@ -145,10 +149,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		final HorizontalLayout buttons = WrapperUtils.wrapWidthFullCenterHorizontal(
 				new NewExperimentButton(experimentDAO, experiment.getModelId(), "TODO")
 		);
-		if(policyDAO.hasPolicyFile(policyId)){
-			final Button exportPolicyButton = new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()));
-			buttons.add(exportPolicyButton);
-		}
+		exportPolicyButton = new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()));
+		buttons.add(exportPolicyButton);
+		exportPolicyButton.setVisible(false);
 
 		return WrapperUtils.wrapSizeFullVertical(
 				WrapperUtils.wrapWidthFullCenterHorizontal(actionButton, runDiscoveryTraining, runFullTraining),
