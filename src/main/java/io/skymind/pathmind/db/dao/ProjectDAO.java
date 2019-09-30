@@ -23,7 +23,6 @@ public class ProjectDAO extends ProjectRepository
 		this.ctx = ctx;
 	}
 
-	// TODO -> Needs to be transactional and save the project, model, and experiment (draft) all in one step or rollback.
 	@Transactional
 	public long setupNewProject(Project project, Model model) {
 		final ProjectRecord proj = PROJECT.newRecord();

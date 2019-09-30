@@ -149,7 +149,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void handleActionButtonClicked() {
 		NotificationUtils.showTodoNotification("Needs to be implemented");
 		RunService.run(policy, publisher);
-		// TODO -> Paul -> What else needs to be updated on this action?
+		// TODO -> DH -> What else needs to be updated on this action?
 	}
 
 	/**
@@ -189,8 +189,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		screenTitlePanel.setSubtitle(experiment.getProject().getName());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		policyChartPanel.update(experiment);
-
-		// TODO -> How do we get the list of policies?
 		trainingsListPanel.update(experiment, policyId);
 	}
 }

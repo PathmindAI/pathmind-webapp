@@ -25,7 +25,6 @@ public class RunService
 	public static void run(Policy policy, UnicastProcessor<PathmindBusEvent> publisher) {
 		new Thread(() -> {
 				try {
-					// TODO -> Implement with new data model.
 					for(int x=0; x<20; x++) {
 						// TODO -> Implement
 						policy.getScores().add(RANDOM.nextInt(FakeDataUtils.EXPERIMENT_SCORE_MAX));

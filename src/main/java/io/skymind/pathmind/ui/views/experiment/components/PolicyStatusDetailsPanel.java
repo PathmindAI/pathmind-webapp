@@ -19,7 +19,6 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 	private static Logger log = LogManager.getLogger(PolicyStatusDetailsPanel.class);
 
 	private Label statusLabel = new Label(RunStatus.NotStarted.toString());
-	// TODO -> Should be swapping back and forth between Label and ProgressBar.
 	private Label runProgressLabel = new Label();
 	private Label runTypeLabel = new Label();
 	private Label elapsedTimeLabel = new Label();

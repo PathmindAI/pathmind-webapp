@@ -13,7 +13,7 @@ public class ExperimentGrid extends Grid<Experiment>
 {
 	public ExperimentGrid()
 	{
-		// TODO -> Paul -> You will need to fill in all the todo values
+		// TODO -> DH -> You will need to fill in all the todo values
 		addColumn(Experiment::getName)
 				.setHeader("Experiment")
 				.setAutoWidth(true)

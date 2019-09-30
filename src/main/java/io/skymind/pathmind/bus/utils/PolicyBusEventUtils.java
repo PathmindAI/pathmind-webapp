@@ -37,7 +37,7 @@ public class PolicyBusEventUtils
 				.subscribe(busEvent -> policyConsumer.accept(((PolicyUpdateBusEvent)busEvent).getPolicy()));
 	}
 
-	// TODO -> Paul -> Policy score updates also need to know about the experiment. I need this because in some cases such as the
+	// TODO -> DH -> Policy score updates also need to know about the experiment. I need this because in some cases such as the
 	// training list I need to know if the policy is new to the Experiment and so instead of updating it I will instead be
 	// adding it as a new training item (policy) in the list.
 	private static boolean isEventBusPolicyForSameExperiment(PathmindBusEvent busEvent, Policy policy) {

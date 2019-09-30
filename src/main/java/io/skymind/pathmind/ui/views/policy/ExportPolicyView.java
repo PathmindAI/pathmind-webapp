@@ -59,7 +59,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	@Override
 	protected Component getMainContent()
 	{
-		// TODO -> Paul -> Add validations.
+		// TODO -> DH -> Add validations.
 		nameTextField = new TextField();
 		nameTextField.setLabel("Name");
 		nameTextField.setWidthFull();
@@ -106,6 +106,6 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
 	{
-		// TODO -> Paul -> Do we need to do anything else here?
+		// TODO -> DH -> Do we need to do anything else here?
 	}
 }

@@ -14,7 +14,7 @@ public class ExperimentSearchBox extends SearchBox<Experiment>
 		super(grid, itemListSupplier);
 	}
 
-	// TODO -> Paul -> Can you add the missing column searches
+	// TODO -> DH -> Can you add the missing column searches
 	@Override
 	protected boolean isMatch(Experiment experiment, String searchValue) {
 		return SearchUtils.contains(experiment.getName(), searchValue) ||

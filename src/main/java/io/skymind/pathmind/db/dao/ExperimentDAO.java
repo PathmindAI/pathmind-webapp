@@ -19,7 +19,6 @@ public class ExperimentDAO extends ExperimentRepository
 		this.ctx = ctx;
 	}
 
-	// TODO -> Almost duplicate code with ProjectDAO.setupNewProject
 	public long setupNewExperiment(Experiment experiment)
 	{
 		final ExperimentRecord ex = EXPERIMENT.newRecord();
@@ -33,7 +32,7 @@ public class ExperimentDAO extends ExperimentRepository
 		return ex.getId();
 	}
 
-	// TODO -> Paul -> I'm just stubbing it here with some hacky code since I'm not sure how it's all going to be implemented in the backend.
+	// TODO -> DH -> I'm just stubbing it here with some hacky code since I'm not sure how it's all going to be implemented in the backend.
 	// Also keep in mind that the experiment going into this method is from policy.getExperiment() which is in turn gotten from
 	// left joins in PolicyRepository so only the minimal columns were retrieved from the query.
 	public long setupNewClonedExperiment(Experiment experiment)
@@ -42,7 +41,7 @@ public class ExperimentDAO extends ExperimentRepository
 		ex.attach(ctx.configuration());
 		ex.setDateCreated(LocalDateTime.now());
 		ex.setLastActivityDate(LocalDateTime.now());
-		// TODO -> Paul -> related to the comments at the method level.
+		// TODO -> DH -> related to the comments at the method level.
 		ex.setModelId(1L);
 		ex.setName("todo");
 		ex.setRewardFunction("todo");

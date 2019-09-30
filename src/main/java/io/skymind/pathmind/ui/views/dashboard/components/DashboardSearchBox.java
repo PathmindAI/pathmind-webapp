@@ -16,7 +16,7 @@ public class DashboardSearchBox extends SearchBox<Policy>
 		super(grid, itemListSupplier);
 	}
 
-	// TODO -> Paul -> I'm not sure where some values comes such as the Algorithm from so please add that to the search
+	// TODO -> DH -> I'm not sure where some values comes such as the Algorithm from so please add that to the search
 	@Override
 	protected boolean isMatch(Policy policy, String searchValue) {
 		return SearchUtils.contains(policy.getRun().getStatusEnum().name(), searchValue) ||

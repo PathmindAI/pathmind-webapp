@@ -15,7 +15,7 @@ public class PolicySearchBox extends SearchBox<Policy>
 		super(grid, itemListSupplier, isSelectFirstOnSearch);
 	}
 
-	// TODO -> Paul -> I'm not sure where some values comes from so please add that to the search
+	// TODO -> DH -> I'm not sure where some values comes from so please add that to the search
 	@Override
 	protected boolean isMatch(Policy policy, String searchValue) {
 		return SearchUtils.contains(policy.getRun().getStatusEnum().name(), searchValue) ||

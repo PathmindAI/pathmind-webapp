@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class ConsoleService
 {
-	// TODO -> Implement.
+	// TODO -> DH -> Implement.
 	public static String getConsoleLogForRun(long runId)
 	{
 		Random random = new Random();
