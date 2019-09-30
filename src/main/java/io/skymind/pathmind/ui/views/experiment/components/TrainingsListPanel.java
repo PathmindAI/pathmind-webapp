@@ -100,9 +100,7 @@ public class TrainingsListPanel extends VerticalLayout
 			experiment.getPolicies().stream()
 					.filter(policy -> policy.getId() == defaultSelectedPolicyId)
 					.findAny()
-					.ifPresentOrElse(
-							policy -> grid.select(policy),
-							() -> grid.select(experiment.getPolicies().get(0)));
+					.ifPresent(policy -> grid.select(policy));
 		}
 	}
 }

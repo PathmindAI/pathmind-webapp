@@ -10,14 +10,14 @@ import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.services.training.progress.RewardScore;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
+import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.data.db.Tables.EXPERIMENT;
-import static io.skymind.pathmind.data.db.Tables.RUN;
+import static io.skymind.pathmind.data.db.Tables.*;
 
 @Repository
 public class PolicyDAO extends PolicyRepository
@@ -68,5 +68,13 @@ public class PolicyDAO extends PolicyRepository
                 });
 
         return policies;
+    }
+
+    public boolean hasPolicyFile(long policyId){
+        return ctx.select(DSL.one()).from(POLICY).where(POLICY.ID.eq(policyId).and(POLICY.FILE.isNotNull())).fetchOptional().isPresent();
+    }
+
+    public byte[] getPolicyFile(long policyId){
+        return ctx.select(POLICY.FILE).from(POLICY).where(POLICY.ID.eq(policyId).and(POLICY.FILE.isNotNull())).fetchOne(POLICY.FILE);
     }
 }
