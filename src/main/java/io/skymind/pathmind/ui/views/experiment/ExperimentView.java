@@ -135,6 +135,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
 		});
 
+		Button runDiscoveryTraining = new Button("RUN DISCOVERY TRAINING", click -> {
+			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
+			trainingService.startDiscoveryRun(experiment);
+			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+		});
+
 
 		final HorizontalLayout buttons = WrapperUtils.wrapWidthFullCenterHorizontal(
 				new NewExperimentButton(experimentDAO, experiment.getModelId(), "TODO")
@@ -145,7 +151,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		}
 
 		return WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullCenterHorizontal(actionButton, runFullTraining),
+				WrapperUtils.wrapWidthFullCenterHorizontal(actionButton, runDiscoveryTraining, runFullTraining),
 				policyHighlightPanel,
 				policyStatusDetailsPanel,
 				rewardFunctionEditor,
