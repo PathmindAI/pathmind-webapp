@@ -29,7 +29,7 @@ public class RunUpdateServiceImpl implements RunUpdateService {
     private final ObjectMapper mapper;
     private final UnicastProcessor<PathmindBusEvent> publisher;
 
-    public RunUpdateServiceImpl(DSLContext ctx, ObjectMapper mapper, UnicastProcessor<PathmindBusEvent> publisher){
+    public RunUpdateServiceImpl(DSLContext ctx, ObjectMapper mapper, UnicastProcessor<PathmindBusEvent> publisher) {
         this.ctx = ctx;
         this.mapper = mapper;
         this.publisher = publisher;
@@ -37,10 +37,17 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
     @Override
     public List<Long> getExecutingRuns() {
-        return ctx.select(RUN.ID).from(RUN).where(RUN.STATUS.eq(RunStatus.Starting.getValue()).or(RUN.STATUS.eq(RunStatus.Running.getValue()))).fetch(RUN.ID);
+        return ctx.select(RUN.ID)
+                .from(RUN)
+                .leftOuterJoin(POLICY)
+                .on(POLICY.RUN_ID.eq(RUN.ID))
+                .where(RUN.STATUS.eq(RunStatus.Starting.getValue())
+                        .or(RUN.STATUS.eq(RunStatus.Running.getValue()))
+                        .or(RUN.STATUS.eq(RunStatus.Completed.getValue()).and(POLICY.FILE.isNull())))
+                .fetch(RUN.ID);
     }
 
-    private Experiment getExperiment(long runId){
+    private Experiment getExperiment(long runId) {
         return ctx.selectFrom(EXPERIMENT).where(EXPERIMENT.ID.in(DSL.select(RUN.EXPERIMENT_ID).from(RUN).where(RUN.ID.eq(runId)))).fetchOneInto(Experiment.class);
     }
 
@@ -81,9 +88,9 @@ public class RunUpdateServiceImpl implements RunUpdateService {
     @Transactional
     public void savePolicyFile(long runId, String externalId, byte[] policyFile) {
         ctx.update(POLICY)
-            .set(POLICY.FILE, policyFile)
-            .where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.eq(externalId)))
-            .execute();
+                .set(POLICY.FILE, policyFile)
+                .where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.eq(externalId)))
+                .execute();
     }
 
 }
