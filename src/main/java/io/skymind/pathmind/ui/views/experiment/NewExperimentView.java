@@ -162,6 +162,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 						if(!FormUtils.isValidForm(binder, experiment))
 							return;
 
+						experimentDAO.updateRewardFunction(experiment);
 						trainingService.startDiscoveryRun(experiment);
 						UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
 					});
@@ -182,6 +183,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			if(!FormUtils.isValidForm(binder, experiment))
 				return;
 
+			experimentDAO.updateRewardFunction(experiment);
 			trainingService.startTestRun(experiment);
 
 			// TODO -> Case #71 -> Define exactly what last activity represents
