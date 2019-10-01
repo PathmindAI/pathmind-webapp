@@ -1,9 +1,5 @@
 package io.skymind.pathmind.constants;
 
-import java.util.Arrays;
-
-// TODO -> Clean up the Algorithm so that it's coming a data model object rather than being called here directly.
-// https://github.com/SkymindIO/pathmind-webapp/issues/101
 public enum Algorithm
 {
     DQN(1, "DQN");
@@ -22,12 +18,5 @@ public enum Algorithm
 
 	public int getValue() {
 		return id;
-	}
-
-	public static Algorithm getEnumFromValue(int value) {
-		return Arrays.stream(values())
-				.filter(runType -> runType.getValue() == value)
-				.findAny()
-				.get();
 	}
 }
