@@ -15,8 +15,8 @@ public class Model extends ArchivableData
 
 	// TODO -> Implement
 	// It doesn't really make sense to have defaults for this. -- pdubs 2019-09-26
-	public static final int DEFAULT_NUMBER_OF_OBSERVATIONS = 3;
-	public static final int DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS = 5;
+	public static final int DEFAULT_NUMBER_OF_OBSERVATIONS = 0;
+	public static final int DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS = 0;
 	public static final String DEFAULT_GET_OBSERVATION_FOR_REWARD_FUNCTION = "Copy and paste your getObservation for reward function here so you" +
 			"can reference it while writing your reward function in the next step.";
 
