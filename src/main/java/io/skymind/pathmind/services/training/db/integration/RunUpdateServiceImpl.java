@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.PolicyUpdateBusEvent;
 import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.services.training.progress.RewardScore;
 import org.jooq.DSLContext;
@@ -68,10 +70,21 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 .where(EXPERIMENT.ID.eq(experiment.getId()))
                 .execute();
 
+        Run run = ctx.selectFrom(RUN).where(RUN.ID.eq(runId)).fetchOneInto(Run.class);
+
         for (Progress progress : progresses) {
             try {
-                if (status.equals(RunStatus.Completed)) {
+                if (!run.getRunTypeEnum().equals(RunType.DiscoverRun) && status.equals(RunStatus.Completed)) {
                     progress.setStoppedAt(now);
+                }
+
+                if (run.getRunTypeEnum().equals(RunType.DiscoverRun) && (status.equals(RunStatus.Running) || status.equals(RunStatus.Completed))) {
+                    // todo: when we change discover run iteration number, we should change this too
+                    // we might better set the iteration number
+
+                    if (progress.getRewardProgression().size() == 100 && progress.getStoppedAt() == null) {
+                        progress.setStoppedAt(now);
+                    }
                 }
 
                 final JSONB serialized = JSONB.valueOf(mapper.writeValueAsString(progress));
