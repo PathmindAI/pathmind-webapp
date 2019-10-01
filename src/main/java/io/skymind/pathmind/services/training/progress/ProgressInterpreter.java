@@ -10,16 +10,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ProgressInterpreter {
-    public static Progress interpret(Map.Entry<String, String> entry){
+
+    public static Progress interpretKey(String keyString) {
         final Progress progress = new Progress();
-        progress.setId(entry.getKey());
+        progress.setId(keyString);
 
         final HashMap<String, String> hyperParameters = new HashMap<>();
 
         StringBuilder buffer = new StringBuilder();
         // looks something like this:
         // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128_2019-08-05_13-56-455cdir_3f
-        final char[] key = entry.getKey().toCharArray();
+
+        final char[] key = keyString.toCharArray();
 
         boolean alg = false;
         boolean envName = false;
@@ -59,6 +61,11 @@ public class ProgressInterpreter {
         final LocalDateTime time = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss"));
         progress.setStartedAt(time);
 
+        return progress;
+    }
+
+    public static Progress interpret(Map.Entry<String, String> entry){
+        final Progress progress = interpretKey(entry.getKey());
 
         try {
             final CsvMapReader mapReader = new CsvMapReader(new StringReader(entry.getValue()), CsvPreference.STANDARD_PREFERENCE);

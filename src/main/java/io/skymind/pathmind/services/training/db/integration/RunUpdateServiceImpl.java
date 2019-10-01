@@ -54,9 +54,10 @@ public class RunUpdateServiceImpl implements RunUpdateService {
     @Override
     @Transactional
     public void updateRun(long runId, RunStatus status, List<Progress> progresses) {
+        LocalDateTime now = LocalDateTime.now();
         ctx.update(RUN)
                 .set(RUN.STATUS, status.getValue())
-                .set(RUN.STOPPED_AT, RunStatus.isRunning(status) ? null : LocalDateTime.now())
+                .set(RUN.STOPPED_AT, RunStatus.isRunning(status) ? null : now)
                 .where(RUN.ID.eq(runId))
                 .execute();
 
@@ -69,6 +70,10 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
         for (Progress progress : progresses) {
             try {
+                if (status.equals(RunStatus.Completed)) {
+                    progress.setStoppedAt(now);
+                }
+
                 final JSONB serialized = JSONB.valueOf(mapper.writeValueAsString(progress));
 
                 ctx.insertInto(POLICY)
