@@ -60,6 +60,13 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 .where(RUN.ID.eq(runId))
                 .execute();
 
+        Experiment experiment = getExperiment(runId);
+
+        ctx.update(EXPERIMENT)
+                .set(EXPERIMENT.LAST_ACTIVITY_DATE, LocalDateTime.now())
+                .where(EXPERIMENT.ID.eq(experiment.getId()))
+                .execute();
+
         for (Progress progress : progresses) {
             try {
                 final JSONB serialized = JSONB.valueOf(mapper.writeValueAsString(progress));
@@ -76,7 +83,7 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 policy.setRunId(runId);
                 policy.setExternalId(progress.getId());
                 policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
-                policy.setExperiment(getExperiment(runId));
+                policy.setExperiment(experiment);
                 publisher.onNext(new PolicyUpdateBusEvent(policy));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
