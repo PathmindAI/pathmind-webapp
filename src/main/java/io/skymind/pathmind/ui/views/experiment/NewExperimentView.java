@@ -186,10 +186,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			experimentDAO.updateRewardFunction(experiment);
 			trainingService.startTestRun(experiment);
 
-			// TODO -> Case #71 -> Define exactly what last activity represents
-			NotificationUtils.showTodoNotification("Case #71 -> Define exactly what last activity represents\n" +
-				"https://github.com/SkymindIO/pathmind-webapp/issues/71");
-
 			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
 		});
 	}
@@ -235,10 +231,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 					"https://github.com/SkymindIO/pathmind-webapp/issues/78");
 			if(!FormUtils.isValidForm(binder, experiment))
 				return;
-
-			// TODO -> Case #71 -> Define exactly what last activity represents
-			NotificationUtils.showTodoNotification("Case #71 -> Define exactly what last activity represents\n" +
-					"https://github.com/SkymindIO/pathmind-webapp/issues/71");
 
 			// TODO -> Case #81 -> What exactly happens when we save?
 			NotificationUtils.showTodoNotification("Case #81 -> What exactly happens when we save?\n" +
