@@ -31,6 +31,6 @@ public class PolicyHighlightPanel extends VerticalLayout
 		policyLabel.setText(policy.getName());
 		// TODO -> How do we calculate?
 //		scoreLabel.setText(policy.getProgress());
-		algorithmLabel.setText(Algorithm.DQN.toString());
+		algorithmLabel.setText(policy.getAlgorithm().name());
 	}
 }

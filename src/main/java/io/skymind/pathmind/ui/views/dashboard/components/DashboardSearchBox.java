@@ -24,7 +24,7 @@ public class DashboardSearchBox extends SearchBox<Policy>
 				SearchUtils.contains(policy.getModel().getName(), searchValue) ||
 				SearchUtils.contains(policy.getExperiment().getName(), searchValue) ||
 				SearchUtils.contains(policy.getRun().getRunTypeEnum().name(), searchValue) ||
-				SearchUtils.contains(Algorithm.DQN.name(), searchValue) ||
+				SearchUtils.contains(policy.getAlgorithm().name(), searchValue) ||
 				SearchUtils.contains(PolicyUtils.getDuration(policy), searchValue) ||
 				SearchUtils.contains(policy.getRun().getStoppedAt(), searchValue);
 	}

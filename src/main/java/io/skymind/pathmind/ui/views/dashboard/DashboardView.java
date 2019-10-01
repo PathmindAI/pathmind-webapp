@@ -84,7 +84,7 @@ public class DashboardView extends PathMindDefaultView
 				.setHeader("Run Type")
 				.setSortable(true);
 		// TODO -> For now it's hardcoded as DQN since that's the only option.
-		dashboardGrid.addColumn(policy -> Algorithm.DQN)
+		dashboardGrid.addColumn(Policy::getAlgorithm)
 				.setHeader("Algorithm")
 				.setSortable(true);
 		dashboardGrid.addColumn(policy -> PolicyUtils.getDuration(policy))

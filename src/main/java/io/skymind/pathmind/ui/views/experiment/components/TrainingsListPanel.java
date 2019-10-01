@@ -59,7 +59,7 @@ public class TrainingsListPanel extends VerticalLayout
 				.setHeader("Run Type")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(policy -> Algorithm.DQN)
+		grid.addColumn(Policy::getAlgorithm)
 				.setHeader("Algorithm")
 				.setAutoWidth(true)
 				.setSortable(true);
