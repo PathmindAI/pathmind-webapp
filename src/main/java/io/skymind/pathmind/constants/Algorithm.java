@@ -2,7 +2,8 @@ package io.skymind.pathmind.constants;
 
 public enum Algorithm
 {
-    DQN(1, "DQN");
+    DQN(1, "DQN"),
+    PPO(2, "PPO");
 
 	private int id;
     private String name;
