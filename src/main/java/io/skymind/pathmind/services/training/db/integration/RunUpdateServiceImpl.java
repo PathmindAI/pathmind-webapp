@@ -64,15 +64,18 @@ public class RunUpdateServiceImpl implements RunUpdateService {
             try {
                 final JSONB serialized = JSONB.valueOf(mapper.writeValueAsString(progress));
 
-                ctx.insertInto(POLICY)
+                long policyId = ctx.insertInto(POLICY)
                         .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS)
                         .values(progress.getId(), runId, progress.getId(), serialized)
                         .onConflict(POLICY.RUN_ID, POLICY.EXTERNAL_ID)
                         .doUpdate()
                         .set(POLICY.PROGRESS, serialized)
-                        .execute();
+                        .returning(POLICY.ID)
+                        .fetchOne()
+                        .getValue(POLICY.ID);;
 
                 final Policy policy = new Policy();
+                policy.setId(policyId);
                 policy.setRunId(runId);
                 policy.setName(progress.getId());
                 policy.setExternalId(progress.getId());
