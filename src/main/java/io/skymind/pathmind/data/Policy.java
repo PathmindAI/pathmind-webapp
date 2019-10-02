@@ -22,7 +22,7 @@ public class Policy extends Data
 	private Run run;
 
 	// For now this is hardcoded: https://github.com/SkymindIO/pathmind-webapp/issues/101
-	private Algorithm algorithm = Algorithm.DQN;
+	private Algorithm algorithm = Algorithm.PPO;
 
 	public long getRunId() {
 		return runId;
