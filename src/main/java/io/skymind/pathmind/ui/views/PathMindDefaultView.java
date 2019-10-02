@@ -9,11 +9,13 @@ import com.vaadin.flow.router.HasDynamicTitle;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
 import io.skymind.pathmind.ui.views.errors.ErrorView;
 import io.skymind.pathmind.ui.views.errors.InvalidDataView;
 import io.skymind.pathmind.utils.PathmindUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Do NOT implement any default methods for this interface because a large part of it's goal is to remind
@@ -24,6 +26,10 @@ public class PathMindDefaultView extends VerticalLayout implements BeforeEnterOb
 	private static Logger log = LogManager.getLogger(PathMindDefaultView.class);
 
 	private boolean isGenerated = false;
+
+	// It's autowired so that we don't have to inject it in all the views.
+	@Autowired
+	private IntercomIntegrationPlugin intercomIntegrationPlugin;
 
 	public PathMindDefaultView()
 	{
@@ -50,6 +56,8 @@ public class PathMindDefaultView extends VerticalLayout implements BeforeEnterOb
 			// Must be after update because we generally need to filter the event based on the screen data
 			if(!isGenerated)
 				subscribeToEventBus();
+			// Intercom plugin added
+			addIntercomPlugin();
 			isGenerated = true;
 		} catch (InvalidDataException e) {
 			log.info("Invalid data attempt: " + e.getMessage());
@@ -57,6 +65,19 @@ public class PathMindDefaultView extends VerticalLayout implements BeforeEnterOb
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			event.rerouteTo(ErrorView.class);
+		}
+	}
+
+	/**
+	 * Must be in it's own method and we need to try and catch because if there is ever an exception in the Intercom plugin
+	 * then it will otherwise go into an infinite loop (by being caught in the Exception catch block of the parent method
+	 * which then causes it to go to teh ErrorView and loop forever crashing the server.
+	 */
+	private void addIntercomPlugin() {
+		try {
+			intercomIntegrationPlugin.addPluginToPage();
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
 		}
 	}
 
