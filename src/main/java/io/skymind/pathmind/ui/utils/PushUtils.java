@@ -18,6 +18,10 @@ public class PushUtils
 
 	// TODO -> Testing to see the issue may be component.getUI() that fails and instead we need to pass in the UI directly.
 	public static void push(UI ui, Command command) {
+		if(ui == null) {
+			log.error("-------> PUSH FAILED");
+			return;
+		}
 		ui.access(command);
 	}
 }
