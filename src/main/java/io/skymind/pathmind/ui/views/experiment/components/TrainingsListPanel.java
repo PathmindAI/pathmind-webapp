@@ -39,7 +39,7 @@ public class TrainingsListPanel extends VerticalLayout
 		grid = new Grid<>();
 
 		// TODO -> DH -> Cases #83, #83, #85, and #86 -> Where do specific columns come from?
-		grid.addColumn(policy -> policy.getRun().getStatusEnum().name())
+		grid.addColumn(policy -> policy.getRun().getStatusEnum().toString())
 				.setHeader("Status")
 				.setAutoWidth(true)
 				.setSortable(true);
@@ -55,7 +55,7 @@ public class TrainingsListPanel extends VerticalLayout
 				.setHeader("Policy")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(policy -> policy.getRun().getRunTypeEnum().name())
+		grid.addColumn(policy -> policy.getRun().getRunTypeEnum())
 				.setHeader("Run Type")
 				.setAutoWidth(true)
 				.setSortable(true);

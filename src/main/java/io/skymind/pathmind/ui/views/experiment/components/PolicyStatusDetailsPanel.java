@@ -70,9 +70,9 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 
 	public void update(Policy policy)
 	{
-		statusLabel.setText(policy.getRun().getStatusEnum().name());
+		statusLabel.setText(policy.getRun().getStatusEnum().toString());
 		runProgressLabel.setText("TODO");
-		runTypeLabel.setText(policy.getRun().getRunTypeEnum().name());
+		runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());
 		elapsedTimeLabel.setText("TODO");
 	}
 }
