@@ -4,7 +4,7 @@ import java.time.format.DateTimeFormatter;
 
 public class DateAndTimeUtils
 {
-	public static final DateTimeFormatter STANDARD_DATE_TIME_FOMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	public static final DateTimeFormatter STANDARD_DATE_TIME_FOMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
 	/**
 	 * We could use org.apache.commons.lang3.time.DurationFormatUtils but it seems overkill for what we need and I didn't want to spend the time
