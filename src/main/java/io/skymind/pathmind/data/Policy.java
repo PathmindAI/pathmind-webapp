@@ -1,5 +1,7 @@
 package io.skymind.pathmind.data;
 
+import io.skymind.pathmind.constants.Algorithm;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,9 @@ public class Policy extends Data
 	private Model model;
 	private Experiment experiment;
 	private Run run;
+
+	// For now this is hardcoded: https://github.com/SkymindIO/pathmind-webapp/issues/101
+	private Algorithm algorithm = Algorithm.DQN;
 
 	public long getRunId() {
 		return runId;
@@ -85,5 +90,13 @@ public class Policy extends Data
 
 	public List<Number> getScores() {
 		return scores;
+	}
+
+	public Algorithm getAlgorithm() {
+		return algorithm;
+	}
+
+	public void setAlgorithm(Algorithm algorithm) {
+		this.algorithm = algorithm;
 	}
 }

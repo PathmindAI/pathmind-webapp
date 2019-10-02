@@ -23,7 +23,7 @@ public class PolicySearchBox extends SearchBox<Policy>
 //				SearchUtils.contains(policy.getProgress().toString(), searchValue) ||
 				SearchUtils.contains(policy.getName(), searchValue) ||
 				SearchUtils.contains(policy.getRun().getRunTypeEnum().name(), searchValue) ||
-				SearchUtils.contains(Algorithm.DQN.name(), searchValue);
+				SearchUtils.contains(policy.getAlgorithm().name(), searchValue);
 //				SearchUtils.contains(policy.getNotes(), searchValue)
 	}
 }

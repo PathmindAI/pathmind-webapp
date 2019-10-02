@@ -5,6 +5,7 @@ import java.util.List;
 public class PathmindUser
 {
 	private long id;
+	private String name;
 	private String email;
 	private String password;
 	private int accountType;
@@ -122,5 +123,13 @@ public class PathmindUser
 
 	public void setZip(String zip) {
 		this.zip = zip;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }
