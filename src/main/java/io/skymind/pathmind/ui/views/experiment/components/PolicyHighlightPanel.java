@@ -16,7 +16,6 @@ public class PolicyHighlightPanel extends VerticalLayout
 	{
 		setWidthFull();
 
-		// TODO -> Using the FormLayout as a quick solution until we have the CSS to make it look nice.
 		FormLayout formLayout = new FormLayout();
 		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("100px", 3, FormLayout.ResponsiveStep.LabelsPosition.TOP));
 

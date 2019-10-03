@@ -10,7 +10,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 
-// TODO -> Move all style to CSS.
+// TODO -> CSS -> Move all style to CSS.
 public class PathminderHelperWizardPanel extends VerticalLayout
 {
 	private Label projectNameLabel = new Label();
@@ -44,7 +44,7 @@ public class PathminderHelperWizardPanel extends VerticalLayout
 		projectNameLabel.setText(projectName);
 	}
 
-	// TODO -> Move CSS to styles.css
+	// TODO -> CSS -> Move CSS to styles.css
 	private Div getInstructionsDiv() {
 		Div div = new Div();
 		div.setWidthFull();

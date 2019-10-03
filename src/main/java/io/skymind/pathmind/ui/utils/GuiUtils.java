@@ -34,10 +34,9 @@ public class GuiUtils
 		return div;
 	}
 
-	// TODO -> Transition to CSS
+	// TODO -> CSS -> Transition to CSS
 	public static Label getSubtitleLabel(String text) {
 		Label label = new Label(text);
-		// TODO -> Set a CSS style here instead.
 		label.getStyle().set("font-size", "12px");
 		return label;
 	}
@@ -48,7 +47,7 @@ public class GuiUtils
 		return label;
 	}
 
-	// TODO -> Should point to a css style rather than style properties
+	// TODO -> CSS -> Should point to a css style rather than style properties
 	public static Label getLabel(String text, String fontSize, String fontWeight) {
 		Label label = new Label(text);
 		label.getStyle().set("font-size", fontSize);

@@ -38,7 +38,7 @@ public class NotificationUtils
 		notification.open();
 	}
 
-	// TODO -> Remove and either put in CSS or just remove alltogether
+	// TODO -> CSS -> Remove and either put in CSS or just remove alltogether
 	private static void applyStyle(Label label, Style style) {
 		switch(style) {
 			case Success:

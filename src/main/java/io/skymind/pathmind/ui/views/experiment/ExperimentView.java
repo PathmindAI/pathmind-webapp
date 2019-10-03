@@ -14,7 +14,6 @@ import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.services.run.RunService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -177,8 +176,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private void handleActionButtonClicked() {
 		NotificationUtils.showTodoNotification("Needs to be implemented");
-		RunService.run(policy, publisher);
-		// TODO -> DH -> What else needs to be updated on this action?
+		// TODO -> We need to hook Paul's backend code here.
 	}
 
 	/**
