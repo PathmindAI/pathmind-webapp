@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.PolicyUpdateBusEvent;
 import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.UnicastProcessor;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,13 +40,14 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
     @Override
     public List<Long> getExecutingRuns() {
-        return ctx.select(RUN.ID)
+        return ctx.selectDistinct(RUN.ID)
                 .from(RUN)
                 .leftOuterJoin(POLICY)
                 .on(POLICY.RUN_ID.eq(RUN.ID))
                 .where(RUN.STATUS.eq(RunStatus.Starting.getValue())
                         .or(RUN.STATUS.eq(RunStatus.Running.getValue()))
-                        .or(RUN.STATUS.eq(RunStatus.Completed.getValue()).and(POLICY.FILE.isNull())))
+                        .or(RUN.STATUS.eq(RunStatus.Completed.getValue()))
+                        .and(POLICY.FILE.isNull()))
                 .fetch(RUN.ID);
     }
 
@@ -55,19 +58,52 @@ public class RunUpdateServiceImpl implements RunUpdateService {
     @Override
     @Transactional
     public void updateRun(long runId, RunStatus status, List<Progress> progresses) {
+        LocalDateTime now = LocalDateTime.now();
         ctx.update(RUN)
                 .set(RUN.STATUS, status.getValue())
-                .set(RUN.STOPPED_AT, RunStatus.isRunning(status) ? null : LocalDateTime.now())
+                .set(RUN.STOPPED_AT, RunStatus.isRunning(status) ? null : now)
                 .where(RUN.ID.eq(runId))
                 .execute();
 
-        // This is needed for the GUI as part of the eventbus update.
-        Run run = ctx.selectFrom(RUN)
-                .where(RUN.ID.eq(runId))
-                .fetchOneInto(Run.class);
+        Experiment experiment = getExperiment(runId);
+
+        ctx.update(EXPERIMENT)
+                .set(EXPERIMENT.LAST_ACTIVITY_DATE, LocalDateTime.now())
+                .where(EXPERIMENT.ID.eq(experiment.getId()))
+                .execute();
+
+        Run run = ctx.selectFrom(RUN).where(RUN.ID.eq(runId)).fetchOneInto(Run.class);
 
         for (Progress progress : progresses) {
             try {
+                if (!run.getRunTypeEnum().equals(RunType.DiscoveryRun) && status.equals(RunStatus.Completed)) {
+                    progress.setStoppedAt(now);
+                }
+
+                if (run.getRunTypeEnum().equals(RunType.DiscoveryRun) && (status.equals(RunStatus.Running) || status.equals(RunStatus.Completed))) {
+                    // todo: when we change discover run iteration number, we should change this too
+                    // we might better set the iteration number
+
+                    if (progress.getRewardProgression().size() == 100) {
+                        Policy policy = ctx.selectFrom(POLICY)
+                                .where(POLICY.RUN_ID.eq(runId), POLICY.EXTERNAL_ID.eq(progress.getId()))
+                                .fetchOneInto(Policy.class);
+
+                        Progress dbProgress = null;
+                        try {
+                             dbProgress = mapper.readValue(policy.getProgress(), Progress.class);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        if (dbProgress != null && dbProgress.getStoppedAt() == null) {
+                            progress.setStoppedAt(now);
+                        } else {
+                            progress.setStoppedAt(dbProgress.getStoppedAt());
+                        }
+                    }
+                }
+
                 final JSONB serialized = JSONB.valueOf(mapper.writeValueAsString(progress));
 
                 long policyId = ctx.insertInto(POLICY)
@@ -87,7 +123,7 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 policy.setName(progress.getId());
                 policy.setExternalId(progress.getId());
                 policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
-                policy.setExperiment(getExperiment(runId));
+                policy.setExperiment(experiment);
 
                 publisher.onNext(new PolicyUpdateBusEvent(policy));
             } catch (JsonProcessingException e) {

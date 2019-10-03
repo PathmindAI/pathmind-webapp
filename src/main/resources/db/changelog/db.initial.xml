@@ -286,6 +286,69 @@
         </sql>
     </changeSet>
 
+    <changeSet id="20190930" author="daehyun@skymind.io">
+        <update tableName="RUN">
+            <column name="STATUS" valueNumeric="0"/>
+            <where>NAME='RUN 1'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="20191001-1" author="daehyun@skymind.io">
+        <createProcedure>
+            CREATE FUNCTION public.update_model_activity_date()
+            RETURNS trigger
+            LANGUAGE 'plpgsql'
+            COST 100
+            VOLATILE NOT LEAKPROOF
+            AS $BODY$BEGIN
+            IF NEW.LAST_ACTIVITY_DATE != OLD.LAST_ACTIVITY_DATE THEN
+            UPDATE MODEL SET LAST_ACTIVITY_DATE = NEW.LAST_ACTIVITY_DATE
+            WHERE id = NEW.MODEL_ID;
+            END IF;
+
+            RETURN NEW;
+            END;$BODY$;
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="20191001-2" author="daehyun@skymind.io">
+        <createProcedure>
+            CREATE TRIGGER update_model
+            AFTER UPDATE OF last_activity_date
+            ON public.experiment
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.update_model_activity_date();
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="20191001-3" author="daehyun@skymind.io">
+        <createProcedure>
+            CREATE FUNCTION public.update_project_activity_date()
+            RETURNS trigger
+            LANGUAGE 'plpgsql'
+            COST 100
+            VOLATILE NOT LEAKPROOF
+            AS $BODY$BEGIN
+            IF NEW.LAST_ACTIVITY_DATE != OLD.LAST_ACTIVITY_DATE THEN
+            UPDATE PROJECT SET LAST_ACTIVITY_DATE = NEW.LAST_ACTIVITY_DATE
+            WHERE id = NEW.PROJECT_ID;
+            END IF;
+
+            RETURN NEW;
+            END;$BODY$;
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="20191001-4" author="daehyun@skymind.io">
+        <createProcedure>
+            CREATE TRIGGER update_project
+            AFTER UPDATE OF last_activity_date
+            ON public.model
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.update_project_activity_date();
+        </createProcedure>
+    </changeSet>
+
     <changeSet id="20191002" author="vesa@vaadin.com">
         <addUniqueConstraint columnNames="EMAIL"
                              tableName="PATHMIND_USER"

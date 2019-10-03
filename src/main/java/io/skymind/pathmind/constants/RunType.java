@@ -5,7 +5,7 @@ import java.util.Arrays;
 public enum RunType
 {
     TestRun(1, "Test Run"),
-    DiscoverRun(2, "Discovery Run"),
+    DiscoveryRun(2, "Discovery Run"),
     FullRun(3, "Full Run");
 
 	private int id;
