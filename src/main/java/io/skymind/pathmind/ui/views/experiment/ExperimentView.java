@@ -135,13 +135,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		Button runFullTraining = new Button("RUN FULL TRAINING", click -> {
 			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
 			trainingService.startFullRun(experiment, policy);
-			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+			// TODO -> Do we need to do anything here?
 		});
 
 		Button runDiscoveryTraining = new Button("RUN DISCOVERY TRAINING", click -> {
 			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
 			trainingService.startDiscoveryRun(experiment);
-			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+			// TODO -> Do we need to do anything here?
 		});
 
 
