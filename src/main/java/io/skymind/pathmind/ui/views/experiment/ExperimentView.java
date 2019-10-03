@@ -36,7 +36,6 @@ import reactor.core.publisher.UnicastProcessor;
 @Route(value = "experiment", layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<String>
 {
-
 	private Button exportPolicyButton;
 
 	private enum ActionButtonState {
@@ -166,7 +165,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			case TestRun:
 				actionButton.setText("Next");
 				break;
-			case DiscoverRun:
+			case DiscoveryRun:
 				actionButton.setText("Stop");
 				break;
 			case FullRun:

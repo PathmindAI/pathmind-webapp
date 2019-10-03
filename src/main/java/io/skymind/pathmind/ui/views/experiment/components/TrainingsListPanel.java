@@ -45,7 +45,7 @@ public class TrainingsListPanel extends VerticalLayout
 	}
 
 	private String getRunStatus(Policy policy) {
-		if (policy.getRun().getRunTypeEnum().equals(RunType.DiscoverRun) && policy.getRun().getStatusEnum().equals(RunStatus.Running)) {
+		if (policy.getRun().getRunTypeEnum().equals(RunType.DiscoveryRun) && policy.getRun().getStatusEnum().equals(RunStatus.Running)) {
 			try {
 				return objectMapper.readValue(policy.getProgress(), Progress.class).getStoppedAt() != null ? RunStatus.Completed.name() : RunStatus.Running.name();
 			} catch (Exception e) {
@@ -69,7 +69,7 @@ public class TrainingsListPanel extends VerticalLayout
 
 		grid.addColumn(policy -> {
 			if (!RunStatus.Completed.name().equalsIgnoreCase(getRunStatus(policy))) {
-				return "Not Completed";
+				return "--";
 			}
 
 			try {
@@ -107,7 +107,7 @@ public class TrainingsListPanel extends VerticalLayout
 				.setAutoWidth(true)
 				.setSortable(true);
 
-		grid.addColumn(policy -> policy.getRun().getRunTypeEnum().name())
+		grid.addColumn(policy -> policy.getRun().getRunTypeEnum())
 				.setHeader("Run Type")
 				.setAutoWidth(true)
 				.setSortable(true);
