@@ -5,7 +5,10 @@ import org.supercsv.prefs.CsvPreference;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -58,7 +61,9 @@ public class ProgressInterpreter {
             buffer.append(cur);
         }
         final String dateTime = buffer.toString().substring(0, 19);
-        final LocalDateTime time = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss"));
+        final LocalDateTime utcTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss"));
+        final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();
+
         progress.setStartedAt(time);
 
         return progress;
