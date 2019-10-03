@@ -8,6 +8,7 @@ import io.skymind.pathmind.bus.data.PolicyUpdateBusEvent;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.services.training.progress.RewardScore;
 import org.jooq.DSLContext;
@@ -60,6 +61,11 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 .where(RUN.ID.eq(runId))
                 .execute();
 
+        // This is needed for the GUI as part of the eventbus update.
+        Run run = ctx.selectFrom(RUN)
+                .where(RUN.ID.eq(runId))
+                .fetchOneInto(Run.class);
+
         for (Progress progress : progresses) {
             try {
                 final JSONB serialized = JSONB.valueOf(mapper.writeValueAsString(progress));
@@ -72,15 +78,17 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                         .set(POLICY.PROGRESS, serialized)
                         .returning(POLICY.ID)
                         .fetchOne()
-                        .getValue(POLICY.ID);;
+                        .getValue(POLICY.ID);
 
                 final Policy policy = new Policy();
                 policy.setId(policyId);
                 policy.setRunId(runId);
+                policy.setRun(run);
                 policy.setName(progress.getId());
                 policy.setExternalId(progress.getId());
                 policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
                 policy.setExperiment(getExperiment(runId));
+
                 publisher.onNext(new PolicyUpdateBusEvent(policy));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);

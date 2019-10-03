@@ -14,6 +14,7 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.views.policy.components.PolicySearchBox;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+@Component
 public class TrainingsListPanel extends VerticalLayout
 {
 	private PolicySearchBox searchBox;
