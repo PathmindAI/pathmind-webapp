@@ -99,7 +99,7 @@ public class DashboardView extends PathMindDefaultView
 				.setSortable(true);
 
 		// Default sorting order as per https://github.com/SkymindIO/pathmind-webapp/issues/133
-		dashboardGrid.sort(Arrays.asList(new GridSortOrder<Policy>(completedColumn, SortDirection.ASCENDING)));
+		dashboardGrid.sort(Arrays.asList(new GridSortOrder<Policy>(completedColumn, SortDirection.DESCENDING)));
 
 		// TODO -> CSS styles
 		dashboardGrid.setWidthFull();
