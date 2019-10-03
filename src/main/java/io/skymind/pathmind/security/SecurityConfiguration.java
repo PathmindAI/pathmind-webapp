@@ -119,6 +119,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // the robots exclusion standard
                 "/robots.txt",
 
+                // web application manifest
+                "/manifest.webmanifest",
+                "/sw.js",
+                "/offline-page.html",
+
                 // icons and images
                 "/icons/**",
                 "/images/**",
