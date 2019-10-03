@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.UnicastProcessor;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,13 +40,14 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
     @Override
     public List<Long> getExecutingRuns() {
-        return ctx.select(RUN.ID)
+        return ctx.selectDistinct(RUN.ID)
                 .from(RUN)
                 .leftOuterJoin(POLICY)
                 .on(POLICY.RUN_ID.eq(RUN.ID))
                 .where(RUN.STATUS.eq(RunStatus.Starting.getValue())
                         .or(RUN.STATUS.eq(RunStatus.Running.getValue()))
-                        .or(RUN.STATUS.eq(RunStatus.Completed.getValue()).and(POLICY.FILE.isNull())))
+                        .or(RUN.STATUS.eq(RunStatus.Completed.getValue()))
+                        .and(POLICY.FILE.isNull()))
                 .fetch(RUN.ID);
     }
 
@@ -74,16 +76,31 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
         for (Progress progress : progresses) {
             try {
-                if (!run.getRunTypeEnum().equals(RunType.DiscoverRun) && status.equals(RunStatus.Completed)) {
+                if (!run.getRunTypeEnum().equals(RunType.DiscoveryRun) && status.equals(RunStatus.Completed)) {
                     progress.setStoppedAt(now);
                 }
 
-                if (run.getRunTypeEnum().equals(RunType.DiscoverRun) && (status.equals(RunStatus.Running) || status.equals(RunStatus.Completed))) {
+                if (run.getRunTypeEnum().equals(RunType.DiscoveryRun) && (status.equals(RunStatus.Running) || status.equals(RunStatus.Completed))) {
                     // todo: when we change discover run iteration number, we should change this too
                     // we might better set the iteration number
 
-                    if (progress.getRewardProgression().size() == 100 && progress.getStoppedAt() == null) {
-                        progress.setStoppedAt(now);
+                    if (progress.getRewardProgression().size() == 100) {
+                        Policy policy = ctx.selectFrom(POLICY)
+                                .where(POLICY.RUN_ID.eq(runId), POLICY.EXTERNAL_ID.eq(progress.getId()))
+                                .fetchOneInto(Policy.class);
+
+                        Progress dbProgress = null;
+                        try {
+                             dbProgress = mapper.readValue(policy.getProgress(), Progress.class);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        if (dbProgress != null && dbProgress.getStoppedAt() == null) {
+                            progress.setStoppedAt(now);
+                        } else {
+                            progress.setStoppedAt(dbProgress.getStoppedAt());
+                        }
                     }
                 }
 
