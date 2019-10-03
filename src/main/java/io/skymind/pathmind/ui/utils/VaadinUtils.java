@@ -26,6 +26,6 @@ public class VaadinUtils
 	}
 
 	public static void setupFavIcon(InitialPageSettings settings) {
-		settings.addFavIcon("icon", "frontend/images/pathmind-browser-logo.gif", "16x16");
+		settings.addFavIcon("icon", "frontend/images/favicon.png", "32x32");
 	}
 }
