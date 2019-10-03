@@ -286,7 +286,7 @@
         </sql>
     </changeSet>
 
-    <changeSet id="20190102" author="vesa@vaadin.com">
+    <changeSet id="20191002" author="vesa@vaadin.com">
         <addUniqueConstraint columnNames="EMAIL"
                              tableName="PATHMIND_USER"
         />
