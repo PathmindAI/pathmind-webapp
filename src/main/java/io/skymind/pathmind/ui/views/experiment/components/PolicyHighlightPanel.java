@@ -5,13 +5,10 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import io.skymind.pathmind.ui.utils.ExperimentViewUtil;
 
 public class PolicyHighlightPanel extends VerticalLayout
 {
-	private Logger log = LogManager.getLogger(PolicyHighlightPanel.class);
-
 	private Label policyLabel = new Label();
 	private Label scoreLabel = new Label();
 	private Label algorithmLabel = new Label();
@@ -32,25 +29,8 @@ public class PolicyHighlightPanel extends VerticalLayout
 	}
 
 	public void update(Policy policy) {
-		String policyName = null;
-		try {
-			String[] split = policy.getName().split("_");
-//			policyName = split[1] + "_" + split[2];
-			policyName = "#" + split[2];
-		} catch (Exception e) {
-			log.debug(e.getMessage(), e);
-		}
-
-		policyLabel.setText(policyName);
-
-		String policyScore = null;
-		try {
-			policyScore = policy.getScores().get(policy.getScores().size() - 1).toString();
-		} catch (Exception e) {
-			log.debug(e.getMessage(), e);
-		}
-
-		scoreLabel.setText(policyScore);
+		policyLabel.setText(ExperimentViewUtil.getParsedPolicyName(policy));
+		scoreLabel.setText(ExperimentViewUtil.getLastScore(policy));
 		algorithmLabel.setText(ProgressInterpreter.interpretKey(policy.getName()).getAlgorithm());
 	}
 }

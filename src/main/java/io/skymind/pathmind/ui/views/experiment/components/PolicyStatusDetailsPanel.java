@@ -1,21 +1,16 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.services.training.progress.Progress;
+import io.skymind.pathmind.ui.utils.ExperimentViewUtil;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
-import io.skymind.pathmind.utils.ObjectMapperHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.time.Duration;
 import java.util.Arrays;
 
 @Component
@@ -27,8 +22,6 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 	private Label runProgressLabel = new Label();
 	private Label runTypeLabel = new Label();
 	private Label elapsedTimeLabel = new Label();
-
-	private ObjectMapper objectMapper = ObjectMapperHolder.getJsonMapper();
 
 	public PolicyStatusDetailsPanel()
 	{
@@ -77,18 +70,9 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 
 	public void update(Policy policy)
 	{
-		statusLabel.setText(policy.getRun().getStatusEnum().toString());
-		runProgressLabel.setText("TODO");
+		statusLabel.setText(ExperimentViewUtil.getRunStatus(policy));
+		runProgressLabel.setText(ExperimentViewUtil.getRunCompletedTime(policy));
 		runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());
-		try {
-			Progress progress = objectMapper.readValue(policy.getProgress(), Progress.class);
-			if (progress.getStoppedAt() != null) {
-				elapsedTimeLabel.setText(Duration.between(progress.getStartedAt(), progress.getStoppedAt()).toString());
-			} else {
-				elapsedTimeLabel.setText(null);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        elapsedTimeLabel.setText(ExperimentViewUtil.getElaspedTime(policy));
 	}
 }
