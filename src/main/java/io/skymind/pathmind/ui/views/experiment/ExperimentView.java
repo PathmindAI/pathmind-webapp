@@ -100,7 +100,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private Component getLeftPanel()
 	{
-		trainingsListPanel = new TrainingsListPanel();
+		trainingsListPanel = new TrainingsListPanel(consumer);
+
 		trainingsListPanel.addSelectionListener(selectedPolicy -> {
 			policy = selectedPolicy;
 			policyHighlightPanel.update(selectedPolicy);

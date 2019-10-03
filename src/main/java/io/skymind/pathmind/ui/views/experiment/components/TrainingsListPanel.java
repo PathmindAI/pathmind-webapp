@@ -1,17 +1,26 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSingleSelectionModel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import io.skymind.pathmind.bus.PathmindBusEvent;
+import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
 import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.ui.utils.GuiUtils;
+import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.views.policy.components.PolicySearchBox;
+import reactor.core.publisher.Flux;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class TrainingsListPanel extends VerticalLayout
 {
@@ -20,8 +29,12 @@ public class TrainingsListPanel extends VerticalLayout
 
 	private Experiment experiment;
 
-	public TrainingsListPanel()
+	private Flux<PathmindBusEvent> consumer;
+
+	public TrainingsListPanel(Flux<PathmindBusEvent> consumer)
 	{
+		this.consumer = consumer;
+
 		setupGrid();
 		setupSearchBox();
 
@@ -88,11 +101,44 @@ public class TrainingsListPanel extends VerticalLayout
 		searchBox = new PolicySearchBox(grid, () -> experiment.getPolicies(), true);
 	}
 
+	private void subscribeToEventBus(UI ui, Flux<PathmindBusEvent> consumer) {
+		PolicyBusEventUtils.consumerBusEventBasedOnExperiment(
+				consumer,
+				() -> getExperiment(),
+				updatedPolicy -> PushUtils.push(ui, () -> updatedGrid(updatedPolicy)));
+	}
+
+	private void updatedGrid(Policy updatedPolicy)
+	{
+		experiment.getPolicies().stream()
+				.filter(policy -> policy.getId() == updatedPolicy.getId())
+				.findAny()
+				.ifPresentOrElse(
+						policy -> replacePolicy(updatedPolicy),
+						() -> experiment.getPolicies().add(updatedPolicy));
+
+		grid.setItems(experiment.getPolicies());
+
+		// TODO -> Re-select same policy
+		// TODO -> refilter according to the search box.
+	}
+
+	private void replacePolicy(Policy updatedPolicy) {
+		experiment.setPolicies(experiment.getPolicies().stream()
+				.map(policy -> policy.getId() == updatedPolicy.getId() ? updatedPolicy : policy)
+				.collect(Collectors.toList()));
+	}
+
+	public Experiment getExperiment() {
+		return experiment;
+	}
+
 	public void update(Experiment experiment, long defaultSelectedPolicyId)
 	{
 		this.experiment = experiment;
 
-		grid.setItems(experiment.getPolicies());
+		grid.setDataProvider(new ListDataProvider<Policy>(experiment.getPolicies()));
+//		grid.setItems(experiment.getPolicies());
 
 		if(!experiment.getPolicies().isEmpty() && defaultSelectedPolicyId < 0) {
 			grid.select(experiment.getPolicies().get(0));
@@ -102,5 +148,7 @@ public class TrainingsListPanel extends VerticalLayout
 					.findAny()
 					.ifPresent(policy -> grid.select(policy));
 		}
+
+		subscribeToEventBus(UI.getCurrent(), consumer);
 	}
 }
