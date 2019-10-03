@@ -316,4 +316,48 @@
             <where>EMAIL='bob@skymind.io'</where>
         </update>
     </changeSet>
+
+    <changeSet id="20191003-2" author="daehyun@skymind.io">
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Deborah Lentle"/>
+            <column name="EMAIL" value="deborah.lentle@decisionlab.co.uk"/>
+            <column name="PASSWORD" value="$2a$10$AwwRO2OuIYnHlcw/wsFq.e8Z8nMMXIDS2jUSEQb/qtKktuAeOwYoi"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Kelvin Yeung"/>
+            <column name="EMAIL" value="kelvin.yeung@decisionlab.co.uk"/>
+            <column name="PASSWORD" value="$2a$10$F7GTC2XqZJqwFdVyZLPV6uM7yhqr5zRQ5xiFSQ3i8575hsSgw3z9y"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Roberto Grugni"/>
+            <column name="EMAIL" value="roberto.grugni@eng.it"/>
+            <column name="PASSWORD" value="$2a$10$Egd0u307wnc2DeppFhQhfOXqFMC4vHXuQEKPeqydHt11CUJ90Ihla"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Luigi Manca"/>
+            <column name="EMAIL" value="luigi.manca@eng.it"/>
+            <column name="PASSWORD" value="$2a$10$clJqjNE/brUFYK7J5auq1.e5/wwFu5fsXZ0V15HBnJdtGJGEQoEaK"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Mahdavi"/>
+            <column name="EMAIL" value="mahdavi@anylogic.com"/>
+            <column name="PASSWORD" value="$2a$10$5ge6QQ.Qv9AY1atSIHTV/.J4r2xrR67lm73.bLqmrH9es2CdNbS/K"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Stefan Hauers"/>
+            <column name="EMAIL" value="stefan.hauers@cnx-consulting.de"/>
+            <column name="PASSWORD" value="$2a$10$r2r5ZkIcd/p.N3NB0BI54O50uhfqb3z0zNE1F4KIOYvcRSsswS6.C"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="T Wolfeadam"/>
+            <column name="EMAIL" value="t.wolfeadam@anylogic.com"/>
+            <column name="PASSWORD" value="$2a$10$f84hlX0MNDYZ5vlavVT1BerXyVO0OPe1ambxUTh2OQAEyReuuJjf."/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
