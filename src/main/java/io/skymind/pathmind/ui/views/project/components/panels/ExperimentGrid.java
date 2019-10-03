@@ -34,14 +34,6 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setHeader("Full Run")
 				.setAutoWidth(true)
 				.setSortable(true);
-		addColumn(experiment -> "Todo")
-				.setHeader("Archive")
-				.setAutoWidth(true)
-				.setSortable(true);
-		addColumn(experiment -> "Todo")
-				.setHeader("Notes")
-				.setAutoWidth(true)
-				.setSortable(true);
 
 		setSelectionMode(Grid.SelectionMode.SINGLE);
 		getElement().getStyle().set("padding-top", "20px");
