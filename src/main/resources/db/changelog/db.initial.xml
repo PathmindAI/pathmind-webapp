@@ -303,4 +303,17 @@
         <!-- TODO: change the password for users to this: -->
         <!--$2a$10$9MDQO5k8e062Lhbq459KJOAgx.JP3c3P6UiXKYh5b5P6l1SFT0AtW-->
     </changeSet>
+
+    <changeSet id="20191003-1" author="daehyun@skymind.io">
+        <update tableName="PATHMIND_USER">
+            <!-- literally "pw!skymind19" -->
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+            <where>EMAIL='steph@followsteph.com'</where>
+        </update>
+        <update tableName="PATHMIND_USER">
+            <!-- literally "pw!skymind19" -->
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+            <where>EMAIL='bob@skymind.io'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
