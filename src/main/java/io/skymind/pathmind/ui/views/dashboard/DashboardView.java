@@ -3,8 +3,10 @@ package io.skymind.pathmind.ui.views.dashboard;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
@@ -24,6 +26,8 @@ import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUti
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -89,9 +93,13 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid.addColumn(policy -> PolicyUtils.getDuration(policy))
 				.setHeader("Duration")
 				.setSortable(true);
-		dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+		Grid.Column<Policy> completedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
 				.setHeader("Completed")
+				.setComparator(getCompletedComparator())
 				.setSortable(true);
+
+		// Default sorting order as per https://github.com/SkymindIO/pathmind-webapp/issues/133
+		dashboardGrid.sort(Arrays.asList(new GridSortOrder<Policy>(completedColumn, SortDirection.ASCENDING)));
 
 		// TODO -> CSS styles
 		dashboardGrid.setWidthFull();
@@ -102,6 +110,16 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid.addSelectionListener(event ->
 				event.getFirstSelectedItem().ifPresent(selectedPolicy ->
 						UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(selectedPolicy))));
+	}
+
+	private Comparator<Policy> getCompletedComparator() {
+		return (p1, p2) ->  {
+			if(p1.getRun() == null || p1.getRun().getStoppedAt() == null)
+				return -1;
+			if(p2.getRun() == null || p2.getRun().getStoppedAt() == null)
+				return 1;
+			return p1.getRun().getStoppedAt().compareTo(p2.getRun().getStoppedAt());
+		};
 	}
 
 	private List<Policy> getPolicies() {
