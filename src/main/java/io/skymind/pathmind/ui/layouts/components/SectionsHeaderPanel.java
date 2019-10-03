@@ -1,10 +1,10 @@
 package io.skymind.pathmind.ui.layouts.components;
 
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
 import io.skymind.pathmind.ui.views.dashboard.DashboardView;
-import io.skymind.pathmind.ui.views.learn.LearnView;
 import io.skymind.pathmind.ui.views.project.ProjectsView;
 
 public class SectionsHeaderPanel extends HorizontalLayout
@@ -18,7 +18,7 @@ public class SectionsHeaderPanel extends HorizontalLayout
 				logo,
 				new RouterLink("Dashboard", DashboardView.class),
 				new RouterLink("Projects", ProjectsView.class),
-				new RouterLink("Learn", LearnView.class));
+				new Anchor("https://help.pathmind.com/", "Learn"));
 		add(sectionsHorizontalLayout);
 
 		sectionsHorizontalLayout.setId("nav-main-links");
