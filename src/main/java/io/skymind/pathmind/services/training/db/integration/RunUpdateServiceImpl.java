@@ -114,15 +114,17 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                         .set(POLICY.PROGRESS, serialized)
                         .returning(POLICY.ID)
                         .fetchOne()
-                        .getValue(POLICY.ID);;
+                        .getValue(POLICY.ID);
 
                 final Policy policy = new Policy();
                 policy.setId(policyId);
                 policy.setRunId(runId);
+                policy.setRun(run);
                 policy.setName(progress.getId());
                 policy.setExternalId(progress.getId());
                 policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
                 policy.setExperiment(experiment);
+
                 publisher.onNext(new PolicyUpdateBusEvent(policy));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);

@@ -1,6 +1,6 @@
 # Pathmind Web Application
 
-This repository contains the Pathmind Webapplication.
+This repository contains the Pathmind Web application.
 
 The other parts of Pathmind (NativeRL, Pathmind Helper) can be currently still be found here:
 

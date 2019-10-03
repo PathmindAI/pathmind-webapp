@@ -40,11 +40,6 @@ public class PathMindDefaultView extends VerticalLayout implements BeforeEnterOb
 	// TODO handle different exceptions differently.
 	public void beforeEnter(BeforeEnterEvent event)
 	{
-		if(!SecurityUtils.isUserLoggedIn()) {
-			event.forwardTo(LoginView.class);
-			return;
-		}
-
 		try {
 			// Before we do anything we should first load the data from the database in case there is an issue such as an InvalidDataException
 			loadData();

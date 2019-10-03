@@ -348,4 +348,79 @@
             EXECUTE PROCEDURE public.update_project_activity_date();
         </createProcedure>
     </changeSet>
+
+    <changeSet id="20191002" author="vesa@vaadin.com">
+        <addUniqueConstraint columnNames="EMAIL"
+                             tableName="PATHMIND_USER"
+        />
+
+        <addColumn tableName="PATHMIND_USER">
+            <column name="DELETE_AT" type="DATETIME"/>
+            <column name="EMAIL_VERIFIED_AT" type="DATETIME"/>
+            <column name="EMAIL_VERIFICATION_TOKEN" type="UUID"/>
+        </addColumn>
+        <!-- TODO: once jooq-codegen:generate works modify the password field to be called - -->
+        <!--renameColumn newColumnName="PASSWORD_HASH"
+                      oldColumnName="password"
+                      tableName="PATHMIND_USER"/-->
+        <!-- TODO: change the password for users to this: -->
+        <!--$2a$10$9MDQO5k8e062Lhbq459KJOAgx.JP3c3P6UiXKYh5b5P6l1SFT0AtW-->
+    </changeSet>
+
+    <changeSet id="20191003-1" author="daehyun@skymind.io">
+        <update tableName="PATHMIND_USER">
+            <!-- literally "pw!skymind19" -->
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+            <where>EMAIL='steph@followsteph.com'</where>
+        </update>
+        <update tableName="PATHMIND_USER">
+            <!-- literally "pw!skymind19" -->
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+            <where>EMAIL='bob@skymind.io'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="20191003-2" author="daehyun@skymind.io">
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Deborah Lentle"/>
+            <column name="EMAIL" value="deborah.lentle@decisionlab.co.uk"/>
+            <column name="PASSWORD" value="$2a$10$AwwRO2OuIYnHlcw/wsFq.e8Z8nMMXIDS2jUSEQb/qtKktuAeOwYoi"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Kelvin Yeung"/>
+            <column name="EMAIL" value="kelvin.yeung@decisionlab.co.uk"/>
+            <column name="PASSWORD" value="$2a$10$F7GTC2XqZJqwFdVyZLPV6uM7yhqr5zRQ5xiFSQ3i8575hsSgw3z9y"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Roberto Grugni"/>
+            <column name="EMAIL" value="roberto.grugni@eng.it"/>
+            <column name="PASSWORD" value="$2a$10$Egd0u307wnc2DeppFhQhfOXqFMC4vHXuQEKPeqydHt11CUJ90Ihla"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Luigi Manca"/>
+            <column name="EMAIL" value="luigi.manca@eng.it"/>
+            <column name="PASSWORD" value="$2a$10$clJqjNE/brUFYK7J5auq1.e5/wwFu5fsXZ0V15HBnJdtGJGEQoEaK"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Mahdavi"/>
+            <column name="EMAIL" value="mahdavi@anylogic.com"/>
+            <column name="PASSWORD" value="$2a$10$5ge6QQ.Qv9AY1atSIHTV/.J4r2xrR67lm73.bLqmrH9es2CdNbS/K"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Stefan Hauers"/>
+            <column name="EMAIL" value="stefan.hauers@cnx-consulting.de"/>
+            <column name="PASSWORD" value="$2a$10$r2r5ZkIcd/p.N3NB0BI54O50uhfqb3z0zNE1F4KIOYvcRSsswS6.C"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="T Wolfeadam"/>
+            <column name="EMAIL" value="t.wolfeadam@anylogic.com"/>
+            <column name="PASSWORD" value="$2a$10$f84hlX0MNDYZ5vlavVT1BerXyVO0OPe1ambxUTh2OQAEyReuuJjf."/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
