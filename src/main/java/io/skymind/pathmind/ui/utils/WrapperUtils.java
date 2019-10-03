@@ -6,8 +6,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 
-// TODO -> Clean up this class and have consistent naming structure. For now I'm just adding helper methods
-// until I get a fuller understanding of all what we need.
 public class WrapperUtils
 {
 	public static VerticalLayout wrapWidthFullVertical(Component... components) {
@@ -42,7 +40,7 @@ public class WrapperUtils
 		return verticalLayout;
 	}
 
-	// TODO -> Move this to CSS.
+	// TODO -> CSS styles
 	public static VerticalLayout wrapFormCenterBorderedVertical(Component... components) {
 		VerticalLayout verticalLayout = wrapFormCenterVertical(components);
 		verticalLayout.getStyle().set("border", "solid 1px #ccc");

@@ -54,25 +54,4 @@ public class ExperimentRepository
 				.where(EXPERIMENT.ID.eq(experiment.getId()))
 				.execute();
 	}
-
-	protected long insertExperiment(Experiment experiment) {
-    	// TODO -> DATA MODEL
-    	return -1;
-//    	long experimentId = dslContext
-//				.insertInto(EXPERIMENT)
-//				.set(EXPERIMENT.NAME, experiment.getName())
-//				.set(EXPERIMENT.DATE, experiment.getDate())
-//				.set(EXPERIMENT.DURATION, experiment.getDuration())
-//				.set(EXPERIMENT.RUN_TYPE, experiment.getRunType())
-//				// TODO -> Algorithm needs to be saved.
-////				.set(EXPERIMENT.ALGORITHM)
-//				.set(EXPERIMENT.SCORE, experiment.getScore())
-//				.set(EXPERIMENT.REWARD_FUNCTION, experiment.getRewardFunction())
-//				.set(EXPERIMENT.PROJECT_ID, experiment.getProject().getId())
-//				.returning(EXPERIMENT.ID)
-//				.fetchOne()
-//				.getValue(EXPERIMENT.ID);
-//    	experiment.setId(experimentId);
-//    	return experimentId;
-	}
 }

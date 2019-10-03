@@ -14,7 +14,6 @@ import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.services.run.RunService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -100,7 +99,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private Component getLeftPanel()
 	{
-		trainingsListPanel = new TrainingsListPanel();
+		trainingsListPanel = new TrainingsListPanel(consumer);
+
 		trainingsListPanel.addSelectionListener(selectedPolicy -> {
 			policy = selectedPolicy;
 			policyHighlightPanel.update(selectedPolicy);
@@ -135,13 +135,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		Button runFullTraining = new Button("RUN FULL TRAINING", click -> {
 			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
 			trainingService.startFullRun(experiment, policy);
-			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+			// TODO -> Do we need to do anything here?
 		});
 
 		Button runDiscoveryTraining = new Button("RUN DISCOVERY TRAINING", click -> {
 			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
 			trainingService.startDiscoveryRun(experiment);
-			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+			// TODO -> Do we need to do anything here?
 		});
 
 
@@ -176,8 +176,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private void handleActionButtonClicked() {
 		NotificationUtils.showTodoNotification("Needs to be implemented");
-		RunService.run(policy, publisher);
-		// TODO -> DH -> What else needs to be updated on this action?
+		// TODO -> We need to hook Paul's backend code here.
 	}
 
 	/**

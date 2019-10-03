@@ -2,6 +2,7 @@ package io.skymind.pathmind.ui.utils;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.server.InitialPageSettings;
 
 public class VaadinUtils
 {
@@ -22,5 +23,9 @@ public class VaadinUtils
 	 */
 	public static String getViewName() {
 		return UI.getCurrent().getInternals().getActiveViewLocation().getFirstSegment();
+	}
+
+	public static void setupFavIcon(InitialPageSettings settings) {
+		settings.addFavIcon("icon", "frontend/images/pathmind-browser-logo.gif", "16x16");
 	}
 }

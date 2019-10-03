@@ -18,12 +18,12 @@ public class PolicySearchBox extends SearchBox<Policy>
 	// TODO -> DH -> I'm not sure where some values comes from so please add that to the search
 	@Override
 	protected boolean isMatch(Policy policy, String searchValue) {
-		return SearchUtils.contains(policy.getRun().getStatusEnum().name(), searchValue) ||
+		return SearchUtils.contains(policy.getRun().getStatusEnum().toString(), searchValue) ||
 //				SearchUtils.contains(policy.getCompleted().toString(), searchValue) ||
 //				SearchUtils.contains(policy.getProgress().toString(), searchValue) ||
 				SearchUtils.contains(policy.getName(), searchValue) ||
-				SearchUtils.contains(policy.getRun().getRunTypeEnum().name(), searchValue) ||
-				SearchUtils.contains(policy.getAlgorithm().name(), searchValue);
+				SearchUtils.contains(policy.getRun().getRunTypeEnum().toString(), searchValue) ||
+				SearchUtils.contains(policy.getAlgorithm().toString(), searchValue);
 //				SearchUtils.contains(policy.getNotes(), searchValue)
 	}
 }

@@ -19,12 +19,12 @@ public class DashboardSearchBox extends SearchBox<Policy>
 	// TODO -> DH -> I'm not sure where some values comes such as the Algorithm from so please add that to the search
 	@Override
 	protected boolean isMatch(Policy policy, String searchValue) {
-		return SearchUtils.contains(policy.getRun().getStatusEnum().name(), searchValue) ||
+		return SearchUtils.contains(policy.getRun().getStatusEnum().toString(), searchValue) ||
 				SearchUtils.contains(policy.getProject().getName(), searchValue) ||
 				SearchUtils.contains(policy.getModel().getName(), searchValue) ||
 				SearchUtils.contains(policy.getExperiment().getName(), searchValue) ||
-				SearchUtils.contains(policy.getRun().getRunTypeEnum().name(), searchValue) ||
-				SearchUtils.contains(policy.getAlgorithm().name(), searchValue) ||
+				SearchUtils.contains(policy.getRun().getRunTypeEnum().toString(), searchValue) ||
+				SearchUtils.contains(policy.getAlgorithm().toString(), searchValue) ||
 				SearchUtils.contains(PolicyUtils.getDuration(policy), searchValue) ||
 				SearchUtils.contains(policy.getRun().getStoppedAt(), searchValue);
 	}

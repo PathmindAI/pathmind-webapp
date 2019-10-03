@@ -23,19 +23,17 @@ public class PolicyChartPanel extends VerticalLayout
 
 	private Experiment experiment;
 
-	private UI ui;
+	private Flux<PathmindBusEvent> consumer;
 
 	public PolicyChartPanel(Flux<PathmindBusEvent> consumer)
 	{
-		this.ui = UI.getCurrent();
+		this.consumer = consumer;
 
 		setupChart();
 		add(chart);
-
-		subscribeToEventBus(consumer);
 	}
 
-	private void subscribeToEventBus(Flux<PathmindBusEvent> consumer) {
+	private void subscribeToEventBus(UI ui, Flux<PathmindBusEvent> consumer) {
 		PolicyBusEventUtils.consumerBusEventBasedOnExperiment(
 				consumer,
 				() -> getExperiment(),
@@ -49,13 +47,14 @@ public class PolicyChartPanel extends VerticalLayout
 		// During a training run, additional policies will be created, i.e. for a discovery run, the policies will
 		// be created as they actually start training. -- pdubs, 20190927
 
+		// We cannot add the last item because there is no guarantee that the updates are in sequence
 		chart.getConfiguration().getSeries().stream()
 				.filter(series -> series.getName().equals(updatedPolicy.getName()))
-				.findAny().ifPresent(series -> {
-						// We cannot add the last item because there is no guarantee that the updates are in sequence
-						((ListSeries) series).setData(updatedPolicy.getScores());
-						chart.drawChart();
-				});
+				.findAny()
+				.ifPresentOrElse(
+						series -> ((ListSeries) series).setData(updatedPolicy.getScores()),
+						() -> chart.getConfiguration().addSeries(new ListSeries(updatedPolicy.getName(), updatedPolicy.getScores())));
+		chart.drawChart();
 	}
 
 	private void setupChart() {
@@ -77,6 +76,7 @@ public class PolicyChartPanel extends VerticalLayout
 	public void update(Experiment experiment) {
 		this.experiment = experiment;
 		updateChart(experiment.getPolicies());
+		subscribeToEventBus(UI.getCurrent(), consumer);
 	}
 
 	private void updateChart(List<Policy> policies) {

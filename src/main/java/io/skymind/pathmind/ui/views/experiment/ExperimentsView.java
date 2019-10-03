@@ -22,6 +22,7 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.ExperimentSearchBox;
+import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.model.ModelsView;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
@@ -43,6 +44,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	private ExperimentGrid experimentGrid;
 	private TextArea getObservationTextArea;
+	private RewardFunctionEditor rewardFunctionEditor;
 
 	public ExperimentsView()
 	{
@@ -53,6 +55,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	{
 		setupExperimentListPanel();
 		setupGetObservationTextArea();
+		setupRewardFunctionEditor();
 
 		return WrapperUtils.wrapWidthFullCenterVertical(
 				WrapperUtils.wrapWidthFullCenterHorizontal(getBackToModelsButton()),
@@ -62,9 +65,16 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 						WrapperUtils.wrapSizeFullVertical(
 								experimentGrid),
 						WrapperUtils.wrapSizeFullVertical(
-								getObservationTextArea
-						),70),
+								rewardFunctionEditor,
+								getObservationTextArea),
+						70),
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewExperimentButton(experimentDAO, modelId)));
+	}
+
+	private void setupRewardFunctionEditor() {
+		rewardFunctionEditor = new RewardFunctionEditor();
+		rewardFunctionEditor.setReadonly(true);
+		rewardFunctionEditor.setSizeFull();
 	}
 
 	/**

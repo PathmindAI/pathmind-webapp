@@ -56,7 +56,7 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 		add(wrapper);
 	}
 
-	// TODO -> Move style to CSS
+	// TODO -> CSS -> Move style to CSS
 	private Label getElementLabel(String label) {
 		Label fieldLabel = new Label(label + " : ");
 		fieldLabel.getStyle().set("font-weight", "bold");

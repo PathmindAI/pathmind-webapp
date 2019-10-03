@@ -264,7 +264,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private void updateTopStatusPanel(Experiment experiment) {
 		projectLabel.setText(experiment.getProject().getName());
-		runTypeLabel.setText(RunType.TestRun.name());
+		runTypeLabel.setText(RunType.TestRun.toString());
 		modelRevisionLabel.setText(experiment.getModel().getName());
 		experimentLabel.setText(experiment.getName());
 	}

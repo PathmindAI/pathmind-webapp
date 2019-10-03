@@ -99,7 +99,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 		return h3;
 	}
 
-	// TODO -> Move CSS to styles.css
+	// TODO -> CSS -> Move CSS to styles.css
 	private Div getInstructionsDiv() {
 		Div div = new Div();
 		div.setWidthFull();
