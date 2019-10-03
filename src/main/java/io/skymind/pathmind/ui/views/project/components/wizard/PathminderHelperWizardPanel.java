@@ -51,7 +51,7 @@ public class PathminderHelperWizardPanel extends VerticalLayout
 		div.getElement().setProperty("innerHTML",
 				"<p>To prepare your AnyLogic model for reinforcement learning, install the PathmindHelper</p>" +
 				"<ol>" +
-					"<li>Download the <a href=\"https://skymind.ai/\">PathmindHelper</a>.</li>" +
+					"<li>Download the <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\">PathmindHelper</a>.</li>" +
 					"<li>Add the PathmindHelper as a library in your AnyLogic Model.</li>" +
 					"<li>Add one instance of the PathmindHelper to your model</li>" +
 					"<li>Fill in these four functions:</li>" +
@@ -63,7 +63,7 @@ public class PathminderHelperWizardPanel extends VerticalLayout
 						"</ul>" +
 				"</ol>" +
 				"<p>When you're ready, upload your model in the next step.</p>" +
-				"<p style=\"font-size:11px;\"><a href=\"https://skymind.ai\">For more details, see our documentation</a></p>");
+				"<p style=\"font-size:11px;\"><a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper\">For more details, see our documentation</a></p>");
 		return div;
 	}
 }
