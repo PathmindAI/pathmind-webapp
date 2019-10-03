@@ -65,10 +65,12 @@ public class SecurityUtils
 	// Will return null if no user is found
 	public static PathmindUserDetails getUser() {
 		SecurityContext context = SecurityContextHolder.getContext();
-		Object principal = context.getAuthentication().getPrincipal();
-		if(principal instanceof UserDetails) {
-			PathmindUserDetails pathmindUserDetails = (PathmindUserDetails) context.getAuthentication().getPrincipal();
-			return pathmindUserDetails;
+		if (context != null && context.getAuthentication() != null) {
+			Object principal = context.getAuthentication().getPrincipal();
+			if (principal instanceof UserDetails) {
+				PathmindUserDetails pathmindUserDetails = (PathmindUserDetails) context.getAuthentication().getPrincipal();
+				return pathmindUserDetails;
+			}
 		}
 		return null;
 	}
