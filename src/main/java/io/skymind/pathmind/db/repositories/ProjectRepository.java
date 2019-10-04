@@ -45,6 +45,13 @@ public class ProjectRepository
 				.fetchOneInto(Project.class);
 	}
 
+	public void archive(long projectId, boolean isArchive) {
+    	dslContext.update(PROJECT)
+				.set(PROJECT.ARCHIVED, isArchive)
+				.where(PROJECT.ID.eq(projectId))
+				.execute();
+	}
+
 	protected long insertProject(Project project) {
     	// TODO -> Needs to be re-implemented and adjusted for the new data models.
     	long projectId = dslContext

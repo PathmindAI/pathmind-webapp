@@ -74,7 +74,8 @@ public class ProjectsView extends PathMindDefaultView
 		return new ArchivesTabPanel<Project>(
 				"Projects",
 				projectGrid,
-				this::getProjects);
+				this::getProjects,
+				(projectId, isArchive) -> projectDAO.archive(projectId, isArchive));
 	}
 
 	private void setupProjectGrid()

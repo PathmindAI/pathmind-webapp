@@ -7,8 +7,10 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import io.skymind.pathmind.data.ArchivableData;
+import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
@@ -17,7 +19,7 @@ import java.util.function.Function;
  */
 public class ArchivesButton<T> extends Button
 {
-	public ArchivesButton(Grid<T> grid, ArchivableData data, Function<Boolean, List<T>> getFilteredData)
+	public ArchivesButton(Grid<T> grid, ArchivableData data, Function<Boolean, List<T>> getFilteredData, BiConsumer<Long, Boolean> archiveDAO)
 	{
 		super();
 
@@ -29,7 +31,7 @@ public class ArchivesButton<T> extends Button
 				"Confirm " + archiveConfirmationText,
 				"Are you sure you want to " + archiveConfirmationText.toLowerCase() + " this " + data.getClass().getSimpleName() + "?",
 				archiveConfirmationText,
-				confirmEvent -> changeArchiveStatus(grid, data, getFilteredData),
+				confirmEvent -> changeArchiveStatus(grid, data, getFilteredData, archiveDAO),
 				"Cancel",
 				cancelEvent -> {});
 
@@ -47,8 +49,11 @@ public class ArchivesButton<T> extends Button
 
 	// Weird looking logic but it's so that we stay on the same page once you reverse the archive value. We also
 	// need to set the items here so that the item is removed from the table.
-	private void changeArchiveStatus(Grid<T> grid, ArchivableData data, Function<Boolean, List<T>> getFilteredData) {
-		data.setArchived(!data.isArchived());
-		grid.setItems(getFilteredData.apply(!data.isArchived()));
+	private void changeArchiveStatus(Grid<T> grid, ArchivableData data, Function<Boolean, List<T>> getFilteredData, BiConsumer<Long, Boolean> archiveDAO) {
+		ExceptionWrapperUtils.handleButtonClicked(() -> {
+			archiveDAO.accept(data.getId(), !data.isArchived());
+			data.setArchived(!data.isArchived());
+			grid.setItems(getFilteredData.apply(!data.isArchived()));
+		});
 	}
 }

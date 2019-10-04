@@ -106,9 +106,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		experimentGrid = new ExperimentGrid();
 		experimentGrid.addSelectionListener(selectedExperiment ->
 				UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(selectedExperiment.getFirstSelectedItem().get())));
-	}
-
-	@Override
+	}@Override
 	protected Component getTitlePanel() {
 		return new ScreenTitlePanel("EXPERIMENTS");
 	}

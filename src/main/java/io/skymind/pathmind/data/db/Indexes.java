@@ -40,6 +40,7 @@ public class Indexes {
     public static final Index EXECUTION_PROVIDER_META_DATA_PROVIDER_CLASS_KEY_KEY = Indexes0.EXECUTION_PROVIDER_META_DATA_PROVIDER_CLASS_KEY_KEY;
     public static final Index EXPERIMENT_PKEY = Indexes0.EXPERIMENT_PKEY;
     public static final Index MODEL_PKEY = Indexes0.MODEL_PKEY;
+    public static final Index PATHMIND_USER_EMAIL_KEY = Indexes0.PATHMIND_USER_EMAIL_KEY;
     public static final Index PATHMIND_USER_PKEY = Indexes0.PATHMIND_USER_PKEY;
     public static final Index POLICY_PKEY = Indexes0.POLICY_PKEY;
     public static final Index POLICY_RUN_ID_EXTERNAL_ID_KEY = Indexes0.POLICY_RUN_ID_EXTERNAL_ID_KEY;
@@ -55,6 +56,7 @@ public class Indexes {
         public static Index EXECUTION_PROVIDER_META_DATA_PROVIDER_CLASS_KEY_KEY = Internal.createIndex("execution_provider_meta_data_provider_class_key_key", ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, new OrderField[] { ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.PROVIDER_CLASS, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.KEY }, true);
         public static Index EXPERIMENT_PKEY = Internal.createIndex("experiment_pkey", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.ID }, true);
         public static Index MODEL_PKEY = Internal.createIndex("model_pkey", Model.MODEL, new OrderField[] { Model.MODEL.ID }, true);
+        public static Index PATHMIND_USER_EMAIL_KEY = Internal.createIndex("pathmind_user_email_key", PathmindUser.PATHMIND_USER, new OrderField[] { PathmindUser.PATHMIND_USER.EMAIL }, true);
         public static Index PATHMIND_USER_PKEY = Internal.createIndex("pathmind_user_pkey", PathmindUser.PATHMIND_USER, new OrderField[] { PathmindUser.PATHMIND_USER.ID }, true);
         public static Index POLICY_PKEY = Internal.createIndex("policy_pkey", Policy.POLICY, new OrderField[] { Policy.POLICY.ID }, true);
         public static Index POLICY_RUN_ID_EXTERNAL_ID_KEY = Internal.createIndex("policy_run_id_external_id_key", Policy.POLICY, new OrderField[] { Policy.POLICY.RUN_ID, Policy.POLICY.EXTERNAL_ID }, true);
