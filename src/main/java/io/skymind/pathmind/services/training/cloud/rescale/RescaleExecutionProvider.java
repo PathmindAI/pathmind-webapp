@@ -9,6 +9,8 @@ import io.skymind.pathmind.services.training.cloud.rescale.api.dto.*;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -18,6 +20,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class RescaleExecutionProvider implements ExecutionProvider {
+    private Logger log = LogManager.getLogger(RescaleExecutionProvider.class);
+
     private static final Map<PathmindHelper, List<String>> pathmindHelperMap = Map.of(
             PathmindHelper.VERSION_0_0_24, Arrays.asList(
                     "kuQJAd" // PathmindPolicy.jar, 2019-08-28
@@ -90,9 +94,25 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         if (statuses.size() > 0) {
             if (statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))) {
                 final JobStatus status = statuses.stream().filter(it -> it.getStatus().equals("Completed")).findFirst().get();
-                if (status.getStatusReason().equals("Completed successfully")) {
+
+                // file check
+                Map<String, String> map = client.outputFiles(jobHandle, "1").getResults()
+                        .parallelStream()
+                        .filter(it -> it.getPath().endsWith("process_output.log"))
+                        .map(it -> {
+                            final String key = new File(it.getPath()).getParentFile().getName();
+                            final String contents = new String(client.fileContents(it.getId()));
+                            return Map.entry(key, contents);
+                        })
+                        .filter(it -> it.getValue().contains("python3: can't open file 'rllibtrain.py': [Errno 2] No such file or directory"))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+                if (status.getStatusReason().equals("Completed successfully") && map.size() == 0) {
                     return RunStatus.Completed;
                 } else {
+                    if (map.size() > 0) {
+                        log.info(jobHandle + " will be considered as an error");
+                    }
                     return RunStatus.Error;
                 }
             } else if (statuses.stream().anyMatch(it -> it.getStatus().equals("Executing"))) {
