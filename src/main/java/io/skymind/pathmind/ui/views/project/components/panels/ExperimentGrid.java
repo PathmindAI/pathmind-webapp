@@ -3,8 +3,14 @@ package io.skymind.pathmind.ui.views.project.components.panels;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
+import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * This is a class because it's expected to be re-used in the ConsoleView when it's brought back.
@@ -13,7 +19,7 @@ public class ExperimentGrid extends Grid<Experiment>
 {
 	public ExperimentGrid()
 	{
-		// TODO -> DH -> You will need to fill in all the todo values
+		// TODO -> DH -> You will need to fll in all the todo values
 		addColumn(Experiment::getName)
 				.setHeader("Experiment")
 				.setAutoWidth(true)
@@ -22,15 +28,33 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setHeader("Last Activity")
 				.setAutoWidth(true)
 				.setSortable(true);
-		addColumn(experiment -> "TODO")
+		addColumn(experiment -> {
+			 Optional<Run> run = experiment.getRuns().stream()
+					.filter(r -> r.getRunTypeEnum().equals(RunType.TestRun))
+					.findAny();
+
+			return run.isPresent() ? run.get().getStatusEnum() : "Draft";
+		})
 				.setHeader("Test Run")
 				.setAutoWidth(true)
 				.setSortable(true);
-		addColumn(experiment -> "Todo")
+		addColumn(experiment -> {
+			Optional<Run> run = experiment.getRuns().stream()
+					.filter(r -> r.getRunTypeEnum().equals(RunType.DiscoveryRun))
+					.findAny();
+
+			return run.isPresent() ? run.get().getStatusEnum() : "--";
+		})
 				.setHeader("Discovery Run")
 				.setAutoWidth(true)
 				.setSortable(true);
-		addColumn(experiment -> "Todo")
+		addColumn(experiment -> {
+			List<Run> runs = experiment.getRuns().stream()
+					.filter(r -> r.getRunTypeEnum().equals(RunType.FullRun))
+					.collect(Collectors.toList());
+
+			return runs.size() > 0 ? runs.size() : "--";
+		})
 				.setHeader("Full Run")
 				.setAutoWidth(true)
 				.setSortable(true);

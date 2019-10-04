@@ -11,6 +11,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -38,6 +39,8 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	private ExperimentRepository experimentRepository;
 	@Autowired
 	private ExperimentDAO experimentDAO;
+	@Autowired
+	private RunDAO runDAO;
 
 	private long modelId;
 	private List<Experiment> experiments;
@@ -122,6 +125,8 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		experiments = experimentRepository.getExperimentsForModel(modelId);
 		if(experiments == null || experiments.isEmpty())
 			throw new InvalidDataException("Attempted to access Experiments for Model: " + modelId);
+		experiments.stream()
+				.forEach(e -> e.setRuns(runDAO.getRunsForExperiment(e.getId())));
 	}
 
 	@Override
