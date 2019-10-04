@@ -1,10 +1,14 @@
 package io.skymind.pathmind.data;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Data
 public class Experiment extends ArchivableData
 {
+	private long id;
 	private long modelId;
 	private String rewardFunction;
 	private LocalDateTime dateCreated;
@@ -14,8 +18,17 @@ public class Experiment extends ArchivableData
 	private Project project;
 	private Model model;
 	private List<Policy> policies;
+	private List<Run> runs;
 
 	public Experiment() {
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public String getRewardFunction() {
@@ -72,5 +85,13 @@ public class Experiment extends ArchivableData
 
 	public void setPolicies(List<Policy> policies) {
 		this.policies = policies;
+	}
+
+	public List<Run> getRuns() {
+		return runs;
+	}
+
+	public void setRuns(List<Run> runs) {
+		this.runs = runs;
 	}
 }

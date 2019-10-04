@@ -1,6 +1,7 @@
 package io.skymind.pathmind.db.repositories;
 
 import io.skymind.pathmind.data.Model;
+import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.ui.views.project.components.wizard.PathminderHelperWizardPanel;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,4 +34,12 @@ public class RunRepository
 //				.where(MODEL.ID.eq(modelId))
 //				.fetchOneInto(Long.class);
 //	}
+
+    public List<Run> getRunsForExperiment(long experimentId) {
+        return dslContext
+                .select(RUN.asterisk())
+                .from(RUN)
+                .where(RUN.EXPERIMENT_ID.eq(experimentId))
+                .fetchInto(Run.class);
+    }
 }
