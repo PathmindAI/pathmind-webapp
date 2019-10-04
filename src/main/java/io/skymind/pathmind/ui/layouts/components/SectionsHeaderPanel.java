@@ -18,9 +18,15 @@ public class SectionsHeaderPanel extends HorizontalLayout
 				logo,
 				new RouterLink("Dashboard", DashboardView.class),
 				new RouterLink("Projects", ProjectsView.class),
-				new Anchor("https://help.pathmind.com/", "Learn"));
+				getLearnAnchor());
 		add(sectionsHorizontalLayout);
 
 		sectionsHorizontalLayout.setId("nav-main-links");
+	}
+
+	private Anchor getLearnAnchor() {
+		Anchor anchor = new Anchor("https://help.pathmind.com/", "Learn");
+		anchor.setTarget("_blank");
+		return anchor;
 	}
 }
