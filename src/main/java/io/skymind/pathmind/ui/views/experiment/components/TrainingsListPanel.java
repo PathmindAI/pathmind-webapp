@@ -116,16 +116,21 @@ public class TrainingsListPanel extends VerticalLayout
 	private void updatedGrid(Policy updatedPolicy)
 	{
 		experiment.getPolicies().stream()
-				.filter(policy -> policy.getId() == updatedPolicy.getId())
+				.filter(policy ->policy.getId() == updatedPolicy.getId())
 				.findAny()
 				.ifPresentOrElse(
-						policy -> replacePolicy(updatedPolicy),
-						() -> experiment.getPolicies().add(updatedPolicy));
+						policy -> {
+							replacePolicy(updatedPolicy);
+							grid.getDataProvider().refreshItem(updatedPolicy);
+						},
+						() -> {
+							experiment.getPolicies().add(updatedPolicy);
+							// We need to refreshAll because otherwise the grid does not see the new row.
+							grid.getDataProvider().refreshAll();
+						});
 
-		grid.setItems(experiment.getPolicies());
-
-		// TODO -> Re-select same policy
-		// TODO -> refilter according to the search box.
+		// TODO -> Re-select same policy ?
+		// TODO -> refilter according to the search box. ?
 	}
 
 	private void replacePolicy(Policy updatedPolicy) {
