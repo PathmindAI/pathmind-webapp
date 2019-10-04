@@ -104,14 +104,15 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                     }
                 }
 
-                final JSONB serialized = JSONB.valueOf(mapper.writeValueAsString(progress));
+                final String progressJsonStr = mapper.writeValueAsString(progress);
+                final JSONB progressJson = JSONB.valueOf(progressJsonStr);
 
                 long policyId = ctx.insertInto(POLICY)
                         .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS)
-                        .values(progress.getId(), runId, progress.getId(), serialized)
+                        .values(progress.getId(), runId, progress.getId(), progressJson)
                         .onConflict(POLICY.RUN_ID, POLICY.EXTERNAL_ID)
                         .doUpdate()
-                        .set(POLICY.PROGRESS, serialized)
+                        .set(POLICY.PROGRESS, progressJson)
                         .returning(POLICY.ID)
                         .fetchOne()
                         .getValue(POLICY.ID);
@@ -123,6 +124,7 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 policy.setName(progress.getId());
                 policy.setExternalId(progress.getId());
                 policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
+                policy.setProgress(progressJsonStr);
                 policy.setExperiment(experiment);
 
                 publisher.onNext(new PolicyUpdateBusEvent(policy));
