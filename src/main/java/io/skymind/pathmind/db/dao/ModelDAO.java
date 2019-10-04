@@ -27,7 +27,7 @@ public class ModelDAO extends ModelRepository
      * @return Model - beware, not all fields are initialized
      */
     public Model getModel(long modelId) {
-        return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS)
+        return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION)
                 .from(MODEL)
                 .where(MODEL.ID.eq(modelId))
                 .fetchOneInto(Model.class);

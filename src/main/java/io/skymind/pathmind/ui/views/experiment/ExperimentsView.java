@@ -10,7 +10,9 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -41,8 +43,11 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	private ExperimentDAO experimentDAO;
 	@Autowired
 	private RunDAO runDAO;
+	@Autowired
+	private ModelDAO modelDAO;
 
 	private long modelId;
+	private Model currentModel;
 	private List<Experiment> experiments;
 
 	private ExperimentGrid experimentGrid;
@@ -92,6 +97,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	private void setupGetObservationTextArea() {
 		getObservationTextArea = new TextArea("getObservations");
 		getObservationTextArea.setSizeFull();
+		getObservationTextArea.setReadOnly(true);
 	}
 
 	private SearchBox getSearchBox() {
@@ -109,6 +115,8 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		experimentGrid = new ExperimentGrid();
 		experimentGrid.addSelectionListener(selectedExperiment ->
 				UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(selectedExperiment.getFirstSelectedItem().get())));
+
+
 	}
 
 	@Override
@@ -125,13 +133,19 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		experiments = experimentRepository.getExperimentsForModel(modelId);
 		if(experiments == null || experiments.isEmpty())
 			throw new InvalidDataException("Attempted to access Experiments for Model: " + modelId);
+
+		// set runs to experiment
 		experiments.stream()
 				.forEach(e -> e.setRuns(runDAO.getRunsForExperiment(e.getId())));
+
+		// set current model
+		currentModel = modelDAO.getModel(modelId);
 	}
 
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
 		experimentGrid.setItems(experiments);
+		getObservationTextArea.setValue(currentModel.getGetObservationForRewardFunction());
 	}
 
 	@Override
