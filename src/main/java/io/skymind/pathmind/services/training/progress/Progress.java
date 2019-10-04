@@ -9,6 +9,7 @@ public class Progress {
     private String algorithm;
     private Map<String, String> hyperParameters;
     private LocalDateTime startedAt;
+    private LocalDateTime stoppedAt;
 
     private List<RewardScore> rewardProgression;
 
@@ -45,6 +46,14 @@ public class Progress {
 
     public void setStartedAt(LocalDateTime startedAt) {
         this.startedAt = startedAt;
+    }
+
+    public LocalDateTime getStoppedAt() {
+        return stoppedAt;
+    }
+
+    public void setStoppedAt(LocalDateTime stoppedAt) {
+        this.stoppedAt = stoppedAt;
     }
 
     public List<RewardScore> getRewardProgression() {

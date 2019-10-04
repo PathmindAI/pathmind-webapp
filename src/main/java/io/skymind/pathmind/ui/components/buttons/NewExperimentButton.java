@@ -20,8 +20,6 @@ public class NewExperimentButton extends Button
 	//  https://github.com/SkymindIO/pathmind-webapp/issues/79
 	// TODO -> Case #80 -> Do we use the same reward function from the experiment we're on as a default value?
 	//  https://github.com/SkymindIO/pathmind-webapp/issues/80
-	// TODO -> Case #71 -> Define exactly what last activity represents
-	//  https://github.com/SkymindIO/pathmind-webapp/issues/71
 	public NewExperimentButton(ExperimentDAO experimentDAO, long modelId, String rewardFunction)
 	{
 		super("New Experiment");

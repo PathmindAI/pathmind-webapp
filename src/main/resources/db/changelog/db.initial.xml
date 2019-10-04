@@ -285,4 +285,142 @@
             INSERT INTO "policy" (RUN_ID, NAME, EXTERNAL_ID, PROGRESS) VALUES ((SELECT MAX(id) from RUN), 'Policy 1', 'SoMeExTeRnAlID', '{"id":"PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128_2019-08-05_13-56-455cdir_3f","algorithm":"PPO","hyperParameters":{"sgd_minibatch_size":"128","lr":"5e-05","gamma":"0.99"},"startedAt":{"year":2019,"monthValue":8,"dayOfMonth":5,"hour":13,"minute":56,"second":45,"nano":0,"month":"AUGUST","dayOfWeek":"MONDAY","dayOfYear":217,"chronology":{"id":"ISO","calendarType":"iso8601"}},"rewardProgression":[{"max":"NaN","min":"NaN","mean":"NaN","iteration":1},{"max":73.55000030994415,"min":-16.550001453608274,"mean":42.721428357596906,"iteration":2},{"max":73.55000030994415,"min":-57.94999961927533,"mean":41.59230767792234,"iteration":3},{"max":73.55000030994415,"min":-142.84999971091747,"mean":33.600000112503764,"iteration":4},{"max":73.55000030994415,"min":-142.84999971091747,"mean":39.36600016742945,"iteration":5},{"max":73.55000030994415,"min":-142.84999971091747,"mean":43.10483891865419,"iteration":6},{"max":73.55000030994415,"min":-142.84999971091747,"mean":44.954166890121996,"iteration":7},{"max":73.55000030994415,"min":-142.84999971091747,"mean":43.730488053273135,"iteration":8},{"max":73.55000030994415,"min":-142.84999971091747,"mean":44.49456547840458,"iteration":9},{"max":73.55000030994415,"min":-142.84999971091747,"mean":47.37870398446642,"iteration":10},{"max":73.55000030994415,"min":-142.84999971091747,"mean":48.631034767383646,"iteration":11},{"max":76.00000045448542,"min":-142.84999971091747,"mean":50.40873045438812,"iteration":12},{"max":76.00000045448542,"min":-142.84999971091747,"mean":51.67173943560624,"iteration":13},{"max":76.00000045448542,"min":-142.84999971091747,"mean":52.001370168814105,"iteration":14},{"max":76.00000045448542,"min":-142.84999971091747,"mean":51.65925957515468,"iteration":15},{"max":76.00000045448542,"min":-142.84999971091747,"mean":52.052907296478054,"iteration":16},{"max":76.00000045448542,"min":-142.84999971091747,"mean":52.31141336509229,"iteration":17}]}');
         </sql>
     </changeSet>
+
+    <changeSet id="20190930" author="daehyun@skymind.io">
+        <update tableName="RUN">
+            <column name="STATUS" valueNumeric="0"/>
+            <where>NAME='RUN 1'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="20191001-1" author="daehyun@skymind.io">
+        <createProcedure>
+            CREATE FUNCTION public.update_model_activity_date()
+            RETURNS trigger
+            LANGUAGE 'plpgsql'
+            COST 100
+            VOLATILE NOT LEAKPROOF
+            AS $BODY$BEGIN
+            IF NEW.LAST_ACTIVITY_DATE != OLD.LAST_ACTIVITY_DATE THEN
+            UPDATE MODEL SET LAST_ACTIVITY_DATE = NEW.LAST_ACTIVITY_DATE
+            WHERE id = NEW.MODEL_ID;
+            END IF;
+
+            RETURN NEW;
+            END;$BODY$;
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="20191001-2" author="daehyun@skymind.io">
+        <createProcedure>
+            CREATE TRIGGER update_model
+            AFTER UPDATE OF last_activity_date
+            ON public.experiment
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.update_model_activity_date();
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="20191001-3" author="daehyun@skymind.io">
+        <createProcedure>
+            CREATE FUNCTION public.update_project_activity_date()
+            RETURNS trigger
+            LANGUAGE 'plpgsql'
+            COST 100
+            VOLATILE NOT LEAKPROOF
+            AS $BODY$BEGIN
+            IF NEW.LAST_ACTIVITY_DATE != OLD.LAST_ACTIVITY_DATE THEN
+            UPDATE PROJECT SET LAST_ACTIVITY_DATE = NEW.LAST_ACTIVITY_DATE
+            WHERE id = NEW.PROJECT_ID;
+            END IF;
+
+            RETURN NEW;
+            END;$BODY$;
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="20191001-4" author="daehyun@skymind.io">
+        <createProcedure>
+            CREATE TRIGGER update_project
+            AFTER UPDATE OF last_activity_date
+            ON public.model
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.update_project_activity_date();
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="20191002" author="vesa@vaadin.com">
+        <addUniqueConstraint columnNames="EMAIL"
+                             tableName="PATHMIND_USER"
+        />
+
+        <addColumn tableName="PATHMIND_USER">
+            <column name="DELETE_AT" type="DATETIME"/>
+            <column name="EMAIL_VERIFIED_AT" type="DATETIME"/>
+            <column name="EMAIL_VERIFICATION_TOKEN" type="UUID"/>
+        </addColumn>
+        <!-- TODO: once jooq-codegen:generate works modify the password field to be called - -->
+        <!--renameColumn newColumnName="PASSWORD_HASH"
+                      oldColumnName="password"
+                      tableName="PATHMIND_USER"/-->
+        <!-- TODO: change the password for users to this: -->
+        <!--$2a$10$9MDQO5k8e062Lhbq459KJOAgx.JP3c3P6UiXKYh5b5P6l1SFT0AtW-->
+    </changeSet>
+
+    <changeSet id="20191003-1" author="daehyun@skymind.io">
+        <update tableName="PATHMIND_USER">
+            <!-- literally "pw!skymind19" -->
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+            <where>EMAIL='steph@followsteph.com'</where>
+        </update>
+        <update tableName="PATHMIND_USER">
+            <!-- literally "pw!skymind19" -->
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+            <where>EMAIL='bob@skymind.io'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="20191003-2" author="daehyun@skymind.io">
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Deborah Lentle"/>
+            <column name="EMAIL" value="deborah.lentle@decisionlab.co.uk"/>
+            <column name="PASSWORD" value="$2a$10$AwwRO2OuIYnHlcw/wsFq.e8Z8nMMXIDS2jUSEQb/qtKktuAeOwYoi"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Kelvin Yeung"/>
+            <column name="EMAIL" value="kelvin.yeung@decisionlab.co.uk"/>
+            <column name="PASSWORD" value="$2a$10$F7GTC2XqZJqwFdVyZLPV6uM7yhqr5zRQ5xiFSQ3i8575hsSgw3z9y"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Roberto Grugni"/>
+            <column name="EMAIL" value="roberto.grugni@eng.it"/>
+            <column name="PASSWORD" value="$2a$10$Egd0u307wnc2DeppFhQhfOXqFMC4vHXuQEKPeqydHt11CUJ90Ihla"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Luigi Manca"/>
+            <column name="EMAIL" value="luigi.manca@eng.it"/>
+            <column name="PASSWORD" value="$2a$10$clJqjNE/brUFYK7J5auq1.e5/wwFu5fsXZ0V15HBnJdtGJGEQoEaK"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Mahdavi"/>
+            <column name="EMAIL" value="mahdavi@anylogic.com"/>
+            <column name="PASSWORD" value="$2a$10$5ge6QQ.Qv9AY1atSIHTV/.J4r2xrR67lm73.bLqmrH9es2CdNbS/K"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Stefan Hauers"/>
+            <column name="EMAIL" value="stefan.hauers@cnx-consulting.de"/>
+            <column name="PASSWORD" value="$2a$10$r2r5ZkIcd/p.N3NB0BI54O50uhfqb3z0zNE1F4KIOYvcRSsswS6.C"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="T Wolfeadam"/>
+            <column name="EMAIL" value="t.wolfeadam@anylogic.com"/>
+            <column name="PASSWORD" value="$2a$10$f84hlX0MNDYZ5vlavVT1BerXyVO0OPe1ambxUTh2OQAEyReuuJjf."/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

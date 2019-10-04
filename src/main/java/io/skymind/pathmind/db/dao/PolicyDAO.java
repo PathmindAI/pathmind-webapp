@@ -52,6 +52,7 @@ public class PolicyDAO extends PolicyRepository
 
                     try {
                         final JSONB progressJson = it.get(tbl.PROGRESS);
+                        policy.setProgress(progressJson.toString());
                         final Progress progress = objectMapper.readValue(progressJson.toString(), Progress.class);
                         policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
                     } catch (IOException e) {

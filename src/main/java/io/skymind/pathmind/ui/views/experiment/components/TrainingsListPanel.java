@@ -10,6 +10,8 @@ import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
+import io.skymind.pathmind.ui.utils.ExperimentViewUtil;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
@@ -49,33 +51,37 @@ public class TrainingsListPanel extends VerticalLayout
 	private void setupGrid()
 	{
 		grid = new Grid<>();
-
-		// TODO -> DH -> Cases #83, #83, #85, and #86 -> Where do specific columns come from?
-		grid.addColumn(policy -> policy.getRun().getStatusEnum().toString())
+		grid.addColumn(policy -> ExperimentViewUtil.getRunStatus(policy))
 				.setHeader("Status")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(policy -> "Completed TODO")
+
+		grid.addColumn(policy -> ExperimentViewUtil.getRunCompletedTime(policy))
 				.setHeader("Completed")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(policy -> "Score todo")
+
+		grid.addColumn(policy -> ExperimentViewUtil.getLastScore(policy))
 				.setHeader("Score")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(Policy::getName)
+
+		grid.addColumn(policy -> ExperimentViewUtil.getParsedPolicyName(policy))
 				.setHeader("Policy")
 				.setAutoWidth(true)
 				.setSortable(true);
+
 		grid.addColumn(policy -> policy.getRun().getRunTypeEnum())
 				.setHeader("Run Type")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(Policy::getAlgorithm)
+
+		grid.addColumn(policy -> ProgressInterpreter.interpretKey(policy.getName()).getAlgorithm())
 				.setHeader("Algorithm")
 				.setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(policy -> "Notes TODO")
+
+		grid.addColumn(policy -> ProgressInterpreter.interpretKey(policy.getName()).getHyperParameters().toString().replaceAll("(\\{|\\})", ""))
 				.setHeader("Notes")
 				.setAutoWidth(true)
 				.setSortable(true);

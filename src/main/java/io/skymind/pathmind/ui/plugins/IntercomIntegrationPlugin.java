@@ -5,6 +5,7 @@ import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import com.vaadin.flow.shared.ui.LoadMode;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.data.utils.PathmindUserUtils;
+import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +34,7 @@ public class IntercomIntegrationPlugin
 	 * such as name or email on the login page otherwise the Intercom Javascript will fail with a non-obvious error.
  	 */
 	private PendingJavaScriptResult getPathmindUserInfoForIntercom() {
-		PathmindUser user = SecurityUtils.getUser();
+		PathmindUserDetails user = SecurityUtils.getUser();
 		return UI.getCurrent().getPage().executeJs(
 				getJavascriptVariables(),
 				appId,
@@ -42,15 +43,15 @@ public class IntercomIntegrationPlugin
 				getUserId(user));
 	}
 
-	private String getFullName(PathmindUser user) {
+	private String getFullName(PathmindUserDetails user) {
 		return user == null || StringUtils.isEmpty(PathmindUserUtils.getFullName(user)) ? "Anonymous" : PathmindUserUtils.getFullName(user);
 	}
 
-	private String getEmail(PathmindUser user) {
-		return user == null || StringUtils.isEmpty(user.getEmail()) ? "Anonymous" : user.getEmail();
+	private String getEmail(PathmindUserDetails user) {
+		return user == null || StringUtils.isEmpty(user.getUsername()) ? "Anonymous" : user.getEmail();
 	}
 
-	private String getUserId(PathmindUser user) {
+	private String getUserId(PathmindUserDetails user) {
 		return user == null ? "-1" : Long.toString(user.getId());
 	}
 

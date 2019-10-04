@@ -25,7 +25,7 @@ public class ExperimentRepository
         Record record = dslContext
             .select(EXPERIMENT.asterisk())
 			.select(MODEL.ID, MODEL.NAME, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION)
-			.select(PROJECT.ID, PROJECT.NAME)
+			.select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
 			.from(EXPERIMENT)
 			.leftJoin(MODEL)
 				.on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))

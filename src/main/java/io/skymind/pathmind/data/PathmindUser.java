@@ -1,6 +1,8 @@
 package io.skymind.pathmind.data;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public class PathmindUser
 {
@@ -16,6 +18,9 @@ public class PathmindUser
 	private String state;
 	private String country;
 	private String zip;
+	private LocalDateTime deleteAt;
+	private LocalDateTime emailVerifiedAt;
+	private UUID emailVerificationToken;
 
 	private List<Project> projects;
 
@@ -132,4 +137,30 @@ public class PathmindUser
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	public LocalDateTime getDeleteAt() {
+		return deleteAt;
+	}
+
+	public void setDeleteAt(LocalDateTime deleteAt) {
+		this.deleteAt = deleteAt;
+	}
+
+	public LocalDateTime getEmailVerifiedAt() {
+		return emailVerifiedAt;
+	}
+
+	public void setEmailVerifiedAt(LocalDateTime emailVerifiedAt) {
+		this.emailVerifiedAt = emailVerifiedAt;
+	}
+
+	public UUID getEmailVerificationToken() {
+		return emailVerificationToken;
+	}
+
+	public void setEmailVerificationToken(UUID emailVerificationToken) {
+		this.emailVerificationToken = emailVerificationToken;
+	}
+
 }
+

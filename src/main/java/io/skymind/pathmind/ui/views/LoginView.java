@@ -4,6 +4,8 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
@@ -27,7 +29,7 @@ import java.util.HashMap;
 @Route("login")
 @Theme(Lumo.class)
 @HtmlImport("frontend://styles/shared-styles.html")
-public class LoginView extends LoginOverlay implements BeforeEnterObserver, HasDynamicTitle, PageConfigurator
+public class LoginView extends LoginOverlay implements AfterNavigationObserver, BeforeEnterObserver, HasDynamicTitle, PageConfigurator
 {
 	@Autowired
 	private UserDAO userDAO;
@@ -45,20 +47,9 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver, HasD
 		loginForm.getForm().setUsername("Email");
 		setI18n(loginForm);
 
-		addLoginListener(e -> handleLogin(e));
+		setAction("login");
 
 		intercomIntegrationPlugin.addPluginToPage();
-	}
-
-	private void handleLogin(LoginEvent e) {
-		if(SecurityUtils.isAuthenticatedUser(e.getUsername(), e.getPassword(), userDAO))
-			navigateToEntryView();
-		else
-			setError(true);
-	}
-
-	private void navigateToEntryView() {
-		UI.getCurrent().navigate(getRerouteClass());
 	}
 
 	private Class getRerouteClass() {
@@ -89,4 +80,12 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver, HasD
 	public void configurePage(InitialPageSettings settings) {
 		VaadinUtils.setupFavIcon(settings);
 	}
+
+	@Override
+	public void afterNavigation(AfterNavigationEvent event) {
+		setError(
+				event.getLocation().getQueryParameters().getParameters().containsKey(
+						"error"));
+	}
+
 }

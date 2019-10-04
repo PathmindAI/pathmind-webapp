@@ -3,8 +3,9 @@ package io.skymind.pathmind.ui.views.experiment.components;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
+import io.skymind.pathmind.ui.utils.ExperimentViewUtil;
 
 public class PolicyHighlightPanel extends VerticalLayout
 {
@@ -27,9 +28,8 @@ public class PolicyHighlightPanel extends VerticalLayout
 	}
 
 	public void update(Policy policy) {
-		policyLabel.setText(policy.getName());
-		// TODO -> How do we calculate?
-//		scoreLabel.setText(policy.getProgress());
-		algorithmLabel.setText(policy.getAlgorithm().toString());
+		policyLabel.setText(ExperimentViewUtil.getParsedPolicyName(policy));
+		scoreLabel.setText(ExperimentViewUtil.getLastScore(policy));
+		algorithmLabel.setText(ProgressInterpreter.interpretKey(policy.getName()).getAlgorithm());
 	}
 }

@@ -48,7 +48,7 @@ public class TrainingService {
 
     public void startTestRun(Experiment exp){
         final Run run = runDAO.createRun(exp, RunType.TestRun);
-        // Get model from the database, as the one we can get from the experiment dosen't have all fields
+        // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelDAO.getModel(exp.getModelId());
 
         final JobSpec spec = new JobSpec(
@@ -76,8 +76,8 @@ public class TrainingService {
     }
 
     public void startDiscoveryRun(Experiment exp){
-        final Run run = runDAO.createRun(exp, RunType.DiscoverRun);
-        // Get model from the database, as the one we can get from the experiment dosen't have all fields
+        final Run run = runDAO.createRun(exp, RunType.DiscoveryRun);
+        // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelDAO.getModel(exp.getModelId());
 
         final JobSpec spec = new JobSpec(
@@ -106,7 +106,7 @@ public class TrainingService {
 
     public void startFullRun(Experiment exp, Policy pol){
         final Run run = runDAO.createRun(exp, RunType.FullRun);
-        // Get model from the database, as the one we can get from the experiment dosen't have all fields
+        // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelDAO.getModel(exp.getModelId());
 
         final JSONB progress = ctx.select(Tables.POLICY.PROGRESS).from(Tables.POLICY).where(Tables.POLICY.ID.eq(pol.getId())).fetchOne().get(Tables.POLICY.PROGRESS);
