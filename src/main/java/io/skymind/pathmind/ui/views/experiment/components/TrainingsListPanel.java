@@ -129,10 +129,6 @@ public class TrainingsListPanel extends VerticalLayout
 							grid.getDataProvider().refreshAll();
 						});
 
-		// TODO -> Re-select same policy ?
-		// TODO -> refilter according to the search box. ?
-		grid.setItems(experiment.getPolicies());
-
 		// BUG -> If you search/filter after an update the grid uses the old value in the row.
 		// TODO -> Re-select same policy
 		// TODO -> refilter according to the search box.
