@@ -137,13 +137,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		tipsTextArea = new TextArea("Tips");
 		tipsTextArea.setSizeFull();
 		tipsTextArea.setReadOnly(true);
-		tipsTextArea.setReadOnly(true);
+		tipsTextArea.setValue("There are two \"general purpose\" reward functions:\n\n" +
+		"1. 'reward = after[0] - before[0];'\n" +
+				"2. 'reward = before[0] - after[0];'\n\n" +
+				"The first is used when you want to maximize something, the second when you want to minimize something."
+		);
 
 		return WrapperUtils.wrapSizeFullVertical(
 				getTopButtonPanel(),
 				getTopStatusPanel(),
-				tipsTextArea,
 				getObservationTextArea,
+				tipsTextArea,
 				getActionButtons());
 	}
 
@@ -153,27 +157,26 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 				click -> handleStartRunButtonClicked());
 		startRunButton.setIconAfterText(true);
 
-
-		// TODO: Make Discovery available from after a test run only
-		final Button startDiscoveryButton = new Button("Start (Discovery RUN)", new Icon(VaadinIcon.CHEVRON_RIGHT),
-				click -> {
-					ExceptionWrapperUtils.handleButtonClicked(() ->
-					{
-						if(!FormUtils.isValidForm(binder, experiment))
-							return;
-
-						experimentDAO.updateRewardFunction(experiment);
-						trainingService.startDiscoveryRun(experiment);
-						UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
-					});
-				});
-		startDiscoveryButton.setIconAfterText(true);
-
+//
+//		// TODO: Make Discovery available from after a test run only
+//		final Button startDiscoveryButton = new Button("Start (Discovery RUN)", new Icon(VaadinIcon.CHEVRON_RIGHT),
+//				click -> {
+//					ExceptionWrapperUtils.handleButtonClicked(() ->
+//					{
+//						if(!FormUtils.isValidForm(binder, experiment))
+//							return;
+//
+//						experimentDAO.updateRewardFunction(experiment);
+//						trainingService.startDiscoveryRun(experiment);
+//						UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+//					});
+//				});
+//		startDiscoveryButton.setIconAfterText(true);
 
 
 		return WrapperUtils.wrapWidthFullCenterVertical(
 				startRunButton,
-				startDiscoveryButton,
+//				startDiscoveryButton,
 				new Label("Start Test Run"));
 	}
 
