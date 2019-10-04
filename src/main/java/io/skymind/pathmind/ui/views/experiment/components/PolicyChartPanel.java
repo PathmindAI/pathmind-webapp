@@ -9,6 +9,7 @@ import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.ui.components.FilterableComponent;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -17,7 +18,7 @@ import java.util.List;
 
 
 @Component
-public class PolicyChartPanel extends VerticalLayout
+public class PolicyChartPanel extends VerticalLayout implements FilterableComponent<Policy>
 {
 	private Chart chart = new Chart(ChartType.SPLINE);
 
@@ -65,14 +66,6 @@ public class PolicyChartPanel extends VerticalLayout
 		return experiment;
 	}
 
-	public void filter(List<Policy> filteredPolicies) {
-		remove(chart);
-		this.chart = new Chart(ChartType.SPLINE);
-		setupChart();
-		add(chart);
-		updateChart(filteredPolicies);
-	}
-
 	public void update(Experiment experiment) {
 		this.experiment = experiment;
 		updateChart(experiment.getPolicies());
@@ -88,6 +81,20 @@ public class PolicyChartPanel extends VerticalLayout
 	// TODO -> Does not seem possible yet: https://vaadin.com/forum/thread/17856633/is-it-possible-to-highlight-a-series-in-a-chart-programmatically
 	public void highlightPolicy(Policy policy)
 	{
+	}
+
+	@Override
+	public List<Policy> getData() {
+		return experiment.getPolicies();
+	}
+
+	@Override
+	public void setFilteredData(List<Policy> filteredPolicies) {
+		remove(chart);
+		this.chart = new Chart(ChartType.SPLINE);
+		setupChart();
+		add(chart);
+		updateChart(filteredPolicies);
 	}
 }
 

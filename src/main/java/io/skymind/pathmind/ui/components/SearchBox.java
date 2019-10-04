@@ -7,36 +7,34 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import io.micrometer.core.instrument.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.function.*;
 import java.util.stream.Collectors;
 
-public abstract class SearchBox<T> extends HorizontalLayout
+public class SearchBox<T> extends HorizontalLayout
 {
-	protected abstract boolean isMatch(T t, String searchValue);
-
 	private TextField searchTextField = new TextField();
 	private Button searchButton = new Button(new Icon(VaadinIcon.SEARCH));
 
-	private Consumer<List<T>> searchConsumer;
-
 	private Grid<T> grid;
-	private Supplier<List<T>> itemListSupplier;
-	private BiPredicate<T, String> isMatch;
 	private boolean isSelectFirstOnSearch;
 
-	public SearchBox(Grid<T> grid, Supplier<List<T>> itemListSupplier) {
-		this(grid, itemListSupplier, false);
+	private ArrayList<FilterableComponent> filterableComponents;
+
+	public SearchBox(Grid<T> grid, PathmindFilterInterface searchPredicate) {
+		this(grid, searchPredicate, false);
 	}
 
-	public SearchBox(Grid<T> grid, Supplier<List<T>> itemListSupplier, boolean isSelectFirstOnSearch)
+	public SearchBox(Grid<T> grid, PathmindFilterInterface searchPredicate, boolean isSelectFirstOnSearch)
 	{
 		this.grid = grid;
-		this.itemListSupplier = itemListSupplier;
 		this.isSelectFirstOnSearch = isSelectFirstOnSearch;
+
+		this.filterableComponents = new ArrayList<FilterableComponent>();
 
 		setSpacing(false);
 		setJustifyContentMode(FlexComponent.JustifyContentMode.END);
@@ -44,31 +42,28 @@ public abstract class SearchBox<T> extends HorizontalLayout
 		searchTextField.setWidthFull();
 		searchTextField.setClearButtonVisible(true);
 		searchTextField.setValueChangeMode(ValueChangeMode.EAGER);
-		searchButton.addClickListener(click -> search());
-    	searchTextField.addValueChangeListener(change -> search());
+		searchButton.addClickListener(click -> search(searchPredicate));
+    	searchTextField.addValueChangeListener(change -> search(searchPredicate));
 
 		add(searchTextField, searchButton);
 	}
 
-	public void addSearchListener(Consumer<List<T>> searchConsumer) {
-		this.searchConsumer = searchConsumer;
-	}
+	public void search(PathmindFilterInterface searchPredicate)
+	{
+		ListDataProvider<T> listDataProvider = ((ListDataProvider<T>)grid.getDataProvider());
+		listDataProvider.addFilter(t -> searchPredicate.isMatch(t, searchTextField.getValue()));
 
-	public void search() {
-		if(StringUtils.isEmpty(searchTextField.getValue())) {
-			updateGrid(itemListSupplier.get());
-		} else {
-			updateGrid(itemListSupplier.get().stream()
-					.filter(t -> isMatch(t, searchTextField.getValue()))
+		if(isSelectFirstOnSearch)
+			grid.select(listDataProvider.getItems().iterator().next());
+
+		filterableComponents.stream().forEach(filterableComponent -> {
+			filterableComponent.setFilteredData((List<T>)filterableComponent.getData().stream()
+					.filter(t -> searchPredicate.isMatch((T)t, searchTextField.getValue()))
 					.collect(Collectors.toList()));
-		}
+		});
 	}
 
-	private void updateGrid(List<T> results) {
-		grid.setItems(results);
-		if(searchConsumer != null)
-			searchConsumer.accept(results);
-		if(isSelectFirstOnSearch && results.size() > 0)
-			grid.select(results.get(0));
+	public void addFilterableComponents(FilterableComponent... newFilterableComponents) {
+		this.filterableComponents.addAll(Arrays.asList(newFilterableComponents));
 	}
 }

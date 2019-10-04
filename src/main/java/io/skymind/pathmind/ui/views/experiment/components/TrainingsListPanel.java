@@ -12,22 +12,20 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import io.skymind.pathmind.ui.utils.ExperimentViewUtil;
+import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
-import io.skymind.pathmind.ui.views.policy.components.PolicySearchBox;
+import io.skymind.pathmind.ui.views.policy.filter.PolicyFilter;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Component
 public class TrainingsListPanel extends VerticalLayout
 {
-	private PolicySearchBox searchBox;
+	private SearchBox<Policy> searchBox;
 	private Grid<Policy> grid;
 
 	private Experiment experiment;
@@ -100,12 +98,12 @@ public class TrainingsListPanel extends VerticalLayout
 				searchBox);
 	}
 
-	public void addSearchListener(Consumer<List<Policy>> searchConsumer) {
-		searchBox.addSearchListener(searchConsumer);
+	private void setupSearchBox() {
+		searchBox = new SearchBox(grid, new PolicyFilter(), true);
 	}
 
-	private void setupSearchBox() {
-		searchBox = new PolicySearchBox(grid, () -> experiment.getPolicies(), true);
+	public SearchBox getSearchBox() {
+		return searchBox;
 	}
 
 	private void subscribeToEventBus(UI ui, Flux<PathmindBusEvent> consumer) {
@@ -121,9 +119,18 @@ public class TrainingsListPanel extends VerticalLayout
 				.filter(policy -> policy.getId() == updatedPolicy.getId())
 				.findAny()
 				.ifPresentOrElse(
-						policy -> replacePolicy(updatedPolicy),
-						() -> experiment.getPolicies().add(updatedPolicy));
+						policy -> {
+							replacePolicy(updatedPolicy);
+							grid.getDataProvider().refreshItem(updatedPolicy);
+						},
+						() -> {
+							experiment.getPolicies().add(updatedPolicy);
+							// We need to refreshAll because otherwise the grid does not see the new row.
+							grid.getDataProvider().refreshAll();
+						});
 
+		// TODO -> Re-select same policy ?
+		// TODO -> refilter according to the search box. ?
 		grid.setItems(experiment.getPolicies());
 
 		// BUG -> If you search/filter after an update the grid uses the old value in the row.
@@ -146,7 +153,6 @@ public class TrainingsListPanel extends VerticalLayout
 		this.experiment = experiment;
 
 		grid.setDataProvider(new ListDataProvider<Policy>(experiment.getPolicies()));
-//		grid.setItems(experiment.getPolicies());
 
 		if(!experiment.getPolicies().isEmpty() && defaultSelectedPolicyId < 0) {
 			grid.select(experiment.getPolicies().get(0));

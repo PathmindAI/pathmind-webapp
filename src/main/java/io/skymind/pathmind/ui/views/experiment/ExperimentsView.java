@@ -21,8 +21,8 @@ import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.components.ExperimentSearchBox;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
+import io.skymind.pathmind.ui.views.experiment.filter.ExperimentFilter;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.model.ModelsView;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
@@ -92,7 +92,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	}
 
 	private SearchBox getSearchBox() {
-		return new ExperimentSearchBox(experimentGrid, () -> getExperiments());
+		return new SearchBox<Experiment>(experimentGrid, new ExperimentFilter());
 	}
 
 	private ArchivesTabPanel getArchivesTabPanel() {

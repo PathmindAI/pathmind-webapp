@@ -10,17 +10,17 @@ import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.dashboard.components.DashboardSearchBox;
+import io.skymind.pathmind.ui.views.dashboard.filter.DashboardFilter;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
@@ -37,7 +37,7 @@ public class DashboardView extends PathMindDefaultView
 	@Autowired
 	private PolicyDAO policyDAO;
 
-	private DashboardSearchBox searchBox;
+	private SearchBox<Policy> searchBox;
 	private Grid<Policy> dashboardGrid;
 
 	private List<Policy> policies;
@@ -65,7 +65,7 @@ public class DashboardView extends PathMindDefaultView
 	}
 
 	private void setupSearchBox() {
-		searchBox = new DashboardSearchBox(dashboardGrid, () -> getPolicies());
+		searchBox = new SearchBox<Policy>(dashboardGrid, new DashboardFilter());
 	}
 
 	private void setupDashboardGrid()

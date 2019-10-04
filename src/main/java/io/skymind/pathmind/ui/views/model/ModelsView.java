@@ -22,7 +22,7 @@ import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
-import io.skymind.pathmind.ui.views.model.components.ModelSearchBox;
+import io.skymind.pathmind.ui.views.model.filter.ModelFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -70,7 +70,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	}
 
 	private SearchBox getSearchBox() {
-		return new ModelSearchBox(modelGrid, () -> getModels());
+		return new SearchBox<Model>(modelGrid, new ModelFilter());
 	}
 
 	private void setupGrid()

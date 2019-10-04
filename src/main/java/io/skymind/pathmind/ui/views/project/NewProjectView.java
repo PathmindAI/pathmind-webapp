@@ -177,7 +177,6 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 	@Override
 	public void fileSuccessfullyVerified() {
-//		PushUtils.push(getProjectView(), () -> {
 		PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
 			setVisibleWizardPanel(modelDetailsWizardPanel);
