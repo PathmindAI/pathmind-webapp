@@ -111,10 +111,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
 		});
 
-		// Only show policies that have been filtered/searched in the charts
-		trainingsListPanel.addSearchListener(policies -> policyChartPanel.filter(policies));
-
 		policyChartPanel = new PolicyChartPanel(consumer);
+
+		trainingsListPanel.getSearchBox().addFilterableComponents(policyChartPanel);
 
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
 				policyChartPanel,

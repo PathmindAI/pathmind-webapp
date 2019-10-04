@@ -24,7 +24,7 @@ import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.model.ModelsView;
-import io.skymind.pathmind.ui.views.project.components.ProjectSearchBox;
+import io.skymind.pathmind.ui.views.project.filter.ProjectFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -67,7 +67,7 @@ public class ProjectsView extends PathMindDefaultView
 	}
 
 	private SearchBox<Project> getSearchBox() {
-		return new ProjectSearchBox(projectGrid, () -> getProjects());
+		return new SearchBox<Project>(projectGrid, new ProjectFilter());
 	}
 
 	private ArchivesTabPanel getTabbedPanel() {
@@ -79,7 +79,7 @@ public class ProjectsView extends PathMindDefaultView
 
 	private void setupProjectGrid()
 	{
-		projectGrid = new Grid<>();
+		projectGrid = new Grid<Project>();
 
 		projectGrid.addColumn(Project::getName)
 				.setHeader("Name")
