@@ -1,11 +1,8 @@
 package io.skymind.pathmind.data;
 
-import lombok.Data;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
 public class Experiment extends ArchivableData
 {
 	private long id;
