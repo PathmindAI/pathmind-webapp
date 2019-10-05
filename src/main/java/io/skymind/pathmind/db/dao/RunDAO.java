@@ -11,6 +11,9 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import static io.skymind.pathmind.data.db.Tables.RUN;
 
 @Repository
 public class RunDAO extends RunRepository
@@ -39,5 +42,15 @@ public class RunDAO extends RunRepository
                 set(Tables.RUN.STATUS, RunStatus.Starting.getValue())
                 .set(Tables.RUN.STARTED_AT, LocalDateTime.now())
                 .where(Tables.RUN.ID.eq(runId)).execute();
+    }
+
+
+
+    public List<Run> getRunsForExperiment(long experimentId) {
+        return ctx
+                .select(RUN.asterisk())
+                .from(RUN)
+                .where(RUN.EXPERIMENT_ID.eq(experimentId))
+                .fetchInto(Run.class);
     }
 }
