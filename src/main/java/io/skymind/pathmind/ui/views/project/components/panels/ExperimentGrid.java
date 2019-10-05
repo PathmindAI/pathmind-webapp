@@ -19,7 +19,6 @@ public class ExperimentGrid extends Grid<Experiment>
 {
 	public ExperimentGrid()
 	{
-		// TODO -> DH -> You will need to fll in all the todo values
 		addColumn(Experiment::getName)
 				.setHeader("Experiment")
 				.setAutoWidth(true)
