@@ -96,10 +96,12 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	}
 
 	private ArchivesTabPanel getArchivesTabPanel() {
-		return new ArchivesTabPanel<Experiment>(
-				"Experiments",
-				experimentGrid,
-				this::getExperiments);
+		return null;
+//		return new ArchivesTabPanel<Experiment>(
+//				"Experiments",
+//				experimentGrid,
+//				this::getExperiments,
+//				experimentDAO);
 	}
 
 	private void setupExperimentListPanel() {
