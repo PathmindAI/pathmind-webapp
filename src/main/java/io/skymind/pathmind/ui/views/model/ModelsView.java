@@ -63,11 +63,11 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	}
 
 	private ArchivesTabPanel getArchivesTabPanel() {
-		return null;
-//		return new ArchivesTabPanel<Model>(
-//				"Models",
-//				modelGrid,
-//				this::getModels);
+		return new ArchivesTabPanel<Model>(
+				"Models",
+				modelGrid,
+				this::getModels,
+				null);
 	}
 
 	private SearchBox getSearchBox() {
