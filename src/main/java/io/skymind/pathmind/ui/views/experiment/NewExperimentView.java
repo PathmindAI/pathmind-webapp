@@ -24,6 +24,7 @@ import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
+import io.skymind.pathmind.ui.components.buttons.StartRunButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.*;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
@@ -149,7 +150,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Component getTopButtonPanel()
 	{
-		final Button startRunButton = new Button("Start (TEST RUN)", new Icon(VaadinIcon.CHEVRON_RIGHT),
+		final Button startRunButton = new StartRunButton("Start (TEST RUN)", new Icon(VaadinIcon.CHEVRON_RIGHT),
 				click -> handleStartRunButtonClicked());
 		startRunButton.setIconAfterText(true);
 
