@@ -17,7 +17,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -50,7 +49,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private ScreenTitlePanel screenTitlePanel;
 
 	private Label projectLabel;
-	private Label runTypeLabel;
 	private Label modelRevisionLabel;
 	private Label experimentLabel;
 
@@ -196,16 +194,18 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Component getTopStatusPanel()
 	{
 		projectLabel = new Label();
-		runTypeLabel = new Label();
 		modelRevisionLabel = new Label();
 		experimentLabel = new Label();
 
 		FormLayout formLayout = new FormLayout();
-		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("100px", 4, FormLayout.ResponsiveStep.LabelsPosition.TOP));
+		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("100px", 3, FormLayout.ResponsiveStep.LabelsPosition.TOP));
 
 		formLayout.addFormItem(projectLabel, "Project");
-		formLayout.addFormItem(runTypeLabel, "Run Type");
-		formLayout.addFormItem(modelRevisionLabel, "Model Revision");
+
+		// todo we make below revert to model revision
+//		formLayout.addFormItem(modelRevisionLabel, "Model Revision");
+		formLayout.addFormItem(modelRevisionLabel, "Model");
+
 		formLayout.addFormItem(experimentLabel, "Experiment");
 
 		return formLayout;
@@ -267,7 +267,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private void updateTopStatusPanel(Experiment experiment) {
 		projectLabel.setText(experiment.getProject().getName());
-		runTypeLabel.setText(RunType.TestRun.toString());
 		modelRevisionLabel.setText(experiment.getModel().getName());
 		experimentLabel.setText(experiment.getName());
 	}
