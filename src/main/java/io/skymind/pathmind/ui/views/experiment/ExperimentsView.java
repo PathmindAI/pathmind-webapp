@@ -100,7 +100,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 				"Experiments",
 				experimentGrid,
 				this::getExperiments,
-				null);
+				(experimentId, isArchivable) -> experimentDAO.archive(experimentId, isArchivable));
 	}
 
 	private void setupExperimentListPanel() {

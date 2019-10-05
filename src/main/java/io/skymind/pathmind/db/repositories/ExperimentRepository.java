@@ -47,6 +47,13 @@ public class ExperimentRepository
 				.fetchInto(Experiment.class);
 	}
 
+	public void archive(long experimentId, boolean isArchive) {
+    	dslContext.update(EXPERIMENT)
+				.set(EXPERIMENT.ARCHIVED, isArchive)
+				.where(EXPERIMENT.ID.eq(experimentId))
+				.execute();
+	}
+
 	public void updateRewardFunction(Experiment experiment) {
     	dslContext
 				.update(EXPERIMENT)
