@@ -15,6 +15,8 @@ The other parts of Pathmind (NativeRL, Pathmind Helper) can be currently still b
 - **Deployment:** Azure
 - **Database Migrations:** Liquibase
 
+[Detailed documentation can be found on the wiki](https://github.com/SkymindIO/pathmind-webapp/wiki)
+
 
 ## Setup
 
