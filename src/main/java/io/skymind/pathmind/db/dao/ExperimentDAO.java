@@ -49,4 +49,11 @@ public class ExperimentDAO extends ExperimentRepository
 
 		return ex.getId();
 	}
+
+	public int getExperimentCount(long modelId) {
+		return ctx.selectCount()
+				.from(EXPERIMENT)
+				.where(EXPERIMENT.MODEL_ID.eq(modelId))
+				.fetchOne(0, int.class);
+	}
 }

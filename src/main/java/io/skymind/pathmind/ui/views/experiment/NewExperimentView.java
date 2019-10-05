@@ -17,7 +17,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -50,7 +49,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private ScreenTitlePanel screenTitlePanel;
 
 	private Label projectLabel;
-	private Label runTypeLabel;
 	private Label modelRevisionLabel;
 	private Label experimentLabel;
 
@@ -137,13 +135,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		tipsTextArea = new TextArea("Tips");
 		tipsTextArea.setSizeFull();
 		tipsTextArea.setReadOnly(true);
-		tipsTextArea.setReadOnly(true);
+		tipsTextArea.setValue("There are two \"general purpose\" reward functions:\n\n" +
+		"1. 'reward = after[0] - before[0];'\n" +
+				"2. 'reward = before[0] - after[0];'\n\n" +
+				"The first is used when you want to maximize something, the second when you want to minimize something."
+		);
 
 		return WrapperUtils.wrapSizeFullVertical(
 				getTopButtonPanel(),
 				getTopStatusPanel(),
-				tipsTextArea,
 				getObservationTextArea,
+				tipsTextArea,
 				getActionButtons());
 	}
 
@@ -153,28 +155,24 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 				click -> handleStartRunButtonClicked());
 		startRunButton.setIconAfterText(true);
 
+//
+//		// TODO: Make Discovery available from after a test run only
+//		final Button startDiscoveryButton = new Button("Start (Discovery RUN)", new Icon(VaadinIcon.CHEVRON_RIGHT),
+//				click -> {
+//					ExceptionWrapperUtils.handleButtonClicked(() ->
+//					{
+//						if(!FormUtils.isValidForm(binder, experiment))
+//							return;
+//
+//						experimentDAO.updateRewardFunction(experiment);
+//						trainingService.startDiscoveryRun(experiment);
+//						UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+//					});
+//				});
+//		startDiscoveryButton.setIconAfterText(true);
 
-		// TODO: Make Discovery available from after a test run only
-		final Button startDiscoveryButton = new Button("Start (Discovery RUN)", new Icon(VaadinIcon.CHEVRON_RIGHT),
-				click -> {
-					ExceptionWrapperUtils.handleButtonClicked(() ->
-					{
-						if(!FormUtils.isValidForm(binder, experiment))
-							return;
 
-						experimentDAO.updateRewardFunction(experiment);
-						trainingService.startDiscoveryRun(experiment);
-						UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
-					});
-				});
-		startDiscoveryButton.setIconAfterText(true);
-
-
-
-		return WrapperUtils.wrapWidthFullCenterVertical(
-				startRunButton,
-				startDiscoveryButton,
-				new Label("Start Test Run"));
+		return WrapperUtils.wrapWidthFullCenterVertical(startRunButton);
 	}
 
 	private void handleStartRunButtonClicked() {
@@ -193,16 +191,18 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Component getTopStatusPanel()
 	{
 		projectLabel = new Label();
-		runTypeLabel = new Label();
 		modelRevisionLabel = new Label();
 		experimentLabel = new Label();
 
 		FormLayout formLayout = new FormLayout();
-		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("100px", 4, FormLayout.ResponsiveStep.LabelsPosition.TOP));
+		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("100px", 3, FormLayout.ResponsiveStep.LabelsPosition.TOP));
 
 		formLayout.addFormItem(projectLabel, "Project");
-		formLayout.addFormItem(runTypeLabel, "Run Type");
-		formLayout.addFormItem(modelRevisionLabel, "Model Revision");
+
+		// todo we make below revert to model revision
+//		formLayout.addFormItem(modelRevisionLabel, "Model Revision");
+		formLayout.addFormItem(modelRevisionLabel, "Model");
+
 		formLayout.addFormItem(experimentLabel, "Experiment");
 
 		return formLayout;
@@ -264,7 +264,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private void updateTopStatusPanel(Experiment experiment) {
 		projectLabel.setText(experiment.getProject().getName());
-		runTypeLabel.setText(RunType.TestRun.toString());
 		modelRevisionLabel.setText(experiment.getModel().getName());
 		experimentLabel.setText(experiment.getName());
 	}

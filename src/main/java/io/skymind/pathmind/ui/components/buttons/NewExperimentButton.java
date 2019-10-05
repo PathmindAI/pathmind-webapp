@@ -13,20 +13,17 @@ public class NewExperimentButton extends Button
 {
 	// TODO -> ExperimentDAO should be injected.
 	public NewExperimentButton(ExperimentDAO experimentDAO, long modelId) {
-		this(experimentDAO, modelId, "todo rewardFunction");
+		this(experimentDAO, modelId, "reward = after[0] - before[0];");
 	}
 
-	// TODO -> Case #79 -> How do we get the name? Id number?
-	//  https://github.com/SkymindIO/pathmind-webapp/issues/79
-	// TODO -> Case #80 -> Do we use the same reward function from the experiment we're on as a default value?
-	//  https://github.com/SkymindIO/pathmind-webapp/issues/80
 	public NewExperimentButton(ExperimentDAO experimentDAO, long modelId, String rewardFunction)
 	{
 		super("New Experiment");
 		setIcon(new Icon(VaadinIcon.PLUS));
 
+		String experimentName = "Experiment " + (experimentDAO.getExperimentCount(modelId) + 1);
 		addClickListener(click -> {
-			Experiment newExperiment = ExperimentUtils.generateNewDefaultExperiment(modelId, "Todo Experiment", rewardFunction);
+			Experiment newExperiment = ExperimentUtils.generateNewDefaultExperiment(modelId, experimentName, rewardFunction);
 			long newExperimentId = experimentDAO.setupNewExperiment(newExperiment);
 			UI.getCurrent().navigate(NewExperimentView.class, newExperimentId);
 		});
