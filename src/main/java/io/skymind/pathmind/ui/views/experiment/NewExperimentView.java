@@ -172,10 +172,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 //		startDiscoveryButton.setIconAfterText(true);
 
 
-		return WrapperUtils.wrapWidthFullCenterVertical(
-				startRunButton,
-//				startDiscoveryButton,
-				new Label("Start Test Run"));
+		return WrapperUtils.wrapWidthFullCenterVertical(startRunButton);
 	}
 
 	private void handleStartRunButtonClicked() {
