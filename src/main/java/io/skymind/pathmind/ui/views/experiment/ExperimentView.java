@@ -8,8 +8,10 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 import io.skymind.pathmind.bus.PathmindBusEvent;
+import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -71,6 +73,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private TrainingService trainingService;
 
 	private Button actionButton;
+	private Button runFullTraining;
+	private Button runDiscoveryTraining;
 
 	public ExperimentView(UnicastProcessor<PathmindBusEvent> publisher, Flux<PathmindBusEvent> consumer)
 	{
@@ -105,6 +109,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			policyChartPanel.update(selectedPolicy);
 			setActionButtonValue(selectedPolicy);
 			exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
+
+			RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
+			if (selectedRunType == RunType.TestRun && experiment.getPolicies().size() == 1) {
+				runDiscoveryTraining.setVisible(true);
+			} else if (selectedRunType == RunType.DiscoveryRun) {
+				runDiscoveryTraining.setVisible(false);
+				runFullTraining.setVisible(true);
+			} else if (selectedRunType == RunType.FullRun) {
+				runDiscoveryTraining.setVisible(false);
+				runFullTraining.setVisible(false);
+			}
 		});
 
 		policyChartPanel = new PolicyChartPanel(consumer);
@@ -126,19 +141,22 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policyStatusDetailsPanel = new PolicyStatusDetailsPanel();
 
 		actionButton = new Button(ActionButtonState.Start.name(), click -> handleActionButtonClicked());
+		actionButton.setVisible(false);
 
 		// TODO: Put this in the appropriate place
-		Button runFullTraining = new Button("RUN FULL TRAINING", click -> {
+		runFullTraining = new Button("RUN FULL TRAINING", click -> {
 			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
 			trainingService.startFullRun(experiment, policy);
 			// TODO -> Do we need to do anything here?
 		});
+		runFullTraining.setVisible(false);
 
-		Button runDiscoveryTraining = new Button("RUN DISCOVERY TRAINING", click -> {
+		runDiscoveryTraining = new Button("RUN DISCOVERY TRAINING", click -> {
 			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
 			trainingService.startDiscoveryRun(experiment);
 			// TODO -> Do we need to do anything here?
 		});
+		runDiscoveryTraining.setVisible(false);
 
 
 		final HorizontalLayout buttons = WrapperUtils.wrapWidthFullCenterHorizontal(
@@ -209,6 +227,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
 	{
+		experiment.getPolicies().stream()
+				.filter(p -> p.getRun().getRunTypeEnum().equals(RunType.DiscoveryRun))
+				.findAny()
+				.ifPresent(p -> runDiscoveryTraining.setVisible(false));
+
 		screenTitlePanel.setSubtitle(experiment.getProject().getName());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		policyChartPanel.update(experiment);
