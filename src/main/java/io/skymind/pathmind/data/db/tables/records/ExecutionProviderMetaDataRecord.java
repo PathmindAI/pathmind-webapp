@@ -5,10 +5,15 @@ package io.skymind.pathmind.data.db.tables.records;
 
 
 import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
-import org.jooq.*;
-import org.jooq.impl.UpdatableRecordImpl;
 
 import javax.annotation.processing.Generated;
+
+import org.jooq.Field;
+import org.jooq.JSON;
+import org.jooq.Record1;
+import org.jooq.Record4;
+import org.jooq.Row4;
+import org.jooq.impl.UpdatableRecordImpl;
 
 
 /**

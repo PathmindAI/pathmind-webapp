@@ -423,4 +423,17 @@
             <column name="PASSWORD" value="$2a$10$f84hlX0MNDYZ5vlavVT1BerXyVO0OPe1ambxUTh2OQAEyReuuJjf."/>
         </insert>
     </changeSet>
+
+    <changeSet id="20191004-1" author="steph@followsteph.com">
+        <addColumn tableName="PROJECT">
+            <column name="ARCHIVED" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+        <addColumn tableName="MODEL">
+            <column name="ARCHIVED" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+        <addColumn tableName="EXPERIMENT">
+            <column name="ARCHIVED" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

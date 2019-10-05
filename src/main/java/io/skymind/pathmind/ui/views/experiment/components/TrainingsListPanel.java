@@ -116,7 +116,7 @@ public class TrainingsListPanel extends VerticalLayout
 	private void updatedGrid(Policy updatedPolicy)
 	{
 		experiment.getPolicies().stream()
-				.filter(policy ->policy.getId() == updatedPolicy.getId())
+				.filter(policy -> policy.getId() == updatedPolicy.getId())
 				.findAny()
 				.ifPresentOrElse(
 						policy -> {
@@ -129,8 +129,9 @@ public class TrainingsListPanel extends VerticalLayout
 							grid.getDataProvider().refreshAll();
 						});
 
-		// TODO -> Re-select same policy ?
-		// TODO -> refilter according to the search box. ?
+		// BUG -> If you search/filter after an update the grid uses the old value in the row.
+		// TODO -> Re-select same policy
+		// TODO -> refilter according to the search box.
 	}
 
 	private void replacePolicy(Policy updatedPolicy) {

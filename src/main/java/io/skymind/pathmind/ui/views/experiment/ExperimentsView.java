@@ -108,15 +108,14 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		return new ArchivesTabPanel<Experiment>(
 				"Experiments",
 				experimentGrid,
-				this::getExperiments);
+				this::getExperiments,
+				(experimentId, isArchivable) -> experimentDAO.archive(experimentId, isArchivable));
 	}
 
 	private void setupExperimentListPanel() {
 		experimentGrid = new ExperimentGrid();
 		experimentGrid.addSelectionListener(selectedExperiment ->
 				UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(selectedExperiment.getFirstSelectedItem().get())));
-
-
 	}
 
 	@Override

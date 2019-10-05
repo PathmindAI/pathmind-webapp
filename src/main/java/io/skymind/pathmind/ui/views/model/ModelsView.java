@@ -66,7 +66,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		return new ArchivesTabPanel<Model>(
 				"Models",
 				modelGrid,
-				this::getModels);
+				this::getModels,
+				(modelId, isArchivable) -> modelDAO.archive(modelId, isArchivable));
 	}
 
 	private SearchBox getSearchBox() {

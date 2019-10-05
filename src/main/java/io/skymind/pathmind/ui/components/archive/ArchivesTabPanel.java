@@ -5,6 +5,7 @@ import io.skymind.pathmind.data.ArchivableData;
 import io.skymind.pathmind.ui.components.TabPanel;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -22,14 +23,14 @@ public class ArchivesTabPanel<T> extends TabPanel
 	 * use the next best thing which is that all our archives columns are the last column on the grid and so get the last column
 	 * and adjust that column header's name.
 	 */
-	public ArchivesTabPanel(String tabName, Grid<T> grid, Supplier<List<T>> getItems)
+	public ArchivesTabPanel(String tabName, Grid<T> grid, Supplier<List<T>> getItems, BiConsumer<Long, Boolean> archiveDAO)
 	{
 		super(tabName, ARCHIVES_TAB);
 
 		setAlignItems(Alignment.START);
 
 		// Add archive column to grid as the last column.
-		grid.addComponentColumn(data -> gettArchivesButton(grid, getItems, (ArchivableData) data))
+		grid.addComponentColumn(data -> gettArchivesButton(grid, getItems, (ArchivableData) data, archiveDAO))
 				.setHeader("Archive")
 				.setSortable(false);
 
@@ -39,8 +40,8 @@ public class ArchivesTabPanel<T> extends TabPanel
 		});
 	}
 
-	private ArchivesButton<T> gettArchivesButton(Grid<T> grid, Supplier<List<T>> getItems, ArchivableData data) {
-		return new ArchivesButton<T>(grid, data, isArchived -> getFilteredModels(getItems.get(), isArchived));
+	private ArchivesButton<T> gettArchivesButton(Grid<T> grid, Supplier<List<T>> getItems, ArchivableData data, BiConsumer<Long, Boolean> archiveDAO) {
+		return new ArchivesButton<T>(grid, data, isArchived -> getFilteredModels(getItems.get(), isArchived), archiveDAO);
 	}
 
 	private void updateArchiveColumnHeader(Grid<T> grid, String header) {

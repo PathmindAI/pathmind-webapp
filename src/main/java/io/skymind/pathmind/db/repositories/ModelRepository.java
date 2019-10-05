@@ -30,6 +30,13 @@ public class ModelRepository
 				.fetchOneInto(Long.class);
 	}
 
+	public void archive(long modelId, boolean isArchive) {
+    	dslContext.update(MODEL)
+				.set(MODEL.ARCHIVED, isArchive)
+				.where(MODEL.ID.eq(modelId))
+				.execute();
+	}
+
 	protected long insertModel(Model model) {
     	long modelId = dslContext
 				.insertInto(MODEL)

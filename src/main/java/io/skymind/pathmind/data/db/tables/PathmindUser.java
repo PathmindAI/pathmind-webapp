@@ -9,8 +9,10 @@ import io.skymind.pathmind.data.db.Keys;
 import io.skymind.pathmind.data.db.Public;
 import io.skymind.pathmind.data.db.tables.records.PathmindUserRecord;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.processing.Generated;
 
@@ -19,7 +21,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row12;
+import org.jooq.Row15;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -41,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PathmindUser extends TableImpl<PathmindUserRecord> {
 
-    private static final long serialVersionUID = 1379753590;
+    private static final long serialVersionUID = 1617166208;
 
     /**
      * The reference instance of <code>public.pathmind_user</code>
@@ -117,6 +119,21 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     public final TableField<PathmindUserRecord, String> ZIP = createField(DSL.name("zip"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
+     * The column <code>public.pathmind_user.delete_at</code>.
+     */
+    public final TableField<PathmindUserRecord, LocalDateTime> DELETE_AT = createField(DSL.name("delete_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+
+    /**
+     * The column <code>public.pathmind_user.email_verified_at</code>.
+     */
+    public final TableField<PathmindUserRecord, LocalDateTime> EMAIL_VERIFIED_AT = createField(DSL.name("email_verified_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+
+    /**
+     * The column <code>public.pathmind_user.email_verification_token</code>.
+     */
+    public final TableField<PathmindUserRecord, UUID> EMAIL_VERIFICATION_TOKEN = createField(DSL.name("email_verification_token"), org.jooq.impl.SQLDataType.UUID, this, "");
+
+    /**
      * Create a <code>public.pathmind_user</code> table reference
      */
     public PathmindUser() {
@@ -156,7 +173,7 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.PATHMIND_USER_PKEY);
+        return Arrays.<Index>asList(Indexes.PATHMIND_USER_EMAIL_KEY, Indexes.PATHMIND_USER_PKEY);
     }
 
     @Override
@@ -166,7 +183,7 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
 
     @Override
     public List<UniqueKey<PathmindUserRecord>> getKeys() {
-        return Arrays.<UniqueKey<PathmindUserRecord>>asList(Keys.PATHMIND_USER_PKEY);
+        return Arrays.<UniqueKey<PathmindUserRecord>>asList(Keys.PATHMIND_USER_PKEY, Keys.PATHMIND_USER_EMAIL_KEY);
     }
 
     @Override
@@ -196,11 +213,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row12 type methods
+    // Row15 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<Long, String, String, String, Integer, String, String, String, String, String, String, String> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row15<Long, String, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID> fieldsRow() {
+        return (Row15) super.fieldsRow();
     }
 }
