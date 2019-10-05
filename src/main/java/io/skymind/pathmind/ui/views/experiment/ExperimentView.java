@@ -11,19 +11,18 @@ import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
+import io.skymind.pathmind.ui.components.buttons.StartRunButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.*;
-import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -147,14 +146,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		actionButton.setVisible(false);
 
 		// TODO: Put this in the appropriate place
-		runFullTraining = new Button("RUN FULL TRAINING", click -> {
+		runFullTraining = new StartRunButton("RUN FULL TRAINING", click -> {
 			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
 			trainingService.startFullRun(experiment, policy);
 			// TODO -> Do we need to do anything here?
 		});
 		runFullTraining.setVisible(false);
 
-		runDiscoveryTraining = new Button("RUN DISCOVERY TRAINING", click -> {
+		runDiscoveryTraining = new StartRunButton("RUN DISCOVERY TRAINING", click -> {
 			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
 			trainingService.startDiscoveryRun(experiment);
 			// TODO -> Do we need to do anything here?
