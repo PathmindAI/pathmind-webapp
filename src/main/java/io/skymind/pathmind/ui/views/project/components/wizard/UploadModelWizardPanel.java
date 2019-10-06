@@ -12,6 +12,7 @@ import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.progressbar.ProgressBarVariant;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import io.skymind.pathmind.constants.PathmindConstants;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -72,7 +73,13 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private void setupUploadPanel()
 	{
 		MemoryBuffer buffer = new MemoryBuffer();
+
 		upload = new Upload(buffer);
+
+		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/123
+//		upload.setMaxFileSize(PathmindConstants.MAX_UPLOAD_FILE_SIZE);
+//		upload.setAcceptedFileTypes("application/zip");
+//		upload.addFailedListener(event -> log.error("ERROR " + event.getReason().getMessage(), e.getReason().getMessage()));
 
 		upload.addSucceededListener(event -> {
 			try {
