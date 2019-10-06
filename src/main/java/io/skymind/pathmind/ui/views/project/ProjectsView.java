@@ -2,12 +2,9 @@ package io.skymind.pathmind.ui.views.project;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -19,7 +16,7 @@ import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
-import io.skymind.pathmind.ui.components.buttons.PathmindButtonFactory;
+import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -51,14 +48,12 @@ public class ProjectsView extends PathMindDefaultView
 	{
 		setupProjectGrid();
 
-		final Button newProjectButton = PathmindButtonFactory.getNewProjectButton();
-
 		VerticalLayout gridWrapper = WrapperUtils.wrapCenterVertical(
 				UIConstants.CENTERED_TABLE_WIDTH,
 				WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
 				getTabbedPanel(),
 				projectGrid,
-				newProjectButton);
+				new NewProjectButton());
 
 		gridWrapper.getElement().getStyle().set("padding-top", "100px");
 		return gridWrapper;
