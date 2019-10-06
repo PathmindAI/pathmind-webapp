@@ -2,6 +2,7 @@ package io.skymind.pathmind.ui.views.dashboard;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -17,6 +18,7 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
+import io.skymind.pathmind.ui.components.buttons.PathmindButtonFactory;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
@@ -58,7 +60,8 @@ public class DashboardView extends PathMindDefaultView
 		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
 				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-				dashboardGrid);
+				dashboardGrid,
+				WrapperUtils.wrapWidthFullCenterHorizontal(PathmindButtonFactory.getNewProjectButton()));
 
 		gridWrapper.getElement().getStyle().set("padding-top", "100px");
 		return gridWrapper;

@@ -19,6 +19,7 @@ import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
+import io.skymind.pathmind.ui.components.buttons.PathmindButtonFactory;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -50,10 +51,7 @@ public class ProjectsView extends PathMindDefaultView
 	{
 		setupProjectGrid();
 
-		final Button newProjectButton = new Button("Create new project", new Icon(VaadinIcon.PLUS), (e) -> {
-			UI.getCurrent().navigate(NewProjectView.class);
-		});
-
+		final Button newProjectButton = PathmindButtonFactory.getNewProjectButton();
 
 		VerticalLayout gridWrapper = WrapperUtils.wrapCenterVertical(
 				UIConstants.CENTERED_TABLE_WIDTH,
