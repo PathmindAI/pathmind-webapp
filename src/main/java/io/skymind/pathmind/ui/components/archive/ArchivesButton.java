@@ -38,8 +38,7 @@ public class ArchivesButton<T> extends Button
 		addClickListener(click -> confirmDialog.open());
 	}
 
-	// TODO -> DH -> Could you please look into adjusting the button so that it only shows up when the mouse hovers over it. The
-	// following link shows the CSS needed: https://stackoverflow.com/questions/5210033/using-only-css-show-div-on-hover-over-a
+	// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/177 -> Archive button is visible on hover only
 	private void setupButton(ArchivableData data) {
 		Icon archiveIcon = new Icon(data.isArchived() ? VaadinIcon.CARET_SQUARE_UP_O : VaadinIcon.CARET_SQUARE_DOWN_O);
 		archiveIcon.setSize("40px");
