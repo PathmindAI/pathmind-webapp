@@ -1,9 +1,7 @@
 package io.skymind.pathmind.ui.views.project;
 
-import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
@@ -12,9 +10,7 @@ import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ModelUtils;
 import io.skymind.pathmind.data.utils.ProjectUtils;
-import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
@@ -39,10 +35,6 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 	@Autowired
 	private ProjectDAO projectDAO;
 	@Autowired
-	private ModelDAO modelDAO;
-	@Autowired
-	private ExperimentRepository experimentRepository;
-	@Autowired
 	private ProjectFileCheckService projectFileCheckService ;
 
 	private Project project;
@@ -61,8 +53,6 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 	private ModelDetailsWizardPanel modelDetailsWizardPanel;
 
 	private List<Component> wizardPanels;
-
-	private boolean hasErrorsFileCheck = false;
 
 	public NewProjectView()
 	{
@@ -95,10 +85,8 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 		createProjectPanel.addButtonClickListener(click -> handleNewProjectClicked());
 		pathminderHelperWizardPanel.addButtonClickListener(click -> handleNextStepClicked());
-		uploadModelWizardPanel.addButtonClickListener(click -> {
-				handleUploadWizardClicked();
-		});
-		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked(click));
+		uploadModelWizardPanel.addButtonClickListener(click -> handleUploadWizardClicked());
+		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked());
 
 		return WrapperUtils.wrapFormCenterVertical(
 				logoPanel,
@@ -109,7 +97,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 				modelDetailsWizardPanel);
 	}
 
-	private void handleMoreDetailsClicked(ClickEvent<Button> click)
+	private void handleMoreDetailsClicked()
 	{
 		ExceptionWrapperUtils.handleButtonClicked(() ->
 		{
@@ -156,15 +144,10 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 		return null;
 	}
 
-	private Component getProjectView() {
-		return this;
-	}
-
 	@Override
 	public void updateStatus(double percentage) {
-		PushUtils.push(ui, () -> {
-			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(percentage);
-		});
+		PushUtils.push(ui, () ->
+			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(percentage));
 	}
 
 	@Override
@@ -188,7 +171,6 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 	@Override
 	public void fileCheckComplete(FileCheckResult anylogicFileCheckResult) {
-		//TODO : Get result and show erros on screen or result on screen.
-
+		//TODO : Get result and show errors on screen or result on screen.
 	}
 }

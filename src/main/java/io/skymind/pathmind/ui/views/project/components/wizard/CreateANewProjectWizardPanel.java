@@ -21,6 +21,7 @@ public class CreateANewProjectWizardPanel extends VerticalLayout
 	{
 		projectNameTextField.setWidthFull();
 
+		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/50 -> Do we allow duplicate project names? Are there any validation rules?
 		add(new H3("Start a New Project!"),
 				GuiUtils.getSubtitleLabel("Projects organize your Pathmind Experiments based on your AnyLogic model"),
 				GuiUtils.getHeightSpacer("40px"),

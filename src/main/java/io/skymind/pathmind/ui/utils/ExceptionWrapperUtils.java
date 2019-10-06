@@ -12,7 +12,7 @@ public class ExceptionWrapperUtils
 	private ExceptionWrapperUtils() {
 	}
 
-	// TODO -> Better error handle as well as handling of different types of exceptions we care about.
+	// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/175 -> Better handle exception errors
 	public static void handleButtonClicked(Runnable runnable) {
 		try {
 			runnable.run();
