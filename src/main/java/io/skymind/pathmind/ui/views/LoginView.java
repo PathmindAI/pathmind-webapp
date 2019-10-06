@@ -12,6 +12,7 @@ import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.InitialPageSettings;
 import com.vaadin.flow.server.PageConfigurator;
+import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import io.skymind.pathmind.db.dao.ProjectDAO;
@@ -23,8 +24,6 @@ import io.skymind.pathmind.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
 import io.skymind.pathmind.utils.PathmindUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.HashMap;
 
 @Route("login")
 @Theme(Lumo.class)
@@ -63,6 +62,9 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
 	{
 		if (SecurityUtils.isUserLoggedIn()) {
 			event.forwardTo(getRerouteClass());
+			// Make sure automatic push mode is enabled. If we don't do this, automatic push
+			// won't work even we have proper annotations in place.
+			UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 			return;
 		}
 
