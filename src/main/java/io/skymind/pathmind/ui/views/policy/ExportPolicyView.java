@@ -23,8 +23,7 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
@@ -33,7 +32,7 @@ import java.io.ByteArrayInputStream;
 @Route(value = "exportPolicy", layout = MainLayout.class)
 public class ExportPolicyView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
-	private Logger log = LogManager.getLogger(ExportPolicyView.class);
+	private static final String DEFAULT_POLICY_DOWNLOAD_FILENAME = "Policy.zip";
 
 	@Autowired
 	private PolicyDAO policyDAO;
@@ -42,8 +41,8 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
 	private TextField nameTextField;
 
-	private Image optimizedPolicyImage;
 	private Button exportButton;
+	private Anchor exportLink;
 	private Button cancelButton;
 
 	private long policyId;
@@ -63,41 +62,35 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	@Override
 	protected Component getMainContent()
 	{
-		// TODO -> DH -> Add validations.
-		nameTextField = new TextField();
-		nameTextField.setLabel("Name");
-		nameTextField.setWidthFull();
-
-		// TODO -> CSS
-		optimizedPolicyImage = new Image("/frontend/images/exportPolicyIcon.gif", "Export Policy");
-
-		// TODO -> CSS
-		final StreamResource resource = new StreamResource("Policy.zip",
-				() -> new ByteArrayInputStream(policyDAO.getPolicyFile(policyId)));
-
 		exportButton = new Button("Export");
 		exportButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportButton.setWidth("200px");
-		final Anchor exportLink = new Anchor();
+
+		exportLink = new Anchor();
 		exportLink.add(exportButton);
-		exportLink.getElement().setAttribute("href", resource);
+		exportLink.getElement().setAttribute("href", getResourceStream(DEFAULT_POLICY_DOWNLOAD_FILENAME));
 		exportLink.getElement().setAttribute("download", true);
 
 		cancelButton = new Button("Cancel", click -> handleCancelButtonClicked());
 		cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
+		nameTextField = new TextField();
+		nameTextField.setLabel("Name");
+		nameTextField.setValue(DEFAULT_POLICY_DOWNLOAD_FILENAME);
+		nameTextField.setWidthFull();
+		nameTextField.addValueChangeListener(change ->
+			exportLink.setHref(getResourceStream(StringUtils.isEmpty(nameTextField.getValue()) ? DEFAULT_POLICY_DOWNLOAD_FILENAME : nameTextField.getValue())));
+
 		return WrapperUtils.wrapFormCenterVertical(
 				nameTextField,
-				optimizedPolicyImage,
+				new Image("/frontend/images/exportPolicyIcon.gif", "Export Policy"),
 				exportLink,
 				cancelButton);
 	}
 
-	private void handleExportButtonClicked() {
-
-
-
-		NotificationUtils.showTodoNotification();
+	private StreamResource getResourceStream(String filename) {
+		return new StreamResource(filename,
+				() -> new ByteArrayInputStream(policyDAO.getPolicyFile(policyId)));
 	}
 
 	private void handleCancelButtonClicked() {
@@ -105,8 +98,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	}
 
 	@Override
-	public void setParameter(BeforeEvent event, Long policyId)
-	{
+	public void setParameter(BeforeEvent event, Long policyId) {
 		this.policyId = policyId;
 	}
 
@@ -115,11 +107,5 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 		policy = policyDAO.getPolicy(policyId);
 		if(policy == null)
 			throw new InvalidDataException("Attempted to access Policy: " + policyId);
-	}
-
-	@Override
-	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
-	{
-		// TODO -> DH -> Do we need to do anything else here?
 	}
 }
