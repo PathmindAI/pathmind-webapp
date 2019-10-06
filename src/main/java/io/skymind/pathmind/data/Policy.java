@@ -12,7 +12,6 @@ public class Policy extends Data
 	private String progress;
 	private byte[] file;
 
-	// TODO -> Temporary location where the chart data is located until scores is defined with json data)
 	private ArrayList<Number> scores = new ArrayList<>();
 
 	// Helper GUI attributes not stored in the database

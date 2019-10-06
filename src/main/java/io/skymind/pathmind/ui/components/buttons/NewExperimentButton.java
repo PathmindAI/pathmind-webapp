@@ -11,7 +11,6 @@ import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 
 public class NewExperimentButton extends Button
 {
-	// TODO -> ExperimentDAO should be injected.
 	public NewExperimentButton(ExperimentDAO experimentDAO, long modelId) {
 		this(experimentDAO, modelId, "reward = after[0] - before[0];");
 	}

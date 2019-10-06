@@ -51,19 +51,4 @@ public class ProjectRepository
 				.where(PROJECT.ID.eq(projectId))
 				.execute();
 	}
-
-	protected long insertProject(Project project) {
-    	// TODO -> Needs to be re-implemented and adjusted for the new data models.
-    	long projectId = dslContext
-				.insertInto(PROJECT)
-				.set(PROJECT.NAME, project.getName())
-				.set(PROJECT.DATE_CREATED, project.getDateCreated())
-				.set(PROJECT.LAST_ACTIVITY_DATE, project.getLastActivityDate())
-				.set(PROJECT.PATHMIND_USER_ID, project.getPathmindUserId())
-				.returning(PROJECT.ID)
-				.fetchOne()
-				.getValue(PROJECT.ID);
-    	project.setId(projectId);
-    	return projectId;
-	}
 }
