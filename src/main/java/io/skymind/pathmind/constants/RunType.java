@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public enum RunType
 {
+	DRAFT(-1, "Draft"),
     TestRun(1, "Test Run"),
     DiscoveryRun(2, "Discovery Run"),
     FullRun(3, "Full Run");

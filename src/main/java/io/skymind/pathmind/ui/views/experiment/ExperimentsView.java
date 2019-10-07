@@ -4,13 +4,18 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.data.selection.SelectionEvent;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
+import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
@@ -114,8 +119,17 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	private void setupExperimentListPanel() {
 		experimentGrid = new ExperimentGrid();
-		experimentGrid.addSelectionListener(selectedExperiment ->
-				UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(selectedExperiment.getFirstSelectedItem().get())));
+		experimentGrid.addSelectionListener(selectedExperiment -> handleExperimentSelected(selectedExperiment));
+	}
+
+	private void handleExperimentSelected(SelectionEvent<Grid<Experiment>, Experiment> event)
+	{
+        Experiment experiment = event.getFirstSelectedItem().get();
+
+        if(ExperimentUtils.getRunType(experiment).equals(RunType.DRAFT))
+            UI.getCurrent().navigate(NewExperimentView.class, experiment.getId());
+        else
+            UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
 	}
 
 	@Override

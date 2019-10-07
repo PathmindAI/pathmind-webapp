@@ -6,6 +6,7 @@ import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 import java.util.List;
@@ -27,13 +28,7 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setHeader("Last Activity")
 				.setAutoWidth(true)
 				.setSortable(true);
-		addColumn(experiment -> {
-			 Optional<Run> run = experiment.getRuns().stream()
-					.filter(r -> r.getRunTypeEnum().equals(RunType.TestRun))
-					.findAny();
-
-			return run.isPresent() ? run.get().getStatusEnum() : "Draft";
-		})
+		addColumn(experiment -> ExperimentUtils.getRunType(experiment).toString())
 				.setHeader("Test Run")
 				.setAutoWidth(true)
 				.setSortable(true);
