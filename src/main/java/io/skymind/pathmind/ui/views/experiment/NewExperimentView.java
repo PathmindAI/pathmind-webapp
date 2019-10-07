@@ -48,9 +48,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private ScreenTitlePanel screenTitlePanel;
 
-	private Label projectLabel;
+	private Label runTypeLabel;
 	private Label modelRevisionLabel;
 	private Label experimentLabel;
+	private Label projectLabel;
 
 	private TextArea errorsTextArea;
 	private TextArea getObservationTextArea;
@@ -64,8 +65,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private TrainingService trainingService;
 
 	private Binder<Experiment> binder;
-
-	private Button backToExperimentsButton;
 
 	public NewExperimentView()
 	{
@@ -99,9 +98,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		rewardFunctionEditor = new RewardFunctionEditor();
 		rewardFunctionEditor.addValueChangeListener(changeEvent -> {
 			final List<String> errors = RewardValidationService.validateRewardFunction(changeEvent.getValue());
-			PushUtils.push(UI.getCurrent(), () -> {
-				errorsTextArea.setValue(String.join("\n", errors));
-			});
+			PushUtils.push(UI.getCurrent(),
+					() -> errorsTextArea.setValue(String.join("\n", errors)));
 		});
 		binder.forField(rewardFunctionEditor)
 				.asRequired()
@@ -190,19 +188,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Component getTopStatusPanel()
 	{
-		projectLabel = new Label();
+		runTypeLabel = new Label();
 		modelRevisionLabel = new Label();
 		experimentLabel = new Label();
+		projectLabel = new Label();
 
 		FormLayout formLayout = new FormLayout();
-		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("100px", 3, FormLayout.ResponsiveStep.LabelsPosition.TOP));
+		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("100px", 4, FormLayout.ResponsiveStep.LabelsPosition.TOP));
 
+		formLayout.addFormItem(runTypeLabel, "Run Type");
+		formLayout.addFormItem(modelRevisionLabel, "Model Revision");
 		formLayout.addFormItem(projectLabel, "Project");
-
-		// todo we make below revert to model revision
-//		formLayout.addFormItem(modelRevisionLabel, "Model Revision");
-		formLayout.addFormItem(modelRevisionLabel, "Model");
-
 		formLayout.addFormItem(experimentLabel, "Experiment");
 
 		return formLayout;
@@ -263,8 +259,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private void updateTopStatusPanel(Experiment experiment) {
-		projectLabel.setText(experiment.getProject().getName());
+		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/178 -> Where does the Run Type come from ?
+//		runTypeLabel.setText(experiment.getRuns().get(0).getRunTypeEnum().toString());
+		runTypeLabel.setText("TODO");
 		modelRevisionLabel.setText(experiment.getModel().getName());
 		experimentLabel.setText(experiment.getName());
+		projectLabel.setText(experiment.getProject().getName());
 	}
 }
