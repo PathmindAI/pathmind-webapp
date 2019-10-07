@@ -25,13 +25,13 @@ public class ExperimentUtils
 		return newExperiment;
 	}
 
-	public static RunStatus getRunType(Experiment experiment)
+	public static RunType getRunType(Experiment experiment)
 	{
 		if (experiment.getRuns().isEmpty())
-			return RunStatus.DRAFT;
+			return RunType.DRAFT;
 
 		return Collections.max(experiment.getRuns(),
 				Comparator.comparingInt(r -> r.getRunTypeEnum().getValue()))
-				.getStatusEnum();
+				.getRunTypeEnum();
 	}
 }
