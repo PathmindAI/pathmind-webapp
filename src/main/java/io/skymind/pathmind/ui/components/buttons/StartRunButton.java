@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.components.buttons;
 
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -7,10 +8,10 @@ import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 
 public class StartRunButton extends Button {
 
-    public StartRunButton(String text, ComponentEventListener<ConfirmDialog.ConfirmEvent> confirmListener) {
-        this (text, null, confirmListener);
+    public StartRunButton(String text, ComponentEventListener<ClickEvent<Button>> clickListener) {
+        this (text, null, clickListener);
     }
-    public StartRunButton(String text, Component icon, ComponentEventListener<ConfirmDialog.ConfirmEvent> confirmListener) {
+    public StartRunButton(String text, Component icon, ComponentEventListener<ClickEvent<Button>> clickListener) {
         super(text);
 
         if (icon != null) {
@@ -19,14 +20,13 @@ public class StartRunButton extends Button {
 
 
         ConfirmDialog confirmDialog = new ConfirmDialog(
-                "Confirm Run",
-                "Are you sure you want to run? If you click \"Run\" It will automatically appear training progress in the training list and policy chart within 10 mins",
-                "Run",
-                confirmListener,
-                "Cancel",
-                cancelEvent -> {}
+                "Starting the training…",
+                "You’ll see the results as the training starts. This could take a couple minutes! (We’re working on fixing this.)",
+                "Okay",
+                confirmEvent -> {}
                 );
 
+        addClickListener(clickListener);
         addClickListener(click -> confirmDialog.open());
     }
 }
