@@ -41,10 +41,7 @@ public class PolicyRepository
 
         return result.stream().map(record -> {
         	Policy policy = record.into(POLICY).into(Policy.class);
-			policy.setRun(record.into(RUN).into(Run.class));
-			policy.setExperiment(record.into(EXPERIMENT).into(Experiment.class));
-			policy.setModel(record.into(MODEL).into(Model.class));
-			policy.setProject(record.into(PROJECT).into(Project.class));
+			addParentDataModelObjects(record, policy);
 			return policy;
 		}).collect(Collectors.toList());
     }
@@ -71,11 +68,15 @@ public class PolicyRepository
 				.fetchOne();
 
 		Policy policy = record.into(POLICY).into(Policy.class);
+		addParentDataModelObjects(record, policy);
+
+		return policy;
+    }
+
+	private void addParentDataModelObjects(Record record, Policy policy) {
 		policy.setRun(record.into(RUN).into(Run.class));
 		policy.setExperiment(record.into(EXPERIMENT).into(Experiment.class));
 		policy.setModel(record.into(MODEL).into(Model.class));
 		policy.setProject(record.into(PROJECT).into(Project.class));
-
-		return policy;
-    }
+	}
 }

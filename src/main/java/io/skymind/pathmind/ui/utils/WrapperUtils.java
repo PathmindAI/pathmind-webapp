@@ -115,5 +115,4 @@ public class WrapperUtils
 		splitLayout.setSplitterPosition(splitterPosition);
 		return splitLayout;
 	}
-
 }

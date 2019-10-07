@@ -10,8 +10,8 @@ import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
-import io.skymind.pathmind.ui.utils.ExperimentViewUtil;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
@@ -51,22 +51,22 @@ public class TrainingsListPanel extends VerticalLayout
 	private void setupGrid()
 	{
 		grid = new Grid<>();
-		grid.addColumn(policy -> ExperimentViewUtil.getRunStatus(policy))
+		grid.addColumn(policy -> PolicyUtils.getRunStatus(policy))
 				.setHeader("Status")
 				.setAutoWidth(true)
 				.setSortable(true);
 
-		grid.addColumn(policy -> ExperimentViewUtil.getRunCompletedTime(policy))
+		grid.addColumn(policy -> PolicyUtils.getRunCompletedTime(policy))
 				.setHeader("Completed")
 				.setAutoWidth(true)
 				.setSortable(true);
 
-		grid.addColumn(policy -> ExperimentViewUtil.getLastScore(policy))
+		grid.addColumn(policy -> PolicyUtils.getLastScore(policy))
 				.setHeader("Score")
 				.setAutoWidth(true)
 				.setSortable(true);
 
-		grid.addColumn(policy -> ExperimentViewUtil.getParsedPolicyName(policy))
+		grid.addColumn(policy -> PolicyUtils.getParsedPolicyName(policy))
 				.setHeader("Policy")
 				.setAutoWidth(true)
 				.setSortable(true);

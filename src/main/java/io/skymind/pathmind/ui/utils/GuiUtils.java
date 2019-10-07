@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.utils;
 
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Label;
@@ -67,5 +68,11 @@ public class GuiUtils
 		return WrapperUtils.wrapLeftAndRightAligned(
 				new Label(title),
 				searchBox);
+	}
+
+	public static FormLayout getTitleBarFullWidth(int componentCount) {
+		FormLayout formLayout = new FormLayout();
+		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("100px", componentCount, FormLayout.ResponsiveStep.LabelsPosition.TOP));
+		return formLayout;
 	}
 }

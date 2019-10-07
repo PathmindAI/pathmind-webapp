@@ -65,10 +65,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Autowired
 	private ExperimentDAO experimentDAO;
-
 	@Autowired
 	private PolicyDAO policyDAO;
-
 	@Autowired
 	private TrainingService trainingService;
 
@@ -104,7 +102,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			policy = selectedPolicy;
 			policyHighlightPanel.update(selectedPolicy);
 			policyStatusDetailsPanel.update(selectedPolicy);
-			policyChartPanel.highlightPolicy(selectedPolicy);
+			policyChartPanel.update(selectedPolicy);
 			setActionButtonValue(selectedPolicy);
 			exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
 		});

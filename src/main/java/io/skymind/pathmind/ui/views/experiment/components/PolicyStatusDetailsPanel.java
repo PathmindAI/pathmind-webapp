@@ -5,7 +5,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.ui.utils.ExperimentViewUtil;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,9 +70,9 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 
 	public void update(Policy policy)
 	{
-		statusLabel.setText(ExperimentViewUtil.getRunStatus(policy));
-		runProgressLabel.setText(ExperimentViewUtil.getRunCompletedTime(policy));
+		statusLabel.setText(PolicyUtils.getRunStatus(policy));
+		runProgressLabel.setText(PolicyUtils.getRunCompletedTime(policy));
 		runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());
-        elapsedTimeLabel.setText(ExperimentViewUtil.getElaspedTime(policy));
+        elapsedTimeLabel.setText(PolicyUtils.getElaspedTime(policy));
 	}
 }

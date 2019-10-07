@@ -1,9 +1,7 @@
 package io.skymind.pathmind.db.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.db.repositories.PolicyRepository;
 import io.skymind.pathmind.services.training.progress.Progress;
@@ -37,11 +35,17 @@ public class PolicyDAO extends PolicyRepository
         final List<Policy> policies = ctx.select(tbl.ID, tbl.EXTERNAL_ID, tbl.NAME, tbl.PROGRESS, tbl.RUN_ID)
                 .select(EXPERIMENT.asterisk())
                 .select(RUN.asterisk())
+                .select(MODEL.asterisk())
+                .select(PROJECT.asterisk())
                 .from(tbl)
                 .join(RUN)
                 .on(tbl.RUN_ID.eq(RUN.ID))
                 .join(EXPERIMENT)
                 .on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
+                .leftJoin(MODEL)
+                    .on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+                .leftJoin(PROJECT)
+                    .on(PROJECT.ID.eq(MODEL.PROJECT_ID))
                 .where(RUN.EXPERIMENT_ID.eq(experimentId))
                 .fetch(it -> {
                     final Policy policy = new Policy();
@@ -59,11 +63,10 @@ public class PolicyDAO extends PolicyRepository
                         throw new RuntimeException(e);
                     }
 
-                    final Experiment exp = it.into(EXPERIMENT).into(Experiment.class);
-                    policy.setExperiment(exp);
-
-                    final Run run = it.into(RUN).into(Run.class);
-                    policy.setRun(run);
+                    policy.setRun(it.into(RUN).into(Run.class));
+                    policy.setExperiment(it.into(EXPERIMENT).into(Experiment.class));
+                    policy.setModel(it.into(MODEL).into(Model.class));
+                    policy.setProject(it.into(PROJECT).into(Project.class));
 
                     return policy;
                 });

@@ -193,8 +193,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		experimentLabel = new Label();
 		projectLabel = new Label();
 
-		FormLayout formLayout = new FormLayout();
-		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("100px", 4, FormLayout.ResponsiveStep.LabelsPosition.TOP));
+		FormLayout formLayout = GuiUtils.getTitleBarFullWidth(4);
 
 		formLayout.addFormItem(runTypeLabel, "Run Type");
 		formLayout.addFormItem(modelRevisionLabel, "Model Revision");
