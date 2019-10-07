@@ -28,7 +28,13 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setHeader("Last Activity")
 				.setAutoWidth(true)
 				.setSortable(true);
-		addColumn(experiment -> ExperimentUtils.getRunType(experiment).toString())
+		addColumn(experiment -> {
+			Optional<Run> run = experiment.getRuns().stream()
+					.filter(r -> r.getRunTypeEnum().equals(RunType.TestRun))
+					.findAny();
+
+			return run.isPresent() ? run.get().getStatusEnum() : "Draft";
+		})
 				.setHeader("Test Run")
 				.setAutoWidth(true)
 				.setSortable(true);
