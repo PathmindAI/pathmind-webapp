@@ -23,7 +23,6 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.buttons.StartRunButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.*;
@@ -203,16 +202,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private HorizontalLayout getActionButtons()
 	{
-		final NewExperimentButton newExperimentButton = new NewExperimentButton(
-				experimentDAO,
-				experiment.getModelId(),
-				rewardFunctionEditor.getValue());
-
 		final Button saveDraftButton = new Button("Save Draft", new Icon(VaadinIcon.FILE),
 				click -> handleSaveDraftClicked());
 
 		return WrapperUtils.wrapWidthFullCenterHorizontal(
-				newExperimentButton,
 				saveDraftButton);
 	}
 
