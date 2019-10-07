@@ -49,7 +49,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private ScreenTitlePanel screenTitlePanel;
 
-	private Label runTypeLabel;
 	private Label modelRevisionLabel;
 	private Label experimentLabel;
 	private Label projectLabel;
@@ -189,16 +188,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Component getTopStatusPanel()
 	{
-		runTypeLabel = new Label();
 		modelRevisionLabel = new Label();
 		experimentLabel = new Label();
 		projectLabel = new Label();
 
-		FormLayout formLayout = GuiUtils.getTitleBarFullWidth(4);
+		FormLayout formLayout = GuiUtils.getTitleBarFullWidth(3);
 
-		formLayout.addFormItem(runTypeLabel, "Run Type");
-		formLayout.addFormItem(modelRevisionLabel, "Model Revision");
 		formLayout.addFormItem(projectLabel, "Project");
+		formLayout.addFormItem(modelRevisionLabel, "Model");
 		formLayout.addFormItem(experimentLabel, "Experiment");
 
 		return formLayout;
@@ -259,9 +256,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private void updateTopStatusPanel(Experiment experiment) {
-		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/178 -> Where does the Run Type come from ?
-//		runTypeLabel.setText(experiment.getRuns().get(0).getRunTypeEnum().toString());
-		runTypeLabel.setText("TODO");
 		modelRevisionLabel.setText(experiment.getModel().getName());
 		experimentLabel.setText(experiment.getName());
 		projectLabel.setText(experiment.getProject().getName());
