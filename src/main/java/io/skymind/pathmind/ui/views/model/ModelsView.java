@@ -81,10 +81,10 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		modelGrid.addColumn(Model::getName)
 				.setHeader("Name")
 				.setSortable(true);
-		modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+		modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setHeader("Date Created")
 				.setSortable(true);
-		modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+		modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setHeader("Last Activity")
 				.setSortable(true);
 

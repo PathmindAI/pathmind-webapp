@@ -4,7 +4,9 @@ import java.time.format.DateTimeFormatter;
 
 public class DateAndTimeUtils
 {
-	public static final DateTimeFormatter STANDARD_DATE_TIME_FOMATTER = DateTimeFormatter.ofPattern("MMM dd yyyy");
+	public static final DateTimeFormatter STANDARD_DATE_ONLY_FOMATTER = DateTimeFormatter.ofPattern("MMMM dd yyyy");
+	public static final DateTimeFormatter STANDARD_DATE_AND_TIME_FOMATTER = DateTimeFormatter.ofPattern("MMMM dd yyyy HH:mm a");
+	public static final DateTimeFormatter STANDARD_DATE_AND_TIME_SHORT_FOMATTER = DateTimeFormatter.ofPattern("MMMM dd HH:mm a");
 
 	/**
 	 * We could use org.apache.commons.lang3.time.DurationFormatUtils but it seems overkill for what we need and I didn't want to spend the time

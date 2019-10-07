@@ -23,7 +23,7 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setHeader("Experiment")
 				.setAutoWidth(true)
 				.setSortable(true);
-		addColumn(new LocalDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+		addColumn(new LocalDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setHeader("Last Activity")
 				.setAutoWidth(true)
 				.setSortable(true);

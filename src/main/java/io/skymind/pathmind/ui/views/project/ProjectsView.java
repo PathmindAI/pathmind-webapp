@@ -78,10 +78,10 @@ public class ProjectsView extends PathMindDefaultView
 		projectGrid.addColumn(Project::getName)
 				.setHeader("Name")
 				.setSortable(true);
-		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setHeader("Date Created")
 				.setSortable(true);
-		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER))
+		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setHeader("Last Activity")
 				.setSortable(true);
 

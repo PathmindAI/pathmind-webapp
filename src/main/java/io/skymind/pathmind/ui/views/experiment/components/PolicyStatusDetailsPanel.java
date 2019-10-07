@@ -7,10 +7,12 @@ import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 @Component
@@ -71,7 +73,7 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 	public void update(Policy policy)
 	{
 		statusLabel.setText(PolicyUtils.getRunStatus(policy));
-		runProgressLabel.setText(PolicyUtils.getRunCompletedTime(policy));
+		runProgressLabel.setText(DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER.format(PolicyUtils.getRunCompletedTime(policy)));
 		runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());
         elapsedTimeLabel.setText(PolicyUtils.getElaspedTime(policy));
 	}

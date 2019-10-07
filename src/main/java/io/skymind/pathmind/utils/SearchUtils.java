@@ -10,7 +10,7 @@ public class SearchUtils
 	}
 
 	public static final boolean contains(LocalDateTime localDateTime, String searchValue) {
-		return StringUtils.containsIgnoreCase(DateAndTimeUtils.STANDARD_DATE_TIME_FOMATTER.format(localDateTime), searchValue);
+		return StringUtils.containsIgnoreCase(DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER.format(localDateTime), searchValue);
 	}
 
 	public static final boolean contains(boolean value, String searchValue) {

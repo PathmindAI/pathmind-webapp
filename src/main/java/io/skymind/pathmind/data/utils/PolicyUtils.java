@@ -9,9 +9,11 @@ import io.skymind.pathmind.utils.DateAndTimeUtils;
 import io.skymind.pathmind.utils.ObjectMapperHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.tomcat.jni.Local;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class PolicyUtils
 {
@@ -39,14 +41,15 @@ public class PolicyUtils
 		}
 	}
 
-	public static String getRunCompletedTime(Policy policy) {
+	public static LocalDateTime getRunCompletedTime(Policy policy) {
 		{
 			if (!RunStatus.Completed.name().equalsIgnoreCase(getRunStatus(policy))) {
-				return "-";
+				return null;
 			}
 
 			try {
-				return objectMapper.readValue(policy.getProgress(), Progress.class).getStoppedAt().toString();
+
+				return objectMapper.readValue(policy.getProgress(), Progress.class).getStoppedAt();
 			} catch (Exception e) {
 				log.debug(e.getMessage(), e);
 				return null;
