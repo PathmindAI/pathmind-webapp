@@ -1,11 +1,13 @@
 package io.skymind.pathmind.ui.views;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
+import com.vaadin.flow.shared.communication.PushMode;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -35,6 +37,9 @@ public class PathMindDefaultView extends VerticalLayout implements BeforeEnterOb
 	{
 		setSizeFull();
 		setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+
+		// IMPORTANT -> Needed so that Push works consistently on every page/view.
+		UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 	}
 
 	// TODO handle different exceptions differently.
