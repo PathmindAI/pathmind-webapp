@@ -436,4 +436,32 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="20191008-1" author="daehyun@skymind.io">
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Edward Junprung"/>
+            <column name="EMAIL" value="edward@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Mohammed Farhan"/>
+            <column name="EMAIL" value="mohammed@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Slin Lee"/>
+            <column name="EMAIL" value="slin@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Dev Pathmind"/>
+            <column name="EMAIL" value="dev_pathmind@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Test Pathmind"/>
+            <column name="EMAIL" value="test_pathmind@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
