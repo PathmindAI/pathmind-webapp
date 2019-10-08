@@ -32,24 +32,23 @@ import java.util.stream.Collectors;
 @Service
 public class RescaleRestApiClient {
     private static final Logger log = LoggerFactory.getLogger(RescaleRestApiClient.class);
-    private final String platformRegion;
+    private final String rescaleBaseUrl;
     private final String apiKey;
     private final ObjectMapper objectMapper;
     private final WebClient client;
 
     public RescaleRestApiClient(
-            @Value("${skymind.rescale.platform.region}") String platformRegion,
+            @Value("${skymind.rescale.base-url}") String rescaleBaseUrl,
             @Value("${skymind.rescale.platform.key}") String apiKey,
             ObjectMapper objectMapper,
             WebClient.Builder webClientBuilder
     ) {
-        this.platformRegion = platformRegion;
+        this.rescaleBaseUrl = rescaleBaseUrl;
         this.apiKey = apiKey;
         this.objectMapper = objectMapper;
 
         client = webClientBuilder
-                .baseUrl("https://" + platformRegion + "/api/v2")
-                //.baseUrl("http://127.0.0.1:8000/api/v2")
+                .baseUrl(rescaleBaseUrl)
                 .defaultHeader("Authorization", "Token "+apiKey)
                 .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .filter(ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
@@ -174,7 +173,7 @@ public class RescaleRestApiClient {
                 new BasicHeader("Authorization", "Token "+apiKey)
         )).build();
 
-        final HttpPost post = new HttpPost("https://" + platformRegion + "/api/v2/files/contents/");
+        final HttpPost post = new HttpPost(rescaleBaseUrl + "/files/contents/");
         post.setEntity(MultipartEntityBuilder.create()
                 .addBinaryBody("file", content, ContentType.APPLICATION_OCTET_STREAM, filename)
                 .build());
@@ -189,7 +188,7 @@ public class RescaleRestApiClient {
                 new BasicHeader("Authorization", "Token "+apiKey)
         )).build();
 
-        final HttpPost post = new HttpPost("https://" + platformRegion + "/api/v2/files/contents/");
+        final HttpPost post = new HttpPost(rescaleBaseUrl + "/files/contents/");
         post.setEntity(MultipartEntityBuilder.create()
                 .addBinaryBody("file", file, ContentType.MULTIPART_FORM_DATA, filename)
                 .build());
