@@ -126,7 +126,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	{
         Experiment experiment = event.getFirstSelectedItem().get();
 
-        if(ExperimentUtils.getRunType(experiment).equals(RunType.DRAFT))
+        if(ExperimentUtils.isDraftRunType(experiment))
             UI.getCurrent().navigate(NewExperimentView.class, experiment.getId());
         else
             UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));

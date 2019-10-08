@@ -25,13 +25,7 @@ public class ExperimentUtils
 		return newExperiment;
 	}
 
-	public static RunType getRunType(Experiment experiment)
-	{
-		if (experiment.getRuns().isEmpty())
-			return RunType.DRAFT;
-
-		return Collections.max(experiment.getRuns(),
-				Comparator.comparingInt(r -> r.getRunTypeEnum().getValue()))
-				.getRunTypeEnum();
+	public static boolean isDraftRunType(Experiment experiment) {
+		return experiment.getRuns().isEmpty();
 	}
 }
