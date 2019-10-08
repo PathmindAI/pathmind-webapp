@@ -19,6 +19,7 @@ class AccountView extends PolymerElement {
                 }
             </style>
             <h3>Hello</h3>
+            <div id="container"></div> 
         `;
     }
 

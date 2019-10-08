@@ -4,10 +4,12 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
@@ -17,6 +19,7 @@ import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -26,6 +29,9 @@ import javax.annotation.PostConstruct;
 @Route(value="account", layout = MainLayout.class)
 public class AccountView extends PolymerTemplate<TemplateModel>
 {
+	@Id("container")
+	private Div container;
+
 	private PathmindUser user;
 
 	@Autowired
@@ -40,6 +46,8 @@ public class AccountView extends PolymerTemplate<TemplateModel>
 //		addClassName("account-view");
 		initTabs();
 		initContent();
+		container.add(new Span("Juicy"));
+		container.add(new RewardFunctionEditor());
 //		add(new Label("TODO -> Account for " + user.getEmail()));
 	}
 
