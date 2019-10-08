@@ -3,6 +3,7 @@ package io.skymind.pathmind.ui.views.experiment;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -17,7 +18,7 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
-import io.skymind.pathmind.ui.components.buttons.StartRunButton;
+import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -144,17 +145,21 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		actionButton.setVisible(false);
 
 		// TODO: Put this in the appropriate place
-		runFullTraining = new StartRunButton("RUN FULL TRAINING", click -> {
+		runFullTraining = new Button("RUN FULL TRAINING", click -> {
 			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
 			trainingService.startFullRun(experiment, policy);
-			// TODO -> Do we need to do anything here?
+
+			ConfirmDialog confirmDialog = new RunConfirmDialog();
+			confirmDialog.open();
 		});
 		runFullTraining.setVisible(false);
 
-		runDiscoveryTraining = new StartRunButton("RUN DISCOVERY TRAINING", click -> {
+		runDiscoveryTraining = new Button("RUN DISCOVERY TRAINING", click -> {
 			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
 			trainingService.startDiscoveryRun(experiment);
-			// TODO -> Do we need to do anything here?
+
+			ConfirmDialog confirmDialog = new RunConfirmDialog();
+			confirmDialog.open();
 		});
 		runDiscoveryTraining.setVisible(false);
 

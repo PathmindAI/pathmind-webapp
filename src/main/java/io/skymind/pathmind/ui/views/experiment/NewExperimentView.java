@@ -3,6 +3,7 @@ package io.skymind.pathmind.ui.views.experiment;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Label;
@@ -23,7 +24,7 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.components.buttons.StartRunButton;
+import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.*;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
@@ -148,7 +149,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Component getTopButtonPanel()
 	{
-		final Button startRunButton = new StartRunButton("Start (TEST RUN)", new Icon(VaadinIcon.CHEVRON_RIGHT),
+		final Button startRunButton = new Button("Start (TEST RUN)", new Icon(VaadinIcon.CHEVRON_RIGHT),
 				click -> handleStartRunButtonClicked());
 		startRunButton.setIconAfterText(true);
 
@@ -180,6 +181,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 			experimentDAO.updateRewardFunction(experiment);
 			trainingService.startTestRun(experiment);
+
+			ConfirmDialog confirmDialog = new RunConfirmDialog();
+			confirmDialog.open();
 
 			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
 		});
