@@ -112,14 +112,14 @@ public class UploadModelWizardPanel extends VerticalLayout
 		div.setWidthFull();
 		div.getElement().setProperty("innerHTML",
 				"<ol>" +
-					"<li>Make sure you have <strong>PathmindHelper</strong> installed in your model.</li>" +
-					"<li>Export your model as a standalone Java application.</li>" +
-					"<li>Open the .jar file as a zip</li>" +
-					"<li>Create a new zip file that contains:</li>" +
+					"<li>Make sure you have <strong>Pathmind Helper</strong> installed in your model.</li>" +
+					"<li><a href=\"https://help.anylogic.com/topic/com.anylogic.help/html/standalone/Export_Java_Application.html\" target=\"_blank\">Export your model as a standalone Java application.</a></li>" +
+					"<li>Open the exported folder.</li>" +
+					"<li>Create a zip file that contains:</li>" +
 						"<ul>" +
-							"<li>model.zip</li>" +
-							"<li>the \"db\" folder if needed</li>" +
-							"<li>custom libraries from the \"lib\" folder if needed.</li>" +
+							"<li>model.jar</li>" +
+							"<li>the \"database\" folder if needed</li>" +
+							"<li>custom libraries from the \"lib\" folder if needed. (This is uncommon)</li>" +
 						"</ul>" +
 					"<li>Upload the new zip file below." +
 				"</ol>");
