@@ -1,6 +1,7 @@
 package io.skymind.pathmind.ui.views.console;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -23,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
 
-@StyleSheet("frontend://styles/styles.css")
+@CssImport("styles/styles.css")
 @Route(value = "console", layout = MainLayout.class)
 public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<Long>
 {

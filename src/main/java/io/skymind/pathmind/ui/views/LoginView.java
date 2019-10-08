@@ -2,6 +2,7 @@ package io.skymind.pathmind.ui.views;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.HtmlImport;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.AfterNavigationEvent;
@@ -27,7 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Route("login")
 @Theme(Lumo.class)
-@HtmlImport("frontend://styles/shared-styles.html")
+//@HtmlImport("frontend://styles/shared-styles.html")
+@JsModule("./styles/shared-styles.js")
 public class LoginView extends LoginOverlay implements AfterNavigationObserver, BeforeEnterObserver, HasDynamicTitle, PageConfigurator
 {
 	@Autowired

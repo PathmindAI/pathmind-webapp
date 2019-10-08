@@ -1,6 +1,7 @@
 package io.skymind.pathmind.ui.views.errors;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.router.Route;
@@ -12,7 +13,7 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 /**
  * TODO -> Implement correctly, this is just a quick stub.
  */
-@StyleSheet("frontend://styles/styles.css")
+@CssImport("styles/styles.css")
 @Route(value="invalidData", layout = MainLayout.class)
 public class InvalidDataView extends PathMindDefaultView
 {

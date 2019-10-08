@@ -2,6 +2,7 @@ package io.skymind.pathmind.ui.views.model;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -28,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@StyleSheet("frontend://styles/styles.css")
+@CssImport("styles/styles.css")
 @Route(value="models", layout = MainLayout.class)
 public class ModelsView extends PathMindDefaultView implements HasUrlParameter<Long>
 {

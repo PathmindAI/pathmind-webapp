@@ -1,4 +1,7 @@
-<link rel="import" href="pathmind-theme.html">
+import '@polymer/polymer/lib/elements/custom-style.js';
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `
 
 <dom-module id="skymind-login" theme-for="vaadin-login-overlay-wrapper">
     <template>
@@ -39,3 +42,50 @@
         </style>
     </template>
 </dom-module>
+ 
+
+
+<custom-style>
+  <style include="style">
+    /* latin-ext */
+   
+   html {
+        --lumo-font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+        --lumo-size-xl: 3rem;
+        --lumo-size-l: 2.5rem;
+        --lumo-size-m: 2rem;
+        --lumo-size-s: 1.75rem;
+        --lumo-size-xs: 1.5rem;
+        --lumo-space-xl: 2.5rem;
+        --lumo-space-l: 1.75rem;
+        --lumo-space-m: 1.125rem;
+        --lumo-space-s: 0.75rem;
+        --lumo-space-xs: 0.375rem;
+        --lumo-success-color-50pct: rgba(53, 151, 106, 0.5);
+        --lumo-success-color-10pct: rgba(53, 151, 106, 0.1);
+        --lumo-success-color: #35976A;
+        --lumo-error-text-color: #D80947;
+        --lumo-error-color-50pct: rgba(216, 9, 71, 0.5);
+        --lumo-error-color-10pct: rgba(216, 9, 71, 0.1);
+        --lumo-error-color: #D80947;
+        --lumo-header-text-color: #000000;
+        --lumo-body-text-color: #2B2B2B;
+        --lumo-secondary-text-color: #888888;
+        --lumo-tertiary-text-color: #D7D7D7;
+        --lumo-disabled-text-color: #FFFFFF;
+        --lumo-base-color: #FFFFFF;
+        --lumo-primary-text-color: #5889F7;
+        --lumo-primary-color-50pct: rgba(88, 137, 247, 0.5);
+        --lumo-primary-color-10pct: rgba(88, 137, 247, 0.1);
+        --lumo-primary-color: #5889F7;
+    }
+    
+    body {
+
+    }
+    
+    
+  </style>
+</custom-style>`;
+
+document.head.appendChild($_documentContainer.content);
