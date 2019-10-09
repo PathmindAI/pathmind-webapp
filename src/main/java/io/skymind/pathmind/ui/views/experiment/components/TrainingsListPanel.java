@@ -129,6 +129,8 @@ public class TrainingsListPanel extends VerticalLayout
 							experiment.getPolicies().add(updatedPolicy);
 							// We need to refreshAll because otherwise the grid does not see the new row.
 							grid.getDataProvider().refreshAll();
+							// If we're here then this has to be the first policy in the grid and so we can select it.
+							grid.select(updatedPolicy);
 						});
 
 		// BUG -> If you search/filter after an update the grid uses the old value in the row.
