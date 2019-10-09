@@ -112,7 +112,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 		div.setWidthFull();
 		div.getElement().setProperty("innerHTML",
 				"<ol>" +
-					"<li>Make sure you have <strong>Pathmind Helper</strong> installed in your model.</li>" +
+					"<li>Make sure you have <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">Pathmind Helper</a> installed in your model.</li>" +
 					"<li><a href=\"https://help.anylogic.com/topic/com.anylogic.help/html/standalone/Export_Java_Application.html\" target=\"_blank\">Export your model as a standalone Java application.</a></li>" +
 					"<li>Open the exported folder.</li>" +
 					"<li>Create a zip file that contains:</li>" +
