@@ -10,6 +10,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
+import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 public class SearchBox<T> extends HorizontalLayout
 {
+	private String CLASS_NAME = "search-box";
 	private TextField searchTextField = new TextField();
 	private Button searchButton = new Button(new Icon(VaadinIcon.SEARCH));
 
@@ -44,7 +46,10 @@ public class SearchBox<T> extends HorizontalLayout
 		searchTextField.setValueChangeMode(ValueChangeMode.EAGER);
 		searchButton.addClickListener(click -> search(searchPredicate));
     	searchTextField.addValueChangeListener(change -> search(searchPredicate));
-    	searchTextField.addClassName("search-field-box");
+
+		addClassName(CLASS_NAME);
+    	searchTextField.addClassName(CLASS_NAME + "_text-field");
+    	searchButton.addClassNames(CLASS_NAME + "_button");
 
 		add(searchTextField, searchButton);
 	}

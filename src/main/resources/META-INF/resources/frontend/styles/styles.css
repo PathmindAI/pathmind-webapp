@@ -65,3 +65,16 @@
 .default-view {
     background: var(--pm-app-bg-color);
 }
+
+.view-section {
+    width: 100%;
+    background: white;
+    border-radius: var(--lumo-border-radius);
+    overflow: hidden;
+    padding: var(--lumo-space-l);
+    box-sizing: border-box;
+}
+
+.dashboard-view .view-section {
+    flex: 1;
+}
