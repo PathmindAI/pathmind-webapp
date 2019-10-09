@@ -38,7 +38,7 @@ public class ProjectDAO extends ProjectRepository
 		final ModelRecord mod = MODEL.newRecord();
 		mod.attach(ctx.configuration());
 
-		mod.setName("Initial Model");
+		mod.setName("1");
 		mod.setDateCreated(proj.getDateCreated());
 		mod.setLastActivityDate(mod.getDateCreated());
 		mod.setProjectId(proj.getId());
@@ -53,7 +53,7 @@ public class ProjectDAO extends ProjectRepository
 		ex.attach(ctx.configuration());
 		ex.setDateCreated(mod.getDateCreated());
 		ex.setModelId(mod.getId());
-		ex.setName("Initial Experiment");
+		ex.setName("1");
 		ex.setRewardFunction("");
 		ex.store();
 
