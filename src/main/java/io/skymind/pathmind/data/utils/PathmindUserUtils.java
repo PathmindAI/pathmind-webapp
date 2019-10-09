@@ -9,6 +9,7 @@ public class PathmindUserUtils
 	}
 
 	public static String getFullName(PathmindUserDetails user) {
-		return user.getFirstname() + " " + user.getLastname();
+//		return user.getFirstname() + " " + user.getLastname(); // The name is currently stored in user.name
+		return user.getName();
 	}
 }
