@@ -23,12 +23,8 @@ public class ExperimentRepository
 	private DSLContext dslContext;
 
 	// We only include the getObservationForRewardFunction in case it's a new experiment (or in draft mode).
-	public Experiment getExperiment(long experimentId) {
-		return getExperiment(dslContext, experimentId);
-	}
-
-    public static Experiment getExperiment(DSLContext ctx, long experimentId) {
-        Record record = ctx
+    public Experiment getExperiment(long experimentId) {
+        Record record = dslContext
             .select(EXPERIMENT.asterisk())
 			.select(MODEL.ID, MODEL.NAME, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION)
 			.select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
