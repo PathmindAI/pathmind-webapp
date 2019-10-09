@@ -7,9 +7,8 @@ import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.PolicyUpdateBusEvent;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
-import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.*;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.services.training.progress.RewardScore;
@@ -66,7 +65,11 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 .where(RUN.ID.eq(runId))
                 .execute();
 
-        Experiment experiment = getExperiment(runId);
+        // TODO -> DH -> Can you please adjust how you would prefer to have the backend setup because it's quite janky right now. I just temporarily
+        //  put this to get the solution working and avoid code duplication. I basically need the model and experiment data models.
+        Experiment experiment = ExperimentDAO.getExperiment(ctx, getExperiment(runId).getId());
+        Model model = experiment.getModel();
+        Project project = experiment.getProject();
 
         ctx.update(EXPERIMENT)
                 .set(EXPERIMENT.LAST_ACTIVITY_DATE, LocalDateTime.now())
@@ -118,21 +121,17 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                         .fetchOne()
                         .getValue(POLICY.ID);
 
-                // TODO -> DH -> Can you please adjust how you would prefer to have the backend setup. I just temporarily put this to get the solution
-                // working and avoid code duplication. I basically also need the model and experiment data models.
-                final Policy policy = PolicyDAO.getPolicy(ctx, policyId);
+                final Policy policy = new Policy();
+                policy.setId(policyId);
+                policy.setRunId(runId);
+                policy.setRun(run);
+                policy.setName(progress.getId());
+                policy.setExternalId(progress.getId());
                 policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
                 policy.setProgress(progressJsonStr);
-
-//                final Policy policy = new Policy();
-//                policy.setId(policyId);
-//                policy.setRunId(runId);
-//                policy.setRun(run);
-//                policy.setName(progress.getId());
-//                policy.setExternalId(progress.getId());
-//                policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
-//                policy.setProgress(progressJsonStr);
-//                policy.setExperiment(experiment);
+                policy.setExperiment(experiment);
+                policy.setModel(model);
+                policy.setProject(project);
 
                 publisher.onNext(new PolicyUpdateBusEvent(policy));
             } catch (JsonProcessingException e) {
