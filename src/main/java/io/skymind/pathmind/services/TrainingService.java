@@ -65,9 +65,9 @@ public class TrainingService {
                 executionEnvironment,
                 RunType.TestRun,
                 () ->modelDAO.getModelFile(model.getId()),
-                Arrays.asList(1e-5),
-                Arrays.asList(0.99),
-                Arrays.asList(128),
+                Arrays.asList(1e-5), // learning rate
+                Arrays.asList(0.99), // gamma
+                Arrays.asList(128), // batch size
                 5 * 60        // 5 mins
         );
 
@@ -78,6 +78,42 @@ public class TrainingService {
     }
 
     public void startDiscoveryRun(Experiment exp){
+        startDiscoveryRunHelper1(exp);
+        startDiscoveryRunHelper2(exp);
+    }
+
+    public void startDiscoveryRunHelper1(Experiment exp){
+        final Run run = runDAO.createRun(exp, RunType.DiscoveryRun);
+        // Get model from the database, as the one we can get from the experiment doesn't have all fields
+        final Model model = modelDAO.getModel(exp.getModelId());
+
+        final JobSpec spec = new JobSpec(
+                exp.getProject().getPathmindUserId(),
+                model.getId(),
+                exp.getId(),
+                run.getId(),
+                "", // not collected via UI yet
+                "",    // not collected via UI yet
+                exp.getRewardFunction(),
+                model.getNumberOfPossibleActions(),
+                model.getNumberOfObservations(),
+                100, // Max 100 iterations for a discovery run. 
+                executionEnvironment,
+                RunType.DiscoveryRun,
+                () ->modelDAO.getModelFile(model.getId()),
+                Arrays.asList(1e-3, 1e-5), // Learning rate
+                Arrays.asList(0.9, 0.99), // gamma
+                Arrays.asList(64), // batch size
+                30 * 60 // 30 mins
+                );
+
+        final String executionId = executionProvider.execute(spec);
+
+        runDAO.markAsStarting(run.getId());
+        log.info("Started DISCOVERY training job with id {}", executionId);
+    }
+
+    public void startDiscoveryRunHelper2(Experiment exp){
         final Run run = runDAO.createRun(exp, RunType.DiscoveryRun);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelDAO.getModel(exp.getModelId());
@@ -94,12 +130,12 @@ public class TrainingService {
                 model.getNumberOfObservations(),
                 100, // Max 100 iterations for a test run
                 executionEnvironment,
-                RunType.TestRun,
+                RunType.DiscoveryRun,
                 () ->modelDAO.getModelFile(model.getId()),
-                Arrays.asList(1e-3, 1e-4, 1e-5),
-                Arrays.asList(0.9, 0.99),
-                Arrays.asList(64, 128),
-                30 * 60        // 30 mins
+                Arrays.asList(1e-3, 1e-5), // Learning rate
+                Arrays.asList(0.9, 0.99), // gamma
+                Arrays.asList(128), // batch size
+                30 * 60 // 30 mins
         );
 
         final String executionId = executionProvider.execute(spec);
@@ -133,7 +169,7 @@ public class TrainingService {
                     model.getNumberOfObservations(),
                     500, // Max 100 iterations for a test run
                     executionEnvironment,
-                    RunType.TestRun,
+                    RunType.FullRun,
                     () ->modelDAO.getModelFile(model.getId()),
                     Arrays.asList(learningRate),
                     Arrays.asList(gamma),
