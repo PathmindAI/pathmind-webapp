@@ -50,7 +50,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 					Collections.singletonList(new SimpleGrantedAuthority("logged_in")),
 					user.getId(),
 					user.getFirstname(),
-					user.getLastname()
+					user.getLastname(),
+					user.getName()
 					);
 		}
 	}

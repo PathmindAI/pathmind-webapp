@@ -17,7 +17,7 @@ public class AccountHeaderPanel extends HorizontalLayout
 {
 	public AccountHeaderPanel() {
 		PathmindUserDetails user = SecurityUtils.getUser();
-		RouterLink accountRouterLink = new RouterLink(user.getEmail(), AccountView.class);
+		RouterLink accountRouterLink = new RouterLink(user.getName(), AccountView.class);
 
 		Anchor logoutLink = createLogoutLink();
 
