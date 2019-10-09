@@ -467,7 +467,7 @@
     <changeSet id="20191008-2" author="daehyun@skymind.io">
         <insert tableName="PATHMIND_USER">
             <column name="NAME" value="Ty Wang"/>
-            <column name="EMAIL" value="ty@skymind.io"/> 
+            <column name="EMAIL" value="ty@skymind.io"/>
             <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
         </insert>
     </changeSet>

@@ -37,7 +37,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     private static final Map<RLLib, List<String>> rllibMap = Map.of(
             RLLib.VERSION_0_7_0, Arrays.asList(
                     "LZAENb", // conda
-                    "yDsrpg", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-09-29
+                    "uLWose", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-10-08 DH version
                     "fDRBHd"  // OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz
             )
     );
@@ -104,7 +104,10 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                             final String contents = new String(client.fileContents(it.getId()));
                             return Map.entry(key, contents);
                         })
-                        .filter(it -> it.getValue().contains("python3: can't open file 'rllibtrain.py': [Errno 2] No such file or directory"))
+                        .filter(it ->
+                                it.getValue().contains("python3: can't open file 'rllibtrain.py': [Errno 2] No such file or directory")
+                                || it.getValue().contains("SyntaxError: invalid syntax")
+                        )
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
                 if (status.getStatusReason().equals("Completed successfully") && map.size() == 0) {
