@@ -18,8 +18,11 @@ import io.skymind.pathmind.ui.utils.VaadinUtils;
 
 @Push(PushMode.AUTOMATIC)
 @CssImport("styles/styles.css")
+@CssImport(value = "styles/components/vaadin-text-field.css", themeFor = "vaadin-text-field")
+@CssImport(value = "styles/components/vaadin-button.css", themeFor = "vaadin-button")
+@CssImport(value = "styles/components/vaadin-grid.css", themeFor = "vaadin-grid")
 @Theme(Lumo.class)
-//@HtmlImport("frontend://styles/shared-styles.html")
+
 @JsModule("./styles/shared-styles.js")
 public class MainLayout extends AppLayout implements PageConfigurator
 {

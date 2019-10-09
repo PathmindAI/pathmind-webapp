@@ -1,0 +1,15 @@
+:host [part="input-field"]  {
+    background: rgba(240,241,246, .25);
+}
+
+/* Search box text field */
+:host(.search-box_text-field) vaadin-text-field-container {
+    border: 1px solid var(--pm-text-color);
+}
+
+:host(.search-box_text-field) [part="input-field"]  {
+    background: transparent;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow: inset 0px 0px 0px 1px rgba(26,41,73, 1);
+}

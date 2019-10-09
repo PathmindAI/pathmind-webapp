@@ -30,7 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Theme(Lumo.class)
 //@HtmlImport("frontend://styles/shared-styles.html")
 @JsModule("./styles/shared-styles.js")
-public class LoginView extends LoginOverlay implements AfterNavigationObserver, BeforeEnterObserver, HasDynamicTitle, PageConfigurator
+public class LoginView extends LoginOverlay
+		implements AfterNavigationObserver, BeforeEnterObserver, HasDynamicTitle, PageConfigurator
 {
 	@Autowired
 	private UserDAO userDAO;

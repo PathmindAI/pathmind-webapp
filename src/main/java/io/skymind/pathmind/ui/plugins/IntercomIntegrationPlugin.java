@@ -1,6 +1,7 @@
 package io.skymind.pathmind.ui.plugins;
 
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import com.vaadin.flow.shared.ui.LoadMode;
 import io.skymind.pathmind.data.PathmindUser;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 // to have transferred it to application.properties. With that in mind I'm leaving in the application.properties
 // file however we should at some point confirm how we want to handle the dev/staging/prod values and do so consistently.
 @Component
+//@JsModule("vendor/IntercomIntegration.js") TODO test and replace line 31 by this
 public class IntercomIntegrationPlugin
 {
 	private static final String INTERCOM_INTEGRATION_JS_FILE = "/frontend/js/IntercomIntegration.js";

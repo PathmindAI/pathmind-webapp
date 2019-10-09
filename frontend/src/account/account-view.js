@@ -24,6 +24,9 @@ class AccountView extends PolymerElement {
           Account Information
         </vaadin-tab>
       </vaadin-tabs>
+      <img src="/frontend/images/pathmind-logo.png">
+      <img src="frontend/images/pathmind-logo.png">
+      <img src="images/pathmind-logo.png">
       <vaadin-vertical-layout style="width: 100%; height: 100%;">
         <vaadin-horizontal-layout style="width: 100%;">
           <vaadin-vertical-layout class="info">

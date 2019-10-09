@@ -1,4 +1,5 @@
 import '@polymer/polymer/lib/elements/custom-style.js';
+
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `
@@ -50,6 +51,13 @@ $_documentContainer.innerHTML = `
     /* latin-ext */
    
    html {
+        /* pathmind-colors */
+        --pm-primary-color: #4F97AA;
+        --pm-secondary-text-color: #B3B6C2;
+        --pm-text-color: #1A2949;
+        --pm-app-bg-color: #F0F1F6;
+            
+         /* pathmind-theme */
         --lumo-font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
         --lumo-size-xl: 3rem;
         --lumo-size-l: 2.5rem;
@@ -69,15 +77,16 @@ $_documentContainer.innerHTML = `
         --lumo-error-color-10pct: rgba(216, 9, 71, 0.1);
         --lumo-error-color: #D80947;
         --lumo-header-text-color: #000000;
-        --lumo-body-text-color: #2B2B2B;
-        --lumo-secondary-text-color: #888888;
+        --lumo-body-text-color: var(--pm-text-color);
+        --lumo-secondary-text-color: var(--pm-secondary-text-color);
         --lumo-tertiary-text-color: #D7D7D7;
         --lumo-disabled-text-color: #FFFFFF;
         --lumo-base-color: #FFFFFF;
-        --lumo-primary-text-color: #5889F7;
+        --lumo-primary-text-color: var(--pm-primary-color);
         --lumo-primary-color-50pct: rgba(88, 137, 247, 0.5);
         --lumo-primary-color-10pct: rgba(88, 137, 247, 0.1);
-        --lumo-primary-color: #5889F7;
+        --lumo-primary-color: var(--pm-primary-color);
+        --lumo-border-radius: 6px;
     }
     
     body {
