@@ -31,6 +31,8 @@ public class CreateANewProjectWizardPanel extends VerticalLayout
 		getStyle().set("border", "1px solid #ccc");
 
 		bindFields(binder);
+
+		projectNameTextField.focus();
 	}
 
 	public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
