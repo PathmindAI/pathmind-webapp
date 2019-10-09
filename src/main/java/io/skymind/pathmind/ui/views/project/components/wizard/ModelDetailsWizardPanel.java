@@ -45,6 +45,8 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 		bindFields(binder);
 
+		numberOfObservationsNumberField.addValueChangeListener(value -> System.out.println("Here"));
+
 		setWidthFull();
 		getStyle().set("border", "1px solid #ccc");
 	}
