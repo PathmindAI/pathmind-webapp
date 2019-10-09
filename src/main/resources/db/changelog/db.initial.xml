@@ -359,12 +359,6 @@
             <column name="EMAIL_VERIFIED_AT" type="DATETIME"/>
             <column name="EMAIL_VERIFICATION_TOKEN" type="UUID"/>
         </addColumn>
-        <!-- TODO: once jooq-codegen:generate works modify the password field to be called - -->
-        <!--renameColumn newColumnName="PASSWORD_HASH"
-                      oldColumnName="password"
-                      tableName="PATHMIND_USER"/-->
-        <!-- TODO: change the password for users to this: -->
-        <!--$2a$10$9MDQO5k8e062Lhbq459KJOAgx.JP3c3P6UiXKYh5b5P6l1SFT0AtW-->
     </changeSet>
 
     <changeSet id="20191003-1" author="daehyun@skymind.io">
