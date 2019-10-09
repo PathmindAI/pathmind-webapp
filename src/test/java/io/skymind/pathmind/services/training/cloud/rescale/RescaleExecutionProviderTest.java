@@ -22,7 +22,7 @@ public class RescaleExecutionProviderTest {
 
     @Test
     public void testCreateWithUploadedModel(){
-        final RescaleRestApiClient client = new RescaleRestApiClient("platform.rescale.jp", "0d0601925a547db44d41007e3cc4386b075c761c", new ObjectMapper(), WebClient.builder());
+        final RescaleRestApiClient client = new RescaleRestApiClient("https://platform.rescale.jp/api/v2", "0d0601925a547db44d41007e3cc4386b075c761c", new ObjectMapper(), WebClient.builder());
         final ExecutionProviderMetaDataService metaDataService = new ExecutionProviderMetaDataService() {
 
             @Override
