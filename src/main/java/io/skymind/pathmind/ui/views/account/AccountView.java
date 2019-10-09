@@ -1,14 +1,9 @@
 package io.skymind.pathmind.ui.views.account;
 
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.tabs.Tab;
@@ -18,8 +13,6 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.WrapperUtils;
-import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -27,10 +20,17 @@ import javax.annotation.PostConstruct;
 @Tag("account-view")
 @JsModule("src/account/account-view.js")
 @Route(value="account", layout = MainLayout.class)
-public class AccountView extends PolymerTemplate<TemplateModel>
+public class AccountView extends PolymerTemplate<AccountView.Model>
 {
-	@Id("container")
-	private Div container;
+
+	@Id("editInfoBtn")
+	private Button editInfoBtn;
+	@Id("changePasswordBtn")
+	private Button changePasswordBtn;
+	@Id("upgradeBtn")
+	private Button upgradeBtn;
+	@Id("editPaymentBtn")
+	private Button editPaymentBtn;
 
 	private PathmindUser user;
 
@@ -38,39 +38,39 @@ public class AccountView extends PolymerTemplate<TemplateModel>
 	public AccountView(CurrentUser currentUser)
 	{
 		user = currentUser.getUser();
-
 	}
 
 	@PostConstruct
 	private void init() {
-//		addClassName("account-view");
 		initTabs();
 		initContent();
-		container.add(new Span("Juicy"));
-		container.add(new RewardFunctionEditor());
-//		add(new Label("TODO -> Account for " + user.getEmail()));
+		initBtns();
+	}
+
+	private void initBtns() {
+		editInfoBtn.addClickListener(e -> UI.getCurrent().navigate(AccountEditView.class));
+		upgradeBtn.setEnabled(false);
 	}
 
 	private void initContent() {
-		Span userTitle = new Span("User Email");
-		userTitle.addClassName("title");
-		Span userInfo = new Span(user.getEmail());
-		userInfo.addClassName("info");
-
-
-		VerticalLayout basicInfoContent = WrapperUtils.wrapWidthFullVertical(userTitle, userInfo);
-		Button edit = new Button("Edit");
-		edit.addClassName("edit");
-		HorizontalLayout basicInfo = WrapperUtils.wrapWidthFullHorizontal(basicInfoContent, edit);
-
-
-		VerticalLayout container = WrapperUtils.wrapWidthFullVertical(basicInfo);
-//		add(container);
+		getModel().setEmail(user.getEmail());
+		getModel().setFirstName(user.getFirstname());
+		getModel().setLastName(user.getLastname());
+		getModel().setSubscription("Early Access");
+		getModel().setBillingInfo("Billing Information");
 	}
 
 	private void initTabs() {
 		Tabs tabs = new Tabs();
 		tabs.add(new Tab("Account information"));
 		tabs.setWidth("100%");
+	}
+
+	public interface Model extends TemplateModel {
+		void setEmail(String email);
+		void setFirstName(String firstName);
+		void setLastName(String lastName);
+		void setSubscription(String subscription);
+		void setBillingInfo(String billingInfo);
 	}
 }
