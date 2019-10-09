@@ -1,68 +1,47 @@
-# Maven package Java project Web App to Linux on Azure
-# Build your Java project and deploy it to Azure as a Linux web app
+# Maven
+# Build your Java project and run tests with Apache Maven.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+variables:
+  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+  MAVEN_OPTS: '-Xmx3072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
 
 trigger:
 - pathmind-test_1
 
-variables:
+pool:
+  vmImage: 'Ubuntu-16.04'
 
-  # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: 'e28bb532-a5e7-4214-96bc-1458fef2e41e'
-  
-  # Web app name
-  webAppName: 'path-testing'
+steps:
+- task: CacheBeta@0
+  inputs:
+    key: maven | **/pom.xml
+    path: $(MAVEN_CACHE_FOLDER)
+  displayName: Cache Maven local repo
 
-  # Environment name
-  environmentName: 'path-testing'
-  
-  # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '$(MAVEN_OPTS)'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.11'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'test package'
 
-stages:
-- stage: Build
-  displayName: Build stage
-  jobs:
-  - job: MavenPackageAndPublishArtifacts
-    displayName: Maven Package and Publish Artifacts
-    pool:
-      vmImage: $(vmImageName)
-    
-    steps:
-    - task: Maven@3
-      displayName: 'Maven Package'
-      inputs:
-        mavenPomFile: 'pom.xml'
+- task: CopyFiles@2
+  inputs:
+    contents: 'target/pathmind-*.jar'
+    targetFolder: $(Build.ArtifactStagingDirectory)
 
-    - task: CopyFiles@2
-      displayName: 'Copy Files to artifact staging directory'
-      inputs:
-        SourceFolder: '$(System.DefaultWorkingDirectory)'
-        Contents: '**/target/*.?(war|jar)'
-        TargetFolder: $(Build.ArtifactStagingDirectory)
+- task: CopyFiles@2
+  inputs:
+    contents: '*.pubxml'
+    targetFolder: $(Build.ArtifactStagingDirectory)
 
-    - upload: $(Build.ArtifactStagingDirectory)
-      artifact: drop
-
-- stage: Deploy
-  displayName: Deploy stage
-  dependsOn: Build
-  condition: succeeded()
-  jobs:
-  - deployment: DeployLinuxWebApp
-    displayName: Deploy Linux Web App
-    environment: $(environmentName)
-    pool: 
-      vmImage: $(vmImageName)
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: AzureWebApp@1
-            displayName: 'Azure Web App Deploy: path-testing'
-            inputs:
-              azureSubscription: $(azureSubscription)
-              appType: webAppLinux
-              appName: $(webAppName)
-              package: '$(Pipeline.Workspace)/drop/**/target/*.?(war|jar)'
+- task: PublishBuildArtifacts@1
+  inputs:
+    artifactName: 'drop'
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
