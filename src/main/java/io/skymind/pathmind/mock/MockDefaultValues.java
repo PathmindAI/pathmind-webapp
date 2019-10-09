@@ -39,7 +39,7 @@ public class MockDefaultValues
 
     public static String getProjectName() {
         LocalDateTime now = LocalDateTime.now();
-        return "Project - " + now.format(DateTimeFormatter.ofPattern("MMM dd")) + " at " +  now.format(DateTimeFormatter.ofPattern("HH:mm a"));
+        return "Project - " + now.format(DateTimeFormatter.ofPattern("MMM dd")) + " - " +  now.format(DateTimeFormatter.ofPattern("HH:mm a"));
     }
 
     public static void addNewProjectModelSettings(Model model) {
