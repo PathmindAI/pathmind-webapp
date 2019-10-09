@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
 trigger:
-- pathmind-test
+- pathmind-test_1
 
 variables:
 
