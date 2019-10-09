@@ -10,7 +10,6 @@ import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.services.training.progress.RewardScore;
 import org.jooq.DSLContext;
@@ -118,21 +117,15 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                         .fetchOne()
                         .getValue(POLICY.ID);
 
-                // TODO -> DH -> Can you please adjust how you would prefer to have the backend setup. I just temporarily put this to get the solution
-                // working and avoid code duplication. I basically also need the model and experiment data models.
-                final Policy policy = PolicyDAO.getPolicy(ctx, policyId);
+                final Policy policy = new Policy();
+                policy.setId(policyId);
+                policy.setRunId(runId);
+                policy.setRun(run);
+                policy.setName(progress.getId());
+                policy.setExternalId(progress.getId());
                 policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
                 policy.setProgress(progressJsonStr);
-
-//                final Policy policy = new Policy();
-//                policy.setId(policyId);
-//                policy.setRunId(runId);
-//                policy.setRun(run);
-//                policy.setName(progress.getId());
-//                policy.setExternalId(progress.getId());
-//                policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
-//                policy.setProgress(progressJsonStr);
-//                policy.setExperiment(experiment);
+                policy.setExperiment(experiment);
 
                 publisher.onNext(new PolicyUpdateBusEvent(policy));
             } catch (JsonProcessingException e) {
