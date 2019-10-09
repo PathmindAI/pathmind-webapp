@@ -76,7 +76,8 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
 
 	private void updateData(Policy updatedPolicy) {
 		updatedPolicyChart(updatedPolicy);
-		if(policy.getId() == updatedPolicy.getId())
+		// If it's an initial run the policy may be null.
+		if(policy != null && policy.getId() == updatedPolicy.getId())
 			update(updatedPolicy);
 	}
 

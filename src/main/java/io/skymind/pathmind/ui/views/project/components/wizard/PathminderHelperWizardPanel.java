@@ -6,6 +6,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -14,11 +16,12 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 public class PathminderHelperWizardPanel extends VerticalLayout
 {
 	private Label projectNameLabel = new Label();
-	private Button nextStepButton = new Button("Next Step");
+	private Button nextStepButton = new Button("Next", new Icon(VaadinIcon.CHEVRON_RIGHT));
 
 	public PathminderHelperWizardPanel()
 	{
 		projectNameLabel.getStyle().set("margin-top", "0px");
+		nextStepButton.setIconAfterText(true);
 
 		add(getProjectH3(),
 				projectNameLabel,
@@ -49,21 +52,21 @@ public class PathminderHelperWizardPanel extends VerticalLayout
 		Div div = new Div();
 		div.setWidthFull();
 		div.getElement().setProperty("innerHTML",
-				"<p>To prepare your AnyLogic model for reinforcement learning, install the PathmindHelper</p>" +
+				"<p>To prepare your AnyLogic model for reinforcement learning, install the Pathmind Helper</p>" +
+				"<p><strong>The basics:</strong></p>" +
 				"<ol>" +
-					"<li>Download the <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">PathmindHelper</a>.</li>" +
-					"<li>Add the PathmindHelper as a library in your AnyLogic Model.</li>" +
-					"<li>Add one instance of the PathmindHelper to your model</li>" +
-					"<li>Fill in these four functions:</li>" +
+					"<li>The Pathmind Helper is an AnyLogic palette item that you add to your simulation. You can <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">download it here</a>.</li>" +
+					"<li>Add Pathmind Helper as a library in AnyLogic.</li>" +
+					"<li>Add a Pathmind Helper to your model.</li>" +
+					"<li>Fill in these functions:</li>" +
 						"<ul>" +
+							"<li>Observation for rewards</li>" +
+							"<li>Observation for training</li>"+
 							"<li>doAction</li>" +
-							"<li>getObservation for rewards</li>" +
-							"<li>getObservation for training</li>" +
-							"<li>isDone</li>" +
 						"</ul>" +
 				"</ol>" +
 				"<p>When you're ready, upload your model in the next step.</p>" +
-				"<p style=\"font-size:11px;\"><a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper\" target=\"_blank\">For more details, see our documentation</a></p>");
+				"<p><a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper\" target=\"_blank\">For more details, see our documentation</a></p>");
 		return div;
 	}
 }

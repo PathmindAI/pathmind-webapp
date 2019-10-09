@@ -118,7 +118,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
 				WrapperUtils.wrapSizeFullVertical(
-						new Label("Write your reward functions"),
+						new Label("Write your reward function:"),
 						rewardFunctionEditor),
 				WrapperUtils.wrapSizeFullVertical(errorsTextArea),
 				70);
@@ -150,13 +150,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Component getTopButtonPanel()
 	{
-		final Button startRunButton = new Button("Start (TEST RUN)", new Icon(VaadinIcon.CHEVRON_RIGHT),
+		final Button startRunButton = new Button("Start Test Run", new Icon(VaadinIcon.PLAY),
 				click -> handleStartRunButtonClicked());
-		startRunButton.setIconAfterText(true);
 
 //
 //		// TODO: Make Discovery available from after a test run only
-//		final Button startDiscoveryButton = new Button("Start (Discovery RUN)", new Icon(VaadinIcon.CHEVRON_RIGHT),
+//		final Button startDiscoveryButton = new Button("Start Discovery Run", new Icon(VaadinIcon.CHEVRON_RIGHT),
 //				click -> {
 //					ExceptionWrapperUtils.handleButtonClicked(() ->
 //					{

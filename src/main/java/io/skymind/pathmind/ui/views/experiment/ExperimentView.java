@@ -6,6 +6,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
@@ -146,7 +148,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		actionButton.setVisible(false);
 
 		// TODO: Put this in the appropriate place
-		runFullTraining = new Button("RUN FULL TRAINING", click -> {
+		runFullTraining = new Button("Start Full Run", new Icon(VaadinIcon.PLAY), click -> {
 			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
 			trainingService.startFullRun(experiment, policy);
 
@@ -155,7 +157,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		});
 		runFullTraining.setVisible(false);
 
-		runDiscoveryTraining = new Button("RUN DISCOVERY TRAINING", click -> {
+		runDiscoveryTraining = new Button("Start Discovery Run", new Icon(VaadinIcon.PLAY), click -> {
 			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
 			trainingService.startDiscoveryRun(experiment);
 

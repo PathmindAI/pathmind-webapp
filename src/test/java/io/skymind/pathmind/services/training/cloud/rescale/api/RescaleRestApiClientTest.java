@@ -21,7 +21,7 @@ public class RescaleRestApiClientTest {
     public void testUploadFilesToRescale() throws IOException {
         ObjectMapper mapper = ObjectMapperHolder.getJsonMapper();
 
-        final RescaleRestApiClient client = new RescaleRestApiClient("platform.rescale.jp",
+        final RescaleRestApiClient client = new RescaleRestApiClient("https://platform.rescale.jp/api/v2",
                 "0d0601925a547db44d41007e3cc4386b075c761c",
                 mapper,
                 WebClient.builder());

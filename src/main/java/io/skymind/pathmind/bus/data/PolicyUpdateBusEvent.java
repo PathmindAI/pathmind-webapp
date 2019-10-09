@@ -8,7 +8,17 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent
 {
 	private Policy policy;
 
-	public PolicyUpdateBusEvent(Policy policy) {
+	public PolicyUpdateBusEvent(Policy policy)
+	{
+		if(policy.getRun() == null)
+			throw new RuntimeException("Run is null");
+		if(policy.getExperiment() == null)
+			throw new RuntimeException("Experiment is null");
+		if(policy.getModel() == null)
+			throw new RuntimeException("Model is null");
+		if(policy.getProject() == null)
+			throw new RuntimeException("Project is null");
+
 		this.policy = policy;
 	}
 

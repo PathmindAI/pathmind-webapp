@@ -46,8 +46,12 @@ public class PolicyRepository
 		}).collect(Collectors.toList());
     }
 
-    public Policy getPolicy(long policyId) {
-        Record record = dslContext
+	public Policy getPolicy(long policyId) {
+		return getPolicy(dslContext, policyId);
+	}
+
+    public static Policy getPolicy(DSLContext ctx, long policyId) {
+        Record record = ctx
                 .select(POLICY.asterisk())
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
                 .select(EXPERIMENT.ID, EXPERIMENT.NAME)
@@ -73,7 +77,7 @@ public class PolicyRepository
 		return policy;
     }
 
-	private void addParentDataModelObjects(Record record, Policy policy) {
+	private static void addParentDataModelObjects(Record record, Policy policy) {
 		policy.setRun(record.into(RUN).into(Run.class));
 		policy.setExperiment(record.into(EXPERIMENT).into(Experiment.class));
 		policy.setModel(record.into(MODEL).into(Model.class));

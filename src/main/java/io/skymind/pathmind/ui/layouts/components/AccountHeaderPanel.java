@@ -9,21 +9,21 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.VaadinServlet;
 
+import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.views.account.AccountView;
 
 public class AccountHeaderPanel extends HorizontalLayout
 {
 	public AccountHeaderPanel() {
-
-		Label userLabel = new Label("Name");
-		RouterLink accountRouterLink = new RouterLink("Account", AccountView.class);
+		PathmindUserDetails user = SecurityUtils.getUser();
+		RouterLink accountRouterLink = new RouterLink(user.getName(), AccountView.class);
 
 		Anchor logoutLink = createLogoutLink();
 
 		final Icon userIcon = new Icon(VaadinIcon.USER);
 		userIcon.getStyle().set("margin-top", "3px");
-		add(userIcon, userLabel, accountRouterLink, logoutLink);
+		add(userIcon, accountRouterLink, logoutLink);
 
 		getElement().getStyle().set("margin-left", "auto");
 		getElement().getStyle().set("padding-right", "20px");
