@@ -44,6 +44,7 @@ public class SearchBox<T> extends HorizontalLayout
 		searchTextField.setValueChangeMode(ValueChangeMode.EAGER);
 		searchButton.addClickListener(click -> search(searchPredicate));
     	searchTextField.addValueChangeListener(change -> search(searchPredicate));
+    	searchTextField.addClassName("search-field-box");
 
 		add(searchTextField, searchButton);
 	}

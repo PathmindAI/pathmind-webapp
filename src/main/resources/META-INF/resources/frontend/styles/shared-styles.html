@@ -6,6 +6,7 @@
 
 /* component styles '/
 <link rel="import" href="components/vaadin-button.html">
+<link rel="import" href="components/vaadin-grid.html">
 <link rel="import" href="components/vaadin-text-field.html">
 
 
@@ -31,10 +32,11 @@
 
             [part="navbar"] {
                 padding: 8px;
+                background: white;
             }
 
-            [part="navbar"] {
-
+            [part="navbar"]::before {
+                content: none;
             }
 
             slot[name="menu"] {
