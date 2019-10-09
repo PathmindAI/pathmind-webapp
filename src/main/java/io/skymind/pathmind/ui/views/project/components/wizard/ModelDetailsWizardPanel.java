@@ -25,13 +25,15 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 	private NumberField numberOfPossibleActionsNumberField;
 	private TextArea getObservationForRewardFunctionTextArea;
 
-	private Button nextStepButton = new Button("Next Step");
+	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
+
 
 	public ModelDetailsWizardPanel(Binder<Model> binder)
 	{
 		setupFields();
 		setupForm();
 		setupGetObservationForRewardFunctionTextArea();
+		nextStepButton.setIconAfterText(true);
 
 		add(WrapperUtils.wrapWidthFullHorizontal(
 				new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE),
