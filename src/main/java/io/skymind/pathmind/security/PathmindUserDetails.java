@@ -31,6 +31,6 @@ public class PathmindUserDetails extends User {
     }
 
     public String getEmail() {
-        return lastname;
+        return getUsername();
     }
 }
