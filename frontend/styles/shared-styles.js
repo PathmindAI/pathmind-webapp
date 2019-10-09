@@ -27,8 +27,8 @@ $_documentContainer.innerHTML = `
                 padding: 8px;
             }
 
-            [part="navbar"] {
-
+            [part="navbar"]::before {
+                content: none;
             }
 
             slot[name="menu"] {
