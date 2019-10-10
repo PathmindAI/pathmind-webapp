@@ -12,7 +12,7 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 /**
  * TODO -> Implement correctly, this is just a quick stub.
  */
-@CssImport("styles/styles.css")
+@CssImport("./styles/styles.css")
 @Route(value="error", layout = MainLayout.class)
 public class ErrorView extends PathMindDefaultView
 {

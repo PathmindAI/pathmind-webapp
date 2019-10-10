@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
 
-@CssImport("styles/styles.css")
+@CssImport("./styles/styles.css")
 @Route(value = "console", layout = MainLayout.class)
 public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
