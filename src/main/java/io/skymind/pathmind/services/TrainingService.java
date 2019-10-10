@@ -61,14 +61,14 @@ public class TrainingService {
                 exp.getRewardFunction(),
                 model.getNumberOfPossibleActions(),
                 model.getNumberOfObservations(),
-                100, // Max 100 iterations for a test run
+                50, // Max 50 iterations for a test run
                 executionEnvironment,
                 RunType.TestRun,
                 () ->modelDAO.getModelFile(model.getId()),
                 Arrays.asList(1e-5),
                 Arrays.asList(0.99),
                 Arrays.asList(128),
-                5 * 60        // 5 mins
+                15 * 60        // 15 mins
         );
 
         final String executionId = executionProvider.execute(spec);
@@ -94,7 +94,7 @@ public class TrainingService {
                 model.getNumberOfObservations(),
                 100, // Max 100 iterations for a test run
                 executionEnvironment,
-                RunType.TestRun,
+                RunType.DiscoveryRun,
                 () ->modelDAO.getModelFile(model.getId()),
                 Arrays.asList(1e-3, 1e-4, 1e-5),
                 Arrays.asList(0.9, 0.99),
@@ -133,7 +133,7 @@ public class TrainingService {
                     model.getNumberOfObservations(),
                     500, // Max 100 iterations for a test run
                     executionEnvironment,
-                    RunType.TestRun,
+                    RunType.FullRun,
                     () ->modelDAO.getModelFile(model.getId()),
                     Arrays.asList(learningRate),
                     Arrays.asList(gamma),
