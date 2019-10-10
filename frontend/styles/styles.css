@@ -30,7 +30,6 @@ html {
     --lumo-body-text-color: var(--pm-text-color);
     --lumo-secondary-text-color: var(--pm-secondary-text-color);
     --lumo-tertiary-text-color: #D7D7D7;
-    --lumo-disabled-text-color: #FFFFFF;
     --lumo-base-color: #FFFFFF;
     --lumo-primary-text-color: var(--pm-primary-color);
     --lumo-primary-color-50pct: rgba(88, 137, 247, 0.5);
@@ -134,4 +133,14 @@ html {
     flex: 1;
     max-width: 1200px;
     align-self: center;
+}
+
+account-view {
+    background: var(--pm-app-bg-color);
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    align-items: center;
 }
