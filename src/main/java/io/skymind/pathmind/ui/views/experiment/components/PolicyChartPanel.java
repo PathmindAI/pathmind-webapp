@@ -4,6 +4,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.ListSeries;
+import com.vaadin.flow.component.charts.model.Series;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -15,15 +16,18 @@ import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.components.FilterableComponent;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
-import org.springframework.stereotype.Component;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
 
 
-@Component
 public class PolicyChartPanel extends VerticalLayout implements FilterableComponent<Policy>
 {
+
+	private static Logger log = LogManager.getLogger(PushUtils.class);
+
 	private Chart chart = new Chart(ChartType.SPLINE);
 
 	private Label policyLabel;
@@ -83,6 +87,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
 
 	private void updatedPolicyChart(Policy updatedPolicy)
 	{
+		log.info("Updating chart for policy {}", updatedPolicy);
 		// TODO -> Do we need to keep experiment up to date if there are new policies, etc.? I don't believe it's necessary
 		// but we should confirm it.
 		// During a training run, additional policies will be created, i.e. for a discovery run, the policies will
@@ -93,9 +98,19 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
 				.filter(series -> series.getName().equals(updatedPolicy.getName()))
 				.findAny()
 				.ifPresentOrElse(
-						series -> ((ListSeries) series).setData(updatedPolicy.getScores()),
-						() -> chart.getConfiguration().addSeries(new ListSeries(updatedPolicy.getName(), updatedPolicy.getScores())));
+						series -> updateSeries(series, updatedPolicy),
+						() -> addSeries(updatedPolicy));
 		chart.drawChart();
+	}
+
+	private void updateSeries(Series series, Policy updatedPolicy) {
+		log.info("Updating series {} with {} values", series.getName(), updatedPolicy.getScores().size());
+		((ListSeries) series).setData(updatedPolicy.getScores());
+	}
+
+	private void addSeries(Policy updatedPolicy) {
+		log.info("Adding a new series {} with {} values", updatedPolicy.getName(), updatedPolicy.getScores().size());
+		chart.getConfiguration().addSeries(new ListSeries(updatedPolicy.getName(), updatedPolicy.getScores()));
 	}
 
 	private void setupChart() {

@@ -98,4 +98,13 @@ public class Policy extends Data
 	public void setAlgorithm(Algorithm algorithm) {
 		this.algorithm = algorithm;
 	}
+
+	@Override
+	public String toString() {
+		return "Policy{" +
+				"id=" + getId() +
+				", runId=" + runId +
+				", name=" + getName() +
+				'}';
+	}
 }
