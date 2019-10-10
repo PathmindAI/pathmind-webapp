@@ -256,7 +256,8 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 // Still has to be set, but doesn't actually do something, needs to be removed from train.sh
                 var("STEP_TIME", "1"),
                 var("STOP_TIME", "420"),
-                var("TIME_UNIT", "MINUTE")
+                var("TIME_UNIT", "MINUTE"),
+                var("MAX_TIME_IN_SEC", String.valueOf(job.getMaxTimeInSec()))
         ));
     }
 
