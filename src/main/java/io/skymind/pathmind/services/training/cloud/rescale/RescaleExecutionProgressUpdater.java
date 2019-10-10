@@ -9,8 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,18 +41,92 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
             if(rescaleJobId != null){
                 final RunStatus status = provider.status(rescaleJobId);
                 final Map<String, String> rawProgress = provider.progress(rescaleJobId);
-                final List<Progress> progresses = rawProgress.entrySet().stream().map(ProgressInterpreter::interpret).collect(Collectors.toList());
+
+                log.info("kepricondebug rawProgress : " + rawProgress.keySet());
+
+                final List<String> finishedPolicyNamesFromDB = updateService.getStoppedPolicies(runId)
+                        .stream()
+                        .map(p -> p.getName())
+                        .collect(Collectors.toList());
+
+                log.info("kepricondebug finishedPolicyNamesFromDB : " + finishedPolicyNamesFromDB);
+
+                final List<Progress> progresses = rawProgress.entrySet().stream()
+                        .filter(e -> !finishedPolicyNamesFromDB.contains(e.getKey()))
+                        .map(ProgressInterpreter::interpret)
+                        .collect(Collectors.toList());
+
+                log.info("kepricondebug after minus finished : " + progresses.stream().map(p -> p.getId()).collect(Collectors.toList()));
+
+                final List<String> finishedPolicyNamesFromRescale = getTerminatedPolices(rescaleJobId);
+
+                log.info("kepricondebug finishedPolicyNamesFromRescale : " + finishedPolicyNamesFromRescale);
+
+                for (Progress progress : progresses) {
+                    if (progress.getStoppedAt() == null) {
+                        log.info("kepricondebug : progress id : " + progress.getId());
+
+                        for (String finishedPolicy : finishedPolicyNamesFromRescale) {
+                            if (progress.getId().contains(finishedPolicy)) {
+                                log.info("kepricondebug : " + progress.getId() + " stoppat updated");
+                                progress.setStoppedAt(LocalDateTime.now());
+                            }
+                        }
+                    }
+                }
+
 
                 updateService.updateRun(runId, status, progresses);
                 if(status == RunStatus.Completed){
-                    for (Progress progress : progresses) {
-                        final byte[] policy = provider.policy(rescaleJobId, progress.getId());
-                        updateService.savePolicyFile(runId, progress.getId(), policy);
+                    for (String finishPolicyName : finishedPolicyNamesFromDB) {
+                        final byte[] policy = provider.policy(rescaleJobId, finishPolicyName);
+                        updateService.savePolicyFile(runId, finishPolicyName, policy);
                     }
                 }
             }else{
                 log.error("Run {} marked as executing but no rescale run id found for it.", runId);
             }
         });
+    }
+
+    public List<String> getTerminatedPolices(String rescaleJobId) {
+
+        List<String> terminatedTrial = new ArrayList<>();
+        String content = provider.consoleAnytime(rescaleJobId);
+        if (content == null) {
+            return terminatedTrial;
+        }
+
+        List<String> lines = Arrays.asList(content.split("\n"));
+
+        int lastIdx = -1;
+        for (int i = lines.size() - 1; i >= 0; i--) {
+            if (lines.get(i).contains("TERMINATED trials:")) {
+                lastIdx = i;
+                break;
+            }
+        }
+        if (lastIdx == -1) {
+            log.info("No Matching terminated trials for " + rescaleJobId);
+            return terminatedTrial;
+        }
+
+        Pattern logPattern = Pattern.compile("\\[[\\w\\d:-]+\\]:.*:\\tTERMINATED");
+        Pattern policyPattern = Pattern.compile("\\w+_\\w+=.+:");
+        //[2019-10-09T22:33:25Z]:  - PPO_PathmindEnvironment_0_gamma=0.9,lr=0.001,sgd_minibatch_size=64:	TERMINATED, [8 CPUs, 0 GPUs], [pid=3339], 6661 s, 100 iter, 400000 ts, -167 rew
+
+        for (int i = lastIdx + 1; i < lines.size(); i++) {
+            String line = lines.get(i);
+            if (!logPattern.matcher(line).find()) {
+                break;
+            }
+
+            Matcher matcher = policyPattern.matcher(line);
+            if (matcher.find()) {
+                terminatedTrial.add(matcher.group().replace(":", ""));
+            }
+        }
+
+        return terminatedTrial;
     }
 }
