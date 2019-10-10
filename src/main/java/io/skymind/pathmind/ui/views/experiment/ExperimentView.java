@@ -16,6 +16,7 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -74,6 +75,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private PolicyDAO policyDAO;
 	@Autowired
 	private TrainingService trainingService;
+	@Autowired
+	private UserDAO userDAO;
 
 	private Button actionButton;
 	private Button runFullTraining;
@@ -221,6 +224,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			experimentId = Long.parseLong(segments[EXPERIMENT_ID_SEGMENT]);
 		if(segments.length > 1 && NumberUtils.isDigits(segments[POLICY_ID_SEGMENT]))
 			policyId = Long.parseLong(segments[POLICY_ID_SEGMENT]);
+	}
+
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToExperiment(experimentId);
 	}
 
 	@Override

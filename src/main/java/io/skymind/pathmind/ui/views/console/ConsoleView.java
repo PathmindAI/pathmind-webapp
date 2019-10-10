@@ -10,6 +10,7 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.services.ConsoleService;
 import io.skymind.pathmind.ui.components.LabelFactory;
@@ -30,22 +31,18 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 	private Logger log = LogManager.getLogger(ConsoleView.class);
 
 	@Autowired
-	private ExperimentRepository experimentRepository;
-	@Autowired
 	private ProjectDAO projectDAO;
-
-	private Flux<PathmindBusEvent> consumer;
+	@Autowired
+	private UserDAO userDAO;
 
 	private TextArea consoleTextArea;
 	private ExperimentGrid experimentListPanel;
 
-	private Project project;
 	private long experimentId;
 
-	public ConsoleView(Flux<PathmindBusEvent> consumer)
+	public ConsoleView()
 	{
 		super();
-		this.consumer = consumer;
 	}
 
 	@Override
@@ -78,9 +75,14 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 		this.experimentId = experimentId;
 	}
 
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToExperiment(experimentId);
+	}
+
 	protected void updateScreen(BeforeEnterEvent event) {
 		// TODO -> Need to load experiments for project due to new changes in the data model.
-		project = projectDAO.getProjectForExperiment(experimentId);
+//		project = projectDAO.getProjectForExperiment(experimentId);
 		consoleTextArea.setValue(ConsoleService.getConsoleLogForRun(experimentId));
 		// TODO => Update the experiment list panel. This is probably no longer on the project level...
 //		experimentListPanel.update(project);

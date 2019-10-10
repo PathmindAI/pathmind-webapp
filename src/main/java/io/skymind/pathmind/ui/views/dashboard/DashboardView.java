@@ -43,6 +43,12 @@ public class DashboardView extends PathMindDefaultView
 
 	private List<Policy> policies;
 
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		// Not needed since the loadData loads the data based on the user's id.
+		return true;
+	}
+
 	public DashboardView()
 	{
 		super();

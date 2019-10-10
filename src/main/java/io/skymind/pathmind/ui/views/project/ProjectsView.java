@@ -106,6 +106,11 @@ public class ProjectsView extends PathMindDefaultView
 	}
 
 	@Override
+	protected boolean isAccessAllowedForUser() {
+		// Not needed since the loadData loads the data based on the user's id.
+		return true;
+	}
+	@Override
 	protected void loadData() throws InvalidDataException {
 		projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId());
 		if(projects == null || projects.isEmpty()) {

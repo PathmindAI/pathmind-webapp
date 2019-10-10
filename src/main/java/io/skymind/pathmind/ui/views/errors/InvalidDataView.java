@@ -30,4 +30,9 @@ public class InvalidDataView extends PathMindDefaultView
 	protected Component getTitlePanel() {
 		return new ScreenTitlePanel("Invalid data error");
 	}
+
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return true;
+	}
 }

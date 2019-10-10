@@ -24,4 +24,9 @@ public class ErrorView extends PathMindDefaultView
 		return WrapperUtils.wrapWidthFullCenterVertical(
 				new Label("An unexpected error occurred. Please contact Skymind for assistance."));
 	}
+
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return true;
+	}
 }

@@ -15,6 +15,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
@@ -37,6 +38,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 {
 	@Autowired
 	private ModelDAO modelDAO;
+	@Autowired
+	private UserDAO userDAO;
 
 	private long projectId;
 	private List<Model> models;
@@ -114,9 +117,13 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	}
 
 	@Override
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToProject(projectId);
+	}
+
+	@Override
 	protected void loadData() throws InvalidDataException {
 		models = modelDAO.getModelsForProject(projectId);
-
 		if(models == null || models.isEmpty())
 			throw new InvalidDataException("Attempted to access Models for Project: " + projectId);
 	}
