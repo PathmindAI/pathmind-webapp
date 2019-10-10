@@ -74,7 +74,7 @@ public class DashboardView extends PathMindDefaultView
 	{
 		dashboardGrid = new Grid<>();
 
-		dashboardGrid.addColumn(policy -> policy.getRun().getStatusEnum())
+		Grid.Column<Policy> statusColumn = dashboardGrid.addColumn(policy -> policy.getRun().getStatusEnum())
 				.setHeader("Status")
 				.setSortable(true);
 		dashboardGrid.addColumn(policy -> policy.getProject().getName())
@@ -101,7 +101,9 @@ public class DashboardView extends PathMindDefaultView
 				.setSortable(true);
 
 		// Default sorting order as per https://github.com/SkymindIO/pathmind-webapp/issues/133
-		dashboardGrid.sort(Arrays.asList(new GridSortOrder<Policy>(completedColumn, SortDirection.DESCENDING)));
+		dashboardGrid.sort(Arrays.asList(
+				new GridSortOrder<Policy>(statusColumn, SortDirection.ASCENDING),
+				new GridSortOrder<Policy>(completedColumn, SortDirection.DESCENDING)));
 
 		// TODO -> CSS styles
 		dashboardGrid.setWidthFull();
