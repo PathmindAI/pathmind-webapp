@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-
 @Route(value="dashboard", layout = MainLayout.class)
 public class DashboardView extends PathMindDefaultView
 {
@@ -104,12 +103,6 @@ public class DashboardView extends PathMindDefaultView
 
 		// Default sorting order as per https://github.com/SkymindIO/pathmind-webapp/issues/133
 		dashboardGrid.sort(Arrays.asList(new GridSortOrder<Policy>(completedColumn, SortDirection.DESCENDING)));
-
-		// TODO -> CSS styles
-		dashboardGrid.setWidthFull();
-		dashboardGrid.setMaxHeight("500px");
-		dashboardGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-
 		dashboardGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
 		dashboardGrid.addSelectionListener(event ->
 				event.getFirstSelectedItem().ifPresent(selectedPolicy ->

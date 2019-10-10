@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 import java.util.List;
 
-@CssImport("styles/styles.css")
+@CssImport("./styles/styles.css")
 @Route(value = "newProject", layout = MainLayout.class)
 public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 {

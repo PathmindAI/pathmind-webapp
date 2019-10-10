@@ -1,5 +1,5 @@
 :host [part="input-field"]  {
-    background: rgba(240,241,246, .25);
+    background: var(--pm-highlight-light);
 }
 
 /* Search box text field */

@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.PostConstruct;
 
 @Tag("account-view")
-@JsModule("src/account/account-view.js")
+@JsModule("./src/account/account-view.js")
 @Route(value="account", layout = MainLayout.class)
 public class AccountView extends PolymerTemplate<AccountView.Model>
 {

@@ -36,7 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
 
-@CssImport("styles/styles.css")
+@CssImport("./styles/styles.css")
 @Route(value = "experiment", layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<String>
 {

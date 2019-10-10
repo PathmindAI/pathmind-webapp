@@ -18,7 +18,7 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Tag("account-edit-view")
-@JsModule("src/account/account-edit-view.js")
+@JsModule("./src/account/account-edit-view.js")
 @Route(value="account/edit", layout = MainLayout.class)
 public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 {
