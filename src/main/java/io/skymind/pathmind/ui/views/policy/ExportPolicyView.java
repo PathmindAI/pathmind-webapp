@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
 
-@CssImport("styles/styles.css")
+@CssImport("./styles/styles.css")
 @Route(value = "exportPolicy", layout = MainLayout.class)
 public class ExportPolicyView extends PathMindDefaultView implements HasUrlParameter<Long>
 {

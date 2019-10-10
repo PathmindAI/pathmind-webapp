@@ -37,7 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@CssImport("styles/styles.css")
+@CssImport("./styles/styles.css")
 @Route(value = "newExperiment", layout = MainLayout.class)
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
 {

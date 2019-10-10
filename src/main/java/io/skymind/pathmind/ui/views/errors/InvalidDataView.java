@@ -13,7 +13,7 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 /**
  * TODO -> Implement correctly, this is just a quick stub.
  */
-@CssImport("styles/styles.css")
+@CssImport("./styles/styles.css")
 @Route(value="invalidData", layout = MainLayout.class)
 public class InvalidDataView extends PathMindDefaultView
 {
