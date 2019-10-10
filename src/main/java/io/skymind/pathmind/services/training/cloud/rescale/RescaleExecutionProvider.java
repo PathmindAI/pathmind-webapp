@@ -143,7 +143,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
         } else if (runStatus.equals(RunStatus.Running)) {
             // Job is still running, we have to tail files
-            return client.tailFiles(jobHandle, "1")
+            return client.workingFiles(jobHandle, "1")
                     .parallelStream()
                     .filter(it -> it.getPath().endsWith("progress.csv"))
                     .map(it -> {
@@ -183,6 +183,18 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         }
 
         return null;
+    }
+
+    public String consoleAnytime(String jobHandle) {
+        try {
+            return client.tailConsole(jobHandle, "1");
+        } catch (Exception e) {
+            try {
+                return client.consoleOutput(jobHandle, "1");
+            } catch (Exception e1) {
+                return null;
+            }
+        }
     }
 
 

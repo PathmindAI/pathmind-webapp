@@ -121,7 +121,7 @@ public class RescaleRestApiClient {
                 .bodyToMono(new ParameterizedTypeReference<PagedResult<JobRun>>(){}).block();
     }
 
-    public List<DirectoryFileReference> tailFiles(String jobId, String run){
+    public List<DirectoryFileReference> workingFiles(String jobId, String run){
         return  client.get().uri("/jobs/"+jobId+"/runs/"+run+"/directory-contents/?page_size=9999")
                 .retrieve()
                 .bodyToFlux(DirectoryFileReference.class)
