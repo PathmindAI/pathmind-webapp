@@ -29,7 +29,9 @@ public class JobSpec {
     private final List<Double> gammas;
     private final List<Integer> batchSizes;
 
-    public JobSpec(long userId, long modelId, long experimentId, long runId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, Supplier<byte[]> modelFileSupplier, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes) {
+    private final int maxTimeInSec;
+
+    public JobSpec(long userId, long modelId, long experimentId, long runId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, Supplier<byte[]> modelFileSupplier, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
@@ -46,6 +48,7 @@ public class JobSpec {
         this.learningRates = learningRates;
         this.gammas = gammas;
         this.batchSizes = batchSizes;
+        this.maxTimeInSec = maxTimeInSec;
     }
 
     public long getUserId() {
@@ -114,5 +117,9 @@ public class JobSpec {
 
     public List<Integer> getBatchSizes() {
         return batchSizes;
+    }
+
+    public int getMaxTimeInSec() {
+        return maxTimeInSec;
     }
 }

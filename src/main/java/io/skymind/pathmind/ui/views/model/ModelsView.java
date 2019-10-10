@@ -4,8 +4,10 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -26,6 +28,7 @@ import io.skymind.pathmind.ui.views.model.filter.ModelFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.List;
 
 @StyleSheet("frontend://styles/styles.css")
@@ -78,13 +81,13 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	{
 		modelGrid = new Grid<>();
 
-		modelGrid.addColumn(Model::getName)
-				.setHeader("Name")
+		Grid.Column<Model> nameColumn = modelGrid.addColumn(Model::getName)
+				.setHeader("Model")
 				.setSortable(true);
 		modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setHeader("Date Created")
 				.setSortable(true);
-		modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+		Grid.Column<Model> lastActivityColumn = modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setHeader("Last Activity")
 				.setSortable(true);
 
@@ -92,6 +95,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		modelGrid.addSelectionListener(event ->
 				event.getFirstSelectedItem().ifPresent(selectedModel ->
 						UI.getCurrent().navigate(ExperimentsView.class, selectedModel.getId())));
+		// Sort by name by default
+		modelGrid.sort(Arrays.asList(new GridSortOrder<Model>(nameColumn, SortDirection.DESCENDING)));
 
 		modelGrid.setWidth(UIConstants.CENTERED_TABLE_WIDTH);
 		modelGrid.setMaxWidth(UIConstants.CENTERED_TABLE_WIDTH);
