@@ -37,7 +37,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     private static final Map<RLLib, List<String>> rllibMap = Map.of(
             RLLib.VERSION_0_7_0, Arrays.asList(
                     "LZAENb", // conda
-                    "yDsrpg", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-09-29
+                    "uLWose", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-10-08 DH version
                     "fDRBHd"  // OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz
             )
     );
@@ -104,7 +104,10 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                             final String contents = new String(client.fileContents(it.getId()));
                             return Map.entry(key, contents);
                         })
-                        .filter(it -> it.getValue().contains("python3: can't open file 'rllibtrain.py': [Errno 2] No such file or directory"))
+                        .filter(it ->
+                                it.getValue().contains("python3: can't open file 'rllibtrain.py': [Errno 2] No such file or directory")
+                                || it.getValue().contains("SyntaxError: invalid syntax")
+                        )
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
                 if (status.getStatusReason().equals("Completed successfully") && map.size() == 0) {
@@ -140,7 +143,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
         } else if (runStatus.equals(RunStatus.Running)) {
             // Job is still running, we have to tail files
-            return client.tailFiles(jobHandle, "1")
+            return client.workingFiles(jobHandle, "1")
                     .parallelStream()
                     .filter(it -> it.getPath().endsWith("progress.csv"))
                     .map(it -> {
@@ -180,6 +183,20 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         }
 
         return null;
+    }
+
+    public String consoleAnytime(String jobHandle) {
+        try {
+            return client.tailConsole(jobHandle, "1");
+        } catch (Exception e) {
+            try {
+                log.debug("consoleAnytime tail: " + e.getMessage(), e);
+                return client.consoleOutput(jobHandle, "1");
+            } catch (Exception e1) {
+                log.debug("consoleAnytime output: " + e1.getMessage(), e1);
+                return null;
+            }
+        }
     }
 
 
@@ -241,7 +258,8 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 // Still has to be set, but doesn't actually do something, needs to be removed from train.sh
                 var("STEP_TIME", "1"),
                 var("STOP_TIME", "420"),
-                var("TIME_UNIT", "MINUTE")
+                var("TIME_UNIT", "MINUTE"),
+                var("MAX_TIME_IN_SEC", String.valueOf(job.getMaxTimeInSec()))
         ));
     }
 

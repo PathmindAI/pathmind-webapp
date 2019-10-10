@@ -67,7 +67,9 @@ public class TrainingService {
                 () ->modelDAO.getModelFile(model.getId()),
                 Arrays.asList(1e-5),
                 Arrays.asList(0.99),
-                Arrays.asList(128));
+                Arrays.asList(128),
+                5 * 60        // 5 mins
+        );
 
         final String executionId = executionProvider.execute(spec);
 
@@ -96,7 +98,9 @@ public class TrainingService {
                 () ->modelDAO.getModelFile(model.getId()),
                 Arrays.asList(1e-3, 1e-4, 1e-5),
                 Arrays.asList(0.9, 0.99),
-                Arrays.asList(64, 128));
+                Arrays.asList(64, 128),
+                30 * 60        // 30 mins
+        );
 
         final String executionId = executionProvider.execute(spec);
 
@@ -133,7 +137,9 @@ public class TrainingService {
                     () ->modelDAO.getModelFile(model.getId()),
                     Arrays.asList(learningRate),
                     Arrays.asList(gamma),
-                    Arrays.asList(batchSize));
+                    Arrays.asList(batchSize),
+                    -1        // no limit
+            );
 
             final String executionId = executionProvider.execute(spec);
 
