@@ -42,39 +42,27 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
                 final RunStatus status = provider.status(rescaleJobId);
                 final Map<String, String> rawProgress = provider.progress(rescaleJobId);
 
-                log.info("kepricondebug rawProgress : " + rawProgress.keySet());
-
                 final List<String> finishedPolicyNamesFromDB = updateService.getStoppedPolicies(runId)
                         .stream()
                         .map(p -> p.getName())
                         .collect(Collectors.toList());
-
-                log.info("kepricondebug finishedPolicyNamesFromDB : " + finishedPolicyNamesFromDB);
 
                 final List<Progress> progresses = rawProgress.entrySet().stream()
                         .filter(e -> !finishedPolicyNamesFromDB.contains(e.getKey()))
                         .map(ProgressInterpreter::interpret)
                         .collect(Collectors.toList());
 
-                log.info("kepricondebug after minus finished : " + progresses.stream().map(p -> p.getId()).collect(Collectors.toList()));
-
                 final List<String> finishedPolicyNamesFromRescale = getTerminatedPolices(rescaleJobId);
-
-                log.info("kepricondebug finishedPolicyNamesFromRescale : " + finishedPolicyNamesFromRescale);
 
                 for (Progress progress : progresses) {
                     if (progress.getStoppedAt() == null) {
-                        log.info("kepricondebug : progress id : " + progress.getId());
-
                         for (String finishedPolicy : finishedPolicyNamesFromRescale) {
                             if (progress.getId().contains(finishedPolicy)) {
-                                log.info("kepricondebug : " + progress.getId() + " stoppat updated");
                                 progress.setStoppedAt(LocalDateTime.now());
                             }
                         }
                     }
                 }
-
 
                 updateService.updateRun(runId, status, progresses);
                 if(status == RunStatus.Completed){
