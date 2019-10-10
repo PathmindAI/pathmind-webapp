@@ -16,59 +16,102 @@ class AccountView extends PolymerElement {
           margin: 50px auto 0;
         }
         .info {
-          width: 70%;
+          color: #696969;
         }
+
+        #account-content {
+          margin-top: 5px;
+          background: #fff;
+          border: 1px solid #ccc;
+          border-radius: 0.3em;
+          padding: 30px 40px;
+        }
+
+        .block {
+          justify-content: space-between;
+        }
+
+        .border-top {
+          border-top: 1px solid #f2f2f2;
+          padding-top: 10px;
+        }
+
+        vaadin-button {
+          width: 120px;
+        }
+
+        .title {
+          font-weight: 700;
+        }
+
+        .data {
+          padding-bottom: 30px;
+        }
+
+        .support-cont {
+          text-align: center
+        }
+        .support {
+          margin: auto;
+          display: inline-block;
+          color: #696969;
+          padding-top: 10px;
+        }
+
       </style>
       <vaadin-tabs>
         <vaadin-tab>
           Account Information
         </vaadin-tab>
       </vaadin-tabs>
-      <img src="/frontend/images/pathmind-logo.png">
+      <!-- <img src="/frontend/images/pathmind-logo.png">
       <img src="frontend/images/pathmind-logo.png">
-      <img src="images/pathmind-logo.png">
-      <vaadin-vertical-layout style="width: 100%; height: 100%;">
-        <vaadin-horizontal-layout style="width: 100%;">
+      <img src="images/pathmind-logo.png"> -->
+      <vaadin-vertical-layout style="width: 100%;" id="account-content">
+        <vaadin-horizontal-layout style="width: 100%;" class="block">
           <vaadin-vertical-layout class="info">
-            <div>User Email</div>
-            <div>{{email}}</div>
-            <div>First Name</div>
-            <div>{{firstName}}</div>
-            <div>Last Name</div>
-            <div>{{lastName}}</div>
+            <div class="title">User Email</div>
+            <div class="data">{{email}}</div>
+            <div class="title">First Name</div>
+            <div class="data">{{firstName}}</div>
+            <div class="title">Last Name</div>
+            <div class="data">{{lastName}}</div>
           </vaadin-vertical-layout>
           <vaadin-button id="editInfoBtn">
             Edit
           </vaadin-button>
         </vaadin-horizontal-layout>
-        <vaadin-horizontal-layout style="width: 100%;">
+        <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
           <vaadin-vertical-layout class="info">
-            <div>Password</div>
-            <div>* * * * * * * * *</div>
+            <div class="title">Password</div>
+            <div class="data">* * * * * * * * *</div>
           </vaadin-vertical-layout>
           <vaadin-button id="changePasswordBtn">
             Change
           </vaadin-button>
         </vaadin-horizontal-layout>
-        <vaadin-horizontal-layout style="width: 100%;">
+        <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
           <vaadin-vertical-layout class="info">
-            <div>Current Subscription</div>
-            <div>{{subscription}}</div>
+            <div class="title">Current Subscription</div>
+            <div class="data">{{subscription}}</div>
           </vaadin-vertical-layout>
           <vaadin-button id="upgradeBtn">
             Upgrade
           </vaadin-button>
         </vaadin-horizontal-layout>
-        <vaadin-horizontal-layout style="width: 100%;">
+        <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
           <vaadin-vertical-layout class="info">
-            <div>Payment</div>
-            <div>{{billingInfo}}</div>
+            <div class="title">Payment</div>
+            <div class="data">{{billingInfo}}</div>
           </vaadin-vertical-layout>
           <vaadin-button id="editPaymentBtn">
             Edit
           </vaadin-button>
         </vaadin-horizontal-layout>
       </vaadin-vertical-layout>
+      <div class="support-cont">
+        <a class="support" href="/support">Contact Support</a>
+      </div>
     `;
   }
 
