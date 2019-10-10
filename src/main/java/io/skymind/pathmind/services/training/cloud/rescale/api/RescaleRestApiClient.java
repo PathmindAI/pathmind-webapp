@@ -121,7 +121,7 @@ public class RescaleRestApiClient {
                 .bodyToMono(new ParameterizedTypeReference<PagedResult<JobRun>>(){}).block();
     }
 
-    public List<DirectoryFileReference> tailFiles(String jobId, String run){
+    public List<DirectoryFileReference> workingFiles(String jobId, String run){
         return  client.get().uri("/jobs/"+jobId+"/runs/"+run+"/directory-contents/?page_size=9999")
                 .retrieve()
                 .bodyToFlux(DirectoryFileReference.class)
@@ -152,7 +152,9 @@ public class RescaleRestApiClient {
     }
 
     public byte[] outputFile(String jobId, String run, String filename){
-        final RescaleFile rescaleFile = outputFiles(jobId, run).getResults().stream().filter(it -> it.getName().equals(filename) && it.isUploaded() && !it.isDeleted()).findFirst().get();
+        //todo why isUploaded is false
+//        final RescaleFile rescaleFile = outputFiles(jobId, run).getResults().stream().filter(it -> it.getName().equals(filename) && it.isUploaded() && !it.isDeleted()).findFirst().get();
+        final RescaleFile rescaleFile = outputFiles(jobId, run).getResults().stream().filter(it -> it.getName().equals(filename)  && !it.isDeleted()).findFirst().get();
         return fileContents(rescaleFile.getId());
     }
 
