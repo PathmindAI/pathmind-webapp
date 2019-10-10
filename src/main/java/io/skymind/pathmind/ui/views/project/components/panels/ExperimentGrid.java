@@ -61,6 +61,5 @@ public class ExperimentGrid extends Grid<Experiment>
 
 		setSelectionMode(Grid.SelectionMode.SINGLE);
 		getElement().getStyle().set("padding-top", "20px");
-		addThemeVariants(GridVariant.LUMO_NO_BORDER);
 	}
 }

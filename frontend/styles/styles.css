@@ -129,3 +129,9 @@ html {
     max-width: 1200px;
     align-self: center;
 }
+
+.models-view .view-section {
+    flex: 1;
+    max-width: 1200px;
+    align-self: center;
+}

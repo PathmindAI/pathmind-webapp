@@ -2,6 +2,7 @@ package io.skymind.pathmind.ui.components.buttons;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import io.skymind.pathmind.data.Experiment;
@@ -26,5 +27,6 @@ public class NewExperimentButton extends Button
 			long newExperimentId = experimentDAO.setupNewExperiment(newExperiment);
 			UI.getCurrent().navigate(NewExperimentView.class, newExperimentId);
 		});
+		addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 	}
 }
