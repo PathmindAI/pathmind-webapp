@@ -46,6 +46,8 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 
 		initBinder();
 
+		email.setEnabled(false);
+		updateBtn.setEnabled(false);
 		cancelBtn.addClickListener(e -> UI.getCurrent().navigate(AccountView.class));
 		updateBtn.addClickListener(e -> {
 
@@ -61,6 +63,7 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 
 		binder.forField(firstName).bind(PathmindUser::getFirstname, PathmindUser::setFirstname);
 		binder.forField(lastName).bind(PathmindUser::getLastname, PathmindUser::setLastname);
+		binder.setBean(user);
 	}
 
 	public interface Model extends TemplateModel {

@@ -22,13 +22,15 @@ import javax.annotation.PostConstruct;
 @Route(value="account", layout = MainLayout.class)
 public class AccountView extends PolymerTemplate<AccountView.Model>
 {
-
 	@Id("editInfoBtn")
 	private Button editInfoBtn;
+
 	@Id("changePasswordBtn")
 	private Button changePasswordBtn;
+
 	@Id("upgradeBtn")
 	private Button upgradeBtn;
+
 	@Id("editPaymentBtn")
 	private Button editPaymentBtn;
 
@@ -49,7 +51,9 @@ public class AccountView extends PolymerTemplate<AccountView.Model>
 
 	private void initBtns() {
 		editInfoBtn.addClickListener(e -> UI.getCurrent().navigate(AccountEditView.class));
+		changePasswordBtn.setEnabled(false);
 		upgradeBtn.setEnabled(false);
+		editPaymentBtn.setEnabled(false);
 	}
 
 	private void initContent() {
