@@ -152,7 +152,9 @@ public class RescaleRestApiClient {
     }
 
     public byte[] outputFile(String jobId, String run, String filename){
-        final RescaleFile rescaleFile = outputFiles(jobId, run).getResults().stream().filter(it -> it.getName().equals(filename) && it.isUploaded() && !it.isDeleted()).findFirst().get();
+        //todo why isUploaded is false
+//        final RescaleFile rescaleFile = outputFiles(jobId, run).getResults().stream().filter(it -> it.getName().equals(filename) && it.isUploaded() && !it.isDeleted()).findFirst().get();
+        final RescaleFile rescaleFile = outputFiles(jobId, run).getResults().stream().filter(it -> it.getName().equals(filename)  && !it.isDeleted()).findFirst().get();
         return fileContents(rescaleFile.getId());
     }
 

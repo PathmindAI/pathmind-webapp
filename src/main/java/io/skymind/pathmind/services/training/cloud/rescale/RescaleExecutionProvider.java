@@ -190,8 +190,10 @@ public class RescaleExecutionProvider implements ExecutionProvider {
             return client.tailConsole(jobHandle, "1");
         } catch (Exception e) {
             try {
+                log.debug("consoleAnytime tail: " + e.getMessage(), e);
                 return client.consoleOutput(jobHandle, "1");
             } catch (Exception e1) {
+                log.debug("consoleAnytime output: " + e1.getMessage(), e1);
                 return null;
             }
         }
