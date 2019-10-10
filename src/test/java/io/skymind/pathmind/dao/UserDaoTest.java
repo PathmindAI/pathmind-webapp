@@ -5,6 +5,7 @@ import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
 import org.jooq.DSLContext;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -14,6 +15,7 @@ import static io.skymind.pathmind.data.db.Tables.PATHMIND_USER;
 import static io.skymind.pathmind.testutils.UserUtils.*;
 import static org.junit.Assert.*;
 
+@Ignore
 @Transactional
 public class UserDaoTest extends PathmindApplicationTests
 {

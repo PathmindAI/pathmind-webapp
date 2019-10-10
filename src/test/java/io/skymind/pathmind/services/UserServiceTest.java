@@ -3,6 +3,7 @@ package io.skymind.pathmind.services;
 import io.skymind.pathmind.PathmindApplicationTests;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.testutils.UserUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
+@Ignore
 @Transactional
 public class UserServiceTest extends PathmindApplicationTests
 {

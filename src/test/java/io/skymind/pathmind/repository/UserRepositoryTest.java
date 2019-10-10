@@ -4,9 +4,11 @@ import io.skymind.pathmind.PathmindApplicationTests;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.repositories.UserRepository;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Ignore
 public class UserRepositoryTest extends PathmindApplicationTests
 {
 
