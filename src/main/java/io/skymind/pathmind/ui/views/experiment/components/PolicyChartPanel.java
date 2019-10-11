@@ -26,7 +26,7 @@ import java.util.List;
 public class PolicyChartPanel extends VerticalLayout implements FilterableComponent<Policy>
 {
 
-	private static Logger log = LogManager.getLogger(PushUtils.class);
+	private static Logger log = LogManager.getLogger(PolicyChartPanel.class);
 
 	private Chart chart = new Chart(ChartType.SPLINE);
 
