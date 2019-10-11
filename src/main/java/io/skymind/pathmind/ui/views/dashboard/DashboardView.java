@@ -110,10 +110,9 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid.setMaxHeight("500px");
 		dashboardGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
-		dashboardGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-		dashboardGrid.addSelectionListener(event ->
-				event.getFirstSelectedItem().ifPresent(selectedPolicy ->
-						UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(selectedPolicy))));
+		dashboardGrid.addItemClickListener(event -> {
+			getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(event.getItem())));
+		});
 	}
 
 	private Comparator<Policy> getCompletedComparator() {
