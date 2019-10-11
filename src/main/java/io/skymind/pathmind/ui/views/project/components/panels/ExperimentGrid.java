@@ -65,7 +65,6 @@ public class ExperimentGrid extends Grid<Experiment>
 		// Sort by name by default
 		sort(Arrays.asList(new GridSortOrder<Experiment>(nameColumn, SortDirection.DESCENDING)));
 
-		setSelectionMode(Grid.SelectionMode.SINGLE);
 		getElement().getStyle().set("padding-top", "20px");
 		addThemeVariants(GridVariant.LUMO_NO_BORDER);
 	}
