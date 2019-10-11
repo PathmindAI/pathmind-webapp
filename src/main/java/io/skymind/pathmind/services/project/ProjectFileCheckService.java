@@ -32,8 +32,8 @@ public class ProjectFileCheckService {
                     if(result.isFileCheckComplete() && result.isFileCheckSuccessful()){
                         statusUpdater.fileSuccessfullyVerified();
                     } else {
-                        log.error("File check not completed");
-                        statusUpdater.updateError("File check not completed.");
+                        log.error("File is not valid");
+                        statusUpdater.updateError("File is not valid.");
                     }
                 } finally {
                     tempFile.delete();
