@@ -140,8 +140,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		rewardFunctionEditor.setReadonly(true);
 		rewardFunctionEditor.setSizeFull();
 
-		policyHighlightPanel = new PolicyHighlightPanel();
-		policyStatusDetailsPanel = new PolicyStatusDetailsPanel();
+		policyHighlightPanel = new PolicyHighlightPanel(consumer);
+		policyStatusDetailsPanel = new PolicyStatusDetailsPanel(consumer);
 
 		actionButton = new Button(ActionButtonState.Start.name(), click -> handleActionButtonClicked());
 		actionButton.setVisible(false);
