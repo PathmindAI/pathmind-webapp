@@ -2,7 +2,6 @@ package io.skymind.pathmind.ui.views.project;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -16,7 +15,6 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
-import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -30,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@CssImport("./styles/styles.css")
+@StyleSheet("frontend://styles/styles.css")
 @Route(value="projects", layout = MainLayout.class)
 public class ProjectsView extends PathMindDefaultView
 {
@@ -38,6 +36,7 @@ public class ProjectsView extends PathMindDefaultView
 	private ProjectDAO projectDAO;
 
 	private List<Project> projects;
+
 	private Grid<Project> projectGrid;
 
 	public ProjectsView()
@@ -48,15 +47,15 @@ public class ProjectsView extends PathMindDefaultView
 	protected Component getMainContent()
 	{
 		setupProjectGrid();
-		addClassName("projects-view");
 
-		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-				new ViewSection(
-					WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
-					getTabbedPanel(),
-					projectGrid
-				),
-				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
+		VerticalLayout gridWrapper = WrapperUtils.wrapCenterVertical(
+				UIConstants.CENTERED_TABLE_WIDTH,
+				WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
+				getTabbedPanel(),
+				projectGrid,
+				new NewProjectButton());
+
+		gridWrapper.getElement().getStyle().set("padding-top", "100px");
 		return gridWrapper;
 	}
 
@@ -86,10 +85,14 @@ public class ProjectsView extends PathMindDefaultView
 				.setHeader("Last Activity")
 				.setSortable(true);
 
-		projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-		projectGrid.addSelectionListener(event ->
-				event.getFirstSelectedItem().ifPresent(selectedProject ->
-						UI.getCurrent().navigate(ModelsView.class, selectedProject.getId())));
+		projectGrid.addItemClickListener(event -> {
+			getUI().ifPresent(ui -> ui.navigate(ModelsView.class, event.getItem().getId()));
+		});
+
+		projectGrid.setWidth(UIConstants.CENTERED_TABLE_WIDTH);
+		projectGrid.setMaxWidth(UIConstants.CENTERED_TABLE_WIDTH);
+		projectGrid.setMaxHeight("500px");
+		projectGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 	}
 
 	private List<Project> getProjects() {

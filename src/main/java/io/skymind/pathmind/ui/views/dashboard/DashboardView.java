@@ -17,7 +17,6 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
-import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -31,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+
 
 @Route(value="dashboard", layout = MainLayout.class)
 public class DashboardView extends PathMindDefaultView
@@ -52,18 +52,17 @@ public class DashboardView extends PathMindDefaultView
 	{
 		setupDashboardGrid();
 		setupSearchBox();
-		addClassName("dashboard-view");
 
 		// BUG -> I didn't have to really investigate but it looks like we may need
 		// to do something special to get the full size content in the AppLayout component which
 		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
 		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-				new ViewSection(
-						WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-						dashboardGrid
-				),
+				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
+				dashboardGrid,
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
+
+		gridWrapper.getElement().getStyle().set("padding-top", "100px");
 		return gridWrapper;
 	}
 
@@ -75,7 +74,7 @@ public class DashboardView extends PathMindDefaultView
 	{
 		dashboardGrid = new Grid<>();
 
-		dashboardGrid.addColumn(policy -> policy.getRun().getStatusEnum())
+		Grid.Column<Policy> statusColumn = dashboardGrid.addColumn(policy -> policy.getRun().getStatusEnum())
 				.setHeader("Status")
 				.setSortable(true);
 		dashboardGrid.addColumn(policy -> policy.getProject().getName())
@@ -96,17 +95,24 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid.addColumn(policy -> PolicyUtils.getDuration(policy))
 				.setHeader("Duration")
 				.setSortable(true);
-		Grid.Column<Policy> completedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+		Grid.Column<Policy> completedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setHeader("Completed")
 				.setComparator(getCompletedComparator())
 				.setSortable(true);
 
 		// Default sorting order as per https://github.com/SkymindIO/pathmind-webapp/issues/133
-		dashboardGrid.sort(Arrays.asList(new GridSortOrder<Policy>(completedColumn, SortDirection.DESCENDING)));
-		dashboardGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-		dashboardGrid.addSelectionListener(event ->
-				event.getFirstSelectedItem().ifPresent(selectedPolicy ->
-						UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(selectedPolicy))));
+		dashboardGrid.sort(Arrays.asList(
+				new GridSortOrder<Policy>(statusColumn, SortDirection.ASCENDING),
+				new GridSortOrder<Policy>(completedColumn, SortDirection.DESCENDING)));
+
+		// TODO -> CSS styles
+		dashboardGrid.setWidthFull();
+		dashboardGrid.setMaxHeight("500px");
+		dashboardGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+
+		dashboardGrid.addItemClickListener(event -> {
+			getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(event.getItem())));
+		});
 	}
 
 	private Comparator<Policy> getCompletedComparator() {

@@ -14,18 +14,17 @@ public class UserRepository
     @Autowired
     private DSLContext dslContext;
 
-    public PathmindUser getUserByEmailAndPassword(String email, String password) {
-        return dslContext
-            .selectFrom(PATHMIND_USER)
-            .where(PATHMIND_USER.EMAIL.eq(email)
-            .and(PATHMIND_USER.PASSWORD.eq(password)))
-            .fetchOneInto(PathmindUser.class);
-    }
-
     public PathmindUser findByEmailIgnoreCase(String email) {
         return dslContext
                 .selectFrom(PATHMIND_USER)
                 .where(PATHMIND_USER.EMAIL.eq(lower(email)))
+                .fetchOneInto(PathmindUser.class);
+    }
+
+    public PathmindUser findById(long id) {
+        return dslContext
+                .selectFrom(PATHMIND_USER)
+                .where(PATHMIND_USER.ID.eq(id))
                 .fetchOneInto(PathmindUser.class);
     }
 
