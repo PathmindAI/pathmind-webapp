@@ -74,7 +74,7 @@ public class DashboardView extends PathMindDefaultView
 	{
 		dashboardGrid = new Grid<>();
 
-		dashboardGrid.addColumn(policy -> policy.getRun().getStatusEnum())
+		Grid.Column<Policy> statusColumn = dashboardGrid.addColumn(policy -> policy.getRun().getStatusEnum())
 				.setHeader("Status")
 				.setSortable(true);
 		dashboardGrid.addColumn(policy -> policy.getProject().getName())
@@ -95,23 +95,24 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid.addColumn(policy -> PolicyUtils.getDuration(policy))
 				.setHeader("Duration")
 				.setSortable(true);
-		Grid.Column<Policy> completedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+		Grid.Column<Policy> completedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setHeader("Completed")
 				.setComparator(getCompletedComparator())
 				.setSortable(true);
 
 		// Default sorting order as per https://github.com/SkymindIO/pathmind-webapp/issues/133
-		dashboardGrid.sort(Arrays.asList(new GridSortOrder<Policy>(completedColumn, SortDirection.DESCENDING)));
+		dashboardGrid.sort(Arrays.asList(
+				new GridSortOrder<Policy>(statusColumn, SortDirection.ASCENDING),
+				new GridSortOrder<Policy>(completedColumn, SortDirection.DESCENDING)));
 
 		// TODO -> CSS styles
 		dashboardGrid.setWidthFull();
 		dashboardGrid.setMaxHeight("500px");
 		dashboardGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
-		dashboardGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-		dashboardGrid.addSelectionListener(event ->
-				event.getFirstSelectedItem().ifPresent(selectedPolicy ->
-						UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(selectedPolicy))));
+		dashboardGrid.addItemClickListener(event -> {
+			getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(event.getItem())));
+		});
 	}
 
 	private Comparator<Policy> getCompletedComparator() {

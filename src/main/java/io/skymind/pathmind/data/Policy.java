@@ -87,8 +87,12 @@ public class Policy extends Data
 		this.run = run;
 	}
 
-	public List<Number> getScores() {
+	public ArrayList<Number> getScores() {
 		return scores;
+	}
+
+	public void setScores(ArrayList<Number> scores) {
+		this.scores = scores;
 	}
 
 	public Algorithm getAlgorithm() {
