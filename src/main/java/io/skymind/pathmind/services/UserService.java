@@ -77,4 +77,7 @@ public class UserService
         pathmindUser.setEmailVerifiedAt(LocalDateTime.now());
     }
 
+    public void update(PathmindUser user) {
+        userDAO.update(user);
+    }
 }

@@ -36,6 +36,8 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 
 	private PathmindUser user;
 
+	private Binder<PathmindUser> binder;
+
 	@Autowired
 	private UserService userService;
 
@@ -43,14 +45,13 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 	public AccountEditView(CurrentUser currentUser)
 	{
 		user = currentUser.getUser();
-
 		initBinder();
 
 		email.setEnabled(false);
-		updateBtn.setEnabled(false);
 		cancelBtn.addClickListener(e -> UI.getCurrent().navigate(AccountView.class));
 		updateBtn.addClickListener(e -> {
-
+			userService.update(user);
+			UI.getCurrent().navigate(AccountView.class);
 		});
 	}
 
