@@ -91,7 +91,7 @@ public class AnylogicFileChecker implements FileChecker {
                     ZipEntry zipEntry = (ZipEntry) enu.nextElement();
                     log.info(zipEntry.getName());
                     fileNameList.add(zipEntry.getName());
-                    if (zipEntry.getName().toLowerCase().indexOf(searchFileName) != -1) {
+                    if (zipEntry.getName().toLowerCase().equalsIgnoreCase(searchFileName)) {
                         unZippedJar = unzipFile(file, searchFileName);
                         log.debug("unzipped jar path {} :-", unZippedJar.getAbsolutePath());
                     }
@@ -151,7 +151,7 @@ public class AnylogicFileChecker implements FileChecker {
                 long compressedSize = zipEntry.getCompressedSize();
                 log.debug("name:- {} | size:- {} | compressed size:- {}\n",
                         name, size, compressedSize);
-                if (zipEntry.getName().toLowerCase().indexOf(searchFileName) != -1) {
+                if (zipEntry.getName().toLowerCase().equalsIgnoreCase(searchFileName)) {
                     Path tempPath = Files.createTempDirectory(uuid);
                     jarTempDir = new File(String.valueOf(tempPath));
                     if (!jarTempDir.exists()) {
