@@ -168,9 +168,4 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 			statusPanel.setModelDetails();
 		});
 	}
-
-	@Override
-	public void fileCheckComplete(FileCheckResult anylogicFileCheckResult) {
-		//TODO : Get result and show errors on screen or result on screen.
-	}
 }
