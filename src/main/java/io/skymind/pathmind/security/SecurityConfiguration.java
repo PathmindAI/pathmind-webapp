@@ -137,6 +137,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // (development mode) H2 debugging console
                 "/h2-console/**",
 
+                // workaround for this issue: https://github.com/vaadin/flow/issues/6471
+                // this is only needed in nmp development mode
+                "/error",
+
                 // (production mode) static resources
                 "/frontend-es5/**", "/frontend-es6/**");
     }
