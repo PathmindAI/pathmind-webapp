@@ -4,6 +4,8 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.ListSeries;
+import com.vaadin.flow.component.charts.model.XAxis;
+import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -98,8 +100,17 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
 		chart.drawChart();
 	}
 
-	private void setupChart() {
+	private void setupChart()
+	{
+		XAxis xAxis = new XAxis();
+		xAxis.setTitle("Iterations");
+
+		YAxis yAxis = new YAxis();
+		yAxis.setTitle("Reward");
+
 		chart.getConfiguration().setTitle("Reward Score");
+		chart.getConfiguration().addxAxis(xAxis);
+		chart.getConfiguration().addyAxis(yAxis);
 	}
 
 	public Experiment getExperiment() {
