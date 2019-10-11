@@ -106,7 +106,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
 		xAxis.setTitle("Iterations");
 
 		YAxis yAxis = new YAxis();
-		yAxis.setTitle("Reward");
+		yAxis.setTitle("Mean Reward Score");
 
 		chart.getConfiguration().setTitle("Reward Score");
 		chart.getConfiguration().addxAxis(xAxis);
