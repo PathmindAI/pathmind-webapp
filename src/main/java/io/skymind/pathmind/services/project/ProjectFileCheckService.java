@@ -31,6 +31,9 @@ public class ProjectFileCheckService {
                     final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
                     if(result.isFileCheckComplete() && result.isFileCheckSuccessful()){
                         statusUpdater.fileSuccessfullyVerified();
+                    } else {
+                        log.error("File check not completed");
+                        statusUpdater.updateError("File check not completed.");
                     }
                 } finally {
                     tempFile.delete();
