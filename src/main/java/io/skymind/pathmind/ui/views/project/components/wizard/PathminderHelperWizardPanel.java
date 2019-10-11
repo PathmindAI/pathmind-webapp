@@ -29,7 +29,8 @@ public class PathminderHelperWizardPanel extends VerticalLayout
 				getInstructionsDiv(),
 				WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
 
-		getStyle().set("border", "1px solid #ccc");
+		setClassName("view-section"); // adds the white 'panel' style with rounded corners
+
 		setWidthFull();
 	}
 

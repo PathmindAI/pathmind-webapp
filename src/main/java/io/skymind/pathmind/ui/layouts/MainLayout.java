@@ -1,7 +1,9 @@
 package io.skymind.pathmind.ui.layouts;
 
 import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.HtmlImport;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.page.Push;
@@ -15,9 +17,12 @@ import io.skymind.pathmind.ui.layouts.components.SectionsHeaderPanel;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
 
 @Push(PushMode.AUTOMATIC)
-@StyleSheet("frontend://styles/styles.css")
+@CssImport("./styles/styles.css")
+@CssImport(value = "./styles/components/vaadin-text-field.css", themeFor = "vaadin-text-field")
+@CssImport(value = "./styles/components/vaadin-button.css", themeFor = "vaadin-button")
+@CssImport(value = "./styles/components/vaadin-grid.css", themeFor = "vaadin-grid")
+@CssImport(value = "./styles/layouts/vaadin-app-layout.css", themeFor = "vaadin-app-layout")
 @Theme(Lumo.class)
-@HtmlImport("frontend://styles/shared-styles.html")
 public class MainLayout extends AppLayout implements PageConfigurator
 {
 	public MainLayout()

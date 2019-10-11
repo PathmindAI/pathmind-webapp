@@ -3,16 +3,13 @@ package io.skymind.pathmind.ui.views.experiment;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.textfield.TextArea;
-import com.vaadin.flow.data.selection.SelectionEvent;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
@@ -38,7 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@StyleSheet("frontend://styles/styles.css")
+@CssImport("./styles/styles.css")
 @Route(value="experiments", layout = MainLayout.class)
 public class ExperimentsView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
@@ -119,17 +116,16 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	private void setupExperimentListPanel() {
 		experimentGrid = new ExperimentGrid();
-		experimentGrid.addSelectionListener(selectedExperiment -> handleExperimentSelected(selectedExperiment));
+		experimentGrid.addItemClickListener(event -> handleExperimentClick(event.getItem()));
 	}
 
-	private void handleExperimentSelected(SelectionEvent<Grid<Experiment>, Experiment> event)
+	private void handleExperimentClick(Experiment experiment)
 	{
-        Experiment experiment = event.getFirstSelectedItem().get();
-
-        if(ExperimentUtils.isDraftRunType(experiment))
-            UI.getCurrent().navigate(NewExperimentView.class, experiment.getId());
-        else
-            UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+        if (ExperimentUtils.isDraftRunType(experiment)) {
+			UI.getCurrent().navigate(NewExperimentView.class, experiment.getId());
+		} else {
+			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+		}
 	}
 
 	@Override
