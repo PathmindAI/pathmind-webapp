@@ -78,11 +78,11 @@ public class TrainingService {
     }
 
     public void startDiscoveryRun(Experiment exp){
-        startDiscoveryRunHelper1(exp);
-        startDiscoveryRunHelper2(exp);
+        startDiscoveryRunJob1(exp);
+        startDiscoveryRunJob2(exp);
     }
 
-    public void startDiscoveryRunHelper1(Experiment exp){
+    public void startDiscoveryRunJob1(Experiment exp){
         final Run run = runDAO.createRun(exp, RunType.DiscoveryRun);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelDAO.getModel(exp.getModelId());
@@ -113,7 +113,7 @@ public class TrainingService {
         log.info("Started DISCOVERY training job with id {}", executionId);
     }
 
-    public void startDiscoveryRunHelper2(Experiment exp){
+    public void startDiscoveryRunJob2(Experiment exp){
         final Run run = runDAO.createRun(exp, RunType.DiscoveryRun);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelDAO.getModel(exp.getModelId());
