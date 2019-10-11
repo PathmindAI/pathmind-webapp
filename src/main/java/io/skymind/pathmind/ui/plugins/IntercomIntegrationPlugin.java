@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class IntercomIntegrationPlugin
 {
-	private static final String INTERCOM_INTEGRATION_JS_FILE = "vendor/IntercomIntegration.js";
+	private static final String INTERCOM_INTEGRATION_JS_FILE = "/frontend/js/IntercomIntegration.js";
 	private final String appId;
 
 	private IntercomIntegrationPlugin(@Value("${skymind.intercom.appId}") String appId) {
