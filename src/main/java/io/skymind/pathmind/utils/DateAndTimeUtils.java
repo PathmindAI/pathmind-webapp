@@ -19,7 +19,7 @@ public class DateAndTimeUtils
 	 * We could use org.apache.commons.lang3.time.DurationFormatUtils but it seems overkill for what we need and I didn't want to spend the time
 	 * to figure out how to conditionally printout the hours, minutes, and seconds.
 	 */
-	public static final String formatTime(long totalSeconds)
+	public static final String formatDurationTime(long totalSeconds)
 	{
 		if(totalSeconds == 0)
 			return "0 sec";
