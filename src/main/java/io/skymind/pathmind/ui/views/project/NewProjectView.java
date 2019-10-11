@@ -37,7 +37,7 @@ import java.util.List;
 public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 {
 
-	private static Logger log = LogManager.getLogger(UploadModelWizardPanel.class);
+	private static Logger log = LogManager.getLogger(NewProjectView.class);
 
 	@Autowired
 	private ProjectDAO projectDAO;
