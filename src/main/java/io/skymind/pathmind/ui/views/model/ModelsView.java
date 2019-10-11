@@ -92,12 +92,10 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 				.setHeader("Last Activity")
 				.setSortable(true);
 
-		modelGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-		modelGrid.addSelectionListener(event ->
-				event.getFirstSelectedItem().ifPresent(selectedModel ->
-						UI.getCurrent().navigate(ExperimentsView.class, selectedModel.getId())));
+		modelGrid.addItemClickListener(event -> getUI().ifPresent(ui -> UI.getCurrent().navigate(ExperimentsView.class, event.getItem().getId())));
+
 		// Sort by name by default
-		modelGrid.sort(Arrays.asList(new GridSortOrder<Model>(nameColumn, SortDirection.DESCENDING)));
+		modelGrid.sort(Arrays.asList(new GridSortOrder<>(nameColumn, SortDirection.DESCENDING)));
 
 		modelGrid.setWidth(UIConstants.CENTERED_TABLE_WIDTH);
 		modelGrid.setMaxWidth(UIConstants.CENTERED_TABLE_WIDTH);
