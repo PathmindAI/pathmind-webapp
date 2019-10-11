@@ -122,7 +122,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 	}
 
 	private void handleUploadWizardClicked() {
-		if (user.getId() == 10) { // User 10 is Ed!
+		if (user.getEmail() == "edward@skymind.io") { // This is Ed!
 			log.info("User is Ed, skipping file check");
 			fileSuccessfullyVerified();
 		} else {
