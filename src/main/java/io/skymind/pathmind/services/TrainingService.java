@@ -1,6 +1,7 @@
 package io.skymind.pathmind.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
@@ -8,6 +9,7 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class TrainingService {
@@ -31,15 +34,17 @@ public class TrainingService {
     private final ExecutionProvider executionProvider;
     private final RunDAO runDAO;
     private final ModelDAO modelDAO;
+    private final PolicyDAO policyDAO;
     private final DSLContext ctx;
     private final ObjectMapper objectMapper;
     private ExecutionEnvironment executionEnvironment;
 
     // TODO: Move direct db access into a DAO.
-    public TrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, DSLContext ctx, ObjectMapper objectMapper) {
+    public TrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, DSLContext ctx, ObjectMapper objectMapper) {
         this.executionProvider = executionProvider;
         this.runDAO = runDAO;
         this.modelDAO = modelDAO;
+        this.policyDAO = policyDAO;
         this.ctx = ctx;
         this.objectMapper = objectMapper;
 
@@ -68,13 +73,30 @@ public class TrainingService {
                 Arrays.asList(1e-5),
                 Arrays.asList(0.99),
                 Arrays.asList(128),
-                15 * 60        // 15 mins
+                5 * 60        // 15 mins
         );
 
         final String executionId = executionProvider.execute(spec);
 
         runDAO.markAsStarting(run.getId());
         log.info("Started TEST training job with id {}", executionId);
+
+        // this is for ui filling gap until ui get a training progress from backend(rescale)
+        Policy tempPolicy = new Policy();
+
+        String name = getTempPolicyName(Algorithm.PPO.toString(),
+                "PathmindEnvironment",
+                spec.getLearningRates(),
+                spec.getGammas(),
+                spec.getBatchSizes(),
+                run.getRunType());
+
+        tempPolicy.setName(name);
+        tempPolicy.setExternalId(name);
+        tempPolicy.setRunId(run.getId());
+
+        policyDAO.insertPolicy(tempPolicy);
+
     }
 
     public void startDiscoveryRun(Experiment exp){
@@ -148,5 +170,25 @@ public class TrainingService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getTempPolicyName(String algorithm, String environment, List<Double> lrs, List<Double> gammas, List<Integer> batchSize, int runType) {
+        String hyperparameters = String.join(
+                ",",
+                "gamma=" + gammas.get(0),
+                "lr=" + lrs.get(0),
+                "sgd_minibatch_size=" + batchSize.get(0)
+        );
+
+        String name = String.join(
+                "_",
+                algorithm,
+                environment,
+                "0",
+                hyperparameters,
+                runType + "TEMP"
+        );
+
+        return name;
     }
 }
