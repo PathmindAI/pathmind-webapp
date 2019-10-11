@@ -46,7 +46,8 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		bindFields(binder);
 
 		setWidthFull();
-		getStyle().set("border", "1px solid #ccc");
+		setClassName("view-section"); // adds the white 'panel' style with rounded corners
+
 	}
 
 	private void setupFields()
