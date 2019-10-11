@@ -22,10 +22,6 @@ public class PolicyUtils
 	private PolicyUtils() {
 	}
 
-	public static final String getDuration(Policy policy) {
-		return DateAndTimeUtils.formatTime(RunUtils.getElapsedTime(policy.getRun()));
-	}
-
 	private static Logger log = LogManager.getLogger(PolicyUtils.class);
 
 	private static ObjectMapper objectMapper = ObjectMapperHolder.getJsonMapper();
@@ -77,17 +73,7 @@ public class PolicyUtils
 		}
 	}
 
-	public static String getElaspedTime(Policy policy) {
-		try {
-			Progress progress = objectMapper.readValue(policy.getProgress(), Progress.class);
-			if (progress.getStoppedAt() != null) {
-				return Duration.between(progress.getStartedAt(), progress.getStoppedAt()).toString();
-			} else {
-				return null;
-			}
-		} catch (IOException e) {
-			log.debug(e.getMessage(), e);
-			return null;
-		}
+	public static final String getElaspedTime(Policy policy) {
+		return DateAndTimeUtils.formatDurationTime(RunUtils.getElapsedTime(policy.getRun()));
 	}
 }
