@@ -74,6 +74,6 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 		statusLabel.setText(PolicyUtils.getRunStatus(policy));
 		runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(PolicyUtils.getRunCompletedTime(policy)));
 		runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());
-        elapsedTimeLabel.setText(PolicyUtils.getElaspedTime(policy));
+        elapsedTimeLabel.setText(PolicyUtils.getElapsedTime(policy));
 	}
 }

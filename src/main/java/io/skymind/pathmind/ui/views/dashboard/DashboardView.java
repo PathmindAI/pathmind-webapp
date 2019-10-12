@@ -91,7 +91,7 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid.addColumn(Policy::getAlgorithm)
 				.setHeader("Algorithm")
 				.setSortable(true);
-		dashboardGrid.addColumn(policy -> PolicyUtils.getElaspedTime(policy))
+		dashboardGrid.addColumn(policy -> PolicyUtils.getElapsedTime(policy))
 				.setHeader("Duration")
 				.setSortable(true);
 		Grid.Column<Policy> completedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
