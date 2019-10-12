@@ -95,7 +95,14 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
 				.filter(series -> series.getId().equals(Long.toString(updatedPolicy.getId())))
 				.findAny()
 				.ifPresentOrElse(
-						series -> ((ListSeries) series).setData(updatedPolicy.getScores()),
+						series -> {
+							ListSeries listSeries = ((ListSeries) series);
+							listSeries.setData(updatedPolicy.getScores());
+
+							if (!series.getName().equals(updatedPolicy.getName())) {
+								listSeries.setName(updatedPolicy.getName());
+							}
+						},
 						() -> addPolicyToChart(updatedPolicy));
 		chart.drawChart();
 	}
@@ -124,7 +131,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
 	}
 
 	private void updateChart(List<Policy> policies) {
-		policies.stream().forEach(policy -> addPolicyToChart(policy));
+		policies.stream().forEach(policy -> updatedPolicyChart(policy));
 		chart.drawChart();
 	}
 
