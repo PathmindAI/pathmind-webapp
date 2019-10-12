@@ -153,6 +153,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 			ConfirmDialog confirmDialog = new RunConfirmDialog();
 			confirmDialog.open();
+
+			try {
+				loadData();
+				updateScreen(null);
+			} catch (InvalidDataException e) {
+				e.printStackTrace();
+			}
 		});
 		runFullTraining.setVisible(false);
 
@@ -162,6 +169,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 			ConfirmDialog confirmDialog = new RunConfirmDialog();
 			confirmDialog.open();
+
+			try {
+				loadData();
+				updateScreen(null);
+			} catch (InvalidDataException e) {
+				e.printStackTrace();
+			}
 		});
 		runDiscoveryTraining.setVisible(false);
 
