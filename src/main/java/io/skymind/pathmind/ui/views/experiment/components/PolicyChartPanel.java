@@ -144,7 +144,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
     public void update(Policy policy) {
         this.policy = policy;
         policyLabel.setText(PolicyUtils.getParsedPolicyName(policy));
-        scoreLabel.setText(PolicyUtils.getLastScore(policy));
+        scoreLabel.setText(PolicyUtils.getFormattedLastScore(policy));
         modelLabel.setText(policy.getModel().getName());
         experimentLabel.setText(policy.getExperiment().getName());
         runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());

@@ -7,9 +7,13 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import io.skymind.pathmind.utils.ObjectMapperHolder;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 
 public class PolicyUtils
@@ -50,13 +54,28 @@ public class PolicyUtils
 		}
 	}
 
-	public static String getLastScore(Policy policy) {
+	public static BigDecimal getLastScore(Policy policy) {
 		try {
-			return policy.getScores().get(policy.getScores().size() - 1).toString();
+			BigDecimal score = BigDecimal.valueOf(policy.getScores().get(policy.getScores().size() - 1).doubleValue());
+			score.setScale(6, RoundingMode.DOWN);
+			return score;
 		} catch (Exception e) {
 			log.debug(e.getMessage(), e);
 			return null;
 		}
+	}
+
+	public static DecimalFormat getLastScoreFormatter() {
+		DecimalFormat decimalFormat = new DecimalFormat();
+		decimalFormat.setMinimumFractionDigits(6);
+		return decimalFormat;
+	}
+
+	public static String getFormattedLastScore(Policy policy) {
+		BigDecimal score = getLastScore(policy);
+		if(score == null)
+			return null;
+		return getLastScoreFormatter().format(score);
 	}
 
 	public static String getParsedPolicyName(Policy policy) {

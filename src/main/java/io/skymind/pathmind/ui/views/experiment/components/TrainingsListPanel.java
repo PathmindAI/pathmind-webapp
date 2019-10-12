@@ -7,6 +7,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
+import com.vaadin.flow.data.renderer.NumberRenderer;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
 import io.skymind.pathmind.constants.Algorithm;
@@ -18,10 +19,13 @@ import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.views.policy.filter.PolicyFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -57,11 +61,13 @@ public class TrainingsListPanel extends VerticalLayout {
                 .setSortable(true);
 
         grid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunCompletedTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+                .setComparator((policy1, policy2) -> ObjectUtils.compare(PolicyUtils.getRunCompletedTime(policy1), PolicyUtils.getRunCompletedTime(policy2)))
                 .setHeader("Completed")
                 .setAutoWidth(true)
                 .setSortable(true);
 
-        grid.addColumn(policy -> PolicyUtils.getLastScore(policy))
+        grid.addColumn(new NumberRenderer<Policy>(policy -> PolicyUtils.getLastScore(policy), PolicyUtils.getLastScoreFormatter()))
+                .setComparator((policy1, policy2) -> ObjectUtils.compare(PolicyUtils.getLastScore(policy1), PolicyUtils.getLastScore(policy2)))
                 .setHeader("Score")
                 .setAutoWidth(true)
                 .setSortable(true);
