@@ -1,6 +1,5 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -41,7 +40,7 @@ public class PolicyHighlightPanel extends VerticalLayout
 	public void update(Policy policy)
 	{
 		updateComponentsForPolicy(policy);
-		subscribeToEventBus(UI.getCurrent(), consumer);
+		subscribeToEventBus(consumer);
 	}
 
 	private void updateComponentsForPolicy(Policy policy) {
@@ -51,14 +50,14 @@ public class PolicyHighlightPanel extends VerticalLayout
 		algorithmLabel.setText(ProgressInterpreter.interpretKey(policy.getName()).getAlgorithm());
 	}
 
-	public Policy getPolicy() {
+	private Policy getPolicy() {
 		return policy;
 	}
 
-	private void subscribeToEventBus(UI ui, Flux<PathmindBusEvent> consumer) {
+	private void subscribeToEventBus(Flux<PathmindBusEvent> consumer) {
 		PolicyBusEventUtils.consumerBusEventBasedOnPolicy(
 				consumer,
-				() -> getPolicy(),
-				updatedPolicy -> PushUtils.push(ui, () -> updateComponentsForPolicy(updatedPolicy)));
+                this::getPolicy,
+				updatedPolicy -> PushUtils.push(getUI().orElseGet(null), () -> updateComponentsForPolicy(updatedPolicy)));
 	}
 }
