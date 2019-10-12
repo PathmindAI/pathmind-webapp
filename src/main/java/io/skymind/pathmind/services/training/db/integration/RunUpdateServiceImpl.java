@@ -84,7 +84,7 @@ public class RunUpdateServiceImpl implements RunUpdateService {
         if (progresses.size() > 0) {
             Progress progress = progresses.get(0);
 
-            // origianl name ex: PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_2019-10-11_21-16-2858waz_89
+            // original name ex: PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_2019-10-11_21-16-2858waz_89
             // get rid of time and extra info
             // add run type and "TEMP"
             String policyTempName = progress.getId().substring(0, progress.getId().length() - 27) + run.getRunType() + "TEMP";
