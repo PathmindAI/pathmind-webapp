@@ -73,7 +73,7 @@ public class TrainingService {
                 Arrays.asList(1e-5),
                 Arrays.asList(0.99),
                 Arrays.asList(128),
-                5 * 60        // 15 mins
+                15 * 60        // 15 mins
         );
 
         final String executionId = executionProvider.execute(spec);
@@ -81,22 +81,7 @@ public class TrainingService {
         runDAO.markAsStarting(run.getId());
         log.info("Started TEST training job with id {}", executionId);
 
-        // this is for ui filling gap until ui get a training progress from backend(rescale)
-        Policy tempPolicy = new Policy();
-
-        String name = getTempPolicyName(Algorithm.PPO.toString(),
-                "PathmindEnvironment",
-                spec.getLearningRates(),
-                spec.getGammas(),
-                spec.getBatchSizes(),
-                run.getRunType());
-
-        tempPolicy.setName(name);
-        tempPolicy.setExternalId(name);
-        tempPolicy.setRunId(run.getId());
-
-        policyDAO.insertPolicy(tempPolicy);
-
+        addTempPolicy(spec, run);
     }
 
     public void startDiscoveryRun(Experiment exp){
@@ -128,6 +113,8 @@ public class TrainingService {
 
         runDAO.markAsStarting(run.getId());
         log.info("Started DISCOVERY training job with id {}", executionId);
+
+        addTempPolicy(spec, run);
     }
 
     public void startFullRun(Experiment exp, Policy pol){
@@ -167,9 +154,29 @@ public class TrainingService {
 
             runDAO.markAsStarting(run.getId());
             log.info("Started FULL training job with id {}", executionId);
+
+            addTempPolicy(spec, run);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void addTempPolicy(JobSpec spec, Run run) {
+        // this is for ui filling gap until ui get a training progress from backend(rescale)
+        Policy tempPolicy = new Policy();
+
+        String name = getTempPolicyName(Algorithm.PPO.toString(),
+                "PathmindEnvironment",
+                spec.getLearningRates(),
+                spec.getGammas(),
+                spec.getBatchSizes(),
+                run.getRunType());
+
+        tempPolicy.setName(name);
+        tempPolicy.setExternalId(name);
+        tempPolicy.setRunId(run.getId());
+
+        policyDAO.insertPolicy(tempPolicy);
     }
 
     private String getTempPolicyName(String algorithm, String environment, List<Double> lrs, List<Double> gammas, List<Integer> batchSize, int runType) {
