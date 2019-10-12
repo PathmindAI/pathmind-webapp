@@ -9,8 +9,8 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
-import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.constants.Algorithm;
+import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import io.skymind.pathmind.ui.components.SearchBox;
@@ -21,6 +21,7 @@ import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -139,9 +140,15 @@ public class TrainingsListPanel extends VerticalLayout
 	}
 
 	private void replacePolicy(Policy updatedPolicy) {
-		experiment.setPolicies(experiment.getPolicies().stream()
-				.map(policy -> policy.getId() == updatedPolicy.getId() ? updatedPolicy : policy)
-				.collect(Collectors.toList()));
+		experiment.getPolicies().stream()
+				.filter(policy -> policy.getId() == updatedPolicy.getId())
+				.forEach(policy -> {
+					// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/229 -> Are these the only values we need to update?
+					policy.setExternalId(updatedPolicy.getExternalId());
+					policy.setProgress(updatedPolicy.getProgress());
+					policy.setScores(updatedPolicy.getScores());
+					policy.setRun(updatedPolicy.getRun());
+				});
 	}
 
 	public Experiment getExperiment() {

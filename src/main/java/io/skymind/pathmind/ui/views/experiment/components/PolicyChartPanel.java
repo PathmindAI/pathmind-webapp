@@ -5,6 +5,8 @@ import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.Series;
+import com.vaadin.flow.component.charts.model.XAxis;
+import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -95,7 +97,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
 
 		// We cannot add the last item because there is no guarantee that the updates are in sequence
 		chart.getConfiguration().getSeries().stream()
-				.filter(series -> series.getName().equals(updatedPolicy.getName()))
+				.filter(series -> series.getId().equals(Long.toString(updatedPolicy.getId())))
 				.findAny()
 				.ifPresentOrElse(
 						series -> updateSeries(series, updatedPolicy),
@@ -114,7 +116,15 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
 	}
 
 	private void setupChart() {
+		XAxis xAxis = new XAxis();
+		xAxis.setTitle("Iterations");
+
+		YAxis yAxis = new YAxis();
+		yAxis.setTitle("Mean Reward Score");
+
 		chart.getConfiguration().setTitle("Reward Score");
+		chart.getConfiguration().addxAxis(xAxis);
+		chart.getConfiguration().addyAxis(yAxis);
 	}
 
 	public Experiment getExperiment() {
@@ -128,9 +138,14 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
 	}
 
 	private void updateChart(List<Policy> policies) {
-		policies.stream().forEach(policy ->
-				chart.getConfiguration().addSeries(new ListSeries(policy.getName(), policy.getScores())));
+		policies.stream().forEach(policy -> addPolicyToChart(policy));
 		chart.drawChart();
+	}
+
+	private void addPolicyToChart(Policy policy) {
+		ListSeries listSeries = new ListSeries(policy.getName(), policy.getScores());
+		listSeries.setId(Long.toString(policy.getId()));
+		chart.getConfiguration().addSeries(listSeries);
 	}
 
 	// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/129 -> Does not seem possible yet: https://vaadin.com/forum/thread/17856633/is-it-possible-to-highlight-a-series-in-a-chart-programmatically
