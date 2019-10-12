@@ -103,16 +103,13 @@ public class RunUpdateServiceImpl implements RunUpdateService {
             }
 
             //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
-
-            log.info("kepricondebug : try to find TEMP : "+ policyTempName);
-
             ctx.select(POLICY.ID)
                     .from(POLICY)
                     .where(POLICY.RUN_ID.eq(runId), POLICY.EXTERNAL_ID.eq(policyTempName))
                     .fetch(POLICY.ID)
                     .stream()
                     .forEach(policyId -> {
-                        log.info("kepricondebug : TEMP FOUND : "+ policyId + " for " + progress.getId());
+                        log.info("temporary policy FOUND : " + policyId + " for " + progress.getId());
 
                         ctx.update(POLICY)
                                 .set(POLICY.NAME, progress.getId())
@@ -120,7 +117,7 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                                 .where(POLICY.ID.eq(policyId))
                                 .execute();
 
-                        log.info("kepricondebug : Update : "+ policyId + " for " + progress.getId());
+                        log.info("temporary policy UPDATED : "+ policyId + " for " + progress.getId());
                     });
         }
 
