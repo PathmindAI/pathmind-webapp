@@ -10,6 +10,9 @@ import io.skymind.pathmind.utils.ObjectMapperHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 
 public class PolicyUtils
@@ -52,7 +55,11 @@ public class PolicyUtils
 
 	public static String getLastScore(Policy policy) {
 		try {
-			return policy.getScores().get(policy.getScores().size() - 1).toString();
+            BigDecimal score = BigDecimal.valueOf(policy.getScores().get(policy.getScores().size() - 1).doubleValue());
+            score.setScale(6, RoundingMode.DOWN);
+            DecimalFormat decimalFormat = new DecimalFormat();
+            decimalFormat.setMinimumFractionDigits(6);
+            return decimalFormat.format(score);
 		} catch (Exception e) {
 			log.debug(e.getMessage(), e);
 			return null;
