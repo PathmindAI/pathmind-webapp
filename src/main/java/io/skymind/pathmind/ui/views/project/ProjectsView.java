@@ -9,6 +9,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -27,6 +28,7 @@ import io.skymind.pathmind.ui.views.project.filter.ProjectFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Comparator;
 import java.util.List;
 
 @CssImport("./styles/styles.css")
@@ -79,9 +81,11 @@ public class ProjectsView extends PathMindDefaultView
 				.setHeader("Name")
 				.setSortable(true);
 		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+				.setComparator(Comparator.comparing(Project::getDateCreated))
 				.setHeader("Date Created")
 				.setSortable(true);
 		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+				.setComparator(Comparator.comparing(Project::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setSortable(true);
 

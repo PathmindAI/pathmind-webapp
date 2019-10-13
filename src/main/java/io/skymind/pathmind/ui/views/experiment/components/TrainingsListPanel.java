@@ -65,6 +65,7 @@ public class TrainingsListPanel extends VerticalLayout {
                 .setSortable(true);
 
         grid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunCompletedTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+                .setComparator(Comparator.comparing(policy -> PolicyUtils.getRunCompletedTime(policy)))
                 .setHeader("Completed")
                 .setAutoWidth(true)
                 .setSortable(true);

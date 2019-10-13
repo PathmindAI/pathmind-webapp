@@ -31,6 +31,7 @@ import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 @CssImport("./styles/styles.css")
@@ -90,9 +91,11 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 				.setHeader("Model")
 				.setSortable(true);
 		modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+				.setComparator(Comparator.comparing(Model::getDateCreated))
 				.setHeader("Date Created")
 				.setSortable(true);
 		Grid.Column<Model> lastActivityColumn = modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+				.setComparator(Comparator.comparing(Model::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setSortable(true);
 

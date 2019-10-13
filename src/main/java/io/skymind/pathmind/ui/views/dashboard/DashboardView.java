@@ -8,6 +8,7 @@ import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.*;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
@@ -102,6 +103,7 @@ public class DashboardView extends PathMindDefaultView
 				.setAutoWidth(true)
 				.setSortable(true);
 		Grid.Column<Policy> completedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+				.setComparator(Comparator.comparing(policy -> policy.getRun().getStoppedAt()))
 				.setHeader("Completed")
 				.setComparator(getCompletedComparator())
 				.setSortable(true);
