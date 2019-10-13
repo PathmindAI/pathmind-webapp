@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -53,6 +54,12 @@ public class TrainingsListPanel extends VerticalLayout {
         grid = new Grid<>();
         grid.addColumn(policy -> PolicyUtils.getRunStatus(policy))
                 .setHeader("Status")
+                .setAutoWidth(true)
+                .setSortable(true);
+
+        grid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunStartTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+                .setComparator(Comparator.comparing(policy -> PolicyUtils.getRunStartTime(policy)))
+                .setHeader("Started")
                 .setAutoWidth(true)
                 .setSortable(true);
 
