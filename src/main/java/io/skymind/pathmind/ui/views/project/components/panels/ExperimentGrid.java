@@ -7,11 +7,13 @@ import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +30,7 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setAutoWidth(true)
 				.setSortable(true);
 		Grid.Column<Experiment> lastActivityColumn = addColumn(new LocalDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+				.setComparator(Comparator.comparing(Experiment::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setAutoWidth(true)
 				.setSortable(true);
