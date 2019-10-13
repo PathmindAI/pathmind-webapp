@@ -98,7 +98,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 	private VerticalLayout getNumberOfObservationsPanel() {
 		VerticalLayout wrapper = new VerticalLayout(
 				GuiUtils.getBoldLabel("Number of Observations for Training"),
-				new Label("Enter the length of the Observation for Training array"),
+				new Label("Enter the number of observations present in the 'observation of training' array"),
 				numberOfObservationsNumberField);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
