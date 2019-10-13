@@ -69,10 +69,12 @@ class ChangePasswordView extends PolymerElement {
       <img src="images/pathmind-logo.png"> -->
       <vaadin-vertical-layout style="width: 100%;" id="account-content">
         <vaadin-vertical-layout style="width: 100%; height: 100%;">
-          <vaadin-password-field
-            id="currentPassword"
-            label="Current Password"
-          ></vaadin-password-field>
+            <div style="width: 100%;">
+                <vaadin-password-field
+                    id="currentPassword"
+                    label="Current Password"
+                ></vaadin-password-field>
+            </div>
           <vaadin-vertical-layout
             id="currentPassNotes"
             class="notes"
