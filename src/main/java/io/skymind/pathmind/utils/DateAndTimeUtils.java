@@ -1,5 +1,8 @@
 package io.skymind.pathmind.utils;
 
+import java.text.FieldPosition;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -31,5 +34,24 @@ public class DateAndTimeUtils
 		return  (hours > 0 ? (hours + " hr ") : "") +
 				(minutes > 0 ? (minutes + " min ") : "") +
 				(seconds > 0 ? (seconds + " sec") : "");
+	}
+
+	public static NumberFormat getElapsedTimeNumberFormat() {
+		return new NumberFormat() {
+			@Override
+			public StringBuffer format(double number, StringBuffer toAppendTo, FieldPosition pos) {
+				throw new RuntimeException("Invalid use of Elapsed Time Formatter");
+			}
+
+			@Override
+			public StringBuffer format(long number, StringBuffer toAppendTo, FieldPosition pos) {
+				return new StringBuffer(formatDurationTime(number));
+			}
+
+			@Override
+			public Number parse(String source, ParsePosition parsePosition) {
+				return Long.parseLong(source);
+			}
+		};
 	}
 }

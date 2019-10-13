@@ -5,11 +5,12 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
-import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
+import com.vaadin.flow.data.renderer.*;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
+import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
@@ -91,7 +92,8 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid.addColumn(Policy::getAlgorithm)
 				.setHeader("Algorithm")
 				.setSortable(true);
-		dashboardGrid.addColumn(policy -> PolicyUtils.getElapsedTime(policy))
+		dashboardGrid.addColumn(new NumberRenderer<>(policy -> RunUtils.getElapsedTime(policy.getRun()), DateAndTimeUtils.getElapsedTimeNumberFormat()))
+				.setComparator(Comparator.comparing(policy -> RunUtils.getElapsedTime(policy.getRun())))
 				.setHeader("Duration")
 				.setSortable(true);
 		dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunStartTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
