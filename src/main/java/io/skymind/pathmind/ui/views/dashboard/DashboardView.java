@@ -94,6 +94,11 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid.addColumn(policy -> PolicyUtils.getElapsedTime(policy))
 				.setHeader("Duration")
 				.setSortable(true);
+		dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunStartTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+				.setComparator(Comparator.comparing(policy -> PolicyUtils.getRunStartTime(policy)))
+				.setHeader("Started")
+				.setAutoWidth(true)
+				.setSortable(true);
 		Grid.Column<Policy> completedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setHeader("Completed")
 				.setComparator(getCompletedComparator())
