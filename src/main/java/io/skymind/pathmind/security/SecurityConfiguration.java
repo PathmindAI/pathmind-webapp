@@ -3,6 +3,7 @@ package io.skymind.pathmind.security;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +36,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String LOGOUT_SUCCESS_URL = "/login";
 
     private final UserDetailsService userDetailsService;
+
+    @Value("${pathmind.development.mode}")
+    private boolean isDevelopmentMode;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -139,5 +143,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 // (production mode) static resources
                 "/frontend-es5/**", "/frontend-es6/**");
+
+        // workaround for this issue: https://github.com/vaadin/flow/issues/6471
+        // this is only needed in nmp development mode
+		if (isDevelopmentMode) {
+            web.ignoring().antMatchers(
+                    "/error"
+            );
+        }
     }
 }

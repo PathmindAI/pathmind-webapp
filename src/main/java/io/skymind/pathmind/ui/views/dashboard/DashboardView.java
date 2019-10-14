@@ -103,12 +103,6 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid.sort(Arrays.asList(
 				new GridSortOrder<Policy>(statusColumn, SortDirection.ASCENDING),
 				new GridSortOrder<Policy>(completedColumn, SortDirection.DESCENDING)));
-
-		// TODO -> CSS styles
-		dashboardGrid.setWidthFull();
-		dashboardGrid.setMaxHeight("500px");
-		dashboardGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-
 		dashboardGrid.addItemClickListener(event -> {
 			getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(event.getItem())));
 		});
