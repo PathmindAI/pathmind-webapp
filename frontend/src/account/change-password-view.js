@@ -40,7 +40,7 @@ class ChangePasswordView extends PolymerElement {
         vaadin-button {
           margin: 5px auto;
         }
-        
+
         #updateBtn {
           width: 250px;
         }
@@ -70,35 +70,40 @@ class ChangePasswordView extends PolymerElement {
       <img src="frontend/images/pathmind-logo.png">
       <img src="images/pathmind-logo.png"> -->
       <vaadin-vertical-layout style="width: 100%;" id="account-content">
-        <vaadin-vertical-layout style="width: 100%; height: 100%;">
-            <div style="width: 100%;">
-                <vaadin-password-field
-                    id="currentPassword"
-                    label="Current Password"
-                ></vaadin-password-field>
-            </div>
-          <vaadin-vertical-layout
-            id="currentPassNotes"
-            class="notes"
-            style="width: 100%;"
-          ></vaadin-vertical-layout>
+        <div style="width: 100%;">
           <vaadin-password-field
-            id="newPassword"
-            label="New Password"
+            id="currentPassword"
+            label="Current Password"
           ></vaadin-password-field>
           <vaadin-vertical-layout
-            id="newPassNotes"
-            class="notes"
-            style="width: 100%;"
-          ></vaadin-vertical-layout>
-          <vaadin-password-field
-            id="confirmNewPassword"
-            label="Confirm New Password"
-          ></vaadin-password-field>
-          <vaadin-vertical-layout id="buttonsCont">
-            <vaadin-button id="updateBtn" theme="primary">Change Password</vaadin-button>
-            <vaadin-button id="cancelBtn" theme="tertiary">Cancel</vaadin-button>
-          </vaadin-vertical-layout>
+          id="currentPassNotes"
+          class="notes"
+          style="width: 100%;"
+        ></vaadin-vertical-layout>
+        </div>
+        <vaadin-vertical-layout
+          id="currentPassNotes"
+          class="notes"
+          style="width: 100%;"
+        ></vaadin-vertical-layout>
+        <vaadin-password-field
+          id="newPassword"
+          label="New Password"
+        ></vaadin-password-field>
+        <vaadin-vertical-layout
+          id="newPassNotes"
+          class="notes"
+          style="width: 100%;"
+        ></vaadin-vertical-layout>
+        <vaadin-password-field
+          id="confirmNewPassword"
+          label="Confirm New Password"
+        ></vaadin-password-field>
+        <vaadin-vertical-layout id="buttonsCont">
+          <vaadin-button id="updateBtn" theme="primary"
+            >Change Password</vaadin-button
+          >
+          <vaadin-button id="cancelBtn" theme="tertiary">Cancel</vaadin-button>
         </vaadin-vertical-layout>
       </vaadin-vertical-layout>
     `;

@@ -87,21 +87,26 @@ public class UserService
         List<String> results = new ArrayList<>();
 
         if (!password.equals(confirm)) {
-            results.add("New Password doesn't match Confirmation password");
+            results.add("* New Password doesn't match Confirmation password");
         }
 
         if (password.length() < 6) {
-            results.add("6 min characters");
+            results.add("* 6 min characters");
         }
 
         if (password.chars().filter(ch -> Character.isUpperCase(ch)).findAny().isEmpty()) {
-            results.add("1 uppercase character");
+            results.add("* 1 uppercase character");
         }
 
         if (password.chars().filter(ch -> Character.isLowerCase(ch)).findAny().isEmpty()) {
-            results.add("1 lowercase character");
+            results.add("* 1 lowercase character");
         }
 
         return results;
+    }
+
+    public boolean isCurrentPassword(PathmindUser user, String password) {
+//        TODO encrypt
+        return user.getPassword().equals(password);
     }
 }

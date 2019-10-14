@@ -20,6 +20,8 @@ import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 @Tag("change-password-view")
 @JsModule("./src/account/change-password-view.js")
 @Route(value="account/change-password", layout = MainLayout.class)
@@ -35,7 +37,10 @@ public class ChangePasswordView extends PolymerTemplate<ChangePasswordView.Model
 	private PasswordField confirmNewPassword;
 
 	@Id("newPassNotes")
-	private VerticalLayout newPassNotes;
+	private VerticalLayout passwordValidationNotes;
+
+	@Id("currentPassNotes")
+	private VerticalLayout currentPasswordValidationNotes;
 
 	@Id("cancelBtn")
 	private Button cancelBtn;
@@ -55,8 +60,8 @@ public class ChangePasswordView extends PolymerTemplate<ChangePasswordView.Model
 	{
 		user = currentUser.getUser();
 
-		newPassNotes.setPadding(false);
-		newPassNotes.setSpacing(false);
+		passwordValidationNotes.setPadding(false);
+		passwordValidationNotes.setSpacing(false);
 
 		cancelBtn.addClickListener(e -> UI.getCurrent().navigate(AccountView.class));
 		updateBtn.addClickListener(e -> {
@@ -68,20 +73,23 @@ public class ChangePasswordView extends PolymerTemplate<ChangePasswordView.Model
 	}
 
 	private boolean validate() {
-//		Validate current password
-//		Validate new password
-//		currentPassword.setErrorMessage("* 1 lowercase charter\n * 1 uppercase charter");
-//		newPassword.setErrorMessage("<span>* 1 lowercase charter</span>" +
-//									"<span>* 1 uppercase charter<span>");
+		boolean valid = true;
 
-		newPassNotes.removeAll();
-		newPassNotes.add(new Span("* 1 lowercase charter"));
-		newPassNotes.add(new Span("* 1 uppercase charter"));
-		Span warning = new Span("* 6 minimum charter");
-		warning.addClassName("secondary");
-		newPassNotes.add(warning);
+		if (!userService.isCurrentPassword(user, currentPassword.getValue())) {
+			currentPasswordValidationNotes.removeAll();
+			currentPasswordValidationNotes.add(new Span("Password is incorrect"));
+			valid = false;
+		}
 
-		return false;
+		List<String> validationResults = userService.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
+		if (!validationResults.isEmpty()) {
+			newPassword.setInvalid(true);
+			passwordValidationNotes.removeAll();
+			validationResults.forEach(message -> passwordValidationNotes.add(new Span(message)));
+			valid = false;
+		}
+
+		return valid;
 	}
 
 	public interface Model extends TemplateModel {

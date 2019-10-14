@@ -70,7 +70,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 	private UserService userService;
 
 	@Autowired
-	public SignUpView(CurrentUser currentUser)
+	public SignUpView()
 	{
 		user = new PathmindUser();
 		initView();

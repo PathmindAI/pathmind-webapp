@@ -13,11 +13,11 @@ public class PathmindUser
 	private int accountType;
 	private String firstname;
 	private String lastname;
-	private String address;
-	private String city;
-	private String state;
-	private String country;
-	private String zip;
+	private String address = "";
+	private String city = "";
+	private String state = "";
+	private String country = "";
+	private String zip = "";
 	private LocalDateTime deleteAt;
 	private LocalDateTime emailVerifiedAt;
 	private UUID emailVerificationToken;
