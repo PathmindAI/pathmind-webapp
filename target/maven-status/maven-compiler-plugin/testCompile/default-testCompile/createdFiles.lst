@@ -1,0 +1,12 @@
+io\skymind\pathmind\dao\UserDaoTest.class
+io\skymind\pathmind\PathmindApplicationTests.class
+io\skymind\pathmind\services\training\ProgressInterpreterTest.class
+io\skymind\pathmind\repository\UserRepositoryTest.class
+io\skymind\pathmind\services\project\AnylogicFileCheckerTest.class
+io\skymind\pathmind\services\project\MockObjectStatusUpdater.class
+io\skymind\pathmind\testutils\UserUtils.class
+io\skymind\pathmind\services\training\cloud\rescale\api\RescaleRestApiClientTest.class
+io\skymind\pathmind\services\training\cloud\rescale\RescaleExecutionProviderTest.class
+io\skymind\pathmind\services\training\cloud\rescale\RescaleExecutionProviderTest$1.class
+io\skymind\pathmind\services\UserServiceTest.class
+io\skymind\pathmind\utils\FileUtilsTest.class
