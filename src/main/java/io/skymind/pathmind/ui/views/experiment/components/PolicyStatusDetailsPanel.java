@@ -12,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 @Component
@@ -75,6 +74,6 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 		statusLabel.setText(PolicyUtils.getRunStatus(policy));
 		runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(PolicyUtils.getRunCompletedTime(policy)));
 		runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());
-        elapsedTimeLabel.setText(PolicyUtils.getElaspedTime(policy));
+        elapsedTimeLabel.setText(PolicyUtils.getElapsedTime(policy));
 	}
 }

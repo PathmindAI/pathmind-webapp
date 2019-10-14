@@ -143,15 +143,20 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
         } else if (runStatus.equals(RunStatus.Running)) {
             // Job is still running, we have to tail files
-            return client.workingFiles(jobHandle, "1")
-                    .parallelStream()
-                    .filter(it -> it.getPath().endsWith("progress.csv"))
-                    .map(it -> {
-                        final String key = new File(it.getPath()).getParentFile().getName();
-                        final String contents = new String(client.tail(jobHandle, "1", it.getPath()));
-                        return Map.entry(key, contents);
-                    })
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            try {
+                return client.workingFiles(jobHandle, "1")
+                        .parallelStream()
+                        .filter(it -> it.getPath().endsWith("progress.csv"))
+                        .map(it -> {
+                            final String key = new File(it.getPath()).getParentFile().getName();
+                            final String contents = new String(client.tail(jobHandle, "1", it.getPath()));
+                            return Map.entry(key, contents);
+                        })
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            } catch (Exception e) {
+                log.debug("Errors on getting progress.csv" , e);
+                return Collections.emptyMap();
+            }
         }
 
         return Collections.emptyMap();

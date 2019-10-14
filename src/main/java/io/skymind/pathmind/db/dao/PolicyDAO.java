@@ -20,7 +20,6 @@ import static io.skymind.pathmind.data.db.Tables.*;
 @Repository
 public class PolicyDAO extends PolicyRepository
 {
-
     private final DSLContext ctx;
     private final io.skymind.pathmind.data.db.tables.Policy tbl;
     private final ObjectMapper objectMapper;
@@ -57,8 +56,10 @@ public class PolicyDAO extends PolicyRepository
                     try {
                         final JSONB progressJson = it.get(tbl.PROGRESS);
                         policy.setProgress(progressJson.toString());
-                        final Progress progress = objectMapper.readValue(progressJson.toString(), Progress.class);
-                        policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
+                        if (progressJson.toString() != null && !progressJson.toString().isEmpty()) {
+                            final Progress progress = objectMapper.readValue(progressJson.toString(), Progress.class);
+                            policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
+                        }
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -80,5 +81,14 @@ public class PolicyDAO extends PolicyRepository
 
     public byte[] getPolicyFile(long policyId){
         return ctx.select(POLICY.FILE).from(POLICY).where(POLICY.ID.eq(policyId).and(POLICY.FILE.isNotNull())).fetchOne(POLICY.FILE);
+    }
+
+    public long insertPolicy(Policy policy) {
+        return ctx.insertInto(tbl)
+                .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID)
+                .values(policy.getName(), policy.getRunId(), policy.getName())
+                .returning(POLICY.ID)
+                .fetchOne()
+                .getValue(POLICY.ID);
     }
 }

@@ -12,6 +12,5 @@ public interface StatusUpdater
 
     public void updateError(String error);
     public void fileSuccessfullyVerified();
-    public void fileCheckComplete(FileCheckResult anylogicFileCheckResult);
 
 }
