@@ -8,12 +8,35 @@ variables:
   MAVEN_OPTS: '-Xmx3072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
 
 trigger:
-- pathmind-test_1
+- pathmind_devops_1
 
 pool:
   vmImage: 'Ubuntu-16.04'
 
+
 steps:
+
+- task: UseNode@1
+  inputs:
+    versionSpec: $(node_version)
+#- script: npm install
+- script: ls '$(System.DefaultWorkingDirectory)'
+
+- task: Npm@1
+  inputs:
+    workingDir: '$(System.DefaultWorkingDirectory)'
+    command: 'install'
+
+
+#- task: Npm@1
+#  inputs:
+#    command: 'install'
+#    customRegistry: 'useFeed'
+#    customFeed: '2b53e450-1a97-4896-8dfa-eeae9c95711e'
+
+#- script: npm install
+
+
 - task: CacheBeta@0
   inputs:
     key: maven | **/pom.xml
@@ -30,6 +53,7 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'test package'
+
 
 - task: CopyFiles@2
   inputs:
