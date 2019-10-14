@@ -8,7 +8,7 @@ variables:
   MAVEN_OPTS: '-Xmx3072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
 
 trigger:
-- pathmind_devops_1
+- pathmind-test_1
 
 pool:
   vmImage: 'Ubuntu-16.04'
