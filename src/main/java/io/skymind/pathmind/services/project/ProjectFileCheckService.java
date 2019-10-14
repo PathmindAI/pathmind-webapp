@@ -27,6 +27,7 @@ public class ProjectFileCheckService {
                     FileUtils.writeByteArrayToFile(tempFile, data);
 
                     AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker();
+
                     //Result set here.
                     final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
                     if(result.isFileCheckComplete() && result.isFileCheckSuccessful()){

@@ -89,6 +89,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 
 				log.info("Upload completed");
 				checkYourModelButton.setVisible(true);
+				checkYourModelButton.click(); // Rigging this to automatically run the file check
 			} catch (IOException e) {
 				log.error("Upload failed", e);
 			}

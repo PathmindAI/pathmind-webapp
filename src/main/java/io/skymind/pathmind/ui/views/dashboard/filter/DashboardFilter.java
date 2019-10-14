@@ -15,7 +15,7 @@ public class DashboardFilter implements PathmindFilterInterface<Policy>
 				SearchUtils.contains(policy.getExperiment().getName(), searchValue) ||
 				SearchUtils.contains(policy.getRun().getRunTypeEnum().toString(), searchValue) ||
 				SearchUtils.contains(policy.getAlgorithm().toString(), searchValue) ||
-				SearchUtils.contains(PolicyUtils.getElaspedTime(policy), searchValue) ||
+				SearchUtils.contains(PolicyUtils.getElapsedTime(policy), searchValue) ||
 				SearchUtils.contains(policy.getRun().getStoppedAt(), searchValue);
 
 	}
