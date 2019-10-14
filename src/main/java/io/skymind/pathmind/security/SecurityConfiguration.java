@@ -81,6 +81,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // Restrict access to our application.
                 .and().authorizeRequests()
 
+                // Allow access to sign-up view
+                .antMatchers("/sign-up").permitAll()
+
                 // Allow all flow internal requests.
                 .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
 
