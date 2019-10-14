@@ -102,6 +102,8 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 			if (validationResults.isEmpty()) {
 				user.setPassword(newPassword.getValue());
 				userService.signup(user);
+//				TODO show notification about successful sign up
+				UI.getCurrent().navigate(LoginView.class);
 			} else {
 				newPassword.setInvalid(true);
 				passwordValidationNotes.removeAll();

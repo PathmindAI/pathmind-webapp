@@ -16,7 +16,7 @@ public class UserRepository
     @Autowired
     private DSLContext dslContext;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    protected PasswordEncoder passwordEncoder;
 
     public PathmindUser findByEmailIgnoreCase(String email) {
         return dslContext

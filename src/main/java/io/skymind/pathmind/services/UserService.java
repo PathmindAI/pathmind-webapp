@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
@@ -24,11 +25,13 @@ public class UserService
 
 
     private UserDAO userDAO;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserDAO userDAO)
+    public UserService(UserDAO userDAO, PasswordEncoder passwordEncoder)
     {
         this.userDAO = userDAO;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public PathmindUser getCurrentUser()
@@ -106,7 +109,10 @@ public class UserService
     }
 
     public boolean isCurrentPassword(PathmindUser user, String password) {
-//        TODO encrypt
-        return user.getPassword().equals(password);
+        return passwordEncoder.matches(password, user.getPassword());
+    }
+
+    public boolean changePassword(PathmindUser user, String password) {
+        return userDAO.changePassword(user.getId(), password);
     }
 }
