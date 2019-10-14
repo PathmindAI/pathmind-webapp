@@ -50,7 +50,6 @@ public class UserDAO extends UserRepository
 		ctx.update(PATHMIND_USER)
 				.set(PATHMIND_USER.NAME, pathmindUser.getName())
 				.set(PATHMIND_USER.EMAIL, pathmindUser.getEmail())
-				.set(PATHMIND_USER.PASSWORD, pathmindUser.getPassword())
 				.set(PATHMIND_USER.ACCOUNT_TYPE, pathmindUser.getAccountType())
 				.set(PATHMIND_USER.FIRSTNAME, pathmindUser.getFirstname())
 				.set(PATHMIND_USER.LASTNAME, pathmindUser.getLastname())

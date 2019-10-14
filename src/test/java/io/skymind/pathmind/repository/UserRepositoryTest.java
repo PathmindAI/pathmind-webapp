@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+@Ignore
 public class UserRepositoryTest extends PathmindApplicationTests
 {
 
