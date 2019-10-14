@@ -1,5 +1,7 @@
 package io.skymind.pathmind.services.training.progress;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.supercsv.io.CsvMapReader;
 import org.supercsv.prefs.CsvPreference;
 
@@ -13,6 +15,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ProgressInterpreter {
+
+    private static Logger log = LogManager.getLogger(ProgressInterpreter.class);
 
     public static Progress interpretKey(String keyString) {
         final Progress progress = new Progress();
@@ -60,11 +64,16 @@ public class ProgressInterpreter {
             }
             buffer.append(cur);
         }
-        final String dateTime = buffer.toString().substring(0, 19);
-        final LocalDateTime utcTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss"));
-        final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();
 
-        progress.setStartedAt(time);
+        try {
+            final String dateTime = buffer.toString().substring(0, 19);
+            final LocalDateTime utcTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss"));
+            final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();
+
+            progress.setStartedAt(time);
+        } catch (Exception e) {
+            log.debug(e.getMessage());
+        }
 
         return progress;
     }
