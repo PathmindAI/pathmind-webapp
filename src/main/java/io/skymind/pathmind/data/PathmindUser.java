@@ -80,6 +80,7 @@ public class PathmindUser
 
 	public void setFirstname(String firstname) {
 		this.firstname = firstname;
+		updateName();
 	}
 
 	public String getLastname() {
@@ -88,6 +89,12 @@ public class PathmindUser
 
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
+		updateName();
+	}
+
+	private void updateName() {
+		name = firstname != null ? firstname : "";
+		name += lastname != null ? " " + lastname : "";
 	}
 
 	public String getAddress() {

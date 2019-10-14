@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -79,5 +81,27 @@ public class UserService
 
     public void update(PathmindUser user) {
         userDAO.update(user);
+    }
+
+    public List<String> validatePassword(String password, String confirm) {
+        List<String> results = new ArrayList<>();
+
+        if (!password.equals(confirm)) {
+            results.add("New Password doesn't match Confirmation password");
+        }
+
+        if (password.length() < 6) {
+            results.add("6 min characters");
+        }
+
+        if (password.chars().filter(ch -> Character.isUpperCase(ch)).findAny().isEmpty()) {
+            results.add("1 uppercase character");
+        }
+
+        if (password.chars().filter(ch -> Character.isLowerCase(ch)).findAny().isEmpty()) {
+            results.add("1 lowercase character");
+        }
+
+        return results;
     }
 }

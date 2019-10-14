@@ -40,6 +40,7 @@ class ChangePasswordView extends PolymerElement {
         vaadin-button {
           margin: 5px auto;
         }
+        
         #updateBtn {
           width: 250px;
         }
@@ -51,6 +52,7 @@ class ChangePasswordView extends PolymerElement {
           padding-left: 15px;
           padding-top: 5px;
         }
+
         .notes span:last-child {
           padding-bottom: 20px;
         }

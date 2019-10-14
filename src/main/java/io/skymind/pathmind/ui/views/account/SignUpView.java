@@ -17,53 +17,103 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.services.UserService;
-import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 @Tag("sign-up-view")
 @JsModule("./src/account/sign-up-view.js")
-@Route(value="account/sign-up")
+@Route(value="sign-up")
 public class SignUpView extends PolymerTemplate<SignUpView.Model>
 {
 	@Id("lastName")
 	private TextField lastName;
+
 	@Id("firstName")
 	private TextField firstName;
+
 	@Id("email")
 	private TextField email;
 
-	@Id("cancelBtn")
-	private Button cancelBtn;
-	@Id("updateBtn")
-	private Button updateBtn;
+	@Id("cancelSignUpBtn")
+	private Button cancelSignUpBtn;
+
+	@Id("cancelSignInBtn")
+	private Button cancelSignInBtn;
+
+	@Id("signUp")
+	private Button signUp;
+
+	@Id("signIn")
+	private Button signIn;
+
+	@Id("newPassword")
+	private PasswordField newPassword;
+
+	@Id("confirmNewPassword")
+	private PasswordField confirmNewPassword;
+
+	@Id("newPassNotes")
+	private VerticalLayout passwordValidationNotes;
+
+	@Id("emailPart")
+	private VerticalLayout emailPart;
+
+	@Id("passwordPart")
+	private VerticalLayout passwordPart;
 
 	private PathmindUser user;
-
 	private Binder<PathmindUser> binder;
 
 	@Autowired
 	private UserService userService;
 
-
 	@Autowired
 	public SignUpView(CurrentUser currentUser)
 	{
 		user = new PathmindUser();
+		initView();
 		initBinder();
+	}
 
-		cancelBtn.addClickListener(e -> UI.getCurrent().navigate(LoginView.class));
-		updateBtn.addClickListener(e -> {
-//			userService.update(user);
-			System.out.println("TODO: Create user: "
-					+ user.getFirstname() + " "
-					+ user.getLastname()
-					+ " " + user.getEmail());
+	private void initView() {
+		emailPart.setSpacing(false);
+		emailPart.setPadding(false);
+		passwordPart.setSpacing(false);
+		passwordPart.setPadding(false);
+		passwordValidationNotes.setSpacing(false);
+		passwordValidationNotes.setPadding(false);
 
+		showPassword(false);
+
+		cancelSignUpBtn.addClickListener(e -> UI.getCurrent().navigate(LoginView.class));
+		cancelSignInBtn.addClickListener(e -> showPassword(false));
+
+		signUp.addClickListener(e -> {
 			if (binder.validate().isOk()) {
-				UI.getCurrent().navigate(LoginView.class);
+				showPassword(true);
 			}
 		});
+
+		signIn.addClickListener(e -> {
+			List<String> validationResults = userService.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
+
+			if (validationResults.isEmpty()) {
+				user.setPassword(newPassword.getValue());
+				userService.signup(user);
+			} else {
+				newPassword.setInvalid(true);
+				passwordValidationNotes.removeAll();
+				validationResults.forEach(message -> passwordValidationNotes.add(new Span(message)));
+			}
+		});
+	}
+
+	private void showPassword(boolean showPasswordPart) {
+		getModel().setTitle(showPasswordPart ? "Create a new password" : "Get Started!");
+		emailPart.setVisible(!showPasswordPart);
+		passwordPart.setVisible(showPasswordPart);
 	}
 
 	private void initBinder() {
@@ -79,5 +129,6 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 	}
 
 	public interface Model extends TemplateModel {
+		void setTitle(String title);
 	}
 }
