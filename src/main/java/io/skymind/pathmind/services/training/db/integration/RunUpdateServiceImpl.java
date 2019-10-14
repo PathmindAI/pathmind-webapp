@@ -6,10 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.PolicyUpdateBusEvent;
 import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.services.training.progress.RewardScore;
 import org.jooq.DSLContext;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.UnicastProcessor;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,33 +77,33 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
         for (Progress progress : progresses) {
             try {
-                if (!run.getRunTypeEnum().equals(RunType.DiscoveryRun) && status.equals(RunStatus.Completed)) {
-                    progress.setStoppedAt(now);
-                }
-
-                if (run.getRunTypeEnum().equals(RunType.DiscoveryRun) && (status.equals(RunStatus.Running) || status.equals(RunStatus.Completed))) {
-                    // todo: when we change discover run iteration number, we should change this too
-                    // we might better set the iteration number
-
-                    if (progress.getRewardProgression().size() == 100) {
-                        Policy policy = ctx.selectFrom(POLICY)
-                                .where(POLICY.RUN_ID.eq(runId), POLICY.EXTERNAL_ID.eq(progress.getId()))
-                                .fetchOneInto(Policy.class);
-
-                        Progress dbProgress = null;
-                        try {
-                             dbProgress = mapper.readValue(policy.getProgress(), Progress.class);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        if (dbProgress != null && dbProgress.getStoppedAt() == null) {
-                            progress.setStoppedAt(now);
-                        } else {
-                            progress.setStoppedAt(dbProgress.getStoppedAt());
-                        }
-                    }
-                }
+//                if (!run.getRunTypeEnum().equals(RunType.DiscoveryRun) && status.equals(RunStatus.Completed)) {
+//                    progress.setStoppedAt(now);
+//                }
+//
+//                if (run.getRunTypeEnum().equals(RunType.DiscoveryRun) && (status.equals(RunStatus.Running) || status.equals(RunStatus.Completed))) {
+//                    // todo: when we change discover run iteration number, we should change this too
+//                    // we might better set the iteration number
+//
+//                    if (progress.getRewardProgression().size() == 100) {
+//                        Policy policy = ctx.selectFrom(POLICY)
+//                                .where(POLICY.RUN_ID.eq(runId), POLICY.EXTERNAL_ID.eq(progress.getId()))
+//                                .fetchOneInto(Policy.class);
+//
+//                        Progress dbProgress = null;
+//                        try {
+//                             dbProgress = mapper.readValue(policy.getProgress(), Progress.class);
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                        if (dbProgress != null && dbProgress.getStoppedAt() == null) {
+//                            progress.setStoppedAt(now);
+//                        } else {
+//                            progress.setStoppedAt(dbProgress.getStoppedAt());
+//                        }
+//                    }
+//                }
 
                 final String progressJsonStr = mapper.writeValueAsString(progress);
                 final JSONB progressJson = JSONB.valueOf(progressJsonStr);
@@ -149,4 +146,23 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 .execute();
     }
 
+    @Override
+    public List<Policy> getStoppedPolicies(long runId) {
+        List<Policy> finishedPolicies = ctx.selectFrom(POLICY)
+                .where(POLICY.RUN_ID.eq(runId))
+                .fetchInto(Policy.class)
+                .parallelStream()
+                .filter(p -> {
+                    try {
+                        Progress progress = mapper.readValue(p.getProgress(), Progress.class);
+                        return progress.getStoppedAt() != null;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        return finishedPolicies;
+    }
 }

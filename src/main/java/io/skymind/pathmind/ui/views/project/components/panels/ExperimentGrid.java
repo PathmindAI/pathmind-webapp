@@ -1,7 +1,9 @@
 package io.skymind.pathmind.ui.views.project.components.panels;
 
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
@@ -9,6 +11,7 @@ import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,11 +23,11 @@ public class ExperimentGrid extends Grid<Experiment>
 {
 	public ExperimentGrid()
 	{
-		addColumn(Experiment::getName)
+		Grid.Column<Experiment> nameColumn = addColumn(Experiment::getName)
 				.setHeader("Experiment")
 				.setAutoWidth(true)
 				.setSortable(true);
-		addColumn(new LocalDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+		Grid.Column<Experiment> lastActivityColumn = addColumn(new LocalDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setHeader("Last Activity")
 				.setAutoWidth(true)
 				.setSortable(true);
@@ -59,7 +62,9 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setAutoWidth(true)
 				.setSortable(true);
 
-		setSelectionMode(Grid.SelectionMode.SINGLE);
+		// Sort by name by default
+		sort(Arrays.asList(new GridSortOrder<Experiment>(nameColumn, SortDirection.DESCENDING)));
+
 		getElement().getStyle().set("padding-top", "20px");
 	}
 }

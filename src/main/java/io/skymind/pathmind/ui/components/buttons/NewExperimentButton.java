@@ -21,7 +21,7 @@ public class NewExperimentButton extends Button
 		super("New Experiment");
 		setIcon(new Icon(VaadinIcon.PLUS));
 
-		String experimentName = "Experiment " + (experimentDAO.getExperimentCount(modelId) + 1);
+		String experimentName = Integer.toString (experimentDAO.getExperimentCount(modelId) + 1);
 		addClickListener(click -> {
 			Experiment newExperiment = ExperimentUtils.generateNewDefaultExperiment(modelId, experimentName, rewardFunction);
 			long newExperimentId = experimentDAO.setupNewExperiment(newExperiment);

@@ -85,10 +85,9 @@ public class ProjectsView extends PathMindDefaultView
 				.setHeader("Last Activity")
 				.setSortable(true);
 
-		projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-		projectGrid.addSelectionListener(event ->
-				event.getFirstSelectedItem().ifPresent(selectedProject ->
-						UI.getCurrent().navigate(ModelsView.class, selectedProject.getId())));
+		projectGrid.addItemClickListener(event -> {
+			getUI().ifPresent(ui -> ui.navigate(ModelsView.class, event.getItem().getId()));
+		});
 	}
 
 	private List<Project> getProjects() {

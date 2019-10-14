@@ -13,6 +13,10 @@ import io.skymind.pathmind.ui.components.juicy.theme.JuicyAceTheme;
 //NOTE: consider to move as separate from project component
 @Tag("juicy-ace-editor")
 @NpmPackage(value = "ace-builds", version = "^1.2.9")
+@JsModule("ace-builds/src-noconflict/ace.js")
+@JsModule("ace-builds/src-noconflict/mode-java.js")
+@JsModule("ace-builds/src-noconflict/theme-eclipse.js")
+@JsModule("ace-builds/src-noconflict/ext-searchbox.js")
 @JsModule("./src/juicy-ace-editor/juicy-ace-editor-npm.min.js")
 public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, String> implements HasSize, Focusable<JuicyAceEditor> {
     public JuicyAceEditor() {

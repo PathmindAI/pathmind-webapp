@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Route("login")
 @Theme(Lumo.class)
 @CssImport(value = "./styles/views/vaadin-login-overlay-wrapper.css", themeFor = "vaadin-login-overlay-wrapper")
-
 public class LoginView extends LoginOverlay
 		implements AfterNavigationObserver, BeforeEnterObserver, HasDynamicTitle, PageConfigurator
 {

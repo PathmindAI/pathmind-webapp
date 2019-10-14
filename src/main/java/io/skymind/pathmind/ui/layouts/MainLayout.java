@@ -23,7 +23,6 @@ import io.skymind.pathmind.ui.utils.VaadinUtils;
 @CssImport(value = "./styles/components/vaadin-grid.css", themeFor = "vaadin-grid")
 @CssImport(value = "./styles/layouts/vaadin-app-layout.css", themeFor = "vaadin-app-layout")
 @Theme(Lumo.class)
-
 public class MainLayout extends AppLayout implements PageConfigurator
 {
 	public MainLayout()
