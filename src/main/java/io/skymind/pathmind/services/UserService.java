@@ -20,6 +20,10 @@ import java.util.UUID;
 @Service
 public class UserService
 {
+    public static final String NOT_MATCHING = "* New Password doesn't match Confirmation password";
+    public static final String TOO_SHORT = "* 6 min characters";
+    public static final String UPPERCASE_MISSING = "* 1 uppercase character";
+    public static final String LOWERCASE_MISSING = "* 1 lowercase character";
 
     private static Logger log = LogManager.getLogger(UserService.class);
 
@@ -90,19 +94,19 @@ public class UserService
         List<String> results = new ArrayList<>();
 
         if (!password.equals(confirm)) {
-            results.add("* New Password doesn't match Confirmation password");
+            results.add(NOT_MATCHING);
         }
 
         if (password.length() < 6) {
-            results.add("* 6 min characters");
+            results.add(TOO_SHORT);
         }
 
         if (password.chars().filter(ch -> Character.isUpperCase(ch)).findAny().isEmpty()) {
-            results.add("* 1 uppercase character");
+            results.add(UPPERCASE_MISSING);
         }
 
         if (password.chars().filter(ch -> Character.isLowerCase(ch)).findAny().isEmpty()) {
-            results.add("* 1 lowercase character");
+            results.add(LOWERCASE_MISSING);
         }
 
         return results;

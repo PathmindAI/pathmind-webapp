@@ -5,6 +5,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
@@ -102,7 +103,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 			if (validationResults.isEmpty()) {
 				user.setPassword(newPassword.getValue());
 				userService.signup(user);
-//				TODO show notification about successful sign up
+                Notification.show("You successfully signed up", 3000, Notification.Position.TOP_END);
 				UI.getCurrent().navigate(LoginView.class);
 			} else {
 				newPassword.setInvalid(true);
@@ -124,7 +125,6 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 		binder.forField(email).asRequired().withValidator(new EmailValidator(
 				"This doesn't look like a valid email address"))
 				.bind(PathmindUser::getEmail, PathmindUser::setEmail);
-
 		binder.forField(firstName).bind(PathmindUser::getFirstname, PathmindUser::setFirstname);
 		binder.forField(lastName).bind(PathmindUser::getLastname, PathmindUser::setLastname);
 		binder.setBean(user);
