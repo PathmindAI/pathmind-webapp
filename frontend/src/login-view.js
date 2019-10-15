@@ -61,9 +61,11 @@ class LoginView extends PolymerElement {
           <label style="color: var(--pm-secondary-text-color);"
             >Don't have an account?</label
           >
-          <vaadin-button theme="tertiary">
-            Get started
-          </vaadin-button>
+          <a href="/sign-up">
+            <vaadin-button theme="tertiary">
+              Get started
+            </vaadin-button>
+          </a>
         </div>
       </div>
     `;
