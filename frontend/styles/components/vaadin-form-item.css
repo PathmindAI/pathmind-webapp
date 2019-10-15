@@ -1,0 +1,50 @@
+/* Label-boxs */
+:host(.label-box) {
+    --pm-label-box-color: #1A2949;
+    border: 3px solid var(--pm-label-box-color);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column-reverse;
+    overflow: hidden;
+    box-sizing: border-box;
+    min-width: 100px;
+    margin: 0.5rem !important;
+}
+
+:host(.label-box.score) {
+    --pm-label-box-color: #ED7820;
+}
+
+:host(.label-box.algorithm) {
+    --pm-label-box-color: var(--pm-primary-color);
+}
+
+:host(.label-box)  [part="label"] {
+    color: white;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    background: var(--pm-label-box-color);
+    line-height: 24px;
+    font-weight: bold;
+}
+
+:host(.label-box) #spacing {
+    display: none;
+}
+
+:host(.label-box) #content {
+    width: 100%;
+    padding: var(--lumo-space-s) var(--lumo-space-m);
+    box-sizing: border-box;
+}
+
+:host(.label-box) #content * {
+    width: 100%;
+    overflow: hidden;
+    display: block;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--pm-label-box-color);
+}

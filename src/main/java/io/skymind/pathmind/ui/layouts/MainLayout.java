@@ -21,7 +21,13 @@ import io.skymind.pathmind.ui.utils.VaadinUtils;
 @CssImport(value = "./styles/components/vaadin-text-field.css", themeFor = "vaadin-text-field")
 @CssImport(value = "./styles/components/vaadin-button.css", themeFor = "vaadin-button")
 @CssImport(value = "./styles/components/vaadin-grid.css", themeFor = "vaadin-grid")
+@CssImport(value = "./styles/components/vaadin-split-layout.css", themeFor = "vaadin-split-layout")
+@CssImport(value = "./styles/components/vaadin-chart.css", themeFor = "vaadin-chart", include = "vaadin-chart-default-theme")
+@CssImport(value = "./styles/components/vaadin-form-item.css", themeFor = "vaadin-form-item")
 @CssImport(value = "./styles/layouts/vaadin-app-layout.css", themeFor = "vaadin-app-layout")
+@CssImport(value = "./styles/views/experiment-view.css")
+@CssImport(value = "./styles/views/experiments-view.css")
+@CssImport(value = "./styles/views/new-experiment-view.css")
 @Theme(Lumo.class)
 public class MainLayout extends AppLayout implements PageConfigurator
 {

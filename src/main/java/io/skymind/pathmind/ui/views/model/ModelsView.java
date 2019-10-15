@@ -19,6 +19,7 @@ import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
+import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.UIConstants;
@@ -52,17 +53,20 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	protected Component getMainContent()
 	{
 		setupGrid();
+		addClassName("models-view");
 
 		// BUG -> I didn't have to really investigate but it looks like we may need
 		// to do something special to get the full size content in the AppLayout component which
 		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
 		// Hence the workaround below:
-		VerticalLayout gridWrapper = WrapperUtils.wrapCenterVertical(
-				UIConstants.CENTERED_TABLE_WIDTH,
-				WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
-				getArchivesTabPanel(),
-				modelGrid);
-		gridWrapper.getElement().getStyle().set("padding-top", "100px");
+		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
+				new ViewSection(
+						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
+						getArchivesTabPanel(),
+						modelGrid
+				)
+		);
+
 		return gridWrapper;
 	}
 
@@ -96,11 +100,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 		// Sort by name by default
 		modelGrid.sort(Arrays.asList(new GridSortOrder<>(nameColumn, SortDirection.DESCENDING)));
-
-		modelGrid.setWidth(UIConstants.CENTERED_TABLE_WIDTH);
-		modelGrid.setMaxWidth(UIConstants.CENTERED_TABLE_WIDTH);
-		modelGrid.setMaxHeight("500px");
-		modelGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 	}
 
 	public List<Model> getModels() {

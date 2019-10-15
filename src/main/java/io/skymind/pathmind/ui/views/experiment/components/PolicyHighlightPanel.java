@@ -20,9 +20,9 @@ public class PolicyHighlightPanel extends VerticalLayout
 		FormLayout formLayout = new FormLayout();
 		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("100px", 3, FormLayout.ResponsiveStep.LabelsPosition.TOP));
 
-		formLayout.addFormItem(policyLabel, "Policy");
-		formLayout.addFormItem(scoreLabel, "Score");
-		formLayout.addFormItem(algorithmLabel, "Algorithm");
+		formLayout.addFormItem(policyLabel, "Policy").addClassNames("label-box","policy");
+		formLayout.addFormItem(scoreLabel, "Score").addClassNames("label-box","score");
+		formLayout.addFormItem(algorithmLabel, "Algorithm").addClassNames("label-box","algorithm");
 
 		add(formLayout);
 	}
