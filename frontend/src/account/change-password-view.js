@@ -20,7 +20,7 @@ class ChangePasswordView extends PolymerElement {
           color: #696969;
         }
 
-        #account-content {
+        .content {
           margin-top: 5px;
           background: #fff;
           border: 1px solid #ccc;
@@ -69,7 +69,7 @@ class ChangePasswordView extends PolymerElement {
       <!-- <img src="/frontend/images/pathmind-logo.png">
       <img src="frontend/images/pathmind-logo.png">
       <img src="images/pathmind-logo.png"> -->
-      <vaadin-vertical-layout style="width: 100%;" id="account-content">
+      <vaadin-vertical-layout style="width: 100%;" class="content">
         <div style="width: 100%;">
           <vaadin-password-field
             id="currentPassword"
