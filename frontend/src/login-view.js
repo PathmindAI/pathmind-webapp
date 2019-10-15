@@ -2,14 +2,13 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "@vaadin/vaadin-button/src/vaadin-button.js";
 import "@vaadin/vaadin-text-field/src/vaadin-text-field.js";
 import "@vaadin/vaadin-text-field/src/vaadin-password-field.js";
-
-// <style include="shared-styles login-view-styles"></style>
+import "@polymer/iron-form/iron-form.js";
+import "@vaadin/vaadin-ordered-layout/src/vaadin-vertical-layout.js";
 
 class LoginView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles login-view-styles">
-      </style>
+      <style include="shared-styles login-view-styles"></style>
       <div class="landing-page"></div>
       <div class="login-panel">
         <label class="welcome-text">Welcome to</label>
@@ -22,20 +21,39 @@ class LoginView extends PolymerElement {
         <div class="title">
           <label>Sign in to your new account!</label>
         </div>
-        <vaadin-text-field
-          label="Label"
-          placeholder="my@email.com"
-          style="width: 100%;"
-        ></vaadin-text-field>
-        <vaadin-password-field
-          label="Password"
-          placeholder="Enter password"
-          value="secret1"
-          style="width: 100%"
-        ></vaadin-password-field>
-        <vaadin-button theme="primary" class="sign-in-btn" style="width: 100%;">
-          Sign in
-        </vaadin-button>
+        <div part="error-message" hidden$="[[!error]]">
+          <h5 part="error-message-title">Incorrect username or password</h5>
+        </div>
+        <vaadin-vertical-layout id="errorsCont"></vaadin-vertical-layout>
+        <iron-form class="login" id="form" allow-redirect>
+          <form method="POST" action="login">
+            <vaadin-text-field
+              id="username"
+              name="username"
+              label="Email"
+              placeholder="my@email.com"
+              style="width: 100%;"
+              required autocapitalize="none" autocorrect="off" spellcheck="false" tabindex="0" has-label has-value
+            ></vaadin-text-field>
+            <vaadin-password-field
+              id="password"
+              name="password"
+              label="Password"
+              placeholder="Enter password"
+              style="width: 100%"
+              required spellcheck="false" tabindex="0" has-label has-value
+            ></vaadin-password-field>
+            <vaadin-button
+              theme="primary"
+              class="sign-in-btn"
+              style="width: 100%;"
+              id="signIn"
+              on-click="login"
+            >
+              Sign in
+            </vaadin-button>
+          </form>
+        </iron-form>
         <vaadin-button theme="tertiary">
           Forgot your password?
         </vaadin-button>
@@ -53,6 +71,14 @@ class LoginView extends PolymerElement {
 
   static get is() {
     return "login-view";
+  }
+
+  login() {
+    console.warn("login attemt");
+    if (!this.$.username.invalid && !this.$.password.invalid) {
+      console.warn("login attemt: go");
+      this.$.form.submit();
+    }
   }
 
   static get properties() {

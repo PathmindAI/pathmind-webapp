@@ -1,11 +1,10 @@
 package io.skymind.pathmind.ui.views;
 
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.login.LoginI18n;
-import com.vaadin.flow.component.login.LoginOverlay;
+import com.vaadin.flow.component.dependency.NpmPackage;
+import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -15,42 +14,35 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.InitialPageSettings;
 import com.vaadin.flow.server.PageConfigurator;
 import com.vaadin.flow.shared.communication.PushMode;
+import com.vaadin.flow.templatemodel.TemplateModel;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
+import io.skymind.pathmind.ui.views.account.AccountView;
 import io.skymind.pathmind.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
 import io.skymind.pathmind.utils.PathmindUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 @Route("login")
 @Theme(Lumo.class)
-@CssImport(value = "./styles/views/vaadin-login-overlay-wrapper.css", themeFor = "vaadin-login-overlay-wrapper")
-public class LoginView extends LoginOverlay
+@Tag("login-view")
+@NpmPackage(value = "@polymer/iron-form", version = "^3.0.1")
+@JsModule("./src/login-view.js")
+public class LoginView extends PolymerTemplate<LoginView.Model>
 		implements AfterNavigationObserver, BeforeEnterObserver, HasDynamicTitle, PageConfigurator
 {
-	@Autowired
-	private UserDAO userDAO;
 
 	@Autowired
 	private ProjectDAO projectDAO;
 
 	public LoginView(IntercomIntegrationPlugin intercomIntegrationPlugin)
 	{
-		setId("pathmind-login");
-		LoginI18n loginForm = LoginI18n.createDefault();
-		loginForm.setHeader(new LoginI18n.Header());
-		loginForm.getHeader().setTitle("Pathmind");
-		loginForm.setAdditionalInformation("By clicking Log In, you agree to Pathmind's Terms of Use and Privacy Policy");
-		loginForm.getForm().setUsername("Email");
-		setI18n(loginForm);
-
-		setAction("login");
-
 		intercomIntegrationPlugin.addPluginToPage();
 	}
 
@@ -71,9 +63,6 @@ public class LoginView extends LoginOverlay
 			return;
 		}
 
-		// Just a quick sanity check.
-		if (!isOpened())
-			setOpened(true);
 	}
 
 	@Override
@@ -88,9 +77,12 @@ public class LoginView extends LoginOverlay
 
 	@Override
 	public void afterNavigation(AfterNavigationEvent event) {
-		setError(
-				event.getLocation().getQueryParameters().getParameters().containsKey(
-						"error"));
+		getModel().setError(
+				event.getLocation().getQueryParameters().getParameters().containsKey("error"));
+	}
+
+	public interface Model extends TemplateModel {
+		void setError(boolean error);
 	}
 
 }
