@@ -5,69 +5,92 @@ import "@vaadin/vaadin-text-field/src/vaadin-password-field.js";
 import "@polymer/iron-form/iron-form.js";
 import "@vaadin/vaadin-ordered-layout/src/vaadin-vertical-layout.js";
 
+import "./landing-page.js";
+
 class LoginView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles login-view-styles"></style>
-      <div class="landing-page"></div>
-      <div class="login-panel">
-        <label class="welcome-text">Welcome to</label>
-        <img
-          src="frontend/images/pathmind-logo.png"
-          alt="Pathmind logo"
-          width="200px"
-          class="logo"
-        />
-        <div class="title">
-          <label>Sign in to your new account!</label>
-        </div>
-        <div part="error-message" hidden$="[[!error]]">
-          <h5 part="error-message-title">Incorrect username or password</h5>
-        </div>
-        <vaadin-vertical-layout id="errorsCont"></vaadin-vertical-layout>
-        <iron-form class="login" id="form" allow-redirect>
-          <form method="POST" action="login">
-            <vaadin-text-field
-              id="username"
-              name="username"
-              label="Email"
-              placeholder="my@email.com"
-              style="width: 100%;"
-              required autocapitalize="none" autocorrect="off" spellcheck="false" tabindex="0" has-label has-value
-            ></vaadin-text-field>
-            <vaadin-password-field
-              id="password"
-              name="password"
-              label="Password"
-              placeholder="Enter password"
-              style="width: 100%"
-              required spellcheck="false" tabindex="0" has-label has-value
-            ></vaadin-password-field>
-            <vaadin-button
-              theme="primary"
-              class="sign-in-btn"
-              style="width: 100%;"
-              id="signIn"
-              on-click="login"
+      <style include="shared-styles login-view-styles">
+        landing-page {
+          width: 65%;
+          height: 100%;
+        }
+        .login-panel {
+          width: 35%;
+          height: 100%;
+        }
+      </style>
+      <vaadin-horizontal-layout>
+        <landing-page></landing-page>
+        <div class="login-panel">
+          <label class="welcome-text">Welcome to</label>
+          <img
+            src="frontend/images/pathmind-logo.png"
+            alt="Pathmind logo"
+            width="200px"
+            class="logo"
+          />
+          <div class="title">
+            <label>Sign in to your new account!</label>
+          </div>
+          <div part="error-message" hidden$="[[!error]]">
+            <h5 part="error-message-title">Incorrect username or password</h5>
+          </div>
+          <vaadin-vertical-layout id="errorsCont"></vaadin-vertical-layout>
+          <iron-form class="login" id="form" allow-redirect>
+            <form method="POST" action="login">
+              <vaadin-text-field
+                id="username"
+                name="username"
+                label="Email"
+                placeholder="Email"
+                style="width: 100%;"
+                required
+                autocapitalize="none"
+                autocorrect="off"
+                spellcheck="false"
+                tabindex="0"
+                has-label
+                has-value
+              ></vaadin-text-field>
+              <vaadin-password-field
+                id="password"
+                name="password"
+                label="Password"
+                placeholder="Enter password"
+                style="width: 100%"
+                required
+                spellcheck="false"
+                tabindex="0"
+                has-label
+                has-value
+              ></vaadin-password-field>
+              <vaadin-button
+                theme="primary"
+                class="sign-in-btn"
+                style="width: 100%;"
+                id="signIn"
+                on-click="login"
+              >
+                Sign in
+              </vaadin-button>
+            </form>
+          </iron-form>
+          <vaadin-button theme="tertiary">
+            Forgot your password?
+          </vaadin-button>
+          <div style="flex-shrink: 0;">
+            <label style="color: var(--pm-secondary-text-color);"
+              >Don't have an account?</label
             >
-              Sign in
-            </vaadin-button>
-          </form>
-        </iron-form>
-        <vaadin-button theme="tertiary">
-          Forgot your password?
-        </vaadin-button>
-        <div style="flex-shrink: 0;">
-          <label style="color: var(--pm-secondary-text-color);"
-            >Don't have an account?</label
-          >
-          <a href="/sign-up">
-            <vaadin-button theme="tertiary">
-              Get started
-            </vaadin-button>
-          </a>
+            <a href="/sign-up">
+              <vaadin-button theme="tertiary">
+                Get started
+              </vaadin-button>
+            </a>
+          </div>
         </div>
-      </div>
+      </vaadin-horizontal-layout>
     `;
   }
 
