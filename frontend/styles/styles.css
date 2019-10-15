@@ -55,18 +55,14 @@ html {
 }
 
 .section-label-title {
-    font-size: 18px;
+    font-size: 1.2rem;
     font-weight: bold;
     color: white;
 }
 
 .section-label-subtitle {
-    font-size: 22px;
+    font-size: 1.2rem;
     color: white;
-}
-
-.section-label-title {
-    font-size: 22px;
 }
 
 .project-title-label {
@@ -152,4 +148,25 @@ account-view {
     flex-direction: column;
     box-sizing: border-box;
     align-items: center;
+}
+
+@media (max-width: 1448px) {
+    html {
+        font-size: 15px;
+    }
+
+}
+
+@media (max-width: 1200px) {
+    html {
+        font-size: 14px;
+    }
+
+}
+
+@media (max-width: 1000px) {
+    html {
+        font-size: 13px;
+    }
+
 }

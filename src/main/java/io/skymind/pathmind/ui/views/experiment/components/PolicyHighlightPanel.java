@@ -16,6 +16,7 @@ public class PolicyHighlightPanel extends VerticalLayout
 	public PolicyHighlightPanel()
 	{
 		setWidthFull();
+		setPadding(false);
 
 		FormLayout formLayout = new FormLayout();
 		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("100px", 3, FormLayout.ResponsiveStep.LabelsPosition.TOP));
