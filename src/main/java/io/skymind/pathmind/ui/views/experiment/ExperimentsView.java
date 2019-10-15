@@ -56,6 +56,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
     public ExperimentsView() {
         super();
+        addClassName("experiments-view");
     }
 
     protected Component getMainContent() {
@@ -63,7 +64,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         setupGetObservationTextArea();
         setupRewardFunctionEditor();
 
-        return WrapperUtils.wrapWidthFullCenterVertical(
+        return WrapperUtils.wrapSizeFullVertical(
                 WrapperUtils.wrapWidthFullCenterHorizontal(getBackToModelsButton()),
                 WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
                 getArchivesTabPanel(),

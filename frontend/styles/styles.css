@@ -6,6 +6,10 @@ html {
     --pm-app-bg-color: #F0F1F6;
     --pm-highlight-light: rgba(240,241,246, .25);
     --pm-highlight-medium: rgba(240,241,246, .50);
+    --pm-highlight-strong: rgba(240,241,246, .50);
+    --pm-friendly-color: #3A966B;
+    --pm-danger-color: #D80947;
+
 
     /* pathmind-theme */
     --lumo-font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -106,6 +110,7 @@ html {
 
 .default-view {
     background: var(--pm-app-bg-color);
+    height: 100%;
 }
 
 .view-section {
@@ -123,10 +128,14 @@ html {
     align-self: center;
 }
 
-.projects-view .view-section {
+.projects-view .content {
     flex: 1;
     max-width: 1200px;
     align-self: center;
+}
+
+.projects-view .view-section {
+    flex: 1;
 }
 
 .models-view .view-section {

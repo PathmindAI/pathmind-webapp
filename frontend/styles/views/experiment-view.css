@@ -1,0 +1,22 @@
+.experiment-view {
+    height: 100%;
+}
+
+.experiment-view > vaadin-split-layout {
+    padding: var(--lumo-space-m);
+    box-sizing: border-box;
+}
+
+.experiment-view vaadin-split-layout  > vaadin-vertical-layout,
+.experiment-view vaadin-split-layout  > vaadin-horizontal-layout {
+    width: 100%;
+    background: white;
+    border-radius: var(--lumo-border-radius);
+    padding: var(--lumo-space-m);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.experiment-view vaadin-grid {
+    min-height: 60px;
+}

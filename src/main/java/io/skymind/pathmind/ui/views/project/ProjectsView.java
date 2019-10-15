@@ -39,8 +39,7 @@ public class ProjectsView extends PathMindDefaultView
 	private List<Project> projects;
 	private Grid<Project> projectGrid;
 
-	public ProjectsView()
-	{
+	public ProjectsView() {
 		super();
 	}
 
@@ -50,12 +49,13 @@ public class ProjectsView extends PathMindDefaultView
 		addClassName("projects-view");
 
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-				new ViewSection(
-					WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
 					getTabbedPanel(),
+				new ViewSection(
+						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
 					projectGrid
 				),
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
+		gridWrapper.addClassName("content");
 		return gridWrapper;
 	}
 

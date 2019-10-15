@@ -8,3 +8,33 @@
 
    --iron-icon-fill-color: var(--pm-text-color);
 }
+
+/* Large image button*/
+:host(.large-image-btn) {
+   margin: 0;
+   height: auto;
+   background: transparent;
+   padding: var(--lumo-space-s) var(--lumo-space-l);
+   font-weight: bold;
+}
+
+:host(.large-image-btn) .vaadin-button-container {
+   display: flex;
+   flex-direction: column;
+}
+
+:host(.large-image-btn) .vaadin-button-container:before {
+   height: 0;
+}
+
+:host(.large-image-btn) [part="prefix"] {
+   margin: 0;
+}
+
+:host(.large-image-btn.run) {
+   color: var(--pm-friendly-color);
+}
+
+:host(.large-image-btn.stop) {
+   color: var(--pm-danger-color);
+}

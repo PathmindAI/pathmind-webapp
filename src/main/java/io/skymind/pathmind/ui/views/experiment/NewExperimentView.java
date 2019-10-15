@@ -7,6 +7,7 @@ import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -68,6 +69,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     public NewExperimentView() {
         super();
+        addClassName("new-experiment-view");
     }
 
     @Override
@@ -143,8 +145,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private Component getTopButtonPanel() {
-        final Button startRunButton = new Button("Start Test Run", new Icon(VaadinIcon.PLAY),
+        final Button startRunButton = new Button("Start Test Run", new Image("frontend/images/start.svg", "run"),
                 click -> handleStartRunButtonClicked());
+        startRunButton.addClassNames("large-image-btn","run");
 
 //
 //		// TODO: Make Discovery available from after a test run only
@@ -161,8 +164,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 //					});
 //				});
 //		startDiscoveryButton.setIconAfterText(true);
-
-
         return WrapperUtils.wrapWidthFullCenterVertical(startRunButton);
     }
 
