@@ -151,6 +151,7 @@ public class AnylogicFileChecker implements FileChecker {
             ByteCodeAnalyzer byteCodeAnalyzer = new ByteCodeAnalyzer();
 
             List<String> listOfHelpers = byteCodeAnalyzer.byteParser(listOfFiles);
+
             anylogicFileCheckResult.setDefinedHelpers(listOfHelpers);
         } catch (IOException ioe) {
             log.error("Error unJarred jar file", ioe);
