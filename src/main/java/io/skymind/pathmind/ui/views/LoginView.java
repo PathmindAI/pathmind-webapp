@@ -44,8 +44,8 @@ public class LoginView extends LoginOverlay
 		setId("pathmind-login");
 		LoginI18n loginForm = LoginI18n.createDefault();
 		loginForm.setHeader(new LoginI18n.Header());
-		loginForm.getHeader().setTitle("Pathmind DevOps V2");
-		loginForm.setAdditionalInformation("By clicking Log In, you agree to Pathmind's Terms of Use and Privacy Policy");
+		loginForm.getHeader().setTitle("Pathmind");
+		loginForm.setAdditionalInformation("By clicking Log In, you agree to Pathmind's Terms of Use and Privacy Policy. Build - Test");
 		loginForm.getForm().setUsername("Email");
 		setI18n(loginForm);
 
