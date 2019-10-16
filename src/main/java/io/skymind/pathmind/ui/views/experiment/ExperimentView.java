@@ -6,6 +6,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -83,6 +84,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         super();
         this.publisher = publisher;
         this.consumer = consumer;
+        addClassName("experiment-view");
     }
 
     @Override
@@ -143,7 +145,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         actionButton.setVisible(false);
 
         // TODO: Put this in the appropriate place
-        runFullTraining = new Button("Start Full Run", new Icon(VaadinIcon.PLAY), click -> {
+        runFullTraining = new Button("Start Full Run", new Image("frontend/images/start.svg", "run"), click -> {
             final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
             trainingService.startFullRun(experiment, policy);
 
@@ -158,6 +160,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             }
         });
         runFullTraining.setVisible(false);
+        runFullTraining.addClassNames("large-image-btn", "run");
 
         runDiscoveryTraining = new Button("Start Discovery Run", new Icon(VaadinIcon.PLAY), click -> {
             final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());

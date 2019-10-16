@@ -6,6 +6,10 @@ html {
     --pm-app-bg-color: #F0F1F6;
     --pm-highlight-light: rgba(240,241,246, .25);
     --pm-highlight-medium: rgba(240,241,246, .50);
+    --pm-highlight-strong: rgba(240,241,246, .50);
+    --pm-friendly-color: #3A966B;
+    --pm-danger-color: #D80947;
+
 
     /* pathmind-theme */
     --lumo-font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -30,7 +34,6 @@ html {
     --lumo-body-text-color: var(--pm-text-color);
     --lumo-secondary-text-color: var(--pm-secondary-text-color);
     --lumo-tertiary-text-color: #D7D7D7;
-    --lumo-disabled-text-color: #FFFFFF;
     --lumo-base-color: #FFFFFF;
     --lumo-primary-text-color: var(--pm-primary-color);
     --lumo-primary-color-50pct: rgba(88, 137, 247, 0.5);
@@ -52,18 +55,14 @@ html {
 }
 
 .section-label-title {
-    font-size: 18px;
+    font-size: 1.2rem;
     font-weight: bold;
     color: white;
 }
 
 .section-label-subtitle {
-    font-size: 22px;
+    font-size: 1.2rem;
     color: white;
-}
-
-.section-label-title {
-    font-size: 22px;
 }
 
 .project-title-label {
@@ -107,6 +106,7 @@ html {
 
 .default-view {
     background: var(--pm-app-bg-color);
+    height: 100%;
 }
 
 .view-section {
@@ -124,8 +124,49 @@ html {
     align-self: center;
 }
 
-.projects-view .view-section {
+.projects-view .content {
     flex: 1;
     max-width: 1200px;
     align-self: center;
+}
+
+.projects-view .view-section {
+    flex: 1;
+}
+
+.models-view .view-section {
+    flex: 1;
+    max-width: 1200px;
+    align-self: center;
+}
+
+account-view {
+    background: var(--pm-app-bg-color);
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    align-items: center;
+}
+
+@media (max-width: 1448px) {
+    html {
+        font-size: 15px;
+    }
+
+}
+
+@media (max-width: 1200px) {
+    html {
+        font-size: 14px;
+    }
+
+}
+
+@media (max-width: 1000px) {
+    html {
+        font-size: 13px;
+    }
+
 }

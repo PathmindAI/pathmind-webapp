@@ -8,20 +8,22 @@ import "@vaadin/vaadin-button/src/vaadin-button.js";
 class AccountEditView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles">
+      <style>
         :host {
-          display: block;
+          padding: 40px;
+          background: var(--pm-app-bg-color);
           height: 100%;
-          width: 600px;
-          margin: 50px auto 0;
-          color: #696969;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          box-sizing: border-box;
+          align-items: center;
         }
 
-        #account-content {
+        .inner-content {
           margin-top: 5px;
           background: #fff;
-          border: 1px solid #ccc;
-          border-radius: 0.3em;
+          border-radius: var(--lumo-border-radius);
           padding: 50px 80px 30px;
         }
 
@@ -40,30 +42,48 @@ class AccountEditView extends PolymerElement {
         #updateBtn {
           width: 250px;
         }
+        .content {
+          max-width: 500px;
+          margin-top: 20px;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
 
+        vaadin-tabs {
+          width: 100%;
+        }
       </style>
-       <vaadin-tabs>
-        <vaadin-tab>
-          Edit Account Information
-        </vaadin-tab>
-      </vaadin-tabs>
-      <!-- <img src="/frontend/images/pathmind-logo.png">
-      <img src="frontend/images/pathmind-logo.png">
-      <img src="images/pathmind-logo.png"> -->
-      <vaadin-vertical-layout style="width: 100%;" id="account-content">
-        <vaadin-vertical-layout style="width: 100%; height: 100%;">
-          <vaadin-text-field id="email" label="Email"></vaadin-text-field>
-          <vaadin-text-field
-            id="firstName"
-            label="First Name"
-          ></vaadin-text-field>
-          <vaadin-text-field id="lastName" label="Last Name"></vaadin-text-field>
-          <vaadin-vertical-layout id="buttonsCont">
-              <vaadin-button id="updateBtn" theme="primary">Update</vaadin-button>
-              <vaadin-button id="cancelBtn" theme="tertiary">Cancel</vaadin-button>
+      <div class="content">
+        <vaadin-tabs class="tabs">
+          <vaadin-tab>
+            Edit Account Information
+          </vaadin-tab>
+        </vaadin-tabs>
+
+        <vaadin-vertical-layout style="width: 100%;" class="inner-content">
+          <vaadin-vertical-layout style="width: 100%; height: 100%;">
+            <vaadin-text-field id="email" label="Email"></vaadin-text-field>
+            <vaadin-text-field
+              id="firstName"
+              label="First Name"
+            ></vaadin-text-field>
+            <vaadin-text-field
+              id="lastName"
+              label="Last Name"
+            ></vaadin-text-field>
+            <vaadin-vertical-layout id="buttonsCont">
+              <vaadin-button id="updateBtn" theme="primary"
+                >Update</vaadin-button
+              >
+              <vaadin-button id="cancelBtn" theme="tertiary"
+                >Cancel</vaadin-button
+              >
+            </vaadin-vertical-layout>
           </vaadin-vertical-layout>
         </vaadin-vertical-layout>
-      </vaadin-vertical-layout>
+      </div>
     `;
   }
 
