@@ -1,10 +1,8 @@
 package io.skymind.pathmind.ui.views.dashboard;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
-import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
@@ -93,7 +91,7 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid.addColumn(Policy::getAlgorithm)
 				.setHeader("Algorithm")
 				.setSortable(true);
-		dashboardGrid.addColumn(policy -> PolicyUtils.getDuration(policy))
+		dashboardGrid.addColumn(policy -> PolicyUtils.getElapsedTime(policy))
 				.setHeader("Duration")
 				.setSortable(true);
 		Grid.Column<Policy> completedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))

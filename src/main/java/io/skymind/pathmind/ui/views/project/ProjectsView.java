@@ -5,7 +5,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -40,8 +39,7 @@ public class ProjectsView extends PathMindDefaultView
 	private List<Project> projects;
 	private Grid<Project> projectGrid;
 
-	public ProjectsView()
-	{
+	public ProjectsView() {
 		super();
 	}
 
@@ -51,12 +49,13 @@ public class ProjectsView extends PathMindDefaultView
 		addClassName("projects-view");
 
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-				new ViewSection(
-					WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
 					getTabbedPanel(),
+				new ViewSection(
+						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
 					projectGrid
 				),
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
+		gridWrapper.addClassName("content");
 		return gridWrapper;
 	}
 

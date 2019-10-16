@@ -10,6 +10,8 @@ import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.services.training.progress.RewardScore;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.impl.DSL;
@@ -19,12 +21,16 @@ import reactor.core.publisher.UnicastProcessor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.data.db.Tables.*;
 
 @Service
 public class RunUpdateServiceImpl implements RunUpdateService {
+    private static Logger log = LogManager.getLogger(RunUpdateServiceImpl.class);
+
     private final DSLContext ctx;
     private final ObjectMapper mapper;
     private final UnicastProcessor<PathmindBusEvent> publisher;
@@ -75,36 +81,49 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
         Run run = ctx.selectFrom(RUN).where(RUN.ID.eq(runId)).fetchOneInto(Run.class);
 
+        if (progresses.size() > 0) {
+            Progress progress = progresses.get(0);
+
+            // original name ex: PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_2019-10-11_21-16-2858waz_89
+            // get rid of time and extra info
+            // add run type and "TEMP"
+            String policyTempName = progress.getId().substring(0, progress.getId().length() - 27) + run.getRunType() + "TEMP";
+
+            String lrPatternStr = "lr=.*,";
+            Pattern lrPattern = Pattern.compile(lrPatternStr);
+            Matcher matcher = lrPattern.matcher(policyTempName);
+
+            if (matcher.find()) {
+                String lr = matcher.group();
+
+                lr = lr.replace("lr=", "").replace(",", "");
+                lr = "lr=" + Double.valueOf(lr).toString() + ",";
+
+                policyTempName = policyTempName.replaceFirst(lrPatternStr, lr);
+            }
+
+            //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
+            ctx.select(POLICY.ID)
+                    .from(POLICY)
+                    .where(POLICY.RUN_ID.eq(runId), POLICY.EXTERNAL_ID.eq(policyTempName))
+                    .fetch(POLICY.ID)
+                    .stream()
+                    .forEach(policyId -> {
+                        log.info("temporary policy FOUND : " + policyId + " for " + progress.getId());
+
+                        ctx.update(POLICY)
+                                .set(POLICY.NAME, progress.getId())
+                                .set(POLICY.EXTERNAL_ID, progress.getId())
+                                .where(POLICY.ID.eq(policyId))
+                                .execute();
+
+                        log.info("temporary policy UPDATED : "+ policyId + " for " + progress.getId());
+                    });
+        }
+
+
         for (Progress progress : progresses) {
             try {
-//                if (!run.getRunTypeEnum().equals(RunType.DiscoveryRun) && status.equals(RunStatus.Completed)) {
-//                    progress.setStoppedAt(now);
-//                }
-//
-//                if (run.getRunTypeEnum().equals(RunType.DiscoveryRun) && (status.equals(RunStatus.Running) || status.equals(RunStatus.Completed))) {
-//                    // todo: when we change discover run iteration number, we should change this too
-//                    // we might better set the iteration number
-//
-//                    if (progress.getRewardProgression().size() == 100) {
-//                        Policy policy = ctx.selectFrom(POLICY)
-//                                .where(POLICY.RUN_ID.eq(runId), POLICY.EXTERNAL_ID.eq(progress.getId()))
-//                                .fetchOneInto(Policy.class);
-//
-//                        Progress dbProgress = null;
-//                        try {
-//                             dbProgress = mapper.readValue(policy.getProgress(), Progress.class);
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//
-//                        if (dbProgress != null && dbProgress.getStoppedAt() == null) {
-//                            progress.setStoppedAt(now);
-//                        } else {
-//                            progress.setStoppedAt(dbProgress.getStoppedAt());
-//                        }
-//                    }
-//                }
-
                 final String progressJsonStr = mapper.writeValueAsString(progress);
                 final JSONB progressJson = JSONB.valueOf(progressJsonStr);
 
@@ -157,7 +176,7 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                         Progress progress = mapper.readValue(p.getProgress(), Progress.class);
                         return progress.getStoppedAt() != null;
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.debug(e);
                         return false;
                     }
                 })

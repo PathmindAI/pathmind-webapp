@@ -11,9 +11,7 @@ class AccountView extends PolymerElement {
       <style include="shared-styles">
         :host {
           display: block;
-          height: 100%;
-          width: 600px;
-          margin: 50px auto 0;
+          padding: 40px;
         }
         .info {
           color: #696969;
@@ -22,8 +20,7 @@ class AccountView extends PolymerElement {
         #account-content {
           margin-top: 5px;
           background: #fff;
-          border: 1px solid #ccc;
-          border-radius: 0.3em;
+          border-radius: var(--lumo-border-radius);
           padding: 30px 40px;
         }
 
@@ -57,8 +54,18 @@ class AccountView extends PolymerElement {
           color: #696969;
           padding-top: 10px;
         }
+        
+        .content {
+    max-width: 500px;
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    }
 
       </style>
+      <div class="content">
       <vaadin-tabs>
         <vaadin-tab>
           Account Information
@@ -110,6 +117,7 @@ class AccountView extends PolymerElement {
         </vaadin-horizontal-layout>
       </vaadin-vertical-layout>
       <div class="support-cont">
+      </div>
         <a class="support" href="/support">Contact Support</a>
       </div>
     `;

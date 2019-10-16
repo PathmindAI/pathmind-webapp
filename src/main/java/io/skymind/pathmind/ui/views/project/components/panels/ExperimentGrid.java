@@ -66,6 +66,5 @@ public class ExperimentGrid extends Grid<Experiment>
 		sort(Arrays.asList(new GridSortOrder<Experiment>(nameColumn, SortDirection.DESCENDING)));
 
 		getElement().getStyle().set("padding-top", "20px");
-		addThemeVariants(GridVariant.LUMO_NO_BORDER);
 	}
 }

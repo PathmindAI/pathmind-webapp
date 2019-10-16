@@ -12,7 +12,7 @@ public class RunUtils
 
 	public static long getElapsedTime(Run run)
 	{
-		if(run.getStartedAt() == null)
+		if(run == null || run.getStartedAt() == null)
 			return 0;
 
 		return run.getStoppedAt() == null ?

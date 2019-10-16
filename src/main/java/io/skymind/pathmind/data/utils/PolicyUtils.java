@@ -1,29 +1,20 @@
 package io.skymind.pathmind.data.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
-import io.skymind.pathmind.data.*;
+import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import io.skymind.pathmind.utils.ObjectMapperHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tomcat.jni.Local;
 
-import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 public class PolicyUtils
 {
 	private PolicyUtils() {
-	}
-
-	public static final String getDuration(Policy policy) {
-		return DateAndTimeUtils.formatTime(RunUtils.getElapsedTime(policy.getRun()));
 	}
 
 	private static Logger log = LogManager.getLogger(PolicyUtils.class);
@@ -77,17 +68,7 @@ public class PolicyUtils
 		}
 	}
 
-	public static String getElaspedTime(Policy policy) {
-		try {
-			Progress progress = objectMapper.readValue(policy.getProgress(), Progress.class);
-			if (progress.getStoppedAt() != null) {
-				return Duration.between(progress.getStartedAt(), progress.getStoppedAt()).toString();
-			} else {
-				return null;
-			}
-		} catch (IOException e) {
-			log.debug(e.getMessage(), e);
-			return null;
-		}
+	public static final String getElapsedTime(Policy policy) {
+		return DateAndTimeUtils.formatDurationTime(RunUtils.getElapsedTime(policy.getRun()));
 	}
 }

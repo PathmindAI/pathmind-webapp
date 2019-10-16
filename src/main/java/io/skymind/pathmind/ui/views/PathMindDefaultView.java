@@ -36,7 +36,7 @@ public class PathMindDefaultView extends VerticalLayout implements BeforeEnterOb
 
 	public PathMindDefaultView()
 	{
-		setSizeFull();
+		setWidth("100%");
 		setDefaultHorizontalComponentAlignment(Alignment.CENTER);
 		GuiUtils.removeMarginsPaddingAndSpacing(this);
 		setClassName("default-view");
