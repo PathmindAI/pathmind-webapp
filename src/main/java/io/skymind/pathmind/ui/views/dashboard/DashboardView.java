@@ -60,7 +60,6 @@ public class DashboardView extends PathMindDefaultView
 				dashboardGrid,
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
 
-		gridWrapper.getElement().getStyle().set("padding-top", "100px");
 		return gridWrapper;
 	}
 

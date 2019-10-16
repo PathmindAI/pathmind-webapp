@@ -9,10 +9,13 @@
     flex-shrink: 0;
 }
 
-.landing-page {
+landing-page {
     display: flex;
     flex-direction: column;
     flex: 1;
+    justify-content: center;
+    padding: var(--lumo-space-l);
+    box-sizing: border-box;
 }
 
 .login-panel {
@@ -21,8 +24,9 @@
     flex-direction: column;
     flex-shrink: 0;
     width: 375px;
-    padding: 80px 50px 50px 50px;
+    padding: var(--lumo-space-xl) var(--lumo-space-l) var(--lumo-space-l) var(--lumo-space-l);
     align-items: center;
+    box-sizing: border-box;
 }
 
 .welcome-text {
@@ -67,4 +71,8 @@
 
 vaadin-button {
     border-radius: 100px;
+}
+
+[part="error-message"] {
+    color: var(--pm-danger-color);
 }

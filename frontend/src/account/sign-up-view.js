@@ -11,56 +11,9 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 class SignUpView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles">
-        :host {
-          display: block;
-          height: 100%;
-          width: 600px;
-          margin: 50px auto 0;
-          color: #696969;
-        }
-
-        .content {
-          margin-top: 5px;
-          background: #fff;
-          border: 1px solid #ccc;
-          border-radius: 0.3em;
-          padding: 50px 80px 30px;
-        }
-
-        vaadin-text-field,
-        vaadin-password-field {
-          width: 100%;
-        }
-
-        #buttonsCont {
-          margin-top: 60px;
-          width: 100%;
-        }
-
-        vaadin-button {
-          margin: 5px auto;
-        }
-        #updateBtn {
-          width: 250px;
-        }
-
-        .notes {
-          font-size: 0.9em;
-          font-weight: 700;
-          color: #979797;
-          padding-left: 15px;
-          padding-top: 5px;
-        }
-
-        .notes span:last-child {
-          padding-bottom: 20px;
-        }
-
-        .notes .secondary {
-          color: #e7e7e7;
-        }
+      <style include="shared-styles sign-up-view-styles">
       </style>
+      <div class="content-wrapper">
       <vaadin-tabs>
         <vaadin-tab>
           {{title}}
@@ -112,6 +65,7 @@ class SignUpView extends PolymerElement {
           <vaadin-button id="cancelSignInBtn" theme="tertiary">Cancel</vaadin-button>
         </vaadin-vertical-layout>
       </vaadin-vertical-layout>
+      </div>
     `;
   }
 
