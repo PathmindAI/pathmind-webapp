@@ -119,4 +119,8 @@ public class UserService
     public boolean changePassword(PathmindUser user, String password) {
         return userDAO.changePassword(user.getId(), password);
     }
+
+    public PathmindUser findByEmailIgnoreCase(String value) {
+        return userDAO.findByEmailIgnoreCase(value);
+    }
 }

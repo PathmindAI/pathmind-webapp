@@ -111,6 +111,7 @@ class ResetPasswordView extends PolymerElement {
         </vaadin-tabs>
         <vaadin-vertical-layout style="width: 100%;" class="inner-content">
           <div class="section-title">Enter the user email and reset link will be sent</div>
+          <div class="message">{{message}}</div>
           <vaadin-email-field
             id="email"
             label="Email"
