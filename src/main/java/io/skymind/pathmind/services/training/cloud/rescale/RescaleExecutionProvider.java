@@ -95,7 +95,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
             if (statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))) {
                 final JobStatus status = statuses.stream().filter(it -> it.getStatus().equals("Completed")).findFirst().get();
 
-                // file check
+                // file check that has an error message
                 Map<String, String> map = client.outputFiles(jobHandle, "1").getResults()
                         .parallelStream()
                         .filter(it -> it.getPath().endsWith("process_output.log"))
@@ -104,9 +104,14 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                             final String contents = new String(client.fileContents(it.getId()));
                             return Map.entry(key, contents);
                         })
+                        // this is the known error message so far, todo i will revisit below after risecamp
+                        // raw error logs are https://3.basecamp.com/3684163/buckets/11875773/vaults/2132519274
                         .filter(it ->
                                 it.getValue().contains("python3: can't open file 'rllibtrain.py': [Errno 2] No such file or directory")
                                 || it.getValue().contains("SyntaxError: invalid syntax")
+                                || it.getValue().contains("Fatal Python error: Aborted")
+                                || it.getValue().contains("Fatal Python error: Segmentation fault")
+                                || it.getValue().contains("Worker crashed during call to train()")
                         )
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
