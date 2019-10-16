@@ -28,7 +28,7 @@ steps:
       command: 'install'
 
 
-  #- task: Npm@1
+  #- task: Npm@1 checking
   #  inputs:
   #    command: 'install'
   #    customRegistry: 'useFeed'
