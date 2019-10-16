@@ -96,7 +96,7 @@ public class DashboardView extends PathMindDefaultView
 				.setComparator(Comparator.comparing(policy -> RunUtils.getElapsedTime(policy.getRun())))
 				.setHeader("Duration")
 				.setSortable(true);
-		dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunStartTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+		Grid.Column<Policy> startedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunStartTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(policy -> PolicyUtils.getRunStartTime(policy)))
 				.setHeader("Started")
 				.setAutoWidth(true)
@@ -106,10 +106,8 @@ public class DashboardView extends PathMindDefaultView
 				.setComparator(getCompletedComparator())
 				.setSortable(true);
 
-		// Default sorting order as per https://github.com/SkymindIO/pathmind-webapp/issues/133
 		dashboardGrid.sort(Arrays.asList(
-				new GridSortOrder<Policy>(statusColumn, SortDirection.ASCENDING),
-				new GridSortOrder<Policy>(completedColumn, SortDirection.DESCENDING)));
+				new GridSortOrder<Policy>(startedColumn, SortDirection.DESCENDING)));
 		dashboardGrid.addItemClickListener(event -> {
 			getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(event.getItem())));
 		});

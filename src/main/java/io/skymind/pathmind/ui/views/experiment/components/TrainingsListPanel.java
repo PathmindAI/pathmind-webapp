@@ -3,14 +3,16 @@ package io.skymind.pathmind.ui.views.experiment.components;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSingleSelectionModel;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
-import io.skymind.pathmind.constants.Algorithm;
-import io.skymind.pathmind.data.*;
+import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import io.skymind.pathmind.ui.components.SearchBox;
@@ -21,10 +23,9 @@ import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @Component
 public class TrainingsListPanel extends VerticalLayout {
@@ -57,7 +58,7 @@ public class TrainingsListPanel extends VerticalLayout {
                 .setAutoWidth(true)
                 .setSortable(true);
 
-        grid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunStartTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+        Grid.Column<Policy> startedColumn = grid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunStartTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
                 .setComparator(Comparator.comparing(policy -> PolicyUtils.getRunStartTime(policy)))
                 .setHeader("Started")
                 .setAutoWidth(true)
@@ -92,6 +93,9 @@ public class TrainingsListPanel extends VerticalLayout {
                 .setHeader("Notes")
                 .setAutoWidth(true)
                 .setSortable(true);
+
+        grid.sort(Arrays.asList(
+                new GridSortOrder<Policy>(startedColumn, SortDirection.DESCENDING)));
     }
 
     public void addSelectionListener(Consumer<Policy> consumer) {
