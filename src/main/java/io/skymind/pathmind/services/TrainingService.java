@@ -85,6 +85,42 @@ public class TrainingService {
     }
 
     public void startDiscoveryRun(Experiment exp){
+        startDiscoveryRunJob1(exp);
+        startDiscoveryRunJob2(exp);
+    }
+
+    public void startDiscoveryRunJob1(Experiment exp){
+        final Run run = runDAO.createRun(exp, RunType.DiscoveryRun);
+        // Get model from the database, as the one we can get from the experiment doesn't have all fields
+        final Model model = modelDAO.getModel(exp.getModelId());
+
+        final JobSpec spec = new JobSpec(
+                exp.getProject().getPathmindUserId(),
+                model.getId(),
+                exp.getId(),
+                run.getId(),
+                "", // not collected via UI yet
+                "",    // not collected via UI yet
+                exp.getRewardFunction(),
+                model.getNumberOfPossibleActions(),
+                model.getNumberOfObservations(),
+                100, // Max 100 iterations for a discovery run. 
+                executionEnvironment,
+                RunType.DiscoveryRun,
+                () ->modelDAO.getModelFile(model.getId()),
+                Arrays.asList(1e-3, 1e-5), // Learning rate
+                Arrays.asList(0.9, 0.99), // gamma
+                Arrays.asList(64), // batch size
+                30 * 60 // 30 mins
+                );
+
+        final String executionId = executionProvider.execute(spec);
+
+        runDAO.markAsStarting(run.getId());
+        log.info("Started DISCOVERY training job with id {}", executionId);
+    }
+
+    public void startDiscoveryRunJob2(Experiment exp){
         final Run run = runDAO.createRun(exp, RunType.DiscoveryRun);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelDAO.getModel(exp.getModelId());
@@ -103,10 +139,10 @@ public class TrainingService {
                 executionEnvironment,
                 RunType.DiscoveryRun,
                 () ->modelDAO.getModelFile(model.getId()),
-                Arrays.asList(1e-3, 1e-4, 1e-5),
-                Arrays.asList(0.9, 0.99),
-                Arrays.asList(64, 128),
-                30 * 60        // 30 mins
+                Arrays.asList(1e-3, 1e-5), // Learning rate
+                Arrays.asList(0.9, 0.99), // gamma
+                Arrays.asList(128), // batch size
+                30 * 60 // 30 mins
         );
 
         final String executionId = executionProvider.execute(spec);
