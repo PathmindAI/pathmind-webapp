@@ -216,9 +216,6 @@
     <profiles>
         <profile>
             <id>local</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <db.driver>org.postgresql.Driver</db.driver>
                 <db.url>jdbc:postgresql://localhost:5432/PATHMIND</db.url>
@@ -229,6 +226,9 @@
         </profile>
         <profile>
             <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <db.driver>org.postgresql.Driver</db.driver>
                 <db.url>jdbc:postgresql://localhost:5432/PATHMIND</db.url>
