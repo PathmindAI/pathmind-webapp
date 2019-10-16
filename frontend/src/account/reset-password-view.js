@@ -1,4 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@vaadin/vaadin-text-field/src/vaadin-email-field.js";
 
 /**
  * `forgot-password-view`
@@ -76,6 +77,31 @@ class ResetPasswordView extends PolymerElement {
         vaadin-tabs {
           width: 100%;
         }
+
+        vaadin-text-field,
+        vaadin-email-field {
+          width: 100%;
+        }
+
+        #buttonsCont {
+          margin-top: 60px;
+          width: 100%;
+        }
+
+        vaadin-button {
+          margin: 5px auto;
+        }
+        #sendBtn {
+          width: 250px;
+        }
+
+        .section-title{
+          color: #666;
+          font-size: 1.1em;
+          font-weight: 500;
+          margin-bottom: 20px;
+          margin-top: 20px;
+        }
       </style>
       <div class="content">
         <vaadin-tabs>
@@ -83,18 +109,23 @@ class ResetPasswordView extends PolymerElement {
             Reset Password
           </vaadin-tab>
         </vaadin-tabs>
-
         <vaadin-vertical-layout style="width: 100%;" class="inner-content">
-          <h3>Enter the user email and reset link will be sent</h3>
-          <vaadin-text-field
-            id="firstName"
-            label="First Name"
-          ></vaadin-text-field>
-          <vaadin-text-field id="lastName" label="Last Name"></vaadin-text-field>
-          <vaadin-text-field id="email" label="Email"></vaadin-text-field>
+          <div class="section-title">Enter the user email and reset link will be sent</div>
+          <vaadin-email-field
+            id="email"
+            label="Email"
+            name="email"
+            error-message="Please enter a valid email address"
+            clear-button-visible
+            required
+          ></vaadin-email-field>
           <vaadin-vertical-layout id="buttonsCont">
-            <vaadin-button id="sendBtn" theme="primary">Send</vaadin-button>
-            <vaadin-button id="cancelBtn" theme="tertiary">Cancel</vaadin-button>
+            <vaadin-button id="sendBtn" theme="primary">
+              Send
+            </vaadin-button>
+            <vaadin-button id="cancelBtn" theme="tertiary">
+              Cancel
+            </vaadin-button>
           </vaadin-vertical-layout>
         </vaadin-vertical-layout>
         <div class="support-cont"></div>
