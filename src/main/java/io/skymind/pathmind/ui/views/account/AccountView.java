@@ -44,7 +44,6 @@ public class AccountView extends PolymerTemplate<AccountView.Model>
 
 	@PostConstruct
 	private void init() {
-		initTabs();
 		initContent();
 		initBtns();
 	}
@@ -52,7 +51,6 @@ public class AccountView extends PolymerTemplate<AccountView.Model>
 	private void initBtns() {
 		editInfoBtn.addClickListener(e -> UI.getCurrent().navigate(AccountEditView.class));
 		changePasswordBtn.addClickListener(e -> UI.getCurrent().navigate(ChangePasswordView.class));
-//		changePasswordBtn.setEnabled(false);
 		upgradeBtn.setEnabled(false);
 		editPaymentBtn.setEnabled(false);
 	}
@@ -63,12 +61,6 @@ public class AccountView extends PolymerTemplate<AccountView.Model>
 		getModel().setLastName(user.getLastname());
 		getModel().setSubscription("Early Access");
 		getModel().setBillingInfo("Billing Information");
-	}
-
-	private void initTabs() {
-		Tabs tabs = new Tabs();
-		tabs.add(new Tab("Account information"));
-		tabs.setWidth("100%");
 	}
 
 	public interface Model extends TemplateModel {
