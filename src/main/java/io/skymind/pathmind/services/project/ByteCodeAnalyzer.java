@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.*;
 
+/*To read and find PathmindHelper qualifiedClassName from class files using ASM*/
 public class ByteCodeAnalyzer extends ClassVisitor {
     private static final Logger log = LogManager.getLogger(ByteCodeAnalyzer.class);
 
@@ -44,6 +45,7 @@ public class ByteCodeAnalyzer extends ClassVisitor {
                                 String innerName, int access) {
     }
 
+    /*To find and add PathmindHelper instance variables in the format of QualifiedClassName#instanceMemberName*/
     public FieldVisitor visitField(int access, String name, String desc,
                                    String signature, Object value) {
         if (desc.contains("PathmindHelper")) {
@@ -55,8 +57,11 @@ public class ByteCodeAnalyzer extends ClassVisitor {
     public void visitEnd() {
     }
 
+    /*To iterate and read all class files*/
     public List<String> byteParser(List<String> classFiles) throws IOException {
+
         for (String classFile : classFiles) {
+
             try (InputStream inputStream = new FileInputStream(classFile)) {
                 ClassReader cr = new ClassReader(inputStream);
                 cr.accept(this, 0);
