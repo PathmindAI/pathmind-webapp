@@ -54,6 +54,7 @@ steps:
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       goals: 'test package'
 
+  - script: ls '$(System.DefaultWorkingDirectory)'
 
   - task: CopyFiles@2
     inputs:
