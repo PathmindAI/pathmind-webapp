@@ -40,7 +40,7 @@ public class AnylogicFileChecker implements FileChecker {
         try {
             //To check the file exist and does the server have permission to read
             if (file.exists() && file.isFile() && file.canRead()) {
-                log.info("File exists and it is readable:");
+                log.info("{} :- File exists and it is readable:",file.getName());
                 unZippedJar = checkZipFile(file, anylogicFileCheckResult);
                 statusUpdater.updateStatus(0.10);
 
@@ -54,7 +54,7 @@ public class AnylogicFileChecker implements FileChecker {
                         if (anylogicFileCheckResult.isHelperPresent()) {
                             statusUpdater.updateStatus(0.90);
                         } else {
-                            log.error("model.jar does not having pathmind class");
+                            log.error("{} :- model.jar does not having pathmind class",file.getName());
                             statusUpdater.updateError("model.jar does not having pathmind class");
                         }
                     }
@@ -69,7 +69,7 @@ public class AnylogicFileChecker implements FileChecker {
                     }
                 }
             } else {
-                log.error("File does not exist or no read permission");
+                log.error("{} :- File does not exist or no read permission",file.getName());
                 statusUpdater.updateError("File does not exist or no read permission");
             }
         } catch (Exception e) {
