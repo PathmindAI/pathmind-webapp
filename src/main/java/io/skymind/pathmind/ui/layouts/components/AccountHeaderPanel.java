@@ -26,6 +26,7 @@ public class AccountHeaderPanel extends HorizontalLayout
 		add(menuBar);
 
 		MenuItem account = menuBar.addItem("Account");
+		account.getElement().getStyle().set("color", "var(--lumo-header-text-color)");
 		String username = StringUtils.isBlank(user.getName()) ? user.getEmail() : user.getName();
 		account.getSubMenu().addItem(createItem(new Icon(VaadinIcon.USER), username),
 				e -> UI.getCurrent().navigate(AccountView.class));
@@ -43,7 +44,7 @@ public class AccountHeaderPanel extends HorizontalLayout
 		label.getStyle().set("padding-top", "5px");
 
 		HorizontalLayout hl = WrapperUtils.wrapWidthFullHorizontal(icon, label);
-		hl.getStyle().set("color", "var(--_lumo-button-color, var(--lumo-primary-text-color)");
+		hl.getStyle().set("color", "var(--lumo-header-text-color)");
 		return hl;
 	}
 
