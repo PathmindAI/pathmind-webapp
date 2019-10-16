@@ -5,8 +5,6 @@ import io.skymind.pathmind.utils.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.FileSystemUtils;
-
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,6 +23,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+/*To validate the model.jar uploaded by the user*/
 public class AnylogicFileChecker implements FileChecker {
     private static final Logger log = LogManager.getLogger(AnylogicFileChecker.class);
     private String uuid = UUID.randomUUID().toString();
@@ -40,11 +39,13 @@ public class AnylogicFileChecker implements FileChecker {
         try {
             //To check the file exist and does the server have permission to read
             if (file.exists() && file.isFile() && file.canRead()) {
-                log.info("{} :- File exists and it is readable:",file.getName());
+                log.info("{} :- File exists and it is readable:", file.getName());
+                //To check a Zip file and if it is a valid file extract it in to the temporary folder
                 unZippedJar = checkZipFile(file, anylogicFileCheckResult);
                 statusUpdater.updateStatus(0.10);
 
                 if (unZippedJar != null) {
+                    //Passing unzipped jar to check whether it is valid or not
                     checkJarFile(unZippedJar, anylogicFileCheckResult);
                     statusUpdater.updateStatus(0.50);
 
@@ -54,14 +55,14 @@ public class AnylogicFileChecker implements FileChecker {
                         if (anylogicFileCheckResult.isHelperPresent()) {
                             statusUpdater.updateStatus(0.90);
                         } else {
-                            log.error("{} :- model.jar does not having pathmind class",file.getName());
-                            statusUpdater.updateError("model.jar does not having pathmind class");
+                            log.error("{} :- model.jar does not having Pathmind Helper class", file.getName());
+                            statusUpdater.updateError("model.jar does not having Pathmind Helper class");
                         }
                     }
                 }
                 if (unZippedJar == null) {
                     if (anylogicFileCheckResult.isCorrectFileType()) {
-                        log.error("model.jar does not exist");
+                        log.error("{} :- model.jar does not exist");
                         statusUpdater.updateError("model.jar does not exist");
                     } else {
                         log.error("File could not be unzipped.");
@@ -69,7 +70,7 @@ public class AnylogicFileChecker implements FileChecker {
                     }
                 }
             } else {
-                log.error("{} :- File does not exist or no read permission",file.getName());
+                log.error("{} :- File does not exist or no read permission", file.getName());
                 statusUpdater.updateError("File does not exist or no read permission");
             }
         } catch (Exception e) {
@@ -107,7 +108,7 @@ public class AnylogicFileChecker implements FileChecker {
 
                     Path objPath = Paths.get(zipEntry.getName());
                     Path modelFileName = objPath.getFileName();
-
+                    // To Search model.jar in the extracted zipped file
                     if (modelFileName.toString().toLowerCase().equalsIgnoreCase(searchFileName)) {
                         unZippedJar = unzipFile(file, searchFileName);
                         log.debug("unzipped jar path {} :-", unZippedJar.getAbsolutePath());
@@ -118,7 +119,7 @@ public class AnylogicFileChecker implements FileChecker {
                 log.error("Invalid input file format :", ioe);
             }
         } else {
-            log.error("Invalid input file format :");
+            log.error("{} :- Invalid input file format :", file.getName());
         }
 
         log.info("{} :- CheckZip File Completed", uuid);
@@ -183,9 +184,11 @@ public class AnylogicFileChecker implements FileChecker {
                     if (!jarTempDir.exists()) {
                         jarTempDir.mkdir();
                     }
+
                     InputStream inputStream = zipFile.getInputStream(zipEntry);
                     jarTempDir = new File(jarTempDir + "/" + searchFileName);
                     log.debug("unzipped jar path {} :-", jarTempDir);
+
                     FileOutputStream fos = new FileOutputStream(jarTempDir);
                     byte[] bytes = new byte[1024];
                     int length;

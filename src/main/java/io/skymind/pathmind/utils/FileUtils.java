@@ -3,7 +3,6 @@ package io.skymind.pathmind.utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tika.Tika;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -37,8 +36,7 @@ public class FileUtils {
     }
 
     /*To detect file type and check whether the file type is zip or not, then return either true or false*/
-    public static boolean detectDocType(InputStream stream)
-            throws IOException {
+    public static boolean detectDocType(InputStream stream) throws IOException {
         Tika tika = new Tika();
         return tika.detect(stream).equals("application/zip");
 
