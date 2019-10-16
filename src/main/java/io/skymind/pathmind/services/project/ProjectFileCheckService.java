@@ -30,11 +30,8 @@ public class ProjectFileCheckService {
 
                     //Result set here.
                     final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
-                    if(result.isFileCheckComplete() && result.isFileCheckSuccessful()){
+                    if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
                         statusUpdater.fileSuccessfullyVerified();
-                    } else {
-                        log.error("File is not valid");
-                        statusUpdater.updateError("File is not valid.");
                     }
                 } finally {
                     tempFile.delete();

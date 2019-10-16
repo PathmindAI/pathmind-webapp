@@ -36,18 +36,27 @@ public class AnylogicFileChecker implements FileChecker {
         File unZippedJar;
         AnylogicFileCheckResult anylogicFileCheckResult = new AnylogicFileCheckResult();
         anylogicFileCheckResult.setFileCheckComplete(false);
+
         try {
             //To check the file exist and does the server have permission to read
             if (file.exists() && file.isFile() && file.canRead()) {
                 log.info("File exists and it is readable:");
                 unZippedJar = checkZipFile(file, anylogicFileCheckResult);
                 statusUpdater.updateStatus(0.10);
+
                 if (unZippedJar != null) {
                     checkJarFile(unZippedJar, anylogicFileCheckResult);
                     statusUpdater.updateStatus(0.50);
+
                     if (anylogicFileCheckResult.isModelJarFilePresent()) {
                         checkHelpers(unZippedJar, anylogicFileCheckResult);
-                        statusUpdater.updateStatus(0.90);
+
+                        if (anylogicFileCheckResult.isHelperPresent()) {
+                            statusUpdater.updateStatus(0.90);
+                        } else {
+                            log.error("model.jar does not having pathmind class");
+                            statusUpdater.updateError("model.jar does not having pathmind class");
+                        }
                     }
                 }
                 if (unZippedJar == null) {
@@ -74,12 +83,14 @@ public class AnylogicFileChecker implements FileChecker {
         return anylogicFileCheckResult;
     }
 
+    /* To check whether zip file is valid or not, if valid it returns unzipped temp directory */
     File checkZipFile(File file, AnylogicFileCheckResult anylogicFileCheckResult) throws IOException {
         log.info("{} :- CheckZip File Started", uuid);
         String searchFileName = "model.jar";
         // To Check if the Zip file is a valid
         File unZippedJar = null;
         boolean isValidZip;
+
         try (InputStream iStream = new FileInputStream(file)) {
             isValidZip = FileUtils.detectDocType(iStream);
         }
@@ -88,12 +99,15 @@ public class AnylogicFileChecker implements FileChecker {
                 anylogicFileCheckResult.setCorrectFileType(true);
                 Enumeration<?> enu = zipFile.entries();
                 List<String> fileNameList = new ArrayList<>();
+
                 while (enu.hasMoreElements()) {
                     ZipEntry zipEntry = (ZipEntry) enu.nextElement();
                     log.info(zipEntry.getName());
                     fileNameList.add(zipEntry.getName());
+
                     Path objPath = Paths.get(zipEntry.getName());
                     Path modelFileName = objPath.getFileName();
+
                     if (modelFileName.toString().toLowerCase().equalsIgnoreCase(searchFileName)) {
                         unZippedJar = unzipFile(file, searchFileName);
                         log.debug("unzipped jar path {} :-", unZippedJar.getAbsolutePath());
@@ -133,7 +147,9 @@ public class AnylogicFileChecker implements FileChecker {
         try {
             File unJarred = extractArchive(file);
             List<String> listOfFiles = FileUtils.listFiles(unJarred.toString());
+
             ByteCodeAnalyzer byteCodeAnalyzer = new ByteCodeAnalyzer();
+
             List<String> listOfHelpers = byteCodeAnalyzer.byteParser(listOfFiles);
             anylogicFileCheckResult.setDefinedHelpers(listOfHelpers);
         } catch (IOException ioe) {
@@ -142,11 +158,12 @@ public class AnylogicFileChecker implements FileChecker {
         log.info("{} :- checkHelpers Completed", uuid);
     }
 
-
+    /* To check whether model.jar exist in zipped file or not, if exist it will create temp directory and extract files and return dir to its calling function */
     private File unzipFile(File zippedFile, String searchFileName) {
         log.info("{} :- unzipFile Started", uuid);
         try (ZipFile zipFile = new ZipFile(zippedFile)) {
             Enumeration<?> enu = zipFile.entries();
+
             while (enu.hasMoreElements()) {
                 ZipEntry zipEntry = (ZipEntry) enu.nextElement();
                 String name = zipEntry.getName();
@@ -154,11 +171,14 @@ public class AnylogicFileChecker implements FileChecker {
                 long compressedSize = zipEntry.getCompressedSize();
                 log.debug("name:- {} | size:- {} | compressed size:- {}\n",
                         name, size, compressedSize);
+
                 Path objPath = Paths.get(name);
                 Path modelFileName = objPath.getFileName();
+
                 if (modelFileName.toString().toLowerCase().equalsIgnoreCase(searchFileName)) {
                     Path tempPath = Files.createTempDirectory(uuid);
                     jarTempDir = new File(String.valueOf(tempPath));
+
                     if (!jarTempDir.exists()) {
                         jarTempDir.mkdir();
                     }
@@ -168,6 +188,7 @@ public class AnylogicFileChecker implements FileChecker {
                     FileOutputStream fos = new FileOutputStream(jarTempDir);
                     byte[] bytes = new byte[1024];
                     int length;
+
                     while ((length = inputStream.read(bytes)) >= 0) {
                         fos.write(bytes, 0, length);
                     }
@@ -182,14 +203,18 @@ public class AnylogicFileChecker implements FileChecker {
         return jarTempDir;
     }
 
+    /*To extract the archive file (mode.jar) contents inside unzipped temp directory*/
     private File extractArchive(File archiveFile) {
         log.info("{} :- extractArchive file Started", uuid);
         File destDir = new File(archiveFile.getParent());
+
         try (JarFile jar = new JarFile(archiveFile)) {
             Enumeration enumEntries = jar.entries();
+
             while (enumEntries.hasMoreElements()) {
                 JarEntry file = (JarEntry) enumEntries.nextElement();
                 File fileDir = new File(destDir + File.separator + file.getName());
+
                 if (!fileDir.exists()) {
                     fileDir.getParentFile().mkdirs();
                     fileDir = new File(destDir, file.getName());
@@ -212,6 +237,7 @@ public class AnylogicFileChecker implements FileChecker {
         return destDir;
     }
 
+    /*To delete the unzipped temp directory*/
     private void deleteTempDirectory() {
         //get parent folder of model.jar
         File file = new File(jarTempDir.getParent());
@@ -222,4 +248,3 @@ public class AnylogicFileChecker implements FileChecker {
         }
     }
 }
-
