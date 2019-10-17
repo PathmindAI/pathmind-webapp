@@ -67,7 +67,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 		errorText = new Text("");
 		fileCheckPanel = WrapperUtils.wrapWidthFullCenterVertical(
 				fileCheckProgressBar,
-				WrapperUtils.wrapWidthFullCenterHorizontal(new Label("File check...")),
+				WrapperUtils.wrapWidthFullCenterHorizontal(new Label("Checking your model...")),
 				errorText);
 	}
 
