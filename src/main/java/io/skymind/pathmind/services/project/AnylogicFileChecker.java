@@ -25,6 +25,7 @@ import java.util.zip.ZipFile;
 
 /*To validate the model.jar uploaded by the user*/
 public class AnylogicFileChecker implements FileChecker {
+
     private static final Logger log = LogManager.getLogger(AnylogicFileChecker.class);
     private String uuid = UUID.randomUUID().toString();
     private File jarTempDir = null;
@@ -39,7 +40,7 @@ public class AnylogicFileChecker implements FileChecker {
         try {
             //To check the file exist and does the server have permission to read
             if (file.exists() && file.isFile() && file.canRead()) {
-                log.info("{} :- File exists and it is readable:", file.getName());
+                log.info("Uploaded file exists and it is readable");
                 //To check a Zip file and if it is a valid file extract it in to the temporary folder
                 unZippedJar = checkZipFile(file, anylogicFileCheckResult);
                 statusUpdater.updateStatus(0.10);
@@ -50,28 +51,29 @@ public class AnylogicFileChecker implements FileChecker {
                     statusUpdater.updateStatus(0.50);
 
                     if (anylogicFileCheckResult.isModelJarFilePresent()) {
+                        //Check for PathmindHelper class instace in uploaded model.jar
                         checkHelpers(unZippedJar, anylogicFileCheckResult);
 
                         if (anylogicFileCheckResult.isHelperPresent()) {
                             statusUpdater.updateStatus(0.90);
                         } else {
-                            log.error("{} :- model.jar does not having Pathmind Helper class", file.getName());
-                            statusUpdater.updateError("model.jar does not having Pathmind Helper class");
+                            log.error("model.jar does not having PathmindHelper class");
+                            statusUpdater.updateError("model.jar does not having PathmindHelper class");
                         }
                     }
                 }
                 if (unZippedJar == null) {
                     if (anylogicFileCheckResult.isCorrectFileType()) {
-                        log.error("{} :- model.jar does not exist");
+                        log.error("model.jar does not exist");
                         statusUpdater.updateError("model.jar does not exist");
                     } else {
-                        log.error("File could not be unzipped.");
-                        statusUpdater.updateError("File could not be unzipped.");
+                        log.error("Uploaded file could not be unzipped.");
+                        statusUpdater.updateError("Uploaded file could not be unzipped.");
                     }
                 }
             } else {
-                log.error("{} :- File does not exist or no read permission", file.getName());
-                statusUpdater.updateError("File does not exist or no read permission");
+                log.error("Uploaded file does not exist or no read permission");
+                statusUpdater.updateError("Uploaded file does not exist or no read permission");
             }
         } catch (Exception e) {
             log.error("Exception in checking jar file ", e);
@@ -103,7 +105,7 @@ public class AnylogicFileChecker implements FileChecker {
 
                 while (enu.hasMoreElements()) {
                     ZipEntry zipEntry = (ZipEntry) enu.nextElement();
-                    log.info(zipEntry.getName());
+                    log.info("Content of Zip file : {} ", zipEntry.getName());
                     fileNameList.add(zipEntry.getName());
 
                     Path objPath = Paths.get(zipEntry.getName());
@@ -209,7 +211,7 @@ public class AnylogicFileChecker implements FileChecker {
 
     /*To extract the archive file (mode.jar) contents inside unzipped temp directory*/
     private File extractArchive(File archiveFile) {
-        log.info("{} :- extractArchive file Started", uuid);
+        log.info("{} :- extractArchive Started", uuid);
         File destDir = new File(archiveFile.getParent());
 
         try (JarFile jar = new JarFile(archiveFile)) {
