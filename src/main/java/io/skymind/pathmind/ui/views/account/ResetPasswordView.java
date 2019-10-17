@@ -12,8 +12,10 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
-import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Tag("reset-password-view")
@@ -24,6 +26,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 {
 	private static final String EMAIL_REGEX = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
 	private static final String CONFIRMATION_MESSAGE = "Reset password email was send.";
+	private static final String LINK_IS_NOT_VALID = "Link is no longer valid. Please try to recover password again.";
 
 	@Id("email")
 	private EmailField emailField;
@@ -37,13 +40,38 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 	@Autowired
 	private UserService userService;
 
+	@Value("${pathmind.reset.password.link.valid}")
+	private int resetTokenValidHours;
+
 	private String token = null;
+
+
 
 	public ResetPasswordView() {
 	}
 
 	@Override
 	public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
+		if (token == null) {
+			initPreStep();
+		} else {
+			initPostStep();
+		}
+	}
+
+	private void initPostStep() {
+		try {
+			PathmindUser user = userService.findByToken(token);
+			if (user == null || LocalDateTime.now().isAfter(user.getPasswordResetSendAt().plus(resetTokenValidHours, ChronoUnit.HOURS))) {
+				getModel().setMessage(LINK_IS_NOT_VALID);
+				return;
+			}
+		} catch(IllegalArgumentException e) {
+			getModel().setMessage(LINK_IS_NOT_VALID);
+		}
+	}
+
+	private void initPreStep() {
 		emailField.setInvalid(false);
 		emailField.setValueChangeMode(ValueChangeMode.ON_CHANGE);
 		emailField.addValueChangeListener(e -> {
@@ -60,7 +88,6 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 		});
 	}
 
-
 	private void startResetProcess(String value) {
 		PathmindUser user = userService.findByEmailIgnoreCase(value);
 		getModel().setMessage(CONFIRMATION_MESSAGE);
@@ -73,8 +100,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 			user.setEmailVerificationToken(UUID.randomUUID());
 		}
 
-//		TODO: uncomment after jooq generete new version
-//		user.setPasswordResetSendAt(LocalDateTime.now());
+		user.setPasswordResetSendAt(LocalDateTime.now());
 		userService.update(user);
 		String link = new RouterLink(user.getName(), ResetPasswordView.class).getHref();
 		link += "/" + user.getEmailVerificationToken();

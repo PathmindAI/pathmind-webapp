@@ -123,4 +123,7 @@ public class UserService
     public PathmindUser findByEmailIgnoreCase(String value) {
         return userDAO.findByEmailIgnoreCase(value);
     }
+    public PathmindUser findByToken(String value) {
+        return userDAO.findByToken(value);
+    }
 }

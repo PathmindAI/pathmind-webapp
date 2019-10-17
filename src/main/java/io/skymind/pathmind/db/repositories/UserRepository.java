@@ -7,6 +7,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 import static io.skymind.pathmind.data.db.Tables.PATHMIND_USER;
 import static org.jooq.impl.DSL.lower;
 
@@ -29,6 +31,13 @@ public class UserRepository
         return dslContext
                 .selectFrom(PATHMIND_USER)
                 .where(PATHMIND_USER.ID.eq(id))
+                .fetchOneInto(PathmindUser.class);
+    }
+
+    public PathmindUser findByToken(String token) {
+        return dslContext
+                .selectFrom(PATHMIND_USER)
+                .where(PATHMIND_USER.EMAIL_VERIFICATION_TOKEN.eq(UUID.fromString(token)))
                 .fetchOneInto(PathmindUser.class);
     }
 
