@@ -163,6 +163,9 @@ class ResetPasswordView extends PolymerElement {
           class="inner-content"
           id="postPart"
         >
+          <div class="section-title">
+            Please enter your new password
+          </div>
           <vaadin-password-field
             id="newPassword"
             label="New Password"

@@ -4,6 +4,7 @@ import com.sendgrid.helpers.mail.Mail;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.PathMindException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class NotificationService
 
 	private static Logger log = LogManager.getLogger(NotificationService.class);
 	private final String verificationRoute = "/verify/";
-	private final String resetPasswordRoute = "/reset_password/";
+	private final String resetPasswordRoute = "/reset-password/";
 	private final String emailValidForHours = "48";
 
 	@Value("${pathmind.email-sending.enabled}")
@@ -83,14 +84,15 @@ public class NotificationService
 			log.info("Email sending has been disabled, not sending the email to: " + pathmindUser.getEmail());
 			return;
 		}
-		if (pathmindUser.getEmailVerifiedAt() != null) {
+		if (pathmindUser.getEmailVerifiedAt() != null && pathmindUser.getPasswordResetSendAt() != null) {
 			log.info("Canceling reset password email sending, user: " + pathmindUser.getEmail() + ", has already been verified");
 			return;
 		}
 		final String resetPasswordLink = createResetPasswordLink(pathmindUser);
 		Mail verificationEmail;
 		try {
-			verificationEmail = mailHelper.createResetPasswordEmail(pathmindUser.getEmail(), pathmindUser.getName(), resetPasswordLink, emailValidForHours);
+			String username = StringUtils.isBlank(pathmindUser.getName()) ? pathmindUser.getEmail() : pathmindUser.getName();
+			verificationEmail = mailHelper.createResetPasswordEmail(pathmindUser.getEmail(), username, resetPasswordLink, emailValidForHours);
 		} catch (PathMindException e) {
 			log.warn("Could not create email due to missing data in the PathmindUser object");
 			return;

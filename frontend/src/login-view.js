@@ -72,7 +72,7 @@ class LoginView extends PolymerElement {
               </vaadin-button>
             </form>
           </iron-form>
-          <vaadin-button theme="tertiary">
+          <vaadin-button id="forgotPassword" theme="tertiary">
             Forgot your password?
           </vaadin-button>
           <div style="flex-shrink: 0;">
