@@ -23,6 +23,7 @@ class ResetPasswordView extends PolymerElement {
           box-sizing: border-box;
           align-items: center;
         }
+
         .info {
           color: #696969;
         }
@@ -58,11 +59,28 @@ class ResetPasswordView extends PolymerElement {
         .support-cont {
           text-align: center;
         }
+
         .support {
           margin: auto;
           display: inline-block;
           color: #696969;
           padding-top: 10px;
+        }
+
+        .notes {
+          font-size: 0.9em;
+          font-weight: 700;
+          color: #979797;
+          padding-left: 15px;
+          padding-top: 5px;
+        }
+
+        .notes span:last-child {
+          padding-bottom: 20px;
+        }
+
+        .notes .secondary {
+          color: #e7e7e7;
         }
 
         .content {
@@ -79,7 +97,8 @@ class ResetPasswordView extends PolymerElement {
         }
 
         vaadin-text-field,
-        vaadin-email-field {
+        vaadin-email-field,
+        vaadin-password-field {
           width: 100%;
         }
 
@@ -91,16 +110,23 @@ class ResetPasswordView extends PolymerElement {
         vaadin-button {
           margin: 5px auto;
         }
-        #sendBtn {
+
+        .positive-action-btn {
           width: 250px;
         }
 
-        .section-title{
+        .section-title {
           color: #666;
           font-size: 1.1em;
           font-weight: 500;
           margin-bottom: 20px;
           margin-top: 20px;
+        }
+
+        .error-message {
+          color: var(--pm-danger-color);
+          padding: 0 10px 10px;
+          font-size: 0.9em;
         }
       </style>
       <div class="content">
@@ -109,9 +135,11 @@ class ResetPasswordView extends PolymerElement {
             Reset Password
           </vaadin-tab>
         </vaadin-tabs>
-        <vaadin-vertical-layout style="width: 100%;" class="inner-content">
-          <div class="section-title">Enter the user email and reset link will be sent</div>
-          <div class="message">{{message}}</div>
+        <vaadin-vertical-layout id="prePart" style="width: 100%;" class="inner-content">
+          <div class="section-title">
+            Please enter the user email and reset link will be sent
+          </div>
+          <div class="error-message">{{message}}</div>
           <vaadin-email-field
             id="email"
             label="Email"
@@ -121,12 +149,35 @@ class ResetPasswordView extends PolymerElement {
             required
           ></vaadin-email-field>
           <vaadin-vertical-layout id="buttonsCont">
-            <vaadin-button id="sendBtn" theme="primary">
-              Send
+            <vaadin-button id="sendBtn" theme="primary" class="positive-action-btn">
+              Send 
             </vaadin-button>
             <vaadin-button id="cancelBtn" theme="tertiary">
               Cancel
             </vaadin-button>
+          </vaadin-vertical-layout>
+        </vaadin-vertical-layout>
+
+        <vaadin-vertical-layout
+          style="width: 100%;"
+          class="inner-content"
+          id="postPart"
+        >
+          <vaadin-password-field
+            id="newPassword"
+            label="New Password"
+          ></vaadin-password-field>
+          <vaadin-vertical-layout
+            id="newPassNotes"
+            class="notes"
+            style="width: 100%;"
+          ></vaadin-vertical-layout>
+          <vaadin-password-field
+            id="confirmNewPassword"
+            label="Confirm New Password"
+          ></vaadin-password-field>
+          <vaadin-vertical-layout id="buttonsCont">
+            <vaadin-button id="changePassword" theme="primary"  class="positive-action-btn">Save Password</vaadin-button>
           </vaadin-vertical-layout>
         </vaadin-vertical-layout>
         <div class="support-cont"></div>
