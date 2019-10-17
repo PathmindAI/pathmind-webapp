@@ -121,7 +121,7 @@ public class AnylogicFileChecker implements FileChecker {
                 log.error("Invalid input file format :", ioe);
             }
         } else {
-            log.error("{} :- Invalid input file format :", file.getName());
+            log.error("Invalid input file format :");
         }
 
         log.info("{} :- CheckZip File Completed", uuid);
