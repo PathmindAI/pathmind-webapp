@@ -7,6 +7,7 @@ import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.bus.PathmindBusEvent;
@@ -114,6 +115,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
         chart.getConfiguration().setTitle("Reward Score");
         chart.getConfiguration().addxAxis(xAxis);
         chart.getConfiguration().addyAxis(yAxis);
+        chart.setSizeFull();
     }
 
     public Experiment getExperiment() {

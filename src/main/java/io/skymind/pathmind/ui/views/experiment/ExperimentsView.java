@@ -3,7 +3,7 @@ package io.skymind.pathmind.ui.views.experiment;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@StyleSheet("frontend://styles/styles.css")
+@CssImport("./styles/styles.css")
 @Route(value = "experiments", layout = MainLayout.class)
 public class ExperimentsView extends PathMindDefaultView implements HasUrlParameter<Long> {
     @Autowired
@@ -56,6 +56,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
     public ExperimentsView() {
         super();
+        addClassName("experiments-view");
     }
 
     protected Component getMainContent() {
@@ -63,7 +64,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         setupGetObservationTextArea();
         setupRewardFunctionEditor();
 
-        return WrapperUtils.wrapWidthFullCenterVertical(
+        return WrapperUtils.wrapSizeFullVertical(
                 WrapperUtils.wrapWidthFullCenterHorizontal(getBackToModelsButton()),
                 WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
                 getArchivesTabPanel(),
