@@ -23,7 +23,7 @@ public class UserRepository
     public PathmindUser findByEmailIgnoreCase(String email) {
         return dslContext
                 .selectFrom(PATHMIND_USER)
-                .where(PATHMIND_USER.EMAIL.eq(lower(email)))
+                .where(PATHMIND_USER.EMAIL.equalIgnoreCase(email))
                 .fetchOneInto(PathmindUser.class);
     }
 
