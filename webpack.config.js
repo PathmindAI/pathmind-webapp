@@ -6,7 +6,10 @@ const merge = require('webpack-merge');
 const flowDefaults = require('./webpack.generated.js');
 
 module.exports = merge(flowDefaults, {
-
+    // Use CDN for the ace-builds dependency because it has an issue with the webpack plugin: https://github.com/DanielSchaffer/webpack-babel-multi-target-plugin/issues/39
+    externals: {
+        'ace-builds/src-noconflict/ace.js': 'ace'
+    }
 });
 
 /**
