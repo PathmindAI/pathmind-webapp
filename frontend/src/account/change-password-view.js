@@ -13,14 +13,17 @@ class ChangePasswordView extends PolymerElement {
     return html`
       <style include="shared-styles">
         :host {
-          display: block;
+          padding: 40px;
+          background: var(--pm-app-bg-color);
           height: 100%;
-          width: 600px;
-          margin: 50px auto 0;
-          color: #696969;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          box-sizing: border-box;
+          align-items: center;
         }
 
-        .content {
+        .inner-content {
           margin-top: 5px;
           background: #fff;
           border: 1px solid #ccc;
@@ -60,52 +63,65 @@ class ChangePasswordView extends PolymerElement {
         .notes .secondary {
           color: #e7e7e7;
         }
+        .content {
+          max-width: 500px;
+          margin-top: 20px;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        vaadin-tabs {
+          width: 100%;
+        }
       </style>
-      <vaadin-tabs>
-        <vaadin-tab>
-          Change Password
-        </vaadin-tab>
-      </vaadin-tabs>
-      <!-- <img src="/frontend/images/pathmind-logo.png">
-      <img src="frontend/images/pathmind-logo.png">
-      <img src="images/pathmind-logo.png"> -->
-      <vaadin-vertical-layout style="width: 100%;" class="content">
-        <div style="width: 100%;">
+      <div class="content">
+        <vaadin-tabs>
+          <vaadin-tab>
+            Change Password
+          </vaadin-tab>
+        </vaadin-tabs>
+        <vaadin-vertical-layout style="width: 100%;" class="inner-content">
+          <div style="width: 100%;">
+            <vaadin-password-field
+              id="currentPassword"
+              label="Current Password"
+            ></vaadin-password-field>
+            <vaadin-vertical-layout
+              id="currentPassNotes"
+              class="notes"
+              style="width: 100%;"
+            ></vaadin-vertical-layout>
+          </div>
+          <vaadin-vertical-layout
+            id="currentPassNotes"
+            class="notes"
+            style="width: 100%;"
+          ></vaadin-vertical-layout>
           <vaadin-password-field
-            id="currentPassword"
-            label="Current Password"
+            id="newPassword"
+            label="New Password"
           ></vaadin-password-field>
           <vaadin-vertical-layout
-          id="currentPassNotes"
-          class="notes"
-          style="width: 100%;"
-        ></vaadin-vertical-layout>
-        </div>
-        <vaadin-vertical-layout
-          id="currentPassNotes"
-          class="notes"
-          style="width: 100%;"
-        ></vaadin-vertical-layout>
-        <vaadin-password-field
-          id="newPassword"
-          label="New Password"
-        ></vaadin-password-field>
-        <vaadin-vertical-layout
-          id="newPassNotes"
-          class="notes"
-          style="width: 100%;"
-        ></vaadin-vertical-layout>
-        <vaadin-password-field
-          id="confirmNewPassword"
-          label="Confirm New Password"
-        ></vaadin-password-field>
-        <vaadin-vertical-layout id="buttonsCont">
-          <vaadin-button id="updateBtn" theme="primary"
-            >Change Password</vaadin-button
-          >
-          <vaadin-button id="cancelBtn" theme="tertiary">Cancel</vaadin-button>
+            id="newPassNotes"
+            class="notes"
+            style="width: 100%;"
+          ></vaadin-vertical-layout>
+          <vaadin-password-field
+            id="confirmNewPassword"
+            label="Confirm New Password"
+          ></vaadin-password-field>
+          <vaadin-vertical-layout id="buttonsCont">
+            <vaadin-button id="updateBtn" theme="primary"
+              >Change Password</vaadin-button
+            >
+            <vaadin-button id="cancelBtn" theme="tertiary"
+              >Cancel</vaadin-button
+            >
+          </vaadin-vertical-layout>
         </vaadin-vertical-layout>
-      </vaadin-vertical-layout>
+      </div>
     `;
   }
 
