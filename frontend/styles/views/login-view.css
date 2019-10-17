@@ -1,0 +1,7 @@
+login-view {
+    background: red;
+    height: 100%;
+    border: 10px solid blue;
+    display: block;
+    box-sizing: border-box;
+}
