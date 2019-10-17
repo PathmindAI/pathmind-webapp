@@ -11,9 +11,13 @@ class LoginView extends PolymerElement {
   static get template() {
     return html`
       <style include="shared-styles login-view-styles">
+          .login-panel {
+            margin: auto;
+          }
       </style>
       <vaadin-horizontal-layout style="width: 100%;">
-        <landing-page></landing-page>
+
+        <!-- <landing-page></landing-page> -->
         <div class="login-panel">
           <label class="welcome-text">Welcome to</label>
           <img
