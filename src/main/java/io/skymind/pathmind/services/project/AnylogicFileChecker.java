@@ -62,7 +62,7 @@ public class AnylogicFileChecker implements FileChecker {
                         }
                     }
                 }
-                if (unZippedJar == null) {
+                else {
                     if (anylogicFileCheckResult.isCorrectFileType()) {
                         log.error("model.jar does not exist");
                         statusUpdater.updateError("model.jar does not exist");
