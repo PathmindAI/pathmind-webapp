@@ -18,6 +18,8 @@ public class NotificationService
 
 	private static Logger log = LogManager.getLogger(NotificationService.class);
 	private final String verificationRoute = "/verify/";
+	private final String resetPasswordRoute = "/reset_password/";
+	private final String emailValidForHours = "48";
 
 	@Value("${pathmind.email-sending.enabled}")
 	private boolean isEmailSendingEnabled;
@@ -66,6 +68,39 @@ public class NotificationService
 	private String createEmailVerificationLink(PathmindUser pathmindUser)
 	{
 		return applicationURL + verificationRoute + pathmindUser.getEmailVerificationToken();
+	}
+
+	/**
+	 * Sends a reset password email to a Pathmind user.
+	 * The email is only sent if email verification hasn't been yet been approved
+	 *
+	 * @param pathmindUser
+	 */
+	public void sendResetPasswordEmail(PathmindUser pathmindUser)
+	{
+		Objects.requireNonNull(pathmindUser);
+		if (!isEmailSendingEnabled) {
+			log.info("Email sending has been disabled, not sending the email to: " + pathmindUser.getEmail());
+			return;
+		}
+		if (pathmindUser.getEmailVerifiedAt() != null) {
+			log.info("Canceling reset password email sending, user: " + pathmindUser.getEmail() + ", has already been verified");
+			return;
+		}
+		final String resetPasswordLink = createResetPasswordLink(pathmindUser);
+		Mail verificationEmail;
+		try {
+			verificationEmail = mailHelper.createResetPasswordEmail(pathmindUser.getEmail(), pathmindUser.getName(), resetPasswordLink, emailValidForHours);
+		} catch (PathMindException e) {
+			log.warn("Could not create email due to missing data in the PathmindUser object");
+			return;
+		}
+		mailHelper.sendMail(verificationEmail);
+	}
+
+	private String createResetPasswordLink(PathmindUser pathmindUser)
+	{
+		return applicationURL + resetPasswordRoute + pathmindUser.getEmailVerificationToken();
 	}
 
 }

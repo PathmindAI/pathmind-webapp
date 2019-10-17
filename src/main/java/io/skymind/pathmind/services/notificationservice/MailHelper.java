@@ -24,8 +24,14 @@ public class MailHelper
 
 	private static Logger log = LogManager.getLogger(MailHelper.class);
 
-	private final String verificationEmailTemplateId = "d-2200af3c4c2e4a8d861ea882958df7b4";
 	public static final String pathmind_verification_email = "Pathmind verification email";
+	public static final String pathmind_resetpassword_email = "Pathmind reset password email";
+
+	@Value("${sendgrid.verification-mail.id}")
+	private String verificationEmailTemplateId;
+
+	@Value("${sendgrid.resetpassword-mail.id}")
+	private String resetPasswordTemplateId;
 
 	@Value("${sendgrid.api.key}")
 	private String apiKey;
@@ -76,6 +82,25 @@ public class MailHelper
 		personalization.addDynamicTemplateData("subject", pathmind_verification_email);
 		personalization.addDynamicTemplateData("name", name);
 		personalization.addDynamicTemplateData("emailVerificationLink", emailVerificationLink);
+		personalization.addTo(new Email(to));
+		mail.addPersonalization(personalization);
+		return mail;
+	}
+
+	public Mail createResetPasswordEmail(String to, String name, String resetPasswordLink, String hours) throws PathMindException
+	{
+		if (StringUtils.isAnyEmpty(to, name, resetPasswordLink, hours)) {
+			throw new PathMindException("Email fields are missing");
+		}
+		Mail mail = new Mail();
+		mail.setFrom(new Email(from));
+		mail.setTemplateId(resetPasswordTemplateId);
+
+		Personalization personalization = new Personalization();
+		personalization.addDynamicTemplateData("subject", pathmind_resetpassword_email);
+		personalization.addDynamicTemplateData("name", name);
+		personalization.addDynamicTemplateData("resetPasswordLink", resetPasswordLink);
+		personalization.addDynamicTemplateData("hours", hours);
 		personalization.addTo(new Email(to));
 		mail.addPersonalization(personalization);
 		return mail;

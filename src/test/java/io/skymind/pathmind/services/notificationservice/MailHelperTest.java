@@ -63,4 +63,26 @@ public class MailHelperTest
 		mailHelper.createVerificationEmail(null, null, null);
 	}
 
+	@Test
+	public void createResetPasswordEmail() throws PathMindException
+	{
+		final String test_email = "test email";
+		final UUID emailVerificationToken = UUID.randomUUID();
+		String emailLink = "http://testurl/verify" + emailVerificationToken.toString();
+		final String test_user = "Test User";
+		final String hours = "48";
+
+		final Mail verificationEmail = mailHelper.createResetPasswordEmail(test_email, test_user, emailLink, hours);
+		final Personalization personalization = verificationEmail.getPersonalization().get(0);
+		final String subject = (String) personalization.getDynamicTemplateData().get("subject");
+		final String name = (String) personalization.getDynamicTemplateData().get("name");
+		final String resetPasswordLink = (String) personalization.getDynamicTemplateData().get("resetPasswordLink");
+		final String emailHours = (String) personalization.getDynamicTemplateData().get("hours");
+
+		assertEquals(MailHelper.pathmind_resetpassword_email, subject);
+		assertEquals(test_user, name);
+		assertEquals(emailLink, resetPasswordLink);
+		assertEquals(hours, emailHours);
+	}
+
 }

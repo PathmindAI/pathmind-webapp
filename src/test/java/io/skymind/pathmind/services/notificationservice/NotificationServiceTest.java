@@ -35,4 +35,20 @@ public class NotificationServiceTest extends PathmindApplicationTests
 		notificationService.sendVerificationEmail(null);
 	}
 
+	@Test
+	public void sendResetPasswordEmail()
+	{
+		PathmindUser pathmindUser = new PathmindUser();
+		pathmindUser.setEmail(testEmail);
+		pathmindUser.setEmailVerificationToken(UUID.randomUUID());
+		pathmindUser.setName("Test User");
+		notificationService.sendResetPasswordEmail(pathmindUser);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void sendResetPasswordEmail_Fail()
+	{
+		notificationService.sendResetPasswordEmail(null);
+	}
+
 }
