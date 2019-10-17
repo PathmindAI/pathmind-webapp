@@ -7,6 +7,8 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Email;
 import com.sendgrid.helpers.mail.objects.Personalization;
+import io.skymind.pathmind.exception.PathMindException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @Component
 public class MailHelper
@@ -30,8 +33,14 @@ public class MailHelper
 	@Value("${pathmind.email.from}")
 	private String from;
 
+	/**
+	 * Sends an email using SendGrid
+	 *
+	 * @param mail The mail object that is used to send the mail.
+	 */
 	public void sendMail(Mail mail)
 	{
+		Objects.requireNonNull(mail);
 		SendGrid sg = new SendGrid(apiKey);
 		Request request = new Request();
 		try {
@@ -45,8 +54,20 @@ public class MailHelper
 		}
 	}
 
-	public Mail createVerificationEmail(String to, String name, String emailVerificationLink)
+	/**
+	 * Creates the verification email
+	 *
+	 * @param to                    The email address of the mail recipient (the user)
+	 * @param name                  The name of the user
+	 * @param emailVerificationLink The email verification link that can be used to verify the user account
+	 * @return The ready made Mail object
+	 * @throws PathMindException Exception is thrown if any of the arguments is null or empty
+	 */
+	public Mail createVerificationEmail(String to, String name, String emailVerificationLink) throws PathMindException
 	{
+		if (StringUtils.isAnyEmpty(to, name, emailVerificationLink)) {
+			throw new PathMindException("Email fields are missing");
+		}
 		Mail mail = new Mail();
 		mail.setFrom(new Email(from));
 		mail.setTemplateId(verificationEmailTemplateId);

@@ -3,10 +3,10 @@ package io.skymind.pathmind.services.notificationservice;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Personalization;
 import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.exception.PathMindException;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -23,7 +23,7 @@ public class MailHelperTest
 	}
 
 	@Test
-	public void createVerificationEmail() throws IOException
+	public void createVerificationEmail() throws PathMindException
 	{
 		PathmindUser pathmindUser = new PathmindUser();
 		final String test_email = "test email";
@@ -44,4 +44,23 @@ public class MailHelperTest
 		assertEquals(test_user, name);
 		assertEquals(emailLink, emailVerificationLink);
 	}
+
+
+	@Test(expected = PathMindException.class)
+	public void createVerificationEmail_Fail() throws PathMindException
+	{
+		PathmindUser pathmindUser = new PathmindUser();
+		final UUID emailVerificationToken = UUID.randomUUID();
+		String emailLink = "http://testurl/verify" + emailVerificationToken.toString();
+		pathmindUser.setEmailVerificationToken(emailVerificationToken);
+
+		mailHelper.createVerificationEmail(pathmindUser.getEmail(), pathmindUser.getName(), emailLink);
+	}
+
+	@Test(expected = PathMindException.class)
+	public void createVerificationEmail_Fail2() throws PathMindException
+	{
+		mailHelper.createVerificationEmail(null, null, null);
+	}
+
 }

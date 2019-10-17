@@ -28,4 +28,11 @@ public class NotificationServiceTest extends PathmindApplicationTests
 		pathmindUser.setName("Test User");
 		notificationService.sendVerificationEmail(pathmindUser);
 	}
+
+	@Test(expected = NullPointerException.class)
+	public void sendVerificationEmail_Fail()
+	{
+		notificationService.sendVerificationEmail(null);
+	}
+
 }
