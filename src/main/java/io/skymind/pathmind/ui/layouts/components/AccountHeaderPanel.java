@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.layouts.components;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.html.Anchor;
@@ -25,14 +26,11 @@ public class AccountHeaderPanel extends HorizontalLayout
 		menuBar.setThemeName("tertiary");
 		add(menuBar);
 
-		MenuItem account = menuBar.addItem("Account");
-		account.getElement().getStyle().set("color", "var(--lumo-header-text-color)");
 		String username = StringUtils.isBlank(user.getName()) ? user.getEmail() : user.getName();
-		account.getSubMenu().addItem(createItem(new Icon(VaadinIcon.USER), username),
-				e -> UI.getCurrent().navigate(AccountView.class));
-
-		account.getSubMenu().addItem(createLogoutLink(
-				createItem(new Icon(VaadinIcon.EXIT), "Logout")));
+		MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER), username));
+		account.getElement().getStyle().set("color", "var(--lumo-header-text-color)");
+		account.getSubMenu().addItem( new Span("Account"), e -> UI.getCurrent().navigate(AccountView.class));
+		account.getSubMenu().addItem(createLogoutLink(new Span( "Logout")));
 
 		getElement().getStyle().set("margin-left", "auto");
 		getElement().getStyle().set("padding-right", "20px");
@@ -48,9 +46,10 @@ public class AccountHeaderPanel extends HorizontalLayout
 		return hl;
 	}
 
-	private Anchor createLogoutLink(HorizontalLayout hl) {
+	private Anchor createLogoutLink(Component hl) {
 		final String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
 		Anchor logoutLink = new Anchor(contextPath + "/logout");
+		logoutLink.getStyle().set("color", "var(--lumo-header-text-color)");
 		logoutLink.add(hl);
 		return logoutLink;
 	}
