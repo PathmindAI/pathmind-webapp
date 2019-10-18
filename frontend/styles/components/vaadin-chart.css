@@ -1,0 +1,16 @@
+:host {
+   border: 1px solid var(--lumo-contrast-20pct);
+   border-radius: var(--lumo-border-radius);
+}
+
+:host .highcharts-background {
+   fill:  var(--pm-highlight-light);
+}
+
+.highcharts-grid-line {
+   stroke-dasharray: 4 4;
+}
+
+.highcharts-point {
+
+}

@@ -34,19 +34,26 @@ public class PolicyUtils
 		}
 	}
 
-	public static LocalDateTime getRunCompletedTime(Policy policy) {
-		{
-			if (!RunStatus.Completed.name().equalsIgnoreCase(getRunStatus(policy))) {
-				return null;
-			}
+	public static LocalDateTime getRunCompletedTime(Policy policy)
+	{
+		if (!RunStatus.Completed.name().equalsIgnoreCase(getRunStatus(policy))) {
+			return null;
+		}
 
-			try {
+		try {
+			return objectMapper.readValue(policy.getProgress(), Progress.class).getStoppedAt();
+		} catch (Exception e) {
+			log.debug(e.getMessage(), e);
+			return null;
+		}
+	}
 
-				return objectMapper.readValue(policy.getProgress(), Progress.class).getStoppedAt();
-			} catch (Exception e) {
-				log.debug(e.getMessage(), e);
-				return null;
-			}
+	public static LocalDateTime getRunStartTime(Policy policy) {
+		try {
+			return objectMapper.readValue(policy.getProgress(), Progress.class).getStartedAt();
+		} catch (Exception e) {
+			log.debug(e.getMessage(), e);
+			return null;
 		}
 	}
 

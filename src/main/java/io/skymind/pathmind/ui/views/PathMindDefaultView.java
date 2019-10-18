@@ -12,6 +12,7 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
+import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.views.errors.ErrorView;
 import io.skymind.pathmind.ui.views.errors.InvalidDataView;
 import io.skymind.pathmind.utils.PathmindUtils;
@@ -35,8 +36,10 @@ public class PathMindDefaultView extends VerticalLayout implements BeforeEnterOb
 
 	public PathMindDefaultView()
 	{
-		setSizeFull();
+		setWidth("100%");
 		setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+		GuiUtils.removeMarginsPaddingAndSpacing(this);
+		setClassName("default-view");
 
 		// IMPORTANT -> Needed so that Push works consistently on every page/view.
 		UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
