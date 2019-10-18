@@ -28,7 +28,7 @@ public class CreateANewProjectWizardPanel extends VerticalLayout
 				projectNameTextField,
 				WrapperUtils.wrapWidthFullCenterHorizontal(createProjectButton));
 
-		getStyle().set("border", "1px solid #ccc");
+		setClassName("view-section"); // adds the white 'panel' style with rounded corners
 
 		bindFields(binder);
 

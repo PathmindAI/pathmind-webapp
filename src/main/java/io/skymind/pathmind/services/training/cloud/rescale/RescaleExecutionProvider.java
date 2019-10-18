@@ -37,7 +37,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     private static final Map<RLLib, List<String>> rllibMap = Map.of(
             RLLib.VERSION_0_7_0, Arrays.asList(
                     "LZAENb", // conda
-                    "uLWose", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-10-08 DH version
+                    "jKjXa", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-10-15 DH version
                     "fDRBHd"  // OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz
             )
     );
@@ -95,7 +95,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
             if (statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))) {
                 final JobStatus status = statuses.stream().filter(it -> it.getStatus().equals("Completed")).findFirst().get();
 
-                // file check
+                // file check that has an error message
                 Map<String, String> map = client.outputFiles(jobHandle, "1").getResults()
                         .parallelStream()
                         .filter(it -> it.getPath().endsWith("process_output.log"))
@@ -104,9 +104,14 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                             final String contents = new String(client.fileContents(it.getId()));
                             return Map.entry(key, contents);
                         })
+                        // this is the known error message so far, todo i will revisit below after risecamp
+                        // raw error logs are https://3.basecamp.com/3684163/buckets/11875773/vaults/2132519274
                         .filter(it ->
                                 it.getValue().contains("python3: can't open file 'rllibtrain.py': [Errno 2] No such file or directory")
                                 || it.getValue().contains("SyntaxError: invalid syntax")
+                                || it.getValue().contains("Fatal Python error: Aborted")
+                                || it.getValue().contains("Fatal Python error: Segmentation fault")
+                                || it.getValue().contains("Worker crashed during call to train()")
                         )
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
@@ -143,15 +148,20 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
         } else if (runStatus.equals(RunStatus.Running)) {
             // Job is still running, we have to tail files
-            return client.workingFiles(jobHandle, "1")
-                    .parallelStream()
-                    .filter(it -> it.getPath().endsWith("progress.csv"))
-                    .map(it -> {
-                        final String key = new File(it.getPath()).getParentFile().getName();
-                        final String contents = new String(client.tail(jobHandle, "1", it.getPath()));
-                        return Map.entry(key, contents);
-                    })
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            try {
+                return client.workingFiles(jobHandle, "1")
+                        .parallelStream()
+                        .filter(it -> it.getPath().endsWith("progress.csv"))
+                        .map(it -> {
+                            final String key = new File(it.getPath()).getParentFile().getName();
+                            final String contents = new String(client.tail(jobHandle, "1", it.getPath()));
+                            return Map.entry(key, contents);
+                        })
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            } catch (Exception e) {
+                log.debug("Errors on getting progress.csv" , e);
+                return Collections.emptyMap();
+            }
         }
 
         return Collections.emptyMap();
