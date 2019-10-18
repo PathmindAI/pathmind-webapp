@@ -11,8 +11,13 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 class SignUpView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles sign-up-view-styles"></style>
-      <div class="content-wrapper">
+      <style include="pathmind-dialog-view">
+        .content {
+          max-width: 600px;
+          width: 600px;
+        }
+      </style>
+      <div class="content">
         <vaadin-tabs>
           <vaadin-tab>
             {{title}}
@@ -20,7 +25,7 @@ class SignUpView extends PolymerElement {
         </vaadin-tabs>
         <vaadin-vertical-layout
           style="width: 100%;"
-          class="content"
+          class="inner-content"
           id="emailPart"
         >
           <h3>Sign up for 30 days Free Trial!</h3>
@@ -53,7 +58,7 @@ class SignUpView extends PolymerElement {
 
         <vaadin-vertical-layout
           style="width: 100%;"
-          class="content"
+          class="inner-content"
           id="passwordPart"
         >
           <vaadin-password-field

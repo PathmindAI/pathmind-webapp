@@ -30,6 +30,7 @@ import io.skymind.pathmind.ui.utils.VaadinUtils;
 @CssImport(value = "./styles/views/new-experiment-view.css")
 @CssImport(value = "./styles/views/login-view-styles.css", id = "login-view-styles")
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
+@CssImport(value = "./styles/views/pathmind-dialog-view.css", id = "pathmind-dialog-view")
 @Theme(Lumo.class)
 public class MainLayout extends AppLayout implements PageConfigurator
 {

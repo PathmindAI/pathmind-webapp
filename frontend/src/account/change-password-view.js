@@ -11,71 +11,7 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 class ChangePasswordView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles">
-        :host {
-          padding: 40px;
-          background: var(--pm-app-bg-color);
-          height: 100%;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          box-sizing: border-box;
-          align-items: center;
-        }
-
-        .inner-content {
-          margin-top: 5px;
-          background: #fff;
-          border: 1px solid #ccc;
-          border-radius: 0.3em;
-          padding: 50px 80px 30px;
-        }
-
-        vaadin-password-field {
-          width: 100%;
-        }
-
-        #buttonsCont {
-          margin-top: 60px;
-          width: 100%;
-        }
-
-        vaadin-button {
-          margin: 5px auto;
-        }
-
-        #updateBtn {
-          width: 250px;
-        }
-
-        .notes {
-          font-size: 0.9em;
-          font-weight: 700;
-          color: #979797;
-          padding-left: 15px;
-          padding-top: 5px;
-        }
-
-        .notes span:last-child {
-          padding-bottom: 20px;
-        }
-
-        .notes .secondary {
-          color: #e7e7e7;
-        }
-        .content {
-          max-width: 500px;
-          margin-top: 20px;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        vaadin-tabs {
-          width: 100%;
-        }
-      </style>
+    <style include="pathmind-dialog-view"></style>
       <div class="content">
         <vaadin-tabs>
           <vaadin-tab>
@@ -113,7 +49,7 @@ class ChangePasswordView extends PolymerElement {
             label="Confirm New Password"
           ></vaadin-password-field>
           <vaadin-vertical-layout id="buttonsCont">
-            <vaadin-button id="updateBtn" theme="primary"
+            <vaadin-button id="updateBtn" theme="primary"  class="positive-action-btn"
               >Change Password</vaadin-button
             >
             <vaadin-button id="cancelBtn" theme="tertiary"
