@@ -26,15 +26,14 @@ public class AccountHeaderPanel extends HorizontalLayout
 		MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER), username));
 
 		account.getSubMenu().addItem("Account", e -> UI.getCurrent().navigate(AccountView.class));
-		account.getSubMenu().addItem("Logout", e -> UI.getCurrent().navigate("/logout"));
+		account.getSubMenu().addItem("Logout", e ->
+				UI.getCurrent().getPage().executeJavaScript("location.assign('/logout')"));
 
 		addClassName("nav-account-links");
 	}
 
 	private HorizontalLayout createItem(Icon icon, String text) {
-		Span label = new Span(text);
-
-		HorizontalLayout hl = WrapperUtils.wrapWidthFullHorizontal(icon, label);
+		HorizontalLayout hl = WrapperUtils.wrapWidthFullHorizontal(icon, new Span(text));
 		return hl;
 	}
 }
