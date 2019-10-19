@@ -58,7 +58,8 @@ public class UploadModelWizardPanel extends VerticalLayout
 		checkYourModelButton.setVisible(false);
 		fileCheckPanel.setVisible(false);
 
-		getStyle().set("border", "1px solid #ccc");
+		setClassName("view-section"); // adds the white 'panel' style with rounded corners
+
 		setWidthFull();
 	}
 
@@ -88,6 +89,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 
 				log.info("Upload completed");
 				checkYourModelButton.setVisible(true);
+				checkYourModelButton.click(); // Rigging this to automatically run the file check
 			} catch (IOException e) {
 				log.error("Upload failed", e);
 			}

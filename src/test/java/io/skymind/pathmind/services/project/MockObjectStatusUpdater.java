@@ -21,10 +21,4 @@ public class MockObjectStatusUpdater implements StatusUpdater {
     public void fileSuccessfullyVerified() {
         log.info("File successfully verified:");
     }
-
-    @Override
-    public void fileCheckComplete(FileCheckResult anylogicFileCheckResult) {
-        log.info("File check complete:");
-
-    }
 }

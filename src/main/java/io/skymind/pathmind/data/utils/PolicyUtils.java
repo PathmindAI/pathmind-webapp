@@ -9,19 +9,12 @@ import io.skymind.pathmind.utils.DateAndTimeUtils;
 import io.skymind.pathmind.utils.ObjectMapperHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tomcat.jni.Local;
 
-import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class PolicyUtils
 {
 	private PolicyUtils() {
-	}
-
-	public static final String getDuration(Policy policy) {
-		return DateAndTimeUtils.formatTime(RunUtils.getElapsedTime(policy.getRun()));
 	}
 
 	private static Logger log = LogManager.getLogger(PolicyUtils.class);
@@ -41,19 +34,26 @@ public class PolicyUtils
 		}
 	}
 
-	public static LocalDateTime getRunCompletedTime(Policy policy) {
-		{
-			if (!RunStatus.Completed.name().equalsIgnoreCase(getRunStatus(policy))) {
-				return null;
-			}
+	public static LocalDateTime getRunCompletedTime(Policy policy)
+	{
+		if (!RunStatus.Completed.name().equalsIgnoreCase(getRunStatus(policy))) {
+			return null;
+		}
 
-			try {
+		try {
+			return objectMapper.readValue(policy.getProgress(), Progress.class).getStoppedAt();
+		} catch (Exception e) {
+			log.debug(e.getMessage(), e);
+			return null;
+		}
+	}
 
-				return objectMapper.readValue(policy.getProgress(), Progress.class).getStoppedAt();
-			} catch (Exception e) {
-				log.debug(e.getMessage(), e);
-				return null;
-			}
+	public static LocalDateTime getRunStartTime(Policy policy) {
+		try {
+			return objectMapper.readValue(policy.getProgress(), Progress.class).getStartedAt();
+		} catch (Exception e) {
+			log.debug(e.getMessage(), e);
+			return null;
 		}
 	}
 
@@ -75,17 +75,7 @@ public class PolicyUtils
 		}
 	}
 
-	public static String getElaspedTime(Policy policy) {
-		try {
-			Progress progress = objectMapper.readValue(policy.getProgress(), Progress.class);
-			if (progress.getStoppedAt() != null) {
-				return Duration.between(progress.getStartedAt(), progress.getStoppedAt()).toString();
-			} else {
-				return null;
-			}
-		} catch (IOException e) {
-			log.debug(e.getMessage(), e);
-			return null;
-		}
+	public static final String getElapsedTime(Policy policy) {
+		return DateAndTimeUtils.formatDurationTime(RunUtils.getElapsedTime(policy.getRun()));
 	}
 }

@@ -2,10 +2,11 @@ package io.skymind.pathmind.ui.views.project;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
@@ -15,10 +16,10 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
+import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.model.ModelsView;
@@ -26,9 +27,11 @@ import io.skymind.pathmind.ui.views.project.filter.ProjectFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
-@StyleSheet("frontend://styles/styles.css")
+@CssImport("./styles/styles.css")
 @Route(value="projects", layout = MainLayout.class)
 public class ProjectsView extends PathMindDefaultView
 {
@@ -36,26 +39,25 @@ public class ProjectsView extends PathMindDefaultView
 	private ProjectDAO projectDAO;
 
 	private List<Project> projects;
-
 	private Grid<Project> projectGrid;
 
-	public ProjectsView()
-	{
+	public ProjectsView() {
 		super();
 	}
 
 	protected Component getMainContent()
 	{
 		setupProjectGrid();
+		addClassName("projects-view");
 
-		VerticalLayout gridWrapper = WrapperUtils.wrapCenterVertical(
-				UIConstants.CENTERED_TABLE_WIDTH,
-				WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
-				getTabbedPanel(),
-				projectGrid,
-				new NewProjectButton());
-
-		gridWrapper.getElement().getStyle().set("padding-top", "100px");
+		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
+					getTabbedPanel(),
+				new ViewSection(
+						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
+					projectGrid
+				),
+				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
+		gridWrapper.addClassName("content");
 		return gridWrapper;
 	}
 
@@ -78,22 +80,22 @@ public class ProjectsView extends PathMindDefaultView
 		projectGrid.addColumn(Project::getName)
 				.setHeader("Name")
 				.setSortable(true);
-		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+
+		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+				.setComparator(Comparator.comparing(Project::getDateCreated))
 				.setHeader("Date Created")
 				.setSortable(true);
-		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+
+		Grid.Column<Project> lastActivityColumn = projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+				.setComparator(Comparator.comparing(Project::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setSortable(true);
 
-		projectGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-		projectGrid.addSelectionListener(event ->
-				event.getFirstSelectedItem().ifPresent(selectedProject ->
-						UI.getCurrent().navigate(ModelsView.class, selectedProject.getId())));
+		projectGrid.sort(Arrays.asList(new GridSortOrder<>(lastActivityColumn, SortDirection.DESCENDING)));
 
-		projectGrid.setWidth(UIConstants.CENTERED_TABLE_WIDTH);
-		projectGrid.setMaxWidth(UIConstants.CENTERED_TABLE_WIDTH);
-		projectGrid.setMaxHeight("500px");
-		projectGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+		projectGrid.addItemClickListener(event -> {
+			getUI().ifPresent(ui -> ui.navigate(ModelsView.class, event.getItem().getId()));
+		});
 	}
 
 	private List<Project> getProjects() {
