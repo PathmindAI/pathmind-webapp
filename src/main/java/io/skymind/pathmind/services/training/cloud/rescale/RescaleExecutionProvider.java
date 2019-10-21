@@ -9,6 +9,7 @@ import io.skymind.pathmind.services.training.cloud.rescale.api.dto.*;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
+import io.skymind.pathmind.services.training.versions.RescaleFileManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -22,35 +23,14 @@ import java.util.stream.Collectors;
 public class RescaleExecutionProvider implements ExecutionProvider {
     private Logger log = LogManager.getLogger(RescaleExecutionProvider.class);
 
-    private static final Map<PathmindHelper, List<String>> pathmindHelperMap = Map.of(
-            PathmindHelper.VERSION_0_0_24, Arrays.asList(
-                    "kuQJAd" // PathmindPolicy.jar, 2019-08-28
-            )
-    );
-
-    private static final Map<AnyLogic, List<String>> anylogicMap = Map.of(
-            AnyLogic.VERSION_8_5, Arrays.asList(
-                    "nbwVpg" // Anylogic 8.5 Base Environment: baseEnv.zip
-            ),
-            AnyLogic.VERSION_8_5_1, Arrays.asList(
-                    "FcrKm" // Anylogic 8.5.1 Base Environment: baseEnv.zip
-            )
-    );
-
-    private static final Map<RLLib, List<String>> rllibMap = Map.of(
-            RLLib.VERSION_0_7_0, Arrays.asList(
-                    "LZAENb", // conda
-                    "jKjXa", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-10-15 DH version
-                    "fDRBHd"  // OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz
-            )
-    );
-
     private final RescaleRestApiClient client;
     private final RescaleMetaDataService metaDataService;
+    private final RescaleFileManager fileManager;
 
     public RescaleExecutionProvider(RescaleRestApiClient client, RescaleMetaDataService metaDataService) {
         this.client = client;
         this.metaDataService = metaDataService;
+        this.fileManager = RescaleFileManager.getInstance();
     }
 
     @Override
@@ -345,10 +325,8 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "mv examples/train.sh .",
                         "cd .."
                 ));
-                files.addAll(rllibMap.getOrDefault(rllibVersion, List.of())
-                        .stream()
-                        .map(it -> new FileReference(it, false))
-                        .collect(Collectors.toList()));
+
+                files.addAll(this.fileManager.getFiles(rllibVersion));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported RLLib Version: " + rllibVersion);
@@ -364,10 +342,8 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "mv baseEnv/* work/",
                         "rm -r baseEnv"
                 ));
-                files.addAll(anylogicMap.getOrDefault(anylogicVersion, List.of())
-                        .stream()
-                        .map(it -> new FileReference(it, false))
-                        .collect(Collectors.toList()));
+
+                files.addAll(this.fileManager.getFiles(anylogicVersion));
                 break;
             case VERSION_8_5_1:
                 instructions.addAll(Arrays.asList(
@@ -376,10 +352,8 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "mv baseEnv/* work/",
                         "rm -r baseEnv"
                 ));
-                files.addAll(anylogicMap.getOrDefault(anylogicVersion, List.of())
-                        .stream()
-                        .map(it -> new FileReference(it, false))
-                        .collect(Collectors.toList()));
+
+                files.addAll(this.fileManager.getFiles(anylogicVersion));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported AnyLogic Version: " + anylogicVersion);
@@ -392,10 +366,8 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));
-                files.addAll(pathmindHelperMap.getOrDefault(pathmindHelperVersion, List.of())
-                        .stream()
-                        .map(it -> new FileReference(it, false))
-                        .collect(Collectors.toList()));
+
+                files.addAll(this.fileManager.getFiles(pathmindHelperVersion));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported Pathmind Helper Version: " + pathmindHelperVersion);
