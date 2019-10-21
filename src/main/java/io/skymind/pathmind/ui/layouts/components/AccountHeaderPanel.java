@@ -21,6 +21,7 @@ public class AccountHeaderPanel extends HorizontalLayout
 		MenuBar menuBar = new MenuBar();
 		menuBar.setThemeName("tertiary");
 		add(menuBar);
+		menuBar.addClassName("account-menu");
 
 		String username = StringUtils.isBlank(user.getName()) ? user.getEmail() : user.getName();
 		MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER), username));
