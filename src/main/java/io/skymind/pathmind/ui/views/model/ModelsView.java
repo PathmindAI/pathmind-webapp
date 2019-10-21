@@ -44,6 +44,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	private long projectId;
 	private List<Model> models;
 
+	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
 
 	public ModelsView()
@@ -54,6 +55,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	protected Component getMainContent()
 	{
 		setupGrid();
+		setupArchivesTabPanel();
+
 		addClassName("models-view");
 
 		// BUG -> I didn't have to really investigate but it looks like we may need
@@ -63,7 +66,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
 				new ViewSection(
 						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
-						getArchivesTabPanel(),
+						archivesTabPanel,
 						modelGrid
 				)
 		);
@@ -71,8 +74,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		return gridWrapper;
 	}
 
-	private ArchivesTabPanel getArchivesTabPanel() {
-		return new ArchivesTabPanel<Model>(
+	private void setupArchivesTabPanel() {
+		archivesTabPanel = new ArchivesTabPanel<Model>(
 				"Models",
 				modelGrid,
 				this::getModels,
@@ -125,6 +128,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
 		modelGrid.setItems(models);
+		archivesTabPanel.initData();
 	}
 
 	@Override

@@ -8,8 +8,7 @@ import "@vaadin/vaadin-text-field/src/vaadin-password-field.js";
 class LoginView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles login-view-styles">
-      </style>
+      <style include="shared-styles login-view-styles"></style>
       <div class="landing-page"></div>
       <div class="login-panel">
         <label class="welcome-text">Welcome to</label>
