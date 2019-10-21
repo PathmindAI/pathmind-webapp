@@ -15,8 +15,12 @@
    border-bottom: var(--_lumo-grid-border-width) solid var(--_lumo-grid-border-color);
 }
 
-#items [part~="row"][ODD]:not([selected]) [part~="body-cell"], #items [part~="row"][ODD] [part~="details-cell"] {
+#items [part~="row"][ODD]:not([selected]):not(:hover) [part~="body-cell"], #items [part~="row"][ODD]:not([selected]):not(:hover) [part~="details-cell"] {
    background: var(--pm-highlight-light);
+}
+
+#items [part~="row"]:hover [part~="body-cell"] {
+   background: var(--lumo-shade-10pct);
 }
 
 :host {
