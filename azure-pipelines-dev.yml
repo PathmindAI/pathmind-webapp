@@ -8,7 +8,7 @@ variables:
   MAVEN_OPTS: '-Xmx1072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
 
 trigger:
-  - master
+  - dev
 
 pool:
   vmImage: 'Ubuntu-16.04'
@@ -26,8 +26,6 @@ steps:
     inputs:
       workingDir: '$(System.DefaultWorkingDirectory)'
       command: 'install'
-
-
 
   - task: CacheBeta@0
     inputs:
@@ -62,3 +60,4 @@ steps:
     inputs:
       artifactName: 'drop'
       pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+
