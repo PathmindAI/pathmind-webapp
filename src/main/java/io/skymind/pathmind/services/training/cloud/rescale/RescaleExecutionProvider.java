@@ -31,6 +31,9 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     private static final Map<AnyLogic, List<String>> anylogicMap = Map.of(
             AnyLogic.VERSION_8_5, Arrays.asList(
                     "nbwVpg" // Anylogic 8.5 Base Environment: baseEnv.zip
+            ),
+            AnyLogic.VERSION_8_5_1, Arrays.asList(
+                    "FcrKm" // Anylogic 8.5.1 Base Environment: baseEnv.zip
             )
     );
 
@@ -355,6 +358,18 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     private void installAnyLogic(AnyLogic anylogicVersion, List<String> instructions, List<FileReference> files) {
         switch (anylogicVersion) {
             case VERSION_8_5:
+                instructions.addAll(Arrays.asList(
+                        "unzip baseEnv.zip",
+                        "rm baseEnv.zip",
+                        "mv baseEnv/* work/",
+                        "rm -r baseEnv"
+                ));
+                files.addAll(anylogicMap.getOrDefault(anylogicVersion, List.of())
+                        .stream()
+                        .map(it -> new FileReference(it, false))
+                        .collect(Collectors.toList()));
+                break;
+            case VERSION_8_5_1:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip",
                         "rm baseEnv.zip",
