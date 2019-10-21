@@ -18,7 +18,7 @@ public class NotificationService
 {
 
 	private static Logger log = LogManager.getLogger(NotificationService.class);
-	private final String verificationRoute = "/verify/";
+	private final String verificationRoute = "/email-verification/";
 	private final String resetPasswordRoute = "/reset-password/";
 	private final String emailValidForHours = "48";
 

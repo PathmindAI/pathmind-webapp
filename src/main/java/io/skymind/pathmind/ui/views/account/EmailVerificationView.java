@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 
 @Tag("email-verification-view")
 @JsModule("./src/account/email-verification-view.js")
-@Route(value="email-verification-view")
+@Route(value="email-verification")
 public class EmailVerificationView extends PolymerTemplate<EmailVerificationView.Model>
 		implements HasUrlParameter<String>, AfterNavigationObserver
 {
