@@ -39,8 +39,6 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 
 	private PathmindUser user;
 
-	private Binder<PathmindUser> binder;
-
 	@Autowired
 	private UserService userService;
 
