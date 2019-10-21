@@ -95,9 +95,7 @@ class LoginView extends PolymerElement {
   }
 
   login() {
-    console.warn("login attemt");
     if (!this.$.username.invalid && !this.$.password.invalid) {
-      console.warn("login attemt: go");
       this.$.form.submit();
     }
   }
