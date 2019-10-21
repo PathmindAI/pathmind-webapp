@@ -6,6 +6,7 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -41,6 +42,8 @@ public class ProjectsView extends PathMindDefaultView
 	private List<Project> projects;
 	private Grid<Project> projectGrid;
 
+	private ArchivesTabPanel archivesTabPanel;
+
 	public ProjectsView() {
 		super();
 	}
@@ -48,11 +51,13 @@ public class ProjectsView extends PathMindDefaultView
 	protected Component getMainContent()
 	{
 		setupProjectGrid();
+		setupTabbedPanel();
+
 		addClassName("projects-view");
 
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-					getTabbedPanel(),
-				new ViewSection(
+					archivesTabPanel,
+					new ViewSection(
 						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
 					projectGrid
 				),
@@ -65,8 +70,8 @@ public class ProjectsView extends PathMindDefaultView
 		return new SearchBox<Project>(projectGrid, new ProjectFilter());
 	}
 
-	private ArchivesTabPanel getTabbedPanel() {
-		return new ArchivesTabPanel<Project>(
+	private void setupTabbedPanel() {
+		archivesTabPanel = new ArchivesTabPanel<Project>(
 				"Projects",
 				projectGrid,
 				this::getProjects,
@@ -120,5 +125,6 @@ public class ProjectsView extends PathMindDefaultView
 	protected void updateScreen(BeforeEnterEvent event)
 	{
 		projectGrid.setItems(projects);
+		archivesTabPanel.initData();
 	}
 }
