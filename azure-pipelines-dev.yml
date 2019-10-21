@@ -27,8 +27,6 @@ steps:
       workingDir: '$(System.DefaultWorkingDirectory)'
       command: 'install'
 
-
-
   - task: CacheBeta@0
     inputs:
       key: maven | **/pom.xml
