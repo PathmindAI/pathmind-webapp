@@ -49,8 +49,6 @@ public class ChangePasswordView extends PolymerTemplate<ChangePasswordView.Model
 
 	private PathmindUser user;
 
-	private Binder<PathmindUser> binder;
-
 	@Autowired
 	private UserService userService;
 
