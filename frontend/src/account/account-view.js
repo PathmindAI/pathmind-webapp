@@ -8,16 +8,22 @@ import "@vaadin/vaadin-ordered-layout/src/vaadin-vertical-layout.js";
 class AccountView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles">
+      <style>
         :host {
-          display: block;
           padding: 40px;
+          background: var(--pm-app-bg-color);
+          height: 100%;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          box-sizing: border-box;
+          align-items: center;
         }
         .info {
           color: #696969;
         }
 
-        #account-content {
+        .inner-content {
           margin-top: 5px;
           background: #fff;
           border-radius: var(--lumo-border-radius);
@@ -46,7 +52,7 @@ class AccountView extends PolymerElement {
         }
 
         .support-cont {
-          text-align: center
+          text-align: center;
         }
         .support {
           margin: auto;
@@ -54,71 +60,80 @@ class AccountView extends PolymerElement {
           color: #696969;
           padding-top: 10px;
         }
-        
-        .content {
-    max-width: 500px;
-    margin-top: 20px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    }
 
+        .content {
+          max-width: 500px;
+          margin-top: 20px;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        vaadin-tabs {
+          width: 100%;
+        }
       </style>
       <div class="content">
-      <vaadin-tabs>
-        <vaadin-tab>
-          Account Information
-        </vaadin-tab>
-      </vaadin-tabs>
-      <!-- <img src="/frontend/images/pathmind-logo.png">
-      <img src="frontend/images/pathmind-logo.png">
-      <img src="images/pathmind-logo.png"> -->
-      <vaadin-vertical-layout style="width: 100%;" id="account-content">
-        <vaadin-horizontal-layout style="width: 100%;" class="block">
-          <vaadin-vertical-layout class="info">
-            <div class="title">User Email</div>
-            <div class="data">{{email}}</div>
-            <div class="title">First Name</div>
-            <div class="data">{{firstName}}</div>
-            <div class="title">Last Name</div>
-            <div class="data">{{lastName}}</div>
-          </vaadin-vertical-layout>
-          <vaadin-button id="editInfoBtn">
-            Edit
-          </vaadin-button>
-        </vaadin-horizontal-layout>
-        <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
-          <vaadin-vertical-layout class="info">
-            <div class="title">Password</div>
-            <div class="data">* * * * * * * * *</div>
-          </vaadin-vertical-layout>
-          <vaadin-button id="changePasswordBtn">
-            Change
-          </vaadin-button>
-        </vaadin-horizontal-layout>
-        <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
-          <vaadin-vertical-layout class="info">
-            <div class="title">Current Subscription</div>
-            <div class="data">{{subscription}}</div>
-          </vaadin-vertical-layout>
-          <vaadin-button id="upgradeBtn">
-            Upgrade
-          </vaadin-button>
-        </vaadin-horizontal-layout>
-        <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
-          <vaadin-vertical-layout class="info">
-            <div class="title">Payment</div>
-            <div class="data">{{billingInfo}}</div>
-          </vaadin-vertical-layout>
-          <vaadin-button id="editPaymentBtn">
-            Edit
-          </vaadin-button>
-        </vaadin-horizontal-layout>
-      </vaadin-vertical-layout>
-      <div class="support-cont">
-      </div>
-        <a class="support" href="/support">Contact Support</a>
+        <vaadin-tabs>
+          <vaadin-tab>
+            Account Information
+          </vaadin-tab>
+        </vaadin-tabs>
+
+        <vaadin-vertical-layout style="width: 100%;" class="inner-content">
+          <vaadin-horizontal-layout style="width: 100%;" class="block">
+            <vaadin-vertical-layout class="info">
+              <div class="title">User Email</div>
+              <div class="data">{{email}}</div>
+              <div class="title">First Name</div>
+              <div class="data">{{firstName}}</div>
+              <div class="title">Last Name</div>
+              <div class="data">{{lastName}}</div>
+            </vaadin-vertical-layout>
+            <vaadin-button id="editInfoBtn">
+              Edit
+            </vaadin-button>
+          </vaadin-horizontal-layout>
+          <vaadin-horizontal-layout
+            style="width: 100%;"
+            class="block border-top"
+          >
+            <vaadin-vertical-layout class="info">
+              <div class="title">Password</div>
+              <div class="data">* * * * * * * * *</div>
+            </vaadin-vertical-layout>
+            <vaadin-button id="changePasswordBtn">
+              Change
+            </vaadin-button>
+          </vaadin-horizontal-layout>
+          <vaadin-horizontal-layout
+            style="width: 100%;"
+            class="block border-top"
+          >
+            <vaadin-vertical-layout class="info">
+              <div class="title">Current Subscription</div>
+              <div class="data">{{subscription}}</div>
+            </vaadin-vertical-layout>
+            <vaadin-button id="upgradeBtn">
+              Upgrade
+            </vaadin-button>
+          </vaadin-horizontal-layout>
+          <vaadin-horizontal-layout
+            style="width: 100%;"
+            class="block border-top"
+          >
+            <vaadin-vertical-layout class="info">
+              <div class="title">Payment</div>
+              <div class="data">{{billingInfo}}</div>
+            </vaadin-vertical-layout>
+            <vaadin-button id="editPaymentBtn">
+              Edit
+            </vaadin-button>
+          </vaadin-horizontal-layout>
+        </vaadin-vertical-layout>
+        <div class="support-cont"></div>
+        <a class="support" href="mailto:contact@pathmind.io">Contact Support</a>
       </div>
     `;
   }
