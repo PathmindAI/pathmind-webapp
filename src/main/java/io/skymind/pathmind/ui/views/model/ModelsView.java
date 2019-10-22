@@ -16,6 +16,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
@@ -31,6 +32,7 @@ import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 @CssImport("./styles/styles.css")
@@ -39,10 +41,13 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 {
 	@Autowired
 	private ModelDAO modelDAO;
+	@Autowired
+	private UserDAO userDAO;
 
 	private long projectId;
 	private List<Model> models;
 
+	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
 
 	public ModelsView()
@@ -53,6 +58,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	protected Component getMainContent()
 	{
 		setupGrid();
+		setupArchivesTabPanel();
+
 		addClassName("models-view");
 
 		// BUG -> I didn't have to really investigate but it looks like we may need
@@ -62,7 +69,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
 				new ViewSection(
 						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
-						getArchivesTabPanel(),
+						archivesTabPanel,
 						modelGrid
 				)
 		);
@@ -70,8 +77,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		return gridWrapper;
 	}
 
-	private ArchivesTabPanel getArchivesTabPanel() {
-		return new ArchivesTabPanel<Model>(
+	private void setupArchivesTabPanel() {
+		archivesTabPanel = new ArchivesTabPanel<Model>(
 				"Models",
 				modelGrid,
 				this::getModels,
@@ -90,9 +97,11 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 				.setHeader("Model")
 				.setSortable(true);
 		modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+				.setComparator(Comparator.comparing(Model::getDateCreated))
 				.setHeader("Date Created")
 				.setSortable(true);
 		Grid.Column<Model> lastActivityColumn = modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+				.setComparator(Comparator.comparing(Model::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setSortable(true);
 
@@ -112,9 +121,13 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	}
 
 	@Override
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToProject(projectId);
+	}
+
+	@Override
 	protected void loadData() throws InvalidDataException {
 		models = modelDAO.getModelsForProject(projectId);
-
 		if(models == null || models.isEmpty())
 			throw new InvalidDataException("Attempted to access Models for Project: " + projectId);
 	}
@@ -122,6 +135,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
 		modelGrid.setItems(models);
+		archivesTabPanel.initData();
 	}
 
 	@Override

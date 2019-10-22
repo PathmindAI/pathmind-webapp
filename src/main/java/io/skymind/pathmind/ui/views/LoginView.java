@@ -87,6 +87,7 @@ public class LoginView extends HorizontalLayout
 		LoginI18n loginI18n = LoginI18n.createDefault();
 		loginI18n.setHeader(new LoginI18n.Header());
 		loginI18n.getHeader().setTitle("");
+		loginI18n.setAdditionalInformation("By clicking Log In, you agree to Pathmind's Terms of Use and Privacy Policy. Build - Test");
 		loginI18n.getForm().setUsername("Email");
 		loginI18n.getForm().setSubmit("Sign in");
 		loginI18n.getForm().setForgotPassword("Forgot your password?");
