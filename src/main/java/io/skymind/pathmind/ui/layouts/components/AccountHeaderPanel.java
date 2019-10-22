@@ -46,7 +46,7 @@ public class AccountHeaderPanel extends HorizontalLayout
 
 	private void subscribeToEventBus(UI ui, Flux<PathmindBusEvent> consumer) {
 		PolicyBusEventUtils.consumerBusEventBasedOnUserUpdate(
-				consumer, pathmindUser -> PushUtils.push(ui, () -> updateData(pathmindUser)));
+				consumer, pathmindUser -> PushUtils.push(UI.getCurrent(), () -> updateData(pathmindUser)));
 	}
 
 //	TODO: update after fix with DEV.
