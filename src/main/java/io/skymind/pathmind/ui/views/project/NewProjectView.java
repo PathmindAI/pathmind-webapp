@@ -92,6 +92,9 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel);
 
+		// This is only used in case we setup MockDefaultValues through ProjectUtils above.
+		projectBinder.readBean(project);
+
 		setVisibleWizardPanel(createProjectPanel);
 
 		createProjectPanel.addButtonClickListener(click -> handleNewProjectClicked());
