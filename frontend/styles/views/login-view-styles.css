@@ -1,4 +1,4 @@
-:host {
+.login-panel-cont {
     display: flex;
     height: 100%;
     width: 100%;
@@ -73,6 +73,12 @@ vaadin-button {
     border-radius: 100px;
 }
 
+.error-message h5,
 [part="error-message"] {
     color: var(--pm-danger-color);
+    font-size: 0.9em;
 }
+
+.login-panel {
+    margin: auto;
+  }

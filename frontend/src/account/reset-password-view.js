@@ -27,7 +27,6 @@ class ResetPasswordView extends PolymerElement {
           <vaadin-email-field
             id="email"
             label="Email"
-            name="email"
             error-message="Please enter a valid email address"
             clear-button-visible
             required
