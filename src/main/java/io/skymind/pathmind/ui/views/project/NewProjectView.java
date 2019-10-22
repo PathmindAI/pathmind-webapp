@@ -185,11 +185,6 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 		});
 	}
 
-    @Override
-	public void fileCheckComplete(FileCheckResult anylogicFileCheckResult) {
-		//TODO : Get result and show errors on screen or result on screen.
-	}
-
 	@Override
 	protected boolean isAccessAllowedForUser() {
 		return true;
