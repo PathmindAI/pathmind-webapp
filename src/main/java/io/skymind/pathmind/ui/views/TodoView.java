@@ -24,4 +24,8 @@ public class TodoView extends PathMindDefaultView
 		return new Label("");
 	}
 
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return true;
+	}
 }

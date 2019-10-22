@@ -18,6 +18,7 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
@@ -46,11 +47,13 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	private ModelDAO modelDAO;
 	@Autowired
 	private ProjectDAO projectDAO;
+	private UserDAO userDAO;
 
 	private long projectId;
 	private String projectName;
 	private List<Model> models;
 
+	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
 
 	public ModelsView()
@@ -61,6 +64,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	protected Component getMainContent()
 	{
 		setupGrid();
+		setupArchivesTabPanel();
+
 		addClassName("models-view");
 
 		// BUG -> I didn't have to really investigate but it looks like we may need
@@ -71,7 +76,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 				new ViewSection(
   				WrapperUtils.wrapWidthFullCenterHorizontal(getBackToProjectsButton()),
 						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
-						getArchivesTabPanel(),
+						archivesTabPanel,
 						modelGrid
 				)
 		);
@@ -79,8 +84,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		return gridWrapper;
 	}
 
-	private ArchivesTabPanel getArchivesTabPanel() {
-		return new ArchivesTabPanel<Model>(
+	private void setupArchivesTabPanel() {
+		archivesTabPanel = new ArchivesTabPanel<Model>(
 				"Models",
 				modelGrid,
 				this::getModels,
@@ -128,6 +133,11 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	}
 
 	@Override
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToProject(projectId);
+	}
+
+	@Override
 	protected void loadData() throws InvalidDataException {
 		models = modelDAO.getModelsForProject(projectId);
 		if(models == null || models.isEmpty())
@@ -139,6 +149,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
 		modelGrid.setItems(models);
+		archivesTabPanel.initData();
 	}
 
 	@Override
