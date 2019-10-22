@@ -22,6 +22,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.mock.MockDefaultValues;
 import io.skymind.pathmind.services.RewardValidationService;
@@ -63,9 +64,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Autowired
     private ExperimentDAO experimentDAO;
-
     @Autowired
     private TrainingService trainingService;
+	@Autowired
+	private UserDAO userDAO;
 
     private Binder<Experiment> binder;
 
@@ -166,6 +168,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 //					});
 //				});
 //		startDiscoveryButton.setIconAfterText(true);
+
         return WrapperUtils.wrapWidthFullCenterVertical(startRunButton);
     }
 
@@ -224,6 +227,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         });
     }
 
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToExperiment(experimentId);
+	}
+    
     @Override
     public void setParameter(BeforeEvent event, Long experimentId) {
         this.experimentId = experimentId;

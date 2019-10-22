@@ -15,6 +15,7 @@ import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -45,11 +46,14 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     private RunDAO runDAO;
     @Autowired
     private ModelDAO modelDAO;
+	@Autowired
+	private UserDAO userDAO;
 
     private long modelId;
     private Model currentModel;
     private List<Experiment> experiments;
 
+    private ArchivesTabPanel archivesTabPanel;
     private ExperimentGrid experimentGrid;
     private TextArea getObservationTextArea;
     private RewardFunctionEditor rewardFunctionEditor;
@@ -63,11 +67,12 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         setupExperimentListPanel();
         setupGetObservationTextArea();
         setupRewardFunctionEditor();
+        setupArchivesTabPanel();
 
         return WrapperUtils.wrapSizeFullVertical(
                 WrapperUtils.wrapWidthFullCenterHorizontal(getBackToModelsButton()),
                 WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
-                getArchivesTabPanel(),
+                archivesTabPanel,
                 WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         WrapperUtils.wrapSizeFullVertical(
                                 experimentGrid),
@@ -103,8 +108,8 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         return new SearchBox<Experiment>(experimentGrid, new ExperimentFilter());
     }
 
-    private ArchivesTabPanel getArchivesTabPanel() {
-        return new ArchivesTabPanel<Experiment>(
+    private void setupArchivesTabPanel() {
+        archivesTabPanel = new ArchivesTabPanel<Experiment>(
                 "Experiments",
                 experimentGrid,
                 this::getExperiments,
@@ -123,6 +128,11 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
             UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
         }
     }
+
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToModel(modelId);
+	}
 
     @Override
     protected Component getTitlePanel() {
@@ -150,6 +160,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     @Override
     protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
         experimentGrid.setItems(experiments);
+        archivesTabPanel.initData();
         getObservationTextArea.setValue(currentModel.getGetObservationForRewardFunction());
     }
 
