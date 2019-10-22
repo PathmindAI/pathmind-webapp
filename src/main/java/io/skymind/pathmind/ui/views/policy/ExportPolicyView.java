@@ -15,7 +15,9 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -37,6 +39,8 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
 	@Autowired
 	private PolicyDAO policyDAO;
+	@Autowired
+	private UserDAO userDAO;
 
 	private ScreenTitlePanel screenTitlePanel;
 
@@ -101,6 +105,11 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	@Override
 	public void setParameter(BeforeEvent event, Long policyId) {
 		this.policyId = policyId;
+	}
+
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToPolicy(policyId);
 	}
 
 	@Override

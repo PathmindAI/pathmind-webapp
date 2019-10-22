@@ -184,4 +184,9 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 			statusPanel.setModelDetails();
 		});
 	}
+
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return true;
+	}
 }

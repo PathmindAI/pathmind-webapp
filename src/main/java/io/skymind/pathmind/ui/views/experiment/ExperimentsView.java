@@ -15,6 +15,7 @@ import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -45,6 +46,8 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     private RunDAO runDAO;
     @Autowired
     private ModelDAO modelDAO;
+	@Autowired
+	private UserDAO userDAO;
 
     private long modelId;
     private Model currentModel;
@@ -125,6 +128,11 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
             UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
         }
     }
+
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToModel(modelId);
+	}
 
     @Override
     protected Component getTitlePanel() {
