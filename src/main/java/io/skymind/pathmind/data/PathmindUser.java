@@ -21,6 +21,7 @@ public class PathmindUser
 	private LocalDateTime deleteAt;
 	private LocalDateTime emailVerifiedAt;
 	private UUID emailVerificationToken;
+	private LocalDateTime passwordResetSendAt;
 
 	private List<Project> projects;
 
@@ -169,5 +170,12 @@ public class PathmindUser
 		this.emailVerificationToken = emailVerificationToken;
 	}
 
+	public LocalDateTime getPasswordResetSendAt() {
+		return passwordResetSendAt;
+	}
+
+	public void setPasswordResetSendAt(LocalDateTime passwordResetSendAt) {
+		this.passwordResetSendAt = passwordResetSendAt;
+	}
 }
 

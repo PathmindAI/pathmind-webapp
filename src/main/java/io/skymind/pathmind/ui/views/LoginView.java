@@ -2,9 +2,10 @@ package io.skymind.pathmind.ui.views;
 
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
+import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
@@ -23,6 +24,7 @@ import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
 import io.skymind.pathmind.ui.views.account.AccountView;
+import io.skymind.pathmind.ui.views.account.ResetPasswordView;
 import io.skymind.pathmind.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
 import io.skymind.pathmind.utils.PathmindUtils;
@@ -38,12 +40,15 @@ import java.util.List;
 public class LoginView extends PolymerTemplate<LoginView.Model>
 		implements AfterNavigationObserver, BeforeEnterObserver, HasDynamicTitle, PageConfigurator
 {
+	@Id("forgotPassword")
+	Button forgotPassword;
 
 	@Autowired
 	private ProjectDAO projectDAO;
 
 	public LoginView(IntercomIntegrationPlugin intercomIntegrationPlugin)
 	{
+		forgotPassword.addClickListener(e -> UI.getCurrent().navigate(ResetPasswordView.class));
 		intercomIntegrationPlugin.addPluginToPage();
 	}
 
@@ -63,7 +68,6 @@ public class LoginView extends PolymerTemplate<LoginView.Model>
 			UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 			return;
 		}
-
 	}
 
 	@Override

@@ -6,8 +6,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
-import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
@@ -44,7 +42,6 @@ public class AccountView extends PolymerTemplate<AccountView.Model>
 
 	@PostConstruct
 	private void init() {
-		initTabs();
 		initContent();
 		initBtns();
 	}
@@ -62,12 +59,6 @@ public class AccountView extends PolymerTemplate<AccountView.Model>
 		getModel().setLastName(user.getLastname());
 		getModel().setSubscription("Early Access");
 		getModel().setBillingInfo("Billing Information");
-	}
-
-	private void initTabs() {
-		Tabs tabs = new Tabs();
-		tabs.add(new Tab("Account information"));
-		tabs.setWidth("100%");
 	}
 
 	public interface Model extends TemplateModel {

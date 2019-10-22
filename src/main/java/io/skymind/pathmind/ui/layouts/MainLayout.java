@@ -12,9 +12,13 @@ import com.vaadin.flow.server.PageConfigurator;
 import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
+import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.ui.layouts.components.AccountHeaderPanel;
 import io.skymind.pathmind.ui.layouts.components.SectionsHeaderPanel;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.UnicastProcessor;
 
 @Push(PushMode.AUTOMATIC)
 @CssImport(value = "./styles/styles.css", id = "shared-styles")
@@ -30,14 +34,16 @@ import io.skymind.pathmind.ui.utils.VaadinUtils;
 @CssImport(value = "./styles/views/new-experiment-view.css")
 @CssImport(value = "./styles/views/login-view-styles.css", id = "login-view-styles")
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
+@CssImport(value = "./styles/views/pathmind-dialog-view.css", id = "pathmind-dialog-view")
 @Theme(Lumo.class)
 public class MainLayout extends AppLayout implements PageConfigurator
 {
-	public MainLayout()
+
+
+	public MainLayout(Flux<PathmindBusEvent> consumer)
 	{
 		setId("pathmind-app-layout");
-		addToNavbar(new SectionsHeaderPanel(), new AccountHeaderPanel());
-
+		addToNavbar(new SectionsHeaderPanel(), new AccountHeaderPanel(consumer));
 
 		// Added a message just in case there's ever a failure.
 		setContent(new Span("Error. Please contact Skymind for assistance"));

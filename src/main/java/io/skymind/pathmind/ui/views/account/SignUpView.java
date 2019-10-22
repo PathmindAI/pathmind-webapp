@@ -16,7 +16,6 @@ import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
-import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.ui.views.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
