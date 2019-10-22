@@ -5,7 +5,7 @@
 
 variables:
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-  MAVEN_OPTS: '-Xmx3072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+  MAVEN_OPTS: '-Xmx1072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
 
 trigger:
   - pathmind-test
@@ -27,16 +27,6 @@ steps:
       workingDir: '$(System.DefaultWorkingDirectory)'
       command: 'install'
 
-
-  #- task: Npm@1
-  #  inputs:
-  #    command: 'install'
-  #    customRegistry: 'useFeed'
-  #    customFeed: '2b53e450-1a97-4896-8dfa-eeae9c95711e'
-
-  #- script: npm install
-
-
   - task: CacheBeta@0
     inputs:
       key: maven | **/pom.xml
@@ -52,9 +42,9 @@ steps:
       jdkArchitectureOption: 'x64'
       publishJUnitResults: true
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
-      goals: 'test package'
+      goals: 'build-frontend'
 
-  - script: ls '$(System.DefaultWorkingDirectory)'
+  - script: 'mvn package -Pdev'
 
   - task: CopyFiles@2
     inputs:
