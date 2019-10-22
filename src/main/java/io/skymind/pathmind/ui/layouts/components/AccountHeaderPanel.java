@@ -33,8 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 public class AccountHeaderPanel extends HorizontalLayout
 {
 
-	private RouterLink accountRouterLink;
-
 	public AccountHeaderPanel(Flux<PathmindBusEvent> consumer) {
 		PathmindUserDetails user = SecurityUtils.getUser();
 
@@ -78,6 +76,6 @@ public class AccountHeaderPanel extends HorizontalLayout
 
 //	TODO: update after fix with DEV.
 	private void updateData(PathmindUser pathmindUser) {
-		accountRouterLink.setText(pathmindUser.getName());
+		//accountRouterLink.setText(pathmindUser.getName());
 	}
 }
