@@ -21,6 +21,7 @@ import io.skymind.pathmind.utils.PathmindUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Do NOT implement any default methods for this interface because a large part of it's goal is to remind
@@ -45,6 +46,9 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 	@Autowired
 	private IntercomIntegrationPlugin intercomIntegrationPlugin;
 
+    @Value("${skymind.debug.accelerate}")
+    private boolean isDebugAccelerate;
+
 	public PathMindDefaultView()
 	{
 		setWidth("100%");
@@ -56,7 +60,11 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 	}
 
-	// TODO handle different exceptions differently.
+    public boolean isDebugAccelerate() {
+        return isDebugAccelerate;
+    }
+
+    // TODO handle different exceptions differently.
 	public void beforeEnter(BeforeEnterEvent event)
 	{
 		try {
