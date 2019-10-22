@@ -43,6 +43,12 @@ public class DashboardView extends PathMindDefaultView
 
 	private List<Policy> policies;
 
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		// Not needed since the loadData loads the data based on the user's id.
+		return true;
+	}
+
 	public DashboardView()
 	{
 		super();
@@ -98,7 +104,7 @@ public class DashboardView extends PathMindDefaultView
 				.setHeader("Duration")
 				.setSortable(true);
 		Grid.Column<Policy> startedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunStartTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
-				.setComparator(Comparator.comparing(policy -> PolicyUtils.getRunStartTime(policy)))
+				.setComparator(Comparator.comparing(policy -> PolicyUtils.getRunStartTime(policy), Comparator.nullsFirst(Comparator.naturalOrder())))
 				.setHeader("Started")
 				.setAutoWidth(true)
 				.setSortable(true);

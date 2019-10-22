@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services.training;
 
+import io.skymind.pathmind.mock.MockDefaultValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -31,7 +32,7 @@ public class ExecutionProgressWatcher implements ApplicationListener<ContextRefr
     }
 
     private class Runner implements Runnable {
-        private static final long updateInterval = 60 * 1000;
+        private final long UPDATE_INTERVAL = (MockDefaultValues.isDebugAccelerate() ? MockDefaultValues.DEBUG_ACCELERATE_UPDATE_INTERVAL : 60) * 1000;
 
         private boolean stop = false;
 
@@ -49,7 +50,7 @@ public class ExecutionProgressWatcher implements ApplicationListener<ContextRefr
         public void run() {
             long lastRun = 0;
             while (!stop) {
-                final long nextRun = lastRun + updateInterval;
+                final long nextRun = lastRun + UPDATE_INTERVAL;
                 try {
                     if (nextRun <= System.currentTimeMillis()) {
                         try {
