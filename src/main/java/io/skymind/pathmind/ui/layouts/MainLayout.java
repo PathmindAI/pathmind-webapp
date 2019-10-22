@@ -1,10 +1,7 @@
 package io.skymind.pathmind.ui.layouts;
 
 import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.HtmlImport;
-import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.dependency.*;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.InitialPageSettings;
@@ -28,6 +25,7 @@ import io.skymind.pathmind.ui.utils.VaadinUtils;
 @CssImport(value = "./styles/views/experiment-view.css")
 @CssImport(value = "./styles/views/experiments-view.css")
 @CssImport(value = "./styles/views/new-experiment-view.css")
+@JavaScript("https://js.stripe.com/v3/")
 @Theme(Lumo.class)
 public class MainLayout extends AppLayout implements PageConfigurator
 {
