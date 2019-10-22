@@ -53,6 +53,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     private Model currentModel;
     private List<Experiment> experiments;
 
+    private ArchivesTabPanel archivesTabPanel;
     private ExperimentGrid experimentGrid;
     private TextArea getObservationTextArea;
     private RewardFunctionEditor rewardFunctionEditor;
@@ -66,11 +67,12 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         setupExperimentListPanel();
         setupGetObservationTextArea();
         setupRewardFunctionEditor();
+        setupArchivesTabPanel();
 
         return WrapperUtils.wrapSizeFullVertical(
                 WrapperUtils.wrapWidthFullCenterHorizontal(getBackToModelsButton()),
                 WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
-                getArchivesTabPanel(),
+                archivesTabPanel,
                 WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         WrapperUtils.wrapSizeFullVertical(
                                 experimentGrid),
@@ -106,8 +108,8 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         return new SearchBox<Experiment>(experimentGrid, new ExperimentFilter());
     }
 
-    private ArchivesTabPanel getArchivesTabPanel() {
-        return new ArchivesTabPanel<Experiment>(
+    private void setupArchivesTabPanel() {
+        archivesTabPanel = new ArchivesTabPanel<Experiment>(
                 "Experiments",
                 experimentGrid,
                 this::getExperiments,
@@ -158,6 +160,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     @Override
     protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
         experimentGrid.setItems(experiments);
+        archivesTabPanel.initData();
         getObservationTextArea.setValue(currentModel.getGetObservationForRewardFunction());
     }
 

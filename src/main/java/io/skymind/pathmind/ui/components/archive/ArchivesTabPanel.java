@@ -18,6 +18,10 @@ public class ArchivesTabPanel<T> extends TabPanel
 {
 	private static final String ARCHIVES_TAB = "Archives";
 
+	// These need to be here for the same reason as the init() method.
+	private Grid<T> grid;
+	private Supplier<List<T>> getItems;
+
 	/**
 	 * Because there is no ability to search for a column by the header's name (https://vaadin.com/forum/thread/17861491) I then
 	 * use the next best thing which is that all our archives columns are the last column on the grid and so get the last column
@@ -26,6 +30,9 @@ public class ArchivesTabPanel<T> extends TabPanel
 	public ArchivesTabPanel(String tabName, Grid<T> grid, Supplier<List<T>> getItems, BiConsumer<Long, Boolean> archiveDAO)
 	{
 		super(tabName, ARCHIVES_TAB);
+
+		this.grid = grid;
+		this.getItems = getItems;
 
 		setAlignItems(Alignment.START);
 
@@ -52,5 +59,12 @@ public class ArchivesTabPanel<T> extends TabPanel
 		return data.stream()
 				.filter(d -> ((ArchivableData)d).isArchived() == isArchived)
 				.collect(Collectors.toList());
+	}
+
+	/**
+	 * This needs to be called because there is are no listeners for the grid to know if grid.setItems() has been called.
+	 */
+	public void initData() {
+		grid.setItems(getFilteredModels(getItems.get(), false));
 	}
 }
