@@ -39,8 +39,8 @@ public class ArchivesButton<T> extends Button
 	}
 
 	private void setupButton(ArchivableData data) {
-		Icon archiveIcon = new Icon(data.isArchived() ? VaadinIcon.CARET_SQUARE_UP_O : VaadinIcon.CARET_SQUARE_DOWN_O);
-		archiveIcon.setSize("40px");
+		Icon archiveIcon = new Icon(data.isArchived() ? VaadinIcon.ARROW_BACKWARD : VaadinIcon.ARCHIVE);
+		archiveIcon.setSize("32px");
 		setIcon(archiveIcon);
 		addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 	}

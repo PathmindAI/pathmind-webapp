@@ -8,10 +8,13 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.shared.communication.PushMode;
+import io.skymind.pathmind.data.utils.PathmindUserUtils;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.ui.exceptions.AccessDeniedException;
 import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
+import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.views.errors.ErrorView;
 import io.skymind.pathmind.ui.views.errors.InvalidDataView;
 import io.skymind.pathmind.utils.PathmindUtils;
@@ -23,8 +26,17 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Do NOT implement any default methods for this interface because a large part of it's goal is to remind
  * the developer to implement these methods in all the views to keep the layout and coding consistent.
  */
-public class PathMindDefaultView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle
+public abstract class PathMindDefaultView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle
 {
+	// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/217 Implement a security framework on the views.
+	// NOTE -> This is a janky solution for https://github.com/SkymindIO/pathmind-webapp/issues/217 until we decide exactly
+	// what we want to implement.
+	// NOTE -> I'm forcing all views to implement this method, even if it's just to return true, so that if any new
+	// views are implemented before we implement a good framework then it will at least hopefully remind the developer to do a user access check.
+	// TODO -> This currently cannot tell us if a user has access to an item because they item could be just none-existant. But for
+	// now I'm using these method names so that we understand what needs to be done eventually.
+	protected abstract boolean isAccessAllowedForUser();
+
 	private static Logger log = LogManager.getLogger(PathMindDefaultView.class);
 
 	private boolean isGenerated = false;
@@ -35,8 +47,10 @@ public class PathMindDefaultView extends VerticalLayout implements BeforeEnterOb
 
 	public PathMindDefaultView()
 	{
-		setSizeFull();
+		setWidth("100%");
 		setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+		GuiUtils.removeMarginsPaddingAndSpacing(this);
+		setClassName("default-view");
 
 		// IMPORTANT -> Needed so that Push works consistently on every page/view.
 		UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
@@ -46,7 +60,15 @@ public class PathMindDefaultView extends VerticalLayout implements BeforeEnterOb
 	public void beforeEnter(BeforeEnterEvent event)
 	{
 		try {
-			// Before we do anything we should first load the data from the database in case there is an issue such as an InvalidDataException
+			// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/217 Implement a security framework on the views.
+			// Before we do anything we need to confirm the user has permission to access the data.
+			// TODO -> This solution is a band-aid solution and although it does implement enough security for now
+			// we absolutely have to revisit it (as well as the exception). See the method itself for more details.
+			// TODO -> This throws InvalidDataException which is incorrect but it is the best we can do with the current solution
+			// until we decide how we want to implement user data management.
+			if(!isAccessAllowedForUser())
+				throw new InvalidDataException("Item does not exist");
+			// Next we load the data from the database in case there is an issue such as an InvalidDataException
 			loadData();
 			// If there is an exception in generating the screens we don't want to display any system related information to the user for security reasons.
 			if(!isGenerated)
@@ -62,6 +84,9 @@ public class PathMindDefaultView extends VerticalLayout implements BeforeEnterOb
 		} catch (InvalidDataException e) {
 			log.info("Invalid data attempt: " + e.getMessage());
 			event.rerouteTo(InvalidDataView.class);
+//		} catch (AccessDeniedException e) {
+//			log.info("Access denied to data for " + SecurityUtils.getUserId() + " : " + e.getMessage());
+//			event.rerouteTo(AccessDeniedView.class);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			event.rerouteTo(ErrorView.class);

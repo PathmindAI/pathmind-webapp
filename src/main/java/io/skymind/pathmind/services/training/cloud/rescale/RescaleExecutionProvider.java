@@ -37,7 +37,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     private static final Map<RLLib, List<String>> rllibMap = Map.of(
             RLLib.VERSION_0_7_0, Arrays.asList(
                     "LZAENb", // conda
-                    "uLWose", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-10-08 DH version
+                    "jKjXa", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-10-15 DH version
                     "fDRBHd"  // OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz
             )
     );

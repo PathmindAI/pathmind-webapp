@@ -1,7 +1,5 @@
 package io.skymind.pathmind.ui.components.status;
 
-import io.skymind.pathmind.services.project.FileCheckResult;
-
 public interface StatusUpdater
 {
     /**
