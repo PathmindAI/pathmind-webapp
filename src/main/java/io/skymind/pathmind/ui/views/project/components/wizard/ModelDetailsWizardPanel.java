@@ -45,8 +45,11 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 		bindFields(binder);
 
+		numberOfObservationsNumberField.addValueChangeListener(value -> System.out.println("Here"));
+
 		setWidthFull();
-		getStyle().set("border", "1px solid #ccc");
+		setClassName("view-section"); // adds the white 'panel' style with rounded corners
+
 	}
 
 	private void setupFields()
@@ -98,7 +101,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 	private VerticalLayout getNumberOfObservationsPanel() {
 		VerticalLayout wrapper = new VerticalLayout(
 				GuiUtils.getBoldLabel("Number of Observations for Training"),
-				new Label("Enter the length of the Observation for Training array"),
+				new Label("Enter the number of observations present in the 'observation of training' array"),
 				numberOfObservationsNumberField);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;

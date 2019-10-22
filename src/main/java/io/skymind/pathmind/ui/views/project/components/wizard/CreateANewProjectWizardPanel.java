@@ -8,9 +8,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.ui.binders.ProjectBinders;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
-import io.skymind.pathmind.ui.binders.ProjectBinders;
 
 public class CreateANewProjectWizardPanel extends VerticalLayout
 {
@@ -28,7 +28,7 @@ public class CreateANewProjectWizardPanel extends VerticalLayout
 				projectNameTextField,
 				WrapperUtils.wrapWidthFullCenterHorizontal(createProjectButton));
 
-		getStyle().set("border", "1px solid #ccc");
+		setClassName("view-section"); // adds the white 'panel' style with rounded corners
 
 		bindFields(binder);
 

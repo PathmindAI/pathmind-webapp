@@ -466,4 +466,43 @@
         </insert>
     </changeSet>
 
+    <changeSet id="20191015-1" author="daehyun@skymind.io">
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Chris Nicholson"/>
+            <column name="EMAIL" value="chris@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Brett Göhre"/>
+            <column name="EMAIL" value="brett@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20191015-2" author="daehyun@skymind.io">
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Goldratt Research"/>
+            <column name="EMAIL" value="jacoben@goldrattresearchlabs.com"/>
+            <column name="PASSWORD" value="$2a$10$284EPT.cBlTiYxREgj/pvemJg0h8NeVSfyWxX8D9KQwzO2b1KffCG"/>
+        </insert>
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Princeton Consultants"/>
+            <column name="EMAIL" value="PRandall@princeton.com"/>
+            <column name="PASSWORD" value="$2a$10$bf.xVNwIWCox8FLGnbZDvO.X7i2E3Gv21SYsro2p6VaR5ncLyPQk2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20191021-1" author="daehyun@skymind.io">
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Michael Tsay"/>
+            <column name="EMAIL" value="michael@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Evegeniy Ivanchenko"/>
+            <column name="EMAIL" value="evegeniy@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

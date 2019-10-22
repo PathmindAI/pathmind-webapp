@@ -2,6 +2,7 @@ package io.skymind.pathmind.ui.views.project;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
@@ -32,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 import java.util.List;
 
-@StyleSheet("frontend://styles/styles.css")
+@CssImport("./styles/styles.css")
 @Route(value = "newProject", layout = MainLayout.class)
 public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 {
@@ -90,6 +91,9 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 				pathminderHelperWizardPanel,
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel);
+
+		// This is only used in case we setup MockDefaultValues through ProjectUtils above.
+		projectBinder.readBean(project);
 
 		setVisibleWizardPanel(createProjectPanel);
 
@@ -182,5 +186,10 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 			modelBinder.readBean(model);
 			statusPanel.setModelDetails();
 		});
+	}
+
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return true;
 	}
 }

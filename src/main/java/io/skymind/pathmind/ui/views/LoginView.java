@@ -1,7 +1,9 @@
 package io.skymind.pathmind.ui.views;
 
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.HtmlImport;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.AfterNavigationEvent;
@@ -27,8 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Route("login")
 @Theme(Lumo.class)
-@HtmlImport("frontend://styles/shared-styles.html")
-public class LoginView extends LoginOverlay implements AfterNavigationObserver, BeforeEnterObserver, HasDynamicTitle, PageConfigurator
+@CssImport(value = "./styles/views/vaadin-login-overlay-wrapper.css", themeFor = "vaadin-login-overlay-wrapper")
+public class LoginView extends LoginOverlay
+		implements AfterNavigationObserver, BeforeEnterObserver, HasDynamicTitle, PageConfigurator
 {
 	@Autowired
 	private UserDAO userDAO;
@@ -42,7 +45,7 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
 		LoginI18n loginForm = LoginI18n.createDefault();
 		loginForm.setHeader(new LoginI18n.Header());
 		loginForm.getHeader().setTitle("Pathmind");
-		loginForm.setAdditionalInformation("By clicking Log In, you agree to Pathmind's Terms of Use and Privacy Policy");
+		loginForm.setAdditionalInformation("By clicking Log In, you agree to Pathmind's Terms of Use and Privacy Policy. Build - Test");
 		loginForm.getForm().setUsername("Email");
 		setI18n(loginForm);
 

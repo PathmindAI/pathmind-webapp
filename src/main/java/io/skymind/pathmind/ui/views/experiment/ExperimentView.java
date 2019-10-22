@@ -4,7 +4,9 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -16,6 +18,7 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -35,7 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
 
-@StyleSheet("frontend://styles/styles.css")
+@CssImport("./styles/styles.css")
 @Route(value = "experiment", layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<String> {
     private Button exportPolicyButton;
@@ -73,6 +76,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private PolicyDAO policyDAO;
     @Autowired
     private TrainingService trainingService;
+	@Autowired
+	private UserDAO userDAO;
 
     private Button actionButton;
     private Button runFullTraining;
@@ -82,6 +87,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         super();
         this.publisher = publisher;
         this.consumer = consumer;
+        addClassName("experiment-view");
     }
 
     @Override
@@ -142,7 +148,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         actionButton.setVisible(false);
 
         // TODO: Put this in the appropriate place
-        runFullTraining = new Button("Start Full Run", new Icon(VaadinIcon.PLAY), click -> {
+        runFullTraining = new Button("Start Full Run", new Image("frontend/images/start.svg", "run"), click -> {
             final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
             trainingService.startFullRun(experiment, policy);
 
@@ -157,6 +163,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             }
         });
         runFullTraining.setVisible(false);
+        runFullTraining.addClassNames("large-image-btn", "run");
 
         runDiscoveryTraining = new Button("Start Discovery Run", new Icon(VaadinIcon.PLAY), click -> {
             final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
@@ -208,6 +215,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void handleActionButtonClicked() {
         NotificationUtils.showTodoNotification("Needs to be implemented");
         // TODO -> We need to hook Paul's backend code here.
+    }
+
+    @Override
+    protected boolean isAccessAllowedForUser() {
+      return userDAO.isUserAllowedAccessToExperiment(experimentId);
     }
 
     /**

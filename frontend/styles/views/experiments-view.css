@@ -1,0 +1,8 @@
+.experiments-view vaadin-split-layout > vaadin-vertical-layout {
+    width: 100%;
+    background: white;
+    border-radius: var(--lumo-border-radius);
+    padding: var(--lumo-space-m);
+    box-sizing: border-box;
+    overflow: hidden;
+}

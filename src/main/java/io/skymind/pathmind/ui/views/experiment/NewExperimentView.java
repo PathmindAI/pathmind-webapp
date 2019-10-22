@@ -4,8 +4,10 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -20,7 +22,9 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.mock.MockDefaultValues;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -30,13 +34,14 @@ import io.skymind.pathmind.ui.utils.*;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@StyleSheet("frontend://styles/styles.css")
+@CssImport("./styles/styles.css")
 @Route(value = "newExperiment", layout = MainLayout.class)
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
     private static final double DEFAULT_SPLIT_PANE_RATIO = 60;
@@ -59,14 +64,16 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Autowired
     private ExperimentDAO experimentDAO;
-
     @Autowired
     private TrainingService trainingService;
+	@Autowired
+	private UserDAO userDAO;
 
     private Binder<Experiment> binder;
 
     public NewExperimentView() {
         super();
+        addClassName("new-experiment-view");
     }
 
     @Override
@@ -142,8 +149,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private Component getTopButtonPanel() {
-        final Button startRunButton = new Button("Start Test Run", new Icon(VaadinIcon.PLAY),
+        final Button startRunButton = new Button("Start Test Run", new Image("frontend/images/start.svg", "run"),
                 click -> handleStartRunButtonClicked());
+        startRunButton.addClassNames("large-image-btn","run");
 
 //
 //		// TODO: Make Discovery available from after a test run only
@@ -160,7 +168,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 //					});
 //				});
 //		startDiscoveryButton.setIconAfterText(true);
-
 
         return WrapperUtils.wrapWidthFullCenterVertical(startRunButton);
     }
@@ -220,6 +227,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         });
     }
 
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToExperiment(experimentId);
+	}
+    
     @Override
     public void setParameter(BeforeEvent event, Long experimentId) {
         this.experimentId = experimentId;
@@ -228,6 +240,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected void loadData() throws InvalidDataException {
         experiment = experimentDAO.getExperiment(experimentId);
+		if(MockDefaultValues.isDebugAccelerate() && StringUtils.isEmpty(experiment.getRewardFunction()))
+			experiment.setRewardFunction(MockDefaultValues.NEW_EXPERIMENT_REWARD_FUNCTION);
         if (experiment == null)
             throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
     }
