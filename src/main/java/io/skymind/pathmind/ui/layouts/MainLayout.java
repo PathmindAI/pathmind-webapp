@@ -20,6 +20,7 @@ import reactor.core.publisher.Flux;
 @CssImport(value = "./styles/styles.css", id = "shared-styles")
 @CssImport(value = "./styles/components/vaadin-text-field.css", themeFor = "vaadin-text-field")
 @CssImport(value = "./styles/components/vaadin-button.css", themeFor = "vaadin-button")
+@CssImport(value = "./styles/components/vaadin-menu-bar.css", themeFor = "vaadin-menu-bar")
 @CssImport(value = "./styles/components/vaadin-grid.css", themeFor = "vaadin-grid")
 @CssImport(value = "./styles/components/vaadin-split-layout.css", themeFor = "vaadin-split-layout")
 @CssImport(value = "./styles/components/vaadin-chart.css", themeFor = "vaadin-chart", include = "vaadin-chart-default-theme")
