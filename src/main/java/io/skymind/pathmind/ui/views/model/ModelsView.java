@@ -4,10 +4,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
-import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
@@ -26,7 +24,6 @@ import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.BackButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
@@ -47,6 +44,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	private ModelDAO modelDAO;
 	@Autowired
 	private ProjectDAO projectDAO;
+	@Autowired
 	private UserDAO userDAO;
 
 	private long projectId;
