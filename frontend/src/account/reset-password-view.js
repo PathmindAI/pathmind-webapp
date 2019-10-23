@@ -12,7 +12,11 @@ import "@vaadin/vaadin-text-field/src/vaadin-email-field.js";
 class ResetPasswordView extends PolymerElement {
   static get template() {
     return html`
-    <style include="pathmind-dialog-view"></style>
+    <style include="pathmind-dialog-view">
+      .content {
+        margin: auto;
+      }
+    </style>
       <div class="content">
         <vaadin-tabs>
           <vaadin-tab>

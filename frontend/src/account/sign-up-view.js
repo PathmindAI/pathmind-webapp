@@ -13,6 +13,7 @@ class SignUpView extends PolymerElement {
     return html`
       <style include="pathmind-dialog-view">
         .content {
+          margin: auto;
           max-width: 600px;
           width: 600px;
         }
@@ -43,6 +44,7 @@ class SignUpView extends PolymerElement {
             label="Last Name"
           ></vaadin-text-field>
           <vaadin-text-field id="email" label="Email"></vaadin-text-field>
+          <div class="error-message" >{{message}}</div>
           <vaadin-vertical-layout id="buttonsCont">
             <vaadin-button
               id="signUp"

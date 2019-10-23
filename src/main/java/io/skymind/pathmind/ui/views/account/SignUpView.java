@@ -27,6 +27,8 @@ import java.util.List;
 @Route(value="sign-up")
 public class SignUpView extends PolymerTemplate<SignUpView.Model>
 {
+	private static final String EMAIL_IS_USED = "This email is already used.";
+
 	@Id("lastName")
 	private TextField lastName;
 
@@ -92,7 +94,12 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 
 		signUp.addClickListener(e -> {
 			if (binder.validate().isOk()) {
-				showPassword(true);
+				if (userService.findByEmailIgnoreCase(email.getValue()) != null) {
+					getModel().setMessage(EMAIL_IS_USED);
+					email.setInvalid(true);
+				} else {
+					showPassword(true);
+				}
 			}
 		});
 
@@ -131,5 +138,6 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 
 	public interface Model extends TemplateModel {
 		void setTitle(String title);
+		void setMessage(String message);
 	}
 }
