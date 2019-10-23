@@ -2,9 +2,6 @@ package io.skymind.pathmind.ui.layouts;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.HtmlImport;
-import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.InitialPageSettings;
@@ -13,12 +10,11 @@ import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import io.skymind.pathmind.bus.PathmindBusEvent;
+import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.ui.layouts.components.AccountHeaderPanel;
 import io.skymind.pathmind.ui.layouts.components.SectionsHeaderPanel;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.UnicastProcessor;
 
 @Push(PushMode.AUTOMATIC)
 @CssImport(value = "./styles/styles.css", id = "shared-styles")
@@ -39,10 +35,10 @@ public class MainLayout extends AppLayout implements PageConfigurator
 {
 
 
-	public MainLayout(Flux<PathmindBusEvent> consumer)
+	public MainLayout(CurrentUser user, Flux<PathmindBusEvent> consumer)
 	{
 		setId("pathmind-app-layout");
-		addToNavbar(new SectionsHeaderPanel(), new AccountHeaderPanel(consumer));
+		addToNavbar(new SectionsHeaderPanel(), new AccountHeaderPanel(user.getUser(), consumer));
 
 		// Added a message just in case there's ever a failure.
 		setContent(new Span("Error. Please contact Skymind for assistance"));
