@@ -37,7 +37,7 @@ public class AccountHeaderPanel extends HorizontalLayout
 		getElement().getStyle().set("margin-left", "auto");
 		getElement().getStyle().set("padding-right", "20px");
 		setId("nav-account-links");
-		subscribeToEventBus(UI.getCurrent(), consumer);
+		subscribeToEventBus(consumer);
 	}
 
 	private HorizontalLayout createItem(Icon icon, PathmindUser user) {
@@ -57,7 +57,7 @@ public class AccountHeaderPanel extends HorizontalLayout
 		return logoutLink;
 	}
 
-	private void subscribeToEventBus(UI ui, Flux<PathmindBusEvent> consumer) {
+	private void subscribeToEventBus(Flux<PathmindBusEvent> consumer) {
 		PolicyBusEventUtils.consumerBusEventBasedOnUserUpdate(
 				consumer, pathmindUser -> PushUtils.push(UI.getCurrent(), () -> updateData(pathmindUser)));
 	}

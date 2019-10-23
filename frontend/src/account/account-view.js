@@ -8,8 +8,9 @@ import "@vaadin/vaadin-ordered-layout/src/vaadin-vertical-layout.js";
 class AccountView extends PolymerElement {
   static get template() {
     return html`
-      <style include="pathmind-dialog-view">
+      <style include="shared-styles pathmind-dialog-view">
       </style>
+      <div id="header" style="width: 100%;"></div>
       <div class="content">
         <vaadin-tabs>
           <vaadin-tab>

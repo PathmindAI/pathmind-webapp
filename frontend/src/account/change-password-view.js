@@ -11,7 +11,8 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 class ChangePasswordView extends PolymerElement {
   static get template() {
     return html`
-    <style include="pathmind-dialog-view"></style>
+    <style include="shared-styles pathmind-dialog-view"></style>
+      <div id="header" style="width: 100%;"></div>
       <div class="content">
         <vaadin-tabs>
           <vaadin-tab>

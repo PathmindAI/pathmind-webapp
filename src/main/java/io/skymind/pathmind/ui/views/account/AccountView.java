@@ -4,12 +4,14 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
+import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,6 +22,9 @@ import javax.annotation.PostConstruct;
 @Route(value="account", layout = MainLayout.class)
 public class AccountView extends PolymerTemplate<AccountView.Model>
 {
+	@Id("header")
+	private Div header;
+
 	@Id("editInfoBtn")
 	private Button editInfoBtn;
 
@@ -42,6 +47,7 @@ public class AccountView extends PolymerTemplate<AccountView.Model>
 
 	@PostConstruct
 	private void init() {
+		header.add(new ScreenTitlePanel("ACCOUNT"));
 		initContent();
 		initBtns();
 	}

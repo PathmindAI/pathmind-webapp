@@ -231,7 +231,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	protected boolean isAccessAllowedForUser() {
 		return userDAO.isUserAllowedAccessToExperiment(experimentId);
 	}
-    
+
     @Override
     public void setParameter(BeforeEvent event, Long experimentId) {
         this.experimentId = experimentId;

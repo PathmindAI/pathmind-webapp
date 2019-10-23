@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.TextField;
@@ -16,6 +17,7 @@ import io.skymind.pathmind.bus.data.UserUpdateBusEvent;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.services.UserService;
+import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.UnicastProcessor;
@@ -25,15 +27,21 @@ import reactor.core.publisher.UnicastProcessor;
 @Route(value="account/edit", layout = MainLayout.class)
 public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 {
+	@Id("header")
+	private Div header;
+
 	@Id("lastName")
 	private TextField lastName;
+
 	@Id("firstName")
 	private TextField firstName;
+
 	@Id("email")
 	private TextField email;
 
 	@Id("cancelBtn")
 	private Button cancelBtn;
+
 	@Id("updateBtn")
 	private Button updateBtn;
 
@@ -47,6 +55,7 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 	@Autowired
 	public AccountEditView(CurrentUser currentUser, UnicastProcessor<PathmindBusEvent> publisher)
 	{
+		header.add(new ScreenTitlePanel("ACCOUNT EDIT"));
 		user = currentUser.getUser();
 		this.publisher = publisher;
 		initBinder();
