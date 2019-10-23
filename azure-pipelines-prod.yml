@@ -8,7 +8,7 @@ variables:
   MAVEN_OPTS: '-Xmx1072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
 
 trigger:
-  - pathmind-test
+  - master
 
 pool:
   vmImage: 'Ubuntu-16.04'
@@ -26,16 +26,6 @@ steps:
     inputs:
       workingDir: '$(System.DefaultWorkingDirectory)'
       command: 'install'
-
-
-  #- task: Npm@1 checking
-  #  inputs:
-  #    command: 'install'
-  #    customRegistry: 'useFeed'
-  #    customFeed: '2b53e450-1a97-4896-8dfa-eeae9c95711e'
-
-  #- script: npm install
-
 
   - task: CacheBeta@0
     inputs:

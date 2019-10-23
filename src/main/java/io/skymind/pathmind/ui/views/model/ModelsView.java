@@ -2,6 +2,7 @@ package io.skymind.pathmind.ui.views.model;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
@@ -16,17 +17,21 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
+import io.skymind.pathmind.ui.components.buttons.BackButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
 import io.skymind.pathmind.ui.views.model.filter.ModelFilter;
+import io.skymind.pathmind.ui.views.project.ProjectsView;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,10 +45,15 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 {
 	@Autowired
 	private ModelDAO modelDAO;
+	@Autowired
+	private ProjectDAO projectDAO;
+	private UserDAO userDAO;
 
 	private long projectId;
+	private String projectName;
 	private List<Model> models;
 
+	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
 
 	public ModelsView()
@@ -54,6 +64,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	protected Component getMainContent()
 	{
 		setupGrid();
+		setupArchivesTabPanel();
+
 		addClassName("models-view");
 
 		// BUG -> I didn't have to really investigate but it looks like we may need
@@ -62,8 +74,9 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
 				new ViewSection(
+  				WrapperUtils.wrapWidthFullCenterHorizontal(getBackToProjectsButton()),
 						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
-						getArchivesTabPanel(),
+						archivesTabPanel,
 						modelGrid
 				)
 		);
@@ -71,8 +84,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		return gridWrapper;
 	}
 
-	private ArchivesTabPanel getArchivesTabPanel() {
-		return new ArchivesTabPanel<Model>(
+	private void setupArchivesTabPanel() {
+		archivesTabPanel = new ArchivesTabPanel<Model>(
 				"Models",
 				modelGrid,
 				this::getModels,
@@ -109,22 +122,34 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		return models;
 	}
 
+	private Button getBackToProjectsButton() {
+		return new BackButton("Back to Projects",
+				click -> UI.getCurrent().navigate(ProjectsView.class));
+	}
+
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("MODELS");
+		return new ScreenTitlePanel("PROJECT " + projectName);
+	}
+
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToProject(projectId);
 	}
 
 	@Override
 	protected void loadData() throws InvalidDataException {
 		models = modelDAO.getModelsForProject(projectId);
-
 		if(models == null || models.isEmpty())
 			throw new InvalidDataException("Attempted to access Models for Project: " + projectId);
+		// It was either a left join on all the models to get the project or a separate database call to get the project's name.
+		projectName = projectDAO.getProject(projectId).getName();
 	}
 
 	@Override
 	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
 		modelGrid.setItems(models);
+		archivesTabPanel.initData();
 	}
 
 	@Override
