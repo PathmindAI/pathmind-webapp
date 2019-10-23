@@ -2,11 +2,10 @@ package io.skymind.pathmind.ui.views.model;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
-import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
@@ -16,18 +15,20 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
+import io.skymind.pathmind.ui.components.buttons.BackButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
 import io.skymind.pathmind.ui.views.model.filter.ModelFilter;
+import io.skymind.pathmind.ui.views.project.ProjectsView;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -42,9 +43,12 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	@Autowired
 	private ModelDAO modelDAO;
 	@Autowired
+	private ProjectDAO projectDAO;
+	@Autowired
 	private UserDAO userDAO;
 
 	private long projectId;
+	private String projectName;
 	private List<Model> models;
 
 	private ArchivesTabPanel archivesTabPanel;
@@ -68,6 +72,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
 				new ViewSection(
+  				WrapperUtils.wrapWidthFullCenterHorizontal(getBackToProjectsButton()),
 						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
 						archivesTabPanel,
 						modelGrid
@@ -115,9 +120,14 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		return models;
 	}
 
+	private Button getBackToProjectsButton() {
+		return new BackButton("Back to Projects",
+				click -> UI.getCurrent().navigate(ProjectsView.class));
+	}
+
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("MODELS");
+		return new ScreenTitlePanel("PROJECT " + projectName);
 	}
 
 	@Override
@@ -130,6 +140,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		models = modelDAO.getModelsForProject(projectId);
 		if(models == null || models.isEmpty())
 			throw new InvalidDataException("Attempted to access Models for Project: " + projectId);
+		// It was either a left join on all the models to get the project or a separate database call to get the project's name.
+		projectName = projectDAO.getProject(projectId).getName();
 	}
 
 	@Override

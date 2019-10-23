@@ -17,6 +17,11 @@ public class AnylogicFileCheckResult implements FileCheckResult {
     }
 
     @Override
+    public void setFileCheckComplete(boolean fileCheckComplete) {
+        this.fileCheckComplete = fileCheckComplete;
+    }
+
+    @Override
     public boolean isFileCheckSuccessful() {
         return isCorrectFileType() && isModelJarFilePresent() && isHelperPresent() && isHelperUnique();
     }
@@ -27,8 +32,19 @@ public class AnylogicFileCheckResult implements FileCheckResult {
     }
 
     @Override
+    public void setCorrectFileType(boolean correctFileType) {
+        this.correctFileType = correctFileType;
+
+    }
+
+    @Override
     public boolean isModelJarFilePresent() {
         return this.modelJarFilePresent;
+    }
+
+    @Override
+    public void setModelJarFilePresent(boolean modelJarFilePresent) {
+        this.modelJarFilePresent = modelJarFilePresent;
     }
 
     @Override
@@ -55,34 +71,18 @@ public class AnylogicFileCheckResult implements FileCheckResult {
     }
 
     @Override
-    public List<String> getDefinedHelpers() {
-        return this.definedHelpers;
-    }
-
-    @Override
-    public void setCorrectFileType(boolean correctFileType) {
-        this.correctFileType = correctFileType;
-
-    }
-
-    @Override
-    public void setModelJarFilePresent(boolean modelJarFilePresent) {
-        this.modelJarFilePresent = modelJarFilePresent;
-    }
-
-    @Override
     public void setZipContentFileNames(List<String> zipContentFileNames) {
         this.zipContentFileNames = zipContentFileNames;
     }
 
     @Override
-    public void setDefinedHelpers(List<String> definedHelpers) {
-        this.definedHelpers = definedHelpers;
+    public List<String> getDefinedHelpers() {
+        return this.definedHelpers;
     }
 
     @Override
-    public void setFileCheckComplete(boolean fileCheckComplete) {
-        this.fileCheckComplete = fileCheckComplete;
+    public void setDefinedHelpers(List<String> definedHelpers) {
+        this.definedHelpers = definedHelpers;
     }
 
 
