@@ -14,6 +14,7 @@ import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 
@@ -40,8 +41,9 @@ public class AccountView extends PolymerTemplate<AccountView.Model>
 	private PathmindUser user;
 
 	@Autowired
-	public AccountView(CurrentUser currentUser)
+	public AccountView(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink)
 	{
+        getModel().setContactLink(contactLink);
 		user = currentUser.getUser();
 	}
 
@@ -73,5 +75,6 @@ public class AccountView extends PolymerTemplate<AccountView.Model>
 		void setLastName(String lastName);
 		void setSubscription(String subscription);
 		void setBillingInfo(String billingInfo);
+        void setContactLink(String contactLink);
 	}
 }

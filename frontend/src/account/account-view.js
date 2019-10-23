@@ -70,7 +70,7 @@ class AccountView extends PolymerElement {
           </vaadin-horizontal-layout>
         </vaadin-vertical-layout>
         <div class="support-cont"></div>
-        <a class="support" href="mailto:contact@pathmind.io">Contact Support</a>
+        <a class="support" href="{{contactLink}}">Contact Support</a>
       </div>
     `;
   }

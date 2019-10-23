@@ -36,6 +36,7 @@ class AccountEditView extends PolymerElement {
             </vaadin-vertical-layout>
           </vaadin-vertical-layout>
         </vaadin-vertical-layout>
+        <a class="support" href="{{contactLink}}">Contact Support</a>
       </div>
     `;
   }

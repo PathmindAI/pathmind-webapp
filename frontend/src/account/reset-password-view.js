@@ -70,8 +70,7 @@ class ResetPasswordView extends PolymerElement {
             <vaadin-button id="changePassword" theme="primary"  class="positive-action-btn">Save Password</vaadin-button>
           </vaadin-vertical-layout>
         </vaadin-vertical-layout>
-        <div class="support-cont"></div>
-        <a class="support" href="/support">Contact Support</a>
+        <a class="support" href="{{contactLink}}">Contact Support</a>
       </div>
     `;
   }

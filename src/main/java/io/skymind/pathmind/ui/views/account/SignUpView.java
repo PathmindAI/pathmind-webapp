@@ -19,6 +19,7 @@ import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.ui.views.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 
@@ -72,8 +73,9 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 	private UserService userService;
 
 	@Autowired
-	public SignUpView()
+	public SignUpView(@Value("${pathmind.contact-support.address}") String contactLink)
 	{
+		getModel().setContactLink(contactLink);
 		user = new PathmindUser();
 		initView();
 		initBinder();
@@ -139,5 +141,6 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 	public interface Model extends TemplateModel {
 		void setTitle(String title);
 		void setMessage(String message);
+		void setContactLink(String contactLink);
 	}
 }

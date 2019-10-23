@@ -21,6 +21,7 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 
@@ -59,8 +60,9 @@ public class ChangePasswordView extends PolymerTemplate<ChangePasswordView.Model
 	private UserService userService;
 
 	@Autowired
-	public ChangePasswordView(CurrentUser currentUser)
-	{
+	public ChangePasswordView(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink)
+    {
+        getModel().setContactLink(contactLink);
 		header.add(new ScreenTitlePanel("CHANGE PASSWORD"));
 		user = currentUser.getUser();
 
@@ -106,5 +108,6 @@ public class ChangePasswordView extends PolymerTemplate<ChangePasswordView.Model
 	}
 
 	public interface Model extends TemplateModel {
+        void setContactLink(String contactLink);
 	}
 }

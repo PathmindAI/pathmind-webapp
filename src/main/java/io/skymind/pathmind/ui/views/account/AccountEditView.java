@@ -20,6 +20,7 @@ import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import reactor.core.publisher.UnicastProcessor;
 
 @Tag("account-edit-view")
@@ -53,8 +54,10 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 	private final UnicastProcessor<PathmindBusEvent> publisher;
 
 	@Autowired
-	public AccountEditView(CurrentUser currentUser, UnicastProcessor<PathmindBusEvent> publisher)
+	public AccountEditView(CurrentUser currentUser, UnicastProcessor<PathmindBusEvent> publisher,
+						   @Value("${pathmind.contact-support.address}") String contactLink)
 	{
+		getModel().setContactLink(contactLink);
 		header.add(new ScreenTitlePanel("ACCOUNT EDIT"));
 		user = currentUser.getUser();
 		this.publisher = publisher;
@@ -82,5 +85,6 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 	}
 
 	public interface Model extends TemplateModel {
+		void setContactLink(String contactLink);
 	}
 }

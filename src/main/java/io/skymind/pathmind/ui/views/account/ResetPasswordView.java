@@ -80,7 +80,9 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 	private String token = null;
 
 
-	public ResetPasswordView() {
+	public ResetPasswordView(@Value("${pathmind.contact-support.address}") String contactLink)
+	{
+		getModel().setContactLink(contactLink);
 	}
 
 	@Override
@@ -194,5 +196,6 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 
 	public interface Model extends TemplateModel {
 		void setMessage(String message);
+		void setContactLink(String contactLink);
 	}
 }
