@@ -1,16 +1,12 @@
 package io.skymind.pathmind.ui.layouts.components;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.server.VaadinServlet;
-
 import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -25,32 +21,20 @@ public class AccountHeaderPanel extends HorizontalLayout
 		MenuBar menuBar = new MenuBar();
 		menuBar.setThemeName("tertiary");
 		add(menuBar);
+		menuBar.addClassName("account-menu");
 
 		String username = StringUtils.isBlank(user.getName()) ? user.getEmail() : user.getName();
 		MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER), username));
-		account.getElement().getStyle().set("color", "var(--lumo-header-text-color)");
-		account.getSubMenu().addItem( new Span("Account"), e -> UI.getCurrent().navigate(AccountView.class));
-		account.getSubMenu().addItem(createLogoutLink(new Span( "Logout")));
 
-		getElement().getStyle().set("margin-left", "auto");
-		getElement().getStyle().set("padding-right", "20px");
-		setId("nav-account-links");
+		account.getSubMenu().addItem("Account", e -> UI.getCurrent().navigate(AccountView.class));
+		account.getSubMenu().addItem("Logout", e ->
+				UI.getCurrent().getPage().executeJavaScript("location.assign('/logout')"));
+
+		addClassName("nav-account-links");
 	}
 
 	private HorizontalLayout createItem(Icon icon, String text) {
-		Span label = new Span(text);
-		label.getStyle().set("padding-top", "5px");
-
-		HorizontalLayout hl = WrapperUtils.wrapWidthFullHorizontal(icon, label);
-		hl.getStyle().set("color", "var(--lumo-header-text-color)");
+		HorizontalLayout hl = WrapperUtils.wrapWidthFullHorizontal(icon, new Span(text));
 		return hl;
-	}
-
-	private Anchor createLogoutLink(Component hl) {
-		final String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
-		Anchor logoutLink = new Anchor(contextPath + "/logout");
-		logoutLink.getStyle().set("color", "var(--lumo-header-text-color)");
-		logoutLink.add(hl);
-		return logoutLink;
 	}
 }
