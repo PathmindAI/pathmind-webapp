@@ -95,6 +95,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                                 || it.getValue().contains("Fatal Python error: Aborted")
                                 || it.getValue().contains("Fatal Python error: Segmentation fault")
                                 || it.getValue().contains("Worker crashed during call to train()")
+                                || it.getValue().contains("java.lang.ArrayIndexOutOfBoundsException")
                         )
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
