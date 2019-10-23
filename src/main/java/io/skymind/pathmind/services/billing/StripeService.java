@@ -13,10 +13,10 @@ import java.util.Map;
 public class StripeService
 {
 
-	@Value("${stripe.public.key}")
+	@Value("${pathmind.stripe.public.key}")
 	private String publicKey;
 
-	@Value("${stripe.secret.key}")
+	@Value("${pathmind.stripe.secret.key}")
 	private String secretKey;
 
 	@PostConstruct

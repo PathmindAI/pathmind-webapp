@@ -1,8 +1,7 @@
 package io.skymind.pathmind.services.billing;
 
 import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
-import com.stripe.model.PaymentMethod;
+import com.stripe.model.*;
 import com.stripe.param.checkout.SessionCreateParams;
 import io.skymind.pathmind.PathmindApplicationTests;
 import org.junit.Test;
@@ -37,6 +36,36 @@ public class StripeServiceTest extends PathmindApplicationTests
 		PaymentIntent paymentIntent = stripeService.createPayment(paymentIntentParams);
 		//paymentIntent.setPaymentMethod();
 		//assertEquals(I//PaymentIntent.t, paymentIntent.getStatus());
+	}
+
+	@Test
+	public void products() throws StripeException
+	{
+		Map<String, Object> paymentIntentParams = new HashMap<String, Object>();
+		paymentIntentParams.put("amount", 1000);
+		paymentIntentParams.put("currency", "eur");
+		ArrayList payment_method_types = new ArrayList();
+		payment_method_types.add("card");
+		paymentIntentParams.put("payment_method_types", payment_method_types);
+		paymentIntentParams.put("receipt_email", "jenny.rosen@example.com");
+
+
+		final Product prod_g2AGAGjNJIkUbv = Product.retrieve("prod_G2AGAGjNJIkUbv");
+	}
+
+	@Test
+	public void plans() throws StripeException
+	{
+		Map<String, Object> paymentIntentParams = new HashMap<String, Object>();
+		paymentIntentParams.put("amount", 1000);
+		paymentIntentParams.put("currency", "eur");
+		ArrayList payment_method_types = new ArrayList();
+		payment_method_types.add("card");
+		paymentIntentParams.put("payment_method_types", payment_method_types);
+		paymentIntentParams.put("receipt_email", "jenny.rosen@example.com");
+
+
+		//final Product prod_g2AGAGjNJIkUbv = Plan.list();
 	}
 
 }
