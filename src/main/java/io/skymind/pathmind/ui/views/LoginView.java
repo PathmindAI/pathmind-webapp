@@ -29,6 +29,7 @@ import io.skymind.pathmind.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
 import io.skymind.pathmind.utils.PathmindUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 @Route("login")
 @Theme(Lumo.class)
@@ -44,7 +45,10 @@ public class LoginView extends HorizontalLayout
 	@Autowired
 	private ProjectDAO projectDAO;
 
-	public LoginView(IntercomIntegrationPlugin intercomIntegrationPlugin)
+	public LoginView(IntercomIntegrationPlugin intercomIntegrationPlugin,
+					 @Value("${pathmind.privacy-policy.url}") String privacyPolicyUrl,
+					 @Value("${pathmind.terms-of-use.url}") String termsOfUseUrl
+					 )
 	{
 		addClassName("login-panel-cont");
 		Label welcome = new Label("Welcome to");
@@ -68,9 +72,9 @@ public class LoginView extends HorizontalLayout
 		Div policy = new Div();
 		policy.addClassName("policy");
 		policy.add(new Span("By clicking Log In, you agree to Pathmind's "),
-				new Anchor("/terms-of-use", "Terms of Use"),
+				new Anchor(termsOfUseUrl, "Terms of Use"),
 				new Span(" and "),
-				new Anchor("/private-policy", "Privacy Policy"),
+				new Anchor(privacyPolicyUrl, "Privacy Policy"),
 				new Span("."));
 
 		Div loginPanel = new Div();
