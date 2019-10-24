@@ -1,0 +1,63 @@
+# Maven
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+variables:
+  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+  MAVEN_OPTS: '-Xmx1072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+
+trigger:
+  - dev
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+
+steps:
+
+  - task: UseNode@1
+    inputs:
+      versionSpec: $(node_version)
+  #- script: npm install
+  - script: ls '$(System.DefaultWorkingDirectory)'
+
+  - task: Npm@1
+    inputs:
+      workingDir: '$(System.DefaultWorkingDirectory)'
+      command: 'install'
+
+  - task: CacheBeta@0
+    inputs:
+      key: maven | **/pom.xml
+      path: $(MAVEN_CACHE_FOLDER)
+    displayName: Cache Maven local repo
+
+  - task: Maven@3
+    inputs:
+      mavenPomFile: 'pom.xml'
+      mavenOptions: '$(MAVEN_OPTS)'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.11'
+      jdkArchitectureOption: 'x64'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      goals: 'build-frontend'
+
+  - script: 'mvn package -Pdev'
+
+  - task: CopyFiles@2
+    inputs:
+      contents: 'target/pathmind-*.jar'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+
+  - task: CopyFiles@2
+    inputs:
+      contents: '*.pubxml'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      artifactName: 'drop'
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+

@@ -16,10 +16,10 @@ import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
-import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.ui.views.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 
@@ -28,6 +28,8 @@ import java.util.List;
 @Route(value="sign-up")
 public class SignUpView extends PolymerTemplate<SignUpView.Model>
 {
+	private static final String EMAIL_IS_USED = "This email is already used.";
+
 	@Id("lastName")
 	private TextField lastName;
 
@@ -71,8 +73,9 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 	private UserService userService;
 
 	@Autowired
-	public SignUpView()
+	public SignUpView(@Value("${pathmind.contact-support.address}") String contactLink)
 	{
+		getModel().setContactLink(contactLink);
 		user = new PathmindUser();
 		initView();
 		initBinder();
@@ -93,7 +96,12 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 
 		signUp.addClickListener(e -> {
 			if (binder.validate().isOk()) {
-				showPassword(true);
+				if (userService.findByEmailIgnoreCase(email.getValue()) != null) {
+					getModel().setMessage(EMAIL_IS_USED);
+					email.setInvalid(true);
+				} else {
+					showPassword(true);
+				}
 			}
 		});
 
@@ -132,5 +140,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 
 	public interface Model extends TemplateModel {
 		void setTitle(String title);
+		void setMessage(String message);
+		void setContactLink(String contactLink);
 	}
 }

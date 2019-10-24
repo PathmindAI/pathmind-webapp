@@ -3,9 +3,11 @@ package io.skymind.pathmind.ui.views.project;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
@@ -19,7 +21,6 @@ import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.UIConstants;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.model.ModelsView;
@@ -27,6 +28,8 @@ import io.skymind.pathmind.ui.views.project.filter.ProjectFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 @CssImport("./styles/styles.css")
@@ -39,6 +42,8 @@ public class ProjectsView extends PathMindDefaultView
 	private List<Project> projects;
 	private Grid<Project> projectGrid;
 
+	private ArchivesTabPanel archivesTabPanel;
+
 	public ProjectsView() {
 		super();
 	}
@@ -46,11 +51,13 @@ public class ProjectsView extends PathMindDefaultView
 	protected Component getMainContent()
 	{
 		setupProjectGrid();
+		setupTabbedPanel();
+
 		addClassName("projects-view");
 
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-					getTabbedPanel(),
-				new ViewSection(
+					archivesTabPanel,
+					new ViewSection(
 						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
 					projectGrid
 				),
@@ -63,8 +70,8 @@ public class ProjectsView extends PathMindDefaultView
 		return new SearchBox<Project>(projectGrid, new ProjectFilter());
 	}
 
-	private ArchivesTabPanel getTabbedPanel() {
-		return new ArchivesTabPanel<Project>(
+	private void setupTabbedPanel() {
+		archivesTabPanel = new ArchivesTabPanel<Project>(
 				"Projects",
 				projectGrid,
 				this::getProjects,
@@ -78,12 +85,18 @@ public class ProjectsView extends PathMindDefaultView
 		projectGrid.addColumn(Project::getName)
 				.setHeader("Name")
 				.setSortable(true);
-		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+
+		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+				.setComparator(Comparator.comparing(Project::getDateCreated))
 				.setHeader("Date Created")
 				.setSortable(true);
-		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+
+		Grid.Column<Project> lastActivityColumn = projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+				.setComparator(Comparator.comparing(Project::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setSortable(true);
+
+		projectGrid.sort(Arrays.asList(new GridSortOrder<>(lastActivityColumn, SortDirection.DESCENDING)));
 
 		projectGrid.addItemClickListener(event -> {
 			getUI().ifPresent(ui -> ui.navigate(ModelsView.class, event.getItem().getId()));
@@ -100,6 +113,11 @@ public class ProjectsView extends PathMindDefaultView
 	}
 
 	@Override
+	protected boolean isAccessAllowedForUser() {
+		// Not needed since the loadData loads the data based on the user's id.
+		return true;
+	}
+	@Override
 	protected void loadData() throws InvalidDataException {
 		projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId());
 		if(projects == null || projects.isEmpty()) {
@@ -112,5 +130,6 @@ public class ProjectsView extends PathMindDefaultView
 	protected void updateScreen(BeforeEnterEvent event)
 	{
 		projectGrid.setItems(projects);
+		archivesTabPanel.initData();
 	}
 }

@@ -16,7 +16,6 @@ import static org.junit.Assert.*;
 @Transactional
 public class UserServiceTest extends PathmindApplicationTests
 {
-
 	@Autowired
 	UserService userService;
 
@@ -47,7 +46,6 @@ public class UserServiceTest extends PathmindApplicationTests
 
 		assertTrue(isVerified);
 	}
-
 
 	@Test
 	public void validatePassword() {

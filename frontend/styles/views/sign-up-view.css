@@ -1,0 +1,59 @@
+:host {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+    background: var(--pm-app-bg-color);
+    align-items: center;
+    overflow-y: auto;
+    padding-top: var(--lumo-space-xl);
+    box-sizing: border-box;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    min-width: 300px;
+    width: 600px;
+}
+
+.content {
+    margin-top: var(--lumo-size-s);
+    background: #fff;
+    border-radius: var(--lumo-border-radius);
+    padding: 50px 80px 30px;
+}
+
+vaadin-text-field,
+vaadin-password-field {
+    width: 100%;
+}
+
+#buttonsCont {
+    margin-top: 60px;
+    width: 100%;
+}
+
+vaadin-button {
+    margin: 5px auto;
+}
+.positive-action-btn {
+    width: 250px;
+}
+
+.notes {
+    font-size: 0.9em;
+    font-weight: 700;
+    color: #979797;
+    padding-left: 15px;
+    padding-top: 5px;
+}
+
+.notes span:last-child {
+    padding-bottom: 20px;
+}
+
+.notes .secondary {
+    color: #e7e7e7;
+}

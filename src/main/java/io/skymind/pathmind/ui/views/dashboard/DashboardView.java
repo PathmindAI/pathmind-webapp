@@ -5,11 +5,13 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
-import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
+import com.vaadin.flow.data.renderer.*;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
+import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
@@ -41,6 +43,12 @@ public class DashboardView extends PathMindDefaultView
 
 	private List<Policy> policies;
 
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		// Not needed since the loadData loads the data based on the user's id.
+		return true;
+	}
+
 	public DashboardView()
 	{
 		super();
@@ -60,7 +68,6 @@ public class DashboardView extends PathMindDefaultView
 				dashboardGrid,
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
 
-		gridWrapper.getElement().getStyle().set("padding-top", "100px");
 		return gridWrapper;
 	}
 
@@ -90,18 +97,23 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid.addColumn(Policy::getAlgorithm)
 				.setHeader("Algorithm")
 				.setSortable(true);
-		dashboardGrid.addColumn(policy -> PolicyUtils.getElapsedTime(policy))
+		dashboardGrid.addColumn(new NumberRenderer<>(policy -> RunUtils.getElapsedTime(policy.getRun()), DateAndTimeUtils.getElapsedTimeNumberFormat()))
+				.setComparator(Comparator.comparing(policy -> RunUtils.getElapsedTime(policy.getRun())))
 				.setHeader("Duration")
 				.setSortable(true);
+		Grid.Column<Policy> startedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunStartTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+				.setComparator(Comparator.comparing(policy -> PolicyUtils.getRunStartTime(policy), Comparator.nullsFirst(Comparator.naturalOrder())))
+				.setHeader("Started")
+				.setAutoWidth(true)
+				.setSortable(true);
 		Grid.Column<Policy> completedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+				.setComparator(Comparator.comparing(policy -> policy.getRun().getStoppedAt()))
 				.setHeader("Completed")
 				.setComparator(getCompletedComparator())
 				.setSortable(true);
 
-		// Default sorting order as per https://github.com/SkymindIO/pathmind-webapp/issues/133
 		dashboardGrid.sort(Arrays.asList(
-				new GridSortOrder<Policy>(statusColumn, SortDirection.ASCENDING),
-				new GridSortOrder<Policy>(completedColumn, SortDirection.DESCENDING)));
+				new GridSortOrder<Policy>(startedColumn, SortDirection.DESCENDING)));
 		dashboardGrid.addItemClickListener(event -> {
 			getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(event.getItem())));
 		});

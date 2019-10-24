@@ -8,53 +8,8 @@ import "@vaadin/vaadin-button/src/vaadin-button.js";
 class AccountEditView extends PolymerElement {
   static get template() {
     return html`
-      <style>
-        :host {
-          padding: 40px;
-          background: var(--pm-app-bg-color);
-          height: 100%;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          box-sizing: border-box;
-          align-items: center;
-        }
-
-        .inner-content {
-          margin-top: 5px;
-          background: #fff;
-          border-radius: var(--lumo-border-radius);
-          padding: 50px 80px 30px;
-        }
-
-        vaadin-text-field {
-          width: 100%;
-        }
-
-        #buttonsCont {
-          margin-top: 60px;
-          width: 100%;
-        }
-
-        vaadin-button {
-          margin: 5px auto;
-        }
-        #updateBtn {
-          width: 250px;
-        }
-        .content {
-          max-width: 500px;
-          margin-top: 20px;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        vaadin-tabs {
-          width: 100%;
-        }
-      </style>
+      <style include="shared-styles pathmind-dialog-view"></style>
+      <div id="header" style="width: 100%;"></div>
       <div class="content">
         <vaadin-tabs class="tabs">
           <vaadin-tab>
@@ -74,15 +29,14 @@ class AccountEditView extends PolymerElement {
               label="Last Name"
             ></vaadin-text-field>
             <vaadin-vertical-layout id="buttonsCont">
-              <vaadin-button id="updateBtn" theme="primary"
-                >Update</vaadin-button
-              >
-              <vaadin-button id="cancelBtn" theme="tertiary"
-                >Cancel</vaadin-button
-              >
+              <vaadin-button id="updateBtn" theme="primary" class="positive-action-btn">
+                Update
+              </vaadin-button>
+              <vaadin-button id="cancelBtn" theme="tertiary">Cancel</vaadin-button>
             </vaadin-vertical-layout>
           </vaadin-vertical-layout>
         </vaadin-vertical-layout>
+        <a class="support" href="{{contactLink}}">Contact Support</a>
       </div>
     `;
   }

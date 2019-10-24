@@ -4,16 +4,17 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
-import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
+import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 
@@ -22,6 +23,9 @@ import javax.annotation.PostConstruct;
 @Route(value="account", layout = MainLayout.class)
 public class AccountView extends PolymerTemplate<AccountView.Model>
 {
+	@Id("header")
+	private Div header;
+
 	@Id("editInfoBtn")
 	private Button editInfoBtn;
 
@@ -37,14 +41,15 @@ public class AccountView extends PolymerTemplate<AccountView.Model>
 	private PathmindUser user;
 
 	@Autowired
-	public AccountView(CurrentUser currentUser)
+	public AccountView(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink)
 	{
+        getModel().setContactLink(contactLink);
 		user = currentUser.getUser();
 	}
 
 	@PostConstruct
 	private void init() {
-		initTabs();
+		header.add(new ScreenTitlePanel("ACCOUNT"));
 		initContent();
 		initBtns();
 	}
@@ -64,17 +69,12 @@ public class AccountView extends PolymerTemplate<AccountView.Model>
 		getModel().setBillingInfo("Billing Information");
 	}
 
-	private void initTabs() {
-		Tabs tabs = new Tabs();
-		tabs.add(new Tab("Account information"));
-		tabs.setWidth("100%");
-	}
-
 	public interface Model extends TemplateModel {
 		void setEmail(String email);
 		void setFirstName(String firstName);
 		void setLastName(String lastName);
 		void setSubscription(String subscription);
 		void setBillingInfo(String billingInfo);
+        void setContactLink(String contactLink);
 	}
 }
