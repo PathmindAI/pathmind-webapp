@@ -8,6 +8,8 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -15,7 +17,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Configures spring security, doing the following:
@@ -33,6 +39,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String LOGIN_FAILURE_URL = "/login?error";
     private static final String LOGIN_URL = "/login";
     private static final String LOGOUT_SUCCESS_URL = "/login";
+    public static final String BAD_CREDENTIALS = "bad-credentials";
+    public static final String EMAIL_VERIFICATION_FAILED = "email-verification-failed";
 
     private final UserDetailsService userDetailsService;
 
@@ -82,6 +90,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
 
                 // Allow access to sign-up view
+                .antMatchers(LOGIN_URL + "/**").permitAll()
                 .antMatchers("/sign-up").permitAll()
                 .antMatchers("/reset-password/**").permitAll()
 
@@ -93,7 +102,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 // Configure the login page.
                 .and().formLogin().loginPage(LOGIN_URL).permitAll().loginProcessingUrl(LOGIN_PROCESSING_URL)
-                .failureUrl(LOGIN_FAILURE_URL)
+                .failureHandler(getFailureHandler())
 
                 // Register the success handler that redirects users to the page they last tried
                 // to access
@@ -101,6 +110,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 // Configure logout
                 .and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL);
+    }
+
+    private AuthenticationFailureHandler getFailureHandler() {
+        Map<String, String> failureUrlMap = new HashMap();
+        failureUrlMap.put(BadCredentialsException.class.getName(), LOGIN_URL + "/" + BAD_CREDENTIALS);
+        failureUrlMap.put(InternalAuthenticationServiceException.class.getName(), LOGIN_URL + "/" + EMAIL_VERIFICATION_FAILED);
+
+        PathmithAuthenticationFailureHandler handler = new PathmithAuthenticationFailureHandler();
+        handler.setExceptionMappings(failureUrlMap);
+        return handler;
     }
 
     /**
