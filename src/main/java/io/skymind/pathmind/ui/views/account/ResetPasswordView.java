@@ -178,8 +178,6 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 
 		user.setPasswordResetSendAt(LocalDateTime.now());
 		userService.update(user);
-		String link = new RouterLink(user.getName(), ResetPasswordView.class).getHref();
-		link += "/" + user.getEmailVerificationToken();
 
 		notificationService.sendResetPasswordEmail(user);
 	}
