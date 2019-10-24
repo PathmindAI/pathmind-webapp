@@ -49,7 +49,7 @@ public class NotificationUtils
 		Notification notification = new Notification(contentLabel, closeButton);
 		closeButton.addClickListener(event -> notification.close());
 		notification.setPosition(Notification.Position.TOP_END);
-		notification.setDuration(30000);
+		notification.setDuration(3000);
 		notification.addThemeVariants(variant);
 		notification.open();
 	}
