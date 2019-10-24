@@ -17,6 +17,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.services.UserService;
+import io.skymind.pathmind.services.notificationservice.NotificationService;
 import io.skymind.pathmind.ui.views.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,13 +67,15 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 	@Id("passwordPart")
 	private VerticalLayout passwordPart;
 
-	private PathmindUser user;
-	private Binder<PathmindUser> binder;
-
 	@Autowired
 	private UserService userService;
 
 	@Autowired
+	private NotificationService notificationService;
+
+	private PathmindUser user;
+	private Binder<PathmindUser> binder;
+
 	public SignUpView(@Value("${pathmind.contact-support.address}") String contactLink)
 	{
 		getModel().setContactLink(contactLink);
@@ -110,8 +113,9 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 
 			if (validationResults.isEmpty()) {
 				user.setPassword(newPassword.getValue());
-				userService.signup(user);
-                Notification.show("You successfully signed up", 3000, Notification.Position.TOP_END);
+				user = userService.signup(user);
+                notificationService.sendVerificationEmail(user);
+				Notification.show("You successfully signed up.", 3000, Notification.Position.TOP_END);
 				UI.getCurrent().navigate(LoginView.class);
 			} else {
 				newPassword.setInvalid(true);

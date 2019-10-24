@@ -93,6 +93,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(LOGIN_URL + "/**").permitAll()
                 .antMatchers("/sign-up").permitAll()
                 .antMatchers("/reset-password/**").permitAll()
+                .antMatchers("/email-verification-view/**").permitAll()
 
                 // Allow all flow internal requests.
                 .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
