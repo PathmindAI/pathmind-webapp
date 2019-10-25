@@ -4,6 +4,7 @@ import com.sendgrid.helpers.mail.Mail;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.PathMindException;
+import io.skymind.pathmind.security.SecurityConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,8 +19,6 @@ public class NotificationService
 {
 
 	private static Logger log = LogManager.getLogger(NotificationService.class);
-	private final String verificationRoute = "/email-verification/";
-	private final String resetPasswordRoute = "/reset-password/";
 
     @Value("${pathmind.reset.password.link.valid}")
     private int resetTokenValidHours;
@@ -70,7 +69,7 @@ public class NotificationService
 
 	private String createEmailVerificationLink(PathmindUser pathmindUser)
 	{
-		return applicationURL + verificationRoute + pathmindUser.getEmailVerificationToken();
+		return applicationURL + SecurityConfiguration.EMAIL_VERIFICATION_URL + "/" + pathmindUser.getEmailVerificationToken();
 	}
 
 	/**
@@ -101,7 +100,8 @@ public class NotificationService
 
 	private String createResetPasswordLink(PathmindUser pathmindUser)
 	{
-		return applicationURL + resetPasswordRoute + pathmindUser.getEmailVerificationToken();
+		return applicationURL + SecurityConfiguration.RESET_PASSWORD_URL +
+				"/" + pathmindUser.getEmailVerificationToken();
 	}
 
 }

@@ -36,11 +36,14 @@ import java.util.Map;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final String LOGIN_PROCESSING_URL = "/login";
-    private static final String LOGIN_FAILURE_URL = "/login?error";
     private static final String LOGIN_URL = "/login";
     private static final String LOGOUT_SUCCESS_URL = "/login";
     public static final String BAD_CREDENTIALS = "bad-credentials";
     public static final String EMAIL_VERIFICATION_FAILED = "email-verification-failed";
+    public static final String WITH_PARAMETER = "/**";
+    public static final String SIGN_UP_URL = "/sign-up";
+    public static final String RESET_PASSWORD_URL = "/reset-password";
+    public static final String EMAIL_VERIFICATION_URL = "/email-verification";
 
     private final UserDetailsService userDetailsService;
 
@@ -90,10 +93,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
 
                 // Allow access to sign-up view
-                .antMatchers(LOGIN_URL + "/**").permitAll()
-                .antMatchers("/sign-up").permitAll()
-                .antMatchers("/reset-password/**").permitAll()
-                .antMatchers("/email-verification/**").permitAll()
+                .antMatchers(LOGIN_URL + WITH_PARAMETER).permitAll()
+                .antMatchers(SIGN_UP_URL).permitAll()
+                .antMatchers(RESET_PASSWORD_URL + WITH_PARAMETER).permitAll()
+                .antMatchers(EMAIL_VERIFICATION_URL + WITH_PARAMETER).permitAll()
 
                 // Allow all flow internal requests.
                 .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
@@ -118,7 +121,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         failureUrlMap.put(BadCredentialsException.class.getName(), LOGIN_URL + "/" + BAD_CREDENTIALS);
         failureUrlMap.put(InternalAuthenticationServiceException.class.getName(), LOGIN_URL + "/" + EMAIL_VERIFICATION_FAILED);
 
-        PathmithAuthenticationFailureHandler handler = new PathmithAuthenticationFailureHandler();
+        PathmindAuthenticationFailureHandler handler = new PathmindAuthenticationFailureHandler();
         handler.setExceptionMappings(failureUrlMap);
         return handler;
     }
