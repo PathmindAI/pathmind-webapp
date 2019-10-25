@@ -5,7 +5,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
@@ -17,6 +17,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.NotificationService;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,7 +144,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 					userService.changePassword(user, newPassword.getValue());
 					user.setPasswordResetSendAt(null);
 					userService.update(user);
-					Notification.show(CHANGED_CONFIRMATION, 3000, Notification.Position.TOP_END);
+					NotificationUtils.showTopRightInlineNotification(CHANGED_CONFIRMATION, NotificationVariant.LUMO_SUCCESS);
 					UI.getCurrent().navigate(LoginView.class);
 				} else {
 					newPassword.setInvalid(true);
@@ -164,7 +165,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 
 	private void startResetProcess(String email) {
 		PathmindUser user = userService.findByEmailIgnoreCase(email);
-		Notification.show(SEND_CONFIRMATION, 3000, Notification.Position.TOP_END);
+		NotificationUtils.showTopRightInlineNotification(SEND_CONFIRMATION, NotificationVariant.LUMO_SUCCESS);
 		getModel().setMessage("");
 
 		if (user == null) {
