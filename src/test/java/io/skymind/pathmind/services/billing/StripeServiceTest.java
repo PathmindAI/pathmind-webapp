@@ -56,16 +56,13 @@ public class StripeServiceTest extends PathmindApplicationTests
 	@Test
 	public void plans() throws StripeException
 	{
-		Map<String, Object> paymentIntentParams = new HashMap<String, Object>();
-		paymentIntentParams.put("amount", 1000);
-		paymentIntentParams.put("currency", "eur");
-		ArrayList payment_method_types = new ArrayList();
-		payment_method_types.add("card");
-		paymentIntentParams.put("payment_method_types", payment_method_types);
-		paymentIntentParams.put("receipt_email", "jenny.rosen@example.com");
+		Map<String, Object> planParams = new HashMap<String, Object>();
+		planParams.put("limit", 3);
 
 
-		//final Product prod_g2AGAGjNJIkUbv = Plan.list();
+		final PlanCollection list = Plan.list(planParams);
+		int i = 0;
 	}
 
 }
+
