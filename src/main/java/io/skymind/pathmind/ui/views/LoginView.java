@@ -108,7 +108,7 @@ public class LoginView extends HorizontalLayout
 			PathmindUser user = userService.findByEmailIgnoreCase(email);
 			if (user != null) {
 				notificationService.sendVerificationEmail(user);
-				NotificationUtils.showTopRightInlineNotification("Email verification was send to your email.",
+				NotificationUtils.showTopRightInlineNotification("Email verification was sent to your email.",
 						NotificationVariant.LUMO_SUCCESS);
 			} else {
 				NotificationUtils.showTopRightInlineNotification("Email: " + email + " is not found. Please try to login again.",

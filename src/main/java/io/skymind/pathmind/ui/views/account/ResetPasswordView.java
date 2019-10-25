@@ -38,7 +38,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 	private static Logger log = LogManager.getLogger(ResetPasswordView.class);
 
 	private static final String EMAIL_REGEX = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
-	private static final String SEND_CONFIRMATION = "Reset password email was send.";
+	private static final String SEND_CONFIRMATION = "Reset password email was sent.";
 	private static final String LINK_IS_NOT_VALID = "Link is no longer valid. Please try to recover password again.";
 	private static final String CHANGED_CONFIRMATION = "Password was successfully changed";
 
