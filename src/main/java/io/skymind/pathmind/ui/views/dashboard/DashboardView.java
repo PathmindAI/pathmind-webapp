@@ -14,6 +14,7 @@ import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
@@ -32,7 +33,7 @@ import java.util.Comparator;
 import java.util.List;
 
 
-@Route(value="dashboard", layout = MainLayout.class)
+@Route(value= Routes.DASHBOARD_URL, layout = MainLayout.class)
 public class DashboardView extends PathMindDefaultView
 {
 	@Autowired

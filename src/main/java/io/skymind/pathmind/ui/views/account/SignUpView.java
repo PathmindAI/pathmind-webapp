@@ -16,7 +16,9 @@ import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
+import io.skymind.pathmind.services.notificationservice.NotificationService;
 import io.skymind.pathmind.ui.views.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +27,7 @@ import java.util.List;
 
 @Tag("sign-up-view")
 @JsModule("./src/account/sign-up-view.js")
-@Route(value="sign-up")
+@Route(value = Routes.SIGN_UP_URL)
 public class SignUpView extends PolymerTemplate<SignUpView.Model>
 {
 	private static final String EMAIL_IS_USED = "This email is already used.";
@@ -44,6 +46,9 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 
 	@Id("cancelSignInBtn")
 	private Button cancelSignInBtn;
+
+	@Id("forgotPasswordBtn")
+	private Button forgotPasswordBtn;
 
 	@Id("signUp")
 	private Button signUp;
@@ -66,13 +71,15 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 	@Id("passwordPart")
 	private VerticalLayout passwordPart;
 
-	private PathmindUser user;
-	private Binder<PathmindUser> binder;
-
 	@Autowired
 	private UserService userService;
 
 	@Autowired
+	private NotificationService notificationService;
+
+	private PathmindUser user;
+	private Binder<PathmindUser> binder;
+
 	public SignUpView(@Value("${pathmind.contact-support.address}") String contactLink)
 	{
 		getModel().setContactLink(contactLink);
@@ -94,6 +101,8 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 		cancelSignUpBtn.addClickListener(e -> UI.getCurrent().navigate(LoginView.class));
 		cancelSignInBtn.addClickListener(e -> showPassword(false));
 
+		forgotPasswordBtn.addClickListener(e ->UI.getCurrent().navigate(ResetPasswordView.class));
+
 		signUp.addClickListener(e -> {
 			if (binder.validate().isOk()) {
 				if (userService.findByEmailIgnoreCase(email.getValue()) != null) {
@@ -110,8 +119,9 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 
 			if (validationResults.isEmpty()) {
 				user.setPassword(newPassword.getValue());
-				userService.signup(user);
-                Notification.show("You successfully signed up", 3000, Notification.Position.TOP_END);
+				user = userService.signup(user);
+                notificationService.sendVerificationEmail(user);
+				Notification.show("You successfully signed up.", 3000, Notification.Position.TOP_END);
 				UI.getCurrent().navigate(LoginView.class);
 			} else {
 				newPassword.setInvalid(true);
