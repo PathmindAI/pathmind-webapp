@@ -15,6 +15,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.NotificationService;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
@@ -31,7 +32,7 @@ import java.util.UUID;
 
 @Tag("reset-password-view")
 @JsModule("./src/account/reset-password-view.js")
-@Route(value="reset-password")
+@Route(value = Routes.RESET_PASSWORD_URL)
 public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 	implements HasUrlParameter<String>, AfterNavigationObserver
 {

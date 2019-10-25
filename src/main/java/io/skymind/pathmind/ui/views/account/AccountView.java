@@ -11,6 +11,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import javax.annotation.PostConstruct;
 
 @Tag("account-view")
 @JsModule("./src/account/account-view.js")
-@Route(value="account", layout = MainLayout.class)
+@Route(value = Routes.ACCOUNT_URL, layout = MainLayout.class)
 public class AccountView extends PolymerTemplate<AccountView.Model>
 {
 	@Id("header")

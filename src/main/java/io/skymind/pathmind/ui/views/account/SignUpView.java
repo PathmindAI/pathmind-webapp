@@ -16,6 +16,7 @@ import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.NotificationService;
 import io.skymind.pathmind.ui.views.LoginView;
@@ -26,7 +27,7 @@ import java.util.List;
 
 @Tag("sign-up-view")
 @JsModule("./src/account/sign-up-view.js")
-@Route(value="sign-up")
+@Route(value = Routes.SIGN_UP_URL)
 public class SignUpView extends PolymerTemplate<SignUpView.Model>
 {
 	private static final String EMAIL_IS_USED = "This email is already used.";

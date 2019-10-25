@@ -4,7 +4,7 @@ import com.sendgrid.helpers.mail.Mail;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.PathMindException;
-import io.skymind.pathmind.security.SecurityConfiguration;
+import io.skymind.pathmind.security.Routes;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -69,7 +69,7 @@ public class NotificationService
 
 	private String createEmailVerificationLink(PathmindUser pathmindUser)
 	{
-		return applicationURL + SecurityConfiguration.EMAIL_VERIFICATION_URL + "/" + pathmindUser.getEmailVerificationToken();
+		return applicationURL + "/" + Routes.EMAIL_VERIFICATION_URL + "/" + pathmindUser.getEmailVerificationToken();
 	}
 
 	/**
@@ -100,8 +100,7 @@ public class NotificationService
 
 	private String createResetPasswordLink(PathmindUser pathmindUser)
 	{
-		return applicationURL + SecurityConfiguration.RESET_PASSWORD_URL +
-				"/" + pathmindUser.getEmailVerificationToken();
+		return applicationURL + "/" + Routes.RESET_PASSWORD_URL + "/" + pathmindUser.getEmailVerificationToken();
 	}
 
 }

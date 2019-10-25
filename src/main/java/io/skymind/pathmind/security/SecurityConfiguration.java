@@ -34,17 +34,6 @@ import java.util.Map;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    private static final String LOGIN_PROCESSING_URL = "/login";
-    private static final String LOGIN_URL = "/login";
-    private static final String LOGOUT_SUCCESS_URL = "/login";
-    public static final String BAD_CREDENTIALS = "bad-credentials";
-    public static final String EMAIL_VERIFICATION_FAILED = "email-verification-failed";
-    public static final String WITH_PARAMETER = "/**";
-    public static final String SIGN_UP_URL = "/sign-up";
-    public static final String RESET_PASSWORD_URL = "/reset-password";
-    public static final String EMAIL_VERIFICATION_URL = "/email-verification";
-
     private final UserDetailsService userDetailsService;
 
     @Value("${pathmind.development.mode}")
@@ -93,10 +82,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
 
                 // Allow access to sign-up view
-                .antMatchers(LOGIN_URL + WITH_PARAMETER).permitAll()
-                .antMatchers(SIGN_UP_URL).permitAll()
-                .antMatchers(RESET_PASSWORD_URL + WITH_PARAMETER).permitAll()
-                .antMatchers(EMAIL_VERIFICATION_URL + WITH_PARAMETER).permitAll()
+                .antMatchers("/" + Routes.LOGIN_URL + Routes.WITH_PARAMETER).permitAll()
+                .antMatchers("/" + Routes.SIGN_UP_URL).permitAll()
+                .antMatchers("/" + Routes.RESET_PASSWORD_URL + Routes.WITH_PARAMETER).permitAll()
+                .antMatchers("/" + Routes.EMAIL_VERIFICATION_URL + Routes.WITH_PARAMETER).permitAll()
 
                 // Allow all flow internal requests.
                 .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
@@ -105,7 +94,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
 
                 // Configure the login page.
-                .and().formLogin().loginPage(LOGIN_URL).permitAll().loginProcessingUrl(LOGIN_PROCESSING_URL)
+                .and().formLogin().loginPage("/" + Routes.LOGIN_URL).permitAll().loginProcessingUrl("/" + Routes.LOGIN_PROCESSING_URL)
                 .failureHandler(getFailureHandler())
 
                 // Register the success handler that redirects users to the page they last tried
@@ -113,13 +102,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
 
                 // Configure logout
-                .and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL);
+                .and().logout().logoutSuccessUrl("/" + Routes.LOGOUT_SUCCESS_URL);
     }
 
     private AuthenticationFailureHandler getFailureHandler() {
         Map<String, String> failureUrlMap = new HashMap();
-        failureUrlMap.put(BadCredentialsException.class.getName(), LOGIN_URL + "/" + BAD_CREDENTIALS);
-        failureUrlMap.put(InternalAuthenticationServiceException.class.getName(), LOGIN_URL + "/" + EMAIL_VERIFICATION_FAILED);
+        failureUrlMap.put(BadCredentialsException.class.getName(), "/" + Routes.LOGIN_URL + "/" + Routes.BAD_CREDENTIALS);
+        failureUrlMap.put(InternalAuthenticationServiceException.class.getName(),
+                "/" + Routes.LOGIN_URL + "/" + Routes.EMAIL_VERIFICATION_FAILED);
 
         PathmindAuthenticationFailureHandler handler = new PathmindAuthenticationFailureHandler();
         handler.setExceptionMappings(failureUrlMap);
