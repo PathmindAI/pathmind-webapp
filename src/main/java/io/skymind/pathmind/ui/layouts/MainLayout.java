@@ -29,7 +29,6 @@ import reactor.core.publisher.Flux;
 @CssImport(value = "./styles/views/experiment-view.css")
 @CssImport(value = "./styles/views/experiments-view.css")
 @CssImport(value = "./styles/views/new-experiment-view.css")
-@CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @CssImport(value = "./styles/views/pathmind-dialog-view.css", id = "pathmind-dialog-view")
 @Theme(Lumo.class)
 public class MainLayout extends AppLayout implements PageConfigurator
