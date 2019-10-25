@@ -23,28 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import reactor.core.publisher.UnicastProcessor;
 
-@Tag("account-edit-view")
-@JsModule("./src/account/account-edit-view.js")
-@Route(value="account/edit", layout = MainLayout.class)
-public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
+@Tag("account-upgrade-view")
+@JsModule("./src/account/account-upgrade-view.js")
+@Route(value="account/upgrade", layout = MainLayout.class)
+public class AccountUpgradeView extends PolymerTemplate<AccountUpgradeView.Model>
 {
 	@Id("header")
 	private Div header;
-
-	@Id("lastName")
-	private TextField lastName;
-
-	@Id("firstName")
-	private TextField firstName;
-
-	@Id("email")
-	private TextField email;
-
-	@Id("cancelBtn")
-	private Button cancelBtn;
-
-	@Id("updateBtn")
-	private Button updateBtn;
 
 	private PathmindUser user;
 
@@ -54,36 +39,17 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 	private final UnicastProcessor<PathmindBusEvent> publisher;
 
 	@Autowired
-	public AccountEditView(CurrentUser currentUser, UnicastProcessor<PathmindBusEvent> publisher,
-						   @Value("${pathmind.contact-support.address}") String contactLink)
+	public AccountUpgradeView(CurrentUser currentUser, UnicastProcessor<PathmindBusEvent> publisher,
+                              @Value("${pathmind.contact-support.address}") String contactLink)
 	{
 		getModel().setContactLink(contactLink);
-		header.add(new ScreenTitlePanel("ACCOUNT", "Edit"));
-//		header.add(new ScreenTitlePanel("ACCOUNT Edit"));
+		header.add(new ScreenTitlePanel("UPGRADE", "Subscription Plan"));
 		user = currentUser.getUser();
 		this.publisher = publisher;
-		initBinder();
-
-		email.setEnabled(false);
-		cancelBtn.addClickListener(e -> UI.getCurrent().navigate(AccountView.class));
-		updateBtn.addClickListener(e -> {
-			userService.update(user);
-			publisher.onNext(new UserUpdateBusEvent(user));
-			UI.getCurrent().navigate(AccountView.class);
-		});
+//			publisher.onNext(new UserUpdateBusEvent(user));
 	}
 
-	private void initBinder() {
-		Binder<PathmindUser> binder = new Binder<>(PathmindUser.class);
 
-		binder.forField(email).asRequired().withValidator(new EmailValidator(
-				"This doesn't look like a valid email address"))
-				.bind(PathmindUser::getEmail, PathmindUser::setEmail);
-
-		binder.forField(firstName).bind(PathmindUser::getFirstname, PathmindUser::setFirstname);
-		binder.forField(lastName).bind(PathmindUser::getLastname, PathmindUser::setLastname);
-		binder.setBean(user);
-	}
 
 	public interface Model extends TemplateModel {
 		void setContactLink(String contactLink);
