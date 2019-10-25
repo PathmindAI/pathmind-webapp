@@ -2,6 +2,7 @@ package io.skymind.pathmind.services.billing;
 
 import com.stripe.exception.StripeException;
 import com.stripe.model.*;
+import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import io.skymind.pathmind.PathmindApplicationTests;
 import org.junit.Test;
@@ -62,6 +63,17 @@ public class StripeServiceTest extends PathmindApplicationTests
 
 		final PlanCollection list = Plan.list(planParams);
 		int i = 0;
+	}
+
+
+	@Test
+	public void testPaymentIntent() throws StripeException
+	{
+		PaymentIntentCreateParams createParams = new PaymentIntentCreateParams.Builder()
+				.setCurrency("usd").setAmount(1099L)
+				.build();
+
+		PaymentIntent intent = PaymentIntent.create(createParams);
 	}
 
 }
