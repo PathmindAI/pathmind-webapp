@@ -4,12 +4,11 @@ import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.utils.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,13 +47,15 @@ public class AnylogicFileChecker implements FileChecker {
                 if (unZippedJar != null) {
                     //Passing unzipped jar to check whether it is valid or not
                     checkJarFile(unZippedJar, anylogicFileCheckResult);
-                    statusUpdater.updateStatus(0.50);
+                    statusUpdater.updateStatus(0.30);
 
                     if (anylogicFileCheckResult.isModelJarFilePresent()) {
                         //Check for PathmindHelper class instace in uploaded model.jar
                         checkHelpers(unZippedJar, anylogicFileCheckResult);
+                        statusUpdater.updateStatus(0.50);
 
                         if (anylogicFileCheckResult.isHelperPresent()) {
+                            extractParameters(unZippedJar, anylogicFileCheckResult);
                             statusUpdater.updateStatus(0.90);
                         } else {
                             log.error("model.jar does not having PathmindHelper class");
@@ -241,6 +242,40 @@ public class AnylogicFileChecker implements FileChecker {
             log.error("error while extract jar files", e);
         }
         return destDir;
+    }
+
+        // To extract hyperparameters for the given models
+    void extractParameters(File file, AnylogicFileCheckResult anylogicFileCheckResult) {
+        log.info("{} :- checkParameters Started", uuid);
+
+        try {
+            File scriptFile = new ClassPathResource("scripts/check_model.sh").getFile();
+            File newFile = new File(file.getParentFile(), scriptFile.getName());
+            FileCopyUtils.copy(scriptFile, newFile);
+
+            String[] cmd = new String[]{"bash", newFile.getAbsolutePath(), newFile.getParentFile().getAbsolutePath(), "/home/kepricon/.pathmind"};
+            Process proc  = Runtime.getRuntime().exec(cmd);
+
+            List<String> list = new ArrayList<>();
+            String line;
+            try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
+                while ((line = stdInput.readLine()) != null) {
+                    list.add(line);
+                }
+            }
+
+            if (list.size() != 2) {
+                log.error("result of bash script is not valid");
+            } else {
+                anylogicFileCheckResult.setNumAction(Integer.parseInt(list.get(0)));
+                anylogicFileCheckResult.setNumObservation(Integer.parseInt(list.get(1)));
+            }
+
+        } catch (IOException e) {
+            log.error("Error extractParameters jar file", e);
+        }
+
+        log.info("{} :- checkParameters Completed", uuid);
     }
 
     /*To delete the unzipped temp directory*/
