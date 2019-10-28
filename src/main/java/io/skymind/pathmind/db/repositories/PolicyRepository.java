@@ -44,8 +44,6 @@ public class PolicyRepository
 
 		return result.stream().map(record -> {
         	Policy policy = record.into(POLICY).into(Policy.class);
-        	// STEPH -> Confirm this is not needed.
-//			PolicyUtils.processProgressJson(policy);
 			addParentDataModelObjects(record, policy);
 			return policy;
 		}).collect(Collectors.toList());
