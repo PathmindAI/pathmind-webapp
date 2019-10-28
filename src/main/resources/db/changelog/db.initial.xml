@@ -518,6 +518,6 @@
             <column name="STOPPEDAT" type="DATETIME"></column>
             <column name="ALGORITHM" type="VARCHAR(3)"></column>
         </addColumn>
-        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy20191022_2"/>
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191022_2"/>
     </changeSet>
 </databaseChangeLog>

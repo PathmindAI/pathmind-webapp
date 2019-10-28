@@ -25,9 +25,9 @@ import java.util.List;
  * IMPORTANT -> If you modify this code please note that you need to run the Maven compile target before you run the liquibase targets
  * otherwise the CODE CHANGES WILL NOT BE REFLECTED IN THE LIQUIBASE TARGETS in any automatic way!!
  */
-public class UpdatePolicy20191022_2 implements CustomTaskChange
+public class UpdatePolicy_ChangeSet_20191022_2 implements CustomTaskChange
 {
-    private static Logger log = LogManager.getLogger(UpdatePolicy20191022_2.class);
+    private static Logger log = LogManager.getLogger(UpdatePolicy_ChangeSet_20191022_2.class);
 
     @Override
     public void execute(final Database database) throws CustomChangeException
