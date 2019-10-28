@@ -3,6 +3,7 @@ package io.skymind.pathmind.ui.views.account;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 
 @Tag("sign-up-view")
+@CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @JsModule("./src/account/sign-up-view.js")
 @Route(value = Routes.SIGN_UP_URL)
 public class SignUpView extends PolymerTemplate<SignUpView.Model>

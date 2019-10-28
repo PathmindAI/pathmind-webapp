@@ -18,7 +18,6 @@ import com.vaadin.flow.theme.lumo.Lumo;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.security.Routes;
-import io.skymind.pathmind.security.SecurityConfiguration;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.NotificationService;
