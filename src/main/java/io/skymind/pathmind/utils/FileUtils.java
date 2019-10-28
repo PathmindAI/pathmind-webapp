@@ -3,7 +3,6 @@ package io.skymind.pathmind.utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tika.Tika;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -17,10 +16,12 @@ import java.util.stream.Stream;
 public class FileUtils {
     private static final Logger log = LogManager.getLogger(FileUtils.class);
 
+    /*To list all the .class file from given file path*/
     public static List<String> listFiles(String filePath) {
         Path path = Paths.get(filePath);
         boolean isDir = Files.isDirectory(path);
         List<String> result = new ArrayList<>();
+
         if (isDir) {
             try (Stream<Path> walk = Files.walk(Paths.get(filePath))) {
                 result = walk.map(x -> x.toString())
@@ -34,8 +35,8 @@ public class FileUtils {
         return result;
     }
 
-    public static boolean detectDocType(InputStream stream)
-            throws IOException {
+    /*To detect file type and check whether the file type is zip or not, then return either true or false*/
+    public static boolean detectDocType(InputStream stream) throws IOException {
         Tika tika = new Tika();
         return tika.detect(stream).equals("application/zip");
 

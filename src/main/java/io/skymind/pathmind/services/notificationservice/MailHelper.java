@@ -24,8 +24,8 @@ public class MailHelper
 
 	private static Logger log = LogManager.getLogger(MailHelper.class);
 
-	public static final String pathmind_verification_email = "Pathmind verification email";
-	public static final String pathmind_resetpassword_email = "Pathmind reset password email";
+	public static final String PATHMIND_VERIFICATION_EMAIL_SUBJECT = "Pathmind verification email";
+	public static final String PATHMIND_RESET_PASSWORD_EMAIL_SUBJECT = "Pathmind reset password email";
 
 	@Value("${sendgrid.verification-mail.id}")
 	private String verificationEmailTemplateId;
@@ -79,7 +79,7 @@ public class MailHelper
 		mail.setTemplateId(verificationEmailTemplateId);
 
 		Personalization personalization = new Personalization();
-		personalization.addDynamicTemplateData("subject", pathmind_verification_email);
+		personalization.addDynamicTemplateData("subject", PATHMIND_VERIFICATION_EMAIL_SUBJECT);
 		personalization.addDynamicTemplateData("name", name);
 		personalization.addDynamicTemplateData("emailVerificationLink", emailVerificationLink);
 		personalization.addTo(new Email(to));
@@ -97,7 +97,7 @@ public class MailHelper
 		mail.setTemplateId(resetPasswordTemplateId);
 
 		Personalization personalization = new Personalization();
-		personalization.addDynamicTemplateData("subject", pathmind_resetpassword_email);
+		personalization.addDynamicTemplateData("subject", PATHMIND_RESET_PASSWORD_EMAIL_SUBJECT);
 		personalization.addDynamicTemplateData("name", name);
 		personalization.addDynamicTemplateData("resetPasswordLink", resetPasswordLink);
 		personalization.addDynamicTemplateData("hours", hours);

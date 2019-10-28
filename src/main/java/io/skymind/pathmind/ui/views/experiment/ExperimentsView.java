@@ -137,11 +137,17 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
     @Override
     protected Component getTitlePanel() {
-        return new ScreenTitlePanel("EXPERIMENTS");
+        return new ScreenTitlePanel("PROJECT " + getProjectName());
     }
 
     public List<Experiment> getExperiments() {
         return experiments;
+    }
+
+    // It's either get the project name from the first experiment (which has to exist for the page to load) or
+    // we need to do a separate database call.
+    private String getProjectName() {
+        return experiments.get(0).getProject().getName();
     }
 
     @Override
