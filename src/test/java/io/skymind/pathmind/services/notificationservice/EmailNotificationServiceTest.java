@@ -10,14 +10,14 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.UUID;
 
 @Ignore
-public class NotificationServiceTest extends PathmindApplicationTests
+public class EmailNotificationServiceTest extends PathmindApplicationTests
 {
 
 	@Value("${test.email.address}")
 	private String testEmail;
 
 	@Autowired
-	private NotificationService notificationService;
+	private EmailNotificationService emailNotificationService;
 
 	@Test
 	public void sendVerificationEmail()
@@ -26,13 +26,13 @@ public class NotificationServiceTest extends PathmindApplicationTests
 		pathmindUser.setEmail(testEmail);
 		pathmindUser.setEmailVerificationToken(UUID.randomUUID());
 		pathmindUser.setName("Test User");
-		notificationService.sendVerificationEmail(pathmindUser);
+		emailNotificationService.sendVerificationEmail(pathmindUser);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void sendVerificationEmail_Fail()
 	{
-		notificationService.sendVerificationEmail(null);
+		emailNotificationService.sendVerificationEmail(null);
 	}
 
 	@Test
@@ -42,13 +42,13 @@ public class NotificationServiceTest extends PathmindApplicationTests
 		pathmindUser.setEmail(testEmail);
 		pathmindUser.setEmailVerificationToken(UUID.randomUUID());
 		pathmindUser.setName("Test User");
-		notificationService.sendResetPasswordEmail(pathmindUser);
+		emailNotificationService.sendResetPasswordEmail(pathmindUser);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void sendResetPasswordEmail_Fail()
 	{
-		notificationService.sendResetPasswordEmail(null);
+		emailNotificationService.sendResetPasswordEmail(null);
 	}
 
 }

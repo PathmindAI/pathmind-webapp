@@ -6,7 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.File;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -18,27 +17,27 @@ public class ProjectFileCheckService {
     @Autowired
     ExecutorService checkerExecutorService;
 
+    /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
     public void checkFile(StatusUpdater statusUpdater, byte[] data) {
         Runnable runnable = () -> {
             try {
                 statusUpdater.updateStatus(0);
                 File tempFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
+
                 try {
                     FileUtils.writeByteArrayToFile(tempFile, data);
-
                     AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker();
-
-                    //Result set here.
+                    //File check result.
                     final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
-                    if(result.isFileCheckComplete() && result.isFileCheckSuccessful()){
+
+                    if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
                         statusUpdater.fileSuccessfullyVerified();
-                    } else {
-                        log.error("File is not valid");
-                        statusUpdater.updateError("File is not valid.");
                     }
+
                 } finally {
                     tempFile.delete();
                 }
+
             } catch (Exception e) {
                 log.error("File check interrupted.", e);
                 statusUpdater.updateError("File check interrupted.");

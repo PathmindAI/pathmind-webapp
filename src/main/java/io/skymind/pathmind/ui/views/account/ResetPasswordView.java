@@ -17,7 +17,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
-import io.skymind.pathmind.services.notificationservice.NotificationService;
+import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -74,7 +74,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 	private UserService userService;
 
 	@Autowired
-	private NotificationService notificationService;
+	private EmailNotificationService emailNotificationService;
 
 	@Value("${pathmind.reset.password.link.valid}")
 	private int resetTokenValidHours;
@@ -181,7 +181,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 		user.setPasswordResetSendAt(LocalDateTime.now());
 		userService.update(user);
 
-		notificationService.sendResetPasswordEmail(user);
+		emailNotificationService.sendResetPasswordEmail(user);
 	}
 
 	static boolean isValid(String email) {

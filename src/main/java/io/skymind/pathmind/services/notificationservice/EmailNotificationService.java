@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 
 @Service
-public class NotificationService
+public class EmailNotificationService
 {
 
-	private static Logger log = LogManager.getLogger(NotificationService.class);
+	private static Logger log = LogManager.getLogger(EmailNotificationService.class);
 
     @Value("${pathmind.reset.password.link.valid}")
     private int resetTokenValidHours;
@@ -33,7 +33,7 @@ public class NotificationService
 	private MailHelper mailHelper;
 
 	@Autowired
-	public NotificationService(UserDAO userDAO, MailHelper mailHelper)
+	public EmailNotificationService(UserDAO userDAO, MailHelper mailHelper)
 	{
 		this.userDAO = userDAO;
 		this.mailHelper = mailHelper;
