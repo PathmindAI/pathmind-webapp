@@ -24,6 +24,8 @@ public class AccountHeaderPanel extends HorizontalLayout
 	private Span usernameLabel = new Span();
 	private PathmindUser user;
 
+	private Disposable subscription;
+
 	public AccountHeaderPanel(PathmindUser user, Flux<PathmindBusEvent> consumer) {
 		this.user = user;
 		addClassName("nav-account-links");
@@ -38,7 +40,18 @@ public class AccountHeaderPanel extends HorizontalLayout
 		account.getSubMenu().addItem("Logout", e ->
 				UI.getCurrent().getPage().executeJavaScript("location.assign('/logout')"));
 
-		subscribeToEventBus(consumer);
+		subscription = subscribeToEventBus(consumer);
+	}
+
+	@Override
+	protected void onDetach(DetachEvent detachEvent) {
+		cancelSubscription();
+	}
+
+	private void cancelSubscription() {
+		if (subscription != null && !subscription.isDisposed()) {
+			subscription.dispose();
+		}
 	}
 
 	private HorizontalLayout createItem(Icon icon, PathmindUser user) {
