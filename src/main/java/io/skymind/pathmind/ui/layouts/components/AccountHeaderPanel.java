@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.layouts.components;
 
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.html.Span;
@@ -9,19 +10,22 @@ import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
+import io.skymind.pathmind.bus.utils.UserBusEventUtils;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.account.AccountView;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import org.apache.commons.lang3.StringUtils;
 
 public class AccountHeaderPanel extends HorizontalLayout
 {
 	private Span usernameLabel = new Span();
+	private PathmindUser user;
 
 	public AccountHeaderPanel(PathmindUser user, Flux<PathmindBusEvent> consumer) {
+		this.user = user;
 		addClassName("nav-account-links");
 
 		MenuBar menuBar = new MenuBar();
@@ -34,7 +38,7 @@ public class AccountHeaderPanel extends HorizontalLayout
 		account.getSubMenu().addItem("Logout", e ->
 				UI.getCurrent().getPage().executeJavaScript("location.assign('/logout')"));
 
-        subscribeToEventBus(consumer);
+		subscribeToEventBus(consumer);
 	}
 
 	private HorizontalLayout createItem(Icon icon, PathmindUser user) {
@@ -43,9 +47,13 @@ public class AccountHeaderPanel extends HorizontalLayout
 		return hl;
 	}
 
-	private void subscribeToEventBus(Flux<PathmindBusEvent> consumer) {
-		PolicyBusEventUtils.consumerBusEventBasedOnUserUpdate(
-				consumer, pathmindUser -> PushUtils.push(UI.getCurrent(), () -> updateData(pathmindUser)));
+	private Disposable subscribeToEventBus(Flux<PathmindBusEvent> consumer) {
+		 return UserBusEventUtils.consumerBusEventBasedOnUserUpdate(
+				consumer, () -> getUser(), pathmindUser -> PushUtils.push(UI.getCurrent(), () -> updateData(pathmindUser)));
+	}
+
+	public PathmindUser getUser() {
+		return user;
 	}
 
 	private void updateData(PathmindUser pathmindUser) {
