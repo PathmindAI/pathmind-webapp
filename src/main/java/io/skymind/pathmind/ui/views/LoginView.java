@@ -20,7 +20,7 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.UserService;
-import io.skymind.pathmind.services.notificationservice.NotificationService;
+import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
@@ -51,7 +51,7 @@ public class LoginView extends HorizontalLayout
 	private ProjectDAO projectDAO;
 
 	@Autowired
-	private NotificationService notificationService;
+	private EmailNotificationService emailNotificationService;
 
 	@Autowired
 	private UserService userService;
@@ -107,7 +107,7 @@ public class LoginView extends HorizontalLayout
 		resendVerification.addClickListener(e -> {
 			PathmindUser user = userService.findByEmailIgnoreCase(email);
 			if (user != null) {
-				notificationService.sendVerificationEmail(user);
+				emailNotificationService.sendVerificationEmail(user);
 				NotificationUtils.showTopRightInlineNotification("Email verification was sent to your email.",
 						NotificationVariant.LUMO_SUCCESS);
 			} else {

@@ -4,11 +4,8 @@ import com.sendgrid.helpers.mail.Mail;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.PathMindException;
-<<<<<<< HEAD
 import io.skymind.pathmind.security.Routes;
 import org.apache.commons.lang3.StringUtils;
-=======
->>>>>>> origin/dev
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +15,10 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 
 @Service
-public class NotificationService
+public class EmailNotificationService
 {
 
-	private static Logger log = LogManager.getLogger(NotificationService.class);
+	private static Logger log = LogManager.getLogger(EmailNotificationService.class);
 
     @Value("${pathmind.reset.password.link.valid}")
     private int resetTokenValidHours;
@@ -36,7 +33,7 @@ public class NotificationService
 	private MailHelper mailHelper;
 
 	@Autowired
-	public NotificationService(UserDAO userDAO, MailHelper mailHelper)
+	public EmailNotificationService(UserDAO userDAO, MailHelper mailHelper)
 	{
 		this.userDAO = userDAO;
 		this.mailHelper = mailHelper;
