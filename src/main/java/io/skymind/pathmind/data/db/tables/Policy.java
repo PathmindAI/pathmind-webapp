@@ -9,6 +9,7 @@ import io.skymind.pathmind.data.db.Keys;
 import io.skymind.pathmind.data.db.Public;
 import io.skymind.pathmind.data.db.tables.records.PolicyRecord;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,7 +21,7 @@ import org.jooq.Index;
 import org.jooq.JSONB;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row6;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = 43380184;
+    private static final long serialVersionUID = -1683981285;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -86,6 +87,21 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.file</code>.
      */
     public final TableField<PolicyRecord, byte[]> FILE = createField(DSL.name("file"), org.jooq.impl.SQLDataType.BLOB, this, "");
+
+    /**
+     * The column <code>public.policy.startedat</code>.
+     */
+    public final TableField<PolicyRecord, LocalDateTime> STARTEDAT = createField(DSL.name("startedat"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+
+    /**
+     * The column <code>public.policy.stoppedat</code>.
+     */
+    public final TableField<PolicyRecord, LocalDateTime> STOPPEDAT = createField(DSL.name("stoppedat"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+
+    /**
+     * The column <code>public.policy.algorithm</code>.
+     */
+    public final TableField<PolicyRecord, String> ALGORITHM = createField(DSL.name("algorithm"), org.jooq.impl.SQLDataType.VARCHAR(3), this, "");
 
     /**
      * Create a <code>public.policy</code> table reference
@@ -176,11 +192,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row6 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, Long, String, String, JSONB, byte[]> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row9<Long, Long, String, String, JSONB, byte[], LocalDateTime, LocalDateTime, String> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }
