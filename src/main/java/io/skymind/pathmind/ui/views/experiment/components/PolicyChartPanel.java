@@ -95,7 +95,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
                 .ifPresentOrElse(
                         series -> {
                             ListSeries listSeries = ((ListSeries) series);
-                            listSeries.setData(updatedPolicy.getScores());
+                            listSeries.setData(PolicyUtils.getMeanScores(updatedPolicy));
 
                             if (!series.getName().equals(updatedPolicy.getName())) {
                                 listSeries.setName(updatedPolicy.getName());
@@ -134,7 +134,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
     }
 
     private void addPolicyToChart(Policy policy) {
-        ListSeries listSeries = new ListSeries(policy.getName(), policy.getScores());
+        ListSeries listSeries = new ListSeries(policy.getName(), PolicyUtils.getMeanScores(policy));
         listSeries.setId(Long.toString(policy.getId()));
         chart.getConfiguration().addSeries(listSeries);
     }
@@ -146,7 +146,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
     public void update(Policy policy) {
         this.policy = policy;
         policyLabel.setText(PolicyUtils.getParsedPolicyName(policy));
-        scoreLabel.setText(PolicyUtils.getLastScore(policy));
+        scoreLabel.setText(PolicyUtils.getLastScoreString(policy));
         modelLabel.setText(policy.getModel().getName());
         experimentLabel.setText(policy.getExperiment().getName());
         runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());

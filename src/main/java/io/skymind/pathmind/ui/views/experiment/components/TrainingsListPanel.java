@@ -14,7 +14,6 @@ import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
-import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
@@ -58,8 +57,8 @@ public class TrainingsListPanel extends VerticalLayout {
                 .setAutoWidth(true)
                 .setSortable(true);
 
-        Grid.Column<Policy> startedColumn = grid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunStartTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
-                .setComparator(Comparator.comparing(policy -> PolicyUtils.getRunStartTime(policy)))
+        Grid.Column<Policy> startedColumn = grid.addColumn(new LocalDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+                .setComparator(Comparator.comparing(Policy::getStartedAt, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .setHeader("Started")
                 .setAutoWidth(true)
                 .setSortable(true);
@@ -85,12 +84,12 @@ public class TrainingsListPanel extends VerticalLayout {
                 .setAutoWidth(true)
                 .setSortable(true);
 
-        grid.addColumn(policy -> ProgressInterpreter.interpretKey(policy.getName()).getAlgorithm())
+        grid.addColumn(policy -> policy.getAlgorithmEnum())
                 .setHeader("Algorithm")
                 .setAutoWidth(true)
                 .setSortable(true);
 
-        grid.addColumn(policy -> ProgressInterpreter.interpretKey(policy.getName()).getHyperParameters().toString().replaceAll("(\\{|\\})", ""))
+        grid.addColumn(Policy::getNotes)
                 .setHeader("Notes")
                 .setAutoWidth(true)
                 .setSortable(true);

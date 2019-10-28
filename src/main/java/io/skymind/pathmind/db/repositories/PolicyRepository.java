@@ -1,12 +1,15 @@
 package io.skymind.pathmind.db.repositories;
 
 import io.skymind.pathmind.data.*;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import org.jooq.DSLContext;
+import org.jooq.JSONB;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,8 +42,10 @@ public class PolicyRepository
 				.where(PATHMIND_USER.ID.eq(userId))
 				.fetch();
 
-        return result.stream().map(record -> {
+		return result.stream().map(record -> {
         	Policy policy = record.into(POLICY).into(Policy.class);
+        	// STEPH -> Confirm this is not needed.
+//			PolicyUtils.processProgressJson(policy);
 			addParentDataModelObjects(record, policy);
 			return policy;
 		}).collect(Collectors.toList());
@@ -72,6 +77,7 @@ public class PolicyRepository
 				.fetchOne();
 
 		Policy policy = record.into(POLICY).into(Policy.class);
+		PolicyUtils.processProgressJson(policy);
 		addParentDataModelObjects(record, policy);
 
 		return policy;

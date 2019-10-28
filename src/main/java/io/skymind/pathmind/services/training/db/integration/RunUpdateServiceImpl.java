@@ -7,14 +7,13 @@ import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.PolicyUpdateBusEvent;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.*;
-import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.data.utils.PolicyUtils;
+import io.skymind.pathmind.db.repositories.RunRepository;
 import io.skymind.pathmind.services.training.progress.Progress;
-import io.skymind.pathmind.services.training.progress.RewardScore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
-import org.jooq.impl.DSL;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.UnicastProcessor;
@@ -54,10 +53,6 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 .fetch(RUN.ID);
     }
 
-    private Experiment getExperiment(long runId) {
-        return ctx.selectFrom(EXPERIMENT).where(EXPERIMENT.ID.in(DSL.select(RUN.EXPERIMENT_ID).from(RUN).where(RUN.ID.eq(runId)))).fetchOneInto(Experiment.class);
-    }
-
     @Override
     @Transactional
     public void updateRun(long runId, RunStatus status, List<Progress> progresses) {
@@ -70,17 +65,17 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
         // TODO -> DH -> Can you please adjust how you would prefer to have the backend setup because it's quite janky right now. I just temporarily
         //  put this to get the solution working and avoid code duplication. I basically need the model and experiment data models.
-        Experiment experiment = ExperimentDAO.getExperiment(ctx, getExperiment(runId).getId());
-        Model model = experiment.getModel();
-        Project project = experiment.getProject();
+        Run run = RunRepository.getRun(ctx, runId);
+        Experiment experiment = run.getExperiment();
+        Model model = run.getModel();
+        Project project = run.getProject();
 
         ctx.update(EXPERIMENT)
                 .set(EXPERIMENT.LAST_ACTIVITY_DATE, LocalDateTime.now())
                 .where(EXPERIMENT.ID.eq(experiment.getId()))
                 .execute();
 
-        Run run = ctx.selectFrom(RUN).where(RUN.ID.eq(runId)).fetchOneInto(Run.class);
-
+        // STEPH -> Why are we only getting the first progress and then looping through them all later?
         if (progresses.size() > 0) {
             Progress progress = progresses.get(0);
 
@@ -103,27 +98,16 @@ public class RunUpdateServiceImpl implements RunUpdateService {
             }
 
             //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
-            ctx.select(POLICY.ID)
-                    .from(POLICY)
+            ctx.update(POLICY)
+                    .set(POLICY.NAME, progress.getId())
+                    .set(POLICY.EXTERNAL_ID, progress.getId())
                     .where(POLICY.RUN_ID.eq(runId), POLICY.EXTERNAL_ID.eq(policyTempName))
-                    .fetch(POLICY.ID)
-                    .stream()
-                    .forEach(policyId -> {
-                        log.info("temporary policy FOUND : " + policyId + " for " + progress.getId());
-
-                        ctx.update(POLICY)
-                                .set(POLICY.NAME, progress.getId())
-                                .set(POLICY.EXTERNAL_ID, progress.getId())
-                                .where(POLICY.ID.eq(policyId))
-                                .execute();
-
-                        log.info("temporary policy UPDATED : "+ policyId + " for " + progress.getId());
-                    });
+                    .execute();
         }
-
 
         for (Progress progress : progresses) {
             try {
+                // PERFORMANCE -> We should store these values in the database rather than having to parse JSON all the time.
                 final String progressJsonStr = mapper.writeValueAsString(progress);
                 final JSONB progressJson = JSONB.valueOf(progressJsonStr);
 
@@ -143,13 +127,23 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 policy.setRun(run);
                 policy.setName(progress.getId());
                 policy.setExternalId(progress.getId());
-                policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
+                policy.setScores(progress.getRewardProgression());
                 policy.setProgress(progressJsonStr);
                 policy.setExperiment(experiment);
                 policy.setModel(model);
                 policy.setProject(project);
 
+                // For performance reasons.
+                policy.setStartedAt(progress.getStartedAt());
+                policy.setAlgorithm(progress.getAlgorithm());
+                policy.setStoppedAt(progress.getStoppedAt());
+
+                // For performance reasons.
+                policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
+                policy.setNotes(PolicyUtils.getNotesFromName(policy));
+
                 publisher.onNext(new PolicyUpdateBusEvent(policy));
+
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
@@ -166,22 +160,10 @@ public class RunUpdateServiceImpl implements RunUpdateService {
     }
 
     @Override
-    public List<Policy> getStoppedPolicies(long runId) {
-        List<Policy> finishedPolicies = ctx.selectFrom(POLICY)
-                .where(POLICY.RUN_ID.eq(runId))
-                .fetchInto(Policy.class)
-                .parallelStream()
-                .filter(p -> {
-                    try {
-                        Progress progress = mapper.readValue(p.getProgress(), Progress.class);
-                        return progress.getStoppedAt() != null;
-                    } catch (Exception e) {
-                        log.debug(e);
-                        return false;
-                    }
-                })
-                .collect(Collectors.toList());
-
-        return finishedPolicies;
+    public List<Policy> getStoppedPolicies(List<Long> runIds) {
+        return ctx.selectFrom(POLICY)
+                .where(POLICY.RUN_ID.in(runIds))
+                .and(POLICY.STOPPEDAT.isNotNull())
+                .fetchInto(Policy.class);
     }
 }

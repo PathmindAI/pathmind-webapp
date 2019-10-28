@@ -5,12 +5,11 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
-import com.vaadin.flow.data.renderer.*;
+import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
+import com.vaadin.flow.data.renderer.NumberRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -75,7 +74,7 @@ public class DashboardView extends PathMindDefaultView
 	{
 		dashboardGrid = new Grid<>();
 
-		Grid.Column<Policy> statusColumn = dashboardGrid.addColumn(policy -> policy.getRun().getStatusEnum())
+		dashboardGrid.addColumn(policy -> policy.getRun().getStatusEnum())
 				.setHeader("Status")
 				.setSortable(true);
 		dashboardGrid.addColumn(policy -> policy.getProject().getName())
@@ -90,19 +89,19 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid.addColumn(policy -> policy.getRun().getRunTypeEnum())
 				.setHeader("Run Type")
 				.setSortable(true);
-		dashboardGrid.addColumn(Policy::getAlgorithm)
+		dashboardGrid.addColumn(Policy::getAlgorithmEnum)
 				.setHeader("Algorithm")
 				.setSortable(true);
 		dashboardGrid.addColumn(new NumberRenderer<>(policy -> RunUtils.getElapsedTime(policy.getRun()), DateAndTimeUtils.getElapsedTimeNumberFormat()))
 				.setComparator(Comparator.comparing(policy -> RunUtils.getElapsedTime(policy.getRun())))
 				.setHeader("Duration")
 				.setSortable(true);
-		Grid.Column<Policy> startedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunStartTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
-				.setComparator(Comparator.comparing(policy -> PolicyUtils.getRunStartTime(policy), Comparator.nullsFirst(Comparator.naturalOrder())))
+		Grid.Column<Policy> startedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+				.setComparator(Comparator.comparing(Policy::getStartedAt, Comparator.nullsFirst(Comparator.naturalOrder())))
 				.setHeader("Started")
 				.setAutoWidth(true)
 				.setSortable(true);
-		Grid.Column<Policy> completedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+		dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(policy -> policy.getRun().getStoppedAt()))
 				.setHeader("Completed")
 				.setComparator(getCompletedComparator())
@@ -123,10 +122,6 @@ public class DashboardView extends PathMindDefaultView
 				return 1;
 			return p1.getRun().getStoppedAt().compareTo(p2.getRun().getStoppedAt());
 		};
-	}
-
-	private List<Policy> getPolicies() {
-		return policies;
 	}
 
 	@Override
