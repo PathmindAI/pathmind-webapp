@@ -16,6 +16,7 @@ import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.UserUpdateBusEvent;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -25,7 +26,7 @@ import reactor.core.publisher.UnicastProcessor;
 
 @Tag("account-edit-view")
 @JsModule("./src/account/account-edit-view.js")
-@Route(value="account/edit", layout = MainLayout.class)
+@Route(value = Routes.ACCOUNT_EDIT_URL, layout = MainLayout.class)
 public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 {
 	@Id("header")

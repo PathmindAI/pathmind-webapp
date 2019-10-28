@@ -16,6 +16,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -27,7 +28,7 @@ import java.util.List;
 
 @Tag("change-password-view")
 @JsModule("./src/account/change-password-view.js")
-@Route(value="account/change-password", layout = MainLayout.class)
+@Route(value = Routes.ACCOUNT_CHANGE_PASS_URL, layout = MainLayout.class)
 public class ChangePasswordView extends PolymerTemplate<ChangePasswordView.Model>
 {
 	@Id("header")

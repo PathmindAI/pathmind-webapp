@@ -4,6 +4,7 @@ import com.vaadin.flow.server.ServletHelper.RequestType;
 import com.vaadin.flow.shared.ApplicationConstants;
 import io.skymind.pathmind.ui.views.CustomRouteNotFoundError;
 import io.skymind.pathmind.ui.views.LoginView;
+import io.skymind.pathmind.ui.views.account.EmailVerificationView;
 import io.skymind.pathmind.ui.views.account.ResetPasswordView;
 import io.skymind.pathmind.ui.views.account.SignUpView;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -88,6 +89,7 @@ public class SecurityUtils
 				//|| AccessDeniedView.class.equals(securedClass)
 				|| SignUpView.class.equals(securedClass)
 				|| ResetPasswordView.class.equals(securedClass)
+				|| EmailVerificationView.class.equals(securedClass)
 				|| CustomRouteNotFoundError.class.equals(securedClass);
 
 		// Always allow access to public views

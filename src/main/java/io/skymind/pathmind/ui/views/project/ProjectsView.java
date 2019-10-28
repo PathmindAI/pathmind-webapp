@@ -14,6 +14,7 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
@@ -33,7 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @CssImport("./styles/styles.css")
-@Route(value="projects", layout = MainLayout.class)
+@Route(value= Routes.PROJECTS_URL, layout = MainLayout.class)
 public class ProjectsView extends PathMindDefaultView
 {
 	@Autowired

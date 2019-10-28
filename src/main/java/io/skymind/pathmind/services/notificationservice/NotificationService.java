@@ -4,6 +4,7 @@ import com.sendgrid.helpers.mail.Mail;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.PathMindException;
+import io.skymind.pathmind.security.Routes;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,9 +19,9 @@ public class NotificationService
 {
 
 	private static Logger log = LogManager.getLogger(NotificationService.class);
-	private final String verificationRoute = "/verify/";
-	private final String resetPasswordRoute = "/reset-password/";
-	private final String emailValidForHours = "48";
+
+    @Value("${pathmind.reset.password.link.valid}")
+    private int resetTokenValidHours;
 
 	@Value("${pathmind.email-sending.enabled}")
 	private boolean isEmailSendingEnabled;
@@ -68,7 +69,7 @@ public class NotificationService
 
 	private String createEmailVerificationLink(PathmindUser pathmindUser)
 	{
-		return applicationURL + verificationRoute + pathmindUser.getEmailVerificationToken();
+		return applicationURL + "/" + Routes.EMAIL_VERIFICATION_URL + "/" + pathmindUser.getEmailVerificationToken();
 	}
 
 	/**
@@ -84,15 +85,12 @@ public class NotificationService
 			log.info("Email sending has been disabled, not sending the email to: " + pathmindUser.getEmail());
 			return;
 		}
-		if (pathmindUser.getEmailVerifiedAt() != null && pathmindUser.getPasswordResetSendAt() != null) {
-			log.info("Canceling reset password email sending, user: " + pathmindUser.getEmail() + ", has already been verified");
-			return;
-		}
+
 		final String resetPasswordLink = createResetPasswordLink(pathmindUser);
 		Mail verificationEmail;
 		try {
 			String username = StringUtils.isBlank(pathmindUser.getName()) ? pathmindUser.getEmail() : pathmindUser.getName();
-			verificationEmail = mailHelper.createResetPasswordEmail(pathmindUser.getEmail(), username, resetPasswordLink, emailValidForHours);
+			verificationEmail = mailHelper.createResetPasswordEmail(pathmindUser.getEmail(), username, resetPasswordLink, "" + resetTokenValidHours);
 		} catch (PathMindException e) {
 			log.warn("Could not create email due to missing data in the PathmindUser object");
 			return;
@@ -102,7 +100,7 @@ public class NotificationService
 
 	private String createResetPasswordLink(PathmindUser pathmindUser)
 	{
-		return applicationURL + resetPasswordRoute + pathmindUser.getEmailVerificationToken();
+		return applicationURL + "/" + Routes.RESET_PASSWORD_URL + "/" + pathmindUser.getEmailVerificationToken();
 	}
 
 }

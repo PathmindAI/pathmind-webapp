@@ -18,6 +18,7 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
@@ -36,7 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @CssImport("./styles/styles.css")
-@Route(value = "experiments", layout = MainLayout.class)
+@Route(value = Routes.EXPERIMENTS_URL, layout = MainLayout.class)
 public class ExperimentsView extends PathMindDefaultView implements HasUrlParameter<Long> {
     @Autowired
     private ExperimentRepository experimentRepository;

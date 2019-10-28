@@ -94,6 +94,10 @@
             <artifactId>vaadin-charts-flow</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-cookie-consent-flow</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
         </dependency>

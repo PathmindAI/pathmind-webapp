@@ -17,6 +17,16 @@ class SignUpView extends PolymerElement {
           max-width: 600px;
           width: 600px;
         }
+        #forgotPasswordBtn {
+          width: 200px;
+        }
+        #errorCont {
+          justify-content: space-between;
+          width: 100%;
+        }
+        #errorCont .error-message {
+          padding-top: 8px;
+        }
       </style>
       <div class="content">
         <vaadin-tabs>
@@ -44,7 +54,18 @@ class SignUpView extends PolymerElement {
             label="Last Name"
           ></vaadin-text-field>
           <vaadin-text-field id="email" label="Email"></vaadin-text-field>
-          <div class="error-message" >{{message}}</div>
+
+          <vaadin-horizontal-layout id="errorCont">
+            <div class="error-message">{{message}}</div>
+            <vaadin-button
+              id="forgotPasswordBtn"
+              theme="tertiary"
+              hidden$="{{!message}}"
+            >
+              Want to reset password?
+            </vaadin-button>
+          </vaadin-horizontal-layout>
+
           <vaadin-vertical-layout id="buttonsCont">
             <vaadin-button
               id="signUp"
