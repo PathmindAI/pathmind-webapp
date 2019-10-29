@@ -19,7 +19,6 @@ import javax.annotation.PostConstruct;
 
 @Tag("stripe-view")
 @JsModule("./src/views/stripe-view.js")
-@JsModule("@power-elements/stripe-elements")
 @Route(value = "stripe-view", layout = MainLayout.class)
 @JavaScript("https://js.stripe.com/v3")
 @CssImport(value = "./styles/views/stripe-view.css")
@@ -28,9 +27,6 @@ public class StripeView extends PolymerTemplate<StripeView.Model>
 
 	private StripeService stripeService;
 	private final String publicKey;
-
-	@Id("submit")
-	private Button submit;
 
 	public StripeView(@Value("${pathmind.stripe.public.key}")String publicKey, @Autowired StripeService stripeService)
 	{

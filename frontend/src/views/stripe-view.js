@@ -1,14 +1,13 @@
 import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
 import "@vaadin/vaadin-ordered-layout/src/vaadin-vertical-layout.js";
 import "@vaadin/vaadin-text-field/src/vaadin-text-field.js";
-import "@power-elements/stripe-elements"
 
 class StripeView extends PolymerElement {
 
     static get template() {
         return html`
     <style include="shared-styles">
-        :host {
+        stripe-view {
             display: block;
             height: 100%;
           padding: 1em;
@@ -43,19 +42,12 @@ class StripeView extends PolymerElement {
     <vaadin-text-field id="zip"
         label="Zip/Postal code"
         value="{{cardData.address_zip}}"></vaadin-text-field>
+       
+    <div id="card-element"></div>
+    <div id="card-errors"></div>
 
-    <stripe-elements id="stripe"
-        stripe-ready="{{isReady}}"
-        is-complete="{{isComplete}}"
-        publishable-key="[[key]]"
-        card-data="[[cardData]]"
-        hide-postal-code
-        token="{{token}}"></stripe-elements>
-        
-    <vaadin-button id="submit"
-        disabled="[[!isComplete]]"
-        on-click="submit"
-    >Submit</vaadin-button>
+    <vaadin-button id="card-button" 
+    >Sign Up</vaadin-button>
 
     <vaadin-notification
         duration="4000"
@@ -69,13 +61,39 @@ class StripeView extends PolymerElement {
 
     ready() {
         super.ready();
+
+        var style = {
+            base: {
+                fontSize: '17px',
+            }
+        };
+
         this.stripe = Stripe(this.key);
-        this.cardData = {}
+        var elements = this.stripe.elements();
+        var cardElement = elements.create('card', {style: style});
+        cardElement.mount('#card-element');
+        element.on('change', ({event}) => {
+
+        });
+
+        cardElement.addEventListener('change', ({error}) => {
+            const displayError = document.getElementById('card-errors');
+            if (error) {
+                displayError.textContent = error.message;
+                this.isComplete = false;
+            } else {
+                displayError.textContent = '';
+                this.isComplete = true;
+            }
+        });
+
+        var cardButton = document.getElementById('card-button');
+
     }
 
     submit() {
         if (this.isReady && this.isComplete) {
-            this.$.stripe.submit();
+            this.stripe.submit();
         }
     }
 
@@ -90,8 +108,14 @@ class StripeView extends PolymerElement {
     static get properties() {
         return {
             stripe: Object,
-            isReady: Boolean,
-            isComplete: Boolean
+            isComplete: {
+                type: Boolean,
+                value: false
+            }
+            isEmpty: {
+                type: Boolean,
+                value: true
+            }
         };
     }
 }
