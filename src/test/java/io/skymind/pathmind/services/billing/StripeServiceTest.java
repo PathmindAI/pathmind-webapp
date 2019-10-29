@@ -74,6 +74,7 @@ public class StripeServiceTest extends PathmindApplicationTests
 				.build();
 
 		PaymentIntent intent = PaymentIntent.create(createParams);
+
 	}
 
 }

@@ -1,29 +1,57 @@
 import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
 import "@vaadin/vaadin-ordered-layout/src/vaadin-vertical-layout.js";
+import "@power-elements/stripe-elements"
 
 class StripeView extends PolymerElement {
 
     static get template() {
         return html`
-<style include="shared-styles">
-                :host {
-                    display: block;
-                    height: 100%;
-                }
-            </style>
-<vaadin-vertical-layout style="width: 100%; height: 100%;">
-    <div id="card-element"></div>
-</vaadin-vertical-layout>
+    <style include="shared-styles">
+        :host {
+            display: block;
+            height: 100%;
+//            --stripe-elements-base-color: var(--paper-grey-700);
+//            --stripe-elements-base-text-transform: uppercase;
+//            --stripe-elements-base-font-family: 'Georgia';
+//            --stripe-elements-base-font-style: italic;
+//            --stripe-elements-element-padding: 14px;
+//            --stripe-elements-element-background: #c0fefe;
+//            --stripe-elements-invalid-color: yellow;
+        }
+        
+    </style>
+            
+            
+    <stripe-elements id="stripe"
+        stripe-ready="{{ready}}"
+        publishable-key="[[key]]"
+        token="{{token}}"
+    ></stripe-elements>
+    
+    <vaadin-button id="submit"
+        disabled="[[!ready]]"
+        on-click="submit"
+    >Submit</vaadin-button>
+
+    <vaadin-notification
+        duration="4000"
+        opened="[[token]]"
+    >
+        <template>Token received for 💳 [[token.card.last4]]! 🤑</template>
+    </vaadin-notification>
+
 `;
     }
 
     ready() {
         super.ready();
-        var stripe = Stripe('pk_test_52b1olVNNEYJ3425191xXgxl00FNHDa3KY');
+        this.stripe = Stripe(this.key);
+    }
 
-        var elements = stripe.elements();
-        var cardElement = elements.create('card');
-        cardElement.mount('#card-element');
+    submit() {
+        if (this.ready) {
+            this.$.stripe.submit();
+        }
     }
 
     static get is() {
@@ -32,7 +60,7 @@ class StripeView extends PolymerElement {
 
     static get properties() {
         return {
-            // Declare your properties here.
+            stripe: Object
         };
     }
 }
