@@ -72,9 +72,6 @@ class StripeView extends PolymerElement {
         var elements = this.stripe.elements();
         var cardElement = elements.create('card', {style: style});
         cardElement.mount('#card-element');
-        element.on('change', ({event}) => {
-
-        });
 
         cardElement.addEventListener('change', ({error}) => {
             const displayError = document.getElementById('card-errors');
@@ -111,7 +108,7 @@ class StripeView extends PolymerElement {
             isComplete: {
                 type: Boolean,
                 value: false
-            }
+            },
             isEmpty: {
                 type: Boolean,
                 value: true
