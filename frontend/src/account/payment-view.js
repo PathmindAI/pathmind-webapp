@@ -14,8 +14,8 @@ class PaymentView extends PolymerElement {
       <style include="shared-styles  pathmind-dialog-view">
         .content {
           margin: auto;
-          max-width: 600px;
-          width: 600px;
+          max-width: 650px;
+          width: 650px;
         }
         .form-cont {
           width: 75%;
