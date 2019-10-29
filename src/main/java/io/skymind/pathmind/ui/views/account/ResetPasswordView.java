@@ -15,6 +15,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.NotificationService;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
@@ -31,14 +32,14 @@ import java.util.UUID;
 
 @Tag("reset-password-view")
 @JsModule("./src/account/reset-password-view.js")
-@Route(value="reset-password")
+@Route(value = Routes.RESET_PASSWORD_URL)
 public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 	implements HasUrlParameter<String>, AfterNavigationObserver
 {
 	private static Logger log = LogManager.getLogger(ResetPasswordView.class);
 
 	private static final String EMAIL_REGEX = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
-	private static final String SEND_CONFIRMATION = "Reset password email was send.";
+	private static final String SEND_CONFIRMATION = "Reset password email was sent.";
 	private static final String LINK_IS_NOT_VALID = "Link is no longer valid. Please try to recover password again.";
 	private static final String CHANGED_CONFIRMATION = "Password was successfully changed";
 

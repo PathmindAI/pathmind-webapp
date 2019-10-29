@@ -26,7 +26,7 @@ class EmailVerificationView extends PolymerElement {
         </vaadin-tabs>
         <vaadin-vertical-layout style="width: 100%;" class="inner-content">
           <div class="section-title" hidden$="{{error}}">
-            Your email was sucessfully verified.
+            Your email was successfully verified.
           </div>
 
           <div class="error-message" hidden$="{{!error}}">Verification link is no longer valid.</div>

@@ -13,6 +13,7 @@ import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.ConsoleService;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
@@ -26,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
 
 @CssImport("./styles/styles.css")
-@Route(value = "console", layout = MainLayout.class)
+@Route(value = Routes.CONSOLE_URL, layout = MainLayout.class)
 public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 	private Logger log = LogManager.getLogger(ConsoleView.class);

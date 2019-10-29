@@ -17,7 +17,7 @@ import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.security.SecurityConfiguration;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.NotificationService;
@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 
-@Route("login")
+@Route(Routes.LOGIN_URL)
 @Theme(Lumo.class)
 @CssImport(value = "./styles/components/vaadin-button.css", themeFor = "vaadin-button")
 @CssImport(value = "./styles/views/pathmind-dialog-view.css")
@@ -108,7 +108,7 @@ public class LoginView extends HorizontalLayout
 			PathmindUser user = userService.findByEmailIgnoreCase(email);
 			if (user != null) {
 				notificationService.sendVerificationEmail(user);
-				NotificationUtils.showTopRightInlineNotification("Email verification was send to your email.",
+				NotificationUtils.showTopRightInlineNotification("Email verification was sent to your email.",
 						NotificationVariant.LUMO_SUCCESS);
 			} else {
 				NotificationUtils.showTopRightInlineNotification("Email: " + email + " is not found. Please try to login again.",
@@ -194,9 +194,9 @@ public class LoginView extends HorizontalLayout
 		if (errorMessage == null)
 			return;
 
-		if (SecurityConfiguration.BAD_CREDENTIALS.equals(errorMessage)) {
+		if (Routes.BAD_CREDENTIALS.equals(errorMessage)) {
 			badCredentials.setVisible(true);
-		} else if (SecurityConfiguration.EMAIL_VERIFICATION_FAILED.equals(errorMessage)) {
+		} else if (Routes.EMAIL_VERIFICATION_FAILED.equals(errorMessage)) {
 			List<String> params = event.getLocation().getQueryParameters().getParameters().get("email");
 			if (params != null && !params.isEmpty()) {
 				email = params.get(0);

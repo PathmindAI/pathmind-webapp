@@ -3,6 +3,7 @@ package io.skymind.pathmind.ui.views.account;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
@@ -16,6 +17,7 @@ import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.NotificationService;
 import io.skymind.pathmind.ui.views.LoginView;
@@ -25,8 +27,9 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 
 @Tag("sign-up-view")
+@CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @JsModule("./src/account/sign-up-view.js")
-@Route(value="sign-up")
+@Route(value = Routes.SIGN_UP_URL)
 public class SignUpView extends PolymerTemplate<SignUpView.Model>
 {
 	private static final String EMAIL_IS_USED = "This email is already used.";

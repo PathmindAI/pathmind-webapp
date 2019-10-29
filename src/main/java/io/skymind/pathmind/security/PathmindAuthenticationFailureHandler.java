@@ -2,7 +2,6 @@ package io.skymind.pathmind.security;
 
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.util.UrlUtils;
 import org.springframework.util.Assert;
@@ -16,10 +15,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 //Based on ExceptionMappingAuthenticationFailureHandler
-public class PathmithAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+public class PathmindAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     private final Map<String, String> failureUrlMap = new HashMap();
 
-    public PathmithAuthenticationFailureHandler() {
+    public PathmindAuthenticationFailureHandler() {
     }
 
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {

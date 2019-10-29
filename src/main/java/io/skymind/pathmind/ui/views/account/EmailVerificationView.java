@@ -9,6 +9,7 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.ui.views.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 
 @Tag("email-verification-view")
 @JsModule("./src/account/email-verification-view.js")
-@Route(value="email-verification")
+@Route(value = Routes.EMAIL_VERIFICATION_URL)
 public class EmailVerificationView extends PolymerTemplate<EmailVerificationView.Model>
 		implements HasUrlParameter<String>, AfterNavigationObserver
 {
