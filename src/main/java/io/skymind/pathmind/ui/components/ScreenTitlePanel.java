@@ -17,13 +17,14 @@ public class ScreenTitlePanel extends HorizontalLayout
 	public ScreenTitlePanel(String title)
 	{
 		this(title, "");
-		setWidthFull();
-		setJustifyContentMode(JustifyContentMode.CENTER);
-	 	addClassName("action-menu");
 	}
 
 	public ScreenTitlePanel(String title, String subtitle)
 	{
+		setWidthFull();
+		setJustifyContentMode(JustifyContentMode.CENTER);
+		addClassName("action-menu");
+
 		titleLabel.setText(title);
 		titleLabel.addClassName("section-label-title");
 		add(titleLabel);

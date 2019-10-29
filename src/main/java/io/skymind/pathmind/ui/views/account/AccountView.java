@@ -58,7 +58,7 @@ public class AccountView extends PolymerTemplate<AccountView.Model>
 	private void initBtns() {
 		editInfoBtn.addClickListener(e -> UI.getCurrent().navigate(AccountEditView.class));
 		changePasswordBtn.addClickListener(e -> UI.getCurrent().navigate(ChangePasswordView.class));
-		upgradeBtn.setEnabled(false);
+		upgradeBtn.addClickListener(e -> UI.getCurrent().navigate(AccountUpgradeView.class));
 		editPaymentBtn.setEnabled(false);
 	}
 

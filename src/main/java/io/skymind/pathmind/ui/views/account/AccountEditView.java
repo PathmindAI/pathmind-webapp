@@ -59,7 +59,8 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 						   @Value("${pathmind.contact-support.address}") String contactLink)
 	{
 		getModel().setContactLink(contactLink);
-		header.add(new ScreenTitlePanel("ACCOUNT EDIT"));
+		header.add(new ScreenTitlePanel("ACCOUNT", "Edit"));
+//		header.add(new ScreenTitlePanel("ACCOUNT Edit"));
 		user = currentUser.getUser();
 		this.publisher = publisher;
 		initBinder();
