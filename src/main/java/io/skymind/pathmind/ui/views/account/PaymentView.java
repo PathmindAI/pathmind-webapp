@@ -17,18 +17,21 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import static io.skymind.pathmind.security.Routes.ACCOUNT_UPGRADE_URL;
+import static io.skymind.pathmind.security.Routes.PAYMENT_URL;
 
-@Tag("account-upgrade-view")
-@JsModule("./src/account/account-upgrade-view.js")
-@Route(value=ACCOUNT_UPGRADE_URL, layout = MainLayout.class)
-public class AccountUpgradeView extends PolymerTemplate<AccountUpgradeView.Model>
+@Tag("payment-view")
+@JsModule("./src/account/payment-view.js")
+@Route(value=PAYMENT_URL, layout = MainLayout.class)
+public class PaymentView extends PolymerTemplate<PaymentView.Model>
 {
 	@Id("header")
 	private Div header;
 
-	@Id("proBtn")
-	private Button proBtn;
+	@Id("cancelSignUpBtn")
+	private Button cancelSignUpBtn;
+
+	@Id("signUp")
+	private Button signUp;
 
 	private PathmindUser user;
 
@@ -37,19 +40,22 @@ public class AccountUpgradeView extends PolymerTemplate<AccountUpgradeView.Model
 
 
 	@Autowired
-	public AccountUpgradeView(CurrentUser currentUser,
-                              @Value("${pathmind.contact-support.address}") String contactLink)
+	public PaymentView(CurrentUser currentUser,
+					   @Value("${pathmind.contact-support.address}") String contactLink)
 	{
-		getModel().setContactLink(contactLink);
-		header.add(new ScreenTitlePanel("UPGRADE", "Subscription Plans"));
 		user = currentUser.getUser();
+		header.add(new ScreenTitlePanel("UPGRADE", "Subscription Plans"));
 
-		proBtn.addClickListener(e -> UI.getCurrent().navigate(PaymentView.class));
+		getModel().setContactLink(contactLink);
+		getModel().setPlan("Professional");
+
+		cancelSignUpBtn.addClickListener(e -> UI.getCurrent().navigate(AccountUpgradeView.class));
 	}
 
 
 
 	public interface Model extends TemplateModel {
 		void setContactLink(String contactLink);
+		void setPlan(String plan);
 	}
 }

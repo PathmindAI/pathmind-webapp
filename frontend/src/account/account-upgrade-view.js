@@ -95,6 +95,9 @@ class AccountUpgradeView extends PolymerElement {
         vaadin-button {
           margin: 35px auto 25px;
         }
+        a {
+          margin: auto;
+        }
 
         .support {
           color: #878787;
@@ -235,12 +238,14 @@ class AccountUpgradeView extends PolymerElement {
               </div>
             </vaadin-vertical-layout>
 
-            <vaadin-button
-              id="enterpriseBtn"
-              theme="primary"
-              class="positive-action-btn"
-              >Contact Us</vaadin-button
-            >
+            <a href="{{contactLink}}">
+              <vaadin-button
+                id="enterpriseBtn"
+                theme="primary"
+                class="positive-action-btn"
+                >Contact Us</vaadin-button
+              >
+            </a>
           </vaadin-vertical-layout>
         </vaadin-horizontal-layout>
         <div class="support">Applicable taxes not included</div>
