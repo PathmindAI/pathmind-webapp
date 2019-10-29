@@ -235,4 +235,8 @@ public class TrainingService {
 
         return name;
     }
+
+    public ExecutionEnvironment getExecutionEnvironment() {
+        return executionEnvironment;
+    }
 }
