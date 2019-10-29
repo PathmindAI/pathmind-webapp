@@ -99,7 +99,7 @@ class PaymentView extends PolymerElement {
 
           <vaadin-horizontal-layout id="errorCont">
             <div class="error-message">{{message}}</div>
-            <div class="error-message">Validation error can be ussed here</div>
+            <div class="error-message">Validation error can be used here</div>
           </vaadin-horizontal-layout>
 
           <vaadin-vertical-layout class="form-cont">
