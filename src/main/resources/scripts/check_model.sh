@@ -81,6 +81,7 @@ public class VerifySettings extends PathmindEnvironment {
         e.reset();
         System.out.println(e.agent.pathmindHelper.possibleActionCount);
         System.out.println(e.agent.pathmindHelper.observationForTraining().length);
+        System.exit(0);
     }
 }
 EOF
