@@ -1,5 +1,6 @@
 import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
 import "@vaadin/vaadin-ordered-layout/src/vaadin-vertical-layout.js";
+import "@vaadin/vaadin-text-field/src/vaadin-text-field.js";
 import "@power-elements/stripe-elements"
 
 class StripeView extends PolymerElement {
@@ -10,6 +11,7 @@ class StripeView extends PolymerElement {
         :host {
             display: block;
             height: 100%;
+          padding: 1em;
 //            --stripe-elements-base-color: var(--paper-grey-700);
 //            --stripe-elements-base-text-transform: uppercase;
 //            --stripe-elements-base-font-family: 'Georgia';
@@ -20,16 +22,38 @@ class StripeView extends PolymerElement {
         }
         
     </style>
-            
-            
+
+
+    <vaadin-text-field id="name"
+        label="Name on card"
+        value="{{cardData.name}}"></vaadin-text-field>
+
+    <vaadin-text-field id="address1"
+      label="Billing Address"
+      value="{{cardData.address_line1}}"></vaadin-text-field>
+
+    <vaadin-text-field id="city"
+        label="City"
+        value="{{cardData.address_city}}"></vaadin-text-field>
+
+    <vaadin-text-field id="state"
+        label="State"
+        value="{{cardData.address_state}}"></vaadin-text-field>
+
+    <vaadin-text-field id="zip"
+        label="Zip/Postal code"
+        value="{{cardData.address_zip}}"></vaadin-text-field>
+
     <stripe-elements id="stripe"
-        stripe-ready="{{ready}}"
+        stripe-ready="{{isReady}}"
+        is-complete="{{isComplete}}"
         publishable-key="[[key]]"
-        token="{{token}}"
-    ></stripe-elements>
-    
+        card-data="[[cardData]]"
+        hide-postal-code
+        token="{{token}}"></stripe-elements>
+        
     <vaadin-button id="submit"
-        disabled="[[!ready]]"
+        disabled="[[!isComplete]]"
         on-click="submit"
     >Submit</vaadin-button>
 
@@ -46,10 +70,11 @@ class StripeView extends PolymerElement {
     ready() {
         super.ready();
         this.stripe = Stripe(this.key);
+        this.cardData = {}
     }
 
     submit() {
-        if (this.ready) {
+        if (this.isReady && this.isComplete) {
             this.$.stripe.submit();
         }
     }
@@ -58,9 +83,15 @@ class StripeView extends PolymerElement {
         return 'stripe-view';
     }
 
+    _attachDom(dom) {
+        this.appendChild(dom);
+    }
+
     static get properties() {
         return {
-            stripe: Object
+            stripe: Object,
+            isReady: Boolean,
+            isComplete: Boolean
         };
     }
 }
