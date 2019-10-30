@@ -75,7 +75,6 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 .where(EXPERIMENT.ID.eq(experiment.getId()))
                 .execute();
 
-        // STEPH -> Why are we only getting the first progress and then looping through them all later?
         if (progresses.size() > 0) {
             Progress progress = progresses.get(0);
 
