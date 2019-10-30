@@ -107,7 +107,7 @@ public class Policy extends Data
 
 	// TODO -> At some point we should remove all the getXxxEnum() versions and only have the getXxx() methods for all Enums.
 	public String getAlgorithm() {
-		return algorithm.name();
+		return algorithm == null ? null : algorithm.name();
 	}
 
 	public void setAlgorithm(String algorithm) {
