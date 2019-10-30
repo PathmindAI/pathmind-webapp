@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
+import java.util.UUID;
 
 @Route(Routes.LOGIN_URL)
 @Theme(Lumo.class)
@@ -107,6 +108,10 @@ public class LoginView extends HorizontalLayout
 		resendVerification.addClickListener(e -> {
 			PathmindUser user = userService.findByEmailIgnoreCase(email);
 			if (user != null) {
+				if (user.getEmailVerifiedAt() != null || user.getEmailVerificationToken() == null ) {
+					user.setEmailVerificationToken(UUID.randomUUID());
+					userService.update(user);
+				}
 				emailNotificationService.sendVerificationEmail(user);
 				NotificationUtils.showTopRightInlineNotification("Email verification was sent to your email.",
 						NotificationVariant.LUMO_SUCCESS);
