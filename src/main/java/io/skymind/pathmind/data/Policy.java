@@ -2,6 +2,7 @@ package io.skymind.pathmind.data;
 
 import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.services.training.progress.RewardScore;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -110,7 +111,7 @@ public class Policy extends Data
 	}
 
 	public void setAlgorithm(String algorithm) {
-		this.algorithm = Algorithm.valueOf(algorithm.toUpperCase());
+		this.algorithm = StringUtils.isEmpty(algorithm) ? null : Algorithm.valueOf(algorithm.toUpperCase());
 	}
 
 	public void setAlgorithmEnum(Algorithm algorithm) {
