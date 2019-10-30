@@ -76,8 +76,8 @@ public class PolicyDAO extends PolicyRepository
 
     public long insertPolicy(Policy policy) {
         return ctx.insertInto(POLICY)
-                .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID)
-                .values(policy.getName(), policy.getRunId(), policy.getName())
+                .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM)
+                .values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm())
                 .returning(POLICY.ID)
                 .fetchOne()
                 .getValue(POLICY.ID);

@@ -111,8 +111,8 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 final JSONB progressJson = JSONB.valueOf(progressJsonStr);
 
                 long policyId = ctx.insertInto(POLICY)
-                        .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS)
-                        .values(progress.getId(), runId, progress.getId(), progressJson)
+                        .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM)
+                        .values(progress.getId(), runId, progress.getId(), progressJson, progress.getStartedAt(), progress.getStoppedAt(), progress.getAlgorithm())
                         .onConflict(POLICY.RUN_ID, POLICY.EXTERNAL_ID)
                         .doUpdate()
                         .set(POLICY.PROGRESS, progressJson)
