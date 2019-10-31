@@ -20,7 +20,6 @@ import javax.annotation.PostConstruct;
 @Tag("stripe-view")
 @JsModule("./src/views/stripe-view.js")
 @Route(value = "stripe-view", layout = MainLayout.class)
-@JavaScript("https://js.stripe.com/v3")
 @CssImport(value = "./styles/views/stripe-view.css")
 public class StripeView extends PolymerTemplate<StripeView.Model>
 {
