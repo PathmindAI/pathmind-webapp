@@ -11,13 +11,6 @@ class StripeView extends PolymerElement {
             display: block;
             height: 100%;
           padding: 1em;
-//            --stripe-elements-base-color: var(--paper-grey-700);
-//            --stripe-elements-base-text-transform: uppercase;
-//            --stripe-elements-base-font-family: 'Georgia';
-//            --stripe-elements-base-font-style: italic;
-//            --stripe-elements-element-padding: 14px;
-//            --stripe-elements-element-background: #c0fefe;
-//            --stripe-elements-invalid-color: yellow;
         }
         
     </style>
@@ -47,6 +40,8 @@ class StripeView extends PolymerElement {
     <div id="card-errors"></div>
 
     <vaadin-button id="card-button" 
+        disabled="[[!isComplete]]"
+        on-click="submit"
     >Sign Up</vaadin-button>
 
     <vaadin-notification
@@ -68,20 +63,21 @@ class StripeView extends PolymerElement {
             }
         };
 
+        this.cardData = {};
+
         this.stripe = Stripe(this.key);
         var elements = this.stripe.elements();
-        var cardElement = elements.create('card', {style: style});
-        cardElement.mount('#card-element');
+        this.cardElement = elements.create('card', {style: style});
+        this.cardElement.mount('#card-element');
 
-        cardElement.addEventListener('change', ({error}) => {
+        this.cardElement.addEventListener('change', (event) => {
             const displayError = document.getElementById('card-errors');
-            if (error) {
+            if (event.error) {
                 displayError.textContent = error.message;
-                this.isComplete = false;
             } else {
                 displayError.textContent = '';
-                this.isComplete = true;
             }
+            this.isComplete = event.complete;
         });
 
         var cardButton = document.getElementById('card-button');
@@ -89,9 +85,22 @@ class StripeView extends PolymerElement {
     }
 
     submit() {
-        if (this.isReady && this.isComplete) {
-            this.stripe.submit();
+        if (this.isComplete) {
+            var stripeView = this;
+            this.stripe.createToken(this.cardElement, this.cardData).then(function(result) {
+                const displayError = document.getElementById('card-errors');
+                if (result.error) {
+                   displayError.textContent = result.error.message;
+                } else {
+                    stripeView.setToken(result.token);
+                    // do real form submit
+                }
+            });
         }
+    }
+
+    setToken(newToken) {
+        this.token = newToken;
     }
 
     static get is() {
@@ -105,13 +114,13 @@ class StripeView extends PolymerElement {
     static get properties() {
         return {
             stripe: Object,
+            token: {
+                type: Object,
+                reflectToAttribute: true
+            },
             isComplete: {
                 type: Boolean,
                 value: false
-            },
-            isEmpty: {
-                type: Boolean,
-                value: true
             }
         };
     }
