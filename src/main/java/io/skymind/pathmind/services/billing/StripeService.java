@@ -123,9 +123,10 @@ public class StripeService
 			log.info("Could not retrieve customer from Stripe: " + email);
 			return false;
 		}
-		Objects.requireNonNull(customer.getSubscriptions());
-		Objects.requireNonNull(customer.getSubscriptions().getData());
-		if (customer.getSubscriptions().getData().isEmpty()) {
+		if (customer.getSubscriptions() == null ||
+				customer.getSubscriptions().getData() == null ||
+				customer.getSubscriptions().getData().isEmpty()
+		) {
 			return false;
 		}
 		return "active".equalsIgnoreCase(customer.getSubscriptions().getData().get(0).getStatus());

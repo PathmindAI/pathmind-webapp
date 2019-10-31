@@ -26,7 +26,7 @@ import java.util.Objects;
 @Tag("stripe-view")
 @JsModule("./src/views/stripe-view.js")
 @Route(value = "stripe-view", layout = MainLayout.class)
-@CssImport(value = "./styles/views/stripe-view.css")
+//@CssImport(value = "./styles/views/stripe-view.css")
 public class StripeView extends PolymerTemplate<StripeView.Model>
 {
 

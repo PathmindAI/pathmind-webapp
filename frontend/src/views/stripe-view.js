@@ -7,50 +7,163 @@ class StripeView extends PolymerElement {
     static get template() {
         return html`
     <style include="shared-styles">
-        stripe-view {
-            display: block;
-            height: 100%;
-          padding: 1em;
+        #card-element {
+            width: 100%;
+            border-radius: var(--lumo-border-radius);
+            background: var(--pm-highlight-medium);
         }
         
+         .content {
+          margin: auto;
+          max-width: 650px;
+          width: 650px;
+        }
+        .form-cont {
+          width: 75%;
+          margin: 25px auto 0;
+        }
+
+        #errorCont {
+          margin: 10px 20px 0;
+          width: 100%;
+        }
+        #errorCont .error-message {
+          padding-top: 8px;
+        }
+
+        #cardNumber vaadin-text-field {
+          width: 23%;
+          margin-right: 2%;
+        }
+
+        #expiresAndCVC vaadin-text-field {
+          width: 48%;
+          margin-right: 2%;
+        }
+        #city {
+          width: 48%;
+          margin-right: 2%;
+        }
+        #state {
+          width: 20%;
+          margin-right: 2%;
+        }
+        #zip {
+          width: 26%;
+          margin-right: 2%;
+        }
+        #numberOnCard, 
+        #billingAddress {
+          width: 98%;
+          margin-right: 2%;
+        }
+
+        .custom-label {
+          color: var(--lumo-secondary-text-color);
+          font-size: var(--lumo-font-size-s);
+          font-weight: 500;
+          margin-top: 15px;
+        }
+
+        .title {
+          font-size: 1.5em;
+          margin-left: 20px;
+          color: #676767;
+        }
+        .sub-title {
+          margin-left: 20px;
+          color: #878787;
+        }
+
+        .payment-notes {
+          margin: 15px auto 0;
+          color: #878787;
+          font-size: 0.8em;
+        }
     </style>
 
 
-    <vaadin-text-field id="name"
-        label="Name on card"
-        value="{{name}}"></vaadin-text-field>
+      <div id="header" style="width: 100%;"></div>
+      <div class="content">
+        <vaadin-tabs>
+          <vaadin-tab>
+            Payment
+          </vaadin-tab>
+        </vaadin-tabs>
+        <vaadin-vertical-layout
+          style="width: 100%;"
+          class="inner-content"
+          id="emailPart"
+        >
+          <div class="title">Upgrade to {{plan}}</div>
+          <div class="sub-title">
+            Please fill in the information below. All fields are required.
+          </div>
 
-    <vaadin-text-field id="address1"
-      label="Billing Address"
-      value="{{address}}"></vaadin-text-field>
+          <vaadin-horizontal-layout id="errorCont">
+            <div class="error-message" id="card-errors">{{message}}</div>
+          </vaadin-horizontal-layout>
 
-    <vaadin-text-field id="city"
-        label="City"
-        value="{{city}}"></vaadin-text-field>
+          <vaadin-vertical-layout class="form-cont">
+            <vaadin-text-field
+              id="name"
+              label="Name on card"
+              required
+              value="{{name}}"
+            ></vaadin-text-field>
+            <vaadin-text-field
+              id="address"
+              label="Billing Address"
+              required
+              value="{{address}}"
+            ></vaadin-text-field>
+            <vaadin-horizontal-layout id="" style="width: 100%;">
+              <vaadin-text-field
+                id="city"
+                label="City"
+                required
+                value="{{city}}"
+              ></vaadin-text-field>
+              <vaadin-text-field
+                id="state"
+                label="State"
+                required
+                value="{{state}}"
+              ></vaadin-text-field>
+              <vaadin-text-field
+                id="zip"
+                label="Zip/Postal code"
+                required
+                value="{{postal_code}}"
+              ></vaadin-text-field>
+            </vaadin-horizontal-layout>
 
-    <vaadin-text-field id="state"
-        label="State"
-        value="{{state}}"></vaadin-text-field>
+            <vaadin-horizontal-layout style="width:100%; margin-top: 25px">
+                <div id="card-element"></div>
+            </vaadin-horizontal-layout>
+          </vaadin-vertical-layout>
+          <vaadin-vertical-layout id="buttonsCont">
+            <vaadin-button
+              id="card-button"
+              theme="primary"
+              class="positive-action-btn"
+              disabled="[[!isComplete]]"
+               on-click="submit"
+              >Sign Up</vaadin-button
+            >
+            <vaadin-button id="cancelSignUpBtn" theme="tertiary"
+              >Cancel</vaadin-button
+            >
+            
+            
+          </vaadin-vertical-layout>
 
-    <vaadin-text-field id="zip"
-        label="Zip/Postal code"
-        value="{{postal_code}}"></vaadin-text-field>
-       
-    <div id="card-element"></div>
-    <div id="card-errors"></div>
+          <span class="payment-notes">Month-to-month @ $500 / month</span>
+        </vaadin-vertical-layout>
 
-    <vaadin-button id="card-button" 
-        disabled="[[!isComplete]]"
-        on-click="submit"
-    >Sign Up</vaadin-button>
-
-    <!--vaadin-notification
-        duration="4000"
-        opened="[[token]]"
-    >
-        <template>Token received for 💳 [[token.card.last4]]! 🤑</template>
-    </vaadin-notification-->
-
+        </vaadin-vertical-layout>
+        <a class="support" href="{{contactLink}}">Contact Support</a>
+      </div>
 `;
     }
 
@@ -60,6 +173,13 @@ class StripeView extends PolymerElement {
         var style = {
             base: {
                 fontSize: '17px',
+                iconColor: '#666EE8',
+                color: '#31325F',
+                lineHeight: '40px',
+                fontWeight: 300,
+                //'::placeholder': {
+                //    color: '#CFD7E0',
+                //},
             }
         };
 
@@ -69,11 +189,13 @@ class StripeView extends PolymerElement {
         this.cardElement.mount('#card-element');
 
         this.cardElement.addEventListener('change', (event) => {
-            const displayError = document.getElementById('card-errors');
+            //const displayError = document.getElementById('card-errors');
             if (event.error) {
-                displayError.textContent = error.message;
+                this.message = error.message;
+                //displayError.textContent = error.message;
             } else {
-                displayError.textContent = '';
+                this.message = '';
+                //displayError.textContent = '';
             }
             this.isComplete = event.complete;
         });
@@ -123,6 +245,10 @@ class StripeView extends PolymerElement {
             stripe: Object,
             paymentMethod: {
                 type: Object,
+                reflectToAttribute: true
+            },
+            message: {
+                type: String,
                 reflectToAttribute: true
             },
             isComplete: {

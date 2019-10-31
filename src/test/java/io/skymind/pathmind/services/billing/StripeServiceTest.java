@@ -82,28 +82,12 @@ public class StripeServiceTest extends PathmindApplicationTests
 
 	}
 
-	// This does not work currently. Requires to create the payment method in advance
-	@Ignore
-	@Test
-	public void createCustomer() throws StripeException
-	{
-		Map<String, Object> customerParams = new HashMap<>();
-		customerParams.put("payment_method", "pm_1FU2bgBF6ERF9jhEQvwnA7sX");
-		customerParams.put("email", "jenny.rosen@example.com");
-		Map<String, String> invoiceSettings = new HashMap<String, String>();
-		invoiceSettings.put("default_payment_method", "pm_1FU2bgBF6ERF9jhEQvwnA7sX");
-		customerParams.put("invoice_settings", invoiceSettings);
-
-		Customer customer = Customer.create(customerParams);
-	}
-
 	@Test
 	public void getCustomer() throws StripeException
 	{
 		final PathmindUser pathmindUser = userDAO.findByEmailIgnoreCase("vesa@vaadin.com");
 		final Customer customer = Customer.retrieve(pathmindUser.getStripeCustomerId());
 		final Plan plan = Plan.retrieve(professionalPlanId);
-		int i = 0;
 	}
 
 }
