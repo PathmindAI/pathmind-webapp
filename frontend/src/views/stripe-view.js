@@ -18,23 +18,23 @@ class StripeView extends PolymerElement {
 
     <vaadin-text-field id="name"
         label="Name on card"
-        value="{{cardData.name}}"></vaadin-text-field>
+        value="{{name}}"></vaadin-text-field>
 
     <vaadin-text-field id="address1"
       label="Billing Address"
-      value="{{cardData.address_line1}}"></vaadin-text-field>
+      value="{{address}}"></vaadin-text-field>
 
     <vaadin-text-field id="city"
         label="City"
-        value="{{cardData.address_city}}"></vaadin-text-field>
+        value="{{city}}"></vaadin-text-field>
 
     <vaadin-text-field id="state"
         label="State"
-        value="{{cardData.address_state}}"></vaadin-text-field>
+        value="{{state}}"></vaadin-text-field>
 
     <vaadin-text-field id="zip"
         label="Zip/Postal code"
-        value="{{cardData.address_zip}}"></vaadin-text-field>
+        value="{{postal_code}}"></vaadin-text-field>
        
     <div id="card-element"></div>
     <div id="card-errors"></div>
@@ -44,12 +44,12 @@ class StripeView extends PolymerElement {
         on-click="submit"
     >Sign Up</vaadin-button>
 
-    <vaadin-notification
+    <!--vaadin-notification
         duration="4000"
         opened="[[token]]"
     >
         <template>Token received for 💳 [[token.card.last4]]! 🤑</template>
-    </vaadin-notification>
+    </vaadin-notification-->
 
 `;
     }
@@ -62,8 +62,6 @@ class StripeView extends PolymerElement {
                 fontSize: '17px',
             }
         };
-
-        this.cardData = {};
 
         this.stripe = Stripe(this.key);
         var elements = this.stripe.elements();
@@ -81,26 +79,35 @@ class StripeView extends PolymerElement {
         });
 
         var cardButton = document.getElementById('card-button');
-
     }
 
     submit() {
         if (this.isComplete) {
             var stripeView = this;
-            this.stripe.createToken(this.cardElement, this.cardData).then(function(result) {
+            this.stripe.createPaymentMethod('card', this.cardElement, {
+                billing_details: {
+                    name: this.name,
+                    address: {
+                        line1: this.address,
+                        city:  this.city,
+                        state:  this.state,
+                        postal_code:  this.postal_code
+                    }
+                }
+            }).then(function(result) {
                 const displayError = document.getElementById('card-errors');
                 if (result.error) {
                    displayError.textContent = result.error.message;
                 } else {
-                    stripeView.setToken(result.token);
-                    // do real form submit
+                    stripeView.setPaymentMethod(result.paymentMethod);
                 }
             });
         }
     }
 
-    setToken(newToken) {
-        this.token = newToken;
+    setPaymentMethod(paymentMethod) {
+        this.paymentMethod = paymentMethod;
+        this.$server.paymentMethodCallback(paymentMethod);
     }
 
     static get is() {
@@ -114,7 +121,7 @@ class StripeView extends PolymerElement {
     static get properties() {
         return {
             stripe: Object,
-            token: {
+            paymentMethod: {
                 type: Object,
                 reflectToAttribute: true
             },

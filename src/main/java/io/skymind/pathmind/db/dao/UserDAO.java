@@ -58,6 +58,7 @@ public class UserDAO extends UserRepository
 				.set(PATHMIND_USER.EMAIL_VERIFICATION_TOKEN, pathmindUser.getEmailVerificationToken())
 				.set(PATHMIND_USER.EMAIL_VERIFIED_AT, pathmindUser.getEmailVerifiedAt())
 				.set(PATHMIND_USER.PASSWORD_RESET_SEND_AT, pathmindUser.getPasswordResetSendAt())
+				.set(PATHMIND_USER.STRIPE_CUSTOMER_ID, pathmindUser.getStripeCustomerId())
 				.where(PATHMIND_USER.ID.eq(pathmindUser.getId()))
 				.execute();
 	}

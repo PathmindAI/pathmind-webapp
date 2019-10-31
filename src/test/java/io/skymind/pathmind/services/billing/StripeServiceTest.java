@@ -3,8 +3,11 @@ package io.skymind.pathmind.services.billing;
 import com.stripe.exception.StripeException;
 import com.stripe.model.*;
 import com.stripe.param.PaymentIntentCreateParams;
+import com.stripe.param.PaymentMethodCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
+import com.stripe.param.issuing.CardDetailsParams;
 import io.skymind.pathmind.PathmindApplicationTests;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -75,6 +78,26 @@ public class StripeServiceTest extends PathmindApplicationTests
 
 		PaymentIntent intent = PaymentIntent.create(createParams);
 
+	}
+
+	// This does not work currently. Requires to create the payment method in advance
+	@Ignore
+	@Test
+	public void createCustomer() throws StripeException
+	{
+		Map<String, Object> customerParams = new HashMap<>();
+		customerParams.put("payment_method", "pm_1FU2bgBF6ERF9jhEQvwnA7sX");
+		customerParams.put("email", "jenny.rosen@example.com");
+		Map<String, String> invoiceSettings = new HashMap<String, String>();
+		invoiceSettings.put("default_payment_method", "pm_1FU2bgBF6ERF9jhEQvwnA7sX");
+		customerParams.put("invoice_settings", invoiceSettings);
+
+		Customer customer = Customer.create(customerParams);
+	}
+
+	@Test
+	public void getCustomer() {
+		//Customer.retrieve("");
 	}
 
 }
