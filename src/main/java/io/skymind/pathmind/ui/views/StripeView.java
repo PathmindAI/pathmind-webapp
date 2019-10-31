@@ -2,6 +2,7 @@ package io.skymind.pathmind.ui.views;
 
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
+import com.stripe.model.Subscription;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -60,25 +61,22 @@ public class StripeView extends PolymerTemplate<StripeView.Model>
 		if (paymentMethodId == null) {
 			final String noPaymentId = "Received a payment method call without a payment id";
 			log.info(noPaymentId);
-			throw new RuntimeException();
+			throw new RuntimeException(noPaymentId);
 		}
 		// TODO: use the following method to get and save all the other interesting fields for the customer in Stripe
 		//final String city = paymentMethod.getObject("billing_details").getObject("address").getString("city");
 		try {
 			Customer customer = stripeService.createCustomer(currentUser.getUser().getEmail(), paymentMethodId);
-			Notification.show("A new customer has been created on Stripe. id: " + customer.getId() + ", email: " + customer.getEmail());
+			final Subscription subscription = stripeService.createSubscription(customer);
+			Notification.show("A new customer has been created on Stripe. id: " + customer.getId() + ", email: " + customer.getEmail() + ", with subscription id: " + subscription.getId());
 		} catch (StripeException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
 	public interface Model extends TemplateModel
 	{
 		void setKey(String key);
-
-		Boolean getReady();
-
-		String getToken();
 	}
 
 

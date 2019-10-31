@@ -3,25 +3,27 @@ package io.skymind.pathmind.services.billing;
 import com.stripe.exception.StripeException;
 import com.stripe.model.*;
 import com.stripe.param.PaymentIntentCreateParams;
-import com.stripe.param.PaymentMethodCreateParams;
-import com.stripe.param.checkout.SessionCreateParams;
-import com.stripe.param.issuing.CardDetailsParams;
 import io.skymind.pathmind.PathmindApplicationTests;
+import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.db.dao.UserDAO;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
 
 public class StripeServiceTest extends PathmindApplicationTests
 {
 
 	@Autowired
 	private StripeService stripeService;
+	@Autowired
+	private UserDAO userDAO;
+	@Value("${pathmind.stripe.professional-plan-id}")
+	private String professionalPlanId;
 
 	@Test
 	public void test() throws StripeException
@@ -96,8 +98,12 @@ public class StripeServiceTest extends PathmindApplicationTests
 	}
 
 	@Test
-	public void getCustomer() {
-		//Customer.retrieve("");
+	public void getCustomer() throws StripeException
+	{
+		final PathmindUser pathmindUser = userDAO.findByEmailIgnoreCase("vesa@vaadin.com");
+		final Customer customer = Customer.retrieve(pathmindUser.getStripeCustomerId());
+		final Plan plan = Plan.retrieve(professionalPlanId);
+		int i = 0;
 	}
 
 }
