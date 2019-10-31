@@ -8,10 +8,12 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 8080, host: 8080
 
   config.vm.provision "shell", inline: <<-SHELL
+    
+    sudo echo "deb http://ftp.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/backports.list
     apt-get update
 
     # Install postgresql, maven, node and java
-    apt-get install -y postgresql default-jdk maven curl
+    apt-get install -y postgresql openjdk-11-jdk maven curl
     curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
     apt-get install -y nodejs
     echo "-------------------- upgrading packages to latest"
