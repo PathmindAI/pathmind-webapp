@@ -25,6 +25,7 @@ import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.mock.MockDefaultValues;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -42,7 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @CssImport("./styles/styles.css")
-@Route(value = "newExperiment", layout = MainLayout.class)
+@Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
     private static final double DEFAULT_SPLIT_PANE_RATIO = 60;
 
@@ -231,7 +232,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	protected boolean isAccessAllowedForUser() {
 		return userDAO.isUserAllowedAccessToExperiment(experimentId);
 	}
-    
+
     @Override
     public void setParameter(BeforeEvent event, Long experimentId) {
         this.experimentId = experimentId;
