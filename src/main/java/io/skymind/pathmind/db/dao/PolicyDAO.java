@@ -50,7 +50,7 @@ public class PolicyDAO extends PolicyRepository
                     // we might as well do it here.
                     PolicyUtils.processProgressJson(policy);
                     // PERFORMANCE => can this be simplified? It's very expensive just to get Notes (both interpretKey and the HashMap of HyperParameters
-                    PolicyUtils.getNotesFromName(policy);
+                    policy.setNotes(PolicyUtils.getNotesFromName(policy));
 
                     policy.setRun(it.into(RUN).into(Run.class));
                     policy.setExperiment(it.into(EXPERIMENT).into(Experiment.class));
