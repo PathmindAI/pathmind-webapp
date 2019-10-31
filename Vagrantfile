@@ -12,7 +12,20 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "hashicorp/bionic64"
+ #config.vm.box = "fgrehm/precise64-lxc"
+	config.vm.box = "debian/stretch64"
+
+ #config.vm.provider "docker" do |d|
+#	 d.build_dir = '.' 
+#	 d.remains_running = false
+#	 d.has_ssh = true
+#	 #d.image="ubuntu:18.04"
+#	end
+ 
+
+#  config.vm.provider "lxc" do |lxc|
+#	  lxc.vm.box = "debian/buster64:10.0.0"
+#  end
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -73,7 +86,7 @@ Vagrant.configure("2") do |config|
      apt-get update
 
       # Install postgresql, maven and java
-      apt-get install -y postgresql default-jdk maven
+      apt-get install -y postgresql default-jdk maven nodejs
 
       # Create User and login
       echo "-------------------- Setting up DB"
@@ -88,8 +101,8 @@ Vagrant.configure("2") do |config|
       echo "-------------------- upgrading packages to latest"
       apt-get upgrade -y
 
-      echo "-------------------- Installing Node"
-      sudo snap install node --classic --channel=10
+      #echo "-------------------- Installing Node"
+      #sudo snap install node --classic --channel=10
 SHELL
     
 end
