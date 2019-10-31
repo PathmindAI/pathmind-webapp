@@ -60,7 +60,6 @@ public class UserDaoTest extends PathmindApplicationTests
 
 		assertNotEquals(pathmindUser.getEmail(), updatedPathmindUser.getEmail());
 		assertNotEquals(pathmindUser.getName(), updatedPathmindUser.getName());
-		assertNotEquals(pathmindUser.getPassword(), updatedPathmindUser.getPassword());
 		assertNotEquals(pathmindUser.getAccountType(), updatedPathmindUser.getAccountType());
 		assertNotEquals(pathmindUser.getFirstname(), updatedPathmindUser.getFirstname());
 		assertNotEquals(pathmindUser.getLastname(), updatedPathmindUser.getLastname());
@@ -72,11 +71,12 @@ public class UserDaoTest extends PathmindApplicationTests
 		assertNotEquals(pathmindUser.getDeleteAt(), updatedPathmindUser.getDeleteAt());
 		assertNotEquals(pathmindUser.getEmailVerifiedAt(), updatedPathmindUser.getEmailVerifiedAt());
 		assertNotEquals(pathmindUser.getEmailVerificationToken(), updatedPathmindUser.getEmailVerificationToken());
+		// these are not changed currently in update
 		assertEquals(pathmindUser.getProjects(), updatedPathmindUser.getProjects());
+		assertEquals(pathmindUser.getPassword(), updatedPathmindUser.getPassword());
 
 		assertEquals(savedPathmindUser.getEmail(), updatedPathmindUser.getEmail());
 		assertEquals(savedPathmindUser.getName(), updatedPathmindUser.getName());
-		assertEquals(savedPathmindUser.getPassword(), updatedPathmindUser.getPassword());
 		assertEquals(savedPathmindUser.getAccountType(), updatedPathmindUser.getAccountType());
 		assertEquals(savedPathmindUser.getFirstname(), updatedPathmindUser.getFirstname());
 		assertEquals(savedPathmindUser.getLastname(), updatedPathmindUser.getLastname());
@@ -89,6 +89,8 @@ public class UserDaoTest extends PathmindApplicationTests
 		assertEquals(savedPathmindUser.getEmailVerifiedAt(), updatedPathmindUser.getEmailVerifiedAt());
 		assertEquals(savedPathmindUser.getEmailVerificationToken(), updatedPathmindUser.getEmailVerificationToken());
 		assertEquals(savedPathmindUser.getProjects(), updatedPathmindUser.getProjects());
+
+		assertNotEquals(savedPathmindUser.getPassword(), updatedPathmindUser.getPassword());
 	}
 
 	@Test

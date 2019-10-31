@@ -19,6 +19,7 @@ import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
@@ -32,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.ByteArrayInputStream;
 
 @CssImport("./styles/styles.css")
-@Route(value = "exportPolicy", layout = MainLayout.class)
+@Route(value = Routes.EXPORT_POLICY_URL, layout = MainLayout.class)
 public class ExportPolicyView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 	private static final String DEFAULT_POLICY_DOWNLOAD_FILENAME = "Policy.zip";

@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <vaadin.version>14.0.7</vaadin.version>
+        <vaadin.version>14.0.10</vaadin.version>
         <jooq.version>3.12.1</jooq.version>
     </properties>
 
@@ -92,6 +92,10 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-charts-flow</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-cookie-consent-flow</artifactId>
         </dependency>
         <dependency>
             <groupId>io.projectreactor</groupId>
@@ -210,7 +214,7 @@
                         </database>
                         <target>
                             <packageName>io.skymind.pathmind.data.db</packageName>
-                            <directory>/src/main/java</directory>
+                            <directory>./src/main/java</directory>
                         </target>
                     </generator>
                 </configuration>

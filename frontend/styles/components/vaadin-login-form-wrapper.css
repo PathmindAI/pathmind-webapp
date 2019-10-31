@@ -1,0 +1,21 @@
+:host {
+    width: 100%;
+    max-width: 100%;
+    /* margin-top: 100px; */
+}
+
+:host [part="form"] {
+    padding: 0;
+}
+
+:host [part="form"] [part="form-title"]{
+    display: none;
+}
+
+:host [part="footer"] {
+    display: none;
+}
+
+:host #forgotPasswordButton {
+    font-size: 1em;
+}
