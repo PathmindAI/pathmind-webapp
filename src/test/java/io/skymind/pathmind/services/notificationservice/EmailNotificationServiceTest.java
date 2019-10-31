@@ -2,6 +2,7 @@ package io.skymind.pathmind.services.notificationservice;
 
 import io.skymind.pathmind.PathmindApplicationTests;
 import io.skymind.pathmind.data.PathmindUser;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,16 @@ public class EmailNotificationServiceTest extends PathmindApplicationTests
 	}
 
 	@Test
+	public void sendVerificationEmail_VerificationTokenCreated()
+	{
+		PathmindUser pathmindUser = new PathmindUser();
+		pathmindUser.setEmail(testEmail);
+		pathmindUser.setName("Test User");
+		emailNotificationService.sendVerificationEmail(pathmindUser);
+		Assert.assertNotNull(pathmindUser.getEmailVerificationToken());
+	}
+
+	@Test
 	public void sendResetPasswordEmail()
 	{
 		PathmindUser pathmindUser = new PathmindUser();
@@ -43,6 +54,16 @@ public class EmailNotificationServiceTest extends PathmindApplicationTests
 		pathmindUser.setEmailVerificationToken(UUID.randomUUID());
 		pathmindUser.setName("Test User");
 		emailNotificationService.sendResetPasswordEmail(pathmindUser);
+	}
+
+	@Test
+	public void sendResetPasswordEmail_VerificationTokenCreated()
+	{
+		PathmindUser pathmindUser = new PathmindUser();
+		pathmindUser.setEmail(testEmail);
+		pathmindUser.setName("Test User");
+		emailNotificationService.sendResetPasswordEmail(pathmindUser);
+		Assert.assertNotNull(pathmindUser.getEmailVerificationToken());
 	}
 
 	@Test(expected = NullPointerException.class)

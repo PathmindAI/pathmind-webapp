@@ -511,6 +511,13 @@
         </insert>
     </changeSet>
 
+    <!-- #370 Since all the existing users are hardcoded in the DB, let's mark their accounts as validated. -->
+    <changeSet id="20191030" author="vesa@vaadin.com">
+        <update tableName="PATHMIND_USER">
+            <column name="EMAIL_VERIFIED_AT" value="NOW()"/>
+        </update>
+    </changeSet>
+
     <changeSet id="20191031" author="vesa@vaadin.com">
         <addColumn tableName="PATHMIND_USER">
             <column name="STRIPE_CUSTOMER_ID" type="VARCHAR(255)"/>

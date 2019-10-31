@@ -37,7 +37,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 	protected abstract boolean isAccessAllowedForUser();
 
 	private static Logger log = LogManager.getLogger(PathMindDefaultView.class);
-	private static String COOKIE_CONSENT_LINK = "/cookies";
+	private static String COOKIE_CONSENT_LINK = "https://pathmind.com/privacy";
 
 	private boolean isGenerated = false;
 

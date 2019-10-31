@@ -3,9 +3,7 @@ package io.skymind.pathmind.bus.utils;
 import io.skymind.pathmind.bus.BusEventType;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.data.PolicyUpdateBusEvent;
-import io.skymind.pathmind.bus.data.UserUpdateBusEvent;
 import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.data.Policy;
 import reactor.core.publisher.Flux;
 
@@ -37,13 +35,6 @@ public class PolicyBusEventUtils
 				.filter(busEvent -> experimentSupplier.get() != null)
 				.filter(busEvent -> isEventBusPolicyForSameExperiment(busEvent, experimentSupplier.get()))
 				.subscribe(busEvent -> policyConsumer.accept(((PolicyUpdateBusEvent)busEvent).getPolicy()));
-	}
-
-
-	public static void consumerBusEventBasedOnUserUpdate(Flux<PathmindBusEvent> consumer, Consumer<PathmindUser> policyConsumer)
-	{
-		consumer.filter(busEvent -> busEvent.getEventType().equals(BusEventType.UserUpdate))
-				.subscribe(busEvent -> policyConsumer.accept(((UserUpdateBusEvent) busEvent).getPathmindUser()));
 	}
 
 	// TODO -> DH -> Policy score updates also need to know about the experiment. I need this because in some cases such as the
