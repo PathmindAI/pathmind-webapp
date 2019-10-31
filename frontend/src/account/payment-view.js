@@ -1,4 +1,4 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
 
 /**
  * `payment-view`
@@ -11,8 +11,14 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 class PaymentView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles  pathmind-dialog-view">
-        .content {
+    <style include="shared-styles">
+        #card-element {
+            width: 100%;
+            border-radius: var(--lumo-border-radius);
+            background: var(--pm-highlight-medium);
+        }
+        
+         .content {
           margin: auto;
           max-width: 650px;
           width: 650px;
@@ -79,7 +85,9 @@ class PaymentView extends PolymerElement {
           color: #878787;
           font-size: 0.8em;
         }
-      </style>
+    </style>
+
+
       <div id="header" style="width: 100%;"></div>
       <div class="content">
         <vaadin-tabs>
@@ -98,70 +106,45 @@ class PaymentView extends PolymerElement {
           </div>
 
           <vaadin-horizontal-layout id="errorCont">
-            <div class="error-message">{{message}}</div>
-            <div class="error-message">Validation error can be used here</div>
+            <div class="error-message" id="card-errors">{{message}}</div>
           </vaadin-horizontal-layout>
 
           <vaadin-vertical-layout class="form-cont">
             <vaadin-text-field
-              id="numberOnCard"
-              label="Number on card"
+              id="name"
+              label="Name on card"
               required
+              value="{{name}}"
             ></vaadin-text-field>
             <vaadin-text-field
-              id="billingAddress"
+              id="address"
               label="Billing Address"
               required
+              value="{{address}}"
             ></vaadin-text-field>
             <vaadin-horizontal-layout id="" style="width: 100%;">
               <vaadin-text-field
                 id="city"
                 label="City"
                 required
+                value="{{city}}"
               ></vaadin-text-field>
               <vaadin-text-field
                 id="state"
                 label="State"
                 required
+                value="{{state}}"
               ></vaadin-text-field>
               <vaadin-text-field
                 id="zip"
                 label="Zip/Postal code"
                 required
+                value="{{postal_code}}"
               ></vaadin-text-field>
             </vaadin-horizontal-layout>
 
-            <vaadin-vertical-layout style="width: 100%;">
-              <label class="custom-label">Card number</label>
-              <vaadin-horizontal-layout style="width: 100%;" id="cardNumber">
-                <vaadin-text-field
-                  id="cardNum1" required
-                ></vaadin-text-field>
-                <vaadin-text-field
-                  id="cardNum2" required
-                ></vaadin-text-field>
-                <vaadin-text-field
-                  id="cardNum3" required
-                ></vaadin-text-field>
-                <vaadin-text-field
-                  id="cardNum4" required
-                ></vaadin-text-field>
-              </vaadin-horizontal-layout>
-            </vaadin-vertical-layout>
-
-            <vaadin-horizontal-layout id="expiresAndCVC" style="width: 100%;" >
-              <vaadin-text-field
-                id="expires"
-                label="Expires"
-                placeholder="MM-YY"
-                required
-              ></vaadin-text-field>
-              <vaadin-text-field
-                id="cvc"
-                label="CVC"
-                placeholder="XXX"
-                required
-              ></vaadin-text-field>
+            <vaadin-horizontal-layout style="width:100%; margin-top: 25px">
+                <div id="card-element"></div>
             </vaadin-horizontal-layout>
           </vaadin-vertical-layout>
           <vaadin-vertical-layout id="buttonsCont">
@@ -169,11 +152,15 @@ class PaymentView extends PolymerElement {
               id="signUp"
               theme="primary"
               class="positive-action-btn"
+              disabled="[[!isComplete]]"
+               on-click="submit"
               >Sign Up</vaadin-button
             >
             <vaadin-button id="cancelSignUpBtn" theme="tertiary"
               >Cancel</vaadin-button
             >
+            
+            
           </vaadin-vertical-layout>
 
           <span class="payment-notes">Month-to-month @ $500 / month</span>
@@ -182,16 +169,97 @@ class PaymentView extends PolymerElement {
         </vaadin-vertical-layout>
         <a class="support" href="{{contactLink}}">Contact Support</a>
       </div>
-    `;
+`;
+  }
+
+  ready() {
+    super.ready();
+
+    var style = {
+      base: {
+        fontSize: '17px',
+        iconColor: '#666EE8',
+        color: '#31325F',
+        lineHeight: '40px',
+        fontWeight: 300,
+        //'::placeholder': {
+        //    color: '#CFD7E0',
+        //},
+      }
+    };
+
+    this.stripe = Stripe(this.key);
+    var elements = this.stripe.elements();
+    this.cardElement = elements.create('card', {style: style});
+    this.cardElement.mount('#card-element');
+
+    this.cardElement.addEventListener('change', (event) => {
+      //const displayError = document.getElementById('card-errors');
+      if (event.error) {
+        this.message = error.message;
+        //displayError.textContent = error.message;
+      } else {
+        this.message = '';
+        //displayError.textContent = '';
+      }
+      this.isComplete = event.complete;
+    });
+
+    var cardButton = document.getElementById('signUp');
+  }
+
+  submit() {
+    if (this.isComplete) {
+      var stripeView = this;
+      this.stripe.createPaymentMethod('card', this.cardElement, {
+        billing_details: {
+          name: this.name,
+          address: {
+            line1: this.address,
+            city:  this.city,
+            state:  this.state,
+            postal_code:  this.postal_code
+          }
+        }
+      }).then(function(result) {
+        const displayError = document.getElementById('card-errors');
+        if (result.error) {
+          displayError.textContent = result.error.message;
+        } else {
+          stripeView.setPaymentMethod(result.paymentMethod);
+        }
+      });
+    }
+  }
+
+  setPaymentMethod(paymentMethod) {
+    this.paymentMethod = paymentMethod;
+    this.$server.paymentMethodCallback(paymentMethod);
   }
 
   static get is() {
     return "payment-view";
   }
 
+  _attachDom(dom) {
+    this.appendChild(dom);
+  }
+
   static get properties() {
     return {
-      // Declare your properties here.
+      stripe: Object,
+      paymentMethod: {
+        type: Object,
+        reflectToAttribute: true
+      },
+      message: {
+        type: String,
+        reflectToAttribute: true
+      },
+      isComplete: {
+        type: Boolean,
+        value: false
+      }
     };
   }
 }
