@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.util.UUID;
 
+@Ignore
 public class EmailNotificationServiceTest extends PathmindApplicationTests
 {
 
