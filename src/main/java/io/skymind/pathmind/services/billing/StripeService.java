@@ -86,7 +86,8 @@ public class StripeService
 		}
 	}
 
-	public Subscription createSubscription(Customer customer) {
+	public Subscription createSubscription(Customer customer)
+	{
 		Objects.requireNonNull(customer);
 		Objects.requireNonNull(customer.getId());
 		Map<String, Object> item = new HashMap<>();
@@ -110,9 +111,24 @@ public class StripeService
 	public Customer getCustomer(String email) throws StripeException
 	{
 		final PathmindUser pathmindUser = userDAO.findByEmailIgnoreCase(email);
-		Objects.requireNonNull(pathmindUser.getStripeCustomerId());
 		return Customer.retrieve(pathmindUser.getStripeCustomerId());
 	}
 
+	public boolean userHasActiveProfessionalSubscription(String email)
+	{
+		Customer customer = null;
+		try {
+			customer = getCustomer(email);
+		} catch (StripeException e) {
+			log.info("Could not retrieve customer from Stripe: " + email);
+			return false;
+		}
+		Objects.requireNonNull(customer.getSubscriptions());
+		Objects.requireNonNull(customer.getSubscriptions().getData());
+		if (customer.getSubscriptions().getData().isEmpty()) {
+			return false;
+		}
+		return "active".equalsIgnoreCase(customer.getSubscriptions().getData().get(0).getStatus());
+	}
 
 }

@@ -12,6 +12,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.security.Routes;
+import io.skymind.pathmind.services.billing.StripeService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,34 +40,43 @@ public class AccountView extends PolymerTemplate<AccountView.Model>
 	@Id("editPaymentBtn")
 	private Button editPaymentBtn;
 
+	final private StripeService stripeService;
+
 	private PathmindUser user;
 
 	@Autowired
-	public AccountView(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink)
+	public AccountView(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink, StripeService stripeService)
 	{
         getModel().setContactLink(contactLink);
 		user = currentUser.getUser();
+		this.stripeService = stripeService;
 	}
 
 	@PostConstruct
 	private void init() {
 		header.add(new ScreenTitlePanel("ACCOUNT"));
-		initContent();
-		initBtns();
+		final boolean hasSubscription = stripeService.userHasActiveProfessionalSubscription(user.getEmail());
+		initContent(hasSubscription);
+		initBtns(hasSubscription);
 	}
 
-	private void initBtns() {
+	private void initBtns(boolean hasSubscription) {
 		editInfoBtn.addClickListener(e -> UI.getCurrent().navigate(AccountEditView.class));
 		changePasswordBtn.addClickListener(e -> UI.getCurrent().navigate(ChangePasswordView.class));
-		upgradeBtn.addClickListener(e -> UI.getCurrent().navigate(AccountUpgradeView.class));
+		if (hasSubscription) {
+			upgradeBtn.setEnabled(false);
+		}
+		else {
+			upgradeBtn.addClickListener(e -> UI.getCurrent().navigate(AccountUpgradeView.class));
+		}
 		editPaymentBtn.setEnabled(false);
 	}
 
-	private void initContent() {
+	private void initContent(boolean hasSubscription) {
 		getModel().setEmail(user.getEmail());
 		getModel().setFirstName(user.getFirstname());
 		getModel().setLastName(user.getLastname());
-		getModel().setSubscription("Early Access");
+		getModel().setSubscription(hasSubscription ? "Professional": "Early Access");
 		getModel().setBillingInfo("Billing Information");
 	}
 
