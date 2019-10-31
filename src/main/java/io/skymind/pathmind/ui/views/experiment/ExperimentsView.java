@@ -3,7 +3,7 @@ package io.skymind.pathmind.ui.views.experiment;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -15,8 +15,10 @@ import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
@@ -34,131 +36,143 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@StyleSheet("frontend://styles/styles.css")
-@Route(value="experiments", layout = MainLayout.class)
-public class ExperimentsView extends PathMindDefaultView implements HasUrlParameter<Long>
-{
+@CssImport("./styles/styles.css")
+@Route(value = Routes.EXPERIMENTS_URL, layout = MainLayout.class)
+public class ExperimentsView extends PathMindDefaultView implements HasUrlParameter<Long> {
+    @Autowired
+    private ExperimentRepository experimentRepository;
+    @Autowired
+    private ExperimentDAO experimentDAO;
+    @Autowired
+    private RunDAO runDAO;
+    @Autowired
+    private ModelDAO modelDAO;
 	@Autowired
-	private ExperimentRepository experimentRepository;
-	@Autowired
-	private ExperimentDAO experimentDAO;
-	@Autowired
-	private RunDAO runDAO;
-	@Autowired
-	private ModelDAO modelDAO;
+	private UserDAO userDAO;
 
-	private long modelId;
-	private Model currentModel;
-	private List<Experiment> experiments;
+    private long modelId;
+    private Model currentModel;
+    private List<Experiment> experiments;
 
-	private ExperimentGrid experimentGrid;
-	private TextArea getObservationTextArea;
-	private RewardFunctionEditor rewardFunctionEditor;
+    private ArchivesTabPanel archivesTabPanel;
+    private ExperimentGrid experimentGrid;
+    private TextArea getObservationTextArea;
+    private RewardFunctionEditor rewardFunctionEditor;
 
-	public ExperimentsView()
-	{
-		super();
-	}
+    public ExperimentsView() {
+        super();
+        addClassName("experiments-view");
+    }
 
-	protected Component getMainContent()
-	{
-		setupExperimentListPanel();
-		setupGetObservationTextArea();
-		setupRewardFunctionEditor();
+    protected Component getMainContent() {
+        setupExperimentListPanel();
+        setupGetObservationTextArea();
+        setupRewardFunctionEditor();
+        setupArchivesTabPanel();
 
-		return WrapperUtils.wrapWidthFullCenterVertical(
-				WrapperUtils.wrapWidthFullCenterHorizontal(getBackToModelsButton()),
-				WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
-				getArchivesTabPanel(),
-				WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-						WrapperUtils.wrapSizeFullVertical(
-								experimentGrid),
-						WrapperUtils.wrapSizeFullVertical(
-								rewardFunctionEditor,
-								getObservationTextArea),
-						70),
-				WrapperUtils.wrapWidthFullCenterHorizontal(new NewExperimentButton(experimentDAO, modelId)));
-	}
+        return WrapperUtils.wrapSizeFullVertical(
+                WrapperUtils.wrapWidthFullCenterHorizontal(getBackToModelsButton()),
+                WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
+                archivesTabPanel,
+                WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                        WrapperUtils.wrapSizeFullVertical(
+                                experimentGrid),
+                        WrapperUtils.wrapSizeFullVertical(
+                                rewardFunctionEditor,
+                                getObservationTextArea),
+                        70),
+                WrapperUtils.wrapWidthFullCenterHorizontal(new NewExperimentButton(experimentDAO, modelId)));
+    }
 
-	private void setupRewardFunctionEditor() {
-		rewardFunctionEditor = new RewardFunctionEditor();
-		rewardFunctionEditor.setReadonly(true);
-		rewardFunctionEditor.setSizeFull();
-	}
+    private void setupRewardFunctionEditor() {
+        rewardFunctionEditor = new RewardFunctionEditor();
+        rewardFunctionEditor.setReadonly(true);
+        rewardFunctionEditor.setSizeFull();
+    }
 
-	/**
-	 * Using any experiment's getProject().getId() since they should all be the same. I'm assuming at this point
-	 * that there has to be at least one experiment to be able to get here.
-	 */
-	private Button getBackToModelsButton() {
-		return new BackButton("Back to Models",
-				click -> UI.getCurrent().navigate(ModelsView.class, experiments.get(0).getProject().getId()));
-	}
+    /**
+     * Using any experiment's getProject().getId() since they should all be the same. I'm assuming at this point
+     * that there has to be at least one experiment to be able to get here.
+     */
+    private Button getBackToModelsButton() {
+        return new BackButton("Back to Models",
+                click -> UI.getCurrent().navigate(ModelsView.class, experiments.get(0).getProject().getId()));
+    }
 
-	private void setupGetObservationTextArea() {
-		getObservationTextArea = new TextArea("getObservations");
-		getObservationTextArea.setSizeFull();
-		getObservationTextArea.setReadOnly(true);
-	}
+    private void setupGetObservationTextArea() {
+        getObservationTextArea = new TextArea("getObservations");
+        getObservationTextArea.setSizeFull();
+        getObservationTextArea.setReadOnly(true);
+    }
 
-	private SearchBox getSearchBox() {
-		return new SearchBox<Experiment>(experimentGrid, new ExperimentFilter());
-	}
+    private SearchBox getSearchBox() {
+        return new SearchBox<Experiment>(experimentGrid, new ExperimentFilter());
+    }
 
-	private ArchivesTabPanel getArchivesTabPanel() {
-		return new ArchivesTabPanel<Experiment>(
-				"Experiments",
-				experimentGrid,
-				this::getExperiments,
-				(experimentId, isArchivable) -> experimentDAO.archive(experimentId, isArchivable));
-	}
+    private void setupArchivesTabPanel() {
+        archivesTabPanel = new ArchivesTabPanel<Experiment>(
+                "Experiments",
+                experimentGrid,
+                this::getExperiments,
+                (experimentId, isArchivable) -> experimentDAO.archive(experimentId, isArchivable));
+    }
 
-	private void setupExperimentListPanel() {
-		experimentGrid = new ExperimentGrid();
-		experimentGrid.addItemClickListener(event -> handleExperimentClick(event.getItem()));
-	}
+    private void setupExperimentListPanel() {
+        experimentGrid = new ExperimentGrid();
+        experimentGrid.addItemClickListener(event -> handleExperimentClick(event.getItem()));
+    }
 
-	private void handleExperimentClick(Experiment experiment)
-	{
+    private void handleExperimentClick(Experiment experiment) {
         if (ExperimentUtils.isDraftRunType(experiment)) {
-			UI.getCurrent().navigate(NewExperimentView.class, experiment.getId());
-		} else {
-			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
-		}
-	}
+            UI.getCurrent().navigate(NewExperimentView.class, experiment.getId());
+        } else {
+            UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+        }
+    }
 
 	@Override
-	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("EXPERIMENTS");
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToModel(modelId);
 	}
 
-	public List<Experiment> getExperiments() {
-		return experiments;
-	}
+    @Override
+    protected Component getTitlePanel() {
+        return new ScreenTitlePanel("PROJECT " + getProjectName());
+    }
 
-	@Override
-	protected void loadData() throws InvalidDataException {
-		experiments = experimentRepository.getExperimentsForModel(modelId);
-		if(experiments == null || experiments.isEmpty())
-			throw new InvalidDataException("Attempted to access Experiments for Model: " + modelId);
+    public List<Experiment> getExperiments() {
+        return experiments;
+    }
 
-		// set runs to experiment
-		experiments.stream()
-				.forEach(e -> e.setRuns(runDAO.getRunsForExperiment(e.getId())));
+    // It's either get the project name from the first experiment (which has to exist for the page to load) or
+    // we need to do a separate database call.
+    private String getProjectName() {
+        return experiments.get(0).getProject().getName();
+    }
 
-		// set current model
-		currentModel = modelDAO.getModel(modelId);
-	}
+    @Override
+    protected void loadData() throws InvalidDataException {
+        experiments = experimentRepository.getExperimentsForModel(modelId);
+        if (experiments == null || experiments.isEmpty())
+            throw new InvalidDataException("Attempted to access Experiments for Model: " + modelId);
 
-	@Override
-	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
-		experimentGrid.setItems(experiments);
-		getObservationTextArea.setValue(currentModel.getGetObservationForRewardFunction());
-	}
+        // set runs to experiment
+        experiments.stream()
+                .forEach(e -> e.setRuns(runDAO.getRunsForExperiment(e.getId())));
 
-	@Override
-	public void setParameter(BeforeEvent event, Long modelId)
-	{
-		this.modelId = modelId;
-	}
+        // set current model
+        currentModel = modelDAO.getModel(modelId);
+    }
+
+    @Override
+    protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
+        experimentGrid.setItems(experiments);
+        archivesTabPanel.initData();
+        getObservationTextArea.setValue(currentModel.getGetObservationForRewardFunction());
+    }
+
+    @Override
+    public void setParameter(BeforeEvent event, Long modelId) {
+        this.modelId = modelId;
+    }
 }

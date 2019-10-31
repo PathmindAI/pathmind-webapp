@@ -4,8 +4,10 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -20,7 +22,10 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.mock.MockDefaultValues;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -30,127 +35,124 @@ import io.skymind.pathmind.ui.utils.*;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@StyleSheet("frontend://styles/styles.css")
-@Route(value = "newExperiment", layout = MainLayout.class)
-public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
-{
-	private static final double DEFAULT_SPLIT_PANE_RATIO = 60;
+@CssImport("./styles/styles.css")
+@Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
+public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
+    private static final double DEFAULT_SPLIT_PANE_RATIO = 60;
 
-	private Logger log = LogManager.getLogger(NewExperimentView.class);
+    private Logger log = LogManager.getLogger(NewExperimentView.class);
 
-	private long experimentId = -1;
-	private Experiment experiment;
+    private long experimentId = -1;
+    private Experiment experiment;
 
-	private ScreenTitlePanel screenTitlePanel;
+    private ScreenTitlePanel screenTitlePanel;
 
-	private Label modelRevisionLabel;
-	private Label experimentLabel;
-	private Label projectLabel;
+    private Label modelRevisionLabel;
+    private Label experimentLabel;
+    private Label projectLabel;
 
-	private TextArea errorsTextArea;
-	private TextArea getObservationTextArea;
-	private TextArea tipsTextArea;
-	private RewardFunctionEditor rewardFunctionEditor;
+    private TextArea errorsTextArea;
+    private TextArea getObservationTextArea;
+    private TextArea tipsTextArea;
+    private RewardFunctionEditor rewardFunctionEditor;
 
+    @Autowired
+    private ExperimentDAO experimentDAO;
+    @Autowired
+    private TrainingService trainingService;
 	@Autowired
-	private ExperimentDAO experimentDAO;
+	private UserDAO userDAO;
 
-	@Autowired
-	private TrainingService trainingService;
+    private Binder<Experiment> binder;
 
-	private Binder<Experiment> binder;
+    public NewExperimentView() {
+        super();
+        addClassName("new-experiment-view");
+    }
 
-	public NewExperimentView()
-	{
-		super();
-	}
+    @Override
+    protected Component getTitlePanel() {
+        screenTitlePanel = new ScreenTitlePanel("PROJECT");
+        return screenTitlePanel;
+    }
 
-	@Override
-	protected Component getTitlePanel() {
-		screenTitlePanel = new ScreenTitlePanel("PROJECT");
-		return screenTitlePanel;
-	}
+    @Override
+    protected Component getMainContent() {
+        binder = new Binder<>(Experiment.class);
 
-	@Override
-	protected Component getMainContent()
-	{
-		binder = new Binder<>(Experiment.class);
+        return WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                getLeftPanel(),
+                getRightPanel(),
+                DEFAULT_SPLIT_PANE_RATIO);
+    }
 
-		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-				getLeftPanel(),
-				getRightPanel(),
-				DEFAULT_SPLIT_PANE_RATIO);
-	}
+    private Component getLeftPanel() {
+        errorsTextArea = new TextArea("Errors");
+        errorsTextArea.setReadOnly(true);
+        errorsTextArea.setSizeFull();
+        errorsTextArea.setReadOnly(true);
 
-	private Component getLeftPanel()
-	{
-		errorsTextArea = new TextArea("Errors");
-		errorsTextArea.setReadOnly(true);
-		errorsTextArea.setSizeFull();
-		errorsTextArea.setReadOnly(true);
-
-		rewardFunctionEditor = new RewardFunctionEditor();
-		rewardFunctionEditor.addValueChangeListener(changeEvent -> {
-			final List<String> errors = RewardValidationService.validateRewardFunction(changeEvent.getValue());
-			PushUtils.push(UI.getCurrent(),
-					() -> errorsTextArea.setValue(String.join("\n", errors)));
-		});
-		binder.forField(rewardFunctionEditor)
-				.asRequired()
-				.withValidator((value, _context) -> {
-					final List<String> errors = RewardValidationService.validateRewardFunction(value);
-					if(errors.size() == 0){
-						return ValidationResult.ok();
-					}else{
-						return ValidationResult.error("Reward Function has compile errors!");
-					}
-				})
-				.bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
+        rewardFunctionEditor = new RewardFunctionEditor();
+        rewardFunctionEditor.addValueChangeListener(changeEvent -> {
+            final List<String> errors = RewardValidationService.validateRewardFunction(changeEvent.getValue());
+            PushUtils.push(UI.getCurrent(),
+                    () -> errorsTextArea.setValue(String.join("\n", errors)));
+        });
+        binder.forField(rewardFunctionEditor)
+                .asRequired()
+                .withValidator((value, _context) -> {
+                    final List<String> errors = RewardValidationService.validateRewardFunction(value);
+                    if (errors.size() == 0) {
+                        return ValidationResult.ok();
+                    } else {
+                        return ValidationResult.error("Reward Function has compile errors!");
+                    }
+                })
+                .bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
 
 
+        return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
+                WrapperUtils.wrapSizeFullVertical(
+                        new Label("Write your reward function:"),
+                        rewardFunctionEditor),
+                WrapperUtils.wrapSizeFullVertical(errorsTextArea),
+                70);
+    }
 
-		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
-				WrapperUtils.wrapSizeFullVertical(
-						new Label("Write your reward function:"),
-						rewardFunctionEditor),
-				WrapperUtils.wrapSizeFullVertical(errorsTextArea),
-				70);
-	}
+    private VerticalLayout getRightPanel() {
+        getObservationTextArea = new TextArea("getObservation");
+        getObservationTextArea.setSizeFull();
+        getObservationTextArea.setReadOnly(true);
+        getObservationTextArea.setReadOnly(true);
 
-	private VerticalLayout getRightPanel()
-	{
-		getObservationTextArea = new TextArea("getObservation");
-		getObservationTextArea.setSizeFull();
-		getObservationTextArea.setReadOnly(true);
-		getObservationTextArea.setReadOnly(true);
+        tipsTextArea = new TextArea("Tips");
+        tipsTextArea.setSizeFull();
+        tipsTextArea.setReadOnly(true);
+        tipsTextArea.setValue("There are two \"general purpose\" reward functions:\n\n" +
+                "1. 'reward = after[0] - before[0];'\n" +
+                "2. 'reward = before[0] - after[0];'\n\n" +
+                "The first is used when you want to maximize something, the second when you want to minimize something."
+        );
 
-		tipsTextArea = new TextArea("Tips");
-		tipsTextArea.setSizeFull();
-		tipsTextArea.setReadOnly(true);
-		tipsTextArea.setValue("There are two \"general purpose\" reward functions:\n\n" +
-		"1. 'reward = after[0] - before[0];'\n" +
-				"2. 'reward = before[0] - after[0];'\n\n" +
-				"The first is used when you want to maximize something, the second when you want to minimize something."
-		);
+        return WrapperUtils.wrapSizeFullVertical(
+                getTopButtonPanel(),
+                getTopStatusPanel(),
+                getObservationTextArea,
+                tipsTextArea,
+                getActionButtons());
+    }
 
-		return WrapperUtils.wrapSizeFullVertical(
-				getTopButtonPanel(),
-				getTopStatusPanel(),
-				getObservationTextArea,
-				tipsTextArea,
-				getActionButtons());
-	}
-
-	private Component getTopButtonPanel()
-	{
-		final Button startRunButton = new Button("Start Test Run", new Icon(VaadinIcon.PLAY),
-				click -> handleStartRunButtonClicked());
+    private Component getTopButtonPanel() {
+        final Button startRunButton = new Button("Start Test Run", new Image("frontend/images/start.svg", "run"),
+                click -> handleStartRunButtonClicked());
+        startRunButton.addClassNames("large-image-btn","run");
 
 //
 //		// TODO: Make Discovery available from after a test run only
@@ -168,92 +170,95 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 //				});
 //		startDiscoveryButton.setIconAfterText(true);
 
+        return WrapperUtils.wrapWidthFullCenterVertical(startRunButton);
+    }
 
-		return WrapperUtils.wrapWidthFullCenterVertical(startRunButton);
-	}
+    private void handleStartRunButtonClicked() {
+        ExceptionWrapperUtils.handleButtonClicked(() ->
+        {
+            if (!FormUtils.isValidForm(binder, experiment))
+                return;
 
-	private void handleStartRunButtonClicked() {
-		ExceptionWrapperUtils.handleButtonClicked(() ->
-		{
-			if(!FormUtils.isValidForm(binder, experiment))
-				return;
+            experimentDAO.updateRewardFunction(experiment);
+            trainingService.startTestRun(experiment);
 
-			experimentDAO.updateRewardFunction(experiment);
-			trainingService.startTestRun(experiment);
+            ConfirmDialog confirmDialog = new RunConfirmDialog();
+            confirmDialog.open();
 
-			ConfirmDialog confirmDialog = new RunConfirmDialog();
-			confirmDialog.open();
+            UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+        });
+    }
 
-			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
-		});
-	}
+    private Component getTopStatusPanel() {
+        modelRevisionLabel = new Label();
+        experimentLabel = new Label();
+        projectLabel = new Label();
 
-	private Component getTopStatusPanel()
-	{
-		modelRevisionLabel = new Label();
-		experimentLabel = new Label();
-		projectLabel = new Label();
+        FormLayout formLayout = GuiUtils.getTitleBarFullWidth(3);
 
-		FormLayout formLayout = GuiUtils.getTitleBarFullWidth(3);
+        formLayout.addFormItem(projectLabel, "Project");
+        formLayout.addFormItem(modelRevisionLabel, "Model");
+        formLayout.addFormItem(experimentLabel, "Experiment");
 
-		formLayout.addFormItem(projectLabel, "Project");
-		formLayout.addFormItem(modelRevisionLabel, "Model");
-		formLayout.addFormItem(experimentLabel, "Experiment");
+        return formLayout;
+    }
 
-		return formLayout;
-	}
+    private HorizontalLayout getActionButtons() {
+        final Button saveDraftButton = new Button("Save Draft", new Icon(VaadinIcon.FILE),
+                click -> handleSaveDraftClicked());
 
-	private HorizontalLayout getActionButtons()
-	{
-		final Button saveDraftButton = new Button("Save Draft", new Icon(VaadinIcon.FILE),
-				click -> handleSaveDraftClicked());
+        return WrapperUtils.wrapWidthFullCenterHorizontal(
+                saveDraftButton);
+    }
 
-		return WrapperUtils.wrapWidthFullCenterHorizontal(
-				saveDraftButton);
-	}
+    private void handleSaveDraftClicked() {
+        ExceptionWrapperUtils.handleButtonClicked(() ->
+        {
+            // TODO -> Case #78 -> How do we validate the Reward Function?
+            NotificationUtils.showTodoNotification("Case #78 -> How do we validate the Reward Function?\n " +
+                    "https://github.com/SkymindIO/pathmind-webapp/issues/78");
+            if (!FormUtils.isValidForm(binder, experiment))
+                return;
 
-	private void handleSaveDraftClicked() {
-		ExceptionWrapperUtils.handleButtonClicked(() ->
-		{
-			// TODO -> Case #78 -> How do we validate the Reward Function?
-			NotificationUtils.showTodoNotification("Case #78 -> How do we validate the Reward Function?\n " +
-					"https://github.com/SkymindIO/pathmind-webapp/issues/78");
-			if(!FormUtils.isValidForm(binder, experiment))
-				return;
-
-			// TODO -> Case #81 -> What exactly happens when we save?
-			NotificationUtils.showTodoNotification("Case #81 -> What exactly happens when we save?\n" +
-					"https://github.com/SkymindIO/pathmind-webapp/issues/81");
-			experimentDAO.updateRewardFunction(experiment);
-			NotificationUtils.showCenteredSimpleNotification("Draft successfully saved", NotificationUtils.Style.Success);
-		});
-	}
+            // TODO -> Case #81 -> What exactly happens when we save?
+            NotificationUtils.showTodoNotification("Case #81 -> What exactly happens when we save?\n" +
+                    "https://github.com/SkymindIO/pathmind-webapp/issues/81");
+            experimentDAO.updateRewardFunction(experiment);
+            NotificationUtils.showCenteredSimpleNotification("Draft successfully saved", NotificationUtils.Style.Success);
+        });
+    }
 
 	@Override
-	public void setParameter(BeforeEvent event, Long experimentId) {
-		this.experimentId = experimentId;
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToExperiment(experimentId);
 	}
 
-	@Override
-	protected void loadData() throws InvalidDataException {
-		experiment = experimentDAO.getExperiment(experimentId);
-		if(experiment == null)
-			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
-	}
+    @Override
+    public void setParameter(BeforeEvent event, Long experimentId) {
+        this.experimentId = experimentId;
+    }
 
-	@Override
-	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException
-	{
-		binder.setBean(experiment);
+    @Override
+    protected void loadData() throws InvalidDataException {
+        experiment = experimentDAO.getExperiment(experimentId);
+		if(MockDefaultValues.isDebugAccelerate() && StringUtils.isEmpty(experiment.getRewardFunction()))
+			experiment.setRewardFunction(MockDefaultValues.NEW_EXPERIMENT_REWARD_FUNCTION);
+        if (experiment == null)
+            throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
+    }
 
-		screenTitlePanel.setSubtitle(experiment.getProject().getName());
-		getObservationTextArea.setValue(experiment.getModel().getGetObservationForRewardFunction());
-		updateTopStatusPanel(experiment);
-	}
+    @Override
+    protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
+        binder.setBean(experiment);
 
-	private void updateTopStatusPanel(Experiment experiment) {
-		modelRevisionLabel.setText(experiment.getModel().getName());
-		experimentLabel.setText(experiment.getName());
-		projectLabel.setText(experiment.getProject().getName());
-	}
+        screenTitlePanel.setSubtitle(experiment.getProject().getName());
+        getObservationTextArea.setValue(experiment.getModel().getGetObservationForRewardFunction());
+        updateTopStatusPanel(experiment);
+    }
+
+    private void updateTopStatusPanel(Experiment experiment) {
+        modelRevisionLabel.setText(experiment.getModel().getName());
+        experimentLabel.setText(experiment.getName());
+        projectLabel.setText(experiment.getProject().getName());
+    }
 }

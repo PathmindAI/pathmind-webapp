@@ -3,19 +3,25 @@ package io.skymind.pathmind.security;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Configures spring security, doing the following:
@@ -28,13 +34,10 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 @EnableWebSecurity
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    private static final String LOGIN_PROCESSING_URL = "/login";
-    private static final String LOGIN_FAILURE_URL = "/login?error";
-    private static final String LOGIN_URL = "/login";
-    private static final String LOGOUT_SUCCESS_URL = "/login";
-
     private final UserDetailsService userDetailsService;
+
+    @Value("${pathmind.development.mode}")
+    private boolean isDevelopmentMode;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -42,14 +45,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     public SecurityConfiguration(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
-    }
-
-    /**
-     * The password encoder to use when encrypting passwords.
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -86,6 +81,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // Restrict access to our application.
                 .and().authorizeRequests()
 
+                // Allow access to sign-up view
+                .antMatchers("/" + Routes.LOGIN_URL + Routes.WITH_PARAMETER).permitAll()
+                .antMatchers("/" + Routes.SIGN_UP_URL).permitAll()
+                .antMatchers("/" + Routes.RESET_PASSWORD_URL + Routes.WITH_PARAMETER).permitAll()
+                .antMatchers("/" + Routes.EMAIL_VERIFICATION_URL + Routes.WITH_PARAMETER).permitAll()
+
                 // Allow all flow internal requests.
                 .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
 
@@ -93,15 +94,26 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
 
                 // Configure the login page.
-                .and().formLogin().loginPage(LOGIN_URL).permitAll().loginProcessingUrl(LOGIN_PROCESSING_URL)
-                .failureUrl(LOGIN_FAILURE_URL)
+                .and().formLogin().loginPage("/" + Routes.LOGIN_URL).permitAll().loginProcessingUrl("/" + Routes.LOGIN_PROCESSING_URL)
+                .failureHandler(getFailureHandler())
 
                 // Register the success handler that redirects users to the page they last tried
                 // to access
                 .successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
 
                 // Configure logout
-                .and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL);
+                .and().logout().logoutSuccessUrl("/" + Routes.LOGOUT_SUCCESS_URL);
+    }
+
+    private AuthenticationFailureHandler getFailureHandler() {
+        Map<String, String> failureUrlMap = new HashMap();
+        failureUrlMap.put(BadCredentialsException.class.getName(), "/" + Routes.LOGIN_URL + "/" + Routes.BAD_CREDENTIALS);
+        failureUrlMap.put(InternalAuthenticationServiceException.class.getName(),
+                "/" + Routes.LOGIN_URL + "/" + Routes.EMAIL_VERIFICATION_FAILED);
+
+        PathmindAuthenticationFailureHandler handler = new PathmindAuthenticationFailureHandler();
+        handler.setExceptionMappings(failureUrlMap);
+        return handler;
     }
 
     /**
@@ -139,5 +151,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 // (production mode) static resources
                 "/frontend-es5/**", "/frontend-es6/**");
+
+        // workaround for this issue: https://github.com/vaadin/flow/issues/6471
+        // this is only needed in nmp development mode
+		if (isDevelopmentMode) {
+            web.ignoring().antMatchers(
+                    "/error"
+            );
+        }
     }
 }

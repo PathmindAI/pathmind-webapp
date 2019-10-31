@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
@@ -14,8 +15,11 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
@@ -28,14 +32,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
 
-@StyleSheet("frontend://styles/styles.css")
-@Route(value = "exportPolicy", layout = MainLayout.class)
+@CssImport("./styles/styles.css")
+@Route(value = Routes.EXPORT_POLICY_URL, layout = MainLayout.class)
 public class ExportPolicyView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 	private static final String DEFAULT_POLICY_DOWNLOAD_FILENAME = "Policy.zip";
 
 	@Autowired
 	private PolicyDAO policyDAO;
+	@Autowired
+	private UserDAO userDAO;
 
 	private ScreenTitlePanel screenTitlePanel;
 
@@ -100,6 +106,11 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	@Override
 	public void setParameter(BeforeEvent event, Long policyId) {
 		this.policyId = policyId;
+	}
+
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToPolicy(policyId);
 	}
 
 	@Override

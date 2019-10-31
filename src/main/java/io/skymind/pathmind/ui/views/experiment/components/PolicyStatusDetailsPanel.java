@@ -60,10 +60,11 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 		rightVerticalLayout.setDefaultHorizontalComponentAlignment(Alignment.START);
 		rightVerticalLayout.setPadding(false);
 
-		HorizontalLayout wrapper = WrapperUtils.wrapFormCenterHorizontal(
+		HorizontalLayout wrapper = new HorizontalLayout(
 				leftVerticalLayout,
 				rightVerticalLayout);
 		wrapper.getStyle().set("padding-top", "10px");
+		wrapper.setWidthFull();
 
 		add(wrapper);
 	}
@@ -102,6 +103,9 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 		PolicyBusEventUtils.consumerBusEventBasedOnPolicy(
 				consumer,
 				() -> getPolicy(),
-				updatedPolicy -> PushUtils.push(ui, () -> updateComponentsForPolicy(updatedPolicy)));
+				updatedPolicy -> PushUtils.push(ui, () -> {
+					updateComponentsForPolicy(updatedPolicy);
+					elapsedTimeLabel.setText(PolicyUtils.getElapsedTime(policy));
+				}));
 	}
 }

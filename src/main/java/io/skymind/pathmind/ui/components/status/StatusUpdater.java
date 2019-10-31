@@ -1,7 +1,5 @@
 package io.skymind.pathmind.ui.components.status;
 
-import io.skymind.pathmind.services.project.FileCheckResult;
-
 public interface StatusUpdater
 {
     /**
@@ -12,6 +10,5 @@ public interface StatusUpdater
 
     public void updateError(String error);
     public void fileSuccessfullyVerified();
-    public void fileCheckComplete(FileCheckResult anylogicFileCheckResult);
 
 }

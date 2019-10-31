@@ -1,9 +1,11 @@
 package io.skymind.pathmind.ui.views.errors;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
@@ -12,8 +14,8 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 /**
  * TODO -> Implement correctly, this is just a quick stub.
  */
-@StyleSheet("frontend://styles/styles.css")
-@Route(value="invalidData", layout = MainLayout.class)
+@CssImport("./styles/styles.css")
+@Route(value = Routes.INVALID_DATA_URL, layout = MainLayout.class)
 public class InvalidDataView extends PathMindDefaultView
 {
 	public InvalidDataView() {
@@ -29,5 +31,10 @@ public class InvalidDataView extends PathMindDefaultView
 	@Override
 	protected Component getTitlePanel() {
 		return new ScreenTitlePanel("Invalid data error");
+	}
+
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return true;
 	}
 }

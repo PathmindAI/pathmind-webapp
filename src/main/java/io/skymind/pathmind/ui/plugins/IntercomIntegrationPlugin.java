@@ -1,6 +1,7 @@
 package io.skymind.pathmind.ui.plugins;
 
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import com.vaadin.flow.shared.ui.LoadMode;
 import io.skymind.pathmind.data.PathmindUser;

@@ -9,6 +9,7 @@ import io.skymind.pathmind.services.training.cloud.rescale.api.dto.*;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
+import io.skymind.pathmind.services.training.versions.RescaleFileManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -22,32 +23,14 @@ import java.util.stream.Collectors;
 public class RescaleExecutionProvider implements ExecutionProvider {
     private Logger log = LogManager.getLogger(RescaleExecutionProvider.class);
 
-    private static final Map<PathmindHelper, List<String>> pathmindHelperMap = Map.of(
-            PathmindHelper.VERSION_0_0_24, Arrays.asList(
-                    "kuQJAd" // PathmindPolicy.jar, 2019-08-28
-            )
-    );
-
-    private static final Map<AnyLogic, List<String>> anylogicMap = Map.of(
-            AnyLogic.VERSION_8_5, Arrays.asList(
-                    "nbwVpg" // Anylogic 8.5 Base Environment: baseEnv.zip
-            )
-    );
-
-    private static final Map<RLLib, List<String>> rllibMap = Map.of(
-            RLLib.VERSION_0_7_0, Arrays.asList(
-                    "LZAENb", // conda
-                    "uLWose", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-10-08 DH version
-                    "fDRBHd"  // OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz
-            )
-    );
-
     private final RescaleRestApiClient client;
     private final RescaleMetaDataService metaDataService;
+    private final RescaleFileManager fileManager;
 
     public RescaleExecutionProvider(RescaleRestApiClient client, RescaleMetaDataService metaDataService) {
         this.client = client;
         this.metaDataService = metaDataService;
+        this.fileManager = RescaleFileManager.getInstance();
     }
 
     @Override
@@ -95,7 +78,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
             if (statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))) {
                 final JobStatus status = statuses.stream().filter(it -> it.getStatus().equals("Completed")).findFirst().get();
 
-                // file check
+                // file check that has an error message
                 Map<String, String> map = client.outputFiles(jobHandle, "1").getResults()
                         .parallelStream()
                         .filter(it -> it.getPath().endsWith("process_output.log"))
@@ -104,9 +87,15 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                             final String contents = new String(client.fileContents(it.getId()));
                             return Map.entry(key, contents);
                         })
+                        // this is the known error message so far, todo i will revisit below after risecamp
+                        // raw error logs are https://3.basecamp.com/3684163/buckets/11875773/vaults/2132519274
                         .filter(it ->
                                 it.getValue().contains("python3: can't open file 'rllibtrain.py': [Errno 2] No such file or directory")
                                 || it.getValue().contains("SyntaxError: invalid syntax")
+                                || it.getValue().contains("Fatal Python error: Aborted")
+                                || it.getValue().contains("Fatal Python error: Segmentation fault")
+                                || it.getValue().contains("Worker crashed during call to train()")
+                                || it.getValue().contains("java.lang.ArrayIndexOutOfBoundsException")
                         )
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
@@ -337,10 +326,8 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "mv examples/train.sh .",
                         "cd .."
                 ));
-                files.addAll(rllibMap.getOrDefault(rllibVersion, List.of())
-                        .stream()
-                        .map(it -> new FileReference(it, false))
-                        .collect(Collectors.toList()));
+
+                files.addAll(this.fileManager.getFiles(rllibVersion));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported RLLib Version: " + rllibVersion);
@@ -356,10 +343,18 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "mv baseEnv/* work/",
                         "rm -r baseEnv"
                 ));
-                files.addAll(anylogicMap.getOrDefault(anylogicVersion, List.of())
-                        .stream()
-                        .map(it -> new FileReference(it, false))
-                        .collect(Collectors.toList()));
+
+                files.addAll(this.fileManager.getFiles(anylogicVersion));
+                break;
+            case VERSION_8_5_1:
+                instructions.addAll(Arrays.asList(
+                        "unzip baseEnv.zip",
+                        "rm baseEnv.zip",
+                        "mv baseEnv/* work/",
+                        "rm -r baseEnv"
+                ));
+
+                files.addAll(this.fileManager.getFiles(anylogicVersion));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported AnyLogic Version: " + anylogicVersion);
@@ -372,10 +367,8 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));
-                files.addAll(pathmindHelperMap.getOrDefault(pathmindHelperVersion, List.of())
-                        .stream()
-                        .map(it -> new FileReference(it, false))
-                        .collect(Collectors.toList()));
+
+                files.addAll(this.fileManager.getFiles(pathmindHelperVersion));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported Pathmind Helper Version: " + pathmindHelperVersion);
