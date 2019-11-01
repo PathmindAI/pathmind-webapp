@@ -3,6 +3,7 @@ package io.skymind.pathmind.ui.views.account;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.Subscription;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -10,6 +11,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.polymertemplate.EventHandler;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.Route;
@@ -39,22 +41,8 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model>
 
 	private static Logger log = LogManager.getLogger(PaymentView.class);
 	private StripeService stripeService;
-	private final String publicKey;
-
-	//@Id("header")
-	private Div header;
-
-	//@Id("cancelSignUpBtn")
-	private Button cancelSignUpBtn;
-
-	//@Id("signUp")
-	private Button signUp;
 
 	private PathmindUser user;
-
-	@Autowired
-	private UserService userService;
-
 
 	@Autowired
 	public PaymentView(@Value("${pathmind.stripe.public.key}") String publicKey,
@@ -62,23 +50,23 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model>
 					   CurrentUser currentUser,
 					   @Value("${pathmind.contact-support.address}") String contactLink)
 	{
-		this.publicKey = publicKey;
 		this.stripeService = stripeService;
 		user = currentUser.getUser();
-		//header.add(new ScreenTitlePanel("UPGRADE", "Subscription Plans"));
+		final ScreenTitlePanel screenTitlePanel = new ScreenTitlePanel("UPGRADE", "Subscription Plans");
+		getElement().appendVirtualChild(screenTitlePanel.getElement());
+		getElement().callJsFunction("addScreenTitlePanel", screenTitlePanel.getElement());
 
 		getModel().setContactLink(contactLink);
 		getModel().setPlan("Professional");
 		getModel().setKey(publicKey);
 
-		//cancelSignUpBtn.addClickListener(e -> UI.getCurrent().navigate(AccountUpgradeView.class));
 	}
 
-	/**
-	 * This method is called from the client side
-	 *
-	 * @param paymentMethod
-	 */
+		/**
+		 * This method is called from the client-side
+		 *
+		 * @param paymentMethod
+		 */
 	@ClientCallable
 	private void paymentMethodCallback(JsonObject paymentMethod)
 	{
@@ -98,6 +86,15 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model>
 		} catch (StripeException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * This method is called from the client-side
+	 */
+	@EventHandler
+	private void cancelButtonClicked()
+	{
+		UI.getCurrent().navigate(AccountUpgradeView.class);
 	}
 
 	public interface Model extends TemplateModel {
