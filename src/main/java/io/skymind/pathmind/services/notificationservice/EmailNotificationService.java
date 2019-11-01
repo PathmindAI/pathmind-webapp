@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class EmailNotificationService
@@ -56,6 +58,10 @@ public class EmailNotificationService
 			log.info("Canceling verification email sending, user: " + pathmindUser.getEmail() + ", has already been verified");
 			return;
 		}
+		if (pathmindUser.getEmailVerificationToken() == null) {
+			pathmindUser.setEmailVerificationToken(UUID.randomUUID());
+			userDAO.update(pathmindUser);
+		}
 		final String emailVerificationLink = createEmailVerificationLink(pathmindUser);
 		Mail verificationEmail;
 		try {
@@ -74,7 +80,6 @@ public class EmailNotificationService
 
 	/**
 	 * Sends a reset password email to a Pathmind user.
-	 * The email is only sent if email verification hasn't been yet been approved
 	 *
 	 * @param pathmindUser
 	 */
@@ -85,6 +90,14 @@ public class EmailNotificationService
 			log.info("Email sending has been disabled, not sending the email to: " + pathmindUser.getEmail());
 			return;
 		}
+
+		if (pathmindUser.getEmailVerifiedAt() != null || pathmindUser.getEmailVerificationToken() == null ) {
+			pathmindUser.setEmailVerificationToken(UUID.randomUUID());
+		}
+
+		pathmindUser.setPasswordResetSendAt(LocalDateTime.now());
+		userDAO.update(pathmindUser);
+
 
 		final String resetPasswordLink = createResetPasswordLink(pathmindUser);
 		Mail verificationEmail;

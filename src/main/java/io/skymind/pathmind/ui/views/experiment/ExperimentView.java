@@ -181,6 +181,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             }
         });
         runDiscoveryTraining.setVisible(false);
+        runDiscoveryTraining.addClassNames("large-image-btn", "run");
 
 
         final HorizontalLayout buttons = WrapperUtils.wrapWidthFullCenterHorizontal(

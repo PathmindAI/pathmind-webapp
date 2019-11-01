@@ -174,13 +174,6 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 			return;
 		}
 
-		if (user.getEmailVerifiedAt() != null || user.getEmailVerificationToken() == null ) {
-			user.setEmailVerificationToken(UUID.randomUUID());
-		}
-
-		user.setPasswordResetSendAt(LocalDateTime.now());
-		userService.update(user);
-
 		emailNotificationService.sendResetPasswordEmail(user);
 	}
 
