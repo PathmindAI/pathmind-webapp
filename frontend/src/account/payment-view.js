@@ -25,27 +25,24 @@ class PaymentView extends PolymerElement {
         }
         .form-cont {
           width: 75%;
-          margin: 0 auto 0;
+          margin: 50px auto 0;
         }
 
         #errorCont {
-          margin: 10px 20px 0;
+          margin: 10px 0;
           width: 100%;
-          height: 80px;
         }
         #errorCont .error-message {
           padding-top: 8px;
+          margin-left: calc(var(--lumo-border-radius-m) / 4);
+          font-size: var(--lumo-font-size-xs);
+          line-height: var(--lumo-line-height-xs);
+          color: var(--lumo-error-text-color);
+          will-change: max-height;
+          transition: 0.4s max-height;
+          max-height: 5em;
         }
 
-        #cardNumber vaadin-text-field {
-          width: 23%;
-          margin-right: 2%;
-        }
-
-        #expiresAndCVC vaadin-text-field {
-          width: 48%;
-          margin-right: 2%;
-        }
         #city {
           width: 48%;
           margin-right: 2%;
@@ -86,6 +83,11 @@ class PaymentView extends PolymerElement {
           color: #878787;
           font-size: 0.8em;
         }
+        
+        #buttonsCont {
+            margin-top: 0;
+        }
+        
     </style>
 
     <div id="header" style="width: 100%;">
@@ -107,17 +109,13 @@ class PaymentView extends PolymerElement {
           Please fill in the information below. All fields are required.
         </div>
 
-        <vaadin-vertical-layout id="errorCont">
-          <div class="error-message" hidden="[[!showValidationError]]">Please fill in all the fields</div>
-          <div class="error-message">{{message}}</div>
-        </vaadin-vertical-layout>
-
         <vaadin-vertical-layout class="form-cont">
           <vaadin-text-field
             id="name"
             label="Name on card"
             required
             on-change="formUpdated"
+            error-message="Please enter your name here"
             value="{{name}}"
           ></vaadin-text-field>
           <vaadin-text-field
@@ -125,6 +123,7 @@ class PaymentView extends PolymerElement {
             label="Billing Address"
             required
             on-change="formUpdated"
+            error-message="Your address is missing"
             value="{{address}}"
           ></vaadin-text-field>
           <vaadin-horizontal-layout id="" style="width: 100%;">
@@ -133,6 +132,7 @@ class PaymentView extends PolymerElement {
               label="City"
               required
               on-change="formUpdated"
+              error-message="Please fill in your city"
               value="{{city}}"
             ></vaadin-text-field>
             <vaadin-text-field
@@ -140,6 +140,7 @@ class PaymentView extends PolymerElement {
               label="State"
               required
               on-change="formUpdated"
+              error-message="State is missing"
               value="{{state}}"
             ></vaadin-text-field>
             <vaadin-text-field
@@ -147,12 +148,16 @@ class PaymentView extends PolymerElement {
               label="Zip/Postal code"
               required
               on-change="formUpdated"
+              error-message="Postal code is missing"
               value="{{postal_code}}"
             ></vaadin-text-field>
           </vaadin-horizontal-layout>
 
           <vaadin-horizontal-layout style="width:100%; margin-top: 25px">
               <div id="card-element"></div>
+          </vaadin-horizontal-layout>
+          <vaadin-horizontal-layout id="errorCont">
+            <div class="error-message">{{message}}</div>
           </vaadin-horizontal-layout>
         </vaadin-vertical-layout>
         <vaadin-vertical-layout id="buttonsCont">

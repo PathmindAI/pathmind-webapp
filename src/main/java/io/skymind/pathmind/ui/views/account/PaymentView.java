@@ -18,6 +18,7 @@ import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.services.billing.StripeService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,10 +68,9 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model>
 	{
 		Objects.requireNonNull(paymentMethod);
 		if (!isValid(paymentMethod)) {
-			getModel().setShowValidationError(true);
+			NotificationUtils.showCenteredSimpleNotification("There was a problem", NotificationUtils.Style.Warn);
 			return;
 		}
-		getModel().setShowValidationError(false);
 
 		final String paymentMethodId = paymentMethod.getString("id");
 		if (paymentMethodId == null) {
@@ -83,6 +83,7 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model>
 			final Subscription subscription = stripeService.createSubscription(customer);
 			Notification.show("A new customer has been created on Stripe. id: " + customer.getId() + ", email: " + customer.getEmail() + ", with subscription id: " + subscription.getId());
 		} catch (StripeException e) {
+			log.warn("There was an error creating a subscription for the customer: " + user.getEmail());
 			throw new RuntimeException(e);
 		}
 	}
@@ -91,10 +92,8 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model>
 	private void validateForm(JsonObject jsonObject)
 	{
 		if (!isValid(jsonObject)) {
-			getModel().setShowValidationError(true);
 			getModel().setIsFormComplete(false);
 		} else {
-			getModel().setShowValidationError(false);
 			getModel().setIsFormComplete(true);
 		}
 	}
@@ -127,8 +126,6 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model>
 		void setKey(String key);
 
 		void setIsFormComplete(Boolean isFormComplete);
-
-		void setShowValidationError(Boolean showValidationError);
 	}
 
 }
