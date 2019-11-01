@@ -157,6 +157,7 @@ public class TrainingsListPanel extends VerticalLayout {
                     policy.setProgress(updatedPolicy.getProgress());
                     policy.setScores(updatedPolicy.getScores());
                     policy.setRun(updatedPolicy.getRun());
+                    policy.setStartedAt(updatedPolicy.getStartedAt());
                     policy.setStoppedAt(updatedPolicy.getStoppedAt());
                 });
     }
