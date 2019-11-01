@@ -3,27 +3,22 @@ package io.skymind.pathmind.ui.views.account;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.Subscription;
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.polymertemplate.EventHandler;
-import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import elemental.json.JsonObject;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
-import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.billing.StripeService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.views.StripeView;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +30,7 @@ import static io.skymind.pathmind.security.Routes.PAYMENT_URL;
 
 @Tag("payment-view")
 @JsModule("./src/account/payment-view.js")
-@Route(value=PAYMENT_URL, layout = MainLayout.class)
+@Route(value = PAYMENT_URL, layout = MainLayout.class)
 public class PaymentView extends PolymerTemplate<PaymentView.Model>
 {
 
@@ -62,23 +57,27 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model>
 
 	}
 
-		/**
-		 * This method is called from the client-side
-		 *
-		 * @param paymentMethod
-		 */
+	/**
+	 * This method is called from the client-side
+	 *
+	 * @param paymentMethod
+	 */
 	@ClientCallable
 	private void paymentMethodCallback(JsonObject paymentMethod)
 	{
 		Objects.requireNonNull(paymentMethod);
+		if (!isValid(paymentMethod)) {
+			getModel().setShowValidationError(true);
+			return;
+		}
+		getModel().setShowValidationError(false);
+
 		final String paymentMethodId = paymentMethod.getString("id");
 		if (paymentMethodId == null) {
 			final String noPaymentId = "Received a payment method call without a payment id";
 			log.info(noPaymentId);
 			throw new RuntimeException(noPaymentId);
 		}
-		// TODO: use the following method to get and save all the other interesting fields for the customer in Stripe
-		//final String city = paymentMethod.getObject("billing_details").getObject("address").getString("city");
 		try {
 			Customer customer = stripeService.createCustomer(user.getEmail(), paymentMethodId);
 			final Subscription subscription = stripeService.createSubscription(customer);
@@ -86,6 +85,28 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model>
 		} catch (StripeException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@ClientCallable
+	private void validateForm(JsonObject jsonObject)
+	{
+		if (!isValid(jsonObject)) {
+			getModel().setShowValidationError(true);
+			getModel().setIsFormComplete(false);
+		} else {
+			getModel().setShowValidationError(false);
+			getModel().setIsFormComplete(true);
+		}
+	}
+
+	private boolean isValid(JsonObject paymentMethod)
+	{
+		final String nameOnCard = paymentMethod.getObject("billing_details").getString("name");
+		final String address = paymentMethod.getObject("billing_details").getObject("address").getString("line1");
+		final String city = paymentMethod.getObject("billing_details").getObject("address").getString("city");
+		final String state = paymentMethod.getObject("billing_details").getObject("address").getString("state");
+		final String zip = paymentMethod.getObject("billing_details").getObject("address").getString("postal_code");
+		return !StringUtils.isAnyEmpty(nameOnCard, address, city, state, zip);
 	}
 
 	/**
@@ -97,10 +118,17 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model>
 		UI.getCurrent().navigate(AccountUpgradeView.class);
 	}
 
-	public interface Model extends TemplateModel {
+	public interface Model extends TemplateModel
+	{
 		void setContactLink(String contactLink);
+
 		void setPlan(String plan);
+
 		void setKey(String key);
+
+		void setIsFormComplete(Boolean isFormComplete);
+
+		void setShowValidationError(Boolean showValidationError);
 	}
 
 }

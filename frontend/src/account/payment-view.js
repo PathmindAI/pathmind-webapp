@@ -25,12 +25,13 @@ class PaymentView extends PolymerElement {
         }
         .form-cont {
           width: 75%;
-          margin: 25px auto 0;
+          margin: 0 auto 0;
         }
 
         #errorCont {
           margin: 10px 20px 0;
           width: 100%;
+          height: 80px;
         }
         #errorCont .error-message {
           padding-top: 8px;
@@ -87,7 +88,6 @@ class PaymentView extends PolymerElement {
         }
     </style>
 
-
     <div id="header" style="width: 100%;">
       <slot name="screen-title-panel"></slot>
     </div>
@@ -107,21 +107,24 @@ class PaymentView extends PolymerElement {
           Please fill in the information below. All fields are required.
         </div>
 
-        <vaadin-horizontal-layout id="errorCont">
-          <div class="error-message" id="card-errors">{{message}}</div>
-        </vaadin-horizontal-layout>
+        <vaadin-vertical-layout id="errorCont">
+          <div class="error-message" hidden="[[!showValidationError]]">Please fill in all the fields</div>
+          <div class="error-message">{{message}}</div>
+        </vaadin-vertical-layout>
 
         <vaadin-vertical-layout class="form-cont">
           <vaadin-text-field
             id="name"
             label="Name on card"
             required
+            on-change="formUpdated"
             value="{{name}}"
           ></vaadin-text-field>
           <vaadin-text-field
             id="address"
             label="Billing Address"
             required
+            on-change="formUpdated"
             value="{{address}}"
           ></vaadin-text-field>
           <vaadin-horizontal-layout id="" style="width: 100%;">
@@ -129,18 +132,21 @@ class PaymentView extends PolymerElement {
               id="city"
               label="City"
               required
+              on-change="formUpdated"
               value="{{city}}"
             ></vaadin-text-field>
             <vaadin-text-field
               id="state"
               label="State"
               required
+              on-change="formUpdated"
               value="{{state}}"
             ></vaadin-text-field>
             <vaadin-text-field
               id="zip"
               label="Zip/Postal code"
               required
+              on-change="formUpdated"
               value="{{postal_code}}"
             ></vaadin-text-field>
           </vaadin-horizontal-layout>
@@ -154,7 +160,7 @@ class PaymentView extends PolymerElement {
             id="signUp"
             theme="primary"
             class="positive-action-btn"
-            disabled="[[!isComplete]]"
+            disabled="[[!and(isStripeComplete, isFormComplete)]]"
              on-click="submit"
             >Sign Up</vaadin-button
           >
@@ -193,15 +199,16 @@ class PaymentView extends PolymerElement {
   static get properties() {
     return {
       stripe: Object,
-      paymentMethod: {
-        type: Object,
-        reflectToAttribute: true
+      message: Object,
+      isStripeComplete: {
+        type: Boolean,
+        value: false
       },
-      message: {
-        type: String,
-        reflectToAttribute: true
+      isFormComplete: {
+        type: Boolean,
+        value: false
       },
-      isComplete: {
+      showValidationError: {
         type: Boolean,
         value: false
       }
@@ -228,13 +235,16 @@ class PaymentView extends PolymerElement {
     const elements = this.stripe.elements();
     this.cardElement = elements.create('card', {hidePostalCode: true, style: style});
     this.cardElement.mount('#card-element');
-    this.cardElement.addEventListener('change', event => this.isComplete = event.complete);
+    this.cardElement.addEventListener('change', event => this.isStripeComplete = event.complete);
     this.cardElement.addEventListener('change', ({error}) => this.message = error ? error.message : '');
+  }
 
+  and(a, b) {
+    return a && b;
   }
 
   submit() {
-    if (this.isComplete) {
+    if (this.isStripeComplete) {
       const paymentView = this;
       this.stripe.createPaymentMethod('card', this.cardElement, {
         billing_details: {
@@ -257,7 +267,6 @@ class PaymentView extends PolymerElement {
   }
 
   setPaymentMethod(paymentMethod) {
-    this.paymentMethod = paymentMethod;
     this.$server.paymentMethodCallback(paymentMethod);
   }
 
@@ -267,6 +276,22 @@ class PaymentView extends PolymerElement {
       slotElement.innerHTML = ''; // remove previous children
       slotElement.appendChild(element);
     }
+  }
+
+  formUpdated() {
+    this.$server.validateForm(
+        {
+          billing_details: {
+            name: this.name,
+            address: {
+              line1: this.address,
+              city: this.city,
+              state: this.state,
+              postal_code: this.postal_code
+            }
+          }
+        }
+    );
   }
 
 }
