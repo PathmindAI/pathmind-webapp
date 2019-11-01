@@ -3,6 +3,7 @@
 
 Vagrant.configure("2") do |config|
 
+  # This image was chosen because it supports Virtualbox and lxc
   config.vm.box = "debian/stretch64"
 
   config.vm.network "forwarded_port", guest: 8080, host: 8080
