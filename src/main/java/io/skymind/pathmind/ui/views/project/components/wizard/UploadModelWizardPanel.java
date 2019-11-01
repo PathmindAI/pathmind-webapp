@@ -12,7 +12,8 @@ import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.progressbar.ProgressBarVariant;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
-import io.skymind.pathmind.constants.PathmindConstants;
+import com.vaadin.flow.dom.DomEvent;
+import com.vaadin.flow.dom.DomEventListener;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -36,7 +37,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private ProgressBar fileCheckProgressBar = new ProgressBar();
 	private VerticalLayout fileCheckPanel;
 
-	private Text error;
+	private Text errorText;
 
 	public UploadModelWizardPanel(Model model)
 	{
@@ -64,11 +65,11 @@ public class UploadModelWizardPanel extends VerticalLayout
 	}
 
 	private void setupFileCheckPanel() {
-		error = new Text("");
+		errorText = new Text("");
 		fileCheckPanel = WrapperUtils.wrapWidthFullCenterVertical(
 				fileCheckProgressBar,
-				WrapperUtils.wrapWidthFullCenterHorizontal(new Label("File check...")),
-				error);
+				WrapperUtils.wrapWidthFullCenterHorizontal(new Label("Checking your model...")),
+				errorText);
 	}
 
 	private void setupUploadPanel()
@@ -82,6 +83,13 @@ public class UploadModelWizardPanel extends VerticalLayout
 //		upload.setAcceptedFileTypes("application/zip");
 //		upload.addFailedListener(event -> log.error("ERROR " + event.getReason().getMessage(), e.getReason().getMessage()));
 
+		addUploadSucceedListener(buffer);
+		addUploadRemoveFileListener();
+
+		uploadModelPanel = WrapperUtils.wrapWidthFullCenterVertical(upload);
+	}
+
+	private void addUploadSucceedListener(MemoryBuffer buffer) {
 		upload.addSucceededListener(event -> {
 			try {
 				final byte[] bytes = buffer.getInputStream().readAllBytes();
@@ -95,8 +103,17 @@ public class UploadModelWizardPanel extends VerticalLayout
 				log.error("Upload failed", e);
 			}
 		});
+	}
 
-		uploadModelPanel = WrapperUtils.wrapWidthFullCenterVertical(upload);
+	// Currently the only way this seems possible is by listening for the DOM event
+	// as explained at: https://vaadin.com/forum/thread/17336034/remove-file-uploaded-vaadin-upload
+	private void addUploadRemoveFileListener() {
+		upload.getElement().addEventListener("file-remove", new DomEventListener() {
+			@Override
+			public void handleEvent(DomEvent event) {
+				clearError();
+			}
+		});
 	}
 
 	public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
@@ -143,14 +160,21 @@ public class UploadModelWizardPanel extends VerticalLayout
 	public void setFileCheckStatusProgressBarValue(double value) {
 		if(value == 0.0){
 			fileCheckProgressBar.removeThemeVariants(ProgressBarVariant.LUMO_ERROR);
-			this.error.setText("");
+			this.errorText.setText("");
 		}
 		fileCheckProgressBar.setValue(value);
 	}
 
 	public void setError(String error) {
 		fileCheckProgressBar.addThemeVariants(ProgressBarVariant.LUMO_ERROR);
-		this.error.setText(error);
+		this.errorText.setText(error);
+		upload.setVisible(true);
+	}
+
+	public void clearError() {
+		fileCheckProgressBar.setValue(0);
+		errorText.setText("");
+		fileCheckPanel.setVisible(false);
 		upload.setVisible(true);
 	}
 }

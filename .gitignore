@@ -32,3 +32,4 @@ build/
 .vscode/
 
 webpack.generated.js
+.vagrant/

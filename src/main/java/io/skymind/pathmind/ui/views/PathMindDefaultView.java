@@ -2,17 +2,15 @@ package io.skymind.pathmind.ui.views;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.shared.communication.PushMode;
-import io.skymind.pathmind.data.utils.PathmindUserUtils;
 import io.skymind.pathmind.exception.InvalidDataException;
-import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.exceptions.AccessDeniedException;
 import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.views.errors.ErrorView;
@@ -39,6 +37,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 	protected abstract boolean isAccessAllowedForUser();
 
 	private static Logger log = LogManager.getLogger(PathMindDefaultView.class);
+	private static String COOKIE_CONSENT_LINK = "https://pathmind.com/privacy";
 
 	private boolean isGenerated = false;
 
@@ -49,12 +48,18 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
     @Value("${skymind.debug.accelerate}")
     private boolean isDebugAccelerate;
 
+
 	public PathMindDefaultView()
 	{
 		setWidth("100%");
 		setDefaultHorizontalComponentAlignment(Alignment.CENTER);
 		GuiUtils.removeMarginsPaddingAndSpacing(this);
 		setClassName("default-view");
+
+		CookieConsent cookieConsent = new CookieConsent();
+		cookieConsent.setPosition(CookieConsent.Position.BOTTOM_LEFT);
+		cookieConsent.setLearnMoreLink(COOKIE_CONSENT_LINK);
+		add(cookieConsent);
 
 		// IMPORTANT -> Needed so that Push works consistently on every page/view.
 		UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);

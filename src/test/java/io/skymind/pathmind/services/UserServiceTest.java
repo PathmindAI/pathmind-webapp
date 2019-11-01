@@ -16,7 +16,6 @@ import static org.junit.Assert.*;
 @Transactional
 public class UserServiceTest extends PathmindApplicationTests
 {
-
 	@Autowired
 	UserService userService;
 
@@ -48,4 +47,12 @@ public class UserServiceTest extends PathmindApplicationTests
 		assertTrue(isVerified);
 	}
 
+	@Test
+	public void validatePassword() {
+		assertTrue( userService.validatePassword("password", "password").contains(userService.UPPERCASE_MISSING));
+		assertTrue( userService.validatePassword("password", "password1").contains(userService.NOT_MATCHING));
+		assertTrue( userService.validatePassword("PASS", "PASS").contains(userService.LOWERCASE_MISSING));
+		assertTrue( userService.validatePassword("PASS", "PASS").contains(userService.TOO_SHORT));
+		assertTrue( userService.validatePassword("Password", "Password").size() == 0);
+	}
 }
