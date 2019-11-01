@@ -116,6 +116,8 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                         .onConflict(POLICY.RUN_ID, POLICY.EXTERNAL_ID)
                         .doUpdate()
                         .set(POLICY.PROGRESS, progressJson)
+                        .set(POLICY.STARTEDAT, progress.getStartedAt())
+                        .set(POLICY.STOPPEDAT, progress.getStoppedAt())
                         .returning(POLICY.ID)
                         .fetchOne()
                         .getValue(POLICY.ID);
