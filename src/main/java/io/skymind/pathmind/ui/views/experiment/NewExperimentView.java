@@ -214,15 +214,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private void handleSaveDraftClicked() {
         ExceptionWrapperUtils.handleButtonClicked(() ->
         {
-            // TODO -> Case #78 -> How do we validate the Reward Function?
-            NotificationUtils.showTodoNotification("Case #78 -> How do we validate the Reward Function?\n " +
-                    "https://github.com/SkymindIO/pathmind-webapp/issues/78");
             if (!FormUtils.isValidForm(binder, experiment))
                 return;
 
-            // TODO -> Case #81 -> What exactly happens when we save?
-            NotificationUtils.showTodoNotification("Case #81 -> What exactly happens when we save?\n" +
-                    "https://github.com/SkymindIO/pathmind-webapp/issues/81");
             experimentDAO.updateRewardFunction(experiment);
             NotificationUtils.showCenteredSimpleNotification("Draft successfully saved", NotificationUtils.Style.Success);
         });
