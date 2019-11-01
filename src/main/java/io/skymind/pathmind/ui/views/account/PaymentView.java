@@ -10,6 +10,8 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.polymertemplate.EventHandler;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import elemental.json.JsonObject;
@@ -32,7 +34,7 @@ import static io.skymind.pathmind.security.Routes.PAYMENT_URL;
 @Tag("payment-view")
 @JsModule("./src/account/payment-view.js")
 @Route(value = PAYMENT_URL, layout = MainLayout.class)
-public class PaymentView extends PolymerTemplate<PaymentView.Model>
+public class PaymentView extends PolymerTemplate<PaymentView.Model> implements BeforeEnterObserver
 {
 
 	private static Logger log = LogManager.getLogger(PaymentView.class);
@@ -56,6 +58,15 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model>
 		getModel().setPlan("Professional");
 		getModel().setKey(publicKey);
 
+	}
+
+	@Override
+	public void beforeEnter(BeforeEnterEvent event)
+	{
+		// if user has an ongoing subscription this view shouldn't be shown
+		if (stripeService.userHasActiveProfessionalSubscription(user.getEmail())) {
+			event.rerouteTo(AccountView.class);
+		}
 	}
 
 	/**
