@@ -166,7 +166,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         runFullTraining.setVisible(false);
         runFullTraining.addClassNames("large-image-btn", "run");
 
-        runDiscoveryTraining = new Button("Start Discovery Run", new Icon(VaadinIcon.PLAY), click -> {
+        runDiscoveryTraining = new Button("Start Discovery Run", new Image("frontend/images/start.svg", "run"), click -> {
             final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
             trainingService.startDiscoveryRun(experiment);
 
