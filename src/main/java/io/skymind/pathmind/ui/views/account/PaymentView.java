@@ -98,7 +98,7 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model> implements B
 			final String postalCode = getPostalCode(paymentMethod);
 			Customer customer = stripeService.createCustomer(user.getEmail(), paymentMethodId, nameOnCard, addressLine1, city, state, postalCode);
 			final Subscription subscription = stripeService.createSubscription(customer);
-			Notification.show("A new customer has been created on Stripe. id: " + customer.getId() + ", email: " + customer.getEmail() + ", with subscription id: " + subscription.getId());
+			UI.getCurrent().navigate(UpgradeDoneView.class);
 		} catch (StripeException e) {
 			log.warn("There was an error creating a subscription for the customer: " + user.getEmail());
 			getModel().setIsFormComplete(true);

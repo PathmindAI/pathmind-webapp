@@ -7,8 +7,6 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
@@ -27,7 +25,7 @@ import static io.skymind.pathmind.security.Routes.UPGRADE_DONE;
 @Tag("upgrade-done-view")
 @JsModule("./src/account/upgrade-done-view.js")
 @Route(value = UPGRADE_DONE, layout = MainLayout.class)
-public class UpgradeDoneView extends PolymerTemplate<UpgradeDoneView.Model> implements BeforeEnterObserver
+public class UpgradeDoneView extends PolymerTemplate<UpgradeDoneView.Model>
 {
 
 	private static Logger log = LogManager.getLogger(UpgradeDoneView.class);
@@ -56,15 +54,6 @@ public class UpgradeDoneView extends PolymerTemplate<UpgradeDoneView.Model> impl
 		getModel().setPlan("Professional");
 
 		done.addClickListener(e -> UI.getCurrent().navigate(AccountView.class));
-	}
-
-	@Override
-	public void beforeEnter(BeforeEnterEvent event)
-	{
-		// if user has an ongoing subscription this view shouldn't be shown
-		if (stripeService.userHasActiveProfessionalSubscription(user.getEmail())) {
-			event.rerouteTo(AccountView.class);
-		}
 	}
 
 	public interface Model extends TemplateModel
