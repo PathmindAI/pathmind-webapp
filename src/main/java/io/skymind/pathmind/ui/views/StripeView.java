@@ -64,7 +64,7 @@ public class StripeView extends PolymerTemplate<StripeView.Model>
 		// TODO: use the following method to get and save all the other interesting fields for the customer in Stripe
 		//final String city = paymentMethod.getObject("billing_details").getObject("address").getString("city");
 		try {
-			Customer customer = stripeService.createCustomer(currentUser.getUser().getEmail(), paymentMethodId);
+			Customer customer = stripeService.createCustomer(currentUser.getUser().getEmail(), paymentMethodId, null, null, null, null, null);
 			final Subscription subscription = stripeService.createSubscription(customer);
 			Notification.show("A new customer has been created on Stripe. id: " + customer.getId() + ", email: " + customer.getEmail() + ", with subscription id: " + subscription.getId());
 		} catch (StripeException e) {

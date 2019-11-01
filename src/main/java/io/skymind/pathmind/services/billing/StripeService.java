@@ -51,7 +51,7 @@ public class StripeService
 		return PaymentIntent.create(paymentIntentParams);
 	}
 
-	public Customer createCustomer(String email, String paymentMethod) throws StripeException
+	public Customer createCustomer(String email, String paymentMethod, String nameOnCard, String addressLine1, String city, String state, String postalCode) throws StripeException
 	{
 		if (customerAlreadyExists(email)) {
 			throw new RuntimeException("Cannot create the same customer a second time");
@@ -59,6 +59,13 @@ public class StripeService
 
 		Map<String, Object> customerParams = new HashMap<>();
 		customerParams.put("email", email);
+		customerParams.put("name", nameOnCard);
+		Map<String, String> address = new HashMap<>();
+		address.put("line1", addressLine1);
+		address.put("city", city);
+		address.put("state", state);
+		address.put("postal_code", postalCode);
+		customerParams.put("address", address);
 		customerParams.put("payment_method", paymentMethod);
 		Map<String, String> invoiceSettings = new HashMap<>();
 		invoiceSettings.put("default_payment_method", paymentMethod);

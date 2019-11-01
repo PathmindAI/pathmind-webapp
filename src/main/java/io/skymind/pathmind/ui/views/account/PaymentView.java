@@ -68,9 +68,10 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model>
 	{
 		Objects.requireNonNull(paymentMethod);
 		if (!isValid(paymentMethod)) {
-			NotificationUtils.showCenteredSimpleNotification("There was a problem", NotificationUtils.Style.Warn);
+			NotificationUtils.showCenteredSimpleNotification("Missing form fields. Please make sure to fill in all the fields", NotificationUtils.Style.Warn);
 			return;
 		}
+		getModel().setIsFormComplete(false);
 
 		final String paymentMethodId = paymentMethod.getString("id");
 		if (paymentMethodId == null) {
@@ -79,12 +80,18 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model>
 			throw new RuntimeException(noPaymentId);
 		}
 		try {
-			Customer customer = stripeService.createCustomer(user.getEmail(), paymentMethodId);
+			final String nameOnCard = getNameOnCard(paymentMethod);
+			final String addressLine1 = getAddressLine1(paymentMethod);
+			final String city = getCity(paymentMethod);
+			final String state = getState(paymentMethod);
+			final String postalCode = getPostalCode(paymentMethod);
+			Customer customer = stripeService.createCustomer(user.getEmail(), paymentMethodId, nameOnCard, addressLine1, city, state, postalCode);
 			final Subscription subscription = stripeService.createSubscription(customer);
 			Notification.show("A new customer has been created on Stripe. id: " + customer.getId() + ", email: " + customer.getEmail() + ", with subscription id: " + subscription.getId());
 		} catch (StripeException e) {
 			log.warn("There was an error creating a subscription for the customer: " + user.getEmail());
-			throw new RuntimeException(e);
+			getModel().setIsFormComplete(true);
+			NotificationUtils.showCenteredSimpleNotification("There was a problem creating a subsription, please try again later", NotificationUtils.Style.Warn);
 		}
 	}
 
@@ -100,12 +107,37 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model>
 
 	private boolean isValid(JsonObject paymentMethod)
 	{
-		final String nameOnCard = paymentMethod.getObject("billing_details").getString("name");
-		final String address = paymentMethod.getObject("billing_details").getObject("address").getString("line1");
-		final String city = paymentMethod.getObject("billing_details").getObject("address").getString("city");
-		final String state = paymentMethod.getObject("billing_details").getObject("address").getString("state");
-		final String zip = paymentMethod.getObject("billing_details").getObject("address").getString("postal_code");
+		final String nameOnCard = getNameOnCard(paymentMethod);
+		final String address = getAddressLine1(paymentMethod);
+		final String city = getCity(paymentMethod);
+		final String state = getState(paymentMethod);
+		final String zip = getPostalCode(paymentMethod);
 		return !StringUtils.isAnyEmpty(nameOnCard, address, city, state, zip);
+	}
+
+	private String getPostalCode(JsonObject paymentMethod)
+	{
+		return paymentMethod.getObject("billing_details").getObject("address").getString("postal_code");
+	}
+
+	private String getState(JsonObject paymentMethod)
+	{
+		return paymentMethod.getObject("billing_details").getObject("address").getString("state");
+	}
+
+	private String getCity(JsonObject paymentMethod)
+	{
+		return paymentMethod.getObject("billing_details").getObject("address").getString("city");
+	}
+
+	private String getAddressLine1(JsonObject paymentMethod)
+	{
+		return paymentMethod.getObject("billing_details").getObject("address").getString("line1");
+	}
+
+	private String getNameOnCard(JsonObject paymentMethod)
+	{
+		return paymentMethod.getObject("billing_details").getString("name");
 	}
 
 	/**
