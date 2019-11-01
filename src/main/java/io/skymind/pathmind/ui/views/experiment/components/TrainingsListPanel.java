@@ -19,6 +19,8 @@ import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.views.policy.filter.PolicyFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
@@ -28,6 +30,7 @@ import java.util.function.Consumer;
 
 @Component
 public class TrainingsListPanel extends VerticalLayout {
+    private static Logger log = LogManager.getLogger(TrainingsListPanel.class);
     private SearchBox<Policy> searchBox;
     private Grid<Policy> grid;
 
@@ -150,11 +153,11 @@ public class TrainingsListPanel extends VerticalLayout {
         experiment.getPolicies().stream()
                 .filter(policy -> policy.getId() == updatedPolicy.getId())
                 .forEach(policy -> {
-                    // TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/229 -> Are these the only values we need to update?
                     policy.setExternalId(updatedPolicy.getExternalId());
                     policy.setProgress(updatedPolicy.getProgress());
                     policy.setScores(updatedPolicy.getScores());
                     policy.setRun(updatedPolicy.getRun());
+                    policy.setStoppedAt(updatedPolicy.getStoppedAt());
                 });
     }
 
