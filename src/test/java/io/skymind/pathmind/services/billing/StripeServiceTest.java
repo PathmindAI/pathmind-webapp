@@ -6,6 +6,7 @@ import com.stripe.param.PaymentIntentCreateParams;
 import io.skymind.pathmind.PathmindApplicationTests;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+@Ignore
 public class StripeServiceTest extends PathmindApplicationTests
 {
 
