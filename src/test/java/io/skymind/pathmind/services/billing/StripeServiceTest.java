@@ -35,7 +35,6 @@ public class StripeServiceTest extends PathmindApplicationTests
 		paymentIntentParams.put("payment_method_types", payment_method_types);
 		paymentIntentParams.put("receipt_email", "jenny.rosen@example.com");
 
-
 		final Product prod_g2AGAGjNJIkUbv = Product.retrieve("prod_G2AGAGjNJIkUbv");
 	}
 
