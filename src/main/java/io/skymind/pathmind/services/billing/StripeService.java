@@ -46,11 +46,6 @@ public class StripeService
 		Stripe.apiKey = secretKey;
 	}
 
-	public PaymentIntent createPayment(Map<String, Object> paymentIntentParams) throws StripeException
-	{
-		return PaymentIntent.create(paymentIntentParams);
-	}
-
 	public Customer createCustomer(String email, String paymentMethod, String nameOnCard, String addressLine1, String city, String state, String postalCode) throws StripeException
 	{
 		if (customerAlreadyExists(email)) {
