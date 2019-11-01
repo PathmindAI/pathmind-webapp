@@ -44,7 +44,7 @@ steps:
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       goals: 'build-frontend'
 
-  - script: 'mvn package -Pdev'
+  - script: 'mvn package -Pproduction'
 
   - task: CopyFiles@2
     inputs:

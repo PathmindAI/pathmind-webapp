@@ -18,6 +18,7 @@ import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
@@ -37,7 +38,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @CssImport("./styles/styles.css")
-@Route(value="models", layout = MainLayout.class)
+@Route(value= Routes.MODELS_URL, layout = MainLayout.class)
 public class ModelsView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 	@Autowired

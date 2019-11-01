@@ -13,10 +13,10 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
-import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -31,7 +31,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-@Route(value="dashboard", layout = MainLayout.class)
+
+@Route(value= Routes.DASHBOARD_URL, layout = MainLayout.class)
 public class DashboardView extends PathMindDefaultView
 {
 	@Autowired
@@ -57,18 +58,16 @@ public class DashboardView extends PathMindDefaultView
 	{
 		setupDashboardGrid();
 		setupSearchBox();
-		addClassName("dashboard-view");
 
 		// BUG -> I didn't have to really investigate but it looks like we may need
 		// to do something special to get the full size content in the AppLayout component which
 		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
 		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-				new ViewSection(
-						WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-						dashboardGrid
-				),
+				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
+				dashboardGrid,
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
+
 		return gridWrapper;
 	}
 
