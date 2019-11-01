@@ -20,15 +20,6 @@ public class NotificationUtils
 	private NotificationUtils() {
 	}
 
-	// TODO -> Remove when done.
-	public static void showTodoNotification() {
-		showCenteredSimpleNotification("Todo    ", Style.Todo);
-	}
-
-	public static void showTodoNotification(String text) {
-		showCenteredSimpleNotification("Todo    : " + text, Style.Todo);
-	}
-
 	public static void showCenteredSimpleNotification(String text, Style style) {
 		Label contentLabel = new Label(text);
 		applyStyle(contentLabel, style);
@@ -54,21 +45,4 @@ public class NotificationUtils
 		notification.open();
 	}
 
-	// TODO -> CSS -> Remove and either put in CSS or just remove alltogether
-	private static void applyStyle(Label label, Style style) {
-		switch(style) {
-			case Success:
-				label.getStyle().set("color", "green");
-				return;
-			case Warn:
-				label.getStyle().set("color", "orange");
-				return;
-			case Error:
-				label.getStyle().set("color", "red");
-				return;
-			case Todo:
-				label.getStyle().set("color", "purple");
-				return;
-		}
-	}
 }
