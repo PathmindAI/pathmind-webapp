@@ -78,31 +78,38 @@ public class RescaleExecutionProvider implements ExecutionProvider {
             if (statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))) {
                 final JobStatus status = statuses.stream().filter(it -> it.getStatus().equals("Completed")).findFirst().get();
 
-                // file check that has an error message
-                Map<String, String> map = client.outputFiles(jobHandle, "1").getResults()
-                        .parallelStream()
-                        .filter(it -> it.getPath().endsWith("process_output.log"))
-                        .map(it -> {
-                            final String key = new File(it.getPath()).getParentFile().getName();
-                            final String contents = new String(client.fileContents(it.getId()));
-                            return Map.entry(key, contents);
-                        })
-                        // this is the known error message so far, todo i will revisit below after risecamp
-                        // raw error logs are https://3.basecamp.com/3684163/buckets/11875773/vaults/2132519274
-                        .filter(it ->
-                                it.getValue().contains("python3: can't open file 'rllibtrain.py': [Errno 2] No such file or directory")
-                                || it.getValue().contains("SyntaxError: invalid syntax")
-                                || it.getValue().contains("Fatal Python error: Aborted")
-                                || it.getValue().contains("Fatal Python error: Segmentation fault")
-                                || it.getValue().contains("Worker crashed during call to train()")
-                                || it.getValue().contains("java.lang.ArrayIndexOutOfBoundsException")
-                        )
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+//                // file check that has an error message
+//                Map<String, String> map = client.outputFiles(jobHandle, "1").getResults()
+//                        .parallelStream()
+//                        .filter(it -> it.getPath().endsWith("process_output.log"))
+//                        .map(it -> {
+//                            final String key = new File(it.getPath()).getParentFile().getName();
+//                            final String contents = new String(client.fileContents(it.getId()));
+//                            return Map.entry(key, contents);
+//                        })
+//                        // this is the known error message so far, todo i will revisit below after risecamp
+//                        // raw error logs are https://3.basecamp.com/3684163/buckets/11875773/vaults/2132519274
+//                        .filter(it ->
+//                                it.getValue().contains("python3: can't open file 'rllibtrain.py': [Errno 2] No such file or directory")
+//                                || it.getValue().contains("SyntaxError: invalid syntax")
+//                                || it.getValue().contains("Fatal Python error: Aborted")
+//                                || it.getValue().contains("Fatal Python error: Segmentation fault")
+//                                || it.getValue().contains("Worker crashed during call to train()")
+//                                || it.getValue().contains("java.lang.ArrayIndexOutOfBoundsException")
+//                        )
+//                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-                if (status.getStatusReason().equals("Completed successfully") && map.size() == 0) {
+                // todo this is simple test
+                List<String> errs = client.outputFiles(jobHandle, "1").getResults()
+                        .parallelStream()
+                        .filter(f -> f.getPath().endsWith("trial_error") && f.getDecryptedSize() > 0)
+                        .map(f -> new String(client.fileContents(f.getId())))
+                        .collect(Collectors.toList());
+
+                if (status.getStatusReason().equals("Completed successfully") && errs.size() == 0) {
                     return RunStatus.Completed;
                 } else {
-                    if (map.size() > 0) {
+                    if (errs.size() > 0) {
                         log.info(jobHandle + " will be considered as an error");
                     }
                     return RunStatus.Error;
@@ -188,6 +195,32 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 return client.consoleOutput(jobHandle, "1");
             } catch (Exception e1) {
                 log.debug("consoleAnytime output: " + e1.getMessage(), e1);
+                return null;
+            }
+        }
+    }
+
+    public String getFileAnytime(String jobHandle, String fileName) {
+        try {
+            return client.workingFiles(jobHandle, "1")
+                    .parallelStream()
+                    .filter(it -> it.getPath().endsWith(fileName))
+                    .findAny()
+                    .map(it -> new String(client.tail(jobHandle, "1", it.getPath())))
+                    .get();
+        } catch (Exception e) {
+            try {
+                log.debug("getFileAnytime tail: " + e.getMessage(), e);
+
+                return client.outputFiles(jobHandle, "1")
+                        .getResults()
+                        .parallelStream()
+                        .filter(it -> it.getPath().endsWith(fileName))
+                        .findAny()
+                        .map(it -> new String(client.fileContents(it.getId())))
+                        .get();
+            } catch (Exception e1) {
+                log.debug("getFileAnytime output: " + e1.getMessage(), e1);
                 return null;
             }
         }
