@@ -274,8 +274,10 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "  cd $DIR;\n" +
                         "  mkdir -p $OLDPWD/../output/$(basename `dirname $DIR`)/;\n" +
                         "  cp ../progress.csv $OLDPWD/../output/$(basename `dirname $DIR`)/; \n"+
+                        "  cp ../../*.json $OLDPWD/../output/; \n"+
                         "  zip -r $OLDPWD/../output/policy_$(basename `dirname $DIR`).zip .;\n" +
                         "  cd $OLDPWD;\n" +
+                        "  cp trial_* ../output;\n" +
                 "done"
         ));
     }
