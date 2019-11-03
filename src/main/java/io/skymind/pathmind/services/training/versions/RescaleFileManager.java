@@ -36,8 +36,10 @@ public class RescaleFileManager {
                 "FcrKm" // Anylogic 8.5.1 Base Environment: baseEnv.zip
         ));
         vTable.put(RLLib.VERSION_0_7_0, Arrays.asList(
-                "LZAENb", // conda
-                "jKjXa", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-10-15 DH version
+//                "LZAENb", // conda
+                "jniWLb", // conda TF 2.0, RAY 0.7.6
+//                "jKjXa", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-10-15 DH version
+                "OoYSOb", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-11-02 DH version
                 "fDRBHd"  // OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz
         ));
         vTable.put(PathmindHelper.VERSION_0_0_24, Arrays.asList(
