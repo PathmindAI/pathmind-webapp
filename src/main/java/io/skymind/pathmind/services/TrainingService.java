@@ -209,6 +209,7 @@ public class TrainingService {
                 spec.getBatchSizes(),
                 run.getRunType());
 
+        tempPolicy.setAlgorithmEnum(Algorithm.PPO);
         tempPolicy.setName(name);
         tempPolicy.setExternalId(name);
         tempPolicy.setRunId(run.getId());
