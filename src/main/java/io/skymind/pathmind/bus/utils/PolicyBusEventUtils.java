@@ -6,12 +6,17 @@ import io.skymind.pathmind.bus.data.PolicyUpdateBusEvent;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import reactor.core.publisher.Flux;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class PolicyBusEventUtils
 {
+	private static Logger log = LogManager.getLogger(PolicyBusEventUtils.class);
+
+
 	/**
 	 * PolicySupplier must be a supplier rather than just the value because the policy value we're comparing
 	 * against can change after the lambda has been setup.
@@ -34,7 +39,11 @@ public class PolicyBusEventUtils
 			consumer.filter(busEvent -> busEvent.getEventType().equals(BusEventType.PolicyUpdate))
 				.filter(busEvent -> experimentSupplier.get() != null)
 				.filter(busEvent -> isEventBusPolicyForSameExperiment(busEvent, experimentSupplier.get()))
-				.subscribe(busEvent -> policyConsumer.accept(((PolicyUpdateBusEvent)busEvent).getPolicy()));
+				.subscribe(busEvent -> {
+					PolicyUpdateBusEvent event = ((PolicyUpdateBusEvent)busEvent);
+					log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + event.getEventDataId() + " : " + event.getTest());
+					policyConsumer.accept(((PolicyUpdateBusEvent)busEvent).getPolicy());
+				});
 	}
 
 	// TODO -> DH -> Policy score updates also need to know about the experiment. I need this because in some cases such as the

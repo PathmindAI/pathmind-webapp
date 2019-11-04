@@ -3,12 +3,8 @@ package io.skymind.pathmind.ui.views.experiment;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
@@ -26,7 +22,6 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.*;
@@ -37,16 +32,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.UnicastProcessor;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<String> {
     private Button exportPolicyButton;
-
-    private enum ActionButtonState {
-        Start, Next, Stop
-    }
 
     private static final int EXPERIMENT_ID_SEGMENT = 0;
     private static final int POLICY_ID_SEGMENT = 1;
@@ -55,7 +45,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private Logger log = LogManager.getLogger(ExperimentView.class);
 
-    private final UnicastProcessor<PathmindBusEvent> publisher;
     private final Flux<PathmindBusEvent> consumer;
 
     private long experimentId = -1;
@@ -80,13 +69,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Autowired
 	private UserDAO userDAO;
 
-    private Button actionButton;
     private Button runFullTraining;
     private Button runDiscoveryTraining;
 
-    public ExperimentView(UnicastProcessor<PathmindBusEvent> publisher, Flux<PathmindBusEvent> consumer) {
+    public ExperimentView(Flux<PathmindBusEvent> consumer) {
         super();
-        this.publisher = publisher;
         this.consumer = consumer;
         addClassName("experiment-view");
     }
@@ -106,14 +93,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private Component getLeftPanel() {
-        trainingsListPanel = new TrainingsListPanel(consumer);
+        trainingsListPanel = new TrainingsListPanel();
 
         trainingsListPanel.addSelectionListener(selectedPolicy -> {
             policy = selectedPolicy;
             policyHighlightPanel.update(selectedPolicy);
             policyStatusDetailsPanel.update(selectedPolicy);
-            policyChartPanel.update(selectedPolicy);
-            setActionButtonValue(selectedPolicy);
+            policyChartPanel.init(selectedPolicy);
             exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
 
             RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
@@ -128,7 +114,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             }
         });
 
-        policyChartPanel = new PolicyChartPanel(consumer);
+        policyChartPanel = new PolicyChartPanel();
 
         trainingsListPanel.getSearchBox().addFilterableComponents(policyChartPanel);
 
@@ -145,23 +131,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         policyHighlightPanel = new PolicyHighlightPanel();
         policyStatusDetailsPanel = new PolicyStatusDetailsPanel();
 
-        actionButton = new Button(ActionButtonState.Start.name(), click -> handleActionButtonClicked());
-        actionButton.setVisible(false);
-
-        // TODO: Put this in the appropriate place
         runFullTraining = new Button("Start Full Run", new Image("frontend/images/start.svg", "run"), click -> {
             final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
             trainingService.startFullRun(experiment, policy);
-
-            ConfirmDialog confirmDialog = new RunConfirmDialog();
-            confirmDialog.open();
-
-            try {
-                loadData();
-                updateScreen(null);
-            } catch (InvalidDataException e) {
-                e.printStackTrace();
-            }
+            new RunConfirmDialog().open();
         });
         runFullTraining.setVisible(false);
         runFullTraining.addClassNames("large-image-btn", "run");
@@ -169,16 +142,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         runDiscoveryTraining = new Button("Start Discovery Run", new Image("frontend/images/start.svg", "run"), click -> {
             final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
             trainingService.startDiscoveryRun(experiment);
-
-            ConfirmDialog confirmDialog = new RunConfirmDialog();
-            confirmDialog.open();
-
-            try {
-                loadData();
-                updateScreen(null);
-            } catch (InvalidDataException e) {
-                e.printStackTrace();
-            }
+            new RunConfirmDialog().open();
         });
         runDiscoveryTraining.setVisible(false);
         runDiscoveryTraining.addClassNames("large-image-btn", "run");
@@ -192,32 +156,33 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         exportPolicyButton.setVisible(false);
 
         return WrapperUtils.wrapSizeFullVertical(
-                WrapperUtils.wrapWidthFullCenterHorizontal(actionButton, runDiscoveryTraining, runFullTraining),
+                WrapperUtils.wrapWidthFullCenterHorizontal(runDiscoveryTraining, runFullTraining),
                 policyHighlightPanel,
                 policyStatusDetailsPanel,
                 rewardFunctionEditor,
-                buttons);
+                buttons,
+                // DH -> Setup and implement example
+                new Button("Test Guava", click -> newFireEvent()));
     }
 
-    // TODO -> I don't fully understand the button logic, including when it's muted from just the screenshots.
-    private void setActionButtonValue(Policy policy) {
-        switch (policy.getRun().getRunTypeEnum()) {
-            case TestRun:
-                actionButton.setText("Next");
-                break;
-            case DiscoveryRun:
-                actionButton.setText("Stop");
-                break;
-            case FullRun:
-                actionButton.setText("Todo");
-                break;
-        }
+    // DH -> Setup and implement example
+    //***********************************************************************
+    private void newSubscribeToEventBus() {
+//        eventBus.subscribe(this);
     }
 
-    private void handleActionButtonClicked() {
-        NotificationUtils.showTodoNotification("Needs to be implemented");
-        // TODO -> We need to hook Paul's backend code here.
+    private void newUnsubscribeToEventBus() {
+//        eventBus.unsubscribe(this);
     }
+
+    private void newFireEvent() {
+        // eventbus.post(new PolicyUpdateEvent(experiment.getPolicies(0));
+    }
+
+    private void newConsumerEvent() {
+//        log.info("Event -> " + policyUpdateEvent.getEventDataId());
+    }
+    //***********************************************************************
 
     @Override
     protected boolean isAccessAllowedForUser() {
@@ -247,7 +212,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     @Override
-    protected void loadData() throws InvalidDataException {
+    protected void initLoadData() throws InvalidDataException {
         experiment = experimentDAO.getExperiment(experimentId);
         if (experiment == null)
             throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
@@ -255,7 +220,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     @Override
-    protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
+    protected void subscribeToEventBus() {
+        log.info("-------------------- subscribing to bus");
+        trainingsListPanel.subscribeToEventBus(consumer);
+        policyChartPanel.subscribeToEventBus(consumer);
+    }
+
+    @Override
+    protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
         experiment.getPolicies().stream()
                 .filter(p -> p.getRun().getRunTypeEnum().equals(RunType.DiscoveryRun))
                 .findAny()
@@ -263,7 +235,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         screenTitlePanel.setSubtitle(experiment.getProject().getName());
         rewardFunctionEditor.setValue(experiment.getRewardFunction());
-        policyChartPanel.update(experiment);
-        trainingsListPanel.update(experiment, policyId);
+        policyChartPanel.init(experiment);
+        trainingsListPanel.init(experiment, policyId);
     }
 }

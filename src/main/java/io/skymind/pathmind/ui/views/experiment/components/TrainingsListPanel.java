@@ -36,11 +36,7 @@ public class TrainingsListPanel extends VerticalLayout {
 
     private Experiment experiment;
 
-    private Flux<PathmindBusEvent> consumer;
-
-    public TrainingsListPanel(Flux<PathmindBusEvent> consumer) {
-        this.consumer = consumer;
-
+    public TrainingsListPanel() {
         setupGrid();
         setupSearchBox();
 
@@ -120,14 +116,16 @@ public class TrainingsListPanel extends VerticalLayout {
         return searchBox;
     }
 
-    private void subscribeToEventBus(UI ui, Flux<PathmindBusEvent> consumer) {
+    public void subscribeToEventBus(Flux<PathmindBusEvent> consumer) {
+        UI ui = UI.getCurrent();
         PolicyBusEventUtils.consumerBusEventBasedOnExperiment(
                 consumer,
-                () -> getExperiment(),
+                this::getExperiment,
                 updatedPolicy -> PushUtils.push(ui, () -> updatedGrid(updatedPolicy)));
     }
 
     private void updatedGrid(Policy updatedPolicy) {
+        log.info("*****************> upgradeGrid event : " + updatedPolicy.getId());
         experiment.getPolicies().stream()
                 .filter(policy -> policy.getId() == updatedPolicy.getId())
                 .findAny()
@@ -166,7 +164,7 @@ public class TrainingsListPanel extends VerticalLayout {
         return experiment;
     }
 
-    public void update(Experiment experiment, long defaultSelectedPolicyId) {
+    public void init(Experiment experiment, long defaultSelectedPolicyId) {
         this.experiment = experiment;
 
         grid.setDataProvider(new ListDataProvider<Policy>(experiment.getPolicies()));
@@ -179,7 +177,5 @@ public class TrainingsListPanel extends VerticalLayout {
                     .findAny()
                     .ifPresent(policy -> grid.select(policy));
         }
-
-        subscribeToEventBus(UI.getCurrent(), consumer);
     }
 }

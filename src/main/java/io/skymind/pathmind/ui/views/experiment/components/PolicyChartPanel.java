@@ -27,19 +27,17 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
     private Experiment experiment;
     private Policy policy;
 
-    private Flux<PathmindBusEvent> consumer;
-
-    public PolicyChartPanel(Flux<PathmindBusEvent> consumer) {
-        this.consumer = consumer;
-
+    public PolicyChartPanel() {
         setupChart();
+        setSizeFull();
         add(chart);
     }
 
-    private void subscribeToEventBus(UI ui, Flux<PathmindBusEvent> consumer) {
+    public void subscribeToEventBus(Flux<PathmindBusEvent> consumer) {
+        UI ui = UI.getCurrent();
         PolicyBusEventUtils.consumerBusEventBasedOnExperiment(
                 consumer,
-                () -> getExperiment(),
+                this::getExperiment,
                 updatedPolicy -> PushUtils.push(ui, () -> updateData(updatedPolicy)));
     }
 
@@ -47,7 +45,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
         updatedPolicyChart(updatedPolicy);
         // If it's an initial run the policy may be null.
         if (policy != null && policy.getId() == updatedPolicy.getId())
-            update(updatedPolicy);
+            init(updatedPolicy);
     }
 
     private void updatedPolicyChart(Policy updatedPolicy) {
@@ -90,10 +88,9 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
         return experiment;
     }
 
-    public void update(Experiment experiment) {
+    public void init(Experiment experiment) {
         this.experiment = experiment;
         updateChart(experiment.getPolicies());
-        subscribeToEventBus(UI.getCurrent(), consumer);
     }
 
     private void updateChart(List<Policy> policies) {
@@ -111,7 +108,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
     public void highlightPolicy(Policy policy) {
     }
 
-    public void update(Policy policy) {
+    public void init(Policy policy) {
         this.policy = policy;
     }
 

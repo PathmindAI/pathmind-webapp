@@ -82,7 +82,7 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 		return userDAO.isUserAllowedAccessToExperiment(experimentId);
 	}
 
-	protected void updateScreen(BeforeEnterEvent event) {
+	protected void initScreen(BeforeEnterEvent event) {
 		// TODO -> Need to load experiments for project due to new changes in the data model.
 //		project = projectDAO.getProjectForExperiment(experimentId);
 		consoleTextArea.setValue(ConsoleService.getConsoleLogForRun(experimentId));
