@@ -26,6 +26,15 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     private final RescaleRestApiClient client;
     private final RescaleMetaDataService metaDataService;
     private final RescaleFileManager fileManager;
+    private static final List<String> KNOWN_ERROR_MSGS = new ArrayList<>();
+
+    static {
+        KNOWN_ERROR_MSGS.add("python3: can't open file 'rllibtrain.py': [Errno 2] No such file or directory");
+        KNOWN_ERROR_MSGS.add("SyntaxError: invalid syntax");
+        KNOWN_ERROR_MSGS.add("Fatal Python error: Segmentation fault");
+        KNOWN_ERROR_MSGS.add("Worker crashed during call to train()");
+        KNOWN_ERROR_MSGS.add("java.lang.ArrayIndexOutOfBoundsException");
+    }
 
     public RescaleExecutionProvider(RescaleRestApiClient client, RescaleMetaDataService metaDataService) {
         this.client = client;
@@ -57,6 +66,9 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
         // Clean up working directory, so only the required files stay around for automatic saving by rescale
         cleanup(job, instructions);
+
+        // Check errors
+        checkErrors(instructions);
 
 
         // Start actual execution of the job
@@ -408,6 +420,12 @@ public class RescaleExecutionProvider implements ExecutionProvider {
             default:
                 throw new IllegalArgumentException("Unsupported Pathmind Helper Version: " + pathmindHelperVersion);
         }
+    }
+
+    private void checkErrors(List<String> instructions) {
+        instructions.addAll(KNOWN_ERROR_MSGS.stream()
+                .map(msg -> "grep -m 2 \"" + msg + "\" process_output.log >> errors.log")
+                .collect(Collectors.toList()));
     }
 
 
