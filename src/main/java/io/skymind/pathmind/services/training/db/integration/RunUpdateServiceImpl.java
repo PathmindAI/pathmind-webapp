@@ -33,6 +33,9 @@ public class RunUpdateServiceImpl implements RunUpdateService {
     private final ObjectMapper mapper;
     private final UnicastProcessor<PathmindBusEvent> publisher;
 
+    private final static String lrPatternStr = "lr=.*,";
+    private final static Pattern lrPattern = Pattern.compile(lrPatternStr);
+
     public RunUpdateServiceImpl(DSLContext ctx, ObjectMapper mapper, UnicastProcessor<PathmindBusEvent> publisher) {
         this.ctx = ctx;
         this.mapper = mapper;
@@ -82,8 +85,6 @@ public class RunUpdateServiceImpl implements RunUpdateService {
             // add run type and "TEMP"
             String policyTempName = progress.getId().substring(0, progress.getId().length() - 27) + run.getRunType() + "TEMP";
 
-            String lrPatternStr = "lr=.*,";
-            Pattern lrPattern = Pattern.compile(lrPatternStr);
             Matcher matcher = lrPattern.matcher(policyTempName);
 
             if (matcher.find()) {
