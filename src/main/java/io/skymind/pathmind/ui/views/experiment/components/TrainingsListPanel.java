@@ -187,9 +187,9 @@ public class TrainingsListPanel extends VerticalLayout {
     
     public void selectPolicyWithId(String policyId) {
     	experiment.getPolicies().stream()
-        .filter(policy -> Long.toString(policy.getId()).equals(policyId))
-        .findAny()
-        .ifPresent(
+        	.filter(policy -> Long.toString(policy.getId()).equals(policyId))
+        	.findAny()
+        	.ifPresent(
                 policy -> {
                 	grid.select(policy);
                 });
