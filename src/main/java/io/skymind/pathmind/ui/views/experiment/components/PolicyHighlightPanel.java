@@ -5,7 +5,6 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
-import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 
 public class PolicyHighlightPanel extends VerticalLayout
 {
@@ -30,7 +29,7 @@ public class PolicyHighlightPanel extends VerticalLayout
 
 	public void update(Policy policy) {
 		policyLabel.setText(PolicyUtils.getParsedPolicyName(policy));
-		scoreLabel.setText(PolicyUtils.getLastScore(policy));
-		algorithmLabel.setText(ProgressInterpreter.interpretKey(policy.getName()).getAlgorithm());
+		scoreLabel.setText(PolicyUtils.getLastScoreString(policy));
+		algorithmLabel.setText(policy.getAlgorithmEnum().name());
 	}
 }

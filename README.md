@@ -27,15 +27,12 @@ The required environment variable looks something like this:
 
 ```
 DB_URL=jdbc:postgresql://localhost/pathmind?user=skynet&password=skynetskynet123
-PATHMIND_DEV_MODE=true
 ```
 
 For running the application you set it up in your `Run/Debug Configuration` when starting the application from inside
 Intellij. For maven commands (also to be run from the IntelliJ) you have to set it also by going to
 `File -> Settings -> Build, Execution, Deployment -> Build Tools -> Maven -> Runner` and set it there in the
 `Environment variables` field.
-
-Pathmind Dev Mode is a temporary workaround for a [Vaadin 14 npm mode bug with Spring Security](https://github.com/SkymindIO/pathmind-webapp/commit/9c09e1aa9cf903a52098f0371d05c7ea73f61e76).
 
 ## JOOQ
 

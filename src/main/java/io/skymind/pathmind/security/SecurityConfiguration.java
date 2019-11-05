@@ -36,9 +36,6 @@ import java.util.Map;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
 
-    @Value("${pathmind.development.mode}")
-    private boolean isDevelopmentMode;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -151,13 +148,5 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 // (production mode) static resources
                 "/frontend-es5/**", "/frontend-es6/**");
-
-        // workaround for this issue: https://github.com/vaadin/flow/issues/6471
-        // this is only needed in nmp development mode
-		if (isDevelopmentMode) {
-            web.ignoring().antMatchers(
-                    "/error"
-            );
-        }
     }
 }

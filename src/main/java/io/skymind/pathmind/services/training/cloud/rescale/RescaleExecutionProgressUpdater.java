@@ -32,47 +32,50 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
     }
 
     @Override
-    public void update() {
+    public void update()
+    {
         final List<Long> runIds = updateService.getExecutingRuns();
+        final List<String> finishedPolicyNamesFromDB = updateService.getStoppedPolicies(runIds)
+                .stream()
+                .map(p -> p.getName())
+                .collect(Collectors.toList());
 
-        runIds.parallelStream().forEach(runId -> {
+        runIds.parallelStream().forEach(runId ->
+        {
             final String rescaleJobId = metaDataService.get(metaDataService.runIdKey(runId), String.class);
 
-            if(rescaleJobId != null){
-                final RunStatus status = provider.status(rescaleJobId);
-                final Map<String, String> rawProgress = provider.progress(rescaleJobId);
+            if(rescaleJobId == null) {
+                log.error("Run {} marked as executing but no rescale run id found for it.", runId);
+                return;
+            }
 
-                final List<String> finishedPolicyNamesFromDB = updateService.getStoppedPolicies(runId)
-                        .stream()
-                        .map(p -> p.getName())
-                        .collect(Collectors.toList());
+            final RunStatus status = provider.status(rescaleJobId);
+            final Map<String, String> rawProgress = provider.progress(rescaleJobId);
 
-                final List<Progress> progresses = rawProgress.entrySet().stream()
-                        .filter(e -> !finishedPolicyNamesFromDB.contains(e.getKey()))
-                        .map(ProgressInterpreter::interpret)
-                        .collect(Collectors.toList());
+            final List<Progress> progresses = rawProgress.entrySet().stream()
+                    .filter(e -> !finishedPolicyNamesFromDB.contains(e.getKey()))
+                    .map(ProgressInterpreter::interpret)
+                    .collect(Collectors.toList());
 
-                final List<String> finishedPolicyNamesFromRescale = getTerminatedPolices(rescaleJobId);
+            final List<String> finishedPolicyNamesFromRescale = getTerminatedPolices(rescaleJobId);
 
-                for (Progress progress : progresses) {
-                    if (progress.getStoppedAt() == null) {
-                        for (String finishedPolicy : finishedPolicyNamesFromRescale) {
-                            if (progress.getId().contains(finishedPolicy)) {
-                                progress.setStoppedAt(LocalDateTime.now());
-                            }
+            for (Progress progress : progresses) {
+                if (progress.getStoppedAt() == null) {
+                    for (String finishedPolicy : finishedPolicyNamesFromRescale) {
+                        if (progress.getId().contains(finishedPolicy)) {
+                            progress.setStoppedAt(LocalDateTime.now());
                         }
                     }
                 }
+            }
 
-                updateService.updateRun(runId, status, progresses);
-                if(status == RunStatus.Completed){
-                    for (String finishPolicyName : finishedPolicyNamesFromDB) {
-                        final byte[] policy = provider.policy(rescaleJobId, finishPolicyName);
-                        updateService.savePolicyFile(runId, finishPolicyName, policy);
-                    }
+            updateService.updateRun(runId, status, progresses);
+
+            if(status == RunStatus.Completed){
+                for (String finishPolicyName : finishedPolicyNamesFromDB) {
+                    final byte[] policy = provider.policy(rescaleJobId, finishPolicyName);
+                    updateService.savePolicyFile(runId, finishPolicyName, policy);
                 }
-            }else{
-                log.error("Run {} marked as executing but no rescale run id found for it.", runId);
             }
         });
     }
