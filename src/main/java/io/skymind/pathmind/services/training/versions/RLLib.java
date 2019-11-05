@@ -1,5 +1,5 @@
 package io.skymind.pathmind.services.training.versions;
 
-public enum RLLib {
+public enum RLLib implements VersionEnum{
     VERSION_0_7_0
 }

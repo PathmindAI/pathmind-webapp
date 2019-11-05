@@ -18,7 +18,9 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
@@ -38,7 +40,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
 
 @CssImport("./styles/styles.css")
-@Route(value = "experiment", layout = MainLayout.class)
+@Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<String> {
     private Button exportPolicyButton;
 
@@ -75,6 +77,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private PolicyDAO policyDAO;
     @Autowired
     private TrainingService trainingService;
+	@Autowired
+	private UserDAO userDAO;
 
     private Button actionButton;
     private Button runFullTraining;
@@ -162,7 +166,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         runFullTraining.setVisible(false);
         runFullTraining.addClassNames("large-image-btn", "run");
 
-        runDiscoveryTraining = new Button("Start Discovery Run", new Icon(VaadinIcon.PLAY), click -> {
+        runDiscoveryTraining = new Button("Start Discovery Run", new Image("frontend/images/start.svg", "run"), click -> {
             final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
             trainingService.startDiscoveryRun(experiment);
 
@@ -177,6 +181,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             }
         });
         runDiscoveryTraining.setVisible(false);
+        runDiscoveryTraining.addClassNames("large-image-btn", "run");
 
 
         final HorizontalLayout buttons = WrapperUtils.wrapWidthFullCenterHorizontal(
@@ -212,6 +217,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void handleActionButtonClicked() {
         NotificationUtils.showTodoNotification("Needs to be implemented");
         // TODO -> We need to hook Paul's backend code here.
+    }
+
+    @Override
+    protected boolean isAccessAllowedForUser() {
+      return userDAO.isUserAllowedAccessToExperiment(experimentId);
     }
 
     /**

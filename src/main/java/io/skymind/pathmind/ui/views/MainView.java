@@ -6,7 +6,9 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 
-@Route("/")
+import static io.skymind.pathmind.security.Routes.ROOT_URL;
+
+@Route(ROOT_URL)
 public class MainView extends Composite<Div> implements BeforeEnterObserver
 {
 	@Override

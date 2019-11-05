@@ -1,11 +1,14 @@
 :host [part="navbar"] {
-    padding: 8px;
+  padding: 8px;
+}
+:host > [content] {
+  background: var(--pm-app-bg-color);
 }
 
 :host [part="navbar"]::before {
-    content: none;
+  content: none;
 }
 
 :host slot[name="menu"] {
-    align-content: flex-end;
+  align-content: flex-end;
 }

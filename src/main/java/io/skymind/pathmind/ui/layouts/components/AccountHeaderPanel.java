@@ -1,56 +1,81 @@
 package io.skymind.pathmind.ui.layouts.components;
 
-import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.server.VaadinServlet;
 
-import io.skymind.pathmind.security.PathmindUserDetails;
-import io.skymind.pathmind.security.SecurityUtils;
+import io.skymind.pathmind.bus.PathmindBusEvent;
+import io.skymind.pathmind.bus.utils.UserBusEventUtils;
+import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.account.AccountView;
+import reactor.core.Disposable;
+import reactor.core.publisher.Flux;
 import org.apache.commons.lang3.StringUtils;
 
 public class AccountHeaderPanel extends HorizontalLayout
 {
-	public AccountHeaderPanel() {
-		PathmindUserDetails user = SecurityUtils.getUser();
+	private Span usernameLabel = new Span();
+	private PathmindUser user;
+
+	private Disposable subscription;
+
+	public AccountHeaderPanel(PathmindUser user, Flux<PathmindBusEvent> consumer) {
+		this.user = user;
+		addClassName("nav-account-links");
 
 		MenuBar menuBar = new MenuBar();
-		menuBar.setThemeName("tertiary");
 		add(menuBar);
+		menuBar.setThemeName("tertiary");
+		menuBar.addClassName("account-menu");
 
-		String username = StringUtils.isBlank(user.getName()) ? user.getEmail() : user.getName();
-		MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER), username));
-		account.getElement().getStyle().set("color", "var(--lumo-header-text-color)");
-		account.getSubMenu().addItem( new Span("Account"), e -> UI.getCurrent().navigate(AccountView.class));
-		account.getSubMenu().addItem(createLogoutLink(new Span( "Logout")));
+		MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER), user));
+		account.getSubMenu().addItem("Account", e -> UI.getCurrent().navigate(AccountView.class));
+		account.getSubMenu().addItem("Logout", e ->
+				UI.getCurrent().getPage().executeJavaScript("location.assign('/logout')"));
 
-		getElement().getStyle().set("margin-left", "auto");
-		getElement().getStyle().set("padding-right", "20px");
-		setId("nav-account-links");
+		subscription = subscribeToEventBus(consumer);
 	}
 
-	private HorizontalLayout createItem(Icon icon, String text) {
-		Span label = new Span(text);
-		label.getStyle().set("padding-top", "5px");
+	@Override
+	protected void onDetach(DetachEvent detachEvent) {
+		cancelSubscription();
+	}
 
-		HorizontalLayout hl = WrapperUtils.wrapWidthFullHorizontal(icon, label);
-		hl.getStyle().set("color", "var(--lumo-header-text-color)");
+	private void cancelSubscription() {
+		if (subscription != null && !subscription.isDisposed()) {
+			subscription.dispose();
+		}
+	}
+
+	private HorizontalLayout createItem(Icon icon, PathmindUser user) {
+        updateData(user);
+		HorizontalLayout hl = WrapperUtils.wrapWidthFullHorizontal(icon, usernameLabel);
 		return hl;
 	}
 
-	private Anchor createLogoutLink(Component hl) {
-		final String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
-		Anchor logoutLink = new Anchor(contextPath + "/logout");
-		logoutLink.getStyle().set("color", "var(--lumo-header-text-color)");
-		logoutLink.add(hl);
-		return logoutLink;
+	private Disposable subscribeToEventBus(Flux<PathmindBusEvent> consumer) {
+		 return UserBusEventUtils.consumerBusEventBasedOnUserUpdate(
+				consumer, () -> getUser(), pathmindUser -> PushUtils.push(UI.getCurrent(), () -> updateData(pathmindUser)));
+	}
+
+	public PathmindUser getUser() {
+		return user;
+	}
+
+	private void updateData(PathmindUser pathmindUser) {
+		if (usernameLabel != null) {
+			usernameLabel.setText(getUsername(pathmindUser));
+		}
+	}
+
+	private String getUsername(PathmindUser user){
+		return StringUtils.isBlank(user.getName()) ? user.getEmail() : user.getName();
 	}
 }

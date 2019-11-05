@@ -6,6 +6,7 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -13,6 +14,7 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
@@ -32,7 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @CssImport("./styles/styles.css")
-@Route(value="projects", layout = MainLayout.class)
+@Route(value= Routes.PROJECTS_URL, layout = MainLayout.class)
 public class ProjectsView extends PathMindDefaultView
 {
 	@Autowired
@@ -41,6 +43,8 @@ public class ProjectsView extends PathMindDefaultView
 	private List<Project> projects;
 	private Grid<Project> projectGrid;
 
+	private ArchivesTabPanel archivesTabPanel;
+
 	public ProjectsView() {
 		super();
 	}
@@ -48,11 +52,13 @@ public class ProjectsView extends PathMindDefaultView
 	protected Component getMainContent()
 	{
 		setupProjectGrid();
+		setupTabbedPanel();
+
 		addClassName("projects-view");
 
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-					getTabbedPanel(),
-				new ViewSection(
+					archivesTabPanel,
+					new ViewSection(
 						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
 					projectGrid
 				),
@@ -65,8 +71,8 @@ public class ProjectsView extends PathMindDefaultView
 		return new SearchBox<Project>(projectGrid, new ProjectFilter());
 	}
 
-	private ArchivesTabPanel getTabbedPanel() {
-		return new ArchivesTabPanel<Project>(
+	private void setupTabbedPanel() {
+		archivesTabPanel = new ArchivesTabPanel<Project>(
 				"Projects",
 				projectGrid,
 				this::getProjects,
@@ -108,6 +114,11 @@ public class ProjectsView extends PathMindDefaultView
 	}
 
 	@Override
+	protected boolean isAccessAllowedForUser() {
+		// Not needed since the loadData loads the data based on the user's id.
+		return true;
+	}
+	@Override
 	protected void loadData() throws InvalidDataException {
 		projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId());
 		if(projects == null || projects.isEmpty()) {
@@ -120,5 +131,6 @@ public class ProjectsView extends PathMindDefaultView
 	protected void updateScreen(BeforeEnterEvent event)
 	{
 		projectGrid.setItems(projects);
+		archivesTabPanel.initData();
 	}
 }

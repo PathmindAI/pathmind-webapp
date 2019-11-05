@@ -21,6 +21,7 @@ public class PathmindUser
 	private LocalDateTime deleteAt;
 	private LocalDateTime emailVerifiedAt;
 	private UUID emailVerificationToken;
+	private LocalDateTime passwordResetSendAt;
 
 	private List<Project> projects;
 
@@ -80,6 +81,7 @@ public class PathmindUser
 
 	public void setFirstname(String firstname) {
 		this.firstname = firstname;
+		updateName();
 	}
 
 	public String getLastname() {
@@ -88,6 +90,12 @@ public class PathmindUser
 
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
+		updateName();
+	}
+
+	private void updateName() {
+		name = firstname != null ? firstname : "";
+		name += lastname != null ? " " + lastname : "";
 	}
 
 	public String getAddress() {
@@ -162,5 +170,12 @@ public class PathmindUser
 		this.emailVerificationToken = emailVerificationToken;
 	}
 
+	public LocalDateTime getPasswordResetSendAt() {
+		return passwordResetSendAt;
+	}
+
+	public void setPasswordResetSendAt(LocalDateTime passwordResetSendAt) {
+		this.passwordResetSendAt = passwordResetSendAt;
+	}
 }
 

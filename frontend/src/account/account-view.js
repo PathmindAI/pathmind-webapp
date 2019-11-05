@@ -8,72 +8,17 @@ import "@vaadin/vaadin-ordered-layout/src/vaadin-vertical-layout.js";
 class AccountView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles">
-        :host {
-          display: block;
-          padding: 40px;
-        }
-        .info {
-          color: #696969;
-        }
-
-        #account-content {
-          margin-top: 5px;
-          background: #fff;
-          border-radius: var(--lumo-border-radius);
-          padding: 30px 40px;
-        }
-
-        .block {
-          justify-content: space-between;
-        }
-
-        .border-top {
-          border-top: 1px solid #f2f2f2;
-          padding-top: 10px;
-        }
-
-        vaadin-button {
-          width: 120px;
-        }
-
-        .title {
-          font-weight: 700;
-        }
-
-        .data {
-          padding-bottom: 30px;
-        }
-
-        .support-cont {
-          text-align: center;
-        }
-        .support {
-          margin: auto;
-          display: inline-block;
-          color: #696969;
-          padding-top: 10px;
-        }
-
-        .content {
-          max-width: 500px;
-          margin-top: 20px;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
+      <style include="shared-styles pathmind-dialog-view">
       </style>
+      <div id="header" style="width: 100%;"></div>
       <div class="content">
         <vaadin-tabs>
           <vaadin-tab>
             Account Information
           </vaadin-tab>
         </vaadin-tabs>
-        <!-- <img src="/frontend/images/pathmind-logo.png">
-      <img src="frontend/images/pathmind-logo.png">
-      <img src="images/pathmind-logo.png"> -->
-        <vaadin-vertical-layout style="width: 100%;" id="account-content">
+
+        <vaadin-vertical-layout style="width: 100%;" class="inner-content">
           <vaadin-horizontal-layout style="width: 100%;" class="block">
             <vaadin-vertical-layout class="info">
               <div class="title">User Email</div>
@@ -125,7 +70,7 @@ class AccountView extends PolymerElement {
           </vaadin-horizontal-layout>
         </vaadin-vertical-layout>
         <div class="support-cont"></div>
-        <a class="support" href="/support">Contact Support</a>
+        <a class="support" href="{{contactLink}}">Contact Support</a>
       </div>
     `;
   }

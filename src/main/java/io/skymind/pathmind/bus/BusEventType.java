@@ -4,5 +4,6 @@ public enum BusEventType
 {
 	ProjectUpdate,
 	ExperimentUpdate,
-	PolicyUpdate
+	PolicyUpdate,
+	UserUpdate
 }

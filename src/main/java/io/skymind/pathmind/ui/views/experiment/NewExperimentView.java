@@ -22,7 +22,10 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
+import io.skymind.pathmind.mock.MockDefaultValues;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -32,6 +35,7 @@ import io.skymind.pathmind.ui.utils.*;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @CssImport("./styles/styles.css")
-@Route(value = "newExperiment", layout = MainLayout.class)
+@Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
     private static final double DEFAULT_SPLIT_PANE_RATIO = 60;
 
@@ -61,9 +65,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Autowired
     private ExperimentDAO experimentDAO;
-
     @Autowired
     private TrainingService trainingService;
+	@Autowired
+	private UserDAO userDAO;
 
     private Binder<Experiment> binder;
 
@@ -171,6 +176,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 //					});
 //				});
 //		startDiscoveryButton.setIconAfterText(true);
+
         return WrapperUtils.wrapWidthFullCenterVertical(startRunButton);
     }
 
@@ -229,6 +235,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         });
     }
 
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return userDAO.isUserAllowedAccessToExperiment(experimentId);
+	}
+
     @Override
     public void setParameter(BeforeEvent event, Long experimentId) {
         this.experimentId = experimentId;
@@ -237,6 +248,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected void loadData() throws InvalidDataException {
         experiment = experimentDAO.getExperiment(experimentId);
+		if(MockDefaultValues.isDebugAccelerate() && StringUtils.isEmpty(experiment.getRewardFunction()))
+			experiment.setRewardFunction(MockDefaultValues.NEW_EXPERIMENT_REWARD_FUNCTION);
         if (experiment == null)
             throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
     }

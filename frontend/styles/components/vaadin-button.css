@@ -38,3 +38,7 @@
 :host(.large-image-btn.stop) {
    color: var(--pm-danger-color);
 }
+
+:host([part="vaadin-login-submit"]) {
+   margin-top: 50px !important;
+}

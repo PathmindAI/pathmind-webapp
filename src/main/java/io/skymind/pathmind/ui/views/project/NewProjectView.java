@@ -13,6 +13,7 @@ import io.skymind.pathmind.data.utils.ModelUtils;
 import io.skymind.pathmind.data.utils.ProjectUtils;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.security.PathmindUserDetails;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
@@ -34,7 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @CssImport("./styles/styles.css")
-@Route(value = "newProject", layout = MainLayout.class)
+@Route(value = Routes.NEW_PROJECT, layout = MainLayout.class)
 public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 {
 
@@ -91,6 +92,9 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 				pathminderHelperWizardPanel,
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel);
+
+		// This is only used in case we setup MockDefaultValues through ProjectUtils above.
+		projectBinder.readBean(project);
 
 		setVisibleWizardPanel(createProjectPanel);
 
@@ -183,5 +187,10 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 			modelBinder.readBean(model);
 			statusPanel.setModelDetails();
 		});
+	}
+
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return true;
 	}
 }

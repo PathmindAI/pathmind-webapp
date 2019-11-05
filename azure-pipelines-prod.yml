@@ -8,7 +8,7 @@ variables:
   MAVEN_OPTS: '-Xmx1072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
 
 trigger:
-  - dev
+  - master
 
 pool:
   vmImage: 'Ubuntu-16.04'
@@ -27,8 +27,6 @@ steps:
       workingDir: '$(System.DefaultWorkingDirectory)'
       command: 'install'
 
-
-
   - task: CacheBeta@0
     inputs:
       key: maven | **/pom.xml
@@ -46,7 +44,7 @@ steps:
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       goals: 'build-frontend'
 
-  - script: 'mvn package -Pdev'
+  - script: 'mvn package -Pproduction'
 
   - task: CopyFiles@2
     inputs:

@@ -27,16 +27,6 @@ steps:
       workingDir: '$(System.DefaultWorkingDirectory)'
       command: 'install'
 
-
-  #- task: Npm@1 checking
-  #  inputs:
-  #    command: 'install'
-  #    customRegistry: 'useFeed'
-  #    customFeed: '2b53e450-1a97-4896-8dfa-eeae9c95711e'
-
-  #- script: npm install
-
-
   - task: CacheBeta@0
     inputs:
       key: maven | **/pom.xml
@@ -54,7 +44,7 @@ steps:
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       goals: 'build-frontend'
 
-  - script: 'mvn package -Pdev'
+  - script: 'mvn package -Pproduction'
 
   - task: CopyFiles@2
     inputs:
