@@ -20,6 +20,7 @@ import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.components.FilterableComponent;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import reactor.core.publisher.Flux;
@@ -68,7 +69,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
                 .ifPresentOrElse(
                         series -> {
                             ListSeries listSeries = ((ListSeries) series);
-                            listSeries.setData(updatedPolicy.getScores());
+                            listSeries.setData(PolicyUtils.getMeanScores(updatedPolicy));
 
                             if (!series.getName().equals(updatedPolicy.getName())) {
                                 listSeries.setName(updatedPolicy.getName());
@@ -108,7 +109,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
     }
 
     private void addPolicyToChart(Policy policy) {
-        ListSeries listSeries = new ListSeries(policy.getName(), policy.getScores());
+        ListSeries listSeries = new ListSeries(policy.getName(), PolicyUtils.getMeanScores(policy));
         listSeries.setId(Long.toString(policy.getId()));
         chart.getConfiguration().addSeries(listSeries);
     }
