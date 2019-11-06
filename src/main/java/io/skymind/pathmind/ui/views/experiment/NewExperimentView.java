@@ -135,10 +135,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         tipsTextArea = new TextArea("Tips");
         tipsTextArea.setSizeFull();
         tipsTextArea.setReadOnly(true);
-        tipsTextArea.setValue("There are two \"general purpose\" reward functions:\n\n" +
-                "1. 'reward = after[0] - before[0];'\n" +
-                "2. 'reward = before[0] - after[0];'\n\n" +
-                "The first is used when you want to maximize something, the second when you want to minimize something."
+        tipsTextArea.setValue(
+                "1. The \"after\" variable is used to retrieve the observation value after an action is performed. The \"before\" variable is used to retrieve the observation value before an action is performed. So if our observation value needs to be maximized, we can write\n" +
+                "reward= after[0]- before[0];\n" +
+                "\n" +
+                "2. Weights can also be added to the reward calculation. In this case, if a condition is satisfied, then the learning agent is rewarded a score of 5 otherwise it gets a zero.\n" +
+                "reward = after[0] > before[0] ? 5 : 0;\n" +
+                "\n" +
+                "3. For multiple lines, the reward variable can be summed or subtracted. The reward function is calculated between every two actions.\n" +
+                "reward = after[0] - before[0];\n" +
+                "reward += after[1] > before[1] ? 5 : 0;\n" +
+                "reward -= after[2] - before[2];"
         );
 
         return WrapperUtils.wrapSizeFullVertical(
