@@ -47,8 +47,8 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
                 return;
             }
 
-            final RunStatus status = provider.status(rescaleJobId);
-            final Map<String, String> rawProgress = provider.progress(rescaleJobId);
+            final RunStatus jobStatus = provider.status(rescaleJobId);
+            final Map<String, String> rawProgress = provider.progress(rescaleJobId, jobStatus);
 
             final List<Progress> progresses = rawProgress.entrySet().stream()
                     .filter(e -> !finishedPolicyNamesFromDB.contains(e.getKey()))
@@ -67,10 +67,12 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
                 }
             }
 
-            updateService.updateRun(runId, status, progresses);
+            updateService.updateRun(runId, jobStatus, progresses);
 
-            if(status == RunStatus.Completed){
+            if(jobStatus == RunStatus.Completed){
                 for (String finishPolicyName : finishedPolicyNamesFromDB) {
+                    // todo make saving to enum or static final variable
+                    updateService.savePolicyFile(runId, finishPolicyName, "saving".getBytes());
                     final byte[] policy = provider.policy(rescaleJobId, finishPolicyName);
                     updateService.savePolicyFile(runId, finishPolicyName, policy);
                 }

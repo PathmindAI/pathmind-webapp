@@ -124,6 +124,11 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     @Override
     public Map<String, String> progress(String jobHandle) {
         final RunStatus runStatus = status(jobHandle);
+        return progress(jobHandle, runStatus);
+    }
+
+    @Override
+    public Map<String, String> progress(String jobHandle, RunStatus runStatus) {
         if (runStatus.equals(RunStatus.Completed)) {
             // Job is done, we have to look at finished files
             return client.outputFiles(jobHandle, "1").getResults()
