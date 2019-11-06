@@ -29,6 +29,9 @@ Vagrant.configure("2") do |config|
 
     echo "-------------------- Setting Env Vars"
     sudo echo "export DB_URL=jdbc:postgresql://localhost/pathmind?user=skynet\\&password=skynetskynet123" > /etc/profile.d/pathmindvar.sh
+
+    echo "-------------------- Setting up .bash_profile"
+    sudo echo "cd /vagrant" > /home/vagrant/.bash_profile
 SHELL
     
 end
