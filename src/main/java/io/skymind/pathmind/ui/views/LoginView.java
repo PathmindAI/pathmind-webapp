@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
-import java.util.UUID;
 
 @Route(Routes.LOGIN_URL)
 @Theme(Lumo.class)
@@ -109,10 +108,10 @@ public class LoginView extends HorizontalLayout
 			PathmindUser user = userService.findByEmailIgnoreCase(email);
 			if (user != null) {
 				emailNotificationService.sendVerificationEmail(user);
-				NotificationUtils.showTopRightInlineNotification("Email verification was sent to your email.",
+				NotificationUtils.showNotification("Email verification was sent to your email.",
 						NotificationVariant.LUMO_SUCCESS);
 			} else {
-				NotificationUtils.showTopRightInlineNotification("Email: " + email + " is not found. Please try to login again.",
+				NotificationUtils.showNotification("Email: " + email + " was not found. Please try to login again.",
 						NotificationVariant.LUMO_ERROR);
 			}
 		});
