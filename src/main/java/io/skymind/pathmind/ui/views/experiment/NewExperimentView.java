@@ -5,12 +5,12 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -221,17 +221,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private void handleSaveDraftClicked() {
         ExceptionWrapperUtils.handleButtonClicked(() ->
         {
-            // TODO -> Case #78 -> How do we validate the Reward Function?
-            NotificationUtils.showTodoNotification("Case #78 -> How do we validate the Reward Function?\n " +
-                    "https://github.com/SkymindIO/pathmind-webapp/issues/78");
             if (!FormUtils.isValidForm(binder, experiment))
                 return;
 
-            // TODO -> Case #81 -> What exactly happens when we save?
-            NotificationUtils.showTodoNotification("Case #81 -> What exactly happens when we save?\n" +
-                    "https://github.com/SkymindIO/pathmind-webapp/issues/81");
             experimentDAO.updateRewardFunction(experiment);
-            NotificationUtils.showCenteredSimpleNotification("Draft successfully saved", NotificationUtils.Style.Success);
+            NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
         });
     }
 
