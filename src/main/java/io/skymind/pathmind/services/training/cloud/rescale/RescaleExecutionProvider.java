@@ -159,17 +159,11 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     @Override
     public byte[] policy(String jobHandle, String trainingRun) {
-        final RunStatus runStatus = status(jobHandle);
-
-        if (runStatus.equals(RunStatus.Completed)) {
-            return client.outputFiles(jobHandle, "1").getResults()
-                    .stream()
-                    .filter(it -> it.getPath().endsWith("policy_" + trainingRun + ".zip"))
-                    .map(it -> client.fileContents(it.getId()))
-                    .findFirst().orElseGet(() -> null);
-        }
-
-        return null;
+        return client.outputFiles(jobHandle, "1").getResults()
+                .stream()
+                .filter(it -> it.getPath().endsWith("policy_" + trainingRun + ".zip"))
+                .map(it -> client.fileContents(it.getId()))
+                .findFirst().orElseGet(() -> null);
     }
 
     @Override
