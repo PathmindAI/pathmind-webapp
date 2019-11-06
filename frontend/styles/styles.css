@@ -42,11 +42,14 @@ html {
     --lumo-border-radius: 6px;
 }
 
-
-
 #nav-main-links, #nav-main-links a, .nav-account-links a {
     color: var(--lumo-body-text-color);
     line-height: 31px;
+}
+
+#nav-main-links a[highlight] {
+    color: var(--pm-primary-color);
+	font-weight: bold;    
 }
 
 .nav-account-links {
