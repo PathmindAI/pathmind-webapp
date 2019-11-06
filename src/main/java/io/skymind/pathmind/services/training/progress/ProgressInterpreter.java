@@ -17,6 +17,7 @@ import java.util.*;
 public class ProgressInterpreter {
 
     private static Logger log = LogManager.getLogger(ProgressInterpreter.class);
+    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss");
 
     public static Progress interpretKey(String keyString) {
         final Progress progress = new Progress();
@@ -69,7 +70,7 @@ public class ProgressInterpreter {
 
         try {
             final String dateTime = buffer.toString().substring(0, 19);
-            final LocalDateTime utcTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss"));
+            final LocalDateTime utcTime = LocalDateTime.parse(dateTime, dateFormat);
             final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();
             progress.setStartedAt(time);
         } catch (Exception e) {
