@@ -32,6 +32,7 @@ Vagrant.configure("2") do |config|
 
     echo "-------------------- Setting up .bash_profile"
     sudo echo "cd /vagrant" > /home/vagrant/.bash_profile
+
 SHELL
     
 end
