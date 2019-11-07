@@ -1,14 +1,17 @@
 package io.skymind.pathmind.ui.views.experiment;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
@@ -30,13 +33,12 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.components.*;
+import io.skymind.pathmind.ui.views.experiment.components.PolicyChartPanel;
+import io.skymind.pathmind.ui.views.experiment.components.PolicyHighlightPanel;
+import io.skymind.pathmind.ui.views.experiment.components.PolicyStatusDetailsPanel;
+import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
+import io.skymind.pathmind.ui.views.experiment.components.TrainingsListPanel;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
 
@@ -113,6 +115,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             policyHighlightPanel.update(selectedPolicy);
             policyStatusDetailsPanel.update(selectedPolicy);
             policyChartPanel.update(selectedPolicy);
+            policyChartPanel.highlightPolicy(selectedPolicy);
             exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
 
             RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
@@ -128,6 +131,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         });
 
         policyChartPanel = new PolicyChartPanel(consumer);
+        policyChartPanel.addSeriesClickListener(policyId -> trainingsListPanel.selectPolicyWithId(policyId));
 
         trainingsListPanel.getSearchBox().addFilterableComponents(policyChartPanel);
 

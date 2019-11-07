@@ -1,5 +1,13 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.function.Consumer;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSingleSelectionModel;
@@ -9,6 +17,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
+
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
 import io.skymind.pathmind.data.Experiment;
@@ -19,14 +28,7 @@ import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.views.policy.filter.PolicyFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.function.Consumer;
 
 @Component
 public class TrainingsListPanel extends VerticalLayout {
@@ -181,5 +183,15 @@ public class TrainingsListPanel extends VerticalLayout {
         }
 
         subscribeToEventBus(UI.getCurrent(), consumer);
+    }
+    
+    public void selectPolicyWithId(String policyId) {
+    	experiment.getPolicies().stream()
+        	.filter(policy -> Long.toString(policy.getId()).equals(policyId))
+        	.findAny()
+        	.ifPresent(
+                policy -> {
+                	grid.select(policy);
+                });
     }
 }
