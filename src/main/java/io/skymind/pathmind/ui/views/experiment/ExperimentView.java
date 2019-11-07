@@ -8,7 +8,6 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
-import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
@@ -31,7 +30,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import reactor.core.publisher.Flux;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
@@ -44,8 +42,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private static final double DEFAULT_SPLIT_PANE_RATIO = 70;
 
     private Logger log = LogManager.getLogger(ExperimentView.class);
-
-    private final Flux<PathmindBusEvent> consumer;
 
     private long experimentId = -1;
     private long policyId = -1;
@@ -72,9 +68,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Button runFullTraining;
     private Button runDiscoveryTraining;
 
-    public ExperimentView(Flux<PathmindBusEvent> consumer) {
+    public ExperimentView() {
         super();
-        this.consumer = consumer;
         addClassName("experiment-view");
     }
 
@@ -160,29 +155,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 policyHighlightPanel,
                 policyStatusDetailsPanel,
                 rewardFunctionEditor,
-                buttons,
-                // DH -> Setup and implement example
-                new Button("Test Guava", click -> newFireEvent()));
+                buttons);
     }
-
-    // DH -> Setup and implement example
-    //***********************************************************************
-    private void newSubscribeToEventBus() {
-//        eventBus.subscribe(this);
-    }
-
-    private void newUnsubscribeToEventBus() {
-//        eventBus.unsubscribe(this);
-    }
-
-    private void newFireEvent() {
-        // eventbus.post(new PolicyUpdateEvent(experiment.getPolicies(0));
-    }
-
-    private void newConsumerEvent() {
-//        log.info("Event -> " + policyUpdateEvent.getEventDataId());
-    }
-    //***********************************************************************
 
     @Override
     protected boolean isAccessAllowedForUser() {
@@ -217,13 +191,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         if (experiment == null)
             throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
-    }
-
-    @Override
-    protected void subscribeToEventBus() {
-        log.info("-------------------- subscribing to bus");
-        trainingsListPanel.subscribeToEventBus(consumer);
-        policyChartPanel.subscribeToEventBus(consumer);
     }
 
     @Override

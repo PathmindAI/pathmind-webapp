@@ -1,27 +1,28 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
-import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.components.FilterableComponent;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
 
 import java.util.List;
 
 
 @Component
-public class PolicyChartPanel extends VerticalLayout implements FilterableComponent<Policy> {
+public class PolicyChartPanel extends VerticalLayout implements FilterableComponent<Policy>, PolicyUpdateSubscriber {
     private Chart chart = new Chart(ChartType.SPLINE);
 
     private Experiment experiment;
@@ -31,14 +32,6 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
         setupChart();
         setSizeFull();
         add(chart);
-    }
-
-    public void subscribeToEventBus(Flux<PathmindBusEvent> consumer) {
-        UI ui = UI.getCurrent();
-        PolicyBusEventUtils.consumerBusEventBasedOnExperiment(
-                consumer,
-                this::getExperiment,
-                updatedPolicy -> PushUtils.push(ui, () -> updateData(updatedPolicy)));
     }
 
     private void updateData(Policy updatedPolicy) {
@@ -84,6 +77,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
         chart.setSizeFull();
     }
 
+    @Override
     public Experiment getExperiment() {
         return experiment;
     }
@@ -124,6 +118,21 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
         setupChart();
         add(chart);
         updateChart(filteredPolicies);
+    }
+
+    @Override
+    protected void onDetach(DetachEvent event) {
+        EventBus.unsubscribe(this);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent event) {
+        EventBus.subscribe(this);
+    }
+
+    @Override
+    public void handleEvent(PolicyUpdateBusEvent event) {
+        PushUtils.push(this, () -> updateData(event.getPolicy()));
     }
 }
 

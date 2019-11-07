@@ -2,7 +2,7 @@ package io.skymind.pathmind.bus.utils;
 
 import io.skymind.pathmind.bus.BusEventType;
 import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.bus.data.UserUpdateBusEvent;
+import io.skymind.pathmind.bus.events.UserUpdateBusEvent;
 import io.skymind.pathmind.data.PathmindUser;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
@@ -10,6 +10,7 @@ import reactor.core.publisher.Flux;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+// STEPH -> Delete and remove once user is adjusted to new eventbus
 public class UserBusEventUtils
 {
 

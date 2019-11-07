@@ -131,6 +131,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		if(mainContent != null) add(mainContent);
 	}
 
+	// Steph -> remove
 	protected void subscribeToEventBus() {
 		// Do nothing by default.
 	}

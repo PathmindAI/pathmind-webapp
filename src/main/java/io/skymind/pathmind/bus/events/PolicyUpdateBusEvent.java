@@ -1,4 +1,4 @@
-package io.skymind.pathmind.bus.data;
+package io.skymind.pathmind.bus.events;
 
 import io.skymind.pathmind.bus.BusEventType;
 import io.skymind.pathmind.bus.PathmindBusEvent;
@@ -13,6 +13,7 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent
 	private Policy policy;
 	private int test;
 
+	// STEPH -> Remove test and counter
 	private static int counter = 0;
 
 	public PolicyUpdateBusEvent(Policy policy)
@@ -32,6 +33,7 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent
 		this.policy = policy;
 	}
 
+	// STEPH -> Remove
 	public int getTest() {
 		return test;
 	}

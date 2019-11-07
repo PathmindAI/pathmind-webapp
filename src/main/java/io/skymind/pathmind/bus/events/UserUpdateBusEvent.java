@@ -1,4 +1,4 @@
-package io.skymind.pathmind.bus.data;
+package io.skymind.pathmind.bus.events;
 
 import io.skymind.pathmind.bus.BusEventType;
 import io.skymind.pathmind.bus.PathmindBusEvent;

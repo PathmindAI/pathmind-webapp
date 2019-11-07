@@ -13,7 +13,7 @@ import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.bus.data.UserUpdateBusEvent;
+import io.skymind.pathmind.bus.events.UserUpdateBusEvent;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.security.Routes;
