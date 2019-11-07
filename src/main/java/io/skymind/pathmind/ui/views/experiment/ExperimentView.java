@@ -116,8 +116,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             policyStatusDetailsPanel.update(selectedPolicy);
             policyChartPanel.update(selectedPolicy);
             policyChartPanel.highlightPolicy(selectedPolicy);
-            setActionButtonValue(selectedPolicy);
-
             exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
 
             RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
