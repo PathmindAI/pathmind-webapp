@@ -3,8 +3,8 @@ package io.skymind.pathmind.services.training.db.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.bus.data.PolicyUpdateBusEvent;
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.utils.PolicyUtils;
@@ -16,13 +16,11 @@ import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.UnicastProcessor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.data.db.Tables.*;
 
@@ -32,12 +30,10 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
     private final DSLContext ctx;
     private final ObjectMapper mapper;
-    private final UnicastProcessor<PathmindBusEvent> publisher;
 
-    public RunUpdateServiceImpl(DSLContext ctx, ObjectMapper mapper, UnicastProcessor<PathmindBusEvent> publisher) {
+    public RunUpdateServiceImpl(DSLContext ctx, ObjectMapper mapper) {
         this.ctx = ctx;
         this.mapper = mapper;
-        this.publisher = publisher;
     }
 
     @Override
@@ -143,7 +139,7 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
                 policy.setNotes(PolicyUtils.getNotesFromName(policy));
 
-                publisher.onNext(new PolicyUpdateBusEvent(policy));
+                EventBus.post(new PolicyUpdateBusEvent(policy));
 
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);

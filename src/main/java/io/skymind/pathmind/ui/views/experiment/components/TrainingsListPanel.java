@@ -1,6 +1,7 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
-import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSingleSelectionModel;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -9,8 +10,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
-import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
@@ -19,28 +21,20 @@ import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.views.policy.filter.PolicyFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Consumer;
 
 @Component
-public class TrainingsListPanel extends VerticalLayout {
-    private static Logger log = LogManager.getLogger(TrainingsListPanel.class);
+public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSubscriber {
     private SearchBox<Policy> searchBox;
     private Grid<Policy> grid;
 
     private Experiment experiment;
 
-    private Flux<PathmindBusEvent> consumer;
-
-    public TrainingsListPanel(Flux<PathmindBusEvent> consumer) {
-        this.consumer = consumer;
-
+    public TrainingsListPanel() {
         setupGrid();
         setupSearchBox();
 
@@ -98,7 +92,7 @@ public class TrainingsListPanel extends VerticalLayout {
                 .setSortable(true);
 
         grid.sort(Arrays.asList(
-                new GridSortOrder<Policy>(startedColumn, SortDirection.DESCENDING)));
+                new GridSortOrder<>(startedColumn, SortDirection.DESCENDING)));
     }
 
     public void addSelectionListener(Consumer<Policy> consumer) {
@@ -118,13 +112,6 @@ public class TrainingsListPanel extends VerticalLayout {
 
     public SearchBox getSearchBox() {
         return searchBox;
-    }
-
-    private void subscribeToEventBus(UI ui, Flux<PathmindBusEvent> consumer) {
-        PolicyBusEventUtils.consumerBusEventBasedOnExperiment(
-                consumer,
-                () -> getExperiment(),
-                updatedPolicy -> PushUtils.push(ui, () -> updatedGrid(updatedPolicy)));
     }
 
     private void updatedGrid(Policy updatedPolicy) {
@@ -162,14 +149,10 @@ public class TrainingsListPanel extends VerticalLayout {
                 });
     }
 
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public void update(Experiment experiment, long defaultSelectedPolicyId) {
+    public void init(Experiment experiment, long defaultSelectedPolicyId) {
         this.experiment = experiment;
 
-        grid.setDataProvider(new ListDataProvider<Policy>(experiment.getPolicies()));
+        grid.setDataProvider(new ListDataProvider<>(experiment.getPolicies()));
 
         if (!experiment.getPolicies().isEmpty() && defaultSelectedPolicyId < 0) {
             grid.select(experiment.getPolicies().get(0));
@@ -179,7 +162,25 @@ public class TrainingsListPanel extends VerticalLayout {
                     .findAny()
                     .ifPresent(policy -> grid.select(policy));
         }
+    }
 
-        subscribeToEventBus(UI.getCurrent(), consumer);
+    @Override
+    protected void onDetach(DetachEvent event) {
+        EventBus.unsubscribe(this);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent event) {
+        EventBus.subscribe(this);
+    }
+
+    @Override
+    public void handleBusEvent(PolicyUpdateBusEvent event) {
+        PushUtils.push(this, () -> updatedGrid(event.getPolicy()));
+    }
+
+    @Override
+    public boolean filterBusEvent(PolicyUpdateBusEvent event) {
+        return experiment.getId() == event.getPolicy().getExperiment().getId();
     }
 }

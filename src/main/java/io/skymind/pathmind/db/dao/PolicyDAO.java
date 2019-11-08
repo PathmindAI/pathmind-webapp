@@ -1,18 +1,19 @@
 package io.skymind.pathmind.db.dao;
 
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.repositories.PolicyRepository;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.impl.DSL;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 import static io.skymind.pathmind.data.db.Tables.*;
 
-@Repository
+@org.springframework.stereotype.Repository
 public class PolicyDAO extends PolicyRepository
 {
     private final DSLContext ctx;
@@ -75,11 +76,17 @@ public class PolicyDAO extends PolicyRepository
     }
 
     public long insertPolicy(Policy policy) {
-        return ctx.insertInto(POLICY)
+        long policyId = ctx.insertInto(POLICY)
                 .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM)
                 .values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm())
                 .returning(POLICY.ID)
                 .fetchOne()
                 .getValue(POLICY.ID);
+
+        // Quick solution until we have more time to properly resolve this as per: https://github.com/SkymindIO/pathmind-webapp/issues/390
+        Policy savedPolicy = getPolicy(ctx, policyId);
+        EventBus.post(new PolicyUpdateBusEvent(savedPolicy));
+
+        return policyId;
     }
 }

@@ -1,53 +1,43 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
-import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.components.FilterableComponent;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
 
 import java.util.List;
 
-
 @Component
-public class PolicyChartPanel extends VerticalLayout implements FilterableComponent<Policy> {
+public class PolicyChartPanel extends VerticalLayout implements FilterableComponent<Policy>, PolicyUpdateSubscriber {
     private Chart chart = new Chart(ChartType.SPLINE);
 
     private Experiment experiment;
     private Policy policy;
 
-    private Flux<PathmindBusEvent> consumer;
-
-    public PolicyChartPanel(Flux<PathmindBusEvent> consumer) {
-        this.consumer = consumer;
-
+    public PolicyChartPanel() {
         setupChart();
+        setSizeFull();
         add(chart);
-    }
-
-    private void subscribeToEventBus(UI ui, Flux<PathmindBusEvent> consumer) {
-        PolicyBusEventUtils.consumerBusEventBasedOnExperiment(
-                consumer,
-                () -> getExperiment(),
-                updatedPolicy -> PushUtils.push(ui, () -> updateData(updatedPolicy)));
     }
 
     private void updateData(Policy updatedPolicy) {
         updatedPolicyChart(updatedPolicy);
         // If it's an initial run the policy may be null.
         if (policy != null && policy.getId() == updatedPolicy.getId())
-            update(updatedPolicy);
+            init(updatedPolicy);
     }
 
     private void updatedPolicyChart(Policy updatedPolicy) {
@@ -86,14 +76,9 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
         chart.setSizeFull();
     }
 
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public void update(Experiment experiment) {
+    public void init(Experiment experiment) {
         this.experiment = experiment;
         updateChart(experiment.getPolicies());
-        subscribeToEventBus(UI.getCurrent(), consumer);
     }
 
     private void updateChart(List<Policy> policies) {
@@ -111,7 +96,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
     public void highlightPolicy(Policy policy) {
     }
 
-    public void update(Policy policy) {
+    public void init(Policy policy) {
         this.policy = policy;
     }
 
@@ -127,6 +112,26 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
         setupChart();
         add(chart);
         updateChart(filteredPolicies);
+    }
+
+    @Override
+    protected void onDetach(DetachEvent event) {
+        EventBus.unsubscribe(this);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent event) {
+        EventBus.subscribe(this);
+    }
+
+    @Override
+    public void handleBusEvent(PolicyUpdateBusEvent event) {
+        PushUtils.push(this, () -> updateData(event.getPolicy()));
+    }
+
+    @Override
+    public boolean filterBusEvent(PolicyUpdateBusEvent event) {
+        return experiment.getId() == event.getPolicy().getExperiment().getId();
     }
 }
 
