@@ -27,6 +27,7 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.plugins.SegmentTracker;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
@@ -77,6 +78,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private TrainingService trainingService;
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private SegmentTracker tracker;
 
     private Button runFullTraining;
     private Button runDiscoveryTraining;
@@ -151,7 +154,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         runFullTraining = new Button("Start Full Run", new Image("frontend/images/start.svg", "run"), click -> {
             final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
             trainingService.startFullRun(experiment, policy);
-
+            tracker.fullRunStarted();
+            
             ConfirmDialog confirmDialog = new RunConfirmDialog();
             confirmDialog.open();
 
@@ -168,7 +172,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         runDiscoveryTraining = new Button("Start Discovery Run", new Image("frontend/images/start.svg", "run"), click -> {
             final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
             trainingService.startDiscoveryRun(experiment);
-
+            tracker.discoveryRunStarted();
+            
             ConfirmDialog confirmDialog = new RunConfirmDialog();
             confirmDialog.open();
 
