@@ -19,6 +19,7 @@ import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.plugins.SegmentTracker;
 import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
 import io.skymind.pathmind.ui.utils.FormUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
@@ -43,8 +44,12 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 	@Autowired
 	private ProjectDAO projectDAO;
+	
 	@Autowired
 	private ProjectFileCheckService projectFileCheckService ;
+	
+	@Autowired
+	private SegmentTracker tracker;
 
 	private Project project;
 	private Model model;
@@ -121,7 +126,8 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 				return;
 
 			final long experimentId = projectDAO.setupNewProject(project, model);
-
+			tracker.projectCreated();
+			
 			UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 		});
 	}
