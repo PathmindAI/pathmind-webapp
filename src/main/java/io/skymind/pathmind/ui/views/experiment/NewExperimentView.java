@@ -31,6 +31,7 @@ import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.plugins.SegmentTracker;
 import io.skymind.pathmind.ui.utils.*;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
@@ -69,6 +70,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private TrainingService trainingService;
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private SegmentTracker tracker;
 
     private Binder<Experiment> binder;
 
@@ -187,7 +190,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 return;
 
             experimentDAO.updateRewardFunction(experiment);
+            tracker.rewardFuntionCreated();
+            
             trainingService.startTestRun(experiment);
+            tracker.testRunStarted();
 
             ConfirmDialog confirmDialog = new RunConfirmDialog();
             confirmDialog.open();
@@ -225,6 +231,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 return;
 
             experimentDAO.updateRewardFunction(experiment);
+            tracker.draftSaved();
             NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
         });
     }
