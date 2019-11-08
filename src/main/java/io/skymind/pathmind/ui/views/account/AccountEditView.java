@@ -20,6 +20,8 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.plugins.SegmentTracker;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import reactor.core.publisher.UnicastProcessor;
@@ -51,6 +53,9 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired 
+	private SegmentTracker tracker;
 
 	private final UnicastProcessor<PathmindBusEvent> publisher;
 
@@ -68,6 +73,7 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 		cancelBtn.addClickListener(e -> UI.getCurrent().navigate(AccountView.class));
 		updateBtn.addClickListener(e -> {
 			userService.update(user);
+			tracker.infoEdited();
 			publisher.onNext(new UserUpdateBusEvent(user));
 			UI.getCurrent().navigate(AccountView.class);
 		});
