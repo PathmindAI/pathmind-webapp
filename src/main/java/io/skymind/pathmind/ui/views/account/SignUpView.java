@@ -20,6 +20,7 @@ import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
+import io.skymind.pathmind.ui.plugins.SegmentTracker;
 import io.skymind.pathmind.ui.views.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -78,6 +79,9 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 
 	@Autowired
 	private EmailNotificationService emailNotificationService;
+	
+	@Autowired
+	private SegmentTracker tracker;
 
 	private PathmindUser user;
 	private Binder<PathmindUser> binder;
@@ -123,6 +127,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 				user.setPassword(newPassword.getValue());
 				user = userService.signup(user);
                 emailNotificationService.sendVerificationEmail(user);
+                tracker.userRegistered(user);
 				Notification.show("You successfully signed up.", 3000, Notification.Position.TOP_END);
 				UI.getCurrent().navigate(LoginView.class);
 			} else {
