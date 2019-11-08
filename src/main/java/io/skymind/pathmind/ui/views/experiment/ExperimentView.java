@@ -24,7 +24,11 @@ import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.components.*;
+import io.skymind.pathmind.ui.views.experiment.components.PolicyChartPanel;
+import io.skymind.pathmind.ui.views.experiment.components.PolicyHighlightPanel;
+import io.skymind.pathmind.ui.views.experiment.components.PolicyStatusDetailsPanel;
+import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
+import io.skymind.pathmind.ui.views.experiment.components.TrainingsListPanel;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -99,6 +103,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             policyHighlightPanel.update(selectedPolicy);
             policyStatusDetailsPanel.update(selectedPolicy);
             policyChartPanel.init(selectedPolicy);
+            policyChartPanel.highlightPolicy(selectedPolicy);
             exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
 
             RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
@@ -114,6 +119,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         });
 
         policyChartPanel = new PolicyChartPanel();
+        policyChartPanel.addSeriesClickListener(policyId -> trainingsListPanel.selectPolicyWithId(policyId));
 
         trainingsListPanel.getSearchBox().addFilterableComponents(policyChartPanel);
 
