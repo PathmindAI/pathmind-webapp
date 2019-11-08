@@ -22,6 +22,7 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.plugins.SegmentTracker;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
@@ -42,6 +43,8 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	private PolicyDAO policyDAO;
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private SegmentTracker tracker;
 
 	private ScreenTitlePanel screenTitlePanel;
 
@@ -71,6 +74,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 		exportButton = new Button("Export");
 		exportButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportButton.setWidth("200px");
+		exportButton.addClickListener(evt -> tracker.policyExported());
 
 		exportLink = new Anchor();
 		exportLink.add(exportButton);
