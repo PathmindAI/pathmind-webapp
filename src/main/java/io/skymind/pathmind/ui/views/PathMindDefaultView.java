@@ -48,7 +48,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
     @Value("${skymind.debug.accelerate}")
     private boolean isDebugAccelerate;
 
-
 	public PathMindDefaultView()
 	{
 		setWidth("100%");
@@ -88,9 +87,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 				addScreens();
 			// Update the screen based on the parameters if need be.
 			initScreen(event);
-			// Must be after update because we generally need to filter the event based on the screen data
-			if(!isGenerated)
-				subscribeToEventBus();
 			// Intercom plugin added
 			addIntercomPlugin();
 			isGenerated = true;
@@ -129,11 +125,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		if(titlePanel != null) add(titlePanel);
 		final Component mainContent = getMainContent();
 		if(mainContent != null) add(mainContent);
-	}
-
-	// Steph -> remove
-	protected void subscribeToEventBus() {
-		// Do nothing by default.
 	}
 
 	protected Component getTitlePanel() {

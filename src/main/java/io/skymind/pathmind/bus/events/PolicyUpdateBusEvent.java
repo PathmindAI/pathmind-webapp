@@ -3,24 +3,13 @@ package io.skymind.pathmind.bus.events;
 import io.skymind.pathmind.bus.BusEventType;
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.data.Policy;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class PolicyUpdateBusEvent implements PathmindBusEvent
 {
-	private static Logger log = LogManager.getLogger(PolicyUpdateBusEvent.class);
-
 	private Policy policy;
-	private int test;
-
-	// STEPH -> Remove test and counter
-	private static int counter = 0;
 
 	public PolicyUpdateBusEvent(Policy policy)
 	{
-		test = counter++;
-		log.info(".................... CREATE PolicyUpdateBusEvent : " + test);
-
 		if(policy.getRun() == null)
 			throw new RuntimeException("Run is null");
 		if(policy.getExperiment() == null)
@@ -33,19 +22,9 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent
 		this.policy = policy;
 	}
 
-	// STEPH -> Remove
-	public int getTest() {
-		return test;
-	}
-
 	@Override
 	public BusEventType getEventType() {
 		return BusEventType.PolicyUpdate;
-	}
-
-	@Override
-	public long getEventDataId() {
-		return policy.getId();
 	}
 
 	public Policy getPolicy() {

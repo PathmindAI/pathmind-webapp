@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-
 @Component
 public class PolicyChartPanel extends VerticalLayout implements FilterableComponent<Policy>, PolicyUpdateSubscriber {
     private Chart chart = new Chart(ChartType.SPLINE);
@@ -77,11 +76,6 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
         chart.setSizeFull();
     }
 
-    @Override
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
     public void init(Experiment experiment) {
         this.experiment = experiment;
         updateChart(experiment.getPolicies());
@@ -131,8 +125,13 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
     }
 
     @Override
-    public void handleEvent(PolicyUpdateBusEvent event) {
+    public void handleBusEvent(PolicyUpdateBusEvent event) {
         PushUtils.push(this, () -> updateData(event.getPolicy()));
+    }
+
+    @Override
+    public boolean filterBusEvent(PolicyUpdateBusEvent event) {
+        return experiment.getId() == event.getPolicy().getExperiment().getId();
     }
 }
 

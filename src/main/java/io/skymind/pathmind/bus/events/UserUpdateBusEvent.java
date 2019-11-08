@@ -17,11 +17,6 @@ public class UserUpdateBusEvent implements PathmindBusEvent
 		return BusEventType.UserUpdate;
 	}
 
-	@Override
-	public long getEventDataId() {
-		return user.getId();
-	}
-
 	public PathmindUser getPathmindUser() {
 		return user;
 	}

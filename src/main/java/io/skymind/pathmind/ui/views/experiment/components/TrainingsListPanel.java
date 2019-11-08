@@ -21,8 +21,6 @@ import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.views.policy.filter.PolicyFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -31,7 +29,6 @@ import java.util.function.Consumer;
 
 @Component
 public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSubscriber {
-    private static Logger log = LogManager.getLogger(TrainingsListPanel.class);
     private SearchBox<Policy> searchBox;
     private Grid<Policy> grid;
 
@@ -152,11 +149,6 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
                 });
     }
 
-    @Override
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
     public void init(Experiment experiment, long defaultSelectedPolicyId) {
         this.experiment = experiment;
 
@@ -183,7 +175,12 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
     }
 
     @Override
-    public void handleEvent(PolicyUpdateBusEvent event) {
+    public void handleBusEvent(PolicyUpdateBusEvent event) {
         PushUtils.push(this, () -> updatedGrid(event.getPolicy()));
+    }
+
+    @Override
+    public boolean filterBusEvent(PolicyUpdateBusEvent event) {
+        return experiment.getId() == event.getPolicy().getExperiment().getId();
     }
 }
