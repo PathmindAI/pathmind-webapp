@@ -19,6 +19,7 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.plugins.SegmentTracker;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,6 +59,9 @@ public class ChangePasswordView extends PolymerTemplate<ChangePasswordView.Model
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private SegmentTracker tracker;
 
 	@Autowired
 	public ChangePasswordView(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink)
@@ -74,6 +78,7 @@ public class ChangePasswordView extends PolymerTemplate<ChangePasswordView.Model
 		updateBtn.addClickListener(e -> {
 			if (validate())  {
 				if (userService.changePassword(user, newPassword.getValue())) {
+					tracker.passwordChanged();
 					NotificationUtils.showNotification("Password was successfully changed.", NotificationVariant.LUMO_SUCCESS);
 					UI.getCurrent().navigate(AccountView.class);
 				} else {
