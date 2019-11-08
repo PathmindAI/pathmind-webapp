@@ -26,6 +26,15 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     private final RescaleRestApiClient client;
     private final RescaleMetaDataService metaDataService;
     private final RescaleFileManager fileManager;
+    private static final List<String> KNOWN_ERROR_MSGS = new ArrayList<>();
+
+    static {
+        KNOWN_ERROR_MSGS.add("python3: can\'t open file \'rllibtrain.py\'");
+        KNOWN_ERROR_MSGS.add("SyntaxError: invalid syntax");
+        KNOWN_ERROR_MSGS.add("Fatal Python error: Segmentation fault");
+        KNOWN_ERROR_MSGS.add("Worker crashed during call to train()");
+        KNOWN_ERROR_MSGS.add("java.lang.ArrayIndexOutOfBoundsException");
+    }
 
     public RescaleExecutionProvider(RescaleRestApiClient client, RescaleMetaDataService metaDataService) {
         this.client = client;
@@ -58,6 +67,9 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         // Clean up working directory, so only the required files stay around for automatic saving by rescale
         cleanup(job, instructions);
 
+        // Check errors
+        checkErrors(instructions);
+
 
         // Start actual execution of the job
         final String rescaleJobId = startTrainingRun(job, instructions, files);
@@ -78,31 +90,25 @@ public class RescaleExecutionProvider implements ExecutionProvider {
             if (statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))) {
                 final JobStatus status = statuses.stream().filter(it -> it.getStatus().equals("Completed")).findFirst().get();
 
-                // file check that has an error message
-                Map<String, String> map = client.outputFiles(jobHandle, "1").getResults()
+                List<String> errs = client.outputFiles(jobHandle, "1").getResults()
                         .parallelStream()
-                        .filter(it -> it.getPath().endsWith("process_output.log"))
-                        .map(it -> {
-                            final String key = new File(it.getPath()).getParentFile().getName();
-                            final String contents = new String(client.fileContents(it.getId()));
-                            return Map.entry(key, contents);
-                        })
-                        // this is the known error message so far, todo i will revisit below after risecamp
-                        // raw error logs are https://3.basecamp.com/3684163/buckets/11875773/vaults/2132519274
-                        .filter(it ->
-                                it.getValue().contains("python3: can't open file 'rllibtrain.py': [Errno 2] No such file or directory")
-                                || it.getValue().contains("SyntaxError: invalid syntax")
-                                || it.getValue().contains("Fatal Python error: Aborted")
-                                || it.getValue().contains("Fatal Python error: Segmentation fault")
-                                || it.getValue().contains("Worker crashed during call to train()")
-                                || it.getValue().contains("java.lang.ArrayIndexOutOfBoundsException")
-                        )
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                        .filter(f -> f.getPath().endsWith("trial_error") && f.getDecryptedSize() > 0)
+                        .map(f -> new String(client.fileContents(f.getId())))
+                        .collect(Collectors.toList());
 
-                if (status.getStatusReason().equals("Completed successfully") && map.size() == 0) {
+                // since we added error check logic to the script,
+                // errors.log will have the same number of line with the number of KNOWN_ERROR_MSGS
+                // if the line number is greater than the size of KNOWN_ERROR_MSGS, it has an error
+                String errorLogFileContents = new String(client.outputFile(jobHandle, "1", "errors.log"));
+                if (errorLogFileContents != null && !errorLogFileContents.isEmpty()
+                        && errorLogFileContents.split("\n").length > KNOWN_ERROR_MSGS.size()) {
+                    errs.add("error!");
+                }
+
+                if (status.getStatusReason().equals("Completed successfully") && errs.size() == 0) {
                     return RunStatus.Completed;
                 } else {
-                    if (map.size() > 0) {
+                    if (errs.size() > 0) {
                         log.info(jobHandle + " will be considered as an error");
                     }
                     return RunStatus.Error;
@@ -118,6 +124,11 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     @Override
     public Map<String, String> progress(String jobHandle) {
         final RunStatus runStatus = status(jobHandle);
+        return progress(jobHandle, runStatus);
+    }
+
+    @Override
+    public Map<String, String> progress(String jobHandle, RunStatus runStatus) {
         if (runStatus.equals(RunStatus.Completed)) {
             // Job is done, we have to look at finished files
             return client.outputFiles(jobHandle, "1").getResults()
@@ -153,17 +164,11 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     @Override
     public byte[] policy(String jobHandle, String trainingRun) {
-        final RunStatus runStatus = status(jobHandle);
-
-        if (runStatus.equals(RunStatus.Completed)) {
-            return client.outputFiles(jobHandle, "1").getResults()
-                    .stream()
-                    .filter(it -> it.getPath().endsWith("policy_" + trainingRun + ".zip"))
-                    .map(it -> client.fileContents(it.getId()))
-                    .findFirst().orElseGet(() -> null);
-        }
-
-        return null;
+        return client.outputFiles(jobHandle, "1").getResults()
+                .stream()
+                .filter(it -> it.getPath().endsWith("policy_" + trainingRun + ".zip"))
+                .map(it -> client.fileContents(it.getId()))
+                .findFirst().orElseGet(() -> null);
     }
 
     @Override
@@ -179,15 +184,34 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         return null;
     }
 
-    public String consoleAnytime(String jobHandle) {
+    /**
+     * get the contents for the given files regardless of the status of job(running or complete)
+     *
+     * @param jobHandle
+     * @param fileName
+     * @return
+     */
+    public String getFileAnytime(String jobHandle, String fileName) {
         try {
-            return client.tailConsole(jobHandle, "1");
+            return client.workingFiles(jobHandle, "1")
+                    .parallelStream()
+                    .filter(it -> it.getPath().endsWith(fileName))
+                    .findAny()
+                    .map(it -> new String(client.tail(jobHandle, "1", it.getPath())))
+                    .get();
         } catch (Exception e) {
             try {
-                log.debug("consoleAnytime tail: " + e.getMessage(), e);
-                return client.consoleOutput(jobHandle, "1");
+                log.debug("getFileAnytime tail: " + e.getMessage(), e);
+
+                return client.outputFiles(jobHandle, "1")
+                        .getResults()
+                        .parallelStream()
+                        .filter(it -> it.getPath().endsWith(fileName))
+                        .findAny()
+                        .map(it -> new String(client.fileContents(it.getId())))
+                        .get();
             } catch (Exception e1) {
-                log.debug("consoleAnytime output: " + e1.getMessage(), e1);
+                log.debug("getFileAnytime output: " + e1.getMessage(), e1);
                 return null;
             }
         }
@@ -274,8 +298,10 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "  cd $DIR;\n" +
                         "  mkdir -p $OLDPWD/../output/$(basename `dirname $DIR`)/;\n" +
                         "  cp ../progress.csv $OLDPWD/../output/$(basename `dirname $DIR`)/; \n"+
+                        "  cp ../../*.json $OLDPWD/../output/; \n"+
                         "  zip -r $OLDPWD/../output/policy_$(basename `dirname $DIR`).zip .;\n" +
                         "  cd $OLDPWD;\n" +
+                        "  cp trial_* ../output;\n" +
                 "done"
         ));
     }
@@ -373,6 +399,12 @@ public class RescaleExecutionProvider implements ExecutionProvider {
             default:
                 throw new IllegalArgumentException("Unsupported Pathmind Helper Version: " + pathmindHelperVersion);
         }
+    }
+
+    private void checkErrors(List<String> instructions) {
+        instructions.addAll(KNOWN_ERROR_MSGS.stream()
+                .map(msg -> "grep -m 2 \"" + msg + "\" process_output.log >> errors.log")
+                .collect(Collectors.toList()));
     }
 
 
