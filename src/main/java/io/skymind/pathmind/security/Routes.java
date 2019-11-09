@@ -11,7 +11,7 @@ public class Routes {
     public static final String BAD_CREDENTIALS = "bad-credentials";
     public static final String EMAIL_VERIFICATION_FAILED = "email-verification-failed";
 
-    public static final String SIGN_UP_URL = "sign-up";
+    public static final String SIGN_UP_URL = "early-access-sign-up";
     public static final String RESET_PASSWORD_URL = "reset-password";
     public static final String EMAIL_VERIFICATION_URL = "email-verification";
 
