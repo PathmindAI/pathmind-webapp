@@ -10,6 +10,7 @@ import com.segment.analytics.Analytics;
 import com.segment.analytics.messages.IdentifyMessage;
 import com.segment.analytics.messages.PageMessage;
 import com.segment.analytics.messages.TrackMessage;
+import com.vaadin.flow.router.Location;
 
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.PathmindUserDetails;
@@ -38,8 +39,8 @@ public class SegmentTracker {
 		analytics = Analytics.builder(key).build();
 	}
 	
-	public void pageVisit(String page) {
-		page(page);
+	public void trackPageVisit(Location location) {
+		page(location);
 	}
 	
 	public void userRegistered(PathmindUser user) {
@@ -99,8 +100,9 @@ public class SegmentTracker {
 	 * The page method lets you record whenever a user sees a page of your website, 
 	 * along with optional extra information about the page being viewed.
 	 */
-	private void page(String page) {
-		analytics.enqueue(PageMessage.builder(page)
+	private void page(Location location) {
+		analytics.enqueue(PageMessage.builder(location.getFirstSegment())
+				.properties(SegmentDataMapper.getAdditionalVisitParameters(location))
 				.userId(getUserId()));
 	}
 	
