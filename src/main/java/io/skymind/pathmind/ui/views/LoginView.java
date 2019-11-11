@@ -22,6 +22,7 @@ import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
+import io.skymind.pathmind.ui.plugins.SegmentTracker;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -55,6 +56,9 @@ public class LoginView extends HorizontalLayout
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private SegmentTracker tracker;
 
 	private String errorMessage;
 	private String email;
@@ -192,6 +196,8 @@ public class LoginView extends HorizontalLayout
 	public void afterNavigation(AfterNavigationEvent event) {
 		emailNotVerified.setVisible(false);
 		badCredentials.setVisible(false);
+		
+		tracker.trackPageVisit(event.getLocation());
 
 		if (errorMessage == null)
 			return;

@@ -14,6 +14,8 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.EmailValidator;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
@@ -31,7 +33,7 @@ import java.util.List;
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @JsModule("./src/account/sign-up-view.js")
 @Route(value = Routes.SIGN_UP_URL)
-public class SignUpView extends PolymerTemplate<SignUpView.Model>
+public class SignUpView extends PolymerTemplate<SignUpView.Model> implements AfterNavigationObserver
 {
 	private static final String EMAIL_IS_USED = "This email is already used.";
 
@@ -159,5 +161,10 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 		void setTitle(String title);
 		void setMessage(String message);
 		void setContactLink(String contactLink);
+	}
+
+	@Override
+	public void afterNavigation(AfterNavigationEvent event) {
+		tracker.trackPageVisit(event.getLocation());
 	}
 }
