@@ -1,5 +1,12 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
+import static io.skymind.pathmind.utils.ChartUtils.createActiveSeriesPlotOptions;
+import static io.skymind.pathmind.utils.ChartUtils.createPassiveSeriesPlotOptions;
+
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
@@ -7,16 +14,16 @@ import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.function.SerializableConsumer;
+
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.components.FilterableComponent;
 import io.skymind.pathmind.ui.utils.PushUtils;
-import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-
-import java.util.List;
 
 
 @Component
@@ -62,7 +69,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
                 .ifPresentOrElse(
                         series -> {
                             ListSeries listSeries = ((ListSeries) series);
-                            listSeries.setData(updatedPolicy.getScores());
+                            listSeries.setData(PolicyUtils.getMeanScores(updatedPolicy));
 
                             if (!series.getName().equals(updatedPolicy.getName())) {
                                 listSeries.setName(updatedPolicy.getName());
@@ -80,6 +87,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
         yAxis.setTitle("Mean Reward Score");
 
         chart.getConfiguration().setTitle("Reward Score");
+        chart.getConfiguration().getLegend().setEnabled(false);
         chart.getConfiguration().addxAxis(xAxis);
         chart.getConfiguration().addyAxis(yAxis);
         chart.setSizeFull();
@@ -101,13 +109,21 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
     }
 
     private void addPolicyToChart(Policy policy) {
-        ListSeries listSeries = new ListSeries(policy.getName(), policy.getScores());
+        ListSeries listSeries = new ListSeries(policy.getName(), PolicyUtils.getMeanScores(policy));
         listSeries.setId(Long.toString(policy.getId()));
         chart.getConfiguration().addSeries(listSeries);
     }
 
     // TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/129 -> Does not seem possible yet: https://vaadin.com/forum/thread/17856633/is-it-possible-to-highlight-a-series-in-a-chart-programmatically
     public void highlightPolicy(Policy policy) {
+    	chart.getConfiguration().getSeries().stream().forEach(series -> {
+    		if (series.getId().equals(Long.toString(policy.getId()))) {
+    			series.setPlotOptions(createActiveSeriesPlotOptions());
+    		} else {
+    			series.setPlotOptions(createPassiveSeriesPlotOptions());
+    		}
+    		ListSeries.class.cast(series).updateSeries();
+    	});
     }
 
     public void update(Policy policy) {
@@ -126,6 +142,10 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
         setupChart();
         add(chart);
         updateChart(filteredPolicies);
+    }
+    
+    public void addSeriesClickListener(SerializableConsumer<String> seriesClickListener) {
+    	chart.addSeriesClickListener(evt -> seriesClickListener.accept(evt.getSeries().getId()));
     }
 }
 

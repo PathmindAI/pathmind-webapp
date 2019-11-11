@@ -27,10 +27,10 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 	public PolicyStatusDetailsPanel()
 	{
 		Label[] labels = Arrays.asList(
-			getElementLabel("Status"),
-			getElementLabel(""),
-			getElementLabel("Run Type"),
-			getElementLabel("Elapsed"))
+				getElementLabel("Status"),
+				getElementLabel(""),
+				getElementLabel("Run Type"),
+				getElementLabel("Elapsed"))
 				.stream().toArray(Label[]::new);
 
 		removeTopMargins(labels);
@@ -72,9 +72,9 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 
 	public void update(Policy policy)
 	{
-		statusLabel.setText(PolicyUtils.getRunStatus(policy));
+		statusLabel.setText(PolicyUtils.getRunStatus(policy).name());
 		runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(PolicyUtils.getRunCompletedTime(policy)));
 		runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());
-        elapsedTimeLabel.setText(PolicyUtils.getElapsedTime(policy));
+		elapsedTimeLabel.setText(PolicyUtils.getElapsedTime(policy));
 	}
 }

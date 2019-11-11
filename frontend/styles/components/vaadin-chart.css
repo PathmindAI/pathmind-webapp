@@ -14,3 +14,9 @@
 .highcharts-point {
 
 }
+.pm-active-series{
+	opacity: 1;
+}
+.pm-passive-series{
+	opacity: 0.2;
+}

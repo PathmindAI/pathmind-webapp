@@ -9,7 +9,7 @@ The other parts of Pathmind (NativeRL, Pathmind Helper) can be currently still b
 
 ## Tech stack
 
-- **UI Framework:** Vaadin 14 (running in compatibility mode to Vaadin 13)
+- **UI Framework:** Vaadin 14
 - **Dependency Injection / Application Container:** Spring Boot 2
 - **Database:** PostgreSQL 10
 - **Build:** Maven
@@ -20,6 +20,21 @@ The other parts of Pathmind (NativeRL, Pathmind Helper) can be currently still b
 
 ## Setup
 
+The quickest way to get up and running is with the Vagrant file:
+
+```
+vagrant up
+vagrant ssh
+mvn spring-boot:run
+```
+
+Your local env will be running at 127.0.0.1:8080
+
+Here are instructions for how you can try out the app and the files you can upload to train:
+https://help.pathmind.com/en/articles/3329544-getting-started
+
+#### Details
+
 When working on this project, you will have to set up a PostgreSQL database server locally. And set the credentials for
 it as an Environment Variable in IntelliJ (or your IDE of choice).
 
@@ -27,15 +42,12 @@ The required environment variable looks something like this:
 
 ```
 DB_URL=jdbc:postgresql://localhost/pathmind?user=skynet&password=skynetskynet123
-PATHMIND_DEV_MODE=true
 ```
 
 For running the application you set it up in your `Run/Debug Configuration` when starting the application from inside
 Intellij. For maven commands (also to be run from the IntelliJ) you have to set it also by going to
 `File -> Settings -> Build, Execution, Deployment -> Build Tools -> Maven -> Runner` and set it there in the
 `Environment variables` field.
-
-Pathmind Dev Mode is a temporary workaround for a [Vaadin 14 npm mode bug with Spring Security](https://github.com/SkymindIO/pathmind-webapp/commit/9c09e1aa9cf903a52098f0371d05c7ea73f61e76).
 
 ## JOOQ
 

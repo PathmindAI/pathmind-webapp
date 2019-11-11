@@ -13,6 +13,11 @@ public class Run extends Data
 	private long experimentId;
 	private int status;
 
+	// Helper attributes
+	private Experiment experiment;
+	private Model model;
+	private Project project;
+
 	public Run() {
 	}
 
@@ -76,5 +81,29 @@ public class Run extends Data
 
 	public void setStatusEnum(RunStatus runStatus) {
 		this.status = runStatus.getValue();
+	}
+
+	public Experiment getExperiment() {
+		return experiment;
+	}
+
+	public void setExperiment(Experiment experiment) {
+		this.experiment = experiment;
+	}
+
+	public Model getModel() {
+		return model;
+	}
+
+	public void setModel(Model model) {
+		this.model = model;
+	}
+
+	public Project getProject() {
+		return project;
+	}
+
+	public void setProject(Project project) {
+		this.project = project;
 	}
 }

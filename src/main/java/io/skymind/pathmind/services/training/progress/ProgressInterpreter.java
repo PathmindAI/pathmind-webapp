@@ -17,6 +17,7 @@ import java.util.*;
 public class ProgressInterpreter {
 
     private static Logger log = LogManager.getLogger(ProgressInterpreter.class);
+    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss");
 
     public static Progress interpretKey(String keyString) {
         final Progress progress = new Progress();
@@ -35,6 +36,8 @@ public class ProgressInterpreter {
         boolean runCounter = false;
         boolean params = false;
 
+        // PERFORMANCE -> Can we minimize this for our needs since it's so expensive... Do we need to parse for the algo? Is there a quick way to just get the hyperParams
+        // as that seems to eb all we ever end up using from this parsing...
         int lastFoundIdx = 0;
         for (int i = 0; i < key.length; i++) {
             final char cur = key[i];
@@ -42,13 +45,13 @@ public class ProgressInterpreter {
                 if(!alg){
                     alg = true;
                     progress.setAlgorithm(buffer.toString());
-                    buffer = new StringBuilder();
+                    buffer.setLength(0);
                 }else if(!envName){
                     envName = true;
-                    buffer = new StringBuilder();
+                    buffer.setLength(0);
                 }else if(!runCounter){
                     runCounter = true;
-                    buffer = new StringBuilder();
+                    buffer.setLength(0);
                 }
                 lastFoundIdx = i;
             } else if(Character.isDigit(cur) && lastFoundIdx == i - 1 && alg && envName && runCounter && !params){
@@ -60,16 +63,15 @@ public class ProgressInterpreter {
                     hyperParameters.put(split[0], split[1]);
                 });
                 progress.setHyperParameters(Collections.unmodifiableMap(hyperParameters));
-                buffer = new StringBuilder();
+                buffer.setLength(0);
             }
             buffer.append(cur);
         }
 
         try {
             final String dateTime = buffer.toString().substring(0, 19);
-            final LocalDateTime utcTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss"));
+            final LocalDateTime utcTime = LocalDateTime.parse(dateTime, dateFormat);
             final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();
-
             progress.setStartedAt(time);
         } catch (Exception e) {
             log.debug(e.getMessage());

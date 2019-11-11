@@ -1,5 +1,13 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.function.Consumer;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSingleSelectionModel;
@@ -9,26 +17,22 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
+
 import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
-import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.views.policy.filter.PolicyFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.function.Consumer;
 
 @Component
 public class TrainingsListPanel extends VerticalLayout {
+    private static Logger log = LogManager.getLogger(TrainingsListPanel.class);
     private SearchBox<Policy> searchBox;
     private Grid<Policy> grid;
 
@@ -58,8 +62,8 @@ public class TrainingsListPanel extends VerticalLayout {
                 .setAutoWidth(true)
                 .setSortable(true);
 
-        Grid.Column<Policy> startedColumn = grid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunStartTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
-                .setComparator(Comparator.comparing(policy -> PolicyUtils.getRunStartTime(policy), Comparator.nullsFirst(Comparator.naturalOrder())))
+        Grid.Column<Policy> startedColumn = grid.addColumn(new LocalDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+                .setComparator(Comparator.comparing(Policy::getStartedAt, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .setHeader("Started")
                 .setAutoWidth(true)
                 .setSortable(true);
@@ -85,12 +89,12 @@ public class TrainingsListPanel extends VerticalLayout {
                 .setAutoWidth(true)
                 .setSortable(true);
 
-        grid.addColumn(policy -> ProgressInterpreter.interpretKey(policy.getName()).getAlgorithm())
+        grid.addColumn(policy -> policy.getAlgorithmEnum())
                 .setHeader("Algorithm")
                 .setAutoWidth(true)
                 .setSortable(true);
 
-        grid.addColumn(policy -> ProgressInterpreter.interpretKey(policy.getName()).getHyperParameters().toString().replaceAll("(\\{|\\})", ""))
+        grid.addColumn(Policy::getNotes)
                 .setHeader("Notes")
                 .setAutoWidth(true)
                 .setSortable(true);
@@ -151,11 +155,12 @@ public class TrainingsListPanel extends VerticalLayout {
         experiment.getPolicies().stream()
                 .filter(policy -> policy.getId() == updatedPolicy.getId())
                 .forEach(policy -> {
-                    // TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/229 -> Are these the only values we need to update?
                     policy.setExternalId(updatedPolicy.getExternalId());
                     policy.setProgress(updatedPolicy.getProgress());
                     policy.setScores(updatedPolicy.getScores());
                     policy.setRun(updatedPolicy.getRun());
+                    policy.setStartedAt(updatedPolicy.getStartedAt());
+                    policy.setStoppedAt(updatedPolicy.getStoppedAt());
                 });
     }
 
@@ -178,5 +183,15 @@ public class TrainingsListPanel extends VerticalLayout {
         }
 
         subscribeToEventBus(UI.getCurrent(), consumer);
+    }
+    
+    public void selectPolicyWithId(String policyId) {
+    	experiment.getPolicies().stream()
+        	.filter(policy -> Long.toString(policy.getId()).equals(policyId))
+        	.findAny()
+        	.ifPresent(
+                policy -> {
+                	grid.select(policy);
+                });
     }
 }

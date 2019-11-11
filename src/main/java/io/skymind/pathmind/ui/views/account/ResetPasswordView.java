@@ -19,16 +19,15 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
+import io.skymind.pathmind.ui.views.LoginView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import io.skymind.pathmind.ui.views.LoginView;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.UUID;
 
 @Tag("reset-password-view")
 @JsModule("./src/account/reset-password-view.js")
@@ -145,7 +144,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 					userService.changePassword(user, newPassword.getValue());
 					user.setPasswordResetSendAt(null);
 					userService.update(user);
-					NotificationUtils.showTopRightInlineNotification(CHANGED_CONFIRMATION, NotificationVariant.LUMO_SUCCESS);
+					NotificationUtils.showNotification(CHANGED_CONFIRMATION, NotificationVariant.LUMO_SUCCESS);
 					UI.getCurrent().navigate(LoginView.class);
 				} else {
 					newPassword.setInvalid(true);
@@ -166,7 +165,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 
 	private void startResetProcess(String email) {
 		PathmindUser user = userService.findByEmailIgnoreCase(email);
-		NotificationUtils.showTopRightInlineNotification(SEND_CONFIRMATION, NotificationVariant.LUMO_SUCCESS);
+		NotificationUtils.showNotification(SEND_CONFIRMATION, NotificationVariant.LUMO_SUCCESS);
 		getModel().setMessage("");
 
 		if (user == null) {

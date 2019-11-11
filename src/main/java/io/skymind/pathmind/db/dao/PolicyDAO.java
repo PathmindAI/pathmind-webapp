@@ -1,19 +1,14 @@
 package io.skymind.pathmind.db.dao;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.data.*;
-import io.skymind.pathmind.data.db.Tables;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.repositories.PolicyRepository;
-import io.skymind.pathmind.services.training.progress.Progress;
-import io.skymind.pathmind.services.training.progress.RewardScore;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.data.db.Tables.*;
 
@@ -21,26 +16,22 @@ import static io.skymind.pathmind.data.db.Tables.*;
 public class PolicyDAO extends PolicyRepository
 {
     private final DSLContext ctx;
-    private final io.skymind.pathmind.data.db.tables.Policy tbl;
-    private final ObjectMapper objectMapper;
 
-    public PolicyDAO(DSLContext ctx, ObjectMapper objectMapper){
+    public PolicyDAO(DSLContext ctx){
         this.ctx = ctx;
-        this.tbl = Tables.POLICY;
-        this.objectMapper = objectMapper;
     }
 
     public List<Policy> getPoliciesForExperiment(long experimentId){
-        final List<Policy> policies = ctx.select(tbl.ID, tbl.EXTERNAL_ID, tbl.NAME, tbl.PROGRESS, tbl.RUN_ID)
+        final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.RUN_ID)
                 .select(EXPERIMENT.asterisk())
                 .select(RUN.asterisk())
                 .select(MODEL.asterisk())
                 .select(PROJECT.asterisk())
-                .from(tbl)
+                .from(POLICY)
                 .join(RUN)
-                .on(tbl.RUN_ID.eq(RUN.ID))
+                   .on(POLICY.RUN_ID.eq(RUN.ID))
                 .join(EXPERIMENT)
-                .on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
+                    .on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
                 .leftJoin(MODEL)
                     .on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
                 .leftJoin(PROJECT)
@@ -48,26 +39,26 @@ public class PolicyDAO extends PolicyRepository
                 .where(RUN.EXPERIMENT_ID.eq(experimentId))
                 .fetch(it -> {
                     final Policy policy = new Policy();
-                    policy.setExternalId(it.get(tbl.EXTERNAL_ID));
-                    policy.setId(it.get(tbl.ID));
-                    policy.setName(it.get(tbl.NAME));
-                    policy.setRunId(it.get(tbl.RUN_ID));
+                    policy.setExternalId(it.get(POLICY.EXTERNAL_ID));
+                    policy.setId(it.get(POLICY.ID));
+                    policy.setName(it.get(POLICY.NAME));
+                    policy.setRunId(it.get(POLICY.RUN_ID));
 
-                    try {
-                        final JSONB progressJson = it.get(tbl.PROGRESS);
-                        policy.setProgress(progressJson.toString());
-                        if (progressJson.toString() != null && !progressJson.toString().isEmpty()) {
-                            final Progress progress = objectMapper.readValue(progressJson.toString(), Progress.class);
-                            policy.getScores().addAll(progress.getRewardProgression().stream().map(RewardScore::getMean).collect(Collectors.toList()));
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    final JSONB progressJson = it.get(POLICY.PROGRESS);
+                    policy.setProgress(progressJson.toString());
+                    // TODO -> Although we process everything we could also get the values from the database. However until scores is also stored in the database
+                    // we might as well do it here.
+                    PolicyUtils.processProgressJson(policy);
+                    // PERFORMANCE => can this be simplified? It's very expensive just to get Notes (both interpretKey and the HashMap of HyperParameters
+                    policy.setNotes(PolicyUtils.getNotesFromName(policy));
 
                     policy.setRun(it.into(RUN).into(Run.class));
                     policy.setExperiment(it.into(EXPERIMENT).into(Experiment.class));
                     policy.setModel(it.into(MODEL).into(Model.class));
                     policy.setProject(it.into(PROJECT).into(Project.class));
+
+                    // Helper for performance reasons
+                    policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
 
                     return policy;
                 });
@@ -79,14 +70,25 @@ public class PolicyDAO extends PolicyRepository
         return ctx.select(DSL.one()).from(POLICY).where(POLICY.ID.eq(policyId).and(POLICY.FILE.isNotNull())).fetchOptional().isPresent();
     }
 
+    public boolean hasPolicyFile(long policyId, String content){
+        boolean hasPolicy = hasPolicyFile(policyId);
+        if (hasPolicy) {
+            String dbContents = new String(getPolicyFile(policyId));
+            if (!dbContents.equals(content)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public byte[] getPolicyFile(long policyId){
         return ctx.select(POLICY.FILE).from(POLICY).where(POLICY.ID.eq(policyId).and(POLICY.FILE.isNotNull())).fetchOne(POLICY.FILE);
     }
 
     public long insertPolicy(Policy policy) {
-        return ctx.insertInto(tbl)
-                .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID)
-                .values(policy.getName(), policy.getRunId(), policy.getName())
+        return ctx.insertInto(POLICY)
+                .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM)
+                .values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm())
                 .returning(POLICY.ID)
                 .fetchOne()
                 .getValue(POLICY.ID);

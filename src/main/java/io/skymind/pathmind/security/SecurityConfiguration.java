@@ -36,9 +36,6 @@ import java.util.Map;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
 
-    @Value("${pathmind.development.mode}")
-    private boolean isDevelopmentMode;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -81,7 +78,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // Restrict access to our application.
                 .and().authorizeRequests()
 
-                // Allow access to sign-up view
+                // Allow access to sign-up view (disabled for public beta https://github.com/SkymindIO/pathmind-webapp/issues/356)
                 .antMatchers("/" + Routes.LOGIN_URL + Routes.WITH_PARAMETER).permitAll()
                 .antMatchers("/" + Routes.SIGN_UP_URL).permitAll()
                 .antMatchers("/" + Routes.RESET_PASSWORD_URL + Routes.WITH_PARAMETER).permitAll()
@@ -151,13 +148,5 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 // (production mode) static resources
                 "/frontend-es5/**", "/frontend-es6/**");
-
-        // workaround for this issue: https://github.com/vaadin/flow/issues/6471
-        // this is only needed in nmp development mode
-		if (isDevelopmentMode) {
-            web.ignoring().antMatchers(
-                    "/error"
-            );
-        }
     }
 }
