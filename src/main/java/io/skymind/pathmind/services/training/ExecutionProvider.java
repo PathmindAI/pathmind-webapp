@@ -12,7 +12,7 @@ public interface ExecutionProvider {
      * @param job Job Definition
      * @return Job Handle to be used with other methods
      */
-    public String execute(JobSpec job);
+    String execute(JobSpec job);
 
     /**
      * Stops the execution of the training  job identified by the given job handle.
@@ -20,14 +20,14 @@ public interface ExecutionProvider {
      *
      * @param jobHandle Job Handle
      */
-    public void stop(String jobHandle);
+    void stop(String jobHandle);
 
     /**
      * Collect the status of the training job identified by the given job handle.
      * @param jobHandle Job Handle
      * @return The current status
      */
-    public RunStatus status(String jobHandle);
+    RunStatus status(String jobHandle);
 
     /**
      * Collects the current progress of the training job identified by the given job handle.
@@ -45,7 +45,17 @@ public interface ExecutionProvider {
      * @param jobHandle Job Handle
      * @return Map of training run to the contents of its progress file
      */
-    public Map<String, String> progress(String jobHandle);
+    Map<String, String> progress(String jobHandle);
+
+    /**
+     * Collects the current progress of the training job identified by the given job handle for the given job status
+     *
+     * @param jobHandle Job Handle
+     * @param runStatus Job Status
+     *
+     * @return Map of training run to the contents of its progress file
+     */
+    Map<String, String> progress(String jobHandle, RunStatus runStatus);
 
     /**
      * Download the policy file from the given jobHandle and trainingRun

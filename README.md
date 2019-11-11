@@ -30,6 +30,9 @@ mvn spring-boot:run
 
 Your local env will be running at 127.0.0.1:8080
 
+Here are instructions for how you can try out the app and the files you can upload to train:
+https://help.pathmind.com/en/articles/3329544-getting-started
+
 #### Details
 
 When working on this project, you will have to set up a PostgreSQL database server locally. And set the credentials for
