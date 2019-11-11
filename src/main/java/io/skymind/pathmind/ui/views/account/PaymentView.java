@@ -8,6 +8,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.polymertemplate.EventHandler;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -79,7 +80,7 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model> implements B
 	{
 		Objects.requireNonNull(paymentMethod);
 		if (!isValid(paymentMethod)) {
-			NotificationUtils.showCenteredSimpleNotification("Missing form fields. Please make sure to fill in all the fields", NotificationUtils.Style.Warn);
+			NotificationUtils.showNotification("Missing form fields. Please make sure to fill in all the fields", NotificationVariant.LUMO_ERROR);
 			return;
 		}
 		getModel().setIsFormComplete(false);
@@ -102,7 +103,7 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model> implements B
 		} catch (StripeException e) {
 			log.warn("There was an error creating a subscription for the customer: " + user.getEmail());
 			getModel().setIsFormComplete(true);
-			NotificationUtils.showCenteredSimpleNotification("There was a problem creating a subsription, please try again later", NotificationUtils.Style.Warn);
+			NotificationUtils.showNotification("There was a problem creating a subsription, please try again later", NotificationVariant.LUMO_ERROR);
 		}
 	}
 

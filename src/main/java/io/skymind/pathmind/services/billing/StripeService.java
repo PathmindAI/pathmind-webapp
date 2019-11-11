@@ -3,7 +3,6 @@ package io.skymind.pathmind.services.billing;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
-import com.stripe.model.PaymentIntent;
 import com.stripe.model.Subscription;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
