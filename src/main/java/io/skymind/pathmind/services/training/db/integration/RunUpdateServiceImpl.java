@@ -62,6 +62,12 @@ public class RunUpdateServiceImpl implements RunUpdateService {
         // TODO -> DH -> Can you please adjust how you would prefer to have the backend setup because it's quite janky right now. I just temporarily
         //  put this to get the solution working and avoid code duplication. I basically need the model and experiment data models.
         Run run = RunRepository.getRun(ctx, runId);
+        // IMPORTANT -> Needed to prevent an issue with the training list missing data. Unfortunately the get (SELECT) returns the values
+        // from before the UPDATE has been saved to the database. This is also required for the EventBus.post() to work as the training
+        // list requires this information.
+        run.setStatusEnum(status);
+        run.setStoppedAt(RunStatus.isRunning(status) ? null : now);
+
         Experiment experiment = run.getExperiment();
         Model model = run.getModel();
         Project project = run.getProject();
@@ -132,8 +138,8 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
                 // For performance reasons.
                 policy.setStartedAt(progress.getStartedAt());
-                policy.setAlgorithm(progress.getAlgorithm());
                 policy.setStoppedAt(progress.getStoppedAt());
+                policy.setAlgorithm(progress.getAlgorithm());
 
                 // For performance reasons.
                 policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));

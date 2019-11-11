@@ -23,7 +23,7 @@ public class PolicyRepository
 
     public List<Policy> getPoliciesForUser(long userId) {
         Result<?> result = dslContext
-                .select(POLICY.asterisk())
+                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM)
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
                 .select(EXPERIMENT.ID, EXPERIMENT.NAME)
                 .select(MODEL.ID, MODEL.NAME)
@@ -55,7 +55,7 @@ public class PolicyRepository
 
     public static Policy getPolicy(DSLContext ctx, long policyId) {
         Record record = ctx
-                .select(POLICY.asterisk())
+                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM)
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
                 .select(EXPERIMENT.ID, EXPERIMENT.NAME)
                 .select(MODEL.ID, MODEL.NAME)
@@ -76,6 +76,9 @@ public class PolicyRepository
 
 		Policy policy = record.into(POLICY).into(Policy.class);
 		PolicyUtils.processProgressJson(policy);
+		policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
+		policy.setNotes(PolicyUtils.getNotesFromName(policy));
+
 		addParentDataModelObjects(record, policy);
 
 		return policy;

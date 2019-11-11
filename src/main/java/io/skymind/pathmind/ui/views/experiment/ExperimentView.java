@@ -171,11 +171,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 buttons);
     }
 
-    @Override
-    protected boolean isAccessAllowedForUser() {
-      return userDAO.isUserAllowedAccessToExperiment(experimentId);
-    }
-
     /**
      * For now I'm doing a manual parse of the parameter since Vaadin only seems
      * to have the ability to parse to a wildcard parameter if you need more than one parameter
@@ -196,6 +191,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentId = Long.parseLong(segments[EXPERIMENT_ID_SEGMENT]);
         if (segments.length > 1 && NumberUtils.isDigits(segments[POLICY_ID_SEGMENT]))
             policyId = Long.parseLong(segments[POLICY_ID_SEGMENT]);
+    }
+
+    @Override
+    protected boolean isAccessAllowedForUser() {
+        return userDAO.isUserAllowedAccessToExperiment(experimentId);
     }
 
     @Override

@@ -26,7 +26,7 @@ public class PolicyDAO extends PolicyRepository
         final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.RUN_ID)
                 .select(EXPERIMENT.asterisk())
                 .select(RUN.asterisk())
-                .select(MODEL.asterisk())
+                .select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.ARCHIVED)
                 .select(PROJECT.asterisk())
                 .from(POLICY)
                 .join(RUN)

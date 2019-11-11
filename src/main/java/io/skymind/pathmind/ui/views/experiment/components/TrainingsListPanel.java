@@ -2,7 +2,6 @@ package io.skymind.pathmind.ui.views.experiment.components;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSingleSelectionModel;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -22,8 +21,6 @@ import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.views.policy.filter.PolicyFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -191,9 +188,6 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
     	experiment.getPolicies().stream()
         	.filter(policy -> Long.toString(policy.getId()).equals(policyId))
         	.findAny()
-        	.ifPresent(
-                policy -> {
-                	grid.select(policy);
-                });
+        	.ifPresent(policy -> grid.select(policy));
     }
 }

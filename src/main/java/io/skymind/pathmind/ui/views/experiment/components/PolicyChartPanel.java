@@ -2,14 +2,13 @@ package io.skymind.pathmind.ui.views.experiment.components;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
-import static io.skymind.pathmind.utils.ChartUtils.createActiveSeriesPlotOptions;
-import static io.skymind.pathmind.utils.ChartUtils.createPassiveSeriesPlotOptions;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.function.SerializableConsumer;
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
@@ -19,9 +18,11 @@ import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.components.FilterableComponent;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import org.springframework.stereotype.Component;
-import com.vaadin.flow.function.SerializableConsumer;
-import com.vaadin.flow.component.UI;
+
 import java.util.List;
+
+import static io.skymind.pathmind.utils.ChartUtils.createActiveSeriesPlotOptions;
+import static io.skymind.pathmind.utils.ChartUtils.createPassiveSeriesPlotOptions;
 
 @Component
 public class PolicyChartPanel extends VerticalLayout implements FilterableComponent<Policy>, PolicyUpdateSubscriber {
