@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,13 +40,30 @@ public class PolicyUtils
             return policy.getStoppedAt();
         return null;
     }
+    
+    /**
+     * If abs(score) > 1, show one decimal point
+     * else show 6 decimal points
+     */
+    private static DecimalFormat getLastScoreFormatter(Double score) {
+ 		DecimalFormat decimalFormat = new DecimalFormat();
+ 		if (Math.abs(score) > 1) {
+ 			decimalFormat.setMaximumFractionDigits(1);
+ 		} else {
+ 			decimalFormat.setMaximumFractionDigits(6);
+ 		}
+ 		return decimalFormat;
+ 	}
 
-    public static String getLastScoreString(Policy policy) {
-        Number number = getLastScore(policy);
-        return number == null ? "" : number.toString();
-    }
+ 	public static String getFormattedLastScore(Policy policy) {
+ 		Double score = getLastScore(policy);
+ 		if(score == null) {
+ 			return "";
+ 		}
+ 		return getLastScoreFormatter(score).format(score);
+ 	}
 
-    public static Number getLastScore(Policy policy) {
+    public static Double getLastScore(Policy policy) {
         if(policy == null || policy.getScores() == null || policy.getScores().isEmpty())
             return null;
         return policy.getScores().get(policy.getScores().size() - 1).getMean();
