@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSingleSelectionModel;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -74,9 +75,11 @@ public class TrainingsListPanel extends VerticalLayout {
                 .setAutoWidth(true)
                 .setSortable(true);
 
-        grid.addColumn(policy -> PolicyUtils.getLastScore(policy))
+        grid.addColumn(policy -> PolicyUtils.getFormattedLastScore(policy))
+        		.setComparator(Comparator.comparing(policy -> PolicyUtils.getLastScore(policy), Comparator.nullsFirst(Comparator.naturalOrder())))
                 .setHeader("Score")
                 .setAutoWidth(true)
+                .setTextAlign(ColumnTextAlign.END)
                 .setSortable(true);
 
         grid.addColumn(policy -> PolicyUtils.getParsedPolicyName(policy))
@@ -185,7 +188,7 @@ public class TrainingsListPanel extends VerticalLayout {
         subscribeToEventBus(UI.getCurrent(), consumer);
     }
     
-    public void selectPolicyWithId(String policyId) {
+	public void selectPolicyWithId(String policyId) {
     	experiment.getPolicies().stream()
         	.filter(policy -> Long.toString(policy.getId()).equals(policyId))
         	.findAny()
