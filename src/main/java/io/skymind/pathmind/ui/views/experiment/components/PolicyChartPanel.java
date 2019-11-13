@@ -2,14 +2,6 @@ package io.skymind.pathmind.ui.views.experiment.components;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
-import static io.skymind.pathmind.utils.ChartUtils.createActiveSeriesPlotOptions;
-import static io.skymind.pathmind.utils.ChartUtils.createPassiveSeriesPlotOptions;
-
-import java.util.List;
-
-import org.springframework.stereotype.Component;
-
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.ListSeries;
@@ -20,17 +12,12 @@ import com.vaadin.flow.function.SerializableConsumer;
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
-import com.vaadin.flow.function.SerializableConsumer;
-
-import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.components.FilterableComponent;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
 
 import java.util.List;
 
