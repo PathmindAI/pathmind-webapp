@@ -158,6 +158,28 @@ account-view {
     align-items: center;
 }
 
+.action-button iron-icon {
+	width: 32px;
+	height: 32px;
+}
+
+.readonly-label {
+	align-self: flex-start;
+    color: var(--lumo-secondary-text-color);
+    font-weight: 500;
+    font-size: var(--lumo-font-size-s);
+    margin-left: calc(var(--lumo-border-radius-m) / 4);
+    transition: color 0.2s;
+    line-height: 1;
+    padding-bottom: 0.5em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    position: relative;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
 @media (max-width: 1448px) {
     html {
         font-size: 15px;
