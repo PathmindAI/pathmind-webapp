@@ -74,7 +74,7 @@ public class TrainingsListPanel extends VerticalLayout {
                 .setSortable(true);
 
         Grid.Column<Policy> scoreColumn = grid.addColumn(policy -> PolicyUtils.getFormattedLastScore(policy))
-        		.setComparator(Comparator.comparing(policy -> PolicyUtils.getLastScore(policy), Comparator.nullsFirst(Comparator.naturalOrder())))
+        		.setComparator(Comparator.comparing(policy -> PolicyUtils.getLastScore(policy), Comparator.nullsLast(Comparator.naturalOrder())))
                 .setHeader("Score")
                 .setAutoWidth(true)
                 .setTextAlign(ColumnTextAlign.END)
