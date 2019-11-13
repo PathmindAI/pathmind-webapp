@@ -33,6 +33,7 @@ import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.BackButton;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
+import io.skymind.pathmind.ui.components.buttons.ShowRewardFunctionButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
@@ -135,7 +136,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     }
 
     private HorizontalLayout createActionButtons(Experiment exp) {
-    	Button showRewardFunctionButton = createShowRewardFunctionButton();
+    	ShowRewardFunctionButton showRewardFunctionButton = new ShowRewardFunctionButton();
     	showRewardFunctionButton.addClickListener(evt -> showRewardFunction(exp));
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.add(archivesTabPanel.getArchivesButton(exp), showRewardFunctionButton);
@@ -145,13 +146,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	private void showRewardFunction(Experiment exp) {
 		rewardFunctionTitle.setText("Reward Function - Experiment #" + exp.getName());
 		rewardFunctionEditor.setValue(exp.getRewardFunction());
-	}
-
-	private Button createShowRewardFunctionButton() {
-		Button showRewardFunction = new Button(VaadinIcon.CODE.create());
-		showRewardFunction.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-		showRewardFunction.setClassName("action-button");
-		return showRewardFunction;
 	}
 
 	private void handleExperimentClick(Experiment experiment) {
