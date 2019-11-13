@@ -31,11 +31,10 @@ public class RunUpdateServiceImpl implements RunUpdateService {
     private final DSLContext ctx;
     private final ObjectMapper mapper;
 
-    public RunUpdateServiceImpl(DSLContext ctx, ObjectMapper mapper) {
-    private final static String lrPatternStr = "lr=.*,";
-    private final static Pattern lrPattern = Pattern.compile(lrPatternStr);
+    private static final String lrPatternStr = "lr=.*,";
+    private static final Pattern lrPattern = Pattern.compile(lrPatternStr);
 
-    public RunUpdateServiceImpl(DSLContext ctx, ObjectMapper mapper, UnicastProcessor<PathmindBusEvent> publisher) {
+    public RunUpdateServiceImpl(DSLContext ctx, ObjectMapper mapper) {
         this.ctx = ctx;
         this.mapper = mapper;
     }
