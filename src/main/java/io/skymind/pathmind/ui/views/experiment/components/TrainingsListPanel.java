@@ -144,7 +144,6 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
                 .filter(policy -> policy.getId() == updatedPolicy.getId())
                 .forEach(policy -> {
                     policy.setExternalId(updatedPolicy.getExternalId());
-                    policy.setProgress(updatedPolicy.getProgress());
                     policy.setScores(updatedPolicy.getScores());
                     policy.setRun(updatedPolicy.getRun());
                     policy.setStartedAt(updatedPolicy.getStartedAt());

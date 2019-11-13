@@ -132,7 +132,6 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 policy.setName(progress.getId());
                 policy.setExternalId(progress.getId());
                 policy.setScores(progress.getRewardProgression());
-                policy.setProgress(progressJsonStr);
                 policy.setExperiment(experiment);
                 policy.setModel(model);
                 policy.setProject(project);
