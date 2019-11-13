@@ -57,8 +57,8 @@ public class PolicyUtils
 
  	public static String getFormattedLastScore(Policy policy) {
  		Double score = getLastScore(policy);
- 		if(score == null) {
- 			return "";
+ 		if(score == null || score.isNaN()) {
+ 			return "-";
  		}
  		return getLastScoreFormatter(score).format(score);
  	}

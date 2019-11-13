@@ -67,8 +67,8 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
                 .setAutoWidth(true)
                 .setSortable(true);
 
-        grid.addColumn(policy -> PolicyUtils.getFormattedLastScore(policy))
-        		.setComparator(Comparator.comparing(policy -> PolicyUtils.getLastScore(policy), Comparator.nullsFirst(Comparator.naturalOrder())))
+        Grid.Column<Policy> scoreColumn = grid.addColumn(policy -> PolicyUtils.getFormattedLastScore(policy))
+        		.setComparator(Comparator.comparing(policy -> PolicyUtils.getLastScore(policy), Comparator.nullsLast(Comparator.naturalOrder())))
                 .setHeader("Score")
                 .setAutoWidth(true)
                 .setTextAlign(ColumnTextAlign.END)
@@ -95,7 +95,7 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
                 .setSortable(true);
 
         grid.sort(Arrays.asList(
-                new GridSortOrder<>(startedColumn, SortDirection.DESCENDING)));
+                new GridSortOrder<Policy>(scoreColumn, SortDirection.DESCENDING)));
     }
 
     public void addSelectionListener(Consumer<Policy> consumer) {
