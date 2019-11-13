@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.data.db.Tables.*;
 
-@org.springframework.stereotype.Repository
+@Repository
 public class PolicyRepository
 {
     @Autowired

@@ -8,12 +8,13 @@ import io.skymind.pathmind.db.repositories.PolicyRepository;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.impl.DSL;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 import static io.skymind.pathmind.data.db.Tables.*;
 
-@org.springframework.stereotype.Repository
+@Repository
 public class PolicyDAO extends PolicyRepository
 {
     private final DSLContext ctx;
