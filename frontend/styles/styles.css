@@ -158,6 +158,11 @@ account-view {
     align-items: center;
 }
 
+.action-button iron-icon {
+	width: 32px;
+	height: 32px;
+}
+
 @media (max-width: 1448px) {
     html {
         font-size: 15px;
