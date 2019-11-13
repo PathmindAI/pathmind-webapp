@@ -65,7 +65,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     private TextArea getObservationTextArea;
     private RewardFunctionEditor rewardFunctionEditor;
     private Label rewardFunctionTitle;
-    private Label activeExperimentName;
 
     public ExperimentsView() {
         super();
@@ -87,7 +86,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
                                 experimentGrid),
                         WrapperUtils.wrapSizeFullVertical(
                         		rewardFunctionTitle,
-                        		activeExperimentName,
                                 rewardFunctionEditor,
                                 getObservationTextArea),
                         70),
@@ -96,10 +94,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
     private void setupRewardFunctionEditor() {
     	rewardFunctionTitle = new Label("Reward Functions");
-    	rewardFunctionTitle.addClassNames("readonly-label", "reward-function-title");
-    	activeExperimentName = new Label("");
-    	activeExperimentName.addClassName("readonly-label");
-    	activeExperimentName.setVisible(false);
+    	rewardFunctionTitle.addClassNames("readonly-label");
         rewardFunctionEditor = new RewardFunctionEditor();
         rewardFunctionEditor.setReadonly(true);
         rewardFunctionEditor.setSizeFull();
@@ -148,9 +143,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	}
 
 	private void showRewardFunction(Experiment exp) {
-		activeExperimentName.setText("Experiment Number: " + exp.getName());
-		activeExperimentName.setVisible(true);
-		
+		rewardFunctionTitle.setText("Reward Function - Experiment #" + exp.getName());
 		rewardFunctionEditor.setValue(exp.getRewardFunction());
 	}
 

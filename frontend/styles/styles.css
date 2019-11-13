@@ -179,9 +179,6 @@ account-view {
     max-width: 100%;
     box-sizing: border-box;
 }
-.reward-function-title {
-	font-weight: bold !important;
-}
 
 @media (max-width: 1448px) {
     html {
