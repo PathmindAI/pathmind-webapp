@@ -75,7 +75,11 @@ public class PolicyRepository
 				.fetchOne();
 
 		Policy policy = record.into(POLICY).into(Policy.class);
-		PolicyUtils.processProgressJson(policy);
+
+		// PERFORMANCE -> Until we remove the json progress string this is to help optimizing the memory usage.
+		PolicyUtils.processProgressJson(policy, policy.getProgress());
+		policy.setProgress(null);
+
 		policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
 		policy.setNotes(PolicyUtils.getNotesFromName(policy));
 

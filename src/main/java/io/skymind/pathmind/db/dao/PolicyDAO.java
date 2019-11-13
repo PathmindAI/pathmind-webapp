@@ -45,13 +45,12 @@ public class PolicyDAO extends PolicyRepository
                     policy.setName(it.get(POLICY.NAME));
                     policy.setRunId(it.get(POLICY.RUN_ID));
 
-                    final JSONB progressJson = it.get(POLICY.PROGRESS);
-                    policy.setProgress(progressJson.toString());
                     // TODO -> Although we process everything we could also get the values from the database. However until scores is also stored in the database
                     // we might as well do it here.
-                    PolicyUtils.processProgressJson(policy);
+                    PolicyUtils.processProgressJson(policy, it.get(POLICY.PROGRESS).toString());
                     // PERFORMANCE => can this be simplified? It's very expensive just to get Notes (both interpretKey and the HashMap of HyperParameters
                     policy.setNotes(PolicyUtils.getNotesFromName(policy));
+                    policy.setProgress(null);
 
                     policy.setRun(it.into(RUN).into(Run.class));
                     policy.setExperiment(it.into(EXPERIMENT).into(Experiment.class));
