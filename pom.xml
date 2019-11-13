@@ -177,7 +177,7 @@
                 <configuration>
                     <changeLogFile>src/main/resources/db/changelog/changelog-master.xml</changeLogFile>
                     <driver>org.postgresql.Driver</driver>
-                    <url>jdbc:postgresql://localhost/pathmind?user=skynet&amp;password=skynetskynet123</url>
+                    <url>${DB_URL}</url>
                 </configuration>
             </plugin>
             <plugin>
@@ -199,7 +199,7 @@
                 <configuration>
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
-                        <url>jdbc:postgresql://localhost/pathmind?user=skynet&amp;password=skynetskynet123</url>
+                        <url>${DB_URL}</url>
                     </jdbc>
                     <generator>
                         <generate>
@@ -230,14 +230,20 @@
             </activation>
             <properties>
                 <db.driver>org.postgresql.Driver</db.driver>
-                <db.url>jdbc:postgresql://localhost/pathmind?user=skynet&amp;password=skynetskynet123</db.url>
+                <db.url>jdbc:postgresql://localhost:5432/PATHMIND</db.url>
+                <!--                <db.schema>PATHMIND</db.schema>-->
+                <db.username>postgres</db.username>
+                <db.password>37iCIf83J0fTAOn2AUDQ</db.password>
             </properties>
         </profile>
         <profile>
             <id>dev</id>
             <properties>
                 <db.driver>org.postgresql.Driver</db.driver>
-                <db.url>jdbc:postgresql://localhost/pathmind?user=skynet&amp;password=skynetskynet123</db.url>
+                <db.url>jdbc:postgresql://localhost:5432/PATHMIND</db.url>
+                <!--                <db.schema>PATHMIND</db.schema>-->
+                <db.username>postgres</db.username>
+                <db.password>37iCIf83J0fTAOn2AUDQ</db.password>
                 <vaadin.productionMode>true</vaadin.productionMode>
             </properties>
             <dependencies>
@@ -267,7 +273,10 @@
             <id>production</id>
             <properties>
                 <db.driver>org.postgresql.Driver</db.driver>
-                <db.url>jdbc:postgresql://localhost/pathmind?user=skynet&amp;password=skynetskynet123</db.url>
+                <db.url>jdbc:postgresql://localhost:5432/PATHMIND</db.url>
+                <!--                <db.schema>PATHMIND</db.schema>-->
+                <db.username>postgres</db.username>
+                <db.password>37iCIf83J0fTAOn2AUDQ</db.password>
                 <vaadin.productionMode>true</vaadin.productionMode>
             </properties>
             <dependencies>
