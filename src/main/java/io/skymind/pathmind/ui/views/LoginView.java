@@ -83,7 +83,9 @@ public class LoginView extends HorizontalLayout
 
 		Div innerContent = new Div();
 		innerContent.setClassName("inner-content");
-		innerContent.add(badCredentials, emailNotVerified, createLoginForm(), createSignUp());
+		// Temporarily block new signups for public beta - issue https://github.com/SkymindIO/pathmind-webapp/issues/356
+		// innerContent.add(badCredentials, emailNotVerified, createLoginForm(), createSignUp());
+		innerContent.add(badCredentials, emailNotVerified, createLoginForm());
 
 		Div policy = new Div();
 		policy.addClassName("policy");

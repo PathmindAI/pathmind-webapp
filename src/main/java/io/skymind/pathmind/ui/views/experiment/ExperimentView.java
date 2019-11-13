@@ -1,5 +1,11 @@
 package io.skymind.pathmind.ui.views.experiment;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -35,6 +41,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.UnicastProcessor;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
@@ -104,7 +112,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             policyStatusDetailsPanel.update(selectedPolicy);
             policyChartPanel.init(selectedPolicy);
             policyChartPanel.highlightPolicy(selectedPolicy);
-            exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
+
+            // to avoid multiple download policy file from rescale server,
+            // we put the "saving" for temporary
+            // policy dao will check if there's real policy file exist or not
+            // todo make saving to enum or static final variable
+            exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId(), "saving"));
 
             RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
             if (selectedRunType == RunType.TestRun && experiment.getPolicies().size() == 1) {

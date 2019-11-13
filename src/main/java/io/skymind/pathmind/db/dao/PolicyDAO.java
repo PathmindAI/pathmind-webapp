@@ -71,6 +71,17 @@ public class PolicyDAO extends PolicyRepository
         return ctx.select(DSL.one()).from(POLICY).where(POLICY.ID.eq(policyId).and(POLICY.FILE.isNotNull())).fetchOptional().isPresent();
     }
 
+    public boolean hasPolicyFile(long policyId, String content){
+        boolean hasPolicy = hasPolicyFile(policyId);
+        if (hasPolicy) {
+            String dbContents = new String(getPolicyFile(policyId));
+            if (!dbContents.equals(content)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public byte[] getPolicyFile(long policyId){
         return ctx.select(POLICY.FILE).from(POLICY).where(POLICY.ID.eq(policyId).and(POLICY.FILE.isNotNull())).fetchOne(POLICY.FILE);
     }
