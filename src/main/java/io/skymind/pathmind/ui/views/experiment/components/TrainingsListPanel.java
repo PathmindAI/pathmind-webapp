@@ -75,7 +75,7 @@ public class TrainingsListPanel extends VerticalLayout {
                 .setAutoWidth(true)
                 .setSortable(true);
 
-        grid.addColumn(policy -> PolicyUtils.getFormattedLastScore(policy))
+        Grid.Column<Policy> scoreColumn = grid.addColumn(policy -> PolicyUtils.getFormattedLastScore(policy))
         		.setComparator(Comparator.comparing(policy -> PolicyUtils.getLastScore(policy), Comparator.nullsFirst(Comparator.naturalOrder())))
                 .setHeader("Score")
                 .setAutoWidth(true)
@@ -103,7 +103,7 @@ public class TrainingsListPanel extends VerticalLayout {
                 .setSortable(true);
 
         grid.sort(Arrays.asList(
-                new GridSortOrder<Policy>(startedColumn, SortDirection.DESCENDING)));
+                new GridSortOrder<Policy>(scoreColumn, SortDirection.ASCENDING)));
     }
 
     public void addSelectionListener(Consumer<Policy> consumer) {
