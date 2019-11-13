@@ -1,14 +1,23 @@
 package io.skymind.pathmind.ui.views.experiment;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
@@ -32,9 +41,6 @@ import io.skymind.pathmind.ui.views.experiment.filter.ExperimentFilter;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.model.ModelsView;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENTS_URL, layout = MainLayout.class)
@@ -54,10 +60,12 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     private Model currentModel;
     private List<Experiment> experiments;
 
-    private ArchivesTabPanel archivesTabPanel;
+    private ArchivesTabPanel<Experiment> archivesTabPanel;
     private ExperimentGrid experimentGrid;
     private TextArea getObservationTextArea;
     private RewardFunctionEditor rewardFunctionEditor;
+    private Label rewardFunctionTitle;
+    private Label activeExperimentName;
 
     public ExperimentsView() {
         super();
@@ -78,6 +86,8 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
                         WrapperUtils.wrapSizeFullVertical(
                                 experimentGrid),
                         WrapperUtils.wrapSizeFullVertical(
+                        		rewardFunctionTitle,
+                        		activeExperimentName,
                                 rewardFunctionEditor,
                                 getObservationTextArea),
                         70),
@@ -85,6 +95,11 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     }
 
     private void setupRewardFunctionEditor() {
+    	rewardFunctionTitle = new Label("Reward Functions");
+    	rewardFunctionTitle.addClassNames("readonly-label", "reward-function-title");
+    	activeExperimentName = new Label("");
+    	activeExperimentName.addClassName("readonly-label");
+    	activeExperimentName.setVisible(false);
         rewardFunctionEditor = new RewardFunctionEditor();
         rewardFunctionEditor.setReadonly(true);
         rewardFunctionEditor.setSizeFull();
@@ -112,6 +127,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     private void setupArchivesTabPanel() {
         archivesTabPanel = new ArchivesTabPanel<Experiment>(
                 "Experiments",
+                false,
                 experimentGrid,
                 this::getExperiments,
                 (experimentId, isArchivable) -> experimentDAO.archive(experimentId, isArchivable));
@@ -119,10 +135,33 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
     private void setupExperimentListPanel() {
         experimentGrid = new ExperimentGrid();
+        experimentGrid.addComponentColumn(exp -> createActionButtons(exp)).setHeader("Actions").setSortable(false);
         experimentGrid.addItemClickListener(event -> handleExperimentClick(event.getItem()));
     }
 
-    private void handleExperimentClick(Experiment experiment) {
+    private HorizontalLayout createActionButtons(Experiment exp) {
+    	Button showRewardFunctionButton = createShowRewardFunctionButton();
+    	showRewardFunctionButton.addClickListener(evt -> showRewardFunction(exp));
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.add(archivesTabPanel.getArchivesButton(exp), showRewardFunctionButton);
+		return layout;
+	}
+
+	private void showRewardFunction(Experiment exp) {
+		activeExperimentName.setText("Experiment Number: " + exp.getName());
+		activeExperimentName.setVisible(true);
+		
+		rewardFunctionEditor.setValue(exp.getRewardFunction());
+	}
+
+	private Button createShowRewardFunctionButton() {
+		Button showRewardFunction = new Button(VaadinIcon.CODE.create());
+		showRewardFunction.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		showRewardFunction.setClassName("action-button");
+		return showRewardFunction;
+	}
+
+	private void handleExperimentClick(Experiment experiment) {
         if (ExperimentUtils.isDraftRunType(experiment)) {
             UI.getCurrent().navigate(NewExperimentView.class, experiment.getId());
         } else {
@@ -169,6 +208,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         experimentGrid.setItems(experiments);
         archivesTabPanel.initData();
         getObservationTextArea.setValue(currentModel.getGetObservationForRewardFunction());
+        showRewardFunction(experiments.get(0));
     }
 
     @Override
