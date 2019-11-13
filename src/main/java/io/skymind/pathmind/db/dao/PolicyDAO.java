@@ -1,5 +1,7 @@
 package io.skymind.pathmind.db.dao;
 
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.repositories.PolicyRepository;
@@ -25,7 +27,7 @@ public class PolicyDAO extends PolicyRepository
         final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.RUN_ID)
                 .select(EXPERIMENT.asterisk())
                 .select(RUN.asterisk())
-                .select(MODEL.asterisk())
+                .select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.ARCHIVED)
                 .select(PROJECT.asterisk())
                 .from(POLICY)
                 .join(RUN)
@@ -44,13 +46,12 @@ public class PolicyDAO extends PolicyRepository
                     policy.setName(it.get(POLICY.NAME));
                     policy.setRunId(it.get(POLICY.RUN_ID));
 
-                    final JSONB progressJson = it.get(POLICY.PROGRESS);
-                    policy.setProgress(progressJson.toString());
                     // TODO -> Although we process everything we could also get the values from the database. However until scores is also stored in the database
                     // we might as well do it here.
-                    PolicyUtils.processProgressJson(policy);
+                    PolicyUtils.processProgressJson(policy, it.get(POLICY.PROGRESS).toString());
                     // PERFORMANCE => can this be simplified? It's very expensive just to get Notes (both interpretKey and the HashMap of HyperParameters
                     policy.setNotes(PolicyUtils.getNotesFromName(policy));
+                    policy.setProgress(null);
 
                     policy.setRun(it.into(RUN).into(Run.class));
                     policy.setExperiment(it.into(EXPERIMENT).into(Experiment.class));
@@ -86,11 +87,17 @@ public class PolicyDAO extends PolicyRepository
     }
 
     public long insertPolicy(Policy policy) {
-        return ctx.insertInto(POLICY)
+        long policyId = ctx.insertInto(POLICY)
                 .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM)
                 .values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm())
                 .returning(POLICY.ID)
                 .fetchOne()
                 .getValue(POLICY.ID);
+
+        // Quick solution until we have more time to properly resolve this as per: https://github.com/SkymindIO/pathmind-webapp/issues/390
+        Policy savedPolicy = getPolicy(ctx, policyId);
+        EventBus.post(new PolicyUpdateBusEvent(savedPolicy));
+
+        return policyId;
     }
 }
