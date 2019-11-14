@@ -20,7 +20,7 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ModelUtils;
-import io.skymind.pathmind.data.utils.ProjectUtils;
+import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.PathmindUserDetails;
@@ -48,6 +48,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	@Autowired
 	private ProjectDAO projectDAO;
+	
+	@Autowired
+	private ModelDAO modelDAO;
+	
 	@Autowired
 	private ProjectFileCheckService projectFileCheckService ;
 
@@ -113,11 +117,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	{
 		ExceptionWrapperUtils.handleButtonClicked(() ->
 		{
-			// Project has already passed validations in a previous panel of the wizard.
 			if(!FormUtils.isValidForm(modelBinder, model))
 				return;
 
-			final long experimentId = projectDAO.setupNewProject(project, model);
+			final long experimentId = modelDAO.addModelToProject(model, project.getId());
 
 			UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 		});
@@ -131,11 +134,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			uploadModelWizardPanel.showFileCheckPanel();
 			projectFileCheckService.checkFile(this, model.getFile());
 		}
-	}
-
-	private void handleNextStepClicked() {
-		setVisibleWizardPanel(uploadModelWizardPanel);
-		statusPanel.setUploadModel();
 	}
 
 	private void setVisibleWizardPanel(Component wizardPanel) {
