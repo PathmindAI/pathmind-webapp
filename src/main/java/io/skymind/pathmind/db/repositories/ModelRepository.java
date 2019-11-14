@@ -17,7 +17,8 @@ public class ModelRepository
 
     public List<Model> getModelsForProject(long projectId) {
         return dslContext
-				.selectFrom(MODEL)
+				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.ARCHIVED)
+				.from(MODEL)
 				.where(MODEL.PROJECT_ID.eq(projectId))
 				.fetchInto(Model.class);
     }

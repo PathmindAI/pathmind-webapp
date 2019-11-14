@@ -119,7 +119,7 @@ public class ProjectsView extends PathMindDefaultView
 		return true;
 	}
 	@Override
-	protected void loadData() throws InvalidDataException {
+	protected void initLoadData() throws InvalidDataException {
 		projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId());
 		if(projects == null || projects.isEmpty()) {
 			UI.getCurrent().navigate(NewProjectView.class);
@@ -128,7 +128,7 @@ public class ProjectsView extends PathMindDefaultView
 	}
 
 	@Override
-	protected void updateScreen(BeforeEnterEvent event)
+	protected void initScreen(BeforeEnterEvent event)
 	{
 		projectGrid.setItems(projects);
 		archivesTabPanel.initData();
