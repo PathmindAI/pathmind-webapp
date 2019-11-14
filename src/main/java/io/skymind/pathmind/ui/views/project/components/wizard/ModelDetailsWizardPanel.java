@@ -45,11 +45,8 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 		bindFields(binder);
 
-		numberOfObservationsNumberField.addValueChangeListener(value -> System.out.println("Here"));
-
 		setWidthFull();
 		setClassName("view-section"); // adds the white 'panel' style with rounded corners
-
 	}
 
 	private void setupFields()

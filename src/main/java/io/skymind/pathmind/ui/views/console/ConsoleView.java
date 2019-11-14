@@ -2,17 +2,13 @@ package io.skymind.pathmind.ui.views.console;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
-import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.ConsoleService;
 import io.skymind.pathmind.ui.components.LabelFactory;
@@ -24,7 +20,6 @@ import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import reactor.core.publisher.Flux;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.CONSOLE_URL, layout = MainLayout.class)
@@ -32,8 +27,6 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 {
 	private Logger log = LogManager.getLogger(ConsoleView.class);
 
-	@Autowired
-	private ProjectDAO projectDAO;
 	@Autowired
 	private UserDAO userDAO;
 
@@ -45,12 +38,6 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 	public ConsoleView()
 	{
 		super();
-	}
-
-	@Override
-	protected void subscribeToEventBus() {
-		// TODO -> Implement
-		// consumer.
 	}
 
 	// I do NOT want to implement a default interface because this is to remind me
@@ -82,7 +69,7 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 		return userDAO.isUserAllowedAccessToExperiment(experimentId);
 	}
 
-	protected void updateScreen(BeforeEnterEvent event) {
+	protected void initScreen(BeforeEnterEvent event) {
 		// TODO -> Need to load experiments for project due to new changes in the data model.
 //		project = projectDAO.getProjectForExperiment(experimentId);
 		consoleTextArea.setValue(ConsoleService.getConsoleLogForRun(experimentId));
