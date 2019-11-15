@@ -17,7 +17,6 @@ import io.skymind.pathmind.ui.utils.VaadinUtils;
 @Push(PushMode.AUTOMATIC)
 @CssImport(value = "./styles/styles.css", id = "shared-styles")
 @CssImport(value = "./styles/components/vaadin-text-field.css", themeFor = "vaadin-text-field")
-@CssImport(value = "./styles/components/vaadin-text-area.css", themeFor = "vaadin-text-area")
 @CssImport(value = "./styles/components/vaadin-button.css", themeFor = "vaadin-button")
 @CssImport(value = "./styles/components/vaadin-menu-bar.css", themeFor = "vaadin-menu-bar")
 @CssImport(value = "./styles/components/vaadin-grid.css", themeFor = "vaadin-grid")
