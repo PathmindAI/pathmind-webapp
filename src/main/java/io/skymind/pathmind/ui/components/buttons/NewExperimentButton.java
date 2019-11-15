@@ -17,15 +17,16 @@ public class NewExperimentButton extends Button
 		this(experimentDAO, modelId, "reward = after[0] - before[0];");
 	}
 
-	public NewExperimentButton(ExperimentDAO experimentDAO, long modelId, String rewardFunction)
+	public NewExperimentButton(ExperimentDAO experimentDAO, long modelId, String defaultRewardFunction)
 	{
 		super("New Experiment");
 		setIcon(new Icon(VaadinIcon.PLUS));
 
-		String experimentName = Integer.toString (experimentDAO.getExperimentCount(modelId) + 1);
-
         addClickListener(click ->
 			ExceptionWrapperUtils.handleButtonClicked(() -> {
+				String experimentName = Integer.toString (experimentDAO.getExperimentCount(modelId) + 1);
+				Experiment lastExperiment = experimentDAO.getLastExperimentForModel(modelId);
+				String rewardFunction = lastExperiment != null ? lastExperiment.getRewardFunction() : defaultRewardFunction; 
 				Experiment newExperiment = ExperimentUtils.generateNewDefaultExperiment(modelId, experimentName, rewardFunction);
 				long newExperimentId = experimentDAO.setupNewExperiment(newExperiment);
 				UI.getCurrent().navigate(NewExperimentView.class, newExperimentId);

@@ -177,7 +177,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     }
 
     @Override
-    protected void loadData() throws InvalidDataException {
+    protected void initLoadData() throws InvalidDataException {
         experiments = experimentRepository.getExperimentsForModel(modelId);
         if (experiments == null || experiments.isEmpty())
             throw new InvalidDataException("Attempted to access Experiments for Model: " + modelId);
@@ -191,7 +191,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     }
 
     @Override
-    protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
+    protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
         experimentGrid.setItems(experiments);
         archivesTabPanel.initData();
         getObservationTextArea.setValue(currentModel.getGetObservationForRewardFunction());

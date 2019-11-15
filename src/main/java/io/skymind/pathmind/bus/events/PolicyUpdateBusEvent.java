@@ -1,4 +1,4 @@
-package io.skymind.pathmind.bus.data;
+package io.skymind.pathmind.bus.events;
 
 import io.skymind.pathmind.bus.BusEventType;
 import io.skymind.pathmind.bus.PathmindBusEvent;
@@ -25,11 +25,6 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent
 	@Override
 	public BusEventType getEventType() {
 		return BusEventType.PolicyUpdate;
-	}
-
-	@Override
-	public long getEventDataId() {
-		return policy.getId();
 	}
 
 	public Policy getPolicy() {
