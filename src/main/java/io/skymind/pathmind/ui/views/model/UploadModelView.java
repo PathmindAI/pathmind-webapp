@@ -104,12 +104,12 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 	
 	@Override
-	protected void loadData() throws InvalidDataException {
+	protected void initLoadData() throws InvalidDataException {
 		project = projectDAO.getProject(projectId);
 	}
 	
 	@Override
-	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
+	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
 		uploadModelWizardPanel.setProjectName(project.getName());
 	}
 
