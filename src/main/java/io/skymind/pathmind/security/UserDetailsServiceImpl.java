@@ -5,7 +5,6 @@ import java.util.Collections;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.repositories.UserRepository;
 import io.skymind.pathmind.exception.EmailIsNotVerifiedException;
-import io.skymind.pathmind.ui.plugins.SegmentTracker;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -29,9 +28,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	private final UserRepository userRepository;
 	
 	@Autowired
-	private SegmentTracker tracker;
-
-	@Autowired
 	public UserDetailsServiceImpl(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
@@ -53,7 +49,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		} else if (user.getEmailVerifiedAt() == null) {
 			throw new EmailIsNotVerifiedException(user.getEmail());
 		} else {
-			PathmindUserDetails userDetails = new PathmindUserDetails(
+			return new PathmindUserDetails(
 					user.getEmail(),
 					user.getPassword(),
 					Collections.singletonList(new SimpleGrantedAuthority("logged_in")),
@@ -62,8 +58,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 					user.getLastname(),
 					user.getName()
 					);
-			tracker.userLoggedIn(userDetails);
-			return userDetails;
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.views;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -21,8 +22,7 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
-import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
-import io.skymind.pathmind.ui.plugins.SegmentTracker;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -58,13 +58,12 @@ public class LoginView extends HorizontalLayout
 	private UserService userService;
 	
 	@Autowired
-	private SegmentTracker tracker;
+	private SegmentIntegrator segmentIntegrator;
 
 	private String errorMessage;
 	private String email;
 
-	public LoginView(IntercomIntegrationPlugin intercomIntegrationPlugin,
-					 @Value("${pathmind.privacy-policy.url}") String privacyPolicyUrl,
+	public LoginView(@Value("${pathmind.privacy-policy.url}") String privacyPolicyUrl,
 					 @Value("${pathmind.terms-of-use.url}") String termsOfUseUrl
 					 )
 	{
@@ -103,10 +102,8 @@ public class LoginView extends HorizontalLayout
 		add(loginPanel);
 		loginPanel.setClassName("content");
 		loginPanel.add(welcome, img, title, innerContent, policy);
-
-		intercomIntegrationPlugin.addPluginToPage();
 	}
-
+	
 	private void updateEmailNotVerified() {
 		Button resendVerification = new Button("Resend");
 		resendVerification.getElement().setAttribute("title", "Send verification email again.");
@@ -156,6 +153,7 @@ public class LoginView extends HorizontalLayout
 		loginForm.setI18n(loginI18n);
 		loginForm.setAction("login");
 		loginForm.addForgotPasswordListener(e -> UI.getCurrent().navigate(ResetPasswordView.class));
+		loginForm.addLoginListener(evt -> segmentIntegrator.userLoggedIn());
 		return loginForm;
 	}
 
@@ -175,6 +173,7 @@ public class LoginView extends HorizontalLayout
 			UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 			return;
 		}
+		add(segmentIntegrator);
 	}
 
 	@Override
@@ -197,8 +196,6 @@ public class LoginView extends HorizontalLayout
 		emailNotVerified.setVisible(false);
 		badCredentials.setVisible(false);
 		
-		tracker.trackPageVisit(event.getLocation());
-
 		if (errorMessage == null)
 			return;
 

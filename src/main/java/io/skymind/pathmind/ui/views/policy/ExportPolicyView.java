@@ -1,37 +1,35 @@
 package io.skymind.pathmind.ui.views.policy;
 
+import java.io.ByteArrayInputStream;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
+
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.plugins.SegmentTracker;
-import io.skymind.pathmind.ui.utils.NotificationUtils;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.ByteArrayInputStream;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPORT_POLICY_URL, layout = MainLayout.class)
@@ -44,7 +42,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	@Autowired
 	private UserDAO userDAO;
 	@Autowired
-	private SegmentTracker tracker;
+	private SegmentIntegrator segmentIntegrator;
 
 	private ScreenTitlePanel screenTitlePanel;
 
@@ -74,7 +72,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 		exportButton = new Button("Export");
 		exportButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportButton.setWidth("200px");
-		exportButton.addClickListener(evt -> tracker.policyExported());
+		exportButton.addClickListener(evt -> segmentIntegrator.policyExported());
 
 		exportLink = new Anchor();
 		exportLink.add(exportButton);

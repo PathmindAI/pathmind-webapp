@@ -1,7 +1,6 @@
 package io.skymind.pathmind.services.project;
 
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
-import io.skymind.pathmind.ui.plugins.SegmentTracker;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -19,9 +18,6 @@ public class ProjectFileCheckService {
     @Autowired
     ExecutorService checkerExecutorService;
     
-    @Autowired
-    SegmentTracker tracker;
-
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
     public void checkFile(StatusUpdater statusUpdater, byte[] data) {
         Runnable runnable = () -> {
@@ -37,9 +33,7 @@ public class ProjectFileCheckService {
 
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
                         statusUpdater.fileSuccessfullyVerified();
-                        tracker.modelImported(true);
                     } else {
-                    	tracker.modelImported(false);
                     }
 
                 } finally {
@@ -49,7 +43,6 @@ public class ProjectFileCheckService {
             } catch (Exception e) {
                 log.error("File check interrupted.", e);
                 statusUpdater.updateError("File check interrupted.");
-                tracker.modelImported(false);
             } finally {
                 log.info("Checking : completed");
             }

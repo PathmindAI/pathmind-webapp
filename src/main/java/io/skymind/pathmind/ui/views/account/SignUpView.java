@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.views.account;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -14,15 +15,13 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.EmailValidator;
-import com.vaadin.flow.router.AfterNavigationEvent;
-import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
-import io.skymind.pathmind.ui.plugins.SegmentTracker;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.views.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +32,7 @@ import java.util.List;
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @JsModule("./src/account/sign-up-view.js")
 @Route(value = Routes.SIGN_UP_URL)
-public class SignUpView extends PolymerTemplate<SignUpView.Model> implements AfterNavigationObserver
+public class SignUpView extends PolymerTemplate<SignUpView.Model>
 {
 	private static final String EMAIL_IS_USED = "This email is already used.";
 
@@ -83,7 +82,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Aft
 	private EmailNotificationService emailNotificationService;
 	
 	@Autowired
-	private SegmentTracker tracker;
+	private SegmentIntegrator segmentIntegrator;
 
 	private PathmindUser user;
 	private Binder<PathmindUser> binder;
@@ -94,6 +93,11 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Aft
 		user = new PathmindUser();
 		initView();
 		initBinder();
+	}
+	
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		getElement().appendChild(segmentIntegrator.getElement());
 	}
 
 	private void initView() {
@@ -129,7 +133,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Aft
 				user.setPassword(newPassword.getValue());
 				user = userService.signup(user);
                 emailNotificationService.sendVerificationEmail(user);
-                tracker.userRegistered(user);
+                segmentIntegrator.userRegistered();
 				Notification.show("You successfully signed up.", 3000, Notification.Position.TOP_END);
 				UI.getCurrent().navigate(LoginView.class);
 			} else {
@@ -163,8 +167,4 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Aft
 		void setContactLink(String contactLink);
 	}
 
-	@Override
-	public void afterNavigation(AfterNavigationEvent event) {
-		tracker.trackPageVisit(event.getLocation());
-	}
 }

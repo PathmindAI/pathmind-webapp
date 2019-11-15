@@ -1,22 +1,18 @@
 package io.skymind.pathmind.ui.layouts;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.page.Push;
-import com.vaadin.flow.router.AfterNavigationEvent;
-import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.server.InitialPageSettings;
 import com.vaadin.flow.server.PageConfigurator;
 import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
+
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.ui.layouts.components.AccountHeaderPanel;
 import io.skymind.pathmind.ui.layouts.components.SectionsHeaderPanel;
-import io.skymind.pathmind.ui.plugins.SegmentTracker;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
 
 @Push(PushMode.AUTOMATIC)
@@ -34,10 +30,8 @@ import io.skymind.pathmind.ui.utils.VaadinUtils;
 @CssImport(value = "./styles/views/new-experiment-view.css")
 @CssImport(value = "./styles/views/pathmind-dialog-view.css", id = "pathmind-dialog-view")
 @Theme(Lumo.class)
-public class MainLayout extends AppLayout implements PageConfigurator, AfterNavigationObserver
+public class MainLayout extends AppLayout implements PageConfigurator
 {
-	@Autowired
-	private SegmentTracker tracker;
 
 	public MainLayout(CurrentUser user)
 	{
@@ -51,11 +45,5 @@ public class MainLayout extends AppLayout implements PageConfigurator, AfterNavi
 	@Override
 	public void configurePage(InitialPageSettings settings) {
 		VaadinUtils.setupFavIcon(settings);
-	}
-
-
-	@Override
-	public void afterNavigation(AfterNavigationEvent event) {
-		tracker.trackPageVisit(event.getLocation());
 	}
 }
