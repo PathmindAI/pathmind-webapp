@@ -114,7 +114,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	}
 
 	@Override
-	protected void loadData() throws InvalidDataException {
+	protected void initLoadData() throws InvalidDataException {
 		policy = policyDAO.getPolicy(policyId);
 		if(policy == null)
 			throw new InvalidDataException("Attempted to access Policy: " + policyId);

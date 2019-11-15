@@ -86,13 +86,13 @@ public class PolicyUtils
         }
     }
 
-    public static void processProgressJson(Policy policy)
+    public static void processProgressJson(Policy policy, String progressString)
     {
-        if(StringUtils.isEmpty(policy.getProgress()))
+        if(StringUtils.isEmpty(progressString))
             return;
 
         try {
-            final Progress progress = OBJECT_MAPPER.readValue(policy.getProgress(), Progress.class);
+            final Progress progress = OBJECT_MAPPER.readValue(progressString, Progress.class);
             policy.setScores(progress.getRewardProgression());
             policy.setStartedAt(progress.getStartedAt());
             policy.setStoppedAt(progress.getStoppedAt());

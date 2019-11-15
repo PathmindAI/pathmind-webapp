@@ -48,7 +48,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
     @Value("${skymind.debug.accelerate}")
     private boolean isDebugAccelerate;
 
-
 	public PathMindDefaultView()
 	{
 		setWidth("100%");
@@ -81,16 +80,13 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 			// until we decide how we want to implement user data management.
 			if(!isAccessAllowedForUser())
 				throw new InvalidDataException("Item does not exist");
-			// Next we load the data from the database in case there is an issue such as an InvalidDataException
-			loadData();
+			// Next we initialize the data from the database in case there is an issue such as an InvalidDataException
+			initLoadData();
 			// If there is an exception in generating the screens we don't want to display any system related information to the user for security reasons.
 			if(!isGenerated)
 				addScreens();
 			// Update the screen based on the parameters if need be.
-			updateScreen(event);
-			// Must be after update because we generally need to filter the event based on the screen data
-			if(!isGenerated)
-				subscribeToEventBus();
+			initScreen(event);
 			// Intercom plugin added
 			addIntercomPlugin();
 			isGenerated = true;
@@ -119,7 +115,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		}
 	}
 
-	protected void loadData() throws InvalidDataException{
+	protected void initLoadData() throws InvalidDataException{
 		// Do nothing by default.
 	}
 
@@ -131,10 +127,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		if(mainContent != null) add(mainContent);
 	}
 
-	protected void subscribeToEventBus() {
-		// Do nothing by default.
-	}
-
 	protected Component getTitlePanel() {
 		return new ScreenTitlePanel("Please contact Skymind for assistance.");
 	}
@@ -143,7 +135,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		return new Label("Please contact Skymind for assistance.");
 	}
 
-	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
+	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
 	}
 
 	@Override
