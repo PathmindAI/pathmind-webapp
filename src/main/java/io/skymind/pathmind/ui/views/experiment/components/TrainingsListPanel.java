@@ -6,7 +6,6 @@ import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSingleSelectionModel;
 import com.vaadin.flow.component.grid.GridSortOrder;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -17,10 +16,7 @@ import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
-import io.skymind.pathmind.ui.components.SearchBox;
-import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
-import io.skymind.pathmind.ui.views.policy.filter.PolicyFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.stereotype.Component;
 
@@ -30,16 +26,12 @@ import java.util.function.Consumer;
 
 @Component
 public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSubscriber {
-    private SearchBox<Policy> searchBox;
     private Grid<Policy> grid;
 
     private Experiment experiment;
 
     public TrainingsListPanel() {
         setupGrid();
-        setupSearchBox();
-
-        add(getTitleAndSearchBoxBar());
         add(grid);
 
         // Always force at least one item to be selected.
@@ -103,19 +95,6 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
                 selectionPolicy.getFirstSelectedItem().ifPresent(p -> consumer.accept(p)));
     }
 
-    private HorizontalLayout getTitleAndSearchBoxBar() {
-        return GuiUtils.getTitleAndSearchBoxBar(
-                "Trainings",
-                searchBox);
-    }
-
-    private void setupSearchBox() {
-        searchBox = new SearchBox(grid, new PolicyFilter(), true);
-    }
-
-    public SearchBox getSearchBox() {
-        return searchBox;
-    }
 
     private void updatedGrid(Policy updatedPolicy) {
         experiment.getPolicies().stream()
