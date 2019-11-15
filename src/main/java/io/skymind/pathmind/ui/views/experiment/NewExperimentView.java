@@ -247,7 +247,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     @Override
-    protected void loadData() throws InvalidDataException {
+    protected void initLoadData() throws InvalidDataException {
         experiment = experimentDAO.getExperiment(experimentId);
 		if(MockDefaultValues.isDebugAccelerate() && StringUtils.isEmpty(experiment.getRewardFunction()))
 			experiment.setRewardFunction(MockDefaultValues.NEW_EXPERIMENT_REWARD_FUNCTION);
@@ -256,7 +256,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     @Override
-    protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
+    protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
         binder.setBean(experiment);
 
         screenTitlePanel.setSubtitle(experiment.getProject().getName());

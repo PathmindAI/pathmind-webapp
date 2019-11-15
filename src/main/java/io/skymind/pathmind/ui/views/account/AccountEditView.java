@@ -12,8 +12,6 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
-import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.bus.data.UserUpdateBusEvent;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.security.Routes;
@@ -24,7 +22,6 @@ import io.skymind.pathmind.ui.plugins.SegmentTracker;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import reactor.core.publisher.UnicastProcessor;
 
 @Tag("account-edit-view")
 @JsModule("./src/account/account-edit-view.js")
@@ -57,16 +54,13 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 	@Autowired 
 	private SegmentTracker tracker;
 
-	private final UnicastProcessor<PathmindBusEvent> publisher;
-
 	@Autowired
-	public AccountEditView(CurrentUser currentUser, UnicastProcessor<PathmindBusEvent> publisher,
+	public AccountEditView(CurrentUser currentUser,
 						   @Value("${pathmind.contact-support.address}") String contactLink)
 	{
 		getModel().setContactLink(contactLink);
 		header.add(new ScreenTitlePanel("ACCOUNT EDIT"));
 		user = currentUser.getUser();
-		this.publisher = publisher;
 		initBinder();
 
 		email.setEnabled(false);
@@ -74,7 +68,6 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 		updateBtn.addClickListener(e -> {
 			userService.update(user);
 			tracker.infoEdited();
-			publisher.onNext(new UserUpdateBusEvent(user));
 			UI.getCurrent().navigate(AccountView.class);
 		});
 	}

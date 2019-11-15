@@ -1,5 +1,7 @@
 package io.skymind.pathmind.db.dao;
 
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.UserUpdateBusEvent;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.repositories.UserRepository;
 import io.skymind.pathmind.security.SecurityUtils;
@@ -60,6 +62,8 @@ public class UserDAO extends UserRepository
 				.set(PATHMIND_USER.PASSWORD_RESET_SEND_AT, pathmindUser.getPasswordResetSendAt())
 				.where(PATHMIND_USER.ID.eq(pathmindUser.getId()))
 				.execute();
+
+		EventBus.post(new UserUpdateBusEvent(pathmindUser));
 	}
 
 	@Transactional

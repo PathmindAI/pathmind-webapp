@@ -39,10 +39,10 @@ public class ArchivesButton<T> extends Button
 	}
 
 	private void setupButton(ArchivableData data) {
-		Icon archiveIcon = new Icon(data.isArchived() ? VaadinIcon.ARROW_BACKWARD : VaadinIcon.ARCHIVE);
-		archiveIcon.setSize("32px");
+		Icon archiveIcon = data.isArchived() ? VaadinIcon.ARROW_BACKWARD.create() : VaadinIcon.ARCHIVE.create();
 		setIcon(archiveIcon);
 		addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		setClassName("action-button");
 	}
 
 	// Weird looking logic but it's so that we stay on the same page once you reverse the archive value. We also

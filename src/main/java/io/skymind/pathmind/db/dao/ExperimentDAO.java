@@ -36,4 +36,13 @@ public class ExperimentDAO extends ExperimentRepository
 				.where(EXPERIMENT.MODEL_ID.eq(modelId))
 				.fetchOne(0, int.class);
 	}
+	
+	public Experiment getLastExperimentForModel(long modelId) {
+		return ctx.select(EXPERIMENT.asterisk())
+				.from(EXPERIMENT)
+				.where(EXPERIMENT.MODEL_ID.eq(modelId))
+				.orderBy(EXPERIMENT.ID.desc())
+				.limit(1)
+				.fetchAnyInto(Experiment.class);
+	}
 }

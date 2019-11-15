@@ -1,4 +1,4 @@
-package io.skymind.pathmind.bus.data;
+package io.skymind.pathmind.bus.events;
 
 import io.skymind.pathmind.bus.BusEventType;
 import io.skymind.pathmind.bus.PathmindBusEvent;
@@ -15,11 +15,6 @@ public class UserUpdateBusEvent implements PathmindBusEvent
 	@Override
 	public BusEventType getEventType() {
 		return BusEventType.UserUpdate;
-	}
-
-	@Override
-	public long getEventDataId() {
-		return user.getId();
 	}
 
 	public PathmindUser getPathmindUser() {

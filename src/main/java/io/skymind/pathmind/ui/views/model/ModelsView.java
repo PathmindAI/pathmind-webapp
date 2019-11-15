@@ -137,7 +137,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	}
 
 	@Override
-	protected void loadData() throws InvalidDataException {
+	protected void initLoadData() throws InvalidDataException {
 		models = modelDAO.getModelsForProject(projectId);
 		if(models == null || models.isEmpty())
 			throw new InvalidDataException("Attempted to access Models for Project: " + projectId);
@@ -146,7 +146,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	}
 
 	@Override
-	protected void updateScreen(BeforeEnterEvent event) throws InvalidDataException {
+	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
 		modelGrid.setItems(models);
 		archivesTabPanel.initData();
 	}
