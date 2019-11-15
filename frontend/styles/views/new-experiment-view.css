@@ -14,5 +14,4 @@
     border-radius: var(--lumo-border-radius);
     padding: var(--lumo-space-m);
     box-sizing: border-box;
-    overflow: hidden;
 }
