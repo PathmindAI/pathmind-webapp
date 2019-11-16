@@ -11,7 +11,6 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
-import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
@@ -151,48 +150,37 @@ public class TrainingService {
         addTempPolicy(spec, run);
     }
 
-    public void startFullRun(Experiment exp, Policy pol){
+    public void startFullRun(Experiment exp, Policy policy){
         final Run run = runDAO.createRun(exp, RunType.FullRun);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelDAO.getModel(exp.getModelId());
 
-        final JSONB progress = ctx.select(Tables.POLICY.PROGRESS).from(Tables.POLICY).where(Tables.POLICY.ID.eq(pol.getId())).fetchOne().get(Tables.POLICY.PROGRESS);
-        try {
-            final Progress value = objectMapper.readValue(progress.toString(), Progress.class);
-            //TODO: make this work across algorithms
-            final Double learningRate = Double.valueOf(value.getHyperParameters().get("lr"));
-            final Double gamma = Double.valueOf(value.getHyperParameters().get("gamma"));
-            final Integer batchSize = Integer.valueOf(value.getHyperParameters().get("sgd_minibatch_size"));
-
-            final JobSpec spec = new JobSpec(
-                    exp.getProject().getPathmindUserId(),
-                    model.getId(),
-                    exp.getId(),
-                    run.getId(),
-                    "", // not collected via UI yet
-                    "",    // not collected via UI yet
-                    exp.getRewardFunction(),
-                    model.getNumberOfPossibleActions(),
-                    model.getNumberOfObservations(),
-                    500, // Max 100 iterations for a test run
-                    executionEnvironment,
-                    RunType.FullRun,
-                    () ->modelDAO.getModelFile(model.getId()),
-                    Arrays.asList(learningRate),
-                    Arrays.asList(gamma),
-                    Arrays.asList(batchSize),
-                    -1        // no limit
+        final JobSpec spec = new JobSpec(
+                exp.getProject().getPathmindUserId(),
+                model.getId(),
+                exp.getId(),
+                run.getId(),
+                "", // not collected via UI yet
+                "",    // not collected via UI yet
+                exp.getRewardFunction(),
+                model.getNumberOfPossibleActions(),
+                model.getNumberOfObservations(),
+                500, // Max 100 iterations for a test run
+                executionEnvironment,
+                RunType.FullRun,
+                () ->modelDAO.getModelFile(model.getId()),
+                Arrays.asList(policy.getHyperParameters().getLearningRate()),
+                Arrays.asList(policy.getHyperParameters().getGamma()),
+                Arrays.asList(policy.getHyperParameters().getBatchSize()),
+                -1        // no limit
             );
 
-            final String executionId = executionProvider.execute(spec);
+        final String executionId = executionProvider.execute(spec);
 
-            runDAO.markAsStarting(run.getId());
-            log.info("Started FULL training job with id {}", executionId);
+        runDAO.markAsStarting(run.getId());
+        log.info("Started FULL training job with id {}", executionId);
 
-            addTempPolicy(spec, run);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        addTempPolicy(spec, run);
     }
 
     private void addTempPolicy(JobSpec spec, Run run) {

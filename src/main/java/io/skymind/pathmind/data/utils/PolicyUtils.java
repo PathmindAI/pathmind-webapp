@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import io.skymind.pathmind.utils.ObjectMapperHolder;
@@ -86,17 +85,20 @@ public class PolicyUtils
         }
     }
 
+    // STEPH -> Pull out the portion the changeset needs to avoid any future errors. We can then also remove the stoppedAt, startedAt, and Algorithm here. All
+    // that should be left is the scores which will be removed shortly.
     public static void processProgressJson(Policy policy, String progressString)
     {
         if(StringUtils.isEmpty(progressString))
             return;
 
         try {
-            final Progress progress = OBJECT_MAPPER.readValue(progressString, Progress.class);
-            policy.setScores(progress.getRewardProgression());
-            policy.setStartedAt(progress.getStartedAt());
-            policy.setStoppedAt(progress.getStoppedAt());
-            policy.setAlgorithm(progress.getAlgorithm());
+            // STEPH -> Is this needed any more? Don't we already have all of this in the database? At least everything but score? And is the score not already loaded?
+            final Policy jsonPolicy = OBJECT_MAPPER.readValue(progressString, Policy.class);
+            policy.setScores(jsonPolicy.getScores());
+            policy.setStartedAt(jsonPolicy.getStartedAt());
+            policy.setStoppedAt(jsonPolicy.getStoppedAt());
+            policy.setAlgorithm(jsonPolicy.getAlgorithm());
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new RuntimeException(e);
@@ -104,6 +106,7 @@ public class PolicyUtils
     }
 
     public static String getNotesFromName(Policy policy) {
+        // STEPH -> Instead of Interpreter pretty up the hyperparameters
         return ProgressInterpreter.interpretKey(policy.getName()).getHyperParameters().toString().replaceAll("(\\{|\\})", "");
     }
 
