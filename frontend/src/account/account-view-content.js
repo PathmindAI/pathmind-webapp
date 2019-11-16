@@ -5,12 +5,10 @@ import "@vaadin/vaadin-ordered-layout/src/vaadin-horizontal-layout.js";
 import "@vaadin/vaadin-button/src/vaadin-button.js";
 import "@vaadin/vaadin-ordered-layout/src/vaadin-vertical-layout.js";
 
-class AccountView extends PolymerElement {
+class AccountViewContent extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles pathmind-dialog-view">
-      </style>
-      <div id="header" style="width: 100%;"></div>
+      <style include="shared-styles pathmind-dialog-view"></style>
       <div class="content">
         <vaadin-tabs>
           <vaadin-tab>
@@ -76,7 +74,7 @@ class AccountView extends PolymerElement {
   }
 
   static get is() {
-    return "account-view";
+    return "account-view-content";
   }
 
   static get properties() {
@@ -86,4 +84,4 @@ class AccountView extends PolymerElement {
   }
 }
 
-customElements.define(AccountView.is, AccountView);
+customElements.define(AccountViewContent.is, AccountViewContent);
