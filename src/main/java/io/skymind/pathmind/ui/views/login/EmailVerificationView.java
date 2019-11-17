@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.account;
+package io.skymind.pathmind.ui.views.login;
 
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -14,7 +14,6 @@ import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
-import io.skymind.pathmind.ui.views.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
