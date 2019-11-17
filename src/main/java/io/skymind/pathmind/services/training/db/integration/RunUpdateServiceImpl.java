@@ -132,7 +132,6 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 policy.setModel(model);
                 policy.setProject(project);
 
-                // STEPH -> Is this still required?
                 // For performance reasons.
                 policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
                 // STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once

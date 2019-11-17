@@ -86,8 +86,6 @@ public class PolicyUtils
         }
     }
 
-    // STEPH -> Pull out the portion the changeset needs to avoid any future errors. We can then also remove the stoppedAt, startedAt, and Algorithm here. All
-    // that should be left is the scores which will be removed shortly.
     public static void processProgressJson(Policy policy, String progressString)
     {
         if(StringUtils.isEmpty(progressString))
