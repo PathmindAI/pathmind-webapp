@@ -3,8 +3,10 @@ package io.skymind.pathmind.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.constants.RunType;
-import io.skymind.pathmind.data.*;
-import io.skymind.pathmind.data.db.Tables;
+import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Model;
+import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
@@ -15,12 +17,10 @@ import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import org.jooq.DSLContext;
-import org.jooq.JSONB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 

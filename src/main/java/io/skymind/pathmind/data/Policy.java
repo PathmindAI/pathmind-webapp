@@ -1,5 +1,6 @@
 package io.skymind.pathmind.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.data.policy.HyperParameters;
@@ -12,10 +13,13 @@ import java.util.List;
 
 public class Policy extends Data
 {
+	@JsonIgnore
 	private long runId;
 	@JsonProperty("id")
 	private String externalId;
+	@JsonIgnore
 	private String progress;
+	@JsonIgnore
 	private byte[] file;
 
     private LocalDateTime startedAt;
@@ -31,14 +35,18 @@ public class Policy extends Data
     private List<RewardScore> scores;
 
     // Helper GUI attributes not stored in the database
+	@JsonIgnore
 	private Project project;
+	@JsonIgnore
 	private Model model;
+	@JsonIgnore
 	private Experiment experiment;
+	@JsonIgnore
 	private Run run;
 
 	// Helper for now for performance reasons.
+	@JsonIgnore
 	private String parsedName;
-	private String notes;
 
 	public long getRunId() {
 		return runId;
@@ -104,6 +112,7 @@ public class Policy extends Data
 		this.run = run;
 	}
 
+	@JsonIgnore
 	public Algorithm getAlgorithmEnum() {
 		return algorithm;
 	}
@@ -145,12 +154,13 @@ public class Policy extends Data
 		this.parsedName = parsedName;
 	}
 
+	@JsonIgnore
 	public String getNotes() {
-		return notes;
+		return hyperParameters.toString();
 	}
 
 	public void setNotes(String notes) {
-		this.notes = notes;
+		// The notes are currently just the hyperParameters
 	}
 
 	public List<RewardScore> getScores() {

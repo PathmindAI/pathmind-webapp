@@ -109,6 +109,7 @@ public class RunUpdateServiceImpl implements RunUpdateService {
         for (Policy policy : policies) {
             try {
                 // PERFORMANCE -> We should store these values in the database rather than having to parse JSON all the time.
+                // STEPH -> Remove this once all the values are stored in the database.
                 final String progressJsonStr = mapper.writeValueAsString(policy);
                 final JSONB progressJson = JSONB.valueOf(progressJsonStr);
 
@@ -134,7 +135,9 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 // STEPH -> Is this still required?
                 // For performance reasons.
                 policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
-                policy.setNotes(PolicyUtils.getNotesFromName(policy));
+                // STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
+                // the HyperParameters are moved into the database we can delete this code.
+                policy.setHyperParameters(PolicyUtils.getHyperParametersFromName(policy));
 
                 EventBus.post(new PolicyUpdateBusEvent(policy));
 

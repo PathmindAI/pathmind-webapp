@@ -1,5 +1,6 @@
 package io.skymind.pathmind.db.repositories;
 
+import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import org.jooq.DSLContext;
@@ -81,7 +82,9 @@ public class PolicyRepository
 		policy.setProgress(null);
 
 		policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
-		policy.setNotes(PolicyUtils.getNotesFromName(policy));
+		// STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
+		// the HyperParameters are moved into the database we can delete this code.
+		policy.setHyperParameters(PolicyUtils.getHyperParametersFromName(policy));
 
 		addParentDataModelObjects(record, policy);
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.policy.HyperParameters;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import io.skymind.pathmind.utils.ObjectMapperHolder;
@@ -93,7 +94,8 @@ public class PolicyUtils
             return;
 
         try {
-            // STEPH -> Is this needed any more? Don't we already have all of this in the database? At least everything but score? And is the score not already loaded?
+            // STEPH -> Is this needed any more other than the setScores? Don't we already have all of this in the database? Once
+            // the scores are in the database all this parsing can also be deleted.
             final Policy jsonPolicy = OBJECT_MAPPER.readValue(progressString, Policy.class);
             policy.setScores(jsonPolicy.getScores());
             policy.setStartedAt(jsonPolicy.getStartedAt());
@@ -105,9 +107,10 @@ public class PolicyUtils
         }
     }
 
-    public static String getNotesFromName(Policy policy) {
-        // STEPH -> Instead of Interpreter pretty up the hyperparameters
-        return ProgressInterpreter.interpretKey(policy.getName()).getHyperParameters().toString().replaceAll("(\\{|\\})", "");
+    // STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
+    // the HyperParameters are moved into the database we can delete this code.
+    public static HyperParameters getHyperParametersFromName(Policy policy) {
+        return ProgressInterpreter.interpretKey(policy.getName()).getHyperParameters();
     }
 
     public static List<Number> getMeanScores(Policy policy) {

@@ -89,7 +89,7 @@ public class ProgressInterpreter
                 policy.getHyperParameters().setGamma(Double.valueOf(value));
                 break;
             case HyperParameters.BATCH_SIZE:
-                policy.getHyperParameters().setGamma(Integer.valueOf(value));
+                policy.getHyperParameters().setBatchSize(Integer.valueOf(value));
                 break;
         }
     }
