@@ -26,9 +26,6 @@ class SegmentIntegrator extends PolymerElement {
 
     static get properties() {
         return {
-        	analytics: {
-        		type: Object
-        	},
         	sourceKey: {
         		type: String
         	},
