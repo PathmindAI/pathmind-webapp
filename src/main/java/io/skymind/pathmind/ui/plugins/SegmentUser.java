@@ -35,16 +35,4 @@ public class SegmentUser {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || !SegmentUser.class.isInstance(obj)) {
-			return false;
-		}
-		SegmentUser user = SegmentUser.class.cast(obj);
-		if (id == null || user.getId() == null) {
-			return false;
-		}
-		return id.equals(user.getId());
-	}
 }
