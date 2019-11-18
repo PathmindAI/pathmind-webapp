@@ -81,35 +81,44 @@ public class DashboardView extends PathMindDefaultView
 
 		dashboardGrid.addColumn(policy -> policy.getRun().getStatusEnum())
 				.setHeader("Status")
-				.setSortable(true);
+				.setSortable(true)
+				.setResizable(true);
 		dashboardGrid.addColumn(policy -> policy.getProject().getName())
 				.setHeader("Project")
+				.setResizable(true)
 				.setSortable(true);
 		dashboardGrid.addColumn(policy -> policy.getModel().getName())
 				.setHeader("Model")
+				.setResizable(true)
 				.setSortable(true);
 		dashboardGrid.addColumn(policy -> policy.getExperiment().getName())
 				.setHeader("Experiment")
+				.setResizable(true)
 				.setSortable(true);
 		dashboardGrid.addColumn(policy -> policy.getRun().getRunTypeEnum())
 				.setHeader("Run Type")
+				.setResizable(true)
 				.setSortable(true);
 		dashboardGrid.addColumn(Policy::getAlgorithmEnum)
 				.setHeader("Algorithm")
+				.setResizable(true)
 				.setSortable(true);
 		dashboardGrid.addColumn(new NumberRenderer<>(policy -> RunUtils.getElapsedTime(policy.getRun()), DateAndTimeUtils.getElapsedTimeNumberFormat()))
 				.setComparator(Comparator.comparing(policy -> RunUtils.getElapsedTime(policy.getRun())))
 				.setHeader("Duration")
+				.setResizable(true)
 				.setSortable(true);
 		Grid.Column<Policy> startedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Policy::getStartedAt, Comparator.nullsFirst(Comparator.naturalOrder())))
 				.setHeader("Started")
 				.setAutoWidth(true)
+				.setResizable(true)
 				.setSortable(true);
 		dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(policy -> policy.getRun().getStoppedAt()))
 				.setHeader("Completed")
 				.setComparator(getCompletedComparator())
+				.setResizable(true)
 				.setSortable(true);
 
 		dashboardGrid.sort(Arrays.asList(
