@@ -104,14 +104,17 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 		Grid.Column<Model> nameColumn = modelGrid.addColumn(Model::getName)
 				.setHeader("Model")
+				.setResizable(true)
 				.setSortable(true);
 		modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getDateCreated))
 				.setHeader("Date Created")
+				.setResizable(true)
 				.setSortable(true);
 		Grid.Column<Model> lastActivityColumn = modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getLastActivityDate))
 				.setHeader("Last Activity")
+				.setResizable(true)
 				.setSortable(true);
 
 		modelGrid.addItemClickListener(event -> getUI().ifPresent(ui -> UI.getCurrent().navigate(ExperimentsView.class, event.getItem().getId())));
