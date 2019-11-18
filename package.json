@@ -19,7 +19,7 @@
     "webpack-dev-server": "3.3.0",
     "webpack-merge": "4.2.1"
   },
-  "vaadinAppPackageHash": "b70da002391ca3526f404f1889ae207c807d0c0b914d01caaf488363b6fed9df",
+  "vaadinAppPackageHash": "97c7d3ada4a65669b5a8b8485fe8b0db2df99bd8efdfca7208b2e7e5abe22196",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
