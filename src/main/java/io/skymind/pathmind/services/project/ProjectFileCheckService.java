@@ -33,9 +33,7 @@ public class ProjectFileCheckService {
 
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
                         statusUpdater.fileSuccessfullyVerified();
-                    } else {
-                    }
-
+                    } 
                 } finally {
                     tempFile.delete();
                 }
