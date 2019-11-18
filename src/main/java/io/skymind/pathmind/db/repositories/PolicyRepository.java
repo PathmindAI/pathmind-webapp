@@ -39,7 +39,10 @@ public class PolicyRepository
 						.on(PROJECT.ID.eq(MODEL.PROJECT_ID))
 					.leftJoin(PATHMIND_USER)
 						.on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
-				.where(PATHMIND_USER.ID.eq(userId))
+				.where(PATHMIND_USER.ID.eq(userId)
+						.and(PROJECT.ARCHIVED.isFalse())
+						.and(MODEL.ARCHIVED.isFalse())
+						.and(EXPERIMENT.ARCHIVED.isFalse()))
 				.fetch();
 
 		return result.stream().map(record -> {
