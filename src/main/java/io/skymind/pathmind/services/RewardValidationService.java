@@ -1,17 +1,24 @@
 package io.skymind.pathmind.services;
 
-import javax.tools.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.SimpleJavaFileObject;
+import javax.tools.ToolProvider;
 
 public class RewardValidationService {
 
     public static List<String> validateRewardFunction(String rewardFunction){
-        return Collections.emptyList();
         //TODO: This fails on azure for some reason, missing JDK?
-
-        /*final String code = fillInTemplate(rewardFunction);
+        final String code = fillInTemplate(rewardFunction);
         final String[] lines = code.split("\n");
         int startReward = 0;
         int endReward = 0;
@@ -33,7 +40,7 @@ public class RewardValidationService {
             }
         }
 
-        return errors;*/
+        return errors;
     }
 
     private static String fillInTemplate(String rewardFunction){
