@@ -110,7 +110,10 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
 	@Override
 	protected boolean isAccessAllowedForUser() {
-		return userDAO.isUserAllowedAccessToPolicy(policyId);
+		// The UserDAO method does less than the initLoadData already does and is an extra database call that gives no current
+		// benefit and has a performance cost. Once we add proper logic we can re-implement it in the software.
+		// return userDAO.isUserAllowedAccessToPolicy(policyId);
+		return true;
 	}
 
 	@Override

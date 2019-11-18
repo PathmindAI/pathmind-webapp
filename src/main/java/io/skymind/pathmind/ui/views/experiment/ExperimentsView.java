@@ -158,7 +158,10 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	@Override
 	protected boolean isAccessAllowedForUser() {
-		return userDAO.isUserAllowedAccessToModel(modelId);
+        // The UserDAO method does less than the initLoadData already does and is an extra database call that gives no current
+        // benefit and has a performance cost. Once we add proper logic we can re-implement it in the software.
+		// return userDAO.isUserAllowedAccessToModel(modelId);
+        return true;
 	}
 
     @Override

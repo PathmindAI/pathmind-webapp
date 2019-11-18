@@ -76,55 +76,55 @@ public class UserDAO extends UserRepository
 
 	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
 	// now I'm using these method names so that we understand what needs to be done eventually.
-	public boolean isUserAllowedAccessToProject(long projectId) {
-		int count = ctx.selectCount()
-			.from(PROJECT)
-			.where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
-			.fetchOne(0, int.class);
-		return count > 0;
-	}
+//	public boolean isUserAllowedAccessToProject(long projectId) {
+//		int count = ctx.selectCount()
+//			.from(PROJECT)
+//			.where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
+//			.fetchOne(0, int.class);
+//		return count > 0;
+//	}
 
 	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
 	// now I'm using these method names so that we understand what needs to be done eventually.
-	public boolean isUserAllowedAccessToModel(long modelId) {
-		int count = ctx.selectCount()
-				.from(MODEL)
-				.leftJoin(PROJECT)
-					.on(MODEL.PROJECT_ID.eq(PROJECT.ID))
-				.where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
-				.fetchOne(0, int.class);
-		return count > 0;
-	}
+//	public boolean isUserAllowedAccessToModel(long modelId) {
+//		int count = ctx.selectCount()
+//				.from(MODEL)
+//				.leftJoin(PROJECT)
+//					.on(MODEL.PROJECT_ID.eq(PROJECT.ID))
+//				.where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
+//				.fetchOne(0, int.class);
+//		return count > 0;
+//	}
 
 	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
 	// now I'm using these method names so that we understand what needs to be done eventually.
-	public boolean isUserAllowedAccessToExperiment(long experimentId) {
-		int count = ctx.selectCount()
-				.from(EXPERIMENT)
-				.leftJoin(MODEL)
-					.on(EXPERIMENT.MODEL_ID.eq(MODEL.ID))
-				.leftJoin(PROJECT)
-					.on(MODEL.PROJECT_ID.eq(PROJECT.ID))
-				.where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
-				.fetchOne(0, int.class);
-		return count > 0;
-	}
+//	public boolean isUserAllowedAccessToExperiment(long experimentId) {
+//		int count = ctx.selectCount()
+//				.from(EXPERIMENT)
+//				.leftJoin(MODEL)
+//					.on(EXPERIMENT.MODEL_ID.eq(MODEL.ID))
+//				.leftJoin(PROJECT)
+//					.on(MODEL.PROJECT_ID.eq(PROJECT.ID))
+//				.where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
+//				.fetchOne(0, int.class);
+//		return count > 0;
+//	}
 
 	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
 	// now I'm using these method names so that we understand what needs to be done eventually.
-	public boolean isUserAllowedAccessToPolicy(long policyId) {
-		int count = ctx.selectCount()
-				.from(POLICY)
-				.leftJoin(RUN)
-					.on(POLICY.RUN_ID.eq(RUN.ID))
-				.leftJoin(EXPERIMENT)
-					.on(RUN.EXPERIMENT_ID.eq(EXPERIMENT.ID))
-				.leftJoin(MODEL)
-					.on(EXPERIMENT.MODEL_ID.eq(MODEL.ID))
-				.leftJoin(PROJECT)
-					.on(MODEL.PROJECT_ID.eq(PROJECT.ID))
-				.where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
-				.fetchOne(0, int.class);
-		return count > 0;
-	}
+//	public boolean isUserAllowedAccessToPolicy(long policyId) {
+//		int count = ctx.selectCount()
+//				.from(POLICY)
+//				.leftJoin(RUN)
+//					.on(POLICY.RUN_ID.eq(RUN.ID))
+//				.leftJoin(EXPERIMENT)
+//					.on(RUN.EXPERIMENT_ID.eq(EXPERIMENT.ID))
+//				.leftJoin(MODEL)
+//					.on(EXPERIMENT.MODEL_ID.eq(MODEL.ID))
+//				.leftJoin(PROJECT)
+//					.on(MODEL.PROJECT_ID.eq(PROJECT.ID))
+//				.where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
+//				.fetchOne(0, int.class);
+//		return count > 0;
+//	}
 }

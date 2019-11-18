@@ -66,7 +66,9 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 
 	@Override
 	protected boolean isAccessAllowedForUser() {
-		return userDAO.isUserAllowedAccessToExperiment(experimentId);
+		// This view is currently not used and in fact shoudl probably be removed.
+//		return userDAO.isUserAllowedAccessToExperiment(experimentId);
+		return false;
 	}
 
 	protected void initScreen(BeforeEnterEvent event) {
