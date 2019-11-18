@@ -17,8 +17,8 @@ public class ProgressInterpreterTest {
 
         assertEquals("PPO", policy.getAlgorithm());
         assertEquals(LocalDateTime.parse("2019-08-05_13-56-45", DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss")), policy.getStartedAt());
-        assertEquals(0.99, policy.getHyperParameters().getGamma());
-        assertEquals(5e-05, policy.getHyperParameters().getLearningRate());
+        assertEquals(0.99, policy.getHyperParameters().getGamma(), 0.001);
+        assertEquals(5e-05, policy.getHyperParameters().getLearningRate(), 0.001);
         assertEquals(128, policy.getHyperParameters().getBatchSize());
         assertEquals(17, policy.getScores().size());
         assertEquals(76.00000045448542, policy.getScores().get(16).getMax(), 0);
