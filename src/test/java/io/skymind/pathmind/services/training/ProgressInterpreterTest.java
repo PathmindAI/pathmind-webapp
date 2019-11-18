@@ -4,7 +4,10 @@ import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import org.junit.Test;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
@@ -15,8 +18,11 @@ public class ProgressInterpreterTest {
     public void testInterpreter(){
         final Progress progress = ProgressInterpreter.interpret(Map.entry(name, fileContents));
 
+        final LocalDateTime utcTime = LocalDateTime.parse("2019-08-05_13-56-45", DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss"));
+        final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();
+
         assertEquals("PPO", progress.getAlgorithm());
-        assertEquals(LocalDateTime.parse("2019-08-05_13-56-45", DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss")), progress.getStartedAt());
+        assertEquals(time, progress.getStartedAt());
         assertEquals("0.99", progress.getHyperParameters().get("gamma"));
         assertEquals("5e-05", progress.getHyperParameters().get("lr"));
         assertEquals("128", progress.getHyperParameters().get("sgd_minibatch_size"));
