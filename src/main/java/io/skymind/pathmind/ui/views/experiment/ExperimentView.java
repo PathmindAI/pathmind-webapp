@@ -1,11 +1,5 @@
 package io.skymind.pathmind.ui.views.experiment;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -24,17 +18,14 @@ import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.TrainingService;
+import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.components.PolicyChartPanel;
-import io.skymind.pathmind.ui.views.experiment.components.PolicyHighlightPanel;
-import io.skymind.pathmind.ui.views.experiment.components.PolicyStatusDetailsPanel;
-import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
-import io.skymind.pathmind.ui.views.experiment.components.TrainingsListPanel;
+import io.skymind.pathmind.ui.views.experiment.components.*;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -116,8 +107,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             // to avoid multiple download policy file from rescale server,
             // we put the "saving" for temporary
             // policy dao will check if there's real policy file exist or not
-            // todo make saving to enum or static final variable
-            exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId(), "saving"));
+            exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId(), TrainingFile.TEMPORARY_POLICY));
 
             RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
             if (selectedRunType == RunType.TestRun && experiment.getPolicies().size() == 1) {

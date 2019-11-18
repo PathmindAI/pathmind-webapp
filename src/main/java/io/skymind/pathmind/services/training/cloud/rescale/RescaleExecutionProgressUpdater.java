@@ -2,6 +2,7 @@ package io.skymind.pathmind.services.training.cloud.rescale;
 
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
+import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.db.integration.RunUpdateService;
 import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
@@ -71,8 +72,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
 
             if(jobStatus == RunStatus.Completed){
                 for (String finishPolicyName : finishedPolicyNamesFromDB) {
-                    // todo make saving to enum or static final variable
-                    updateService.savePolicyFile(runId, finishPolicyName, "saving".getBytes());
+                    updateService.savePolicyFile(runId, finishPolicyName, TrainingFile.TEMPORARY_POLICY.getBytes());
                     final byte[] policy = provider.policy(rescaleJobId, finishPolicyName);
                     updateService.savePolicyFile(runId, finishPolicyName, policy);
                 }
@@ -81,7 +81,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
     }
 
     public List<String> getTerminatedPolices(String rescaleJobId) {
-        String content = provider.getFileAnytime(rescaleJobId, "trial_complete");
+        String content = provider.getFileAnytime(rescaleJobId, TrainingFile.RAY_TRIAL_COMPLETE);
         if (content == null) {
             return Collections.emptyList();
         }
