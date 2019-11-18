@@ -534,4 +534,23 @@
         </update>
     </changeSet>
 
+    <!-- #456 Remove the default projects from the initial development from the database as they are no longer working with all the changes since
+    Now technically I should just be able to do DELETE FROM POLICY since there is only sample data but to avoid any accidental errors I'm forcing
+    a massive left join with a WHERE pathmind_user.email="steph@followsteph.com" so even if there is an error it can only delete the data from the
+    test account. -->
+    <changeSet id="20191117" author="steph@followsteph.com">
+        <sql>
+            DELETE FROM POLICY WHERE ID IN
+                (SELECT POLICY.ID FROM POLICY LEFT JOIN RUN ON RUN.ID = POLICY.RUN_ID LEFT JOIN EXPERIMENT ON EXPERIMENT.ID = RUN.EXPERIMENT_ID LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            DELETE FROM RUN WHERE ID IN
+                (SELECT RUN.ID FROM RUN LEFT JOIN EXPERIMENT ON EXPERIMENT.ID = RUN.EXPERIMENT_ID LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            DELETE FROM EXPERIMENT WHERE ID IN
+                (SELECT EXPERIMENT.ID FROM EXPERIMENT LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            DELETE FROM MODEL WHERE ID IN
+                (SELECT MODEL.ID FROM MODEL LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            DELETE FROM PROJECT WHERE ID IN
+                (SELECT PROJECT.ID FROM PROJECT LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
