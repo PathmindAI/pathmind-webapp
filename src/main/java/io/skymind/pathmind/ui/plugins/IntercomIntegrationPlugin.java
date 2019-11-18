@@ -1,21 +1,20 @@
 package io.skymind.pathmind.ui.plugins;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import com.vaadin.flow.shared.ui.LoadMode;
-import io.skymind.pathmind.data.PathmindUser;
+
 import io.skymind.pathmind.data.utils.PathmindUserUtils;
 import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.SecurityUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 // TODO -> DH -> Initially this was setup as a system environment at the request of Paul but then he seems
 // to have transferred it to application.properties. With that in mind I'm leaving in the application.properties
 // file however we should at some point confirm how we want to handle the dev/staging/prod values and do so consistently.
-@Component
+//@Component
 public class IntercomIntegrationPlugin
 {
 	private static final String INTERCOM_INTEGRATION_JS_FILE = "/frontend/js/IntercomIntegration.js";
