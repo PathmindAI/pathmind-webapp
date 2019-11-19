@@ -137,7 +137,7 @@ public class DashboardView extends PathMindDefaultView
 	@Override
 	protected void initLoadData() throws InvalidDataException {
 		// Policies can never be null since it's not a url generated query.
-		policies = policyDAO.getPoliciesForUser(SecurityUtils.getUserId());
+		policies = policyDAO.getActivePoliciesForUser(SecurityUtils.getUserId());
 	}
 
 	@Override
