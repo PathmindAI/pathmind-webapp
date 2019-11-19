@@ -1,7 +1,6 @@
 package io.skymind.pathmind.ui.plugins;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Tag;
@@ -20,9 +19,12 @@ import io.skymind.pathmind.security.SecurityUtils;
 @UIScope
 @Tag("segment-integrator")
 @JsModule("./src/plugins/segment-integrator.js")
-public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model>{
-	
+public class SegmentIntegrator
+		extends
+			PolymerTemplate<SegmentIntegrator.Model> {
+
 	private String sourceKey;
+	private boolean enabled;
 	private PathmindUserDetails user;
 
 	private static final String EVENT_SIGN_UP = "Sign up";
@@ -37,30 +39,31 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model>{
 	private static final String EVENT_SAVE_DRAFT = "Save Draft";
 	private static final String EVENT_CHANGE_PW = "Change Password";
 	private static final String EVENT_EDIT_INFO = "Edit Info";
-	
-	
-	public SegmentIntegrator(@Value("${skymind.segment.key}") String key) {
-		sourceKey = key;
+
+	public SegmentIntegrator(@Value("${skymind.segment.key}") String key,
+			@Value("${skymind.segment.enabled}") Boolean enabled) {
+		this.sourceKey = key;
+		this.enabled = enabled;
 	}
-	
+
 	public void userLoggedIn() {
 		track(EVENT_LOGIN);
 	}
-	
+
 	public void userRegistered() {
 		track(EVENT_SIGN_UP);
 	}
-	
+
 	public void modelImported(boolean result) {
 		JsonObject additionalInfo = Json.createObject();
 		additionalInfo.put("result", result ? "success" : "failed");
 		track(EVENT_IMPORT_MODEL, additionalInfo);
 	}
-	
+
 	public void projectCreated() {
 		track(EVENT_CREATE_PROJECT);
 	}
-	
+
 	public void rewardFuntionCreated() {
 		track(EVENT_CREATE_REWARD_FUNTION);
 	}
@@ -92,31 +95,37 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model>{
 	public void infoEdited() {
 		track(EVENT_EDIT_INFO);
 	}
-	
+
 	private void track(String event) {
-		getElement().callJsFunction("track", event);
+		track(event, Json.createObject());
 	}
-	
+
 	private void track(String event, JsonObject props) {
-		getElement().callJsFunction("track", event, props);
+		if (enabled) {
+			getElement().callJsFunction("track", event, props);
+		}
 	}
 	private void page() {
-		getElement().callJsFunction("page");
+		if (enabled) {
+			getElement().callJsFunction("page");
+		}
 	}
 
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
-		getModel().setSourceKey(sourceKey);
-		if (user == null && user != SecurityUtils.getUser()) {
-			user = SecurityUtils.getUser();
-			getModel().setUser(new SegmentUser(user));
+		if (enabled) {
+			getModel().setSourceKey(sourceKey);
+			if (user == null && user != SecurityUtils.getUser()) {
+				user = SecurityUtils.getUser();
+				getModel().setUser(new SegmentUser(user));
+			}
+			page();
 		}
-		page();
 	}
-	
+
 	public interface Model extends TemplateModel {
 		void setSourceKey(String key);
 		void setUser(SegmentUser user);
 	}
-	
+
 }
