@@ -45,18 +45,21 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
         grid.addColumn(policy -> PolicyUtils.getRunStatus(policy))
                 .setHeader("Status")
                 .setAutoWidth(true)
+                .setResizable(true)
                 .setSortable(true);
 
         Grid.Column<Policy> startedColumn = grid.addColumn(new LocalDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
                 .setComparator(Comparator.comparing(Policy::getStartedAt, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .setHeader("Started")
                 .setAutoWidth(true)
+                .setResizable(true)
                 .setSortable(true);
 
         grid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunCompletedTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
                 .setComparator(Comparator.comparing(policy -> PolicyUtils.getRunCompletedTime(policy)))
                 .setHeader("Completed")
                 .setAutoWidth(true)
+                .setResizable(true)
                 .setSortable(true);
 
         Grid.Column<Policy> scoreColumn = grid.addColumn(policy -> PolicyUtils.getFormattedLastScore(policy))
@@ -64,26 +67,31 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
                 .setHeader("Score")
                 .setAutoWidth(true)
                 .setTextAlign(ColumnTextAlign.END)
+                .setResizable(true)
                 .setSortable(true);
 
         grid.addColumn(policy -> PolicyUtils.getParsedPolicyName(policy))
                 .setHeader("Policy")
                 .setAutoWidth(true)
+                .setResizable(true)
                 .setSortable(true);
 
         grid.addColumn(policy -> policy.getRun().getRunTypeEnum())
                 .setHeader("Run Type")
                 .setAutoWidth(true)
+                .setResizable(true)
                 .setSortable(true);
 
         grid.addColumn(policy -> policy.getAlgorithmEnum())
                 .setHeader("Algorithm")
                 .setAutoWidth(true)
+                .setResizable(true)
                 .setSortable(true);
 
         grid.addColumn(policy -> PolicyUtils.getFormatHyperParameters(policy))
                 .setHeader("Notes")
                 .setAutoWidth(true)
+                .setResizable(true)
                 .setSortable(true);
 
         grid.sort(Arrays.asList(
