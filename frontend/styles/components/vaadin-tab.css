@@ -1,0 +1,7 @@
+:host {
+   color: #888888 !important;
+}
+:host([selected]) {
+   font-weight: bold;
+   color: var(--pm-primary-color) !important;
+}
