@@ -116,4 +116,10 @@ public class PolicyUtils
             .map(rewardScore -> rewardScore.getMean())
             .collect(Collectors.toList());
     }
+
+    public static String getFormatHyperParameters(Policy policy) {
+        return  HyperParameters.BATCH_SIZE + "=" + policy.getHyperParameters().getBatchSize() + ", " +
+                HyperParameters.LEARNING_RATE + "=" + policy.getHyperParameters().getLearningRate() + ", " +
+                HyperParameters.GAMMA + "=" + policy.getHyperParameters().getGamma();
+    }
 }

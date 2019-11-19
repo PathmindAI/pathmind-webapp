@@ -81,7 +81,7 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
                 .setAutoWidth(true)
                 .setSortable(true);
 
-        grid.addColumn(Policy::getNotes)
+        grid.addColumn(policy -> PolicyUtils.getFormatHyperParameters(policy))
                 .setHeader("Notes")
                 .setAutoWidth(true)
                 .setSortable(true);
