@@ -10,12 +10,10 @@ import com.vaadin.flow.server.PageConfigurator;
 import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
-import io.skymind.pathmind.bus.PathmindBusEvent;
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.ui.layouts.components.AccountHeaderPanel;
 import io.skymind.pathmind.ui.layouts.components.SectionsHeaderPanel;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
-import reactor.core.publisher.Flux;
 
 @Push(PushMode.AUTOMATIC)
 @CssImport(value = "./styles/styles.css", id = "shared-styles")
@@ -36,17 +34,14 @@ import reactor.core.publisher.Flux;
 @Theme(Lumo.class)
 public class MainLayout extends AppLayout implements PageConfigurator
 {
-
-
-	public MainLayout(CurrentUser user, Flux<PathmindBusEvent> consumer)
+	public MainLayout(CurrentUser user)
 	{
 		setId("pathmind-app-layout");
-		addToNavbar(new SectionsHeaderPanel(), new AccountHeaderPanel(user.getUser(), consumer));
+		addToNavbar(new SectionsHeaderPanel(), new AccountHeaderPanel(user.getUser()));
 
 		// Added a message just in case there's ever a failure.
 		setContent(new Span("Error. Please contact Skymind for assistance"));
 	}
-
 
 	@Override
 	public void configurePage(InitialPageSettings settings) {

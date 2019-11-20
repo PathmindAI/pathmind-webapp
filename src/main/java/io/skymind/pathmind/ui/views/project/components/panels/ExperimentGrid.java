@@ -28,11 +28,13 @@ public class ExperimentGrid extends Grid<Experiment>
 		Grid.Column<Experiment> nameColumn = addColumn(Experiment::getName)
 				.setHeader("Experiment")
 				.setAutoWidth(true)
+				.setResizable(true)
 				.setSortable(true);
 		Grid.Column<Experiment> lastActivityColumn = addColumn(new LocalDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Experiment::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setAutoWidth(true)
+				.setResizable(true)
 				.setSortable(true);
 		addColumn(experiment -> {
 			Optional<Run> run = experiment.getRuns().stream()
@@ -43,6 +45,7 @@ public class ExperimentGrid extends Grid<Experiment>
 		})
 				.setHeader("Test Run")
 				.setAutoWidth(true)
+				.setResizable(true)
 				.setSortable(true);
 		addColumn(experiment -> {
 			Optional<Run> run = experiment.getRuns().stream()
@@ -53,6 +56,7 @@ public class ExperimentGrid extends Grid<Experiment>
 		})
 				.setHeader("Discovery Run")
 				.setAutoWidth(true)
+				.setResizable(true)
 				.setSortable(true);
 		addColumn(experiment -> {
 			List<Run> runs = experiment.getRuns().stream()
@@ -63,6 +67,7 @@ public class ExperimentGrid extends Grid<Experiment>
 		})
 				.setHeader("Full Run")
 				.setAutoWidth(true)
+				.setResizable(true)
 				.setSortable(true);
 
 		// Sort by name by default

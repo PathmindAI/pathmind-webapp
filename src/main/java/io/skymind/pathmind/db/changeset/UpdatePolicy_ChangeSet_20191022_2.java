@@ -48,7 +48,7 @@ public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, Custo
     }
 
     private void convertJsonValues(List<Policy> policies) {
-        policies.parallelStream().forEach(policy -> PolicyUtils.processProgressJson(policy));
+        policies.parallelStream().forEach(policy -> PolicyUtils.processProgressJson(policy, policy.getProgress()));
     }
 
     @Override

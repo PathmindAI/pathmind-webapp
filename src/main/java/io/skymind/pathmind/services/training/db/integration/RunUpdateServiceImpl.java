@@ -3,8 +3,8 @@ package io.skymind.pathmind.services.training.db.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.bus.data.PolicyUpdateBusEvent;
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.utils.PolicyUtils;
@@ -16,7 +16,6 @@ import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.UnicastProcessor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,15 +30,13 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
     private final DSLContext ctx;
     private final ObjectMapper mapper;
-    private final UnicastProcessor<PathmindBusEvent> publisher;
 
-    private final static String lrPatternStr = "lr=.*,";
-    private final static Pattern lrPattern = Pattern.compile(lrPatternStr);
+    private static final String lrPatternStr = "lr=.*,";
+    private static final Pattern lrPattern = Pattern.compile(lrPatternStr);
 
-    public RunUpdateServiceImpl(DSLContext ctx, ObjectMapper mapper, UnicastProcessor<PathmindBusEvent> publisher) {
+    public RunUpdateServiceImpl(DSLContext ctx, ObjectMapper mapper) {
         this.ctx = ctx;
         this.mapper = mapper;
-        this.publisher = publisher;
     }
 
     @Override
@@ -68,6 +65,12 @@ public class RunUpdateServiceImpl implements RunUpdateService {
         // TODO -> DH -> Can you please adjust how you would prefer to have the backend setup because it's quite janky right now. I just temporarily
         //  put this to get the solution working and avoid code duplication. I basically need the model and experiment data models.
         Run run = RunRepository.getRun(ctx, runId);
+        // IMPORTANT -> Needed to prevent an issue with the training list missing data. Unfortunately the get (SELECT) returns the values
+        // from before the UPDATE has been saved to the database. This is also required for the EventBus.post() to work as the training
+        // list requires this information.
+        run.setStatusEnum(status);
+        run.setStoppedAt(RunStatus.isRunning(status) ? null : now);
+
         Experiment experiment = run.getExperiment();
         Model model = run.getModel();
         Project project = run.getProject();
@@ -129,21 +132,20 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 policy.setName(progress.getId());
                 policy.setExternalId(progress.getId());
                 policy.setScores(progress.getRewardProgression());
-                policy.setProgress(progressJsonStr);
                 policy.setExperiment(experiment);
                 policy.setModel(model);
                 policy.setProject(project);
 
                 // For performance reasons.
                 policy.setStartedAt(progress.getStartedAt());
-                policy.setAlgorithm(progress.getAlgorithm());
                 policy.setStoppedAt(progress.getStoppedAt());
+                policy.setAlgorithm(progress.getAlgorithm());
 
                 // For performance reasons.
                 policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
                 policy.setNotes(PolicyUtils.getNotesFromName(policy));
 
-                publisher.onNext(new PolicyUpdateBusEvent(policy));
+                EventBus.post(new PolicyUpdateBusEvent(policy));
 
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);

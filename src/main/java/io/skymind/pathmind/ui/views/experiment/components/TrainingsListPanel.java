@@ -1,51 +1,37 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
-import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSingleSelectionModel;
 import com.vaadin.flow.component.grid.GridSortOrder;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
-import io.skymind.pathmind.bus.PathmindBusEvent;
-import io.skymind.pathmind.bus.utils.PolicyBusEventUtils;
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
-import io.skymind.pathmind.ui.components.SearchBox;
-import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
-import io.skymind.pathmind.ui.views.policy.filter.PolicyFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Consumer;
 
 @Component
-public class TrainingsListPanel extends VerticalLayout {
-    private static Logger log = LogManager.getLogger(TrainingsListPanel.class);
-    private SearchBox<Policy> searchBox;
+public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSubscriber {
     private Grid<Policy> grid;
 
     private Experiment experiment;
 
-    private Flux<PathmindBusEvent> consumer;
-
-    public TrainingsListPanel(Flux<PathmindBusEvent> consumer) {
-        this.consumer = consumer;
-
+    public TrainingsListPanel() {
         setupGrid();
-        setupSearchBox();
-
-        add(getTitleAndSearchBoxBar());
         add(grid);
 
         // Always force at least one item to be selected.
@@ -59,18 +45,21 @@ public class TrainingsListPanel extends VerticalLayout {
         grid.addColumn(policy -> PolicyUtils.getRunStatus(policy))
                 .setHeader("Status")
                 .setAutoWidth(true)
+                .setResizable(true)
                 .setSortable(true);
 
         Grid.Column<Policy> startedColumn = grid.addColumn(new LocalDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
                 .setComparator(Comparator.comparing(Policy::getStartedAt, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .setHeader("Started")
                 .setAutoWidth(true)
+                .setResizable(true)
                 .setSortable(true);
 
         grid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunCompletedTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
                 .setComparator(Comparator.comparing(policy -> PolicyUtils.getRunCompletedTime(policy)))
                 .setHeader("Completed")
                 .setAutoWidth(true)
+                .setResizable(true)
                 .setSortable(true);
 
         Grid.Column<Policy> scoreColumn = grid.addColumn(policy -> PolicyUtils.getFormattedLastScore(policy))
@@ -78,26 +67,31 @@ public class TrainingsListPanel extends VerticalLayout {
                 .setHeader("Score")
                 .setAutoWidth(true)
                 .setTextAlign(ColumnTextAlign.END)
+                .setResizable(true)
                 .setSortable(true);
 
         grid.addColumn(policy -> PolicyUtils.getParsedPolicyName(policy))
                 .setHeader("Policy")
                 .setAutoWidth(true)
+                .setResizable(true)
                 .setSortable(true);
 
         grid.addColumn(policy -> policy.getRun().getRunTypeEnum())
                 .setHeader("Run Type")
                 .setAutoWidth(true)
+                .setResizable(true)
                 .setSortable(true);
 
         grid.addColumn(policy -> policy.getAlgorithmEnum())
                 .setHeader("Algorithm")
                 .setAutoWidth(true)
+                .setResizable(true)
                 .setSortable(true);
 
         grid.addColumn(Policy::getNotes)
                 .setHeader("Notes")
                 .setAutoWidth(true)
+                .setResizable(true)
                 .setSortable(true);
 
         grid.sort(Arrays.asList(
@@ -109,26 +103,6 @@ public class TrainingsListPanel extends VerticalLayout {
                 selectionPolicy.getFirstSelectedItem().ifPresent(p -> consumer.accept(p)));
     }
 
-    private HorizontalLayout getTitleAndSearchBoxBar() {
-        return GuiUtils.getTitleAndSearchBoxBar(
-                "Trainings",
-                searchBox);
-    }
-
-    private void setupSearchBox() {
-        searchBox = new SearchBox(grid, new PolicyFilter(), true);
-    }
-
-    public SearchBox getSearchBox() {
-        return searchBox;
-    }
-
-    private void subscribeToEventBus(UI ui, Flux<PathmindBusEvent> consumer) {
-        PolicyBusEventUtils.consumerBusEventBasedOnExperiment(
-                consumer,
-                () -> getExperiment(),
-                updatedPolicy -> PushUtils.push(ui, () -> updatedGrid(updatedPolicy)));
-    }
 
     private void updatedGrid(Policy updatedPolicy) {
         experiment.getPolicies().stream()
@@ -157,7 +131,6 @@ public class TrainingsListPanel extends VerticalLayout {
                 .filter(policy -> policy.getId() == updatedPolicy.getId())
                 .forEach(policy -> {
                     policy.setExternalId(updatedPolicy.getExternalId());
-                    policy.setProgress(updatedPolicy.getProgress());
                     policy.setScores(updatedPolicy.getScores());
                     policy.setRun(updatedPolicy.getRun());
                     policy.setStartedAt(updatedPolicy.getStartedAt());
@@ -165,14 +138,10 @@ public class TrainingsListPanel extends VerticalLayout {
                 });
     }
 
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public void update(Experiment experiment, long defaultSelectedPolicyId) {
+    public void init(Experiment experiment, long defaultSelectedPolicyId) {
         this.experiment = experiment;
 
-        grid.setDataProvider(new ListDataProvider<Policy>(experiment.getPolicies()));
+        grid.setDataProvider(new ListDataProvider<>(experiment.getPolicies()));
 
         if (!experiment.getPolicies().isEmpty() && defaultSelectedPolicyId < 0) {
             grid.select(experiment.getPolicies().get(0));
@@ -182,17 +151,32 @@ public class TrainingsListPanel extends VerticalLayout {
                     .findAny()
                     .ifPresent(policy -> grid.select(policy));
         }
-
-        subscribeToEventBus(UI.getCurrent(), consumer);
     }
-    
-	public void selectPolicyWithId(String policyId) {
+
+    @Override
+    protected void onDetach(DetachEvent event) {
+        EventBus.unsubscribe(this);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent event) {
+        EventBus.subscribe(this);
+    }
+
+    @Override
+    public void handleBusEvent(PolicyUpdateBusEvent event) {
+        PushUtils.push(this, () -> updatedGrid(event.getPolicy()));
+    }
+
+    @Override
+    public boolean filterBusEvent(PolicyUpdateBusEvent event) {
+        return experiment.getId() == event.getPolicy().getExperiment().getId();
+    }
+
+    public void selectPolicyWithId(String policyId) {
     	experiment.getPolicies().stream()
         	.filter(policy -> Long.toString(policy.getId()).equals(policyId))
         	.findAny()
-        	.ifPresent(
-                policy -> {
-                	grid.select(policy);
-                });
+        	.ifPresent(policy -> grid.select(policy));
     }
 }

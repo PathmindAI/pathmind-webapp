@@ -1,12 +1,17 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
-import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +20,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
 @Component
-public class PolicyStatusDetailsPanel extends VerticalLayout
+public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUpdateSubscriber
 {
 	private static Logger log = LogManager.getLogger(PolicyStatusDetailsPanel.class);
 
@@ -23,6 +28,8 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 	private Label runProgressLabel = new Label();
 	private Label runTypeLabel = new Label();
 	private Label elapsedTimeLabel = new Label();
+
+	private Policy policy;
 
 	public PolicyStatusDetailsPanel()
 	{
@@ -72,9 +79,36 @@ public class PolicyStatusDetailsPanel extends VerticalLayout
 
 	public void update(Policy policy)
 	{
-		statusLabel.setText(PolicyUtils.getRunStatus(policy).name());
+		this.policy = policy;
+
+		statusLabel.setText(PolicyUtils.getRunStatus(policy).toString());
 		runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(PolicyUtils.getRunCompletedTime(policy)));
 		runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());
 		elapsedTimeLabel.setText(PolicyUtils.getElapsedTime(policy));
+	}
+
+	private Policy getPolicy() {
+		return policy;
+	}
+
+	@Override
+	protected void onDetach(DetachEvent event) {
+		EventBus.unsubscribe(this);
+	}
+
+	@Override
+	protected void onAttach(AttachEvent event) {
+		EventBus.subscribe(this);
+	}
+
+	@Override
+	public void handleBusEvent(PolicyUpdateBusEvent event) {
+		this.policy = event.getPolicy();
+		PushUtils.push(this, () -> update(event.getPolicy()));
+	}
+
+	@Override
+	public boolean filterBusEvent(PolicyUpdateBusEvent event) {
+		return getPolicy().getId() == event.getPolicy().getId();
 	}
 }
