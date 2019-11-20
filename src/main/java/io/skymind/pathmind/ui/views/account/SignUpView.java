@@ -1,10 +1,5 @@
 package io.skymind.pathmind.ui.views.account;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -23,21 +18,23 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.InitialPageSettings;
 import com.vaadin.flow.server.PageConfigurator;
 import com.vaadin.flow.templatemodel.TemplateModel;
-
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
 import io.skymind.pathmind.ui.views.LoginView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.util.List;
 
 @Tag("sign-up-view")
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @JsModule("./src/account/sign-up-view.js")
 @Route(value = Routes.SIGN_UP_URL)
-public class SignUpView extends PolymerTemplate<SignUpView.Model>
-		implements
-			PageConfigurator {
+public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PageConfigurator
+{
 	private static final String EMAIL_IS_USED = "This email is already used.";
 
 	@Id("lastName")
@@ -88,8 +85,8 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 	private PathmindUser user;
 	private Binder<PathmindUser> binder;
 
-	public SignUpView(
-			@Value("${pathmind.contact-support.address}") String contactLink) {
+	public SignUpView(@Value("${pathmind.contact-support.address}") String contactLink)
+	{
 		getModel().setContactLink(contactLink);
 		user = new PathmindUser();
 		initView();
@@ -106,17 +103,14 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 
 		showPassword(false);
 
-		cancelSignUpBtn.addClickListener(
-				e -> UI.getCurrent().navigate(LoginView.class));
+		cancelSignUpBtn.addClickListener(e -> UI.getCurrent().navigate(LoginView.class));
 		cancelSignInBtn.addClickListener(e -> showPassword(false));
 
-		forgotPasswordBtn.addClickListener(
-				e -> UI.getCurrent().navigate(ResetPasswordView.class));
+		forgotPasswordBtn.addClickListener(e ->UI.getCurrent().navigate(ResetPasswordView.class));
 
 		signUp.addClickListener(e -> {
 			if (binder.validate().isOk()) {
-				if (userService
-						.findByEmailIgnoreCase(email.getValue()) != null) {
+				if (userService.findByEmailIgnoreCase(email.getValue()) != null) {
 					getModel().setMessage(EMAIL_IS_USED);
 					email.setInvalid(true);
 				} else {
@@ -126,28 +120,24 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 		});
 
 		signIn.addClickListener(e -> {
-			List<String> validationResults = userService.validatePassword(
-					newPassword.getValue(), confirmNewPassword.getValue());
+			List<String> validationResults = userService.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
 
 			if (validationResults.isEmpty()) {
 				user.setPassword(newPassword.getValue());
 				user = userService.signup(user);
-				emailNotificationService.sendVerificationEmail(user);
-				Notification.show("You successfully signed up.", 3000,
-						Notification.Position.TOP_END);
+                emailNotificationService.sendVerificationEmail(user);
+				Notification.show("You successfully signed up.", 3000, Notification.Position.TOP_END);
 				UI.getCurrent().navigate(LoginView.class);
 			} else {
 				newPassword.setInvalid(true);
 				passwordValidationNotes.removeAll();
-				validationResults.forEach(message -> passwordValidationNotes
-						.add(new Span(message)));
+				validationResults.forEach(message -> passwordValidationNotes.add(new Span(message)));
 			}
 		});
 	}
 
 	private void showPassword(boolean showPasswordPart) {
-		getModel().setTitle(
-				showPasswordPart ? "Create a new password" : "Get Started!");
+		getModel().setTitle(showPasswordPart ? "Create a new password" : "Get Started!");
 		emailPart.setVisible(!showPasswordPart);
 		passwordPart.setVisible(showPasswordPart);
 	}
@@ -155,17 +145,14 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 	private void initBinder() {
 		binder = new Binder<>(PathmindUser.class);
 
-		binder.forField(email).asRequired()
-				.withValidator(new EmailValidator(
-						"This doesn't look like a valid email address"))
+		binder.forField(email).asRequired().withValidator(new EmailValidator(
+				"This doesn't look like a valid email address"))
 				.bind(PathmindUser::getEmail, PathmindUser::setEmail);
-		binder.forField(firstName).bind(PathmindUser::getFirstname,
-				PathmindUser::setFirstname);
-		binder.forField(lastName).bind(PathmindUser::getLastname,
-				PathmindUser::setLastname);
+		binder.forField(firstName).bind(PathmindUser::getFirstname, PathmindUser::setFirstname);
+		binder.forField(lastName).bind(PathmindUser::getLastname, PathmindUser::setLastname);
 		binder.setBean(user);
 	}
-
+	
 	@Override
 	public void configurePage(InitialPageSettings settings) {
 		VaadinUtils.setupFavIcon(settings);
