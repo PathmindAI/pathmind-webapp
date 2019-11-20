@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.views.account;
 
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -70,6 +71,9 @@ public class ChangePasswordView extends PolymerTemplate<ChangePasswordView.Model
 		passwordValidationNotes.setSpacing(false);
 
 
+		cancelBtn.addClickShortcut(Key.ESCAPE);
+		updateBtn.addClickShortcut(Key.ENTER);
+		
 		cancelBtn.addClickListener(e -> UI.getCurrent().navigate(AccountView.class));
 		updateBtn.addClickListener(e -> {
 			if (validate())  {
