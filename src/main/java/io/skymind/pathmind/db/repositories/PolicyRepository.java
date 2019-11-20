@@ -24,25 +24,29 @@ import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 
 @Repository
-public class PolicyRepository {
-	@Autowired
-	private DSLContext dslContext;
+public class PolicyRepository
+{
+    @Autowired
+    private DSLContext dslContext;
 
-	public List<Policy> getActivePoliciesForUser(long userId) {
-		Result<?> result = dslContext
-				.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID,
-						POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT,
-						POLICY.STOPPEDAT, POLICY.ALGORITHM)
-				.select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE,
-						RUN.STARTED_AT, RUN.STOPPED_AT)
-				.select(EXPERIMENT.ID, EXPERIMENT.NAME)
-				.select(MODEL.ID, MODEL.NAME).select(PROJECT.ID, PROJECT.NAME)
-				.from(POLICY).leftJoin(RUN).on(RUN.ID.eq(POLICY.RUN_ID))
-				.leftJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
-				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
-				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
-				.leftJoin(PATHMIND_USER)
-				.on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
+    public List<Policy> getActivePoliciesForUser(long userId) {
+        Result<?> result = dslContext
+                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM)
+                .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
+                .select(EXPERIMENT.ID, EXPERIMENT.NAME)
+                .select(MODEL.ID, MODEL.NAME)
+                .select(PROJECT.ID, PROJECT.NAME)
+				.from(POLICY)
+					.leftJoin(RUN)
+						.on(RUN.ID.eq(POLICY.RUN_ID))
+					.leftJoin(EXPERIMENT)
+						.on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
+					.leftJoin(MODEL)
+						.on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+					.leftJoin(PROJECT)
+						.on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+					.leftJoin(PATHMIND_USER)
+						.on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
 				.where(PATHMIND_USER.ID.eq(userId)
 						.and(PROJECT.ARCHIVED.isFalse())
 						.and(MODEL.ARCHIVED.isFalse())
@@ -50,37 +54,40 @@ public class PolicyRepository {
 				.fetch();
 
 		return result.stream().map(record -> {
-			Policy policy = record.into(POLICY).into(Policy.class);
+        	Policy policy = record.into(POLICY).into(Policy.class);
 			addParentDataModelObjects(record, policy);
 			return policy;
 		}).collect(Collectors.toList());
-	}
+    }
 
 	public Policy getPolicy(long policyId) {
 		return getPolicy(dslContext, policyId);
 	}
 
-	public static Policy getPolicy(DSLContext ctx, long policyId) {
-		Record record = ctx
-				.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID,
-						POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT,
-						POLICY.STOPPEDAT, POLICY.ALGORITHM)
-				.select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE,
-						RUN.STARTED_AT, RUN.STOPPED_AT)
-				.select(EXPERIMENT.ID, EXPERIMENT.NAME)
-				.select(MODEL.ID, MODEL.NAME).select(PROJECT.ID, PROJECT.NAME)
-				.from(POLICY).leftJoin(RUN).on(RUN.ID.eq(POLICY.RUN_ID))
-				.leftJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
-				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
-				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
-				.leftJoin(PATHMIND_USER)
-				.on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
-				.where(POLICY.ID.eq(policyId)).fetchOne();
+    public static Policy getPolicy(DSLContext ctx, long policyId) {
+        Record record = ctx
+                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM)
+                .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
+                .select(EXPERIMENT.ID, EXPERIMENT.NAME)
+                .select(MODEL.ID, MODEL.NAME)
+                .select(PROJECT.ID, PROJECT.NAME)
+				.from(POLICY)
+					.leftJoin(RUN)
+						.on(RUN.ID.eq(POLICY.RUN_ID))
+					.leftJoin(EXPERIMENT)
+						.on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
+					.leftJoin(MODEL)
+						.on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+					.leftJoin(PROJECT)
+						.on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+					.leftJoin(PATHMIND_USER)
+						.on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
+				.where(POLICY.ID.eq(policyId))
+				.fetchOne();
 
 		Policy policy = record.into(POLICY).into(Policy.class);
 
-		// PERFORMANCE -> Until we remove the json progress string this is to
-		// help optimizing the memory usage.
+		// PERFORMANCE -> Until we remove the json progress string this is to help optimizing the memory usage.
 		PolicyUtils.processProgressJson(policy, policy.getProgress());
 		policy.setProgress(null);
 
@@ -90,10 +97,9 @@ public class PolicyRepository {
 		addParentDataModelObjects(record, policy);
 
 		return policy;
-	}
+    }
 
-	private static void addParentDataModelObjects(Record record,
-			Policy policy) {
+	private static void addParentDataModelObjects(Record record, Policy policy) {
 		policy.setRun(record.into(RUN).into(Run.class));
 		policy.setExperiment(record.into(EXPERIMENT).into(Experiment.class));
 		policy.setModel(record.into(MODEL).into(Model.class));
