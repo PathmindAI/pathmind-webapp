@@ -1,9 +1,9 @@
 package io.skymind.pathmind.services.training.progress;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.supercsv.io.CsvMapReader;
-import org.supercsv.prefs.CsvPreference;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -60,32 +60,41 @@ public class ProgressInterpreter {
         return progress;
     }
 
+
     public static Progress interpret(Map.Entry<String, String> entry){
         final Progress progress = interpretKey(entry.getKey());
 
-        try {
-            final CsvMapReader mapReader = new CsvMapReader(new StringReader(entry.getValue()), CsvPreference.STANDARD_PREFERENCE);
-            final String[] header = mapReader.getHeader(true);
+        final ArrayList<RewardScore> scores = new ArrayList<>();
 
-            final ArrayList<RewardScore> scores = new ArrayList<>();
-            Map<String, String> map;
-            while( (map = mapReader.read(header)) != null ) {
-                final String max = map.get("episode_reward_max");
-                final String min = map.get("episode_reward_min");
-                final String mean = map.get("episode_reward_mean");
+        try (CSVReader reader = new CSVReader(new StringReader(entry.getValue()))) {
+
+            String[] record = null;
+            //skip header row
+            reader.readNext();
+
+            while((record = reader.readNext()) != null){
+                final String max = record[0];   // episode_reward_max
+                final String min = record[1];   // episode_reward_min
+                final String mean = record[2];  // episode_reward_mean
+
                 scores.add(new RewardScore(
                         Double.valueOf(max.equals("nan") ? "NaN" : max),
                         Double.valueOf(min.equals("nan") ? "NaN" : min),
                         Double.valueOf(mean.equals("nan") ? "NaN" : mean),
-                        Integer.parseInt(map.get("training_iteration"))
+                        Integer.parseInt(record[9]) // training_iteration
                 ));
             }
             progress.setRewardProgression(scores);
+
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+        } catch (CsvValidationException e) {
+            e.printStackTrace();
         }
+
 
         return progress;
     }
+
 
 }
