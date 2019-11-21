@@ -85,16 +85,19 @@ public class ProjectsView extends PathMindDefaultView
 
 		projectGrid.addColumn(Project::getName)
 				.setHeader("Name")
+				.setResizable(true)
 				.setSortable(true);
 
 		projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Project::getDateCreated))
 				.setHeader("Date Created")
+				.setResizable(true)
 				.setSortable(true);
 
 		Grid.Column<Project> lastActivityColumn = projectGrid.addColumn(new LocalDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Project::getLastActivityDate))
 				.setHeader("Last Activity")
+				.setResizable(true)
 				.setSortable(true);
 
 		projectGrid.sort(Arrays.asList(new GridSortOrder<>(lastActivityColumn, SortDirection.DESCENDING)));

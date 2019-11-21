@@ -137,7 +137,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         tipsTextArea.setReadOnly(true);
         tipsTextArea.setValue(
                 "1. The \"after\" variable is used to retrieve the observation value after an action is performed. The \"before\" variable is used to retrieve the observation value before an action is performed. So if our observation value needs to be maximized, we can write\n" +
-                "reward= after[0]- before[0];\n" +
+                "reward = after[0]- before[0];\n" +
                 "\n" +
                 "2. Weights can also be added to the reward calculation. In this case, if a condition is satisfied, then the learning agent is rewarded a score of 5 otherwise it gets a zero.\n" +
                 "reward = after[0] > before[0] ? 5 : 0;\n" +

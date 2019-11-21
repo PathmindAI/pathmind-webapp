@@ -13,12 +13,15 @@ import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.*;
+import com.vaadin.flow.server.InitialPageSettings;
+import com.vaadin.flow.server.PageConfigurator;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
+import io.skymind.pathmind.ui.utils.VaadinUtils;
 import io.skymind.pathmind.ui.views.LoginView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +36,7 @@ import java.util.List;
 @JsModule("./src/account/reset-password-view.js")
 @Route(value = Routes.RESET_PASSWORD_URL)
 public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
-	implements HasUrlParameter<String>, AfterNavigationObserver
+	implements HasUrlParameter<String>, AfterNavigationObserver, PageConfigurator
 {
 	private static Logger log = LogManager.getLogger(ResetPasswordView.class);
 
@@ -183,6 +186,11 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 	@Override
 	public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String param) {
 		token = param;
+	}
+	
+	@Override
+	public void configurePage(InitialPageSettings settings) {
+		VaadinUtils.setupFavIcon(settings);
 	}
 
 

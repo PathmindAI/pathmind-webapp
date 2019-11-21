@@ -7,7 +7,11 @@ public class Routes {
 
     public static final String LOGIN_URL = "login";
     public static final String LOGIN_PROCESSING_URL = "login";
-    public static final String LOGOUT_SUCCESS_URL = "login";
+
+    // Need to pass a x-ms-routing-name GET param on logout to make sure that after a logout
+    // the browser will be redirected to the latest version of the application when using
+    // canary deployments and slots. Param value can be anything.
+    public static final String LOGOUT_SUCCESS_URL = "?x-ms-routing-name=latest";
     public static final String BAD_CREDENTIALS = "bad-credentials";
     public static final String EMAIL_VERIFICATION_FAILED = "email-verification-failed";
 
@@ -23,6 +27,7 @@ public class Routes {
     public static final String EXPERIMENTS_URL = "experiments";
     public static final String EXPERIMENT_URL = "experiment";
     public static final String NEW_EXPERIMENT = "newExperiment";
+    public static final String UPLOAD_MODEL = "uploadModel";
     public static final String ERROR_URL = "error";
 
     public static final String CONSOLE_URL = "console";

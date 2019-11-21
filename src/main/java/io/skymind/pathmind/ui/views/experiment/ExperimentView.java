@@ -32,8 +32,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.UnicastProcessor;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
@@ -104,6 +102,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             policyChartPanel.init(selectedPolicy);
             policyChartPanel.highlightPolicy(selectedPolicy);
 
+
             // to avoid multiple download policy file from rescale server,
             // we put the "saving" for temporary
             // policy dao will check if there's real policy file exist or not
@@ -123,8 +122,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         policyChartPanel = new PolicyChartPanel();
         policyChartPanel.addSeriesClickListener(policyId -> trainingsListPanel.selectPolicyWithId(policyId));
-
-        trainingsListPanel.getSearchBox().addFilterableComponents(policyChartPanel);
 
         SplitLayout leftSplitPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
                 policyChartPanel,
