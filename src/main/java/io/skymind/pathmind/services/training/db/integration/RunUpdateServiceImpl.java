@@ -177,7 +177,7 @@ public class RunUpdateServiceImpl implements RunUpdateService {
     }
 
     @Override
-    public void cleanUpTemproary(long runId) {
+    public void cleanUpTemporary(long runId) {
         boolean isExist = policyDao.isTemporaryPolicy(runId, TrainingService.TEMPORARY_POSTFIX);
         if (isExist) {
             policyDao.deleteTemporaryPolicy(runId, TrainingService.TEMPORARY_POSTFIX);

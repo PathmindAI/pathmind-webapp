@@ -76,7 +76,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
                     final byte[] policy = provider.policy(rescaleJobId, finishPolicyName);
                     updateService.savePolicyFile(runId, finishPolicyName, policy);
                 }
-                updateService.cleanUpTemproary(runId);
+                updateService.cleanUpTemporary(runId);
             }
         });
     }
