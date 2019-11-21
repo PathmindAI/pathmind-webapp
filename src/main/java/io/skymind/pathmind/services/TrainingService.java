@@ -3,7 +3,10 @@ package io.skymind.pathmind.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.constants.RunType;
-import io.skymind.pathmind.data.*;
+import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Model;
+import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
@@ -35,6 +38,8 @@ public class TrainingService {
     private final DSLContext ctx;
     private final ObjectMapper objectMapper;
     private ExecutionEnvironment executionEnvironment;
+
+    public final static String TEMPORARY_POSTFIX = "TEMP";
 
     // TODO: Move direct db access into a DAO.
     public TrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, DSLContext ctx, ObjectMapper objectMapper) {
@@ -228,7 +233,7 @@ public class TrainingService {
                 environment,
                 "0",
                 hyperparameters,
-                runType + "TEMP"
+                runType + TEMPORARY_POSTFIX
         );
 
         return name;
