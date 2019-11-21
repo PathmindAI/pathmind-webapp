@@ -1,19 +1,27 @@
 package io.skymind.pathmind.db.repositories;
 
-import io.skymind.pathmind.data.*;
-import io.skymind.pathmind.data.utils.PolicyUtils;
+import static io.skymind.pathmind.data.db.Tables.EXPERIMENT;
+import static io.skymind.pathmind.data.db.Tables.MODEL;
+import static io.skymind.pathmind.data.db.Tables.PATHMIND_USER;
+import static io.skymind.pathmind.data.db.Tables.POLICY;
+import static io.skymind.pathmind.data.db.Tables.PROJECT;
+import static io.skymind.pathmind.data.db.Tables.RUN;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.jooq.DSLContext;
-import org.jooq.JSONB;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static io.skymind.pathmind.data.db.Tables.*;
+import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Model;
+import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 
 @Repository
 public class PolicyRepository
@@ -21,7 +29,7 @@ public class PolicyRepository
     @Autowired
     private DSLContext dslContext;
 
-    public List<Policy> getPoliciesForUser(long userId) {
+    public List<Policy> getActivePoliciesForUser(long userId) {
         Result<?> result = dslContext
                 .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM)
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
@@ -39,7 +47,10 @@ public class PolicyRepository
 						.on(PROJECT.ID.eq(MODEL.PROJECT_ID))
 					.leftJoin(PATHMIND_USER)
 						.on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
-				.where(PATHMIND_USER.ID.eq(userId))
+				.where(PATHMIND_USER.ID.eq(userId)
+						.and(PROJECT.ARCHIVED.isFalse())
+						.and(MODEL.ARCHIVED.isFalse())
+						.and(EXPERIMENT.ARCHIVED.isFalse()))
 				.fetch();
 
 		return result.stream().map(record -> {
