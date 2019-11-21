@@ -72,7 +72,6 @@ public class ChangePasswordView extends PolymerTemplate<ChangePasswordView.Model
 
 
 		cancelBtn.addClickShortcut(Key.ESCAPE);
-		updateBtn.addClickShortcut(Key.ENTER);
 		
 		cancelBtn.addClickListener(e -> UI.getCurrent().navigate(AccountView.class));
 		updateBtn.addClickListener(e -> {

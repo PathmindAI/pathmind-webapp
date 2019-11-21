@@ -62,7 +62,6 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 		email.setEnabled(false);
 		
 		cancelBtn.addClickShortcut(Key.ESCAPE);
-		updateBtn.addClickShortcut(Key.ENTER);
 		
 		cancelBtn.addClickListener(e -> UI.getCurrent().navigate(AccountView.class));
 		updateBtn.addClickListener(e -> {
