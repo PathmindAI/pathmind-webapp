@@ -18,6 +18,7 @@ import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.TrainingService;
+import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
@@ -101,6 +102,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             policyChartPanel.init(selectedPolicy);
             policyChartPanel.highlightPolicy(selectedPolicy);
 
+
+            // to avoid multiple download policy file from rescale server,
+            // we put the "saving" for temporary
+            // policy dao will check if there's real policy file exist or not
             exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
 
             RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();

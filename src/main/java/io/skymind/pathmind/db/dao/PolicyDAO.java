@@ -6,7 +6,6 @@ import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.repositories.PolicyRepository;
 import org.jooq.DSLContext;
-import org.jooq.JSONB;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
@@ -99,5 +98,15 @@ public class PolicyDAO extends PolicyRepository
         EventBus.post(new PolicyUpdateBusEvent(savedPolicy));
 
         return policyId;
+    }
+
+    public boolean isTemporaryPolicy(long runId, String tempKeyword) {
+        return ctx.select(DSL.one()).from(POLICY).where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.like("%" + tempKeyword))).fetchOptional().isPresent();
+    }
+
+    public void deleteTemporaryPolicy(long runId, String tempKeyword) {
+        ctx.delete(POLICY)
+                .where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.like("%" + tempKeyword)))
+                .execute();
     }
 }
