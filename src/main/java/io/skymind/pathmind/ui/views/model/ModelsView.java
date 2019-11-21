@@ -57,6 +57,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
+	private ScreenTitlePanel titlePanel;
 
 	public ModelsView()
 	{
@@ -134,7 +135,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("PROJECT " + projectName);
+		titlePanel = new ScreenTitlePanel("PROJECT");
+		return titlePanel;
 	}
 
 	@Override
@@ -155,6 +157,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
 		modelGrid.setItems(models);
 		archivesTabPanel.initData();
+		titlePanel.setSubtitle(projectName);
 	}
 
 	@Override
