@@ -6,7 +6,6 @@ import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.repositories.PolicyRepository;
 import org.jooq.DSLContext;
-import org.jooq.JSONB;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
@@ -41,6 +40,7 @@ public class PolicyDAO extends PolicyRepository
                 .leftJoin(PROJECT)
                     .on(PROJECT.ID.eq(MODEL.PROJECT_ID))
                 .where(RUN.EXPERIMENT_ID.eq(experimentId))
+                .orderBy(POLICY.ID)
                 .fetch(it -> {
                     final Policy policy = new Policy();
                     policy.setExternalId(it.get(POLICY.EXTERNAL_ID));
