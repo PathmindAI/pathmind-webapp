@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.views.account;
 
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -59,6 +60,9 @@ public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
 		initBinder();
 
 		email.setEnabled(false);
+		
+		cancelBtn.addClickShortcut(Key.ESCAPE);
+		
 		cancelBtn.addClickListener(e -> UI.getCurrent().navigate(AccountView.class));
 		updateBtn.addClickListener(e -> {
 			userService.update(user);

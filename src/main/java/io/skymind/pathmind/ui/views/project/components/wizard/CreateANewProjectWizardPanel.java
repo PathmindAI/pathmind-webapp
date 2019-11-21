@@ -2,6 +2,7 @@ package io.skymind.pathmind.ui.views.project.components.wizard;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -32,6 +33,7 @@ public class CreateANewProjectWizardPanel extends VerticalLayout
 
 		bindFields(binder);
 
+		createProjectButton.addClickShortcut(Key.ENTER);
 		projectNameTextField.focus();
 	}
 
