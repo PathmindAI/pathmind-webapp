@@ -66,6 +66,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     private TextArea getObservationTextArea;
     private RewardFunctionEditor rewardFunctionEditor;
     private Label rewardFunctionTitle;
+    private ScreenTitlePanel titlePanel;
 
     public ExperimentsView() {
         super();
@@ -163,7 +164,8 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
     @Override
     protected Component getTitlePanel() {
-        return new ScreenTitlePanel("PROJECT " + getProjectName());
+        titlePanel = new ScreenTitlePanel("PROJECT");
+        return titlePanel;
     }
 
     public List<Experiment> getExperiments() {
@@ -196,6 +198,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         archivesTabPanel.initData();
         getObservationTextArea.setValue(currentModel.getGetObservationForRewardFunction());
         showRewardFunction(experiments.get(0));
+        titlePanel.setSubtitle(getProjectName());
     }
 
     @Override
