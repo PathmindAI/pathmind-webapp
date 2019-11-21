@@ -48,7 +48,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
             final Map<String, String> rawProgress = provider.progress(rescaleJobId, jobStatus);
 
             final List<Policy> policies = rawProgress.entrySet().stream()
-                    .filter(e -> !stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.EMPTY_LIST).contains(e.getKey()))
+                    .filter(e -> !stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).contains(e.getKey()))
                     .map(ProgressInterpreter::interpret)
                     .collect(Collectors.toList());
 
