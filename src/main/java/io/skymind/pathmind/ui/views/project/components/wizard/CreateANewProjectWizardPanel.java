@@ -9,6 +9,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.ui.binders.ProjectBinders;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -18,11 +19,10 @@ public class CreateANewProjectWizardPanel extends VerticalLayout
 	private TextField projectNameTextField = new TextField("Give your project a name");
 	private Button createProjectButton = new Button("Create Project");
 
-	public CreateANewProjectWizardPanel(Binder<Project> binder)
+	public CreateANewProjectWizardPanel(Binder<Project> binder, ProjectDAO projectDao)
 	{
 		projectNameTextField.setWidthFull();
 
-		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/50 -> Do we allow duplicate project names? Are there any validation rules?
 		add(new H3("Start a New Project!"),
 				GuiUtils.getSubtitleLabel("Projects organize your Pathmind Experiments based on your AnyLogic model"),
 				GuiUtils.getHeightSpacer("40px"),
@@ -31,7 +31,7 @@ public class CreateANewProjectWizardPanel extends VerticalLayout
 
 		setClassName("view-section"); // adds the white 'panel' style with rounded corners
 
-		bindFields(binder);
+		bindFields(binder, projectDao);
 
 		createProjectButton.addClickShortcut(Key.ENTER);
 		projectNameTextField.focus();
@@ -41,7 +41,7 @@ public class CreateANewProjectWizardPanel extends VerticalLayout
 		createProjectButton.addClickListener(listener);
 	}
 
-	private void bindFields(Binder<Project> binder) {
-		ProjectBinders.bindProjectName(binder, projectNameTextField);
+	private void bindFields(Binder<Project> binder, ProjectDAO projectDao) {
+		ProjectBinders.bindProjectName(binder, projectDao, projectNameTextField);
 	}
 }
