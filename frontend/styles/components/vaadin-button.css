@@ -15,6 +15,11 @@
    height: auto;
    background: transparent;
    padding: var(--lumo-space-s) var(--lumo-space-l);
+}
+:host(.large-image-btn:hover)::before {
+   opacity: 0; 
+}
+:host(.large-image-btn:hover) {
    font-weight: bold;
 }
 

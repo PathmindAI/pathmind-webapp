@@ -2,7 +2,6 @@ package io.skymind.pathmind.ui.layouts.components;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
@@ -33,9 +32,9 @@ public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSu
 		menuBar.addClassName("account-menu");
 
 		MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER), user));
-		account.getSubMenu().addItem("Account", e -> UI.getCurrent().navigate(AccountView.class));
+		account.getSubMenu().addItem("Account", e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
 		account.getSubMenu().addItem("Logout", e ->
-				UI.getCurrent().getPage().executeJavaScript("location.assign('/logout')"));
+				getUI().ifPresent(ui -> ui.getPage().executeJavaScript("location.assign('/logout')")));
 	}
 
 	private HorizontalLayout createItem(Icon icon, PathmindUser user) {

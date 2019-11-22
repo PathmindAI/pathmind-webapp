@@ -82,7 +82,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 		logoPanel = new NewProjectLogoWizardPanel();
 		statusPanel = new NewProjectStatusWizardPanel();
-		createProjectPanel = new CreateANewProjectWizardPanel(projectBinder);
+		createProjectPanel = new CreateANewProjectWizardPanel(projectBinder, projectDAO);
 		pathminderHelperWizardPanel = new PathminderHelperWizardPanel();
 		uploadModelWizardPanel = new UploadModelWizardPanel(model);
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
