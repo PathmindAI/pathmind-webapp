@@ -1,89 +1,35 @@
 package io.skymind.pathmind.ui.views.account;
 
-import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
-import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.validator.EmailValidator;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.templatemodel.TemplateModel;
-import io.skymind.pathmind.data.PathmindUser;
-import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.security.Routes;
-import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
-@Tag("account-edit-view")
-@JsModule("./src/account/account-edit-view.js")
 @Route(value = Routes.ACCOUNT_EDIT_URL, layout = MainLayout.class)
-public class AccountEditView extends PolymerTemplate<AccountEditView.Model>
-{
-	@Id("header")
-	private Div header;
+public class AccountEditView extends PathMindDefaultView {
 
-	@Id("lastName")
-	private TextField lastName;
-
-	@Id("firstName")
-	private TextField firstName;
-
-	@Id("email")
-	private TextField email;
-
-	@Id("cancelBtn")
-	private Button cancelBtn;
-
-	@Id("updateBtn")
-	private Button updateBtn;
-
-	private PathmindUser user;
+	private final AccountEditViewContent accountEditViewContent;
 
 	@Autowired
-	private UserService userService;
-
-	@Autowired
-	public AccountEditView(CurrentUser currentUser,
-						   @Value("${pathmind.contact-support.address}") String contactLink)
-	{
-		getModel().setContactLink(contactLink);
-		header.add(new ScreenTitlePanel("ACCOUNT", "Edit"));
-//		header.add(new ScreenTitlePanel("ACCOUNT Edit"));
-		user = currentUser.getUser();
-		initBinder();
-
-		email.setEnabled(false);
-		
-		cancelBtn.addClickShortcut(Key.ESCAPE);
-		
-		cancelBtn.addClickListener(e -> UI.getCurrent().navigate(AccountView.class));
-		updateBtn.addClickListener(e -> {
-			userService.update(user);
-			UI.getCurrent().navigate(AccountView.class);
-		});
+	public AccountEditView(AccountEditViewContent accountEditViewContent) {
+		this.accountEditViewContent = accountEditViewContent;
 	}
 
-	private void initBinder() {
-		Binder<PathmindUser> binder = new Binder<>(PathmindUser.class);
-
-		binder.forField(email).asRequired().withValidator(new EmailValidator(
-				"This doesn't look like a valid email address"))
-				.bind(PathmindUser::getEmail, PathmindUser::setEmail);
-
-		binder.forField(firstName).bind(PathmindUser::getFirstname, PathmindUser::setFirstname);
-		binder.forField(lastName).bind(PathmindUser::getLastname, PathmindUser::setLastname);
-		binder.setBean(user);
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return true;
 	}
 
-	public interface Model extends TemplateModel {
-		void setContactLink(String contactLink);
+	@Override
+	protected Component getTitlePanel() {
+		return new ScreenTitlePanel("ACCOUNT", "Edit");
+	}
+
+	@Override
+	protected Component getMainContent() {
+		return accountEditViewContent;
 	}
 }
