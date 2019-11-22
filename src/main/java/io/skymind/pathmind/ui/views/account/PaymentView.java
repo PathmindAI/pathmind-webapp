@@ -32,6 +32,13 @@ import java.util.Objects;
 
 import static io.skymind.pathmind.security.Routes.PAYMENT_URL;
 
+/**
+ * Serverside part of the payment-view element which handles the integration to Stripe.
+ *
+ * NOTE: This element is not rendered in a shadow DOM so you cannot use the normal @Id Polymer template connector annotations
+ *
+ * DO NOT SEND CREDIT CARD INFORMATION FROM FRONTEND TO BACKEND. LET STRIPE HANDLE ALL THAT INSTEAD AND ONLY PASS IDS.
+ */
 @Tag("payment-view")
 @JsModule("./src/account/payment-view.js")
 @Route(value = PAYMENT_URL, layout = MainLayout.class)
@@ -51,6 +58,9 @@ public class PaymentView extends PolymerTemplate<PaymentView.Model> implements B
 	{
 		this.stripeService = stripeService;
 		user = currentUser.getUser();
+
+		// because payment-view is not in the shadow DOM we cannot use the @Id PolymerTemplate connector annotation
+		// and we have to add the ScreenTitlePanel element via this custom method
 		final ScreenTitlePanel screenTitlePanel = new ScreenTitlePanel("UPGRADE", "Subscription Plans");
 		getElement().appendVirtualChild(screenTitlePanel.getElement());
 		getElement().callJsFunction("addScreenTitlePanel", screenTitlePanel.getElement());

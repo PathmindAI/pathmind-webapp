@@ -17,6 +17,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * This class is used to manage credit card subscription of the Pathmind application.
+ * Stripe is used as the service. For more information please refer to the documentation: https://stripe.com/docs
+ *
+ * The following documentation was followed to initially create this class and allow the Customer to subscribe to a
+ * recurring plan:
+ * https://stripe.com/docs/billing/subscriptions/set-up-subscription
+ *
+ * PLEASE NOTE: NO CREDIT CARD INFORMATION IS TO BE STORED ON PATHMIND APPLICATION. STRIPE WILL BE USED FOR THIS.
+ *
+ * Stripe's customer id is saved in {@link io.skymind.pathmind.data.PathmindUser#stripeCustomerId} which serves
+ * as the link between Pathmind and Stripe data.
+ *
+ */
 @Service
 public class StripeService
 {
@@ -45,6 +59,21 @@ public class StripeService
 		Stripe.apiKey = secretKey;
 	}
 
+	/**
+	 * Creates a new Customer object on Stripe with the given parameters.
+	 * @param email user email address
+	 * @param paymentMethod payment method id that Stripe Elements returns on the frontend. This is used to create
+	 *                      the subscription
+	 *      				See <a href="https://stripe.com/docs/api/payment_methods">https://stripe.com/docs/api/payment_methods</a>
+	 *        				for more information
+	 * @param nameOnCard
+	 * @param addressLine1
+	 * @param city
+	 * @param state
+	 * @param postalCode
+	 * @return new Stripe customer object.
+	 * @throws StripeException
+	 */
 	public Customer createCustomer(String email, String paymentMethod, String nameOnCard, String addressLine1, String city, String state, String postalCode) throws StripeException
 	{
 		if (customerAlreadyExists(email)) {
@@ -73,6 +102,12 @@ public class StripeService
 		return customer;
 	}
 
+	/**
+	 * Checks whether a customer already exists on Stripe based on the Stripe customer id that is stored in
+	 * {@link io.skymind.pathmind.data.PathmindUser#stripeCustomerId}
+	 * @param email email of the Pathmind user
+	 * @return true if the customer already exists, false otherwise
+	 */
 	public boolean customerAlreadyExists(String email)
 	{
 		try {
@@ -87,6 +122,11 @@ public class StripeService
 		}
 	}
 
+	/**
+	 * Creates a new recurring Professional subscription for the given Stripe customer.
+	 * @param customer Stripe customer to create the subscription for.
+	 * @return The newly created Subscription
+	 */
 	public Subscription createSubscription(Customer customer)
 	{
 		Objects.requireNonNull(customer);
@@ -109,12 +149,23 @@ public class StripeService
 		}
 	}
 
+	/**
+	 * Get a Stripe customer by Pathmind user email.
+	 * @param email
+	 * @return
+	 * @throws StripeException
+	 */
 	public Customer getCustomer(String email) throws StripeException
 	{
 		final PathmindUser pathmindUser = userDAO.findByEmailIgnoreCase(email);
 		return Customer.retrieve(pathmindUser.getStripeCustomerId());
 	}
 
+	/**
+	 * Checks whether the user has an active recurring Professional subscription.
+	 * @param email Pathmind user email address
+	 * @return true if the user has an ongoing subscription, false if not.
+	 */
 	public boolean userHasActiveProfessionalSubscription(String email)
 	{
 		Customer customer = null;

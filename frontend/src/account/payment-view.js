@@ -3,7 +3,13 @@ import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
 /**
  * `payment-view`
  *
- * PaymentView element.
+ * PaymentView manages the integration with Stripe Elements.
+ *
+ * For more information please refer to the following links:
+ * https://stripe.com/en-fi/payments/elements
+ * https://stripe.com/docs/stripe-js
+ *
+ * NOTE: ONLY USE STRIPE ELEMENTS FOR MANAGING CREDIT CARD INFORMATION!
  *
  * @customElement
  * @polymer
@@ -197,6 +203,8 @@ class PaymentView extends PolymerElement {
     return "payment-view";
   }
 
+  // This allows us to keep the payment-view element in the light DOM.
+  // Without this Stripe Elements won't work at all.
   _attachDom(dom) {
     this.appendChild(dom);
   }
@@ -236,11 +244,19 @@ class PaymentView extends PolymerElement {
       }
     };
 
+    // Initialize Stripe with the key that is gotten from the backend
     this.stripe = Stripe(this.key);
+    // Initialize Stripe Elements as per Stripe documentation
     const elements = this.stripe.elements();
+    // Create a new credit card field with Stripe, hide the postal code because we have a Vaadin field for that.
+    // Also override the styles
     this.cardElement = elements.create('card', {hidePostalCode: true, style: style});
+    // Find an element with #card-element id and mount that with the new Stripe credit card element
+    // This creates an iFrame to Stripe services.
     this.cardElement.mount('#card-element');
+    // Add a listener to the card element to know when it's ready.
     this.cardElement.addEventListener('change', event => this.isStripeComplete = event.complete);
+    // If there's an error coming from Stripe set it visible
     this.cardElement.addEventListener('change', ({error}) => this.message = error ? error.message : '');
   }
 
@@ -248,6 +264,8 @@ class PaymentView extends PolymerElement {
     return a && b;
   }
 
+  // submit is called when the user clicks the submit button. They are only able to do that once all the data has been
+  // validated by us and by Stripe (Stripe naturally only validates the credit card information on their side)
   submit() {
     if (this.isStripeComplete) {
       const paymentView = this;
@@ -271,10 +289,14 @@ class PaymentView extends PolymerElement {
     }
   }
 
+  // This method passes the payment method id to the backend which will be used to create the subscription for the user
   setPaymentMethod(paymentMethod) {
     this.$server.paymentMethodCallback(paymentMethod);
   }
 
+  // This is used to add the ScreenTitlePanel serverside element to the frontend.
+  // Because payment-view is not in the shadow DOM the regular way of using @Id PolymerTemplate annotation won't work
+  // (it renders a blank screen instead if you add it to the backend)
   addScreenTitlePanel(element) {
     let slotElement = this.querySelector(`slot[name="screen-title-panel"]`);
     if (slotElement) {
@@ -283,6 +305,8 @@ class PaymentView extends PolymerElement {
     }
   }
 
+  // Called every time the form changes. Validation for the Vaadin elements happens on the server side as well.
+  // NOTE: DO NOT SEND ANY CREDIT CARD RELATED INFORMATION TO THE BACKEND. STRIPE SHOULD ONLY MANAGE THAT!
   formUpdated() {
     this.$server.validateForm(
         {
