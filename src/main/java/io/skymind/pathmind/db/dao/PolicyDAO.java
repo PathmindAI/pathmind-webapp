@@ -6,7 +6,6 @@ import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.repositories.PolicyRepository;
 import org.jooq.DSLContext;
-import org.jooq.JSONB;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +16,8 @@ import static io.skymind.pathmind.data.db.Tables.*;
 @Repository
 public class PolicyDAO extends PolicyRepository
 {
+    private static final String SAVING = "saving";
+
     private final DSLContext ctx;
 
     public PolicyDAO(DSLContext ctx){
@@ -39,6 +40,7 @@ public class PolicyDAO extends PolicyRepository
                 .leftJoin(PROJECT)
                     .on(PROJECT.ID.eq(MODEL.PROJECT_ID))
                 .where(RUN.EXPERIMENT_ID.eq(experimentId))
+                .orderBy(POLICY.ID)
                 .fetch(it -> {
                     final Policy policy = new Policy();
                     policy.setExternalId(it.get(POLICY.EXTERNAL_ID));
@@ -67,19 +69,17 @@ public class PolicyDAO extends PolicyRepository
         return policies;
     }
 
-    public boolean hasPolicyFile(long policyId){
-        return ctx.select(DSL.one()).from(POLICY).where(POLICY.ID.eq(policyId).and(POLICY.FILE.isNotNull())).fetchOptional().isPresent();
-    }
-
-    public boolean hasPolicyFile(long policyId, String content){
-        boolean hasPolicy = hasPolicyFile(policyId);
-        if (hasPolicy) {
-            String dbContents = new String(getPolicyFile(policyId));
-            if (!dbContents.equals(content)) {
-                return true;
-            }
-        }
-        return false;
+    /**
+     * To avoid multiple download policy file from rescale server,
+     * we put the "saving" for temporary
+     * policy dao will check if there's real policy file exist or not
+     */
+    public boolean hasPolicyFile(long policyId) {
+        return ctx.select(DSL.one()).from(POLICY)
+                .where(POLICY.ID.eq(policyId)
+                        .and(POLICY.FILE.isNotNull())
+                        .and(POLICY.FILE.notEqual("saving".getBytes())))
+                .fetchOptional().isPresent();
     }
 
     public byte[] getPolicyFile(long policyId){
