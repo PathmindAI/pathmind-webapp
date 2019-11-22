@@ -1,19 +1,17 @@
 package io.skymind.pathmind.services.billing;
 
 import com.stripe.exception.StripeException;
-import com.stripe.model.*;
-import com.stripe.param.PaymentIntentCreateParams;
+import com.stripe.model.Customer;
+import com.stripe.model.Plan;
+import com.stripe.model.Product;
 import io.skymind.pathmind.PathmindApplicationTests;
-import io.skymind.pathmind.data.PathmindUser;
-import io.skymind.pathmind.db.dao.UserDAO;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @Ignore
 public class StripeServiceTest extends PathmindApplicationTests
@@ -21,52 +19,45 @@ public class StripeServiceTest extends PathmindApplicationTests
 
 	@Autowired
 	private StripeService stripeService;
-	@Autowired
-	private UserDAO userDAO;
 	@Value("${pathmind.stripe.professional-plan-id}")
 	private String professionalPlanId;
 
-	@Test
-	public void products() throws StripeException
-	{
-		Map<String, Object> paymentIntentParams = new HashMap<String, Object>();
-		paymentIntentParams.put("amount", 1000);
-		paymentIntentParams.put("currency", "eur");
-		ArrayList payment_method_types = new ArrayList();
-		payment_method_types.add("card");
-		paymentIntentParams.put("payment_method_types", payment_method_types);
-		paymentIntentParams.put("receipt_email", "jenny.rosen@example.com");
+	private String customerEmail = "vesa@vaadin.com";
 
-		final Product prod_g2AGAGjNJIkUbv = Product.retrieve("prod_G2AGAGjNJIkUbv");
+	@Test
+	public void testProfessionalProductExists() throws StripeException
+	{
+		final Product pathmindProfessionalProduct = Product.retrieve("prod_G2AGAGjNJIkUbv");
+		assertTrue(pathmindProfessionalProduct.getActive());
+		assertEquals("Pathmind Professional", pathmindProfessionalProduct.getName());
 	}
 
 	@Test
-	public void plans() throws StripeException
+	public void testProfessionalPlanExists() throws StripeException
 	{
-		Map<String, Object> planParams = new HashMap<String, Object>();
-		planParams.put("limit", 3);
-
-		final PlanCollection list = Plan.list(planParams);
-	}
-
-
-	@Test
-	public void testPaymentIntent() throws StripeException
-	{
-		PaymentIntentCreateParams createParams = new PaymentIntentCreateParams.Builder()
-				.setCurrency("usd").setAmount(1099L)
-				.build();
-
-		PaymentIntent intent = PaymentIntent.create(createParams);
-
+		final Plan pathmindProfessionalPlan = Plan.retrieve(professionalPlanId);
+		assertTrue(pathmindProfessionalPlan.getActive());
+		assertTrue(50000L == pathmindProfessionalPlan.getAmount());
+		assertEquals("month", pathmindProfessionalPlan.getInterval());
 	}
 
 	@Test
-	public void getCustomer() throws StripeException
+	public void testGetCustomer() throws StripeException
 	{
-		final PathmindUser pathmindUser = userDAO.findByEmailIgnoreCase("vesa@vaadin.com");
-		final Customer customer = Customer.retrieve(pathmindUser.getStripeCustomerId());
-		final Plan plan = Plan.retrieve(professionalPlanId);
+		final Customer customer = stripeService.getCustomer(customerEmail);
+		assertEquals("Vesa Nieminen", customer.getName());
+	}
+
+	@Test
+	public void testCustomerAlreadyExists()
+	{
+		assertTrue(stripeService.customerAlreadyExists(customerEmail));
+	}
+
+	@Test
+	public void testUserHasActiveProfessionalSubscription()
+	{
+		assertTrue(stripeService.userHasActiveProfessionalSubscription(customerEmail));
 	}
 
 }
