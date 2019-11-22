@@ -1,6 +1,5 @@
-package io.skymind.pathmind.ui.views;
+package io.skymind.pathmind.ui.views.login;
 
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -26,8 +25,6 @@ import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
-import io.skymind.pathmind.ui.views.account.ResetPasswordView;
-import io.skymind.pathmind.ui.views.account.SignUpView;
 import io.skymind.pathmind.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
 import io.skymind.pathmind.utils.PathmindUtils;
@@ -64,8 +61,7 @@ public class LoginView extends HorizontalLayout
 	private String email;
 
 	public LoginView(@Value("${pathmind.privacy-policy.url}") String privacyPolicyUrl,
-					 @Value("${pathmind.terms-of-use.url}") String termsOfUseUrl
-					 )
+					 @Value("${pathmind.terms-of-use.url}") String termsOfUseUrl)
 	{
 		addClassName("login-panel-cont");
 		Label welcome = new Label("Welcome to");
@@ -103,7 +99,7 @@ public class LoginView extends HorizontalLayout
 		loginPanel.setClassName("content");
 		loginPanel.add(welcome, img, title, innerContent, policy);
 	}
-	
+
 	private void updateEmailNotVerified() {
 		Button resendVerification = new Button("Resend");
 		resendVerification.getElement().setAttribute("title", "Send verification email again.");
@@ -195,7 +191,7 @@ public class LoginView extends HorizontalLayout
 	public void afterNavigation(AfterNavigationEvent event) {
 		emailNotVerified.setVisible(false);
 		badCredentials.setVisible(false);
-		
+
 		if (errorMessage == null)
 			return;
 

@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.account;
+package io.skymind.pathmind.ui.views.login;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Tag;
@@ -16,13 +16,15 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.InitialPageSettings;
+import com.vaadin.flow.server.PageConfigurator;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.ui.views.LoginView;
+import io.skymind.pathmind.ui.utils.VaadinUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -32,7 +34,7 @@ import java.util.List;
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @JsModule("./src/account/sign-up-view.js")
 @Route(value = Routes.SIGN_UP_URL)
-public class SignUpView extends PolymerTemplate<SignUpView.Model>
+public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PageConfigurator
 {
 	private static final String EMAIL_IS_USED = "This email is already used.";
 
@@ -160,11 +162,15 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model>
 		binder.forField(lastName).bind(PathmindUser::getLastname, PathmindUser::setLastname);
 		binder.setBean(user);
 	}
+	
+	@Override
+	public void configurePage(InitialPageSettings settings) {
+		VaadinUtils.setupFavIcon(settings);
+	}
 
 	public interface Model extends TemplateModel {
 		void setTitle(String title);
 		void setMessage(String message);
 		void setContactLink(String contactLink);
 	}
-
 }

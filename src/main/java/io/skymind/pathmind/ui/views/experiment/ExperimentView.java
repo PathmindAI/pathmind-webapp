@@ -105,11 +105,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             policyChartPanel.init(selectedPolicy);
             policyChartPanel.highlightPolicy(selectedPolicy);
 
-            // to avoid multiple download policy file from rescale server,
-            // we put the "saving" for temporary
-            // policy dao will check if there's real policy file exist or not
-            // todo make saving to enum or static final variable
-            exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId(), "saving"));
+            exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
 
             RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
             if (selectedRunType == RunType.TestRun && experiment.getPolicies().size() == 1) {
