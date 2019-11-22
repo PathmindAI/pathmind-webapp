@@ -534,7 +534,7 @@
         </update>
     </changeSet>
 
-    <changeSet id="20191031" author="vesa@vaadin.com">
+    <changeSet id="20191031-1" author="vesa@vaadin.com">
         <addColumn tableName="PATHMIND_USER">
             <column name="STRIPE_CUSTOMER_ID" type="VARCHAR(255)"/>
         </addColumn>
