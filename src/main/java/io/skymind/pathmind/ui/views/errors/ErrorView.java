@@ -2,10 +2,10 @@ package io.skymind.pathmind.ui.views.errors;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.security.Routes;
+import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -19,6 +19,11 @@ public class ErrorView extends PathMindDefaultView
 {
 	public ErrorView() {
 		super();
+	}
+
+	@Override
+	protected Component getTitlePanel() {
+		return new ScreenTitlePanel("Please contact Skymind for assistance.");
 	}
 
 	@Override

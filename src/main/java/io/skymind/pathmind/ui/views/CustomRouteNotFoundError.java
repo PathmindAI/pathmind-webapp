@@ -5,6 +5,7 @@ import com.vaadin.flow.router.ErrorParameter;
 import com.vaadin.flow.router.NotFoundException;
 import com.vaadin.flow.router.RouteNotFoundError;
 
+import io.skymind.pathmind.ui.views.login.LoginView;
 import javax.servlet.http.HttpServletResponse;
 
 public class CustomRouteNotFoundError extends RouteNotFoundError
