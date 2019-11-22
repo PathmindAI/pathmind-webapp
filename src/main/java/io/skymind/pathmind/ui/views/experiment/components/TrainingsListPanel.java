@@ -1,5 +1,11 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.function.Consumer;
+
+import org.springframework.stereotype.Component;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
@@ -9,20 +15,16 @@ import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
-import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
+
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
+import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.function.Consumer;
 
 @Component
 public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSubscriber {
@@ -48,14 +50,14 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
                 .setResizable(true)
                 .setSortable(true);
 
-        Grid.Column<Policy> startedColumn = grid.addColumn(new LocalDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+        Grid.Column<Policy> startedColumn = grid.addColumn(new ZonedDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
                 .setComparator(Comparator.comparing(Policy::getStartedAt, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .setHeader("Started")
                 .setAutoWidth(true)
                 .setResizable(true)
                 .setSortable(true);
 
-        grid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunCompletedTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+        grid.addColumn(new ZonedDateTimeRenderer<>(policy -> PolicyUtils.getRunCompletedTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
                 .setComparator(Comparator.comparing(policy -> PolicyUtils.getRunCompletedTime(policy)))
                 .setHeader("Completed")
                 .setAutoWidth(true)

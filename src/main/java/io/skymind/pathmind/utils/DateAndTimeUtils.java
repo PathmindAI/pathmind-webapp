@@ -4,7 +4,11 @@ import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+
+import com.vaadin.flow.component.UI;
 
 public class DateAndTimeUtils
 {
@@ -13,9 +17,23 @@ public class DateAndTimeUtils
 	public static final DateTimeFormatter STANDARD_DATE_AND_TIME_SHORT_FOMATTER = DateTimeFormatter.ofPattern("MMM d H:mm");
 
 	public static final String formatDateAndTimeShortFormatter(LocalDateTime localDateTime) {
+		return formatDateAndTimeShortFormatter(localDateTime, getUserZone());
+	}
+	public static final String formatDateAndTimeShortFormatter(LocalDateTime localDateTime, ZoneId userZone) {
 		if(localDateTime == null)
 			return "--";
-		return STANDARD_DATE_AND_TIME_SHORT_FOMATTER.format(localDateTime);
+		ZonedDateTime serverDateTime = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
+		ZonedDateTime userDateTime = serverDateTime.withZoneSameLocal(userZone);
+		return STANDARD_DATE_AND_TIME_SHORT_FOMATTER.format(userDateTime);
+	}
+	
+	private static final ZoneId getUserZone() {
+		String zoneId = UI.getCurrent().getInternals().getExtendedClientDetails().getTimeZoneId();
+		if (zoneId == null) {
+			return ZoneId.systemDefault();
+		} else {
+			return ZoneId.of(zoneId);
+		}
 	}
 
 	/**
