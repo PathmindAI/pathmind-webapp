@@ -170,34 +170,42 @@ public class RescaleRestApiClient {
      *
      * TODO: Test if upload with indefinite size works, or if we must create an input stream reader body type that knows about filesize
      */
-    public RescaleFile fileUpload(byte[] content, String filename) throws IOException {
-        final CloseableHttpClient client = HttpClients.custom().setDefaultHeaders(Arrays.asList(
-                new BasicHeader("Authorization", "Token "+apiKey)
-        )).build();
-
-        final HttpPost post = new HttpPost(rescaleBaseUrl + "/files/contents/");
+    public RescaleFile fileUpload(byte[] content, String filename) throws IOException
+    {
+        final HttpPost post = getHttpPost();
         post.setEntity(MultipartEntityBuilder.create()
                 .addBinaryBody("file", content, ContentType.APPLICATION_OCTET_STREAM, filename)
                 .build());
 
-        final CloseableHttpResponse resp = client.execute(post);
-
-        return objectMapper.readValue(resp.getEntity().getContent(), RescaleFile.class);
+        try(final CloseableHttpClient client = getCloseableHttpClient();
+            final CloseableHttpResponse resp = client.execute(post))
+        {
+            return objectMapper.readValue(resp.getEntity().getContent(), RescaleFile.class);
+        }
     }
 
-    public RescaleFile fileUpload(File file, String filename) throws IOException {
-        final CloseableHttpClient client = HttpClients.custom().setDefaultHeaders(Arrays.asList(
-                new BasicHeader("Authorization", "Token "+apiKey)
-        )).build();
-
-        final HttpPost post = new HttpPost(rescaleBaseUrl + "/files/contents/");
+    public RescaleFile fileUpload(File file, String filename) throws IOException
+    {
+        final HttpPost post = getHttpPost();
         post.setEntity(MultipartEntityBuilder.create()
                 .addBinaryBody("file", file, ContentType.MULTIPART_FORM_DATA, filename)
                 .build());
 
-        final CloseableHttpResponse resp = client.execute(post);
+        try(final CloseableHttpClient client = getCloseableHttpClient();
+            final CloseableHttpResponse resp = client.execute(post))
+        {
+            return objectMapper.readValue(resp.getEntity().getContent(), RescaleFile.class);
+        }
+    }
 
-        return objectMapper.readValue(resp.getEntity().getContent(), RescaleFile.class);
+    private HttpPost getHttpPost() {
+        return new HttpPost(rescaleBaseUrl + "/files/contents/");
+    }
+
+    private CloseableHttpClient getCloseableHttpClient() {
+        return HttpClients.custom().setDefaultHeaders(
+                Arrays.asList(new BasicHeader("Authorization", "Token "+apiKey)))
+                .build();
     }
 
     public PagedResult<RescaleFile> filesList(){
