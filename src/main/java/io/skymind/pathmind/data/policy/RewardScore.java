@@ -1,4 +1,4 @@
-package io.skymind.pathmind.services.training.progress;
+package io.skymind.pathmind.data.policy;
 
 public class RewardScore {
     // May be NaN!
