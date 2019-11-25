@@ -169,6 +169,14 @@ public class RunUpdateServiceImpl implements RunUpdateService {
     }
 
     @Override
+    public void saveCheckpointFile(long runId, String externalId, byte[] checkpointFile) {
+        ctx.update(POLICY)
+                .set(POLICY.SNAPSHOT, checkpointFile)
+                .where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.eq(externalId)))
+                .execute();
+    }
+
+    @Override
     public List<Policy> getStoppedPolicies(List<Long> runIds) {
         return ctx.selectFrom(POLICY)
                 .where(POLICY.RUN_ID.in(runIds))

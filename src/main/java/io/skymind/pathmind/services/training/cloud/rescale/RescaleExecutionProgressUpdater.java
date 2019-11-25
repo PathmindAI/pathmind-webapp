@@ -72,9 +72,16 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
 
             if(jobStatus == RunStatus.Completed){
                 for (String finishPolicyName : finishedPolicyNamesFromDB) {
+                    // save temporary file to avoid multiple download tries
                     updateService.savePolicyFile(runId, finishPolicyName, TrainingFile.TEMPORARY_POLICY.getBytes());
+
+                    // save a policy file
                     final byte[] policy = provider.policy(rescaleJobId, finishPolicyName);
                     updateService.savePolicyFile(runId, finishPolicyName, policy);
+
+                    // save the last checkpoint
+                    final byte[] checkPointFile = provider.snapshot(rescaleJobId, finishPolicyName);
+                    updateService.saveCheckpointFile(runId, finishPolicyName, checkPointFile);
                 }
                 updateService.cleanUpTemporary(runId);
             }

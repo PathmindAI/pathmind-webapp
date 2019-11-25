@@ -173,6 +173,15 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     }
 
     @Override
+    public byte[] snapshot(String jobHandle, String trainingRun) {
+        return client.outputFiles(jobHandle, "1").getResults()
+                .stream()
+                .filter(it -> it.getPath().matches("checkpoint_*_" + trainingRun + ".zip"))
+                .map(it -> client.fileContents(it.getId()))
+                .findFirst().orElseGet(() -> null);
+    }
+
+    @Override
     public String console(String jobHandle) {
         final RunStatus runStatus = status(jobHandle);
 
