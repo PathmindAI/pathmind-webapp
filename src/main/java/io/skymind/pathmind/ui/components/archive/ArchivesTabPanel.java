@@ -5,11 +5,13 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 
 import io.skymind.pathmind.data.ArchivableData;
 import io.skymind.pathmind.ui.components.TabPanel;
+import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 /**
  * If this class is used within a view with a grid then it will automatically add the Archived column in the grid
@@ -79,5 +81,6 @@ public class ArchivesTabPanel<T extends ArchivableData> extends TabPanel
 	 */
 	public void initData() {
 		grid.setItems(getFilteredModels(getItems.get(), false));
+		DateAndTimeUtils.refreshAfterRetrivingTimezone(UI.getCurrent(), grid.getDataProvider());
 	}
 }

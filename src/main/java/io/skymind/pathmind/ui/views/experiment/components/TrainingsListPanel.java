@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSingleSelectionModel;
@@ -15,6 +16,8 @@ import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
@@ -26,7 +29,8 @@ import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
-@Component
+@SpringComponent
+@UIScope
 public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSubscriber {
     private Grid<Policy> grid;
 
@@ -144,6 +148,7 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
         this.experiment = experiment;
 
         grid.setDataProvider(new ListDataProvider<>(experiment.getPolicies()));
+        DateAndTimeUtils.refreshAfterRetrivingTimezone(UI.getCurrent(), grid.getDataProvider());
 
         if (!experiment.getPolicies().isEmpty() && defaultSelectedPolicyId < 0) {
             grid.select(experiment.getPolicies().get(0));

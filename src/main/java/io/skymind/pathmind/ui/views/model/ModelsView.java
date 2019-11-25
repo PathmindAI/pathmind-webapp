@@ -156,6 +156,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	@Override
 	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
 		modelGrid.setItems(models);
+		DateAndTimeUtils.refreshAfterRetrivingTimezone(event.getUI(), modelGrid.getDataProvider());
 		archivesTabPanel.initData();
 		titlePanel.setSubtitle(projectName);
 	}

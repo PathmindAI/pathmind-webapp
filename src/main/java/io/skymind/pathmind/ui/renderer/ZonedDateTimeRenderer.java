@@ -17,7 +17,7 @@ import com.vaadin.flow.function.ValueProvider;
 public class ZonedDateTimeRenderer<SOURCE> extends BasicRenderer<SOURCE, LocalDateTime> {
 
 	private DateTimeFormatter formatter;
-	private String nullRepresentation = "--";
+	private String nullRepresentation = "-";
 	private String userTimeZoneId;
 	
 	public ZonedDateTimeRenderer(ValueProvider<SOURCE, LocalDateTime> valueProvider, DateTimeFormatter formatter) {

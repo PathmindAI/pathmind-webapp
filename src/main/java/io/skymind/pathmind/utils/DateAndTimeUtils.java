@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.data.provider.DataProvider;
 
 public class DateAndTimeUtils
 {
@@ -21,14 +22,17 @@ public class DateAndTimeUtils
 	}
 	public static final String formatDateAndTimeShortFormatter(LocalDateTime localDateTime, ZoneId userZone) {
 		if(localDateTime == null)
-			return "--";
+			return "-";
 		ZonedDateTime serverDateTime = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
 		ZonedDateTime userDateTime = serverDateTime.withZoneSameLocal(userZone);
 		return STANDARD_DATE_AND_TIME_SHORT_FOMATTER.format(userDateTime);
 	}
 	
 	private static final ZoneId getUserZone() {
-		String zoneId = UI.getCurrent().getInternals().getExtendedClientDetails().getTimeZoneId();
+		String zoneId = null;
+		if (UI.getCurrent().getInternals().getExtendedClientDetails() != null) {
+			zoneId = UI.getCurrent().getInternals().getExtendedClientDetails().getTimeZoneId();
+		}
 		if (zoneId == null) {
 			return ZoneId.systemDefault();
 		} else {
@@ -71,5 +75,13 @@ public class DateAndTimeUtils
 				return Long.parseLong(source);
 			}
 		};
+	}
+	
+	public static void refreshAfterRetrivingTimezone(UI ui, DataProvider<?, ?> dataProvider) {
+		if (ui.getInternals().getExtendedClientDetails() == null) {
+			ui.getPage().retrieveExtendedClientDetails(details -> {
+				dataProvider.refreshAll();
+			});
+		}
 	}
 }
