@@ -44,4 +44,14 @@ public class CreateANewProjectWizardPanel extends VerticalLayout
 	private void bindFields(Binder<Project> binder, ProjectDAO projectDao) {
 		ProjectBinders.bindProjectName(binder, projectDao, projectNameTextField);
 	}
+	
+	/**
+	 * <code>createProjectButton</code> has a click shortcut that stays active as long as the button is visible and attached
+	 * For this reason, changing also the visibility of the button, when visibility of panel is changed
+	 */
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		createProjectButton.setVisible(visible);
+	}
 }
