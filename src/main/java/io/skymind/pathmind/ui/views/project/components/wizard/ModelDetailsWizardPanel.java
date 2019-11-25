@@ -78,6 +78,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 	private void setupGetObservationForRewardFunctionTextArea() {
 		getObservationForRewardFunctionTextArea.setWidthFull();
 		getObservationForRewardFunctionTextArea.setHeight("200px");
+		getObservationForRewardFunctionTextArea.getElement().setProperty("spellcheck", false);
 	}
 
 	private void setupForm() {
