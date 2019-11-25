@@ -303,6 +303,9 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "  zip -r $OLDPWD/../output/policy_$(basename `dirname $DIR`).zip .;\n" +
                         "  cd $OLDPWD;\n" +
                         "  cp trial_* ../output;\n" +
+                        "  cd `find \"$DIR\"/.. -iname checkpoint_* -type d | sort -V | tail -1`;\n"+
+                        "  zip $OLDPWD/../output/$(basename $PWD)_$(basename `dirname $DIR`).zip ./* ;\n"+
+                        "  cd $OLDPWD;\n" +
                 "done"
         ));
     }
