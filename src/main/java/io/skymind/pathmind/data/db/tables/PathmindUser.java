@@ -18,10 +18,11 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row16;
+import org.jooq.Row17;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PathmindUser extends TableImpl<PathmindUserRecord> {
 
-    private static final long serialVersionUID = 319183585;
+    private static final long serialVersionUID = -446786313;
 
     /**
      * The reference instance of <code>public.pathmind_user</code>
@@ -61,7 +62,7 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     /**
      * The column <code>public.pathmind_user.id</code>.
      */
-    public final TableField<PathmindUserRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<PathmindUserRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('pathmind_user_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.pathmind_user.name</code>.
@@ -139,6 +140,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     public final TableField<PathmindUserRecord, LocalDateTime> PASSWORD_RESET_SEND_AT = createField(DSL.name("password_reset_send_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
 
     /**
+     * The column <code>public.pathmind_user.stripe_customer_id</code>.
+     */
+    public final TableField<PathmindUserRecord, String> STRIPE_CUSTOMER_ID = createField(DSL.name("stripe_customer_id"), org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
+
+    /**
      * Create a <code>public.pathmind_user</code> table reference
      */
     public PathmindUser() {
@@ -182,6 +188,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     }
 
     @Override
+    public Identity<PathmindUserRecord, Long> getIdentity() {
+        return Keys.IDENTITY_PATHMIND_USER;
+    }
+
+    @Override
     public UniqueKey<PathmindUserRecord> getPrimaryKey() {
         return Keys.PATHMIND_USER_PKEY;
     }
@@ -218,11 +229,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row16 type methods
+    // Row17 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row16<Long, String, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime> fieldsRow() {
-        return (Row16) super.fieldsRow();
+    public Row17<Long, String, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime, String> fieldsRow() {
+        return (Row17) super.fieldsRow();
     }
 }

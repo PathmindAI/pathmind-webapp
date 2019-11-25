@@ -534,4 +534,11 @@
         </update>
     </changeSet>
 
+    <changeSet id="20191125-1" author="daehyun@skymind.io">
+        <comment>Add snapshot file column</comment>
+        <addColumn tableName="POLICY">
+            <column name="SNAPSHOT" type="bytea"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
