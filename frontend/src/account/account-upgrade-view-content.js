@@ -1,7 +1,7 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "@vaadin/vaadin-ordered-layout/src/vaadin-horizontal-layout.js";
 
-class AccountUpgradeView extends PolymerElement {
+class AccountUpgradeViewContent extends PolymerElement {
   static get template() {
     return html`
       <style include="shared-styles pathmind-dialog-view">
@@ -104,7 +104,6 @@ class AccountUpgradeView extends PolymerElement {
           padding-top: 40px;
         }
       </style>
-      <div id="header" style="width: 100%;"></div>
       <div class="content">
         <vaadin-horizontal-layout class="cards-holder">
           <vaadin-vertical-layout class="inner-content">
@@ -254,7 +253,7 @@ class AccountUpgradeView extends PolymerElement {
   }
 
   static get is() {
-    return "account-upgrade-view";
+    return "account-upgrade-view-content";
   }
 
   static get properties() {
@@ -264,4 +263,4 @@ class AccountUpgradeView extends PolymerElement {
   }
 }
 
-customElements.define(AccountUpgradeView.is, AccountUpgradeView);
+customElements.define(AccountUpgradeViewContent.is, AccountUpgradeViewContent);
