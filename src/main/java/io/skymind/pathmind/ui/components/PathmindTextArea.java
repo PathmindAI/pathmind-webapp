@@ -4,6 +4,15 @@ import com.vaadin.flow.component.textfield.TextArea;
 
 public class PathmindTextArea extends TextArea {
 
+	public PathmindTextArea() {
+		super();
+	}
+
+	public PathmindTextArea(String label) {
+		super(label);
+	}
+	
+	
 	/**
 	 * Enables/Disables browser spell check for text area
 	 */
