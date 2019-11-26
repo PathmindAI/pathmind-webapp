@@ -1,9 +1,9 @@
 import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
 
 /**
- * `payment-view`
+ * `payment-view-content`
  *
- * PaymentView manages the integration with Stripe Elements.
+ * PaymentViewContent manages the integration with Stripe Elements.
  *
  * For more information please refer to the following links:
  * https://stripe.com/en-fi/payments/elements
@@ -14,7 +14,7 @@ import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
  * @customElement
  * @polymer
  */
-class PaymentView extends PolymerElement {
+class PaymentViewContent extends PolymerElement {
   static get template() {
     return html`
     <style include="shared-styles">
@@ -96,9 +96,6 @@ class PaymentView extends PolymerElement {
         
     </style>
 
-    <div id="header" style="width: 100%;">
-      <slot name="screen-title-panel"></slot>
-    </div>
     <div class="content">
       <vaadin-tabs>
         <vaadin-tab>
@@ -200,7 +197,7 @@ class PaymentView extends PolymerElement {
   }
 
   static get is() {
-    return "payment-view";
+    return "payment-view-content";
   }
 
   // This allows us to keep the payment-view element in the light DOM.
@@ -294,17 +291,6 @@ class PaymentView extends PolymerElement {
     this.$server.paymentMethodCallback(paymentMethod);
   }
 
-  // This is used to add the ScreenTitlePanel serverside element to the frontend.
-  // Because payment-view is not in the shadow DOM the regular way of using @Id PolymerTemplate annotation won't work
-  // (it renders a blank screen instead if you add it to the backend)
-  addScreenTitlePanel(element) {
-    let slotElement = this.querySelector(`slot[name="screen-title-panel"]`);
-    if (slotElement) {
-      slotElement.innerHTML = ''; // remove previous children
-      slotElement.appendChild(element);
-    }
-  }
-
   // Called every time the form changes. Validation for the Vaadin elements happens on the server side as well.
   // NOTE: DO NOT SEND ANY CREDIT CARD RELATED INFORMATION TO THE BACKEND. STRIPE SHOULD ONLY MANAGE THAT!
   formUpdated() {
@@ -325,4 +311,4 @@ class PaymentView extends PolymerElement {
 
 }
 
-customElements.define(PaymentView.is, PaymentView);
+customElements.define(PaymentViewContent.is, PaymentViewContent);

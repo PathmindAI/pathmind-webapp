@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.views.account;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -15,6 +16,8 @@ import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.billing.StripeService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.views.PathMindDefaultView;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,45 +25,30 @@ import org.springframework.beans.factory.annotation.Value;
 
 import static io.skymind.pathmind.security.Routes.UPGRADE_DONE;
 
-@Tag("upgrade-done-view")
-@JsModule("./src/account/upgrade-done-view.js")
 @Route(value = UPGRADE_DONE, layout = MainLayout.class)
-public class UpgradeDoneView extends PolymerTemplate<UpgradeDoneView.Model>
+public class UpgradeDoneView extends PathMindDefaultView
 {
 
-	private static Logger log = LogManager.getLogger(UpgradeDoneView.class);
-	@Id("header")
-	private Div header;
-
-	@Id("done")
-	private Button done;
-
-	private PathmindUser user;
-
+	private final UpgradeDoneViewContent upgradeDoneViewContent;
+	
 	@Autowired
-	private UserService userService;
-
-	@Autowired
-	private StripeService stripeService;
-
-	@Autowired
-	public UpgradeDoneView(CurrentUser currentUser,
-						   @Value("${pathmind.contact-support.address}") String contactLink)
-	{
-		user = currentUser.getUser();
-		header.add(new ScreenTitlePanel("UPGRADE", "Subscription Plans"));
-
-		getModel().setContactLink(contactLink);
-		getModel().setPlan("Professional");
-
-		done.addClickListener(e -> UI.getCurrent().navigate(AccountView.class));
+	public UpgradeDoneView(UpgradeDoneViewContent upgradeDoneViewContent) {
+		this.upgradeDoneViewContent = upgradeDoneViewContent;
 	}
 
-	public interface Model extends TemplateModel
-	{
-		void setContactLink(String contactLink);
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return true;
+	}
 
-		void setPlan(String plan);
+	@Override
+	protected Component getTitlePanel() {
+		return new ScreenTitlePanel("UPGRADE", "Subscription Plans");
+	}
+
+	@Override
+	protected Component getMainContent() {
+		return upgradeDoneViewContent;
 	}
 
 }

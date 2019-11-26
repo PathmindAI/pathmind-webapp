@@ -1,14 +1,14 @@
 import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
 
 /**
- * `upgrade-done-view`
+ * `upgrade-done-view-content`
  *
  * UpgradeDoneView element.
  *
  * @customElement
  * @polymer
  */
-class UpgradeDoneView extends PolymerElement {
+class UpgradeDoneViewContent extends PolymerElement {
   static get template() {
     return html`
       <style include="shared-styles  pathmind-dialog-view">
@@ -86,7 +86,6 @@ class UpgradeDoneView extends PolymerElement {
         }
         
       </style>
-      <div id="header" style="width: 100%;"></div>
       <div class="content">
         <vaadin-tabs>
           <vaadin-tab>
@@ -122,7 +121,7 @@ class UpgradeDoneView extends PolymerElement {
   }
 
   static get is() {
-    return "upgrade-done-view";
+    return "upgrade-done-view-content";
   }
 
   static get properties() {
@@ -130,4 +129,4 @@ class UpgradeDoneView extends PolymerElement {
 
 }
 
-customElements.define(UpgradeDoneView.is, UpgradeDoneView);
+customElements.define(UpgradeDoneViewContent.is, UpgradeDoneViewContent);
