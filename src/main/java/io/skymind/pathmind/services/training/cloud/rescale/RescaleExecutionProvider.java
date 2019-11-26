@@ -51,6 +51,18 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         // Get model file id, either uploading it if necessary, or just collecting it form the spec if available
         String modelId = uploadModelIfNeeded(job);
 
+        // Get checkpoint file id
+        String checkpointId = uploadCheckpointIfNeeded(job);
+
+        if (job.getSnapshot() != null) {
+            try {
+                RescaleFile rescaleFile = client.fileUpload(job.getSnapshot(), "checkpoint.zip");
+                files.add(new FileReference(rescaleFile.getId(), false));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         final ExecutionEnvironment env = job.getEnv();
 
         // Set up which files are needed, and how to install them
@@ -58,6 +70,10 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         installAnyLogic(env.getAnylogicVersion(), instructions, files);
         installHelper(env.getPathmindHelperVersion(), instructions, files);
         installModel(modelId, instructions, files);
+
+        if (job.getSnapshot() != null) {
+            installCheckpoint(checkpointId, instructions, files);
+        }
 
         // Set up variables
         setupVariables(job, instructions);
@@ -176,7 +192,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     public byte[] snapshot(String jobHandle, String trainingRun) {
         return client.outputFiles(jobHandle, "1").getResults()
                 .stream()
-                .filter(it -> it.getPath().matches("checkpoint_*_" + trainingRun + ".zip"))
+                .filter(it -> it.getPath().endsWith(trainingRun + "/checkpoint.zip"))
                 .map(it -> client.fileContents(it.getId()))
                 .findFirst().orElseGet(() -> null);
     }
@@ -248,6 +264,26 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         return fileId;
     }
 
+    /**
+     *  Upload checkpoint file if necessary
+     */
+    private String uploadCheckpointIfNeeded(JobSpec jobSpec) {
+        final String fileKey = metaDataService.checkPointFileKey(jobSpec.getParentPolicyId());
+        String fileId = metaDataService.get(fileKey, String.class);
+
+        if (fileId == null) {
+            final RescaleFile rescaleFile;
+            try {
+                rescaleFile = client.fileUpload(jobSpec.getSnapshot(), "checkpoint.zip");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            fileId = rescaleFile.getId();
+        }
+
+        return fileId;
+    }
+
     private String startTrainingRun(JobSpec job, List<String> instructions, List<FileReference> files) {
         final Job rescaleJob = Job.create(
                 String.format("user-%d-model-%d-rllib-%d-run-%d", job.getUserId(), job.getModelId(), job.getExperimentId(), job.getRunId()),
@@ -263,6 +299,10 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     private String var(String name, String value) {
         return "export " + name + "='" + value.replace("'", "\\'") + "'";
+    }
+
+    private String varExp(String name, String value) {
+        return "export " + name + "=" + value.replace("'", "\\'");
     }
 
     private void setupVariables(JobSpec job, List<String> instructions) {
@@ -313,7 +353,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "  cd $OLDPWD;\n" +
                         "  cp trial_* ../output;\n" +
                         "  cd `find \"$DIR\"/.. -iname checkpoint_* -type d | sort -V | tail -1`;\n"+
-                        "  zip $OLDPWD/../output/$(basename $PWD)_$(basename `dirname $DIR`).zip ./* ;\n"+
+                        "  zip $OLDPWD/../output/$(basename `dirname $DIR`)/checkpoint.zip ./* ;\n"+
                         "  cd $OLDPWD;\n" +
                 "done"
         ));
@@ -324,6 +364,20 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 "cd ..",
                 "rm -rf work conda jdk8u222-b10"
         ));
+    }
+
+    private void installCheckpoint(String checkpointId, List<String> instructions, List<FileReference> files) {
+        files.add(new FileReference(checkpointId, false));
+
+        instructions.addAll(Arrays.asList(
+                "mkdir checkpoint",
+                "unzip ../checkpoint.zip -d checkpoint",
+                "rm ../checkpoint.zip"
+        ));
+
+        instructions.add(
+                varExp("CHECKPOINT", "$(find checkpoint -name \"checkpoint-*\" ! -name \"checkpoint-*.*\")")
+        );
     }
 
     private void installModel(String modelId, List<String> instructions, List<FileReference> files) {

@@ -31,4 +31,8 @@ public class RescaleMetaDataService {
     public String runIdKey(long runId){
         return "runId:" + runId;
     }
+
+    public String checkPointFileKey(long polidyId) {
+        return "checkPointFileId:" + polidyId;
+    }
 }

@@ -109,7 +109,7 @@ public class TrainingService {
                 exp.getRewardFunction(),
                 model.getNumberOfPossibleActions(),
                 model.getNumberOfObservations(),
-                100, // Max 100 iterations for a discovery run. 
+                100, // Max 100 iterations for a discovery run.
                 executionEnvironment,
                 RunType.DiscoveryRun,
                 () -> modelDAO.getModelFile(model.getId()),
@@ -117,7 +117,7 @@ public class TrainingService {
                 Arrays.asList(0.9, 0.99), // gamma
                 Arrays.asList(64), // batch size
                 30 * 60 // 30 mins
-                );
+        );
 
         final String executionId = executionProvider.execute(spec);
 
@@ -191,6 +191,7 @@ public class TrainingService {
                     -1        // no limit
             );
 
+            spec.setParentPolicyId(pol.getId());
             spec.setSnapshot(() -> ctx.select(POLICY.SNAPSHOT).from(POLICY).where(POLICY.ID.eq(pol.getId())).fetchOne(POLICY.SNAPSHOT));
 
             final String executionId = executionProvider.execute(spec);
