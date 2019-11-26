@@ -2,6 +2,8 @@ package io.skymind.pathmind.bus;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * For now I've implemented a custom EventBus for several reasons. Should we need to extend the EventBus then we should
@@ -26,12 +28,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * of threads. And since we're creating threads to fire events (so that there is no blocking) we can just stream through
  * the subscriber list. The subscriber list should be short. If it ever becomes a problem we can always parallelStream
  * but for now I didn't think that was worth it.
+ *
+ * This type of thread pool is used as recommended by the API: "These pools will typically improve the performance of
+ * programs that execute many short-lived asynchronous tasks". The ExecutorService.shutdown() method is not hooked in
+ * since there's no point because the only time we'll need this is when the server is shutting down, at which point
+ * it's going to be shutting down hard anyways.
  */
 public class EventBus
 {
     private static final EventBus EVENT_BUS = new EventBus();
 
     private Map<BusEventType, List<EventBusSubscriber>> subscribers;
+
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
     private EventBus() {
         Map<BusEventType, List<EventBusSubscriber>> subscribersModifiable = new HashMap<>();
@@ -47,7 +56,7 @@ public class EventBus
     public static void post(PathmindBusEvent event) {
         EVENT_BUS.subscribers.get(event.getEventType()).stream().forEach(subscriber -> {
             if (subscriber != null && subscriber.filterBusEvent(event) && subscriber.getUI().isPresent())
-                new Thread(() -> subscriber.handleBusEvent(event)).start();
+                EXECUTOR_SERVICE.execute(() -> subscriber.handleBusEvent(event));
         });
     }
 
