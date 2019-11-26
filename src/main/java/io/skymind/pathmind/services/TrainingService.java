@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static io.skymind.pathmind.data.db.Tables.POLICY;
+
 @Service
 public class TrainingService {
     private static final Logger log = LoggerFactory.getLogger(TrainingService.class);
@@ -72,7 +74,7 @@ public class TrainingService {
                 50, // Max 50 iterations for a test run
                 executionEnvironment,
                 RunType.TestRun,
-                () ->modelDAO.getModelFile(model.getId()),
+                () -> modelDAO.getModelFile(model.getId()),
                 Arrays.asList(1e-5),
                 Arrays.asList(0.99),
                 Arrays.asList(128),
@@ -110,7 +112,7 @@ public class TrainingService {
                 100, // Max 100 iterations for a discovery run. 
                 executionEnvironment,
                 RunType.DiscoveryRun,
-                () ->modelDAO.getModelFile(model.getId()),
+                () -> modelDAO.getModelFile(model.getId()),
                 Arrays.asList(1e-3, 1e-5), // Learning rate
                 Arrays.asList(0.9, 0.99), // gamma
                 Arrays.asList(64), // batch size
@@ -141,7 +143,7 @@ public class TrainingService {
                 100, // Max 100 iterations for a test run
                 executionEnvironment,
                 RunType.DiscoveryRun,
-                () ->modelDAO.getModelFile(model.getId()),
+                () -> modelDAO.getModelFile(model.getId()),
                 Arrays.asList(1e-3, 1e-5), // Learning rate
                 Arrays.asList(0.9, 0.99), // gamma
                 Arrays.asList(128), // batch size
@@ -182,25 +184,31 @@ public class TrainingService {
                     500, // Max 100 iterations for a test run
                     executionEnvironment,
                     RunType.FullRun,
-                    () ->modelDAO.getModelFile(model.getId()),
+                    () -> modelDAO.getModelFile(model.getId()),
                     Arrays.asList(learningRate),
                     Arrays.asList(gamma),
                     Arrays.asList(batchSize),
                     -1        // no limit
             );
 
+            spec.setSnapshot(() -> ctx.select(POLICY.SNAPSHOT).from(POLICY).where(POLICY.ID.eq(pol.getId())).fetchOne(POLICY.SNAPSHOT));
+
             final String executionId = executionProvider.execute(spec);
 
             runDAO.markAsStarting(run.getId());
             log.info("Started FULL training job with id {}", executionId);
 
-            addTempPolicy(spec, run);
+            addTempPolicy(spec, run, progress);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private void addTempPolicy(JobSpec spec, Run run) {
+        addTempPolicy(spec, run, null);
+    }
+
+    private void addTempPolicy(JobSpec spec, Run run, JSONB progress) {
         // this is for ui filling gap until ui get a training progress from backend(rescale)
         Policy tempPolicy = new Policy();
 
@@ -215,6 +223,10 @@ public class TrainingService {
         tempPolicy.setName(name);
         tempPolicy.setExternalId(name);
         tempPolicy.setRunId(run.getId());
+
+        if (progress != null) {
+            tempPolicy.setProgress(progress.toString());
+        }
 
         policyDAO.insertPolicy(tempPolicy);
     }

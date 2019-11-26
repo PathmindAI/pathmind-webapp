@@ -24,6 +24,7 @@ public class JobSpec {
 
     private final RunType type;
     private final Supplier<byte[]> modelFileSupplier;
+    private Supplier<byte[]> snapshotSupplier;
 
     private final List<Double> learningRates;
     private final List<Double> gammas;
@@ -97,6 +98,14 @@ public class JobSpec {
 
     public byte[] getModelFile() {
         return modelFileSupplier.get();
+    }
+
+    public byte[] getSnapshot() {
+        return snapshotSupplier != null ? snapshotSupplier.get() : null;
+    }
+
+    public void setSnapshot(Supplier<byte[]> snapshotSupplier) {
+        this.snapshotSupplier = snapshotSupplier;
     }
 
     public ExecutionEnvironment getEnv() {
