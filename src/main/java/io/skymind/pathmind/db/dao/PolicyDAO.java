@@ -6,6 +6,7 @@ import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.repositories.PolicyRepository;
 import org.jooq.DSLContext;
+import org.jooq.JSONB;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
@@ -87,8 +88,8 @@ public class PolicyDAO extends PolicyRepository
 
     public long insertPolicy(Policy policy) {
         long policyId = ctx.insertInto(POLICY)
-                .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM)
-                .values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm())
+                .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM, POLICY.PROGRESS)
+                .values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm(), JSONB.valueOf(policy.getProgress()))
                 .returning(POLICY.ID)
                 .fetchOne()
                 .getValue(POLICY.ID);
@@ -108,5 +109,11 @@ public class PolicyDAO extends PolicyRepository
         ctx.delete(POLICY)
                 .where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.like("%" + tempKeyword)))
                 .execute();
+    }
+
+    public Policy getPolicy(long runId, String policyEXternalId) {
+        return ctx.selectFrom(POLICY)
+                .where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.in(policyEXternalId)))
+                .fetchOneInto(Policy.class);
     }
 }

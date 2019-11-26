@@ -53,4 +53,11 @@ public class RunDAO extends RunRepository
                 .where(RUN.EXPERIMENT_ID.eq(experimentId))
                 .fetchInto(Run.class);
     }
+
+    public Run getRun(long runId) {
+        return ctx.select(RUN.asterisk())
+                .from(RUN)
+                .where(RUN.ID.eq(runId))
+                .fetchOneInto(Run.class);
+    }
 }

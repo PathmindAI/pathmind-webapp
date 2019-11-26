@@ -5,7 +5,6 @@ import io.skymind.pathmind.services.training.progress.RewardScore;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,6 +14,7 @@ public class Policy extends Data
 	private String externalId;
 	private String progress;
 	private byte[] file;
+	private byte[] snapshot;
 
 //	private ArrayList<Number> scores = new ArrayList<>();
 
@@ -67,6 +67,14 @@ public class Policy extends Data
 
 	public void setFile(byte[] file) {
 		this.file = file;
+	}
+
+	public byte[] getSnapshot() {
+		return snapshot;
+	}
+
+	public void setSnapshot(byte[] snapshot) {
+		this.snapshot = snapshot;
 	}
 
 	public Project getProject() {

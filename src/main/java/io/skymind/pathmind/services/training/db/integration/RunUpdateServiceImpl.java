@@ -9,9 +9,11 @@ import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.repositories.RunRepository;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.services.training.progress.Progress;
+import io.skymind.pathmind.services.training.progress.RewardScore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
@@ -20,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -39,6 +42,9 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
     @Autowired
     private PolicyDAO policyDao;
+
+    @Autowired
+    private RunDAO runDao;
 
     public RunUpdateServiceImpl(DSLContext ctx, ObjectMapper mapper) {
         this.ctx = ctx;
@@ -89,23 +95,8 @@ public class RunUpdateServiceImpl implements RunUpdateService {
         if (policyDao.isTemporaryPolicy(runId, TrainingService.TEMPORARY_POSTFIX) && progresses.size() > 0) {
             Progress progress = progresses.get(0);
 
-            // original name ex: PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_2019-10-11_21-16-2858waz_89
-            // get rid of time and extra info
-            // add run type and "TEMP"
-            String policyTempName = progress.getId().substring(0, progress.getId().length() - 27) + run.getRunType() + TrainingService.TEMPORARY_POSTFIX;
+            String policyTempName = policyTempName(progress.getId(), run.getRunType());
 
-            Matcher matcher = lrPattern.matcher(policyTempName);
-
-            if (matcher.find()) {
-                String lr = matcher.group();
-
-                lr = lr.replace("lr=", "").replace(",", "");
-                lr = "lr=" + Double.valueOf(lr).toString() + ",";
-
-                policyTempName = policyTempName.replaceFirst(lrPatternStr, lr);
-            }
-
-            //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
             ctx.update(POLICY)
                     .set(POLICY.NAME, progress.getId())
                     .set(POLICY.EXTERNAL_ID, progress.getId())
@@ -191,5 +182,51 @@ public class RunUpdateServiceImpl implements RunUpdateService {
             policyDao.deleteTemporaryPolicy(runId, TrainingService.TEMPORARY_POSTFIX);
             log.info("Cleaned Temporary Policies in " + runId);
         }
+    }
+
+    @Override
+    public List<RewardScore> getScores(long runId, String policyExtId) {
+        Policy policy =  policyDao.getPolicy(runId, policyExtId);
+
+        // check temporary policy
+        if (policy == null) {
+            int runType = runDao.getRun(runId).getRunType();
+            policy = policyDao.getPolicy(runId, policyTempName(policyExtId, runType));
+        }
+
+        if (policy == null) {
+            return null;
+        }
+
+        // todo need to get rid of json parsing after having progress db
+        try {
+            Progress progress = mapper.readValue(policy.getProgress(), Progress.class);
+            policy.setScores(progress.getRewardProgression());
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+
+        return policy.getScores();
+    }
+
+    private String policyTempName(String policyExtId, int runType) {
+        // original name ex: PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_2019-10-11_21-16-2858waz_89
+        // get rid of time and extra info
+        // add run type and "TEMP"
+        String policyTempName = policyExtId.substring(0, policyExtId.length() - 27) + runType + TrainingService.TEMPORARY_POSTFIX;
+
+        Matcher matcher = lrPattern.matcher(policyTempName);
+
+        if (matcher.find()) {
+            String lr = matcher.group();
+
+            lr = lr.replace("lr=", "").replace(",", "");
+            lr = "lr=" + Double.valueOf(lr).toString() + ",";
+
+            policyTempName = policyTempName.replaceFirst(lrPatternStr, lr);
+        }
+
+        //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
+        return policyTempName;
     }
 }

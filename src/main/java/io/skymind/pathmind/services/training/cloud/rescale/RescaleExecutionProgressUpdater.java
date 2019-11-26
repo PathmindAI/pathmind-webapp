@@ -6,6 +6,7 @@ import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.db.integration.RunUpdateService;
 import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
+import io.skymind.pathmind.services.training.progress.RewardScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,10 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
 
             final List<Progress> progresses = rawProgress.entrySet().stream()
                     .filter(e -> !finishedPolicyNamesFromDB.contains(e.getKey()))
-                    .map(ProgressInterpreter::interpret)
+                    .map(e -> {
+                        List<RewardScore> previousScores = updateService.getScores(runId, e.getKey());
+                        return ProgressInterpreter.interpret(e, previousScores);
+                    })
                     .collect(Collectors.toList());
 
             final List<String> finishedPolicyNamesFromRescale = getTerminatedPolices(rescaleJobId);
