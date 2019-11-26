@@ -18,14 +18,10 @@ public class ZonedDateTimeRenderer<SOURCE> extends BasicRenderer<SOURCE, LocalDa
 
 	private DateTimeFormatter formatter;
 	private String nullRepresentation = "-";
-	private String userTimeZoneId;
 	
 	public ZonedDateTimeRenderer(ValueProvider<SOURCE, LocalDateTime> valueProvider, DateTimeFormatter formatter) {
 		super(valueProvider);
 		this.formatter = formatter;
-		UI.getCurrent().getPage().retrieveExtendedClientDetails(details -> {
-			this.userTimeZoneId = details.getTimeZoneId();
-		});
 	}
 
 	@Override
@@ -36,6 +32,7 @@ public class ZonedDateTimeRenderer<SOURCE> extends BasicRenderer<SOURCE, LocalDa
 
 	private String formatDateTimeInUserTimezone(LocalDateTime dateTime) {
 		ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneId.systemDefault());
+		String userTimeZoneId = UI.getCurrent().getInternals().getExtendedClientDetails().getTimeZoneId();
 		if (userTimeZoneId != null) {
 			zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.of(userTimeZoneId));
 		}

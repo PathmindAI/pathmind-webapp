@@ -82,9 +82,11 @@ public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUp
 		this.policy = policy;
 
 		statusLabel.setText(PolicyUtils.getRunStatus(policy).toString());
-		runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(PolicyUtils.getRunCompletedTime(policy)));
 		runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());
 		elapsedTimeLabel.setText(PolicyUtils.getElapsedTime(policy));
+		DateAndTimeUtils.withUserTimeZone(userTimeZone -> {
+			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(PolicyUtils.getRunCompletedTime(policy), userTimeZone));
+		});
 	}
 
 	private Policy getPolicy() {

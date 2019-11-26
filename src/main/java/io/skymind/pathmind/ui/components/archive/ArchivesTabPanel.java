@@ -80,7 +80,8 @@ public class ArchivesTabPanel<T extends ArchivableData> extends TabPanel
 	 * This needs to be called because there is are no listeners for the grid to know if grid.setItems() has been called.
 	 */
 	public void initData() {
-		grid.setItems(getFilteredModels(getItems.get(), false));
-		DateAndTimeUtils.refreshAfterRetrivingTimezone(UI.getCurrent(), grid.getDataProvider());
+		DateAndTimeUtils.withUserTimeZone(timeZoneId -> {
+			grid.setItems(getFilteredModels(getItems.get(), false));
+		});
 	}
 }

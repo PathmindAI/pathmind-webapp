@@ -147,8 +147,9 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
     public void init(Experiment experiment, long defaultSelectedPolicyId) {
         this.experiment = experiment;
 
-        grid.setDataProvider(new ListDataProvider<>(experiment.getPolicies()));
-        DateAndTimeUtils.refreshAfterRetrivingTimezone(UI.getCurrent(), grid.getDataProvider());
+        DateAndTimeUtils.withUserTimeZone(timeZonneId -> {
+        	grid.setDataProvider(new ListDataProvider<>(experiment.getPolicies()));
+        });
 
         if (!experiment.getPolicies().isEmpty() && defaultSelectedPolicyId < 0) {
             grid.select(experiment.getPolicies().get(0));

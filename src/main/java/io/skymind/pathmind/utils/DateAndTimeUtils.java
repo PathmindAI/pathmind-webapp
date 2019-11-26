@@ -9,7 +9,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.function.SerializableConsumer;
 
 public class DateAndTimeUtils
 {
@@ -17,29 +17,19 @@ public class DateAndTimeUtils
 	public static final DateTimeFormatter STANDARD_DATE_AND_TIME_FOMATTER = DateTimeFormatter.ofPattern("MMM d yyyy H:mm");
 	public static final DateTimeFormatter STANDARD_DATE_AND_TIME_SHORT_FOMATTER = DateTimeFormatter.ofPattern("MMM d H:mm");
 
-	public static final String formatDateAndTimeShortFormatter(LocalDateTime localDateTime) {
-		return formatDateAndTimeShortFormatter(localDateTime, getUserZone());
-	}
-	public static final String formatDateAndTimeShortFormatter(LocalDateTime localDateTime, ZoneId userZone) {
-		if(localDateTime == null)
+	public static final String formatDateAndTimeShortFormatter(LocalDateTime localDateTime, String userZoneId) {
+		if(localDateTime == null) {
 			return "-";
-		ZonedDateTime serverDateTime = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
-		ZonedDateTime userDateTime = serverDateTime.withZoneSameLocal(userZone);
-		return STANDARD_DATE_AND_TIME_SHORT_FOMATTER.format(userDateTime);
+		}
+		if (userZoneId == null) {
+			return STANDARD_DATE_AND_TIME_SHORT_FOMATTER.format(localDateTime);
+		} else {
+			ZonedDateTime serverDateTime = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
+			ZonedDateTime userDateTime = serverDateTime.withZoneSameLocal(ZoneId.of(userZoneId));
+			return STANDARD_DATE_AND_TIME_SHORT_FOMATTER.format(userDateTime);
+		}
 	}
 	
-	private static final ZoneId getUserZone() {
-		String zoneId = null;
-		if (UI.getCurrent().getInternals().getExtendedClientDetails() != null) {
-			zoneId = UI.getCurrent().getInternals().getExtendedClientDetails().getTimeZoneId();
-		}
-		if (zoneId == null) {
-			return ZoneId.systemDefault();
-		} else {
-			return ZoneId.of(zoneId);
-		}
-	}
-
 	/**
 	 * We could use org.apache.commons.lang3.time.DurationFormatUtils but it seems overkill for what we need and I didn't want to spend the time
 	 * to figure out how to conditionally printout the hours, minutes, and seconds.
@@ -76,12 +66,15 @@ public class DateAndTimeUtils
 			}
 		};
 	}
-	
-	public static void refreshAfterRetrivingTimezone(UI ui, DataProvider<?, ?> dataProvider) {
-		if (ui.getInternals().getExtendedClientDetails() == null) {
-			ui.getPage().retrieveExtendedClientDetails(details -> {
-				dataProvider.refreshAll();
-			});
-		}
+	/**
+	 * Calls retrieveExtendedClientDetails to read the userTimeZone from client.
+	 * This call is done in an async way, and the value is cached by Page, so for each UI, the call is done only once.
+	 * <br>
+	 * If userTimeZone is available in cache, executes the timeZoneConsumer immediately,
+	 * otherwise, it's executed after userTimeZone is read from client side
+	 */
+	public static void withUserTimeZone(SerializableConsumer<String> timeZoneConsumer) {
+		UI.getCurrent().getPage().retrieveExtendedClientDetails(details -> timeZoneConsumer.accept(details.getTimeZoneId()));
 	}
+	
 }
