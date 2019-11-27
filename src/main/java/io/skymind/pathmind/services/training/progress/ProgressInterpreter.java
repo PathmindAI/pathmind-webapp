@@ -81,7 +81,6 @@ public class ProgressInterpreter {
                 final int iter = Integer.parseInt(record[9]); // training_iteration
 
                 if (iter > lastIteration) {
-                    log.info("kepricondebug 3 : " + iter + ", " + lastIteration);
                     final String max = record[0];   // episode_reward_max
                     final String min = record[1];   // episode_reward_min
                     final String mean = record[2];  // episode_reward_mean
