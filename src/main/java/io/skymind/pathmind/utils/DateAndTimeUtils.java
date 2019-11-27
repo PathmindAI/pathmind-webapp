@@ -3,7 +3,9 @@ package io.skymind.pathmind.utils;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 public class DateAndTimeUtils
@@ -53,5 +55,12 @@ public class DateAndTimeUtils
 				return Long.parseLong(source);
 			}
 		};
+	}
+	
+	/**
+	 * This is used in Stripe integration, since Stripe keeps Timestamps as epochSeconds
+	 */
+	public static LocalDateTime fromEpoch(long epoch) {
+		return LocalDateTime.ofInstant(Instant.ofEpochSecond(epoch), ZoneId.systemDefault());
 	}
 }

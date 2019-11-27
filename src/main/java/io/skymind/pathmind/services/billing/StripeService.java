@@ -150,6 +150,25 @@ public class StripeService
 	}
 
 	/**
+	 * Takes a cancel request from user, and the subscription is cancelled at period end
+	 * 
+	 * @return updated subscription instance
+	 */
+	public Subscription cancelSubscription(String email)
+	{
+		try {
+			Customer customer = getCustomer(email);
+			Subscription subscription = customer.getSubscriptions().getData().get(0);
+			Map<String, Object> params = new HashMap<>();
+			params.put("cancel_at_period_end", true);
+			return subscription.update(params);
+		} catch (StripeException e) {
+			log.info("Could not cancel Stripe subscription for: " + email);
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
 	 * Get a Stripe customer by Pathmind user email.
 	 * @param email
 	 * @return
@@ -168,20 +187,34 @@ public class StripeService
 	 */
 	public boolean userHasActiveProfessionalSubscription(String email)
 	{
+		Subscription subscription = getActiveSubscriptionOfUser(email);
+		if (subscription == null) {
+			return false;
+		}
+		return "active".equalsIgnoreCase(subscription.getStatus());
+	}
+	
+	/**
+	 * Retrieve user's active subscription.
+	 * @param email Pathmind user email address
+	 * @return ongoing subscription if available, otherwise null.
+	 */
+	public Subscription getActiveSubscriptionOfUser(String email)
+	{
 		Customer customer = null;
 		try {
 			customer = getCustomer(email);
 		} catch (StripeException e) {
 			log.info("Could not retrieve customer from Stripe: " + email);
-			return false;
+			return null;
 		}
 		if (customer.getSubscriptions() == null ||
 				customer.getSubscriptions().getData() == null ||
 				customer.getSubscriptions().getData().isEmpty()
-		) {
-			return false;
+				) {
+			return null;
 		}
-		return "active".equalsIgnoreCase(customer.getSubscriptions().getData().get(0).getStatus());
+		return customer.getSubscriptions().getData().get(0);
 	}
 
 }
