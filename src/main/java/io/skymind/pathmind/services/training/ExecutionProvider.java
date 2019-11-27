@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.training;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 public interface ExecutionProvider {
@@ -73,7 +74,7 @@ public interface ExecutionProvider {
      * @param trainingRun
      * @return
      */
-    byte[] snapshot(String jobHandle, String trainingRun);
+    Map.Entry<@NotNull String, byte[]> snapshot(String jobHandle, String trainingRun);
 
     /**
      *  Download the current console output for the given jobHandle. Best used for debugging purposes; usually not

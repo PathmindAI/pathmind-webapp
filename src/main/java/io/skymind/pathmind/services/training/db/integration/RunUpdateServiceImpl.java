@@ -200,8 +200,10 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
         // todo need to get rid of json parsing after having progress db
         try {
-            Progress progress = mapper.readValue(policy.getProgress(), Progress.class);
-            policy.setScores(progress.getRewardProgression());
+            if (policy != null && policy.getProgress() != null) {
+                Progress progress = mapper.readValue(policy.getProgress(), Progress.class);
+                policy.setScores(progress.getRewardProgression());
+            }
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }

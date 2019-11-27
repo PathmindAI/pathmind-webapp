@@ -32,7 +32,7 @@ public class RescaleMetaDataService {
         return "runId:" + runId;
     }
 
-    public String checkPointFileKey(long polidyId) {
-        return "checkPointFileId:" + polidyId;
+    public String checkPointFileKey(String polidyExternalId) {
+        return "checkPointFileId:" + polidyExternalId;
     }
 }

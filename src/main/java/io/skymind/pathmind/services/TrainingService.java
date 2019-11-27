@@ -191,7 +191,7 @@ public class TrainingService {
                     -1        // no limit
             );
 
-            spec.setParentPolicyId(pol.getId());
+            spec.setParentPolicyExternalId(pol.getExternalId());
             spec.setSnapshot(() -> ctx.select(POLICY.SNAPSHOT).from(POLICY).where(POLICY.ID.eq(pol.getId())).fetchOne(POLICY.SNAPSHOT));
 
             final String executionId = executionProvider.execute(spec);

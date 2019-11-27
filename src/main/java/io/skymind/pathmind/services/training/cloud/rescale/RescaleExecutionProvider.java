@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -52,15 +53,10 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         String modelId = uploadModelIfNeeded(job);
 
         // Get checkpoint file id
-        String checkpointId = uploadCheckpointIfNeeded(job);
+        String checkpointId = null;
 
         if (job.getSnapshot() != null) {
-            try {
-                RescaleFile rescaleFile = client.fileUpload(job.getSnapshot(), "checkpoint.zip");
-                files.add(new FileReference(rescaleFile.getId(), false));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            checkpointId = uploadCheckpointIfNeeded(job);
         }
 
         final ExecutionEnvironment env = job.getEnv();
@@ -189,11 +185,11 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public byte[] snapshot(String jobHandle, String trainingRun) {
+    public Map.Entry<@NotNull String, byte[]> snapshot(String jobHandle, String trainingRun) {
         return client.outputFiles(jobHandle, "1").getResults()
                 .stream()
                 .filter(it -> it.getPath().endsWith(trainingRun + "/checkpoint.zip"))
-                .map(it -> client.fileContents(it.getId()))
+                .map(it -> Map.entry(it.getId(), client.fileContents(it.getId())))
                 .findFirst().orElseGet(() -> null);
     }
 
@@ -268,7 +264,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
      *  Upload checkpoint file if necessary
      */
     private String uploadCheckpointIfNeeded(JobSpec jobSpec) {
-        final String fileKey = metaDataService.checkPointFileKey(jobSpec.getParentPolicyId());
+        final String fileKey = metaDataService.checkPointFileKey(jobSpec.getParentPolicyExternalId());
         String fileId = metaDataService.get(fileKey, String.class);
 
         if (fileId == null) {
