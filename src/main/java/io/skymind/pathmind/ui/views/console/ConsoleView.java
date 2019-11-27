@@ -12,6 +12,7 @@ import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.ConsoleService;
 import io.skymind.pathmind.ui.components.LabelFactory;
+import io.skymind.pathmind.ui.components.PathmindTextArea;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -30,7 +31,7 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 	@Autowired
 	private UserDAO userDAO;
 
-	private TextArea consoleTextArea;
+	private PathmindTextArea consoleTextArea;
 	private ExperimentGrid experimentListPanel;
 
 	private long experimentId;
@@ -49,7 +50,7 @@ public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<
 
 	protected Component getMainContent()
 	{
-		consoleTextArea = new TextArea();
+		consoleTextArea = new PathmindTextArea();
 		consoleTextArea.setSizeFull();
 		experimentListPanel = new ExperimentGrid();
 
