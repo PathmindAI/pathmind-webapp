@@ -107,7 +107,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
 
             RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
-			boolean canStartFurtherRuns = PolicyUtils.getRunStatus(selectedPolicy) != RunStatus.Error;
+            boolean canStartFurtherRuns = PolicyUtils.getRunStatus(selectedPolicy) != RunStatus.Error;
             if (selectedRunType == RunType.TestRun && experiment.getPolicies().size() == 1) {
                 runDiscoveryTraining.setVisible(true);
                 runDiscoveryTraining.setEnabled(canStartFurtherRuns);
