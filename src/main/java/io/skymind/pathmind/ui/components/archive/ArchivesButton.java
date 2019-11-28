@@ -43,6 +43,7 @@ public class ArchivesButton<T> extends Button
 		setIcon(archiveIcon);
 		addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 		setClassName("action-button");
+		getElement().setAttribute("title", data.isArchived() ? "Unarchive" : "Archive");
 	}
 
 	// Weird looking logic but it's so that we stay on the same page once you reverse the archive value. We also

@@ -10,5 +10,6 @@ public class ShowRewardFunctionButton extends Button {
 		super(VaadinIcon.CODE.create());
 		addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 		addClassName("action-button");
+		getElement().setAttribute("title", "Show reward function");
 	}
 }
