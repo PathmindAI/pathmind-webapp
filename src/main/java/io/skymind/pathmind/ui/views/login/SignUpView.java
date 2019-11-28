@@ -10,6 +10,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -144,7 +145,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pag
 	private void initBinder() {
 		binder = new Binder<>(PathmindUser.class);
 
-		binder.forField(email).asRequired().withValidator(new EmailValidator(
+		binder.forField(email).asRequired("Email is required").withValidator(new EmailValidator(
 				"This doesn't look like a valid email address"))
 				.bind(PathmindUser::getEmail, PathmindUser::setEmail);
 		binder.forField(firstName).bind(PathmindUser::getFirstname, PathmindUser::setFirstname);
