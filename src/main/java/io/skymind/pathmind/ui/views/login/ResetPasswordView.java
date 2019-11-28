@@ -22,6 +22,8 @@ import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
+import io.skymind.pathmind.utils.PathmindUtils;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +37,7 @@ import java.util.List;
 @JsModule("./src/account/reset-password-view.js")
 @Route(value = Routes.RESET_PASSWORD_URL)
 public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
-	implements HasUrlParameter<String>, AfterNavigationObserver, PageConfigurator
+	implements HasUrlParameter<String>, AfterNavigationObserver, PageConfigurator, HasDynamicTitle
 {
 	private static Logger log = LogManager.getLogger(ResetPasswordView.class);
 
@@ -191,7 +193,11 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 	public void configurePage(InitialPageSettings settings) {
 		VaadinUtils.setupFavIcon(settings);
 	}
-
+	
+	@Override
+	public String getPageTitle() {
+		return PathmindUtils.getPageTitle();
+	}
 
 	public interface Model extends TemplateModel {
 		void setMessage(String message);
