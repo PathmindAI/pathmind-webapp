@@ -67,7 +67,7 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 		editPaymentBtn.setEnabled(false);
 		upgradeBtn.setVisible(subscription == null);
 		cancelSubscriptionBtn.setVisible(subscription != null);
-		cancelSubscriptionBtn.setEnabled(!subscription.getCancelAtPeriodEnd());
+		cancelSubscriptionBtn.setEnabled(subscription != null && !subscription.getCancelAtPeriodEnd());
 		
 		upgradeBtn.addClickListener(e -> UI.getCurrent().navigate(AccountUpgradeView.class));
 		cancelSubscriptionBtn.addClickListener(evt -> cancelSubscription(subscription));
