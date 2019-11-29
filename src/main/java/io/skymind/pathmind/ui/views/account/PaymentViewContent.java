@@ -85,12 +85,7 @@ public class PaymentViewContent extends PolymerTemplate<PaymentViewContent.Model
 			throw new RuntimeException(noPaymentId);
 		}
 		try {
-			final String nameOnCard = getNameOnCard(paymentMethod);
-			final String addressLine1 = getAddressLine1(paymentMethod);
-			final String city = getCity(paymentMethod);
-			final String state = getState(paymentMethod);
-			final String postalCode = getPostalCode(paymentMethod);
-			Customer customer = stripeService.createCustomer(user.getEmail(), paymentMethodId, nameOnCard, addressLine1, city, state, postalCode);
+			Customer customer = createOrUpdateCustomer(paymentMethod);
 			final Subscription subscription = stripeService.createSubscription(customer);
 			UI.getCurrent().navigate(UpgradeDoneView.class);
 		} catch (StripeException e) {
@@ -98,6 +93,30 @@ public class PaymentViewContent extends PolymerTemplate<PaymentViewContent.Model
 			getModel().setIsFormComplete(true);
 			NotificationUtils.showNotification("There was a problem creating a subsription, please try again later", NotificationVariant.LUMO_ERROR);
 		}
+	}
+	
+	/**
+	 * If customer is new, creates a customer on Stripe,
+	 * If customer already exists on Stripe, attaches the new payment method to customer, and updates customer info with provided information
+	 * @param paymentMethod
+	 * @return
+	 * @throws StripeException
+	 */
+	private Customer createOrUpdateCustomer(JsonObject paymentMethod) throws StripeException {
+		final String paymentMethodId = paymentMethod.getString("id");
+		final String nameOnCard = getNameOnCard(paymentMethod);
+		final String addressLine1 = getAddressLine1(paymentMethod);
+		final String city = getCity(paymentMethod);
+		final String state = getState(paymentMethod);
+		final String postalCode = getPostalCode(paymentMethod);
+		Customer customer = stripeService.getCustomer(user.getEmail());
+		if (customer == null) {
+			customer = stripeService.createCustomer(user.getEmail(), paymentMethodId, nameOnCard, addressLine1, city, state, postalCode); 
+		} else {
+			stripeService.attachPaymentMethodToCustomer(paymentMethodId, customer);
+			customer = stripeService.updateCustomer(customer, nameOnCard, addressLine1, city, state, postalCode, paymentMethodId);
+		}
+		return customer;
 	}
 
 	@ClientCallable
