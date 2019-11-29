@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.billing;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
+import com.stripe.model.PaymentMethod;
 import com.stripe.model.Subscription;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -101,6 +102,34 @@ public class StripeService
 
 		return customer;
 	}
+	
+	/**
+	 * Updates existing customer on Stripe with given parameters
+	 * @param customer
+	 * @param nameOnCard
+	 * @param addressLine1
+	 * @param city
+	 * @param state
+	 * @param postalCode
+	 * @param paymentMethodId 
+	 * @return
+	 * @throws StripeException 
+	 */
+	public Customer updateCustomer(Customer customer, String nameOnCard, String addressLine1, String city, String state, String postalCode, String paymentMethodId) throws StripeException {
+		Map<String, Object> customerParams = new HashMap<>();
+		customerParams.put("name", nameOnCard);
+		Map<String, String> address = new HashMap<>();
+		address.put("line1", addressLine1);
+		address.put("city", city);
+		address.put("state", state);
+		address.put("postal_code", postalCode);
+		customerParams.put("address", address);
+		Map<String, String> invoiceSettings = new HashMap<>();
+		invoiceSettings.put("default_payment_method", paymentMethodId);
+		customerParams.put("invoice_settings", invoiceSettings);
+		
+		return customer.update(customerParams);
+	}
 
 	/**
 	 * Checks whether a customer already exists on Stripe based on the Stripe customer id that is stored in
@@ -120,6 +149,19 @@ public class StripeService
 			log.info("Could not retrieve Customer from Stripe with email: " + email);
 			return false;
 		}
+	}
+	
+	/**
+	 * Attaches a new payment method to an existing customer
+	 * @param paymentMethodId
+	 * @param customer
+	 * @throws StripeException
+	 */
+	public void attachPaymentMethodToCustomer(String paymentMethodId, Customer customer) throws StripeException {
+		PaymentMethod paymentMethod = PaymentMethod.retrieve(paymentMethodId);
+		Map<String, Object> params = new HashMap<>();
+		params.put("customer", customer.getId());
+		paymentMethod.attach(params);
 	}
 
 	/**
@@ -177,7 +219,11 @@ public class StripeService
 	public Customer getCustomer(String email) throws StripeException
 	{
 		final PathmindUser pathmindUser = userDAO.findByEmailIgnoreCase(email);
-		return Customer.retrieve(pathmindUser.getStripeCustomerId());
+		if (pathmindUser.getStripeCustomerId() != null) {
+			return Customer.retrieve(pathmindUser.getStripeCustomerId());
+		} else {
+			return null;
+		}
 	}
 
 	/**
