@@ -13,6 +13,7 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.ui.binders.ModelBinders;
+import io.skymind.pathmind.ui.components.PathmindTextArea;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -23,7 +24,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private NumberField numberOfObservationsNumberField;
 	private NumberField numberOfPossibleActionsNumberField;
-	private TextArea getObservationForRewardFunctionTextArea;
+	private PathmindTextArea getObservationForRewardFunctionTextArea;
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
@@ -61,7 +62,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 				Model.MAX_NUMBER_OF_POSSIBLE_ACTIONS,
 				Model.DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS);
 
-		getObservationForRewardFunctionTextArea = new TextArea();
+		getObservationForRewardFunctionTextArea = new PathmindTextArea();
 		getObservationForRewardFunctionTextArea.setValue(Model.DEFAULT_GET_OBSERVATION_FOR_REWARD_FUNCTION);
 	}
 
@@ -78,6 +79,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 	private void setupGetObservationForRewardFunctionTextArea() {
 		getObservationForRewardFunctionTextArea.setWidthFull();
 		getObservationForRewardFunctionTextArea.setHeight("200px");
+		getObservationForRewardFunctionTextArea.setSpellcheck(false);
 	}
 
 	private void setupForm() {
