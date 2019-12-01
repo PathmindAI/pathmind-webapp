@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.policy.HyperParameters;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
@@ -16,12 +17,17 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PolicyUtils
 {
-    private static Logger log = LogManager.getLogger(PolicyUtils.class);
-    private static ObjectMapper OBJECT_MAPPER = ObjectMapperHolder.getJsonMapper();
+    private static final String lrPatternStr = "lr=.*,";
+    private static final Pattern lrPattern = Pattern.compile(lrPatternStr);
+
+    private static final Logger log = LogManager.getLogger(PolicyUtils.class);
+    private static final ObjectMapper OBJECT_MAPPER = ObjectMapperHolder.getJsonMapper();
 
     private PolicyUtils() {
     }
@@ -121,5 +127,40 @@ public class PolicyUtils
         return  HyperParameters.BATCH_SIZE + "=" + policy.getHyperParameters().getBatchSize() + ", " +
                 HyperParameters.LEARNING_RATE + "=" + policy.getHyperParameters().getLearningRate() + ", " +
                 HyperParameters.GAMMA + "=" + policy.getHyperParameters().getGamma();
+    }
+
+    // original name ex: PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_2019-10-11_21-16-2858waz_89
+    // get rid of time and extra info
+    // add run type and "TEMP"
+    public static String generatePolicyTempName(Policy policy, Run run)
+    {
+        String policyTempName = policy.getExternalId().substring(0, policy.getExternalId().length() - 27) + run.getRunType() + "TEMP";
+
+        Matcher matcher = lrPattern.matcher(policyTempName);
+
+        if (matcher.find()) {
+            String lr = matcher.group();
+
+            lr = lr.replace("lr=", "").replace(",", "");
+            lr = "lr=" + Double.valueOf(lr).toString() + ",";
+
+            policyTempName = policyTempName.replaceFirst(lrPatternStr, lr);
+        }
+
+        return policyTempName;
+    }
+
+    public static void loadPolicyDataModel(Policy policy, long policyId, Run run) {
+        policy.setId(policyId);
+        policy.setName(policy.getExternalId());
+        policy.setRun(run);
+        policy.setExperiment(run.getExperiment());
+        policy.setModel(run.getModel());
+        policy.setProject(run.getProject());
+        // For performance reasons.
+        policy.setParsedName(parsePolicyName(policy.getName()));
+        // STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
+        // the HyperParameters are moved into the database we can delete this code.
+        policy.setHyperParameters(getHyperParametersFromName(policy));
     }
 }

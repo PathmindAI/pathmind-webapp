@@ -7,10 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -25,7 +23,6 @@ import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
-import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -46,8 +43,6 @@ import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENTS_URL, layout = MainLayout.class)
 public class ExperimentsView extends PathMindDefaultView implements HasUrlParameter<Long> {
-    @Autowired
-    private ExperimentRepository experimentRepository;
     @Autowired
     private ExperimentDAO experimentDAO;
     @Autowired
@@ -180,7 +175,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
     @Override
     protected void initLoadData() throws InvalidDataException {
-        experiments = experimentRepository.getExperimentsForModel(modelId);
+        experiments = experimentDAO.getExperimentsForModel(modelId);
         if (experiments == null || experiments.isEmpty())
             throw new InvalidDataException("Attempted to access Experiments for Model: " + modelId);
 

@@ -16,7 +16,6 @@ import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
-import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,17 +30,15 @@ public class TrainingService {
     private final RunDAO runDAO;
     private final ModelDAO modelDAO;
     private final PolicyDAO policyDAO;
-    private final DSLContext ctx;
     private final ObjectMapper objectMapper;
     private ExecutionEnvironment executionEnvironment;
 
     // TODO: Move direct db access into a DAO.
-    public TrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, DSLContext ctx, ObjectMapper objectMapper) {
+    public TrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, ObjectMapper objectMapper) {
         this.executionProvider = executionProvider;
         this.runDAO = runDAO;
         this.modelDAO = modelDAO;
         this.policyDAO = policyDAO;
-        this.ctx = ctx;
         this.objectMapper = objectMapper;
 
 //        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5, PathmindHelper.VERSION_0_0_24, RLLib.VERSION_0_7_0);
@@ -168,7 +165,7 @@ public class TrainingService {
                 500, // Max 100 iterations for a test run
                 executionEnvironment,
                 RunType.FullRun,
-                () ->modelDAO.getModelFile(model.getId()),
+                () -> modelDAO.getModelFile(model.getId()),
                 Arrays.asList(policy.getHyperParameters().getLearningRate()),
                 Arrays.asList(policy.getHyperParameters().getGamma()),
                 Arrays.asList(policy.getHyperParameters().getBatchSize()),

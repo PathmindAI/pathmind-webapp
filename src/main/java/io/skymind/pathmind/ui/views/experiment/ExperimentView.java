@@ -28,8 +28,6 @@ import io.skymind.pathmind.ui.views.experiment.components.*;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @CssImport("./styles/styles.css")
@@ -41,8 +39,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private static final int POLICY_ID_SEGMENT = 1;
 
     private static final double DEFAULT_SPLIT_PANE_RATIO = 70;
-
-    private Logger log = LogManager.getLogger(ExperimentView.class);
 
     private long experimentId = -1;
     private long policyId = -1;

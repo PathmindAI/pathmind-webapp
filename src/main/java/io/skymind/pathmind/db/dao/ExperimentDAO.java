@@ -1,48 +1,45 @@
 package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
-import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
-import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
+import java.util.List;
 
 @Repository
-public class ExperimentDAO extends ExperimentRepository
+public class ExperimentDAO
 {
 	private final DSLContext ctx;
 
-	ExperimentDAO(DSLContext ctx){
+	ExperimentDAO(DSLContext ctx) {
 		this.ctx = ctx;
 	}
 
-	public long setupNewExperiment(Experiment experiment)
-	{
-		final ExperimentRecord ex = EXPERIMENT.newRecord();
-		ex.attach(ctx.configuration());
-		ex.setDateCreated(experiment.getDateCreated());
-		ex.setModelId(experiment.getModelId());
-		ex.setName(experiment.getName());
-		ex.setRewardFunction(experiment.getRewardFunction());
-		ex.store();
+	public Experiment getExperiment(long experimentId) {
+		return ExperimentSQL.getExperiment(ctx, experimentId);
+	}
 
-		return ex.getId();
+	public long setupNewExperiment(Experiment experiment) {
+		return ExperimentSQL.setupNewExperiment(ctx, experiment);
 	}
 
 	public int getExperimentCount(long modelId) {
-		return ctx.selectCount()
-				.from(EXPERIMENT)
-				.where(EXPERIMENT.MODEL_ID.eq(modelId))
-				.fetchOne(0, int.class);
+		return ExperimentSQL.getExperimentCount(ctx, modelId);
 	}
-	
+
 	public Experiment getLastExperimentForModel(long modelId) {
-		return ctx.select(EXPERIMENT.asterisk())
-				.from(EXPERIMENT)
-				.where(EXPERIMENT.MODEL_ID.eq(modelId))
-				.orderBy(EXPERIMENT.ID.desc())
-				.limit(1)
-				.fetchAnyInto(Experiment.class);
+		return ExperimentSQL.getLastExperimentForModel(ctx, modelId);
+	}
+
+	public List<Experiment> getExperimentsForModel(long modelId) {
+		return ExperimentSQL.getExperimentsForModel(ctx, modelId);
+	}
+
+	public void updateRewardFunction(Experiment experiment) {
+		ExperimentSQL.updateRewardFunction(ctx, experiment);
+	}
+
+	public void archive(long experimentId, boolean isArchive) {
+		ExperimentSQL.archive(ctx, experimentId, isArchive);
 	}
 }

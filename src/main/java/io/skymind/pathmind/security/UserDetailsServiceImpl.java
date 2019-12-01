@@ -3,7 +3,7 @@ package io.skymind.pathmind.security;
 import java.util.Collections;
 
 import io.skymind.pathmind.data.PathmindUser;
-import io.skymind.pathmind.db.repositories.UserRepository;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.EmailIsNotVerifiedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -24,11 +24,11 @@ import org.springframework.stereotype.Service;
 @Primary
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-	private final UserRepository userRepository;
+	private final UserDAO userDAO;
 
 	@Autowired
-	public UserDetailsServiceImpl(UserRepository userRepository) {
-		this.userRepository = userRepository;
+	public UserDetailsServiceImpl(UserDAO userDAO) {
+		this.userDAO = userDAO;
 	}
 
 	/**
@@ -42,7 +42,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	 */
 	@Override
 	public UserDetails loadUserByUsername(String username) throws AuthenticationException {
-		PathmindUser user = userRepository.findByEmailIgnoreCase(username);
+		PathmindUser user = userDAO.findByEmailIgnoreCase(username);
 		if (null == user) {
 			throw new UsernameNotFoundException("No user present with email: " + username);
 		} else if (user.getEmailVerifiedAt() == null) {

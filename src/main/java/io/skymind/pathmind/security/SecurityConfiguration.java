@@ -1,9 +1,8 @@
 package io.skymind.pathmind.security;
 
 import io.skymind.pathmind.data.PathmindUser;
-import io.skymind.pathmind.db.repositories.UserRepository;
+import io.skymind.pathmind.db.dao.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,11 +45,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public CurrentUser currentUser(UserRepository userRepository) {
+    public CurrentUser currentUser(UserDAO userDAO) {
         final String username = SecurityUtils.getUsername();
         PathmindUser user =
-                username != null ? userRepository.findByEmailIgnoreCase(username) :
-                        null;
+                username != null ? userDAO.findByEmailIgnoreCase(username) : null;
         return () -> user;
     }
 
