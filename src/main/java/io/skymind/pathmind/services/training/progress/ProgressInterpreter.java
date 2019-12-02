@@ -5,6 +5,8 @@ import io.skymind.pathmind.data.policy.HyperParameters;
 import io.skymind.pathmind.data.policy.RewardScore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.supercsv.cellprocessor.constraint.NotNull;
+import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvMapReader;
 import org.supercsv.prefs.CsvPreference;
 
@@ -98,21 +100,24 @@ public class ProgressInterpreter
     {
         final Policy policy = interpretKey(entry.getKey());
 
-        try {
-            final CsvMapReader mapReader = new CsvMapReader(new StringReader(entry.getValue()), CsvPreference.STANDARD_PREFERENCE);
-            final String[] header = mapReader.getHeader(true);
+        try(StringReader stringReader = new StringReader(entry.getValue());
+            CsvMapReader mapReader = new CsvMapReader(stringReader, CsvPreference.STANDARD_PREFERENCE))
+        {
+            mapReader.getHeader(true);
+            final String[] header = new String[]{"episode_reward_max", "episode_reward_min", "episode_reward_mean", null, null, null, null, null, null, "training_iteration", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null};
+            final CellProcessor[] processors = new CellProcessor[] {new NotNull(), new NotNull(), new NotNull(), null, null, null, null, null, null, new NotNull(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null};
 
             final ArrayList<RewardScore> scores = new ArrayList<>();
-            Map<String, String> map;
-            while( (map = mapReader.read(header)) != null ) {
-                final String max = map.get("episode_reward_max");
-                final String min = map.get("episode_reward_min");
-                final String mean = map.get("episode_reward_mean");
+            Map<String, Object> map;
+            while( (map = mapReader.read(header, processors)) != null ) {
+                final String max = map.get("episode_reward_max").toString();
+                final String min = map.get("episode_reward_min").toString();
+                final String mean = map.get("episode_reward_mean").toString();
                 scores.add(new RewardScore(
                         Double.valueOf(max.equals("nan") ? "NaN" : max),
                         Double.valueOf(min.equals("nan") ? "NaN" : min),
                         Double.valueOf(mean.equals("nan") ? "NaN" : mean),
-                        Integer.parseInt(map.get("training_iteration"))
+                        Integer.parseInt(map.get("training_iteration").toString())
                 ));
             }
             policy.setScores(scores);
