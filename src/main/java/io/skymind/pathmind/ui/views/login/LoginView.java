@@ -10,8 +10,6 @@ import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.*;
-import com.vaadin.flow.server.InitialPageSettings;
-import com.vaadin.flow.server.PageConfigurator;
 import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
@@ -23,11 +21,9 @@ import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
-import io.skymind.pathmind.ui.utils.VaadinUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
-import io.skymind.pathmind.utils.PathmindUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -40,7 +36,7 @@ import java.util.List;
 @CssImport(value = "./styles/views/login-view-styles.css")
 @CssImport(value = "./styles/components/vaadin-login-form-wrapper.css", themeFor = "vaadin-login-form-wrapper")
 public class LoginView extends HorizontalLayout
-		implements AfterNavigationObserver, BeforeEnterObserver, HasDynamicTitle, PageConfigurator, HasUrlParameter<String>
+		implements PublicView, AfterNavigationObserver, BeforeEnterObserver, HasUrlParameter<String>
 {
 	private Div badCredentials = new Div();
 	private HorizontalLayout emailNotVerified = WrapperUtils.wrapWidthFullHorizontal();
@@ -169,16 +165,6 @@ public class LoginView extends HorizontalLayout
 			UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 			return;
 		}
-	}
-
-	@Override
-	public String getPageTitle() {
-		return PathmindUtils.getPageTitle();
-	}
-
-	@Override
-	public void configurePage(InitialPageSettings settings) {
-		VaadinUtils.setupFavIcon(settings);
 	}
 
 	@Override
