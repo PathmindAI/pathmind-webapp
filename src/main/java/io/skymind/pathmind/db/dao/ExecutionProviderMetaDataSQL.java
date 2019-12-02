@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static io.skymind.pathmind.data.db.Tables.EXECUTION_PROVIDER_META_DATA;
 
@@ -31,12 +32,15 @@ class ExecutionProviderMetaDataSQL
     // STEPH -> REFACTOR -> Convert from JSON to String in the database as we're only ever using String. All the logic will fail if it's anything but string.
     protected static String get(DSLContext ctx, String providerClazz, String key)
     {
-        return ctx.select(EXECUTION_PROVIDER_META_DATA.VALUE)
+        Optional<String> optional = ctx.select(EXECUTION_PROVIDER_META_DATA.VALUE)
                 .from(EXECUTION_PROVIDER_META_DATA)
                 .where(EXECUTION_PROVIDER_META_DATA.PROVIDER_CLASS.eq(providerClazz)
                         .and(EXECUTION_PROVIDER_META_DATA.KEY.eq(key)))
                 // STEPH -> REFACTOR -> The JSON is just a string. Quick hack until I resolve issue ...
-                .fetchOne(EXECUTION_PROVIDER_META_DATA.VALUE, String.class).replaceAll("\"", "");
+                .fetchOptional(EXECUTION_PROVIDER_META_DATA.VALUE, String.class);
+        if(optional.isPresent())
+            return optional.get().replaceAll("\"", "");
+        return null;
     }
 
     // STEPH -> REFACTOR -> Convert from JSON to String in the database as we're only ever using String. All the logic will fail if it's anything but string.
@@ -47,7 +51,12 @@ class ExecutionProviderMetaDataSQL
                 .where(EXECUTION_PROVIDER_META_DATA.PROVIDER_CLASS.eq(providerClazz)
                         .and(EXECUTION_PROVIDER_META_DATA.KEY.in(keys)))
                 // STEPH -> REFACTOR -> The JSON is just a string. Quick hack until I resolve issue ...
-                .fetchMap(EXECUTION_PROVIDER_META_DATA.KEY, record -> record.get(EXECUTION_PROVIDER_META_DATA.VALUE).toString().replaceAll("\"", ""));
+                .fetchMap(EXECUTION_PROVIDER_META_DATA.KEY, record -> {
+                    // STEPH -> REFACTOR -> Can it ever be null? I don't believe so but it's an extra check for now.
+                    if(record.get(EXECUTION_PROVIDER_META_DATA.VALUE) == null)
+                        return null;
+                    return record.get(EXECUTION_PROVIDER_META_DATA.VALUE).toString().replaceAll("\"", "");
+                });
     }
 
     protected static void delete(DSLContext ctx, String providerClazz, String key) {
