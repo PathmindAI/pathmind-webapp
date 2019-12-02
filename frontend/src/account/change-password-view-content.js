@@ -8,11 +8,10 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
  * @customElement
  * @polymer
  */
-class ChangePasswordView extends PolymerElement {
+class ChangePasswordViewContent extends PolymerElement {
   static get template() {
     return html`
-    <style include="shared-styles pathmind-dialog-view"></style>
-      <div id="header" style="width: 100%;"></div>
+      <style include="shared-styles pathmind-dialog-view"></style>
       <div class="content">
         <vaadin-tabs>
           <vaadin-tab>
@@ -50,7 +49,10 @@ class ChangePasswordView extends PolymerElement {
             label="Confirm New Password"
           ></vaadin-password-field>
           <vaadin-vertical-layout id="buttonsCont">
-            <vaadin-button id="updateBtn" theme="primary"  class="positive-action-btn"
+            <vaadin-button
+              id="updateBtn"
+              theme="primary"
+              class="positive-action-btn"
               >Change Password</vaadin-button
             >
             <vaadin-button id="cancelBtn" theme="tertiary"
@@ -64,7 +66,7 @@ class ChangePasswordView extends PolymerElement {
   }
 
   static get is() {
-    return "change-password-view";
+    return "change-password-view-content";
   }
 
   static get properties() {
@@ -74,4 +76,4 @@ class ChangePasswordView extends PolymerElement {
   }
 }
 
-customElements.define(ChangePasswordView.is, ChangePasswordView);
+customElements.define(ChangePasswordViewContent.is, ChangePasswordViewContent);
