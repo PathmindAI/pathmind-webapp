@@ -1,6 +1,7 @@
 package io.skymind.pathmind.services.project;
 
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +17,7 @@ public class ProjectFileCheckService {
 
     @Autowired
     ExecutorService checkerExecutorService;
-
+    
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
     public void checkFile(StatusUpdater statusUpdater, byte[] data) {
         Runnable runnable = () -> {
@@ -32,8 +33,7 @@ public class ProjectFileCheckService {
 
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
                         statusUpdater.fileSuccessfullyVerified();
-                    }
-
+                    } 
                 } finally {
                     tempFile.delete();
                 }

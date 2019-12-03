@@ -25,6 +25,8 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.*;
@@ -68,6 +70,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private TrainingService trainingService;
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
     private Button runFullTraining;
     private Button runDiscoveryTraining;
@@ -143,6 +147,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         runFullTraining = new Button("Start Full Run", new Image("frontend/images/start.svg", "run"), click -> {
             final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
             trainingService.startFullRun(experiment, policy);
+            segmentIntegrator.fullRunStarted();
             new RunConfirmDialog().open();
         });
         runFullTraining.setVisible(false);
@@ -151,6 +156,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         runDiscoveryTraining = new Button("Start Discovery Run", new Image("frontend/images/start.svg", "run"), click -> {
             final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
             trainingService.startDiscoveryRun(experiment);
+            segmentIntegrator.discoveryRunStarted();
             new RunConfirmDialog().open();
         });
         runDiscoveryTraining.setVisible(false);
