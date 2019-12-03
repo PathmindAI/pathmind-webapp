@@ -155,7 +155,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pag
 	private void initBinder() {
 		binder = new Binder<>(PathmindUser.class);
 
-		binder.forField(email).asRequired().withValidator(new EmailValidator(
+		binder.forField(email).asRequired("Email is required").withValidator(new EmailValidator(
 				"This doesn't look like a valid email address"))
 				.bind(PathmindUser::getEmail, PathmindUser::setEmail);
 		binder.forField(firstName).bind(PathmindUser::getFirstname, PathmindUser::setFirstname);

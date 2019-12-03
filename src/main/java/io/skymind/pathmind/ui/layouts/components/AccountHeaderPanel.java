@@ -12,6 +12,7 @@ import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.UserUpdateBusEvent;
 import io.skymind.pathmind.bus.subscribers.UserUpdateSubscriber;
 import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.account.AccountView;
@@ -33,8 +34,8 @@ public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSu
 
 		MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER), user));
 		account.getSubMenu().addItem("Account", e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
-		account.getSubMenu().addItem("Logout", e ->
-				getUI().ifPresent(ui -> ui.getPage().executeJavaScript("location.assign('/logout')")));
+		account.getSubMenu().addItem("Sign out", e ->
+				getUI().ifPresent(ui -> ui.getPage().executeJavaScript("location.assign('/" + Routes.LOGOUT_URL + "')")));
 	}
 
 	private HorizontalLayout createItem(Icon icon, PathmindUser user) {

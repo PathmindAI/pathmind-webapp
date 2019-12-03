@@ -88,7 +88,7 @@ public class LoginView extends HorizontalLayout
 
 		Div policy = new Div();
 		policy.addClassName("policy");
-		policy.add(new Span("By clicking Log In, you agree to Pathmind's "),
+		policy.add(new Span("By clicking Sign In, you agree to Pathmind's "),
 				new Anchor(termsOfUseUrl, "Terms of Use"),
 				new Span(" and "),
 				new Anchor(privacyPolicyUrl, "Privacy Policy"),
@@ -147,7 +147,7 @@ public class LoginView extends HorizontalLayout
 
 		LoginForm loginForm = new LoginForm();
 		loginForm.setI18n(loginI18n);
-		loginForm.setAction("login");
+		loginForm.setAction(Routes.LOGIN_URL);
 		loginForm.addForgotPasswordListener(e -> UI.getCurrent().navigate(ResetPasswordView.class));
 		loginForm.addLoginListener(evt -> segmentIntegrator.userLoggedIn());
 		return loginForm;
