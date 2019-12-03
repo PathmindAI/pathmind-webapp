@@ -57,6 +57,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
+	private ScreenTitlePanel titlePanel;
 
 	public ModelsView()
 	{
@@ -104,14 +105,17 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 		Grid.Column<Model> nameColumn = modelGrid.addColumn(Model::getName)
 				.setHeader("Model")
+				.setResizable(true)
 				.setSortable(true);
 		modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getDateCreated))
 				.setHeader("Date Created")
+				.setResizable(true)
 				.setSortable(true);
 		Grid.Column<Model> lastActivityColumn = modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getLastActivityDate))
 				.setHeader("Last Activity")
+				.setResizable(true)
 				.setSortable(true);
 
 		modelGrid.addItemClickListener(event -> getUI().ifPresent(ui -> UI.getCurrent().navigate(ExperimentsView.class, event.getItem().getId())));
@@ -131,7 +135,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("PROJECT " + projectName);
+		titlePanel = new ScreenTitlePanel("PROJECT");
+		return titlePanel;
 	}
 
 	@Override
@@ -152,6 +157,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
 		modelGrid.setItems(models);
 		archivesTabPanel.initData();
+		titlePanel.setSubtitle(projectName);
 	}
 
 	@Override

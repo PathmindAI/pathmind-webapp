@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.account;
+package io.skymind.pathmind.ui.views.login;
 
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -11,7 +11,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
-import io.skymind.pathmind.ui.views.LoginView;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @JsModule("./src/account/email-verification-view.js")
 @Route(value = Routes.EMAIL_VERIFICATION_URL)
 public class EmailVerificationView extends PolymerTemplate<EmailVerificationView.Model>
-		implements HasUrlParameter<String>, AfterNavigationObserver
+		implements PublicView, HasUrlParameter<String>, AfterNavigationObserver
 {
 	@Id("backToApp")
 	private Button backToApp;
@@ -53,7 +53,7 @@ public class EmailVerificationView extends PolymerTemplate<EmailVerificationView
 			getModel().setError(true);
 		}
 	}
-
+	
 	public interface Model extends TemplateModel {
 		void setError(boolean error);
 	}

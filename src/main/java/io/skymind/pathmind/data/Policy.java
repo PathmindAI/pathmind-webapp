@@ -1,41 +1,52 @@
 package io.skymind.pathmind.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.skymind.pathmind.constants.Algorithm;
-import io.skymind.pathmind.services.training.progress.RewardScore;
+import io.skymind.pathmind.data.policy.HyperParameters;
+import io.skymind.pathmind.data.policy.RewardScore;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class Policy extends Data
 {
+	@JsonIgnore
 	private long runId;
+	@JsonProperty("id")
 	private String externalId;
+	@JsonIgnore
 	private String progress;
+	@JsonIgnore
 	private byte[] file;
 
-//	private ArrayList<Number> scores = new ArrayList<>();
+    private LocalDateTime startedAt;
+    private LocalDateTime stoppedAt;
 
-	// Helper GUI attributes not stored in the database
+    private HyperParameters hyperParameters = new HyperParameters();
+
+    // For now this is hardcoded: https://github.com/SkymindIO/pathmind-webapp/issues/101
+    private Algorithm algorithm = Algorithm.PPO;
+
+    // REFACTOR -> Same as Progress which is not saved to the database and is parsed back and forth...
+    @JsonProperty("rewardProgression")
+    private List<RewardScore> scores;
+
+    // Helper GUI attributes not stored in the database
+	@JsonIgnore
 	private Project project;
+	@JsonIgnore
 	private Model model;
+	@JsonIgnore
 	private Experiment experiment;
+	@JsonIgnore
 	private Run run;
 
-	private LocalDateTime startedAt;
-	private LocalDateTime stoppedAt;
-
 	// Helper for now for performance reasons.
+	@JsonIgnore
 	private String parsedName;
-	private String notes;
-
-	// For now this is hardcoded: https://github.com/SkymindIO/pathmind-webapp/issues/101
-	private Algorithm algorithm = Algorithm.PPO;
-
-	// REFACTOR -> Same as Progress which is not saved to the database and is parsed back and forth...
-	private List<RewardScore> scores;
 
 	public long getRunId() {
 		return runId;
@@ -101,6 +112,7 @@ public class Policy extends Data
 		this.run = run;
 	}
 
+	@JsonIgnore
 	public Algorithm getAlgorithmEnum() {
 		return algorithm;
 	}
@@ -142,12 +154,14 @@ public class Policy extends Data
 		this.parsedName = parsedName;
 	}
 
+	// STEPH -> Clean this up when we add notes to the database.
+	@JsonIgnore
 	public String getNotes() {
-		return notes;
+		throw new RuntimeException("Should not be used");
 	}
 
 	public void setNotes(String notes) {
-		this.notes = notes;
+		// The notes are currently just the hyperParameters
 	}
 
 	public List<RewardScore> getScores() {
@@ -157,4 +171,12 @@ public class Policy extends Data
 	public void setScores(List<RewardScore> scores) {
 		this.scores = scores;
 	}
+
+    public HyperParameters getHyperParameters() {
+        return hyperParameters;
+    }
+
+    public void setHyperParameters(HyperParameters hyperParameters) {
+        this.hyperParameters = hyperParameters;
+    }
 }

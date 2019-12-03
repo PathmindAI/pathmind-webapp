@@ -6,7 +6,6 @@ import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.repositories.PolicyRepository;
 import org.jooq.DSLContext;
-import org.jooq.JSONB;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +16,8 @@ import static io.skymind.pathmind.data.db.Tables.*;
 @Repository
 public class PolicyDAO extends PolicyRepository
 {
+    private static final String SAVING = "saving";
+
     private final DSLContext ctx;
 
     public PolicyDAO(DSLContext ctx){
@@ -39,6 +40,7 @@ public class PolicyDAO extends PolicyRepository
                 .leftJoin(PROJECT)
                     .on(PROJECT.ID.eq(MODEL.PROJECT_ID))
                 .where(RUN.EXPERIMENT_ID.eq(experimentId))
+                .orderBy(POLICY.ID)
                 .fetch(it -> {
                     final Policy policy = new Policy();
                     policy.setExternalId(it.get(POLICY.EXTERNAL_ID));
@@ -48,9 +50,11 @@ public class PolicyDAO extends PolicyRepository
 
                     // TODO -> Although we process everything we could also get the values from the database. However until scores is also stored in the database
                     // we might as well do it here.
-                    PolicyUtils.processProgressJson(policy, it.get(POLICY.PROGRESS).toString());
                     // PERFORMANCE => can this be simplified? It's very expensive just to get Notes (both interpretKey and the HashMap of HyperParameters
-                    policy.setNotes(PolicyUtils.getNotesFromName(policy));
+                    PolicyUtils.processProgressJson(policy, it.get(POLICY.PROGRESS).toString());
+                    // STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
+                    // the HyperParameters are moved into the database we can delete this code.
+                    policy.setHyperParameters(PolicyUtils.getHyperParametersFromName(policy));
                     policy.setProgress(null);
 
                     policy.setRun(it.into(RUN).into(Run.class));
@@ -67,19 +71,17 @@ public class PolicyDAO extends PolicyRepository
         return policies;
     }
 
-    public boolean hasPolicyFile(long policyId){
-        return ctx.select(DSL.one()).from(POLICY).where(POLICY.ID.eq(policyId).and(POLICY.FILE.isNotNull())).fetchOptional().isPresent();
-    }
-
-    public boolean hasPolicyFile(long policyId, String content){
-        boolean hasPolicy = hasPolicyFile(policyId);
-        if (hasPolicy) {
-            String dbContents = new String(getPolicyFile(policyId));
-            if (!dbContents.equals(content)) {
-                return true;
-            }
-        }
-        return false;
+    /**
+     * To avoid multiple download policy file from rescale server,
+     * we put the "saving" for temporary
+     * policy dao will check if there's real policy file exist or not
+     */
+    public boolean hasPolicyFile(long policyId) {
+        return ctx.select(DSL.one()).from(POLICY)
+                .where(POLICY.ID.eq(policyId)
+                        .and(POLICY.FILE.isNotNull())
+                        .and(POLICY.FILE.notEqual("saving".getBytes())))
+                .fetchOptional().isPresent();
     }
 
     public byte[] getPolicyFile(long policyId){
