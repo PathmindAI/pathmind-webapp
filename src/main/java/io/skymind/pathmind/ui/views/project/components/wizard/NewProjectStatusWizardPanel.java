@@ -3,6 +3,7 @@ package io.skymind.pathmind.ui.views.project.components.wizard;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabsVariant;
 import io.skymind.pathmind.ui.components.TabPanel;
+import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 
 public class NewProjectStatusWizardPanel extends VerticalLayout
 {
@@ -26,6 +27,9 @@ public class NewProjectStatusWizardPanel extends VerticalLayout
 
 		setWidthFull();
 		setMargin(false);
+		setPadding(false);
+		setSpacing(false);
+		setClassName(CssMindPathStyles.SECTION_STATUS_PANEL);
 	}
 
 	public void setCreateANewProject() {
