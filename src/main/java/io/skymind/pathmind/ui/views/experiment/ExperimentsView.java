@@ -28,6 +28,7 @@ import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.db.repositories.ExperimentRepository;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
+import io.skymind.pathmind.ui.components.PathmindTextArea;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
@@ -63,9 +64,10 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private ExperimentGrid experimentGrid;
-    private TextArea getObservationTextArea;
+    private PathmindTextArea getObservationTextArea;
     private RewardFunctionEditor rewardFunctionEditor;
     private Label rewardFunctionTitle;
+    private ScreenTitlePanel titlePanel;
 
     public ExperimentsView() {
         super();
@@ -111,7 +113,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     }
 
     private void setupGetObservationTextArea() {
-        getObservationTextArea = new TextArea("getObservations");
+        getObservationTextArea = new PathmindTextArea("getObservations");
         getObservationTextArea.setSizeFull();
         getObservationTextArea.setReadOnly(true);
     }
@@ -163,7 +165,8 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
     @Override
     protected Component getTitlePanel() {
-        return new ScreenTitlePanel("PROJECT " + getProjectName());
+        titlePanel = new ScreenTitlePanel("PROJECT");
+        return titlePanel;
     }
 
     public List<Experiment> getExperiments() {
@@ -196,6 +199,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         archivesTabPanel.initData();
         getObservationTextArea.setValue(currentModel.getGetObservationForRewardFunction());
         showRewardFunction(experiments.get(0));
+        titlePanel.setSubtitle(getProjectName());
     }
 
     @Override

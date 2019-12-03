@@ -49,12 +49,4 @@ public class HyperParameters
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
     }
-
-    @Override
-    public String toString() {
-        return  BATCH_SIZE + "=" + batchSize + ", " +
-                LEARNING_RATE + "=" + learningRate + ", " +
-                GAMMA + "=" + gamma;
-    }
-
 }

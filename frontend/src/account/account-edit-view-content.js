@@ -5,11 +5,10 @@ import "@vaadin/vaadin-form-layout/src/vaadin-form-item.js";
 import "@vaadin/vaadin-text-field/src/vaadin-text-field.js";
 import "@vaadin/vaadin-button/src/vaadin-button.js";
 
-class AccountEditView extends PolymerElement {
+class AccountEditViewContent extends PolymerElement {
   static get template() {
     return html`
       <style include="shared-styles pathmind-dialog-view"></style>
-      <div id="header" style="width: 100%;"></div>
       <div class="content">
         <vaadin-tabs class="tabs">
           <vaadin-tab>
@@ -29,10 +28,16 @@ class AccountEditView extends PolymerElement {
               label="Last Name"
             ></vaadin-text-field>
             <vaadin-vertical-layout id="buttonsCont">
-              <vaadin-button id="updateBtn" theme="primary" class="positive-action-btn">
+              <vaadin-button
+                id="updateBtn"
+                theme="primary"
+                class="positive-action-btn"
+              >
                 Update
               </vaadin-button>
-              <vaadin-button id="cancelBtn" theme="tertiary">Cancel</vaadin-button>
+              <vaadin-button id="cancelBtn" theme="tertiary"
+                >Cancel</vaadin-button
+              >
             </vaadin-vertical-layout>
           </vaadin-vertical-layout>
         </vaadin-vertical-layout>
@@ -42,7 +47,7 @@ class AccountEditView extends PolymerElement {
   }
 
   static get is() {
-    return "account-edit-view";
+    return "account-edit-view-content";
   }
 
   static get properties() {
@@ -52,4 +57,4 @@ class AccountEditView extends PolymerElement {
   }
 }
 
-customElements.define(AccountEditView.is, AccountEditView);
+customElements.define(AccountEditViewContent.is, AccountEditViewContent);

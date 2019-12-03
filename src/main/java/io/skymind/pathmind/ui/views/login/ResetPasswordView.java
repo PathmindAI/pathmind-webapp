@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.account;
+package io.skymind.pathmind.ui.views.login;
 
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -19,7 +19,7 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
-import io.skymind.pathmind.ui.views.LoginView;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ import java.util.List;
 @JsModule("./src/account/reset-password-view.js")
 @Route(value = Routes.RESET_PASSWORD_URL)
 public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
-	implements HasUrlParameter<String>, AfterNavigationObserver
+	implements PublicView, HasUrlParameter<String>, AfterNavigationObserver
 {
 	private static Logger log = LogManager.getLogger(ResetPasswordView.class);
 
@@ -184,7 +184,6 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 	public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String param) {
 		token = param;
 	}
-
 
 	public interface Model extends TemplateModel {
 		void setMessage(String message);

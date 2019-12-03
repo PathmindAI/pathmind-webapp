@@ -19,6 +19,7 @@ import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
 import io.skymind.pathmind.ui.utils.FormUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
@@ -43,8 +44,12 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 	@Autowired
 	private ProjectDAO projectDAO;
+	
 	@Autowired
 	private ProjectFileCheckService projectFileCheckService ;
+	
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
 	private Project project;
 	private Model model;
@@ -82,7 +87,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 		logoPanel = new NewProjectLogoWizardPanel();
 		statusPanel = new NewProjectStatusWizardPanel();
-		createProjectPanel = new CreateANewProjectWizardPanel(projectBinder);
+		createProjectPanel = new CreateANewProjectWizardPanel(projectBinder, projectDAO);
 		pathminderHelperWizardPanel = new PathminderHelperWizardPanel();
 		uploadModelWizardPanel = new UploadModelWizardPanel(model);
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
@@ -121,7 +126,8 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 				return;
 
 			final long experimentId = projectDAO.setupNewProject(project, model);
-
+			segmentIntegrator.projectCreated();
+			
 			UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 		});
 	}
@@ -175,6 +181,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 		PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
 			uploadModelWizardPanel.setError(error);
+			segmentIntegrator.modelImported(false);
 		});
 	}
 
@@ -186,6 +193,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 			projectBinder.readBean(project);
 			modelBinder.readBean(model);
 			statusPanel.setModelDetails();
+			segmentIntegrator.modelImported(true);
 		});
 	}
 

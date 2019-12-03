@@ -11,7 +11,7 @@ import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.shared.communication.PushMode;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.views.errors.ErrorView;
 import io.skymind.pathmind.ui.views.errors.InvalidDataView;
@@ -27,26 +27,17 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public abstract class PathMindDefaultView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle
 {
-	// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/217 Implement a security framework on the views.
-	// NOTE -> This is a janky solution for https://github.com/SkymindIO/pathmind-webapp/issues/217 until we decide exactly
-	// what we want to implement.
-	// NOTE -> I'm forcing all views to implement this method, even if it's just to return true, so that if any new
-	// views are implemented before we implement a good framework then it will at least hopefully remind the developer to do a user access check.
-	// TODO -> This currently cannot tell us if a user has access to an item because they item could be just none-existant. But for
-	// now I'm using these method names so that we understand what needs to be done eventually.
-	protected abstract boolean isAccessAllowedForUser();
 
 	private static Logger log = LogManager.getLogger(PathMindDefaultView.class);
 	private static String COOKIE_CONSENT_LINK = "https://pathmind.com/privacy";
 
 	private boolean isGenerated = false;
 
-	// It's autowired so that we don't have to inject it in all the views.
-	@Autowired
-	private IntercomIntegrationPlugin intercomIntegrationPlugin;
-
     @Value("${skymind.debug.accelerate}")
     private boolean isDebugAccelerate;
+    
+    @Autowired
+    private SegmentIntegrator segmentIntegrator;
 
 	public PathMindDefaultView()
 	{
@@ -87,8 +78,8 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 				addScreens();
 			// Update the screen based on the parameters if need be.
 			initScreen(event);
-			// Intercom plugin added
-			addIntercomPlugin();
+			// Segment plugin added
+			add(segmentIntegrator);
 			isGenerated = true;
 		} catch (InvalidDataException e) {
 			log.info("Invalid data attempt: " + e.getMessage());
@@ -99,19 +90,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			event.rerouteTo(ErrorView.class);
-		}
-	}
-
-	/**
-	 * Must be in it's own method and we need to try and catch because if there is ever an exception in the Intercom plugin
-	 * then it will otherwise go into an infinite loop (by being caught in the Exception catch block of the parent method
-	 * which then causes it to go to teh ErrorView and loop forever crashing the server.
-	 */
-	private void addIntercomPlugin() {
-		try {
-			intercomIntegrationPlugin.addPluginToPage();
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
 		}
 	}
 
@@ -127,13 +105,18 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		if(mainContent != null) add(mainContent);
 	}
 
-	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("Please contact Skymind for assistance.");
-	}
+	// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/217 Implement a security framework on the views.
+	// NOTE -> This is a janky solution for https://github.com/SkymindIO/pathmind-webapp/issues/217 until we decide exactly
+	// what we want to implement.
+	// NOTE -> I'm forcing all views to implement this method, even if it's just to return true, so that if any new
+	// views are implemented before we implement a good framework then it will at least hopefully remind the developer to do a user access check.
+	// TODO -> This currently cannot tell us if a user has access to an item because they item could be just none-existant. But for
+	// now I'm using these method names so that we understand what needs to be done eventually.
+	protected abstract boolean isAccessAllowedForUser();
 
-	protected Component getMainContent() {
-		return new Label("Please contact Skymind for assistance.");
-	}
+	protected abstract Component getTitlePanel();
+
+	protected abstract Component getMainContent();
 
 	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
 	}

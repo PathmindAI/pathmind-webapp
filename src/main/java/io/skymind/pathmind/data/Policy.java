@@ -154,9 +154,10 @@ public class Policy extends Data
 		this.parsedName = parsedName;
 	}
 
+	// STEPH -> Clean this up when we add notes to the database.
 	@JsonIgnore
 	public String getNotes() {
-		return hyperParameters.toString();
+		throw new RuntimeException("Should not be used");
 	}
 
 	public void setNotes(String notes) {
