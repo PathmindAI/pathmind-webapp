@@ -9,9 +9,12 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.*;
+
+import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -104,11 +107,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
 
             RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
+            boolean canStartFurtherRuns = PolicyUtils.getRunStatus(selectedPolicy) != RunStatus.Error;
             if (selectedRunType == RunType.TestRun && experiment.getPolicies().size() == 1) {
                 runDiscoveryTraining.setVisible(true);
+                runDiscoveryTraining.setEnabled(canStartFurtherRuns);
             } else if (selectedRunType == RunType.DiscoveryRun) {
                 runDiscoveryTraining.setVisible(false);
                 runFullTraining.setVisible(true);
+                runFullTraining.setEnabled(canStartFurtherRuns);
             } else if (selectedRunType == RunType.FullRun) {
                 runDiscoveryTraining.setVisible(false);
                 runFullTraining.setVisible(false);
