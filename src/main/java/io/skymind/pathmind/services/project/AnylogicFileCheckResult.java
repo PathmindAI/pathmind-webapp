@@ -9,6 +9,8 @@ public class AnylogicFileCheckResult implements FileCheckResult {
     private boolean modelJarFilePresent;
     private List<String> zipContentFileNames;
     private List<String> definedHelpers;
+    private int numAction;
+    private int numObservation;
 
     @Override
     public boolean isFileCheckComplete() {
@@ -85,5 +87,19 @@ public class AnylogicFileCheckResult implements FileCheckResult {
         this.definedHelpers = definedHelpers;
     }
 
+    public int getNumAction() {
+        return numAction;
+    }
 
+    public void setNumAction(int numAction) {
+        this.numAction = numAction;
+    }
+
+    public int getNumObservation() {
+        return numObservation;
+    }
+
+    public void setNumObservation(int numObservation) {
+        this.numObservation = numObservation;
+    }
 }

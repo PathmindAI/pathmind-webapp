@@ -15,6 +15,7 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
+import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
 import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
@@ -129,7 +130,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 	private void handleUploadWizardClicked() {
 		if (user.getEmail().equals("edward@skymind.io")) { // This is Ed!
 			log.info("User is Ed, skipping file check");
-			fileSuccessfullyVerified();
+			fileSuccessfullyVerified(null);
 		} else {
 			uploadModelWizardPanel.showFileCheckPanel();
 			projectFileCheckService.checkFile(this, model.getFile());
@@ -179,10 +180,16 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 	}
 
 	@Override
-	public void fileSuccessfullyVerified() {
+	public void fileSuccessfullyVerified(FileCheckResult result) {
 		PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
 			setVisibleWizardPanel(modelDetailsWizardPanel);
+
+			if (result != null) {
+				model.setNumberOfPossibleActions(((AnylogicFileCheckResult) (result)).getNumAction());
+				model.setNumberOfObservations(((AnylogicFileCheckResult) (result)).getNumObservation());
+			}
+
 			projectBinder.readBean(project);
 			modelBinder.readBean(model);
 			statusPanel.setModelDetails();

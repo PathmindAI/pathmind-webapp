@@ -18,7 +18,7 @@ public class MockObjectStatusUpdater implements StatusUpdater {
     }
 
     @Override
-    public void fileSuccessfullyVerified() {
+    public void fileSuccessfullyVerified(FileCheckResult result) {
         log.info("File successfully verified:");
     }
 }
