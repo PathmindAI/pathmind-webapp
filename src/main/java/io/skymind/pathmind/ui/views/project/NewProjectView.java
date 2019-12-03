@@ -188,6 +188,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 			if (result != null) {
 				model.setNumberOfPossibleActions(((AnylogicFileCheckResult) (result)).getNumAction());
 				model.setNumberOfObservations(((AnylogicFileCheckResult) (result)).getNumObservation());
+				model.setGetObservationForRewardFunction(((AnylogicFileCheckResult) (result)).getRewardFunction());
 			}
 
 			projectBinder.readBean(project);
