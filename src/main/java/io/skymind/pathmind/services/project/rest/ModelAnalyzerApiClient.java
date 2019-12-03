@@ -1,13 +1,25 @@
 package io.skymind.pathmind.services.project.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 
 @Slf4j
 @Service
@@ -18,8 +30,8 @@ public class ModelAnalyzerApiClient {
     private final WebClient client;
 
     public ModelAnalyzerApiClient(
-            @Value("${skymind.model.anlayzer.base-url}") String url,
-            @Value("${skymind.model.anlayzer.token}") String token,
+            @Value("${skymind.model.analyzer.base-url}") String url,
+            @Value("${skymind.model.analyzer.token}") String token,
             ObjectMapper objectMapper,
             WebClient.Builder webClientBuilder
     ) {
@@ -38,14 +50,31 @@ public class ModelAnalyzerApiClient {
                         })
                 )
                 .build();
-
     }
 
-    public void health() {
+    public String health() {
+        // todo when we need to use this endpoint, need to change return type
         String result = client.get().uri("/actuator/health")
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
-        System.out.println(result);
+        return result;
+    }
+
+    public HyperparametersDTO analyze(File file) throws IOException {
+
+        final CloseableHttpClient client = HttpClients.custom().setDefaultHeaders(Arrays.asList(
+                new BasicHeader("Authorization", "Token "+ token)
+        )).build();
+
+
+        final HttpPost post = new HttpPost(this.url + "/api/v1/extract-hyperparameters");
+        post.setEntity(MultipartEntityBuilder.create()
+                .addBinaryBody("file", file, ContentType.MULTIPART_FORM_DATA, file.getName())
+                .build());
+
+        final CloseableHttpResponse resp = client.execute(post);
+
+        return objectMapper.readValue(resp.getEntity().getContent(), HyperparametersDTO.class);
     }
 }
