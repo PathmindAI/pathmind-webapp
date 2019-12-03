@@ -16,6 +16,10 @@
    background: transparent;
    padding: var(--lumo-space-s) var(--lumo-space-l);
 }
+:host(.large-image-btn):host([disabled]) {
+    background-color: transparent !important;
+    opacity: 0.5;
+}
 :host(.large-image-btn:hover)::before {
    opacity: 0; 
 }
