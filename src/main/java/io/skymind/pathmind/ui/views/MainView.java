@@ -6,6 +6,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 
+import io.skymind.pathmind.security.Routes;
+
 import static io.skymind.pathmind.security.Routes.ROOT_URL;
 
 @Route(ROOT_URL)
@@ -14,6 +16,6 @@ public class MainView extends Composite<Div> implements BeforeEnterObserver
 	@Override
 	public void beforeEnter(BeforeEnterEvent event)
 	{
-		 event.rerouteTo("login");
+		 event.rerouteTo(Routes.LOGIN_URL);
 	}
 }
