@@ -5,7 +5,7 @@ public class UIConstants
 {
 	public static final String CENTERED_TABLE_WIDTH = "700px";
 
-	public static final String CENTERED_FORM_WIDTH = "500px";
+	public static final String CENTERED_FORM_WIDTH = "520px";
 
 	public static final String GRID_BUTTON_WIDTH = "150px";
 
