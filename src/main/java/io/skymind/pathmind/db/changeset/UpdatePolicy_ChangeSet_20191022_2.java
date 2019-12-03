@@ -1,7 +1,8 @@
 package io.skymind.pathmind.db.changeset;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.utils.PolicyUtils;
+import io.skymind.pathmind.utils.ObjectMapperHolder;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.change.custom.CustomSqlRollback;
 import liquibase.database.Database;
@@ -13,9 +14,11 @@ import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RawSqlStatement;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -48,7 +51,29 @@ public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, Custo
     }
 
     private void convertJsonValues(List<Policy> policies) {
-        policies.parallelStream().forEach(policy -> PolicyUtils.processProgressJson(policy, policy.getProgress()));
+        ObjectMapper objectMapper = ObjectMapperHolder.getJsonMapper();
+        policies.parallelStream().forEach(policy -> processProgressJson(objectMapper, policy, policy.getProgress()));
+    }
+
+    /**
+     * Copied this code from PolicyUtils.processProgressJson so that it can be changed independently without worrying about breaking
+     * the database changelog.
+     */
+    public static void processProgressJson(ObjectMapper objectMapper, Policy policy, String progressString)
+    {
+        if(StringUtils.isEmpty(progressString))
+            return;
+
+        try {
+            final Policy jsonPolicy = objectMapper.readValue(progressString, Policy.class);
+            policy.setScores(jsonPolicy.getScores());
+            policy.setStartedAt(jsonPolicy.getStartedAt());
+            policy.setStoppedAt(jsonPolicy.getStoppedAt());
+            policy.setAlgorithm(jsonPolicy.getAlgorithm());
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

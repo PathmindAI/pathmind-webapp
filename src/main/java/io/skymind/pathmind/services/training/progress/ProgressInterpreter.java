@@ -1,5 +1,8 @@
 package io.skymind.pathmind.services.training.progress;
 
+import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.policy.HyperParameters;
+import io.skymind.pathmind.data.policy.RewardScore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.supercsv.io.CsvMapReader;
@@ -14,16 +17,14 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class ProgressInterpreter {
-
+public class ProgressInterpreter
+{
     private static Logger log = LogManager.getLogger(ProgressInterpreter.class);
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss");
 
-    public static Progress interpretKey(String keyString) {
-        final Progress progress = new Progress();
-        progress.setId(keyString);
-
-        final HashMap<String, String> hyperParameters = new HashMap<>();
+    public static Policy interpretKey(String keyString) {
+        final Policy policy = new Policy();
+        policy.setExternalId(keyString);
 
         StringBuilder buffer = new StringBuilder();
         // looks something like this:
@@ -44,7 +45,7 @@ public class ProgressInterpreter {
             if(cur == '_'){
                 if(!alg){
                     alg = true;
-                    progress.setAlgorithm(buffer.toString());
+                    policy.setAlgorithm(buffer.toString());
                     buffer.setLength(0);
                 }else if(!envName){
                     envName = true;
@@ -54,15 +55,14 @@ public class ProgressInterpreter {
                     buffer.setLength(0);
                 }
                 lastFoundIdx = i;
-            } else if(Character.isDigit(cur) && lastFoundIdx == i - 1 && alg && envName && runCounter && !params){
+            // IMPORTANT PERFORMANCE -> It's very important that Character.isDigit(cur) is last because this is a code hotspot.
+            } else if(lastFoundIdx == i - 1 && alg && envName && runCounter && !params && Character.isDigit(cur)){
                 params = true;
-                String parameters = buffer.toString();
-                parameters = parameters.substring(1, parameters.length() - 1);
+                String parameters = buffer.substring(1, buffer.length() - 1);
                 Arrays.stream(parameters.split(",")).forEach(it -> {
                     final String[] split = it.split("=");
-                    hyperParameters.put(split[0], split[1]);
+                    setHyperParameter(policy, split[0], split[1]);
                 });
-                progress.setHyperParameters(Collections.unmodifiableMap(hyperParameters));
                 buffer.setLength(0);
             }
             buffer.append(cur);
@@ -72,16 +72,31 @@ public class ProgressInterpreter {
             final String dateTime = buffer.toString().substring(0, 19);
             final LocalDateTime utcTime = LocalDateTime.parse(dateTime, dateFormat);
             final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();
-            progress.setStartedAt(time);
+            policy.setStartedAt(time);
         } catch (Exception e) {
             log.debug(e.getMessage());
         }
 
-        return progress;
+        return policy;
     }
 
-    public static Progress interpret(Map.Entry<String, String> entry){
-        final Progress progress = interpretKey(entry.getKey());
+    private static void setHyperParameter(Policy policy, String name, String value) {
+        switch (name) {
+            case HyperParameters.LEARNING_RATE:
+                policy.getHyperParameters().setLearningRate(Double.valueOf(value));
+                break;
+            case HyperParameters.GAMMA:
+                policy.getHyperParameters().setGamma(Double.valueOf(value));
+                break;
+            case HyperParameters.BATCH_SIZE:
+                policy.getHyperParameters().setBatchSize(Integer.valueOf(value));
+                break;
+        }
+    }
+
+    public static Policy interpret(Map.Entry<String, String> entry)
+    {
+        final Policy policy = interpretKey(entry.getKey());
 
         try {
             final CsvMapReader mapReader = new CsvMapReader(new StringReader(entry.getValue()), CsvPreference.STANDARD_PREFERENCE);
@@ -100,12 +115,11 @@ public class ProgressInterpreter {
                         Integer.parseInt(map.get("training_iteration"))
                 ));
             }
-            progress.setRewardProgression(scores);
+            policy.setScores(scores);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        return progress;
+        return policy;
     }
-
 }

@@ -99,7 +99,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
 
                 // Configure logout
-                .and().logout().logoutSuccessUrl("/" + Routes.LOGOUT_SUCCESS_URL);
+                .and().logout().logoutUrl("/" + Routes.LOGOUT_URL).logoutSuccessUrl("/" + Routes.LOGOUT_SUCCESS_URL);
     }
 
     private AuthenticationFailureHandler getFailureHandler() {

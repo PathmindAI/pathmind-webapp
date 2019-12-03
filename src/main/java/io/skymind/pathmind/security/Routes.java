@@ -5,8 +5,10 @@ public class Routes {
 
     public static final String ROOT_URL = "/";
 
-    public static final String LOGIN_URL = "login";
-    public static final String LOGIN_PROCESSING_URL = "login";
+    public static final String LOGIN_URL = "sign-in";
+    public static final String LOGIN_PROCESSING_URL = "sign-in";
+    
+    public static final String LOGOUT_URL = "sign-out";
 
     // Need to pass a x-ms-routing-name GET param on logout to make sure that after a logout
     // the browser will be redirected to the latest version of the application when using

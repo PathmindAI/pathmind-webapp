@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.services.training.progress.Progress;
+import io.skymind.pathmind.data.policy.HyperParameters;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import io.skymind.pathmind.utils.ObjectMapperHolder;
@@ -92,24 +92,34 @@ public class PolicyUtils
             return;
 
         try {
-            final Progress progress = OBJECT_MAPPER.readValue(progressString, Progress.class);
-            policy.setScores(progress.getRewardProgression());
-            policy.setStartedAt(progress.getStartedAt());
-            policy.setStoppedAt(progress.getStoppedAt());
-            policy.setAlgorithm(progress.getAlgorithm());
+            // STEPH -> Is this needed any more other than the setScores? Don't we already have all of this in the database? Once
+            // the scores are in the database all this parsing can also be deleted.
+            final Policy jsonPolicy = OBJECT_MAPPER.readValue(progressString, Policy.class);
+            policy.setScores(jsonPolicy.getScores());
+            policy.setStartedAt(jsonPolicy.getStartedAt());
+            policy.setStoppedAt(jsonPolicy.getStoppedAt());
+            policy.setAlgorithm(jsonPolicy.getAlgorithm());
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
 
-    public static String getNotesFromName(Policy policy) {
-        return ProgressInterpreter.interpretKey(policy.getName()).getHyperParameters().toString().replaceAll("(\\{|\\})", "");
+    // STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
+    // the HyperParameters are moved into the database we can delete this code.
+    public static HyperParameters getHyperParametersFromName(Policy policy) {
+        return ProgressInterpreter.interpretKey(policy.getName()).getHyperParameters();
     }
 
     public static List<Number> getMeanScores(Policy policy) {
         return policy.getScores().stream()
             .map(rewardScore -> rewardScore.getMean())
             .collect(Collectors.toList());
+    }
+
+    public static String getFormatHyperParameters(Policy policy) {
+        return  HyperParameters.BATCH_SIZE + "=" + policy.getHyperParameters().getBatchSize() + ", " +
+                HyperParameters.LEARNING_RATE + "=" + policy.getHyperParameters().getLearningRate() + ", " +
+                HyperParameters.GAMMA + "=" + policy.getHyperParameters().getGamma();
     }
 }
