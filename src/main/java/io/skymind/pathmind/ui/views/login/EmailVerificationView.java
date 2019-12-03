@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.account;
+package io.skymind.pathmind.ui.views.login;
 
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -7,14 +7,11 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.*;
-import com.vaadin.flow.server.InitialPageSettings;
-import com.vaadin.flow.server.PageConfigurator;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
-import io.skymind.pathmind.ui.utils.VaadinUtils;
-import io.skymind.pathmind.ui.views.LoginView;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
@@ -23,7 +20,7 @@ import java.time.LocalDateTime;
 @JsModule("./src/account/email-verification-view.js")
 @Route(value = Routes.EMAIL_VERIFICATION_URL)
 public class EmailVerificationView extends PolymerTemplate<EmailVerificationView.Model>
-		implements HasUrlParameter<String>, AfterNavigationObserver, PageConfigurator
+		implements PublicView, HasUrlParameter<String>, AfterNavigationObserver
 {
 	@Id("backToApp")
 	private Button backToApp;
@@ -57,11 +54,6 @@ public class EmailVerificationView extends PolymerTemplate<EmailVerificationView
 		}
 	}
 	
-	@Override
-	public void configurePage(InitialPageSettings settings) {
-		VaadinUtils.setupFavIcon(settings);
-	}
-
 	public interface Model extends TemplateModel {
 		void setError(boolean error);
 	}

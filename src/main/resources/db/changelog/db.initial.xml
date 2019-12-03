@@ -538,7 +538,7 @@
     Now technically I should just be able to do DELETE FROM POLICY since there is only sample data but to avoid any accidental errors I'm forcing
     a massive left join with a WHERE pathmind_user.email="steph@followsteph.com" so even if there is an error it can only delete the data from the
     test account. -->
-    <changeSet id="20191117" author="steph@followsteph.com">
+    <changeSet id="20191117-1" author="steph@followsteph.com">
         <sql>
             DELETE FROM POLICY WHERE ID IN
                 (SELECT POLICY.ID FROM POLICY LEFT JOIN RUN ON RUN.ID = POLICY.RUN_ID LEFT JOIN EXPERIMENT ON EXPERIMENT.ID = RUN.EXPERIMENT_ID LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');

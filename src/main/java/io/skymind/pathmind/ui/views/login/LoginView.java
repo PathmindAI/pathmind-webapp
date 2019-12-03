@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views;
+package io.skymind.pathmind.ui.views.login;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -10,8 +10,6 @@ import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.*;
-import com.vaadin.flow.server.InitialPageSettings;
-import com.vaadin.flow.server.PageConfigurator;
 import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
@@ -21,15 +19,11 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
-import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
-import io.skymind.pathmind.ui.utils.VaadinUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
-import io.skymind.pathmind.ui.views.account.ResetPasswordView;
-import io.skymind.pathmind.ui.views.account.SignUpView;
 import io.skymind.pathmind.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
-import io.skymind.pathmind.utils.PathmindUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -42,7 +36,7 @@ import java.util.List;
 @CssImport(value = "./styles/views/login-view-styles.css")
 @CssImport(value = "./styles/components/vaadin-login-form-wrapper.css", themeFor = "vaadin-login-form-wrapper")
 public class LoginView extends HorizontalLayout
-		implements AfterNavigationObserver, BeforeEnterObserver, HasDynamicTitle, PageConfigurator, HasUrlParameter<String>
+		implements PublicView, AfterNavigationObserver, BeforeEnterObserver, HasUrlParameter<String>
 {
 	private Div badCredentials = new Div();
 	private HorizontalLayout emailNotVerified = WrapperUtils.wrapWidthFullHorizontal();
@@ -55,14 +49,15 @@ public class LoginView extends HorizontalLayout
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
 	private String errorMessage;
 	private String email;
 
-	public LoginView(IntercomIntegrationPlugin intercomIntegrationPlugin,
-					 @Value("${pathmind.privacy-policy.url}") String privacyPolicyUrl,
-					 @Value("${pathmind.terms-of-use.url}") String termsOfUseUrl
-					 )
+	public LoginView(@Value("${pathmind.privacy-policy.url}") String privacyPolicyUrl,
+					 @Value("${pathmind.terms-of-use.url}") String termsOfUseUrl)
 	{
 		addClassName("login-panel-cont");
 		Label welcome = new Label("Welcome to");
@@ -89,7 +84,7 @@ public class LoginView extends HorizontalLayout
 
 		Div policy = new Div();
 		policy.addClassName("policy");
-		policy.add(new Span("By clicking Log In, you agree to Pathmind's "),
+		policy.add(new Span("By clicking Sign In, you agree to Pathmind's "),
 				new Anchor(termsOfUseUrl, "Terms of Use"),
 				new Span(" and "),
 				new Anchor(privacyPolicyUrl, "Privacy Policy"),
@@ -99,8 +94,6 @@ public class LoginView extends HorizontalLayout
 		add(loginPanel);
 		loginPanel.setClassName("content");
 		loginPanel.add(welcome, img, title, innerContent, policy);
-
-		intercomIntegrationPlugin.addPluginToPage();
 	}
 
 	private void updateEmailNotVerified() {
@@ -150,8 +143,9 @@ public class LoginView extends HorizontalLayout
 
 		LoginForm loginForm = new LoginForm();
 		loginForm.setI18n(loginI18n);
-		loginForm.setAction("login");
+		loginForm.setAction(Routes.LOGIN_URL);
 		loginForm.addForgotPasswordListener(e -> UI.getCurrent().navigate(ResetPasswordView.class));
+		loginForm.addLoginListener(evt -> segmentIntegrator.userLoggedIn());
 		return loginForm;
 	}
 
@@ -171,16 +165,7 @@ public class LoginView extends HorizontalLayout
 			UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 			return;
 		}
-	}
-
-	@Override
-	public String getPageTitle() {
-		return PathmindUtils.getPageTitle();
-	}
-
-	@Override
-	public void configurePage(InitialPageSettings settings) {
-		VaadinUtils.setupFavIcon(settings);
+		add(segmentIntegrator);
 	}
 
 	@Override
