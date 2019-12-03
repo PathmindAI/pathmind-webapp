@@ -9,6 +9,7 @@ import com.vaadin.flow.server.PageConfigurator;
 import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
+
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.ui.layouts.components.AccountHeaderPanel;
 import io.skymind.pathmind.ui.layouts.components.SectionsHeaderPanel;
@@ -32,6 +33,7 @@ import io.skymind.pathmind.ui.utils.VaadinUtils;
 @Theme(Lumo.class)
 public class MainLayout extends AppLayout implements PageConfigurator
 {
+
 	public MainLayout(CurrentUser user)
 	{
 		setId("pathmind-app-layout");

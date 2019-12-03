@@ -40,12 +40,8 @@ import io.skymind.pathmind.ui.components.PathmindTextArea;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.layouts.MainLayout;
-import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
-import io.skymind.pathmind.ui.utils.FormUtils;
-import io.skymind.pathmind.ui.utils.GuiUtils;
-import io.skymind.pathmind.ui.utils.NotificationUtils;
-import io.skymind.pathmind.ui.utils.PushUtils;
-import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.ui.utils.*;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
@@ -77,6 +73,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private TrainingService trainingService;
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
     private Binder<Experiment> binder;
 
@@ -195,7 +193,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 return;
 
             experimentDAO.updateRewardFunction(experiment);
+            segmentIntegrator.rewardFuntionCreated();
+            
             trainingService.startTestRun(experiment);
+            segmentIntegrator.testRunStarted();
 
             ConfirmDialog confirmDialog = new RunConfirmDialog();
             confirmDialog.open();
@@ -233,6 +234,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 return;
 
             experimentDAO.updateRewardFunction(experiment);
+            segmentIntegrator.draftSaved();
             NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
         });
     }

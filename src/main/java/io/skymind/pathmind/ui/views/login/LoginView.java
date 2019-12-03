@@ -19,7 +19,7 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
-import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.dashboard.DashboardView;
@@ -49,14 +49,15 @@ public class LoginView extends HorizontalLayout
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
 	private String errorMessage;
 	private String email;
 
-	public LoginView(IntercomIntegrationPlugin intercomIntegrationPlugin,
-					 @Value("${pathmind.privacy-policy.url}") String privacyPolicyUrl,
-					 @Value("${pathmind.terms-of-use.url}") String termsOfUseUrl
-					 )
+	public LoginView(@Value("${pathmind.privacy-policy.url}") String privacyPolicyUrl,
+					 @Value("${pathmind.terms-of-use.url}") String termsOfUseUrl)
 	{
 		addClassName("login-panel-cont");
 		Label welcome = new Label("Welcome to");
@@ -93,8 +94,6 @@ public class LoginView extends HorizontalLayout
 		add(loginPanel);
 		loginPanel.setClassName("content");
 		loginPanel.add(welcome, img, title, innerContent, policy);
-
-		intercomIntegrationPlugin.addPluginToPage();
 	}
 
 	private void updateEmailNotVerified() {
@@ -146,6 +145,7 @@ public class LoginView extends HorizontalLayout
 		loginForm.setI18n(loginI18n);
 		loginForm.setAction(Routes.LOGIN_URL);
 		loginForm.addForgotPasswordListener(e -> UI.getCurrent().navigate(ResetPasswordView.class));
+		loginForm.addLoginListener(evt -> segmentIntegrator.userLoggedIn());
 		return loginForm;
 	}
 
@@ -165,6 +165,7 @@ public class LoginView extends HorizontalLayout
 			UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 			return;
 		}
+		add(segmentIntegrator);
 	}
 
 	@Override
