@@ -1,6 +1,5 @@
 package io.skymind.pathmind.db.repositories;
 
-import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import org.jooq.DSLContext;
