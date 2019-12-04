@@ -1,12 +1,12 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
 import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.db.integration.RunUpdateService;
-import io.skymind.pathmind.services.training.progress.Progress;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
-import io.skymind.pathmind.services.training.progress.RewardScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -52,7 +52,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
             final RunStatus jobStatus = provider.status(rescaleJobId);
             final Map<String, String> rawProgress = provider.progress(rescaleJobId, jobStatus);
 
-            final List<Progress> progresses = rawProgress.entrySet().stream()
+            final List<Policy> policies = rawProgress.entrySet().stream()
                     .filter(e -> !finishedPolicyNamesFromDB.contains(e.getKey()))
                     .map(e -> {
                         List<RewardScore> previousScores = updateService.getScores(runId, e.getKey());
@@ -62,17 +62,13 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
 
             final List<String> finishedPolicyNamesFromRescale = getTerminatedPolices(rescaleJobId);
 
-            for (Progress progress : progresses) {
-                if (progress.getStoppedAt() == null) {
-                    for (String finishedPolicy : finishedPolicyNamesFromRescale) {
-                        if (finishedPolicy.contains(progress.getId())) {
-                            progress.setStoppedAt(LocalDateTime.now());
-                        }
-                    }
-                }
-            }
+            policies.stream()
+                    .filter(policy -> policy.getStoppedAt() == null)
+                    .filter(policy -> finishedPolicyNamesFromRescale.stream().anyMatch(
+                            finishedPolicy -> finishedPolicy.contains(policy.getExternalId())))
+                    .forEach(policy -> policy.setStoppedAt(LocalDateTime.now()));
 
-            updateService.updateRun(runId, jobStatus, progresses);
+            updateService.updateRun(runId, jobStatus, policies);
 
             if(jobStatus == RunStatus.Completed){
                 for (String finishPolicyName : finishedPolicyNamesFromDB) {

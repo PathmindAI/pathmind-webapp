@@ -7,13 +7,12 @@ import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.*;
+import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.repositories.RunRepository;
 import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.services.training.progress.Progress;
-import io.skymind.pathmind.services.training.progress.RewardScore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
@@ -22,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -66,7 +64,7 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
     @Override
     @Transactional
-    public void updateRun(long runId, RunStatus status, List<Progress> progresses) {
+    public void updateRun(long runId, RunStatus status, List<Policy> policies) {
         LocalDateTime now = LocalDateTime.now();
         ctx.update(RUN)
                 .set(RUN.STATUS, status.getValue())
@@ -92,55 +90,49 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 .where(EXPERIMENT.ID.eq(experiment.getId()))
                 .execute();
 
-        if (policyDao.isTemporaryPolicy(runId, TrainingService.TEMPORARY_POSTFIX) && progresses.size() > 0) {
-            Progress progress = progresses.get(0);
+        if (policyDao.isTemporaryPolicy(runId, TrainingService.TEMPORARY_POSTFIX) && policies.size() > 0) {
+            Policy policy = policies.get(0);
 
-            String policyTempName = policyTempName(progress.getId(), run.getRunType());
+            String policyTempName = policyTempName(policy.getExternalId(), run.getRunType());
 
             ctx.update(POLICY)
-                    .set(POLICY.NAME, progress.getId())
-                    .set(POLICY.EXTERNAL_ID, progress.getId())
+                    .set(POLICY.NAME, policy.getExternalId())
+                    .set(POLICY.EXTERNAL_ID, policy.getExternalId())
                     .where(POLICY.RUN_ID.eq(runId), POLICY.EXTERNAL_ID.eq(policyTempName))
                     .execute();
         }
 
-        for (Progress progress : progresses) {
+        for (Policy policy : policies) {
             try {
                 // PERFORMANCE -> We should store these values in the database rather than having to parse JSON all the time.
-                final String progressJsonStr = mapper.writeValueAsString(progress);
+                // STEPH -> Remove this once all the values are stored in the database.
+                final String progressJsonStr = mapper.writeValueAsString(policy);
                 final JSONB progressJson = JSONB.valueOf(progressJsonStr);
 
                 long policyId = ctx.insertInto(POLICY)
                         .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM)
-                        .values(progress.getId(), runId, progress.getId(), progressJson, progress.getStartedAt(), progress.getStoppedAt(), progress.getAlgorithm())
+                        .values(policy.getExternalId(), runId, policy.getExternalId(), progressJson, policy.getStartedAt(), policy.getStoppedAt(), policy.getAlgorithm())
                         .onConflict(POLICY.RUN_ID, POLICY.EXTERNAL_ID)
                         .doUpdate()
                         .set(POLICY.PROGRESS, progressJson)
-                        .set(POLICY.STARTEDAT, progress.getStartedAt())
-                        .set(POLICY.STOPPEDAT, progress.getStoppedAt())
+                        .set(POLICY.STARTEDAT, policy.getStartedAt())
+                        .set(POLICY.STOPPEDAT, policy.getStoppedAt())
                         .returning(POLICY.ID)
                         .fetchOne()
                         .getValue(POLICY.ID);
 
-                final Policy policy = new Policy();
                 policy.setId(policyId);
-                policy.setRunId(runId);
+                policy.setName(policy.getExternalId());
                 policy.setRun(run);
-                policy.setName(progress.getId());
-                policy.setExternalId(progress.getId());
-                policy.setScores(progress.getRewardProgression());
                 policy.setExperiment(experiment);
                 policy.setModel(model);
                 policy.setProject(project);
 
                 // For performance reasons.
-                policy.setStartedAt(progress.getStartedAt());
-                policy.setStoppedAt(progress.getStoppedAt());
-                policy.setAlgorithm(progress.getAlgorithm());
-
-                // For performance reasons.
                 policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
-                policy.setNotes(PolicyUtils.getNotesFromName(policy));
+                // STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
+                // the HyperParameters are moved into the database we can delete this code.
+                policy.setHyperParameters(PolicyUtils.getHyperParametersFromName(policy));
 
                 EventBus.post(new PolicyUpdateBusEvent(policy));
 
@@ -196,16 +188,6 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
         if (policy == null) {
             return null;
-        }
-
-        // todo need to get rid of json parsing after having progress db
-        try {
-            if (policy != null && policy.getProgress() != null) {
-                Progress progress = mapper.readValue(policy.getProgress(), Progress.class);
-                policy.setScores(progress.getRewardProgression());
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
         }
 
         return policy.getScores();

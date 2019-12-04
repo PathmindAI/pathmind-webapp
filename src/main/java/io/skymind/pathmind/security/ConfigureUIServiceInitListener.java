@@ -7,7 +7,7 @@ import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 
 import io.skymind.pathmind.ui.exceptions.AccessDeniedException;
-import io.skymind.pathmind.ui.views.LoginView;
+import io.skymind.pathmind.ui.views.login.LoginView;
 
 /**
  * Adds before enter listener to check access to views.

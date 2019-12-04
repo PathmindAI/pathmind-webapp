@@ -88,7 +88,7 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
                 .setResizable(true)
                 .setSortable(true);
 
-        grid.addColumn(Policy::getNotes)
+        grid.addColumn(policy -> PolicyUtils.getFormatHyperParameters(policy))
                 .setHeader("Notes")
                 .setAutoWidth(true)
                 .setResizable(true)

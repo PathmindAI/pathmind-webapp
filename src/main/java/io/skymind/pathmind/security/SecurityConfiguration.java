@@ -8,6 +8,8 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,6 +17,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -23,130 +26,174 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Configures spring security, doing the following:
- * <li>Bypass security checks for static resources,</li>
- * <li>Restrict access to the application, allowing only logged in users,</li>
- * <li>Set up the login form,</li>
- * <li>Configures the {@link UserDetailsServiceImpl}.</li>
-
- */
 @EnableWebSecurity
-@Configuration
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-    private final UserDetailsService userDetailsService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public SecurityConfiguration(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
-
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public CurrentUser currentUser(UserRepository userRepository) {
-        final String username = SecurityUtils.getUsername();
-        PathmindUser user =
-                username != null ? userRepository.findByEmailIgnoreCase(username) :
-                        null;
-        return () -> user;
-    }
+public class SecurityConfiguration {
 
     /**
-     * Registers our UserDetailsService and the password encoder to be used on login attempts.
+     * This is a security configuration for REST APIs exposed from this web app.
+     * HTTP Basic auth is used to secure those APIs.
      */
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        super.configure(auth);
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+    @Configuration
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+
+        private final PasswordEncoder passwordEncoder;
+        private final String apiUsername;
+        private final String apiPassword;
+
+        @Autowired
+        public ApiWebSecurityConfigurationAdapter(PasswordEncoder passwordEncoder,
+                                                  @Value("${api.username}") String apiUsername,
+                                                  @Value("${api.password}") String apiPassword) {
+            this.apiUsername = apiUsername;
+            this.apiPassword = apiPassword;
+            this.passwordEncoder = passwordEncoder;
+        }
+
+        @Override
+        public void configure(AuthenticationManagerBuilder auth) throws Exception {
+            String password = passwordEncoder.encode(apiPassword);
+            auth.inMemoryAuthentication().passwordEncoder(passwordEncoder)
+                    .withUser(apiUsername).password(password).roles("API_USER");
+        }
+
+        protected void configure(HttpSecurity http) throws Exception {
+            http.sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            http.csrf().disable()
+                    .antMatcher("/api/**")
+                    .authorizeRequests()
+                    .antMatchers("/api/**").authenticated()
+                    .and()
+                    .httpBasic();
+        }
     }
+
 
     /**
-     * Require login to access internal pages and configure login form.
+     * Configures spring security, doing the following:
+     * <li>Bypass security checks for static resources,</li>
+     * <li>Restrict access to the application, allowing only logged in users,</li>
+     * <li>Set up the login form,</li>
+     * <li>Configures the {@link UserDetailsServiceImpl}.</li>
      */
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        // Not using Spring CSRF here to be able to use plain HTML for the login page
-        http.csrf().disable()
+    @Configuration
+    static class VaadinFrontendConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
-                // Register our CustomRequestCache, that saves unauthorized access attempts, so
-                // the user is redirected after login.
-                .requestCache().requestCache(new CustomRequestCache())
+        private final UserDetailsService userDetailsService;
 
-                // Restrict access to our application.
-                .and().authorizeRequests()
+        private PasswordEncoder passwordEncoder;
 
-                // Allow access to sign-up view (disabled for public beta https://github.com/SkymindIO/pathmind-webapp/issues/356)
-                .antMatchers("/" + Routes.LOGIN_URL + Routes.WITH_PARAMETER).permitAll()
-                .antMatchers("/" + Routes.SIGN_UP_URL).permitAll()
-                .antMatchers("/" + Routes.RESET_PASSWORD_URL + Routes.WITH_PARAMETER).permitAll()
-                .antMatchers("/" + Routes.EMAIL_VERIFICATION_URL + Routes.WITH_PARAMETER).permitAll()
+        @Autowired
+        public VaadinFrontendConfigurationAdapter(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+            this.userDetailsService = userDetailsService;
+            this.passwordEncoder = passwordEncoder;
+        }
 
-                // Allow all flow internal requests.
-                .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
+            @Bean
+            @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+            public CurrentUser currentUser (UserRepository userRepository){
+            final String username = SecurityUtils.getUsername();
+            PathmindUser user =
+                    username != null ? userRepository.findByEmailIgnoreCase(username) :
+                            null;
+            return () -> user;
+        }
 
-                // Allow all requests by logged in users.
-                .anyRequest().authenticated()
+        /**
+         * Registers our UserDetailsService and the password encoder to be used on login attempts.
+         */
+        @Override
+        protected void configure (AuthenticationManagerBuilder auth) throws Exception {
+            super.configure(auth);
+            auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+        }
 
-                // Configure the login page.
-                .and().formLogin().loginPage("/" + Routes.LOGIN_URL).permitAll().loginProcessingUrl("/" + Routes.LOGIN_PROCESSING_URL)
-                .failureHandler(getFailureHandler())
+        /**
+         * Require login to access internal pages and configure login form.
+         */
+        @Override
+        protected void configure (HttpSecurity http) throws Exception {
+            // Not using Spring CSRF here to be able to use plain HTML for the login page
+            http.csrf().disable()
 
-                // Register the success handler that redirects users to the page they last tried
-                // to access
-                .successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
+                    // Register our CustomRequestCache, that saves unauthorized access attempts, so
+                    // the user is redirected after login.
+                    .requestCache().requestCache(new CustomRequestCache())
 
-                // Configure logout
-                .and().logout().logoutSuccessUrl("/" + Routes.LOGOUT_SUCCESS_URL);
-    }
+                    // Restrict access to our application.
+                    .and().authorizeRequests()
 
-    private AuthenticationFailureHandler getFailureHandler() {
-        Map<String, String> failureUrlMap = new HashMap();
-        failureUrlMap.put(BadCredentialsException.class.getName(), "/" + Routes.LOGIN_URL + "/" + Routes.BAD_CREDENTIALS);
-        failureUrlMap.put(InternalAuthenticationServiceException.class.getName(),
-                "/" + Routes.LOGIN_URL + "/" + Routes.EMAIL_VERIFICATION_FAILED);
+                    // Allow access to sign-up view (disabled for public beta https://github.com/SkymindIO/pathmind-webapp/issues/356)
+                    .antMatchers("/" + Routes.LOGIN_URL + Routes.WITH_PARAMETER).permitAll()
+                    .antMatchers("/" + Routes.SIGN_UP_URL).permitAll()
+                    .antMatchers("/" + Routes.RESET_PASSWORD_URL + Routes.WITH_PARAMETER).permitAll()
+                    .antMatchers("/" + Routes.EMAIL_VERIFICATION_URL + Routes.WITH_PARAMETER).permitAll()
 
-        PathmindAuthenticationFailureHandler handler = new PathmindAuthenticationFailureHandler();
-        handler.setExceptionMappings(failureUrlMap);
-        return handler;
-    }
+                    // Allow all flow internal requests.
+                    .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
 
-    /**
-     * Allows access to static resources, bypassing Spring security.
-     */
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers(
-                // Vaadin Flow static resources
-                "/VAADIN/**",
+                    // Allow all requests by logged in users.
+                    .anyRequest().authenticated()
 
-                // the standard favicon URI
-                "/favicon.ico",
+                    // Configure the login page.
+                    .and().formLogin().loginPage("/" + Routes.LOGIN_URL).permitAll().loginProcessingUrl("/" + Routes.LOGIN_PROCESSING_URL)
+                    .failureHandler(getFailureHandler())
 
-                // the robots exclusion standard
-                "/robots.txt",
+                    // Register the success handler that redirects users to the page they last tried
+                    // to access
+                    .successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
 
-                // web application manifest
-                "/manifest.webmanifest",
-                "/sw.js",
-                "/offline-page.html",
+                    // Configure logout
+                    .and().logout().logoutUrl("/" + Routes.LOGOUT_URL).logoutSuccessUrl("/" + Routes.LOGOUT_SUCCESS_URL);
+        }
 
-                // icons and images
-                "/icons/**",
-                "/images/**",
+        private AuthenticationFailureHandler getFailureHandler () {
+            Map<String, String> failureUrlMap = new HashMap();
+            failureUrlMap.put(BadCredentialsException.class.getName(), "/" + Routes.LOGIN_URL + "/" + Routes.BAD_CREDENTIALS);
+            failureUrlMap.put(InternalAuthenticationServiceException.class.getName(),
+                    "/" + Routes.LOGIN_URL + "/" + Routes.EMAIL_VERIFICATION_FAILED);
 
-                // (development mode) static resources
-                "/frontend/**",
+            PathmindAuthenticationFailureHandler handler = new PathmindAuthenticationFailureHandler();
+            handler.setExceptionMappings(failureUrlMap);
+            return handler;
+        }
 
-                // (development mode) webjars
-                "/webjars/**",
+        /**
+         * Allows access to static resources, bypassing Spring security.
+         */
+        @Override
+        public void configure (WebSecurity web) throws Exception {
+            web.ignoring().antMatchers(
+                    // Vaadin Flow static resources
+                    "/VAADIN/**",
 
-                // (development mode) H2 debugging console
-                "/h2-console/**",
+                    // the standard favicon URI
+                    "/favicon.ico",
 
-                // (production mode) static resources
-                "/frontend-es5/**", "/frontend-es6/**");
+                    // the robots exclusion standard
+                    "/robots.txt",
+
+                    // web application manifest
+                    "/manifest.webmanifest",
+                    "/sw.js",
+                    "/offline-page.html",
+
+                    // icons and images
+                    "/icons/**",
+                    "/images/**",
+
+                    // (development mode) static resources
+                    "/frontend/**",
+
+                    // (development mode) webjars
+                    "/webjars/**",
+
+                    // (development mode) H2 debugging console
+                    "/h2-console/**",
+
+                    // (production mode) static resources
+                    "/frontend-es5/**", "/frontend-es6/**");
+        }
     }
 }
