@@ -2,6 +2,7 @@ package io.skymind.pathmind.services.training.cloud.rescale.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.training.cloud.rescale.api.dto.*;
+import io.skymind.pathmind.services.training.constant.TrainingFile;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -136,7 +137,7 @@ public class RescaleRestApiClient {
     }
 
     public String tailConsole(String jobId, String run){
-        return new String(tail(jobId, run, "process_output.log"));
+        return new String(tail(jobId, run, TrainingFile.RESCALE_LOG));
     }
 
     public byte[] tail(String jobId, String run, String filename){
@@ -159,7 +160,7 @@ public class RescaleRestApiClient {
     }
 
     public String consoleOutput(String jobId, String run){
-        return new String(outputFile(jobId, run, "process_output.log"));
+        return new String(outputFile(jobId, run, TrainingFile.RESCALE_LOG));
     }
 
 

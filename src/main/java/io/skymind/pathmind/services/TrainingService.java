@@ -35,6 +35,8 @@ public class TrainingService {
     private final ObjectMapper objectMapper;
     private ExecutionEnvironment executionEnvironment;
 
+    public final static String TEMPORARY_POSTFIX = "TEMP";
+
     // TODO: Move direct db access into a DAO.
     public TrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, DSLContext ctx, ObjectMapper objectMapper) {
         this.executionProvider = executionProvider;
@@ -101,7 +103,7 @@ public class TrainingService {
                 exp.getRewardFunction(),
                 model.getNumberOfPossibleActions(),
                 model.getNumberOfObservations(),
-                100, // Max 100 iterations for a discovery run. 
+                100, // Max 100 iterations for a discovery run.
                 executionEnvironment,
                 RunType.DiscoveryRun,
                 () ->modelDAO.getModelFile(model.getId()),
@@ -109,7 +111,7 @@ public class TrainingService {
                 Arrays.asList(0.9, 0.99), // gamma
                 Arrays.asList(64), // batch size
                 30 * 60 // 30 mins
-                );
+        );
 
         final String executionId = executionProvider.execute(spec);
 
@@ -173,7 +175,7 @@ public class TrainingService {
                 Arrays.asList(policy.getHyperParameters().getGamma()),
                 Arrays.asList(policy.getHyperParameters().getBatchSize()),
                 -1        // no limit
-            );
+        );
 
         final String executionId = executionProvider.execute(spec);
 
@@ -216,7 +218,7 @@ public class TrainingService {
                 environment,
                 "0",
                 hyperparameters,
-                runType + "TEMP"
+                runType + TEMPORARY_POSTFIX
         );
 
         return name;
