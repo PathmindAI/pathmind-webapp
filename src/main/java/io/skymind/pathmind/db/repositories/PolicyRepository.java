@@ -1,27 +1,17 @@
 package io.skymind.pathmind.db.repositories;
 
-import static io.skymind.pathmind.data.db.Tables.EXPERIMENT;
-import static io.skymind.pathmind.data.db.Tables.MODEL;
-import static io.skymind.pathmind.data.db.Tables.PATHMIND_USER;
-import static io.skymind.pathmind.data.db.Tables.POLICY;
-import static io.skymind.pathmind.data.db.Tables.PROJECT;
-import static io.skymind.pathmind.data.db.Tables.RUN;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
+import io.skymind.pathmind.data.*;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Model;
-import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.data.utils.PolicyUtils;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static io.skymind.pathmind.data.db.Tables.*;
 
 @Repository
 public class PolicyRepository
@@ -92,7 +82,9 @@ public class PolicyRepository
 		policy.setProgress(null);
 
 		policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
-		policy.setNotes(PolicyUtils.getNotesFromName(policy));
+		// STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
+		// the HyperParameters are moved into the database we can delete this code.
+		policy.setHyperParameters(PolicyUtils.getHyperParametersFromName(policy));
 
 		addParentDataModelObjects(record, policy);
 
