@@ -10,4 +10,5 @@ public interface RunUpdateService {
     void updateRun(long runId, RunStatus status, List<Policy> policies);
     void savePolicyFile(long runId, String externalId, byte[] policyFile);
     List<Policy> getStoppedPolicies(List<Long> runId);
+    void cleanUpTemporary(long rundId);
 }

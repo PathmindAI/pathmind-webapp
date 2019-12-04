@@ -1,4 +1,3 @@
-
 package io.skymind.pathmind.services.training.db.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -8,11 +7,14 @@ import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.utils.PolicyUtils;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.repositories.RunRepository;
+import io.skymind.pathmind.services.TrainingService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,9 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
     private static final String lrPatternStr = "lr=.*,";
     private static final Pattern lrPattern = Pattern.compile(lrPatternStr);
+
+    @Autowired
+    private PolicyDAO policyDao;
 
     public RunUpdateServiceImpl(DSLContext ctx, ObjectMapper mapper) {
         this.ctx = ctx;
@@ -79,13 +84,14 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 .where(EXPERIMENT.ID.eq(experiment.getId()))
                 .execute();
 
-        if (policies.size() > 0) {
+        if (policyDao.isTemporaryPolicy(runId, TrainingService.TEMPORARY_POSTFIX) && policies.size() > 0) {
             Policy policy = policies.get(0);
 
             // original name ex: PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_2019-10-11_21-16-2858waz_89
             // get rid of time and extra info
             // add run type and "TEMP"
-            String policyTempName = policy.getExternalId().substring(0, policy.getExternalId().length() - 27) + run.getRunType() + "TEMP";
+            String policyTempName = policy.getExternalId().substring(0, policy.getExternalId().length() - 27)
+                    + run.getRunType() + TrainingService.TEMPORARY_POSTFIX;
 
             Matcher matcher = lrPattern.matcher(policyTempName);
 
@@ -161,5 +167,14 @@ public class RunUpdateServiceImpl implements RunUpdateService {
                 .where(POLICY.RUN_ID.in(runIds))
                 .and(POLICY.STOPPEDAT.isNotNull())
                 .fetchInto(Policy.class);
+    }
+
+    @Override
+    public void cleanUpTemporary(long runId) {
+        boolean isExist = policyDao.isTemporaryPolicy(runId, TrainingService.TEMPORARY_POSTFIX);
+        if (isExist) {
+            policyDao.deleteTemporaryPolicy(runId, TrainingService.TEMPORARY_POSTFIX);
+            log.info("Cleaned Temporary Policies in " + runId);
+        }
     }
 }

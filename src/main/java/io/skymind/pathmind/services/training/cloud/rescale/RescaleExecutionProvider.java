@@ -6,6 +6,7 @@ import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.cloud.rescale.api.RescaleRestApiClient;
 import io.skymind.pathmind.services.training.cloud.rescale.api.dto.*;
+import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
@@ -92,14 +93,14 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
                 List<String> errs = client.outputFiles(jobHandle, "1").getResults()
                         .parallelStream()
-                        .filter(f -> f.getPath().endsWith("trial_error") && f.getDecryptedSize() > 0)
+                        .filter(f -> f.getPath().endsWith(TrainingFile.RAY_TRIAL_ERROR) && f.getDecryptedSize() > 0)
                         .map(f -> new String(client.fileContents(f.getId())))
                         .collect(Collectors.toList());
 
                 // since we added error check logic to the script,
                 // errors.log will have the same number of line with the number of KNOWN_ERROR_MSGS
                 // if the line number is greater than the size of KNOWN_ERROR_MSGS, it has an error
-                String errorLogFileContents = new String(client.outputFile(jobHandle, "1", "errors.log"));
+                String errorLogFileContents = new String(client.outputFile(jobHandle, "1", TrainingFile.KNOWN_ERROR));
                 if (errorLogFileContents != null && !errorLogFileContents.isEmpty()
                         && errorLogFileContents.split("\n").length > KNOWN_ERROR_MSGS.size()) {
                     errs.add("error!");
@@ -403,7 +404,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     private void checkErrors(List<String> instructions) {
         instructions.addAll(KNOWN_ERROR_MSGS.stream()
-                .map(msg -> "grep -m 2 \"" + msg + "\" process_output.log >> errors.log")
+                .map(msg -> "grep -m 2 \"" + msg + "\" " + TrainingFile.RESCALE_LOG + " >> " + TrainingFile.KNOWN_ERROR)
                 .collect(Collectors.toList()));
     }
 
