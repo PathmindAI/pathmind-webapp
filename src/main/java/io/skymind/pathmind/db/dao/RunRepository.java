@@ -22,8 +22,7 @@ import static io.skymind.pathmind.data.db.tables.Model.MODEL;
 import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
 import static io.skymind.pathmind.data.db.tables.Run.RUN;
 
-@Repository
-class RunSQL
+class RunRepository
 {
     protected static Run getRun(DSLContext ctx, long runId) {
         return ctx

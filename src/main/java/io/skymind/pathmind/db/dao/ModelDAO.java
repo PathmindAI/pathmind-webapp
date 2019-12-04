@@ -19,19 +19,19 @@ public class ModelDAO
     }
 
 	public List<Model> getModelsForProject(long projectId) {
-    	return ModelSQL.getModelsForProject(ctx, projectId);
+    	return ModelRepository.getModelsForProject(ctx, projectId);
 	}
 
 	public void archive(long modelId, boolean isArchive) {
-    	ModelSQL.archive(ctx, modelId, isArchive);
+    	ModelRepository.archive(ctx, modelId, isArchive);
 	}
 
 	public byte[] getModelFile(long id) {
-    	return ModelSQL.getModelFile(ctx, id);
+    	return ModelRepository.getModelFile(ctx, id);
 	}
 
 	public Model getModel(long modelId) {
-    	return ModelSQL.getModel(ctx, modelId);
+    	return ModelRepository.getModel(ctx, modelId);
 	}
 
 	@Transactional
@@ -41,9 +41,9 @@ public class ModelDAO
 		{
 			DSLContext transactionCtx = DSL.using(configuration);
 			LocalDateTime dateCreated = LocalDateTime.now();
-			String modelName = Integer.toString(ModelSQL.getModelCount(transactionCtx, projectId) + 1);
-			long modelId = ModelSQL.insertModel(transactionCtx, model, modelName, dateCreated, projectId);
-			return ExperimentSQL.insertExperiment(transactionCtx, modelId, dateCreated);
+			String modelName = Integer.toString(ModelRepository.getModelCount(transactionCtx, projectId) + 1);
+			long modelId = ModelRepository.insertModel(transactionCtx, model, modelName, dateCreated, projectId);
+			return ExperimentRepository.insertExperiment(transactionCtx, modelId, dateCreated);
 		});
 	}
 }

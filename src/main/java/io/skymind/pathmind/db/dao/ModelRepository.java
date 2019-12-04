@@ -11,8 +11,7 @@ import java.util.List;
 
 import static io.skymind.pathmind.data.db.Tables.MODEL;
 
-@Repository
-class ModelSQL
+class ModelRepository
 {
     protected static List<Model> getModelsForProject(DSLContext ctx, long projectId) {
         return ctx

@@ -9,8 +9,7 @@ import java.util.UUID;
 
 import static io.skymind.pathmind.data.db.Tables.*;
 
-@Repository
-class UserSQL
+class UserRepository
 {
     protected static PathmindUser findByEmailIgnoreCase(DSLContext ctx, String email) {
         return ctx

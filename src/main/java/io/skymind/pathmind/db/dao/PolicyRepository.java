@@ -14,8 +14,7 @@ import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.data.db.Tables.*;
 
-@Repository
-class PolicySQL
+class PolicyRepository
 {
 	private static final String SAVING = "saving";
 

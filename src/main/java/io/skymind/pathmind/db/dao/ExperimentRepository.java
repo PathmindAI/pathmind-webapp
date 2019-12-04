@@ -18,8 +18,7 @@ import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.data.db.tables.Model.MODEL;
 import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
 
-@Repository
-class ExperimentSQL
+class ExperimentRepository
 {
 	protected static Experiment getExperiment(DSLContext ctx, long experimentId) {
 		Record record = ctx

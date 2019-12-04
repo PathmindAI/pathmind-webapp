@@ -36,35 +36,35 @@ public class RunDAO
     }
 
     public Run getRun(long runId) {
-        return RunSQL.getRun(ctx, runId);
+        return RunRepository.getRun(ctx, runId);
     }
 
     public List<Run> getRuns(List<Long> runIds) {
-        return RunSQL.getRuns(ctx, runIds);
+        return RunRepository.getRuns(ctx, runIds);
     }
 
     public Run createRun(Experiment experiment, RunType runType){
-        return RunSQL.createRun(ctx, experiment, runType);
+        return RunRepository.createRun(ctx, experiment, runType);
     }
 
     public void markAsStarting(long runId){
-        RunSQL.markAsStarting(ctx, runId);
+        RunRepository.markAsStarting(ctx, runId);
     }
 
     public List<Run> getRunsForExperiment(long experimentId) {
-        return RunSQL.getRunsForExperiment(ctx, experimentId);
+        return RunRepository.getRunsForExperiment(ctx, experimentId);
     }
 
     public List<Long> getExecutingRuns() {
-        return RunSQL.getExecutingRuns(ctx);
+        return RunRepository.getExecutingRuns(ctx);
     }
 
     public void savePolicyFile(long runId, String externalId, byte[] policyFile) {
-        RunSQL.savePolicyFile(ctx, runId, externalId, policyFile);
+        RunRepository.savePolicyFile(ctx, runId, externalId, policyFile);
     }
 
     public Map<Long, List<String>> getStoppedPolicyNamesForRuns(List<Long> runIds) {
-        return RunSQL.getStoppedPolicyNamesForRuns(ctx, runIds);
+        return RunRepository.getStoppedPolicyNamesForRuns(ctx, runIds);
     }
 
     @Transactional
@@ -86,12 +86,12 @@ public class RunDAO
         if (policies.size() > 0) {
             Policy policy = policies.get(0);
             //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
-            PolicySQL.updatePolicyNameAndExternalId(transactionCtx, run.getId(), policy.getExternalId(), PolicyUtils.generatePolicyTempName(policy, run));
+            PolicyRepository.updatePolicyNameAndExternalId(transactionCtx, run.getId(), policy.getExternalId(), PolicyUtils.generatePolicyTempName(policy, run));
         }
     }
 
     private void updateExperiment(Run run, DSLContext transactionCtx) {
-        ExperimentSQL.updateLastActivityDate(transactionCtx, run.getExperimentId());
+        ExperimentRepository.updateLastActivityDate(transactionCtx, run.getExperimentId());
     }
 
     private void updateRun(Run run, RunStatus status, DSLContext transactionCtx) {
@@ -99,7 +99,7 @@ public class RunDAO
         run.setStatusEnum(status);
         // STEPH -> REFACTOR -> QUESTION -> Isn't this just a duplicate of setStoppedAtForFinishedPolicies()
         run.setStoppedAt(RunStatus.isRunning(status) ? null : LocalDateTime.now());
-        RunSQL.updateStatus(transactionCtx, run);
+        RunRepository.updateStatus(transactionCtx, run);
     }
 
     private void updatePolicies(Run run, List<Policy> policies, DSLContext transactionCtx)
@@ -119,7 +119,7 @@ public class RunDAO
                 // than what we have now. Plus this is a loop within a loop of database inserts and other database calls. We should instead
                 // update ONLY the most recent policy and ignore the others since really all we're doing is updating to get the progress.
                 // IMPORTANT -> The most recent policy may NOT be the last policy in the list.
-                long policyId = PolicySQL.updateOrInsertPolicy(transactionCtx, policy, progressJson);
+                long policyId = PolicyRepository.updateOrInsertPolicy(transactionCtx, policy, progressJson);
 
                 // Load up the Policy object so that we can push it to the GUI for the event. We may not need everything in here any more...
                 PolicyUtils.loadPolicyDataModel(policy, policyId, run);

@@ -16,30 +16,30 @@ public class ExperimentDAO
 	}
 
 	public Experiment getExperiment(long experimentId) {
-		return ExperimentSQL.getExperiment(ctx, experimentId);
+		return ExperimentRepository.getExperiment(ctx, experimentId);
 	}
 
 	public long setupNewExperiment(Experiment experiment) {
-		return ExperimentSQL.setupNewExperiment(ctx, experiment);
+		return ExperimentRepository.setupNewExperiment(ctx, experiment);
 	}
 
 	public int getExperimentCount(long modelId) {
-		return ExperimentSQL.getExperimentCount(ctx, modelId);
+		return ExperimentRepository.getExperimentCount(ctx, modelId);
 	}
 
 	public Experiment getLastExperimentForModel(long modelId) {
-		return ExperimentSQL.getLastExperimentForModel(ctx, modelId);
+		return ExperimentRepository.getLastExperimentForModel(ctx, modelId);
 	}
 
 	public List<Experiment> getExperimentsForModel(long modelId) {
-		return ExperimentSQL.getExperimentsForModel(ctx, modelId);
+		return ExperimentRepository.getExperimentsForModel(ctx, modelId);
 	}
 
 	public void updateRewardFunction(Experiment experiment) {
-		ExperimentSQL.updateRewardFunction(ctx, experiment);
+		ExperimentRepository.updateRewardFunction(ctx, experiment);
 	}
 
 	public void archive(long experimentId, boolean isArchive) {
-		ExperimentSQL.archive(ctx, experimentId, isArchive);
+		ExperimentRepository.archive(ctx, experimentId, isArchive);
 	}
 }

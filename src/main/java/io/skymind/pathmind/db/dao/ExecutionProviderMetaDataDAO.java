@@ -65,19 +65,19 @@ public class ExecutionProviderMetaDataDAO
     }
 
     private void put(String key, Object value) {
-        ExecutionProviderMetaDataSQL.put(ctx, mapper, RESCALE_EXECUTION_PROVIDER, key, value);
+        ExecutionProviderMetaDataRepository.put(ctx, mapper, RESCALE_EXECUTION_PROVIDER, key, value);
     }
 
     private String get(String key) {
-        return ExecutionProviderMetaDataSQL.get(ctx, RESCALE_EXECUTION_PROVIDER, key);
+        return ExecutionProviderMetaDataRepository.get(ctx, RESCALE_EXECUTION_PROVIDER, key);
     }
 
     private Map<String, String> get(List<String> keys) {
-        return ExecutionProviderMetaDataSQL.get(ctx, RESCALE_EXECUTION_PROVIDER, keys);
+        return ExecutionProviderMetaDataRepository.get(ctx, RESCALE_EXECUTION_PROVIDER, keys);
     }
 
     private void delete(String key) {
-        ExecutionProviderMetaDataSQL.delete(ctx, RESCALE_EXECUTION_PROVIDER, key);
+        ExecutionProviderMetaDataRepository.delete(ctx, RESCALE_EXECUTION_PROVIDER, key);
     }
 
     // STEPH -> REFACTOR -> Convert this to a column identifier so we can just do a where type=1, etc. for modelfile. So much easier and standard otherwise this will not scale up.

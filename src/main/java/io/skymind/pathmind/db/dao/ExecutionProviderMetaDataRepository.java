@@ -12,8 +12,7 @@ import java.util.Optional;
 
 import static io.skymind.pathmind.data.db.Tables.EXECUTION_PROVIDER_META_DATA;
 
-@Repository
-class ExecutionProviderMetaDataSQL
+class ExecutionProviderMetaDataRepository
 {
     protected static void put(DSLContext ctx, ObjectMapper mapper, String providerClazz, String key, Object value)
     {

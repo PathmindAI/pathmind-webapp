@@ -1,6 +1,5 @@
 package io.skymind.pathmind.db.dao;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.data.Policy;
@@ -19,11 +18,11 @@ public class PolicyDAO
     }
 
     public Policy getPolicy(long policyId) {
-          return PolicySQL.getPolicy(ctx, policyId);
+          return PolicyRepository.getPolicy(ctx, policyId);
     }
 
     public List<Policy> getPoliciesForExperiment(long experimentId) {
-        return PolicySQL.getPoliciesForExperiment(ctx, experimentId);
+        return PolicyRepository.getPoliciesForExperiment(ctx, experimentId);
     }
 
     /**
@@ -32,26 +31,26 @@ public class PolicyDAO
      * policy dao will check if there's real policy file exist or not
      */
     public boolean hasPolicyFile(long policyId) {
-        return PolicySQL.hasPolicyFile(ctx, policyId);
+        return PolicyRepository.hasPolicyFile(ctx, policyId);
     }
 
     public byte[] getPolicyFile(long policyId) {
-        return PolicySQL.getPolicyFile(ctx, policyId);
+        return PolicyRepository.getPolicyFile(ctx, policyId);
     }
 
     public long insertPolicy(Policy policy) {
-        long policyId = PolicySQL.insertPolicy(ctx, policy);
+        long policyId = PolicyRepository.insertPolicy(ctx, policy);
         // STEPH -> This should not be required since the GUI has the parent objects but until I have to the time it's an extra database call.
-        Policy savedPolicy = PolicySQL.getPolicy(ctx, policyId);
+        Policy savedPolicy = PolicyRepository.getPolicy(ctx, policyId);
         EventBus.post(new PolicyUpdateBusEvent(savedPolicy));
         return policyId;
     }
 
     public List<Policy> getActivePoliciesForUser(long userId) {
-        return PolicySQL.getActivePoliciesForUser(ctx, userId);
+        return PolicyRepository.getActivePoliciesForUser(ctx, userId);
     }
 
     public void updatePolicyNameAndExternalId(long runId, String newExternalId, String oldExternalId) {
-        PolicySQL.updatePolicyNameAndExternalId(ctx, runId, newExternalId, oldExternalId);
+        PolicyRepository.updatePolicyNameAndExternalId(ctx, runId, newExternalId, oldExternalId);
     }
 }

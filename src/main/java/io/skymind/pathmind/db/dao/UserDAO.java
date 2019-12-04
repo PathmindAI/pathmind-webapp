@@ -19,54 +19,54 @@ public class UserDAO
 	}
 
 	public long insertUser(PathmindUser pathmindUser) {
-		long pathmindUserId = UserSQL.insertUser(ctx, pathmindUser, passwordEncoder.encode(pathmindUser.getPassword()));
+		long pathmindUserId = UserRepository.insertUser(ctx, pathmindUser, passwordEncoder.encode(pathmindUser.getPassword()));
 		pathmindUser.setId(pathmindUserId);
 		return pathmindUserId;
 	}
 
 	public void update(PathmindUser pathmindUser) {
-		UserSQL.update(ctx, pathmindUser);
+		UserRepository.update(ctx, pathmindUser);
 		EventBus.post(new UserUpdateBusEvent(pathmindUser));
 	}
 
 	public void delete(long id) {
-		UserSQL.delete(ctx, id);
+		UserRepository.delete(ctx, id);
 	}
 
 	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
 	// now I'm using these method names so that we understand what needs to be done eventually.
 	public boolean isUserAllowedAccessToProject(long projectId) {
-		return UserSQL.isUserAllowedAccessToProject(ctx, projectId);
+		return UserRepository.isUserAllowedAccessToProject(ctx, projectId);
 	}
 
 	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
 	// now I'm using these method names so that we understand what needs to be done eventually.
 	public boolean isUserAllowedAccessToModel(long modelId) {
-		return UserSQL.isUserAllowedAccessToModel(ctx, modelId);
+		return UserRepository.isUserAllowedAccessToModel(ctx, modelId);
 	}
 
 	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
 	// now I'm using these method names so that we understand what needs to be done eventually.
 	public boolean isUserAllowedAccessToExperiment(long experimentId) {
-		return UserSQL.isUserAllowedAccessToExperiment(ctx, experimentId);
+		return UserRepository.isUserAllowedAccessToExperiment(ctx, experimentId);
 	}
 
 	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
 	// now I'm using these method names so that we understand what needs to be done eventually.
 	public boolean isUserAllowedAccessToPolicy(long policyId) {
-		return UserSQL.isUserAllowedAccessToPolicy(ctx, policyId);
+		return UserRepository.isUserAllowedAccessToPolicy(ctx, policyId);
 	}
 
 	public PathmindUser findByEmailIgnoreCase(String email) {
-		return UserSQL.findByEmailIgnoreCase(ctx, email);
+		return UserRepository.findByEmailIgnoreCase(ctx, email);
 	}
 
 	public PathmindUser findById(long id) {
-		return UserSQL.findById(ctx, id);
+		return UserRepository.findById(ctx, id);
 	}
 
 	public PathmindUser findByToken(String token) {
-		return UserSQL.findByToken(ctx, token);
+		return UserRepository.findByToken(ctx, token);
 	}
 
 	/**
@@ -76,6 +76,6 @@ public class UserDAO
 	 * @return whether the password was updated or not
 	 */
 	public boolean changePassword(long id, String newPassword) {
-		return UserSQL.changePassword(ctx, id, passwordEncoder.encode(newPassword));
+		return UserRepository.changePassword(ctx, id, passwordEncoder.encode(newPassword));
 	}
 }
