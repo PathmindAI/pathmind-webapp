@@ -4,6 +4,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabsVariant;
 
 import io.skymind.pathmind.ui.components.TabPanel;
+import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 
 public class UploadModelStatusWizardPanel extends VerticalLayout {
 
@@ -23,6 +24,9 @@ public class UploadModelStatusWizardPanel extends VerticalLayout {
 
 		setWidthFull();
 		setMargin(false);
+		setSpacing(false);
+		setPadding(false);
+		setClassName(CssMindPathStyles.SECTION_STATUS_PANEL);
 	}
 
 	public void setUploadModel() {

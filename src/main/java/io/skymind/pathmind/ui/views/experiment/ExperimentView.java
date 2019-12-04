@@ -9,19 +9,25 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.*;
+
+import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.TrainingService;
+import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.*;
@@ -61,6 +67,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private TrainingService trainingService;
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
     private Button runFullTraining;
     private Button runDiscoveryTraining;
@@ -97,14 +105,21 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             policyChartPanel.init(selectedPolicy);
             policyChartPanel.highlightPolicy(selectedPolicy);
 
+
+            // to avoid multiple download policy file from rescale server,
+            // we put the "saving" for temporary
+            // policy dao will check if there's real policy file exist or not
             exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
 
             RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
+            boolean canStartFurtherRuns = PolicyUtils.getRunStatus(selectedPolicy) != RunStatus.Error;
             if (selectedRunType == RunType.TestRun && experiment.getPolicies().size() == 1) {
                 runDiscoveryTraining.setVisible(true);
+                runDiscoveryTraining.setEnabled(canStartFurtherRuns);
             } else if (selectedRunType == RunType.DiscoveryRun) {
                 runDiscoveryTraining.setVisible(false);
                 runFullTraining.setVisible(true);
+                runFullTraining.setEnabled(canStartFurtherRuns);
             } else if (selectedRunType == RunType.FullRun) {
                 runDiscoveryTraining.setVisible(false);
                 runFullTraining.setVisible(false);
@@ -133,6 +148,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         runFullTraining = new Button("Start Full Run", new Image("frontend/images/start.svg", "run"), click -> {
             final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
             trainingService.startFullRun(experiment, policy);
+            segmentIntegrator.fullRunStarted();
             new RunConfirmDialog().open();
         });
         runFullTraining.setVisible(false);
@@ -141,6 +157,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         runDiscoveryTraining = new Button("Start Discovery Run", new Image("frontend/images/start.svg", "run"), click -> {
             final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
             trainingService.startDiscoveryRun(experiment);
+            segmentIntegrator.discoveryRunStarted();
             new RunConfirmDialog().open();
         });
         runDiscoveryTraining.setVisible(false);

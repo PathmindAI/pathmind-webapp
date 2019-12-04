@@ -3,24 +3,31 @@ package io.skymind.pathmind.services.training.progress;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.policy.HyperParameters;
 import io.skymind.pathmind.data.policy.RewardScore;
+import com.opencsv.CSVReader;
+import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.policy.HyperParameters;
+import io.skymind.pathmind.data.policy.RewardScore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.supercsv.io.CsvMapReader;
-import org.supercsv.prefs.CsvPreference;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class ProgressInterpreter
 {
     private static Logger log = LogManager.getLogger(ProgressInterpreter.class);
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss");
+
+    private static final int TRIAL_ID_LEN = 8;
+    private static final int DATE_LEN = 19;
 
     public static Policy interpretKey(String keyString) {
         final Policy policy = new Policy();
@@ -30,46 +37,23 @@ public class ProgressInterpreter
         // looks something like this:
         // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128_2019-08-05_13-56-455cdir_3f
 
-        final char[] key = keyString.toCharArray();
+        int keyLength = keyString.length();
+        String id = keyString.substring(keyLength - TRIAL_ID_LEN);
+        String dateTime = keyString.substring(keyLength - TRIAL_ID_LEN - DATE_LEN, keyLength - TRIAL_ID_LEN);
+        keyString = keyString.substring(0, keyLength - TRIAL_ID_LEN - DATE_LEN - 1);
 
-        boolean alg = false;
-        boolean envName = false;
-        boolean runCounter = false;
-        boolean params = false;
+        // keyString now looks like :
+        // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128
+        List<String> list = Arrays.asList(keyString.split("_", 4));
 
-        // PERFORMANCE -> Can we minimize this for our needs since it's so expensive... Do we need to parse for the algo? Is there a quick way to just get the hyperParams
-        // as that seems to eb all we ever end up using from this parsing...
-        int lastFoundIdx = 0;
-        for (int i = 0; i < key.length; i++) {
-            final char cur = key[i];
-            if(cur == '_'){
-                if(!alg){
-                    alg = true;
-                    policy.setAlgorithm(buffer.toString());
-                    buffer.setLength(0);
-                }else if(!envName){
-                    envName = true;
-                    buffer.setLength(0);
-                }else if(!runCounter){
-                    runCounter = true;
-                    buffer.setLength(0);
-                }
-                lastFoundIdx = i;
-            // IMPORTANT PERFORMANCE -> It's very important that Character.isDigit(cur) is last because this is a code hotspot.
-            } else if(lastFoundIdx == i - 1 && alg && envName && runCounter && !params && Character.isDigit(cur)){
-                params = true;
-                String parameters = buffer.substring(1, buffer.length() - 1);
-                Arrays.stream(parameters.split(",")).forEach(it -> {
-                    final String[] split = it.split("=");
-                    setHyperParameter(policy, split[0], split[1]);
-                });
-                buffer.setLength(0);
-            }
-            buffer.append(cur);
-        }
+        policy.setAlgorithm(list.get(0));
+
+        Arrays.stream(list.get(3).split(",")).forEach(it -> {
+            final String[] split = it.split("=");
+            setHyperParameter(policy, split[0], split[1]);
+        });
 
         try {
-            final String dateTime = buffer.toString().substring(0, 19);
             final LocalDateTime utcTime = LocalDateTime.parse(dateTime, dateFormat);
             final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();
             policy.setStartedAt(time);
@@ -94,29 +78,31 @@ public class ProgressInterpreter
         }
     }
 
-    public static Policy interpret(Map.Entry<String, String> entry)
-    {
+    public static Policy interpret(Map.Entry<String, String> entry){
         final Policy policy = interpretKey(entry.getKey());
 
-        try {
-            final CsvMapReader mapReader = new CsvMapReader(new StringReader(entry.getValue()), CsvPreference.STANDARD_PREFERENCE);
-            final String[] header = mapReader.getHeader(true);
+        final ArrayList<RewardScore> scores = new ArrayList<>();
 
-            final ArrayList<RewardScore> scores = new ArrayList<>();
-            Map<String, String> map;
-            while( (map = mapReader.read(header)) != null ) {
-                final String max = map.get("episode_reward_max");
-                final String min = map.get("episode_reward_min");
-                final String mean = map.get("episode_reward_mean");
+        try (CSVReader reader = new CSVReader(new StringReader(entry.getValue()))) {
+
+            String[] record = null;
+            //skip header row
+            reader.readNext();
+
+            while((record = reader.readNext()) != null){
+                final String max = record[0];   // episode_reward_max
+                final String min = record[1];   // episode_reward_min
+                final String mean = record[2];  // episode_reward_mean
+
                 scores.add(new RewardScore(
                         Double.valueOf(max.equals("nan") ? "NaN" : max),
                         Double.valueOf(min.equals("nan") ? "NaN" : min),
                         Double.valueOf(mean.equals("nan") ? "NaN" : mean),
-                        Integer.parseInt(map.get("training_iteration"))
+                        Integer.parseInt(record[9]) // training_iteration
                 ));
             }
             policy.setScores(scores);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 

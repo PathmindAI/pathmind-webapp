@@ -11,7 +11,7 @@ import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.shared.communication.PushMode;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.plugins.IntercomIntegrationPlugin;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.views.errors.ErrorView;
 import io.skymind.pathmind.ui.views.errors.InvalidDataView;
@@ -33,12 +33,11 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
 	private boolean isGenerated = false;
 
-	// It's autowired so that we don't have to inject it in all the views.
-	@Autowired
-	private IntercomIntegrationPlugin intercomIntegrationPlugin;
-
     @Value("${skymind.debug.accelerate}")
     private boolean isDebugAccelerate;
+    
+    @Autowired
+    private SegmentIntegrator segmentIntegrator;
 
 	public PathMindDefaultView()
 	{
@@ -79,8 +78,8 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 				addScreens();
 			// Update the screen based on the parameters if need be.
 			initScreen(event);
-			// Intercom plugin added
-			addIntercomPlugin();
+			// Segment plugin added
+			add(segmentIntegrator);
 			isGenerated = true;
 		} catch (InvalidDataException e) {
 			log.info("Invalid data attempt: " + e.getMessage());
@@ -91,19 +90,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			event.rerouteTo(ErrorView.class);
-		}
-	}
-
-	/**
-	 * Must be in it's own method and we need to try and catch because if there is ever an exception in the Intercom plugin
-	 * then it will otherwise go into an infinite loop (by being caught in the Exception catch block of the parent method
-	 * which then causes it to go to teh ErrorView and loop forever crashing the server.
-	 */
-	private void addIntercomPlugin() {
-		try {
-			intercomIntegrationPlugin.addPluginToPage();
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
 		}
 	}
 

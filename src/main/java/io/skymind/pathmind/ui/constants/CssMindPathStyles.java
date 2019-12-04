@@ -12,8 +12,11 @@ public class CssMindPathStyles
 
 	public static final String SECTION_TITLE_LABEL = "section-title-label";
 	public static final String SECTION_SUBTITLE_LABEL = "section-subtitle-label";
+	public static final String SECTION_STATUS_PANEL = "section-status-panel";
 
 	public static final String CENTERED_FORM_LABEL = "centered-field-label";
 
 	public static final String PROJECT_TITLE = "project-title-label";
+	
+	public static final String CREATE_PROJECT_BUTTON = "create-project-button";
 }

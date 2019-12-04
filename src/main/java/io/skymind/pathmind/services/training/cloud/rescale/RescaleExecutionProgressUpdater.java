@@ -5,7 +5,10 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
+import io.skymind.pathmind.services.training.constant.TrainingFile;
+import io.skymind.pathmind.services.training.db.integration.RunUpdateService;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +65,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
                 // method is called and we can just do a simple isPolicyFile != null check as to whether or not to
                 // also update it in the database.
                 savePolicyFilesForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus);
+                updateService.cleanUpTemporary(runId);
         });
     }
 
@@ -105,7 +109,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
     }
 
     public List<String> getTerminatedPolicesFromProvider(String rescaleJobId) {
-        String content = provider.getFileAnytime(rescaleJobId, "trial_complete");
+        String content = provider.getFileAnytime(rescaleJobId, TrainingFile.RAY_TRIAL_COMPLETE));
         return content == null ? Collections.emptyList() : Arrays.asList(content.split("\n"));
     }
 }
