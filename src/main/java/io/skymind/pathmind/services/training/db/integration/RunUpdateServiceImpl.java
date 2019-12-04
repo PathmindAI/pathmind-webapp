@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -162,11 +163,11 @@ public class RunUpdateServiceImpl implements RunUpdateService {
     }
 
     @Override
-    public List<Policy> getStoppedPolicies(List<Long> runIds) {
-        return ctx.selectFrom(POLICY)
-                .where(POLICY.RUN_ID.in(runIds))
-                .and(POLICY.STOPPEDAT.isNotNull())
-                .fetchInto(Policy.class);
+    public Map<Long, List<String>> getStoppedPolicyNamesForRuns(List<Long> runIds) {
+        return ctx.select(POLICY.NAME, POLICY.RUN_ID)
+                .from(POLICY)
+                .where(POLICY.RUN_ID.in(runIds)).and(POLICY.STOPPEDAT.isNotNull())
+                .fetchGroups(POLICY.RUN_ID, POLICY.NAME);
     }
 
     @Override

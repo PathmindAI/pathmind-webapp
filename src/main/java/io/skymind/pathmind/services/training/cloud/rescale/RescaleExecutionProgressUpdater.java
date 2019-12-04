@@ -34,10 +34,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
     public void update()
     {
         final List<Long> runIds = updateService.getExecutingRuns();
-        final List<String> finishedPolicyNamesFromDB = updateService.getStoppedPolicies(runIds)
-                .stream()
-                .map(p -> p.getName())
-                .collect(Collectors.toList());
+        final Map<Long, List<String>> stoppedPoliciesNamesForRuns = updateService.getStoppedPolicyNamesForRuns(runIds);
 
         runIds.parallelStream().forEach(runId ->
         {
@@ -52,7 +49,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
             final Map<String, String> rawProgress = provider.progress(rescaleJobId, jobStatus);
 
             final List<Policy> policies = rawProgress.entrySet().stream()
-                    .filter(e -> !finishedPolicyNamesFromDB.contains(e.getKey()))
+                    .filter(e -> !stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).contains(e.getKey()))
                     .map(ProgressInterpreter::interpret)
                     .collect(Collectors.toList());
 
@@ -67,11 +64,12 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
             updateService.updateRun(runId, jobStatus, policies);
 
             if(jobStatus == RunStatus.Completed){
-                for (String finishPolicyName : finishedPolicyNamesFromDB) {
+                stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).stream().forEach(finishPolicyName -> {
+                    // todo make saving to enum or static final variable (currently defined in PolicyDAO).
                     updateService.savePolicyFile(runId, finishPolicyName, TrainingFile.TEMPORARY_POLICY.getBytes());
                     final byte[] policy = provider.policy(rescaleJobId, finishPolicyName);
                     updateService.savePolicyFile(runId, finishPolicyName, policy);
-                }
+                });
                 updateService.cleanUpTemporary(runId);
             }
         });
