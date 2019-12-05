@@ -10,8 +10,7 @@ import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.repositories.RunRepository;
 import io.skymind.pathmind.services.TrainingService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +26,8 @@ import java.util.regex.Pattern;
 import static io.skymind.pathmind.data.db.Tables.*;
 
 @Service
+@Slf4j
 public class RunUpdateServiceImpl implements RunUpdateService {
-    private static Logger log = LogManager.getLogger(RunUpdateServiceImpl.class);
 
     private final DSLContext ctx;
     private final ObjectMapper mapper;

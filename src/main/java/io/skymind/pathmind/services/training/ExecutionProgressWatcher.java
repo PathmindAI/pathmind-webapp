@@ -1,16 +1,15 @@
 package io.skymind.pathmind.services.training;
 
 import io.skymind.pathmind.mock.MockDefaultValues;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class ExecutionProgressWatcher implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
-    private static Logger log = LoggerFactory.getLogger(ExecutionProgressWatcher.class);
     private Runner runner = null;
 
     public void destroy(){

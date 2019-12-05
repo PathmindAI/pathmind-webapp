@@ -20,8 +20,7 @@ import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -32,10 +31,10 @@ import java.util.List;
 @Tag("reset-password-view")
 @JsModule("./src/account/reset-password-view.js")
 @Route(value = Routes.RESET_PASSWORD_URL)
+@Slf4j
 public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 	implements PublicView, HasUrlParameter<String>, AfterNavigationObserver
 {
-	private static Logger log = LogManager.getLogger(ResetPasswordView.class);
 
 	private static final String EMAIL_REGEX = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
 	private static final String SEND_CONFIRMATION = "Reset password email was sent.";

@@ -4,8 +4,7 @@ import com.opencsv.CSVReader;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.policy.HyperParameters;
 import io.skymind.pathmind.data.policy.RewardScore;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.StringReader;
 import java.time.Clock;
@@ -18,9 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class ProgressInterpreter {
-
-    private static Logger log = LogManager.getLogger(ProgressInterpreter.class);
+@Slf4j
+public class ProgressInterpreter
+{
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss");
 
     private static final int TRIAL_ID_LEN = 8;
