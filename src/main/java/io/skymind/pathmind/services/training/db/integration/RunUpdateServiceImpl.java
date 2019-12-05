@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -188,6 +189,16 @@ public class RunUpdateServiceImpl implements RunUpdateService {
 
         if (policy == null) {
             return null;
+        }
+
+        // todo need to get rid of json parsing after having progress db
+        try {
+            if (policy != null && policy.getProgress() != null) {
+                Policy policyJson = mapper.readValue(policy.getProgress(), Policy.class);
+                policy.setScores(policyJson.getScores());
+            }
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
         }
 
         return policy.getScores();
