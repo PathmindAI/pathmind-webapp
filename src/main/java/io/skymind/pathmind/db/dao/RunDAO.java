@@ -10,6 +10,7 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.utils.PolicyUtils;
+import io.skymind.pathmind.data.utils.RunUtils;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.impl.DSL;
@@ -83,7 +84,8 @@ public class RunDAO
 
     // STEPH -> REFACTOR -> QUESTION -> Rename method with an explanation of what this does? It generates a temp policy name but why? And why get only index 0.
     private void updateFirstPolicy(Run run, List<Policy> policies, DSLContext transactionCtx) {
-        if (policies.size() > 0) {
+        // IMPORTANT -> Keep the policies.size() check  first because if it fails then we can avoid the database call.
+        if (policies.size() > 0 && PolicyRepository.isTemporaryPolicy(ctx, run.getId(), RunUtils.TEMPORARY_POSTFIX)) {
             Policy policy = policies.get(0);
             //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
             PolicyRepository.updatePolicyNameAndExternalId(transactionCtx, run.getId(), policy.getExternalId(), PolicyUtils.generatePolicyTempName(policy, run));
@@ -132,6 +134,16 @@ public class RunDAO
                 log.error(e.getMessage(), e);
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    // STEPH -> REFACTOR -> Can we just make this as a single SQL call with a WHERE?. This should be in the updatePolicies method rather than in the service
+    // to make it all transactional. I will do this as another github issue in another PR.
+    public void cleanUpTemporary(long runId) {
+        boolean isExist = PolicyRepository.isTemporaryPolicy(ctx, runId, RunUtils.TEMPORARY_POSTFIX);
+        if (isExist) {
+            PolicyRepository.deleteTemporaryPolicy(ctx, runId, RunUtils.TEMPORARY_POSTFIX);
+            log.info("Cleaned Temporary Policies in " + runId);
         }
     }
 }

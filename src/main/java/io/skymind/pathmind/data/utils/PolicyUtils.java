@@ -135,7 +135,7 @@ public class PolicyUtils
     // add run type and "TEMP"
     public static String generatePolicyTempName(Policy policy, Run run)
     {
-        String policyTempName = policy.getExternalId().substring(0, policy.getExternalId().length() - 27) + run.getRunType() + "TEMP";
+        String policyTempName = policy.getExternalId().substring(0, policy.getExternalId().length() - 27) + run.getRunType() + RunUtils.TEMPORARY_POSTFIX;
 
         Matcher matcher = lrPattern.matcher(policyTempName);
 

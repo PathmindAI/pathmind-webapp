@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 
 public class RunUtils
 {
+	public final static String TEMPORARY_POSTFIX = "TEMP";
+
 	private RunUtils() {
 	}
 

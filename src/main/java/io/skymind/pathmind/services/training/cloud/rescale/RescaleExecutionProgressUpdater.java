@@ -5,10 +5,8 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
-import io.skymind.pathmind.services.training.db.integration.RunUpdateService;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,25 +45,24 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
         // since runDAO.updateRun() is now transactional. In any case it's no worse than today and as a result I'm pushing this to another ticket.
         runsWithRescaleJobs.parallelStream().forEach(run ->
         {
-                final String rescaleJobId = rescaleJobIds.get(run.getId());
-                final RunStatus jobStatus = provider.status(rescaleJobId);
+            final String rescaleJobId = rescaleJobIds.get(run.getId());
+            final RunStatus jobStatus = provider.status(rescaleJobId);
 
-                final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus);
-                final List<String> finishedPolicyNamesFromRescale = getTerminatedPolicesFromProvider(rescaleJobId);
+            final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus);
+            final List<String> finishedPolicyNamesFromRescale = getTerminatedPolicesFromProvider(rescaleJobId);
 
-                setStoppedAtForFinishedPolicies(policies, finishedPolicyNamesFromRescale);
+            setStoppedAtForFinishedPolicies(policies, finishedPolicyNamesFromRescale);
 
-                runDAO.updateRun(run, jobStatus, policies);
+            runDAO.updateRun(run, jobStatus, policies);
 
-                // STEPH -> REFACTOR -> QUESTION -> Does this need to be transactional with runDAO.updateRun and put
-                // into updateRun()? For now I left it here, it's no worse than what's in production today. I mainly kept it out
-                // updateRun() because savePolicyFilesForCompletedRuns() calls another provider and as a result it doesn't belong
-                // in the database layer. I would recommend breaking up savePolicyFilesForCompletedRuns() and pulling out the
-                // service component so that if there is a policyFile (byte[]) then it's done before the updateRun()
-                // method is called and we can just do a simple isPolicyFile != null check as to whether or not to
-                // also update it in the database.
-                savePolicyFilesForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus);
-                updateService.cleanUpTemporary(runId);
+            // STEPH -> REFACTOR -> QUESTION -> Does this need to be transactional with runDAO.updateRun and put
+            // into updateRun()? For now I left it here, it's no worse than what's in production today. I mainly kept it out
+            // updateRun() because savePolicyFilesForCompletedRuns() calls another provider and as a result it doesn't belong
+            // in the database layer. I would recommend breaking up savePolicyFilesForCompletedRuns() and pulling out the
+            // service component so that if there is a policyFile (byte[]) then it's done before the updateRun()
+            // method is called and we can just do a simple isPolicyFile != null check as to whether or not to
+            // also update it in the database.
+            savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus);
         });
     }
 
@@ -82,13 +79,16 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
         return rescaleJobIds.get(runId) != null;
     }
 
-    private void savePolicyFilesForCompletedRuns(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String rescaleJobId, RunStatus jobStatus) {
+    private void savePolicyFilesAndCleanupForCompletedRuns(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String rescaleJobId, RunStatus jobStatus) {
         if(jobStatus == RunStatus.Completed) {
             stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).stream().forEach(finishPolicyName -> {
                 // todo make saving to enum or static final variable (currently defined in PolicyDAO).
                 final byte[] policyFile = provider.policy(rescaleJobId, finishPolicyName);
                 runDAO.savePolicyFile(runId, finishPolicyName, policyFile);
             });
+            // STEPH -> REFACTOR -> Combined so that this is transactional. For now I just left it as is for the merge
+            // conflict just to process the PR and will clean it up as part of another ticket.
+            runDAO.cleanUpTemporary(runId);
         }
     }
 
@@ -109,7 +109,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
     }
 
     public List<String> getTerminatedPolicesFromProvider(String rescaleJobId) {
-        String content = provider.getFileAnytime(rescaleJobId, TrainingFile.RAY_TRIAL_COMPLETE));
+        String content = provider.getFileAnytime(rescaleJobId, TrainingFile.RAY_TRIAL_COMPLETE);
         return content == null ? Collections.emptyList() : Arrays.asList(content.split("\n"));
     }
 }

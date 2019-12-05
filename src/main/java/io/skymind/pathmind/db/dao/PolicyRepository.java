@@ -172,4 +172,18 @@ class PolicyRepository
 				.fetchOne()
 				.getValue(POLICY.ID);
 	}
+
+	protected static boolean isTemporaryPolicy(DSLContext ctx, long runId, String tempKeyword) {
+		return ctx.select(DSL.one())
+				.from(POLICY)
+				.where(POLICY.RUN_ID.eq(runId)
+						.and(POLICY.EXTERNAL_ID.like("%" + tempKeyword)))
+				.fetchOptional().isPresent();
+	}
+
+	protected static void deleteTemporaryPolicy(DSLContext ctx, long runId, String tempKeyword) {
+		ctx.delete(POLICY)
+				.where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.like("%" + tempKeyword)))
+				.execute();
+	}
 }
