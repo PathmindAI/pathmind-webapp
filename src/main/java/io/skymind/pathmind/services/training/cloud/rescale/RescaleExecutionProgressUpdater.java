@@ -84,7 +84,11 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
                     final byte[] checkPointFile = entry.getValue();
                     updateService.saveCheckpointFile(runId, finishPolicyName, checkPointFile);
 
-                    metaDataService.put(metaDataService.checkPointFileKey(finishPolicyName), entry.getKey());
+                    // save meta data for checkpoint
+                    String checkpointFileKey = metaDataService.checkPointFileKey(finishPolicyName);
+                    if (metaDataService.get(checkpointFileKey, String.class) == null) {
+                        metaDataService.put(checkpointFileKey, entry.getKey());
+                    }
                 }
                 updateService.cleanUpTemporary(runId);
             }
