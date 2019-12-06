@@ -1,6 +1,7 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
 import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 public class RescaleExecutionProvider implements ExecutionProvider {
 
     private final RescaleRestApiClient client;
-    private final RescaleMetaDataService metaDataService;
+    private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RescaleFileManager fileManager;
     private static final List<String> KNOWN_ERROR_MSGS = new ArrayList<>();
 
@@ -36,9 +37,9 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         KNOWN_ERROR_MSGS.add("java.lang.ArrayIndexOutOfBoundsException");
     }
 
-    public RescaleExecutionProvider(RescaleRestApiClient client, RescaleMetaDataService metaDataService) {
+    public RescaleExecutionProvider(RescaleRestApiClient client, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
         this.client = client;
-        this.metaDataService = metaDataService;
+        this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.fileManager = RescaleFileManager.getInstance();
     }
 
@@ -62,18 +63,17 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         setupVariables(job, instructions);
 
         // Set up instructions to run that specific type of job
-        runTraining(job, instructions);
+        runTraining(instructions);
 
         // Clean up working directory, so only the required files stay around for automatic saving by rescale
-        cleanup(job, instructions);
+        cleanup(instructions);
 
         // Check errors
         checkErrors(instructions);
 
-
         // Start actual execution of the job
         final String rescaleJobId = startTrainingRun(job, instructions, files);
-        metaDataService.put(metaDataService.runIdKey(job.getRunId()), rescaleJobId);
+        executionProviderMetaDataDAO.putRescaleRunJobId(job.getRunId(), rescaleJobId);
         return rescaleJobId;
     }
 
@@ -168,7 +168,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 .stream()
                 .filter(it -> it.getPath().endsWith("policy_" + trainingRun + ".zip"))
                 .map(it -> client.fileContents(it.getId()))
-                .findFirst().orElseGet(() -> null);
+                .findFirst().orElse(null);
     }
 
     @Override
@@ -222,8 +222,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
      * Get Model file from database if it wasn't uploaded yet.
      */
     private String uploadModelIfNeeded(JobSpec job) {
-        final String fileKey = metaDataService.modelFileKey(job.getModelId());
-        String fileId = metaDataService.get(fileKey, String.class);
+        String fileId = executionProviderMetaDataDAO.getModelFileKey(job.getModelId());
         if (fileId == null) {
             final RescaleFile rescaleFile;
             try {
@@ -231,7 +230,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            metaDataService.put(fileKey, rescaleFile.getId());
+            executionProviderMetaDataDAO.putModelFileKey(job.getModelId(), rescaleFile.getId());
             fileId = rescaleFile.getId();
         }
 
@@ -281,7 +280,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         ));
     }
 
-    private void runTraining(JobSpec job, List<String> instructions) {
+    private void runTraining(List<String> instructions) {
         instructions.addAll(Arrays.asList(
                 // ensure empty files are there as needed
                 "echo > setup.sh",
@@ -306,7 +305,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         ));
     }
 
-    private void cleanup(JobSpec job, List<String> instructions) {
+    private void cleanup(List<String> instructions) {
         instructions.addAll(Arrays.asList(
                 "cd ..",
                 "rm -rf work conda jdk8u222-b10"
@@ -406,6 +405,4 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 .map(msg -> "grep -m 2 \"" + msg + "\" " + TrainingFile.RESCALE_LOG + " >> " + TrainingFile.KNOWN_ERROR)
                 .collect(Collectors.toList()));
     }
-
-
 }

@@ -1,5 +1,8 @@
 package io.skymind.pathmind.services.training.progress;
 
+import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.policy.HyperParameters;
+import io.skymind.pathmind.data.policy.RewardScore;
 import com.opencsv.CSVReader;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.policy.HyperParameters;
@@ -18,8 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class ProgressInterpreter
-{
+public class ProgressInterpreter {
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss");
 
     private static final int TRIAL_ID_LEN = 8;
