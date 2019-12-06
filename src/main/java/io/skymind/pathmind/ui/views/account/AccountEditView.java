@@ -1,12 +1,14 @@
 package io.skymind.pathmind.ui.views.account;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.Route;
+
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = Routes.ACCOUNT_EDIT_URL, layout = MainLayout.class)
 public class AccountEditView extends PathMindDefaultView {

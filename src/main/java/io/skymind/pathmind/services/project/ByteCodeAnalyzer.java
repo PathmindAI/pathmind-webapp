@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import lombok.extern.slf4j.Slf4j;
 import org.objectweb.asm.*;
 
 /*To read and find PathmindHelper qualifiedClassName from class files using ASM*/
+@Slf4j
 public class ByteCodeAnalyzer extends ClassVisitor {
-    private static final Logger log = LogManager.getLogger(ByteCodeAnalyzer.class);
     public String qualifiedClassName;
     List<String> qualifiedClasses = new ArrayList<String>();
 

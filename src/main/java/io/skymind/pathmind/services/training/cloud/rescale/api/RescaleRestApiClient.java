@@ -2,6 +2,8 @@ package io.skymind.pathmind.services.training.cloud.rescale.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.training.cloud.rescale.api.dto.*;
+import io.skymind.pathmind.services.training.constant.TrainingFile;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -9,8 +11,6 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
@@ -30,8 +30,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class RescaleRestApiClient {
-    private static final Logger log = LoggerFactory.getLogger(RescaleRestApiClient.class);
     private final String rescaleBaseUrl;
     private final String apiKey;
     private final ObjectMapper objectMapper;
@@ -136,7 +136,7 @@ public class RescaleRestApiClient {
     }
 
     public String tailConsole(String jobId, String run){
-        return new String(tail(jobId, run, "process_output.log"));
+        return new String(tail(jobId, run, TrainingFile.RESCALE_LOG));
     }
 
     public byte[] tail(String jobId, String run, String filename){
@@ -159,7 +159,7 @@ public class RescaleRestApiClient {
     }
 
     public String consoleOutput(String jobId, String run){
-        return new String(outputFile(jobId, run, "process_output.log"));
+        return new String(outputFile(jobId, run, TrainingFile.RESCALE_LOG));
     }
 
 
@@ -170,34 +170,42 @@ public class RescaleRestApiClient {
      *
      * TODO: Test if upload with indefinite size works, or if we must create an input stream reader body type that knows about filesize
      */
-    public RescaleFile fileUpload(byte[] content, String filename) throws IOException {
-        final CloseableHttpClient client = HttpClients.custom().setDefaultHeaders(Arrays.asList(
-                new BasicHeader("Authorization", "Token "+apiKey)
-        )).build();
-
-        final HttpPost post = new HttpPost(rescaleBaseUrl + "/files/contents/");
+    public RescaleFile fileUpload(byte[] content, String filename) throws IOException
+    {
+        final HttpPost post = getHttpPost();
         post.setEntity(MultipartEntityBuilder.create()
                 .addBinaryBody("file", content, ContentType.APPLICATION_OCTET_STREAM, filename)
                 .build());
 
-        final CloseableHttpResponse resp = client.execute(post);
-
-        return objectMapper.readValue(resp.getEntity().getContent(), RescaleFile.class);
+        try(final CloseableHttpClient client = getCloseableHttpClient();
+            final CloseableHttpResponse resp = client.execute(post))
+        {
+            return objectMapper.readValue(resp.getEntity().getContent(), RescaleFile.class);
+        }
     }
 
-    public RescaleFile fileUpload(File file, String filename) throws IOException {
-        final CloseableHttpClient client = HttpClients.custom().setDefaultHeaders(Arrays.asList(
-                new BasicHeader("Authorization", "Token "+apiKey)
-        )).build();
-
-        final HttpPost post = new HttpPost(rescaleBaseUrl + "/files/contents/");
+    public RescaleFile fileUpload(File file, String filename) throws IOException
+    {
+        final HttpPost post = getHttpPost();
         post.setEntity(MultipartEntityBuilder.create()
                 .addBinaryBody("file", file, ContentType.MULTIPART_FORM_DATA, filename)
                 .build());
 
-        final CloseableHttpResponse resp = client.execute(post);
+        try(final CloseableHttpClient client = getCloseableHttpClient();
+            final CloseableHttpResponse resp = client.execute(post))
+        {
+            return objectMapper.readValue(resp.getEntity().getContent(), RescaleFile.class);
+        }
+    }
 
-        return objectMapper.readValue(resp.getEntity().getContent(), RescaleFile.class);
+    private HttpPost getHttpPost() {
+        return new HttpPost(rescaleBaseUrl + "/files/contents/");
+    }
+
+    private CloseableHttpClient getCloseableHttpClient() {
+        return HttpClients.custom().setDefaultHeaders(
+                Arrays.asList(new BasicHeader("Authorization", "Token "+apiKey)))
+                .build();
     }
 
     public PagedResult<RescaleFile> filesList(){

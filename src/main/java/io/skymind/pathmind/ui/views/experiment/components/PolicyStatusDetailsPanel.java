@@ -13,8 +13,6 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -22,8 +20,6 @@ import java.util.Arrays;
 @Component
 public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUpdateSubscriber
 {
-	private static Logger log = LogManager.getLogger(PolicyStatusDetailsPanel.class);
-
 	private Label statusLabel = new Label(RunStatus.NotStarted.toString());
 	private Label runProgressLabel = new Label();
 	private Label runTypeLabel = new Label();

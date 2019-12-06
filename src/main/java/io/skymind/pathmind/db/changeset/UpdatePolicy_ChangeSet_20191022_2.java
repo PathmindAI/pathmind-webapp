@@ -14,9 +14,8 @@ import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RawSqlStatement;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -36,10 +35,9 @@ import java.util.List;
  * IMPORTANT TIP -> If you modify this code please note that you need to run the Maven compile target before you run the liquibase targets
  * otherwise the CODE CHANGES WILL NOT BE REFLECTED IN THE LIQUIBASE TARGETS in any automatic way!!
  */
+@Slf4j
 public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, CustomSqlRollback
 {
-    private static Logger log = LogManager.getLogger(UpdatePolicy_ChangeSet_20191022_2.class);
-
     @Override
     public SqlStatement[] generateStatements(Database database) throws CustomChangeException
     {
