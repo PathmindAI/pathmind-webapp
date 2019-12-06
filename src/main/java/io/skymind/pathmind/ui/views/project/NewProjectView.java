@@ -3,7 +3,6 @@ package io.skymind.pathmind.ui.views.project;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
@@ -15,7 +14,6 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
-import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -28,8 +26,7 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.ui.views.project.components.panels.NewProjectLogoWizardPanel;
 import io.skymind.pathmind.ui.views.project.components.wizard.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
@@ -37,10 +34,9 @@ import java.util.List;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.NEW_PROJECT, layout = MainLayout.class)
+@Slf4j
 public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 {
-
-	private static Logger log = LogManager.getLogger(NewProjectView.class);
 
 	@Autowired
 	private ProjectDAO projectDAO;

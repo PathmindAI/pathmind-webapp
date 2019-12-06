@@ -102,4 +102,14 @@ public class PolicyDAO extends PolicyRepository
 
         return policyId;
     }
+
+    public boolean isTemporaryPolicy(long runId, String tempKeyword) {
+        return ctx.select(DSL.one()).from(POLICY).where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.like("%" + tempKeyword))).fetchOptional().isPresent();
+    }
+
+    public void deleteTemporaryPolicy(long runId, String tempKeyword) {
+        ctx.delete(POLICY)
+                .where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.like("%" + tempKeyword)))
+                .execute();
+    }
 }

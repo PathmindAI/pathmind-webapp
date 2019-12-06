@@ -3,8 +3,7 @@ package io.skymind.pathmind.ui.views.model;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
@@ -36,15 +35,13 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.ui.views.model.components.UploadModelStatusWizardPanel;
-import io.skymind.pathmind.ui.views.project.NewProjectView;
 import io.skymind.pathmind.ui.views.project.components.wizard.ModelDetailsWizardPanel;
 import io.skymind.pathmind.ui.views.project.components.wizard.UploadModelWizardPanel;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
+@Slf4j
 public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<Long> {
-
-	private static Logger log = LogManager.getLogger(NewProjectView.class);
 
 	@Autowired
 	private ProjectDAO projectDAO;

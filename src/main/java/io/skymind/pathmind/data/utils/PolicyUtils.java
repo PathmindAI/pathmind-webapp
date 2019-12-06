@@ -8,9 +8,8 @@ import io.skymind.pathmind.data.policy.HyperParameters;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import io.skymind.pathmind.utils.ObjectMapperHolder;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -18,9 +17,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class PolicyUtils
 {
-    private static Logger log = LogManager.getLogger(PolicyUtils.class);
     private static ObjectMapper OBJECT_MAPPER = ObjectMapperHolder.getJsonMapper();
 
     private PolicyUtils() {

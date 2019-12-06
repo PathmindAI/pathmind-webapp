@@ -2,9 +2,8 @@ package io.skymind.pathmind.ui.views.experiment;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
@@ -20,7 +19,6 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -48,10 +46,9 @@ import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUti
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
+@Slf4j
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
     private static final double DEFAULT_SPLIT_PANE_RATIO = 60;
-
-    private Logger log = LogManager.getLogger(NewExperimentView.class);
 
     private long experimentId = -1;
     private Experiment experiment;

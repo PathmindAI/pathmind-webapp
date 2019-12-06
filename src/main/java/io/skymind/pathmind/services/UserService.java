@@ -2,8 +2,7 @@ package io.skymind.pathmind.services;
 
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,15 +17,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class UserService
 {
     public static final String NOT_MATCHING = "* New Password doesn't match Confirmation password";
     public static final String TOO_SHORT = "* 6 min characters";
     public static final String UPPERCASE_MISSING = "* 1 uppercase character";
     public static final String LOWERCASE_MISSING = "* 1 lowercase character";
-
-    private static Logger log = LogManager.getLogger(UserService.class);
-
 
     private UserDAO userDAO;
     private PasswordEncoder passwordEncoder;
