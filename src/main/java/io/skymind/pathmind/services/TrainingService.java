@@ -1,12 +1,12 @@
 package io.skymind.pathmind.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
@@ -17,7 +17,6 @@ import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.DSLContext;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -30,20 +29,14 @@ public class TrainingService {
     private final RunDAO runDAO;
     private final ModelDAO modelDAO;
     private final PolicyDAO policyDAO;
-    private final DSLContext ctx;
-    private final ObjectMapper objectMapper;
     private ExecutionEnvironment executionEnvironment;
 
-    public final static String TEMPORARY_POSTFIX = "TEMP";
-
     // TODO: Move direct db access into a DAO.
-    public TrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, DSLContext ctx, ObjectMapper objectMapper) {
+    public TrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO) {
         this.executionProvider = executionProvider;
         this.runDAO = runDAO;
         this.modelDAO = modelDAO;
         this.policyDAO = policyDAO;
-        this.ctx = ctx;
-        this.objectMapper = objectMapper;
 
 //        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5, PathmindHelper.VERSION_0_0_24, RLLib.VERSION_0_7_0);
         executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_1, PathmindHelper.VERSION_0_0_24, RLLib.VERSION_0_7_0);
@@ -67,7 +60,7 @@ public class TrainingService {
                 50, // Max 50 iterations for a test run
                 executionEnvironment,
                 RunType.TestRun,
-                () ->modelDAO.getModelFile(model.getId()),
+                () -> modelDAO.getModelFile(model.getId()),
                 Arrays.asList(1e-5),
                 Arrays.asList(0.99),
                 Arrays.asList(128),
@@ -169,7 +162,7 @@ public class TrainingService {
                 500, // Max 100 iterations for a test run
                 executionEnvironment,
                 RunType.FullRun,
-                () ->modelDAO.getModelFile(model.getId()),
+                () -> modelDAO.getModelFile(model.getId()),
                 Arrays.asList(policy.getHyperParameters().getLearningRate()),
                 Arrays.asList(policy.getHyperParameters().getGamma()),
                 Arrays.asList(policy.getHyperParameters().getBatchSize()),
@@ -203,6 +196,8 @@ public class TrainingService {
         policyDAO.insertPolicy(tempPolicy);
     }
 
+    // STEPH -> REFACTOR -> This should be in the DAO layer and not the service layer as this is information on how data is stored
+    // within the database. However for now I'm just quickly putting it here so that we can process the PR asap.
     private String getTempPolicyName(String algorithm, String environment, List<Double> lrs, List<Double> gammas, List<Integer> batchSize, int runType) {
         String hyperparameters = String.join(
                 ",",
@@ -217,7 +212,7 @@ public class TrainingService {
                 environment,
                 "0",
                 hyperparameters,
-                runType + TEMPORARY_POSTFIX
+                runType + RunUtils.TEMPORARY_POSTFIX
         );
 
         return name;

@@ -2,51 +2,51 @@ package io.skymind.pathmind.data.policy;
 
 public class RewardScore {
     // May be NaN!
-    private double max;
-    private double min;
-    private double mean;
+    private Double max;
+    private Double min;
+    private Double mean;
 
-    private int iteration;
+    private Integer iteration;
 
     // for deserialization
     private RewardScore(){}
 
-    public RewardScore(double max, double min, double mean, int iteration) {
+    public RewardScore(Double max, Double min, Double mean, Integer iteration) {
         this.max = max;
         this.min = min;
         this.mean = mean;
         this.iteration = iteration;
     }
 
-    public double getMax() {
+    public Double getMax() {
         return max;
     }
 
-    public void setMax(double max) {
+    public void setMax(Double max) {
         this.max = max;
     }
 
-    public double getMin() {
+    public Double getMin() {
         return min;
     }
 
-    public void setMin(double min) {
+    public void setMin(Double min) {
         this.min = min;
     }
 
-    public double getMean() {
+    public Double getMean() {
         return mean;
     }
 
-    public void setMean(double mean) {
+    public void setMean(Double mean) {
         this.mean = mean;
     }
 
-    public int getIteration() {
+    public Integer getIteration() {
         return iteration;
     }
 
-    public void setIteration(int iteration) {
+    public void setIteration(Integer iteration) {
         this.iteration = iteration;
     }
 }
