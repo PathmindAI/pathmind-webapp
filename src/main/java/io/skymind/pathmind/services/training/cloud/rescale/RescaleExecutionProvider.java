@@ -12,8 +12,7 @@ import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import io.skymind.pathmind.services.training.versions.RescaleFileManager;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -22,8 +21,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class RescaleExecutionProvider implements ExecutionProvider {
-    private Logger log = LogManager.getLogger(RescaleExecutionProvider.class);
 
     private final RescaleRestApiClient client;
     private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;

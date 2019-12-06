@@ -5,9 +5,8 @@ import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.PathMindException;
 import io.skymind.pathmind.security.Routes;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,10 +16,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class EmailNotificationService
 {
-
-	private static Logger log = LogManager.getLogger(EmailNotificationService.class);
 
     @Value("${pathmind.reset.password.link.valid}")
     private int resetTokenValidHours;

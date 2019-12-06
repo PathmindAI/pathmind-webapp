@@ -2,13 +2,11 @@ package io.skymind.pathmind.ui.utils;
 
 import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.ui.views.errors.ErrorView;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ExceptionWrapperUtils
 {
-	private static Logger log = LogManager.getLogger(ExceptionWrapperUtils.class);
-
 	private ExceptionWrapperUtils() {
 	}
 

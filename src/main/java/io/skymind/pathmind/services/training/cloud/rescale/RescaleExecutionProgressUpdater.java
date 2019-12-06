@@ -8,8 +8,7 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,8 +19,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater {
-    private static Logger log = LoggerFactory.getLogger(RescaleExecutionProgressUpdater.class);
     private final RescaleExecutionProvider provider;
     private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RunDAO runDAO;

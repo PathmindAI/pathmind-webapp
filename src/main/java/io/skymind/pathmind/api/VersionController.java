@@ -8,15 +8,14 @@ import com.vaadin.flow.spring.SpringVaadinSession;
 import io.skymind.pathmind.ActiveSessionsRegistry;
 import io.skymind.pathmind.ui.components.CloseableNotification;
 import javax.servlet.http.HttpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Slf4j
 public class VersionController {
-
-	private static final Logger log = LoggerFactory.getLogger(VersionController.class);
 
 	public static final String ATTRIBUTE_VAADIN_SPRING_SERVLET = "com.vaadin.flow.server.VaadinSession.springServlet";
 
