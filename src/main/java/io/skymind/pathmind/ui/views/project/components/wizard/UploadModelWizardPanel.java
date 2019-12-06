@@ -19,14 +19,13 @@ import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
+@Slf4j
 public class UploadModelWizardPanel extends VerticalLayout
 {
-	private static Logger log = LogManager.getLogger(UploadModelWizardPanel.class);
 	private final Model model;
 
 	private Label projectNameLabel;
