@@ -56,6 +56,13 @@ steps:
       contents: '*.pubxml'
       targetFolder: $(Build.ArtifactStagingDirectory)
 
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: 'src/main/scripts/'
+      contents: '*sh'
+      targetFolder: '$(Build.ArtifactStagingDirectory)/target'
+      flattenFolders: true
+
   - task: PublishBuildArtifacts@1
     inputs:
       artifactName: 'drop'
