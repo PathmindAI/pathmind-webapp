@@ -1,15 +1,21 @@
 package io.skymind.pathmind.services.training;
 
 import io.skymind.pathmind.mock.MockDefaultValues;
+import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class ExecutionProgressWatcher implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
+public class ExecutionProgressWatcher implements ApplicationListener<ContextRefreshedEvent>, DisposableBean
+{
+    @Autowired
+    private EmailNotificationService emailNotificationService;
+
     private Runner runner = null;
 
     public void destroy(){
@@ -56,6 +62,7 @@ public class ExecutionProgressWatcher implements ApplicationListener<ContextRefr
                             updater.update();
                         } catch (Exception e) {
                             log.error("Exception during progress update", e);
+                            emailNotificationService.sendEmailExceptionNotification(e);
                         }
                         lastRun = System.currentTimeMillis();
                     } else {
