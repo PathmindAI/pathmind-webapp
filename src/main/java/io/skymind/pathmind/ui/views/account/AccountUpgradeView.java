@@ -20,13 +20,13 @@ public class AccountUpgradeView extends PathMindDefaultView
 {
 	private final AccountUpgradeViewContent accountUpgradeViewContent;
 	
-	@Autowired
 	private StripeService stripeService;
 	
 	@Autowired
-	public AccountUpgradeView(AccountUpgradeViewContent accountUpgradeViewContent)
+	public AccountUpgradeView(AccountUpgradeViewContent accountUpgradeViewContent, StripeService stripeService)
 	{
 		this.accountUpgradeViewContent = accountUpgradeViewContent;
+		this.stripeService = stripeService;
 	}
 
 	@Override

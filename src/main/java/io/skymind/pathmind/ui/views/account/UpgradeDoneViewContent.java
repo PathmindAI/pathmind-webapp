@@ -18,8 +18,6 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
-import io.skymind.pathmind.services.UserService;
-import io.skymind.pathmind.services.billing.StripeService;
 
 @Tag("upgrade-done-view-content")
 @JsModule("./src/account/upgrade-done-view-content.js")
@@ -33,12 +31,6 @@ public class UpgradeDoneViewContent extends PolymerTemplate<UpgradeDoneViewConte
 	private Button done;
 
 	private PathmindUser user;
-
-	@Autowired
-	private UserService userService;
-
-	@Autowired
-	private StripeService stripeService;
 
 	@Autowired
 	public UpgradeDoneViewContent(CurrentUser currentUser,

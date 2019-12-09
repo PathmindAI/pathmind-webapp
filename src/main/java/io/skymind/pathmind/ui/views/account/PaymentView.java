@@ -5,8 +5,6 @@ import static io.skymind.pathmind.security.Routes.PAYMENT_URL;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 
@@ -28,12 +26,12 @@ public class PaymentView extends PathMindDefaultView {
 
 	private final PaymentViewContent paymentViewContent;
 	
-	@Autowired
 	private StripeService stripeService;
 
 	@Autowired
-	public PaymentView(PaymentViewContent paymentViewContent) {
+	public PaymentView(PaymentViewContent paymentViewContent, StripeService stripeService) {
 		this.paymentViewContent = paymentViewContent;
+		this.stripeService = stripeService;
 	}
 
 	@Override

@@ -1,5 +1,12 @@
 package io.skymind.pathmind.ui.views.account;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+
 import com.stripe.model.Subscription;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -9,18 +16,12 @@ import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
+
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.services.billing.StripeService;
 import io.skymind.pathmind.ui.components.dialog.SubscriptionCancelDialog;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
-
-import javax.annotation.PostConstruct;
 
 @Tag("account-view-content")
 @JsModule("./src/account/account-view-content.js")
@@ -43,14 +44,14 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 	@Id("editPaymentBtn")
 	private Button editPaymentBtn;
 	
-	@Autowired
 	private StripeService stripeService;
 
 	private PathmindUser user;
 
 	@Autowired
-	public AccountViewContent(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink) {
-        getModel().setContactLink(contactLink);
+	public AccountViewContent(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink, StripeService stripeService) {
+        this.stripeService = stripeService;
+		getModel().setContactLink(contactLink);
 		user = currentUser.getUser();
 	}
 
@@ -76,7 +77,7 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 	// This part will probably move to a separate view, but for now implementing it as a confirmation dialog
 	private void cancelSubscription(Subscription subscription) {
 		SubscriptionCancelDialog subscriptionCancelDialog = new SubscriptionCancelDialog(subscription.getCurrentPeriodEnd(), () -> {
-			Subscription updatedSubscription = stripeService.cancelSubscription(user.getEmail());
+			Subscription updatedSubscription = stripeService.cancelSubscription(user.getEmail(), true);
 			initContent(updatedSubscription);
 			initBtns(updatedSubscription);
 		});

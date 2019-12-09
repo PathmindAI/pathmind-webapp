@@ -16,8 +16,6 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
-import io.skymind.pathmind.services.UserService;
-import io.skymind.pathmind.services.billing.StripeService;
 
 @Tag("account-upgrade-view-content")
 @JsModule("./src/account/account-upgrade-view-content.js")
@@ -29,12 +27,6 @@ public class AccountUpgradeViewContent extends PolymerTemplate<AccountUpgradeVie
 	private Button proBtn;
 
 	private PathmindUser user;
-
-	@Autowired
-	private UserService userService;
-
-	@Autowired
-	private StripeService stripeService;
 
 	@Autowired
 	public AccountUpgradeViewContent(CurrentUser currentUser,
