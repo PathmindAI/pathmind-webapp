@@ -73,8 +73,15 @@ public class DateAndTimeUtils
 	 * If userTimeZone is available in cache, executes the timeZoneConsumer immediately,
 	 * otherwise, it's executed after userTimeZone is read from client side
 	 */
-	public static void withUserTimeZone(SerializableConsumer<String> timeZoneConsumer) {
+	public static void withUserTimeZoneId(SerializableConsumer<String> timeZoneConsumer) {
 		UI.getCurrent().getPage().retrieveExtendedClientDetails(details -> timeZoneConsumer.accept(details.getTimeZoneId()));
+	}
+
+	/**
+	 * Gets the TimeZoneId from client browser
+	 */
+	public static String getUserTimeZoneId() {
+		return UI.getCurrent().getInternals().getExtendedClientDetails().getTimeZoneId();
 	}
 	
 }
