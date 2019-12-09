@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import com.stripe.model.Product;
 
 import io.skymind.pathmind.PathmindApplicationTests;
 
+@Ignore
 public class StripeServiceTest extends PathmindApplicationTests
 {
 
