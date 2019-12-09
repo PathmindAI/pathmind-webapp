@@ -558,5 +558,12 @@
                 (SELECT PROJECT.ID FROM PROJECT LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
         </sql>
     </changeSet>
+    
+    <changeSet id="20191209-1" author="onur@vaadin.com">
+        <update tableName="PATHMIND_USER">
+            <column name="STRIPE_CUSTOMER_ID" value="cus_GKPM6sw8wTtgjg"/>
+            <where>EMAIL='test_pathmind@skymind.io'</where>
+        </update>
+    </changeSet>
 
 </databaseChangeLog>

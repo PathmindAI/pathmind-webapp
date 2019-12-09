@@ -1,19 +1,21 @@
 package io.skymind.pathmind.services.billing;
 
-import com.stripe.exception.StripeException;
-import com.stripe.model.Customer;
-import com.stripe.model.Plan;
-import com.stripe.model.Product;
-import io.skymind.pathmind.PathmindApplicationTests;
-import org.junit.Ignore;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Customer;
+import com.stripe.model.Plan;
+import com.stripe.model.Product;
 
-@Ignore
+import io.skymind.pathmind.PathmindApplicationTests;
+
 public class StripeServiceTest extends PathmindApplicationTests
 {
 
@@ -22,7 +24,7 @@ public class StripeServiceTest extends PathmindApplicationTests
 	@Value("${pathmind.stripe.professional-plan-id}")
 	private String professionalPlanId;
 
-	private String customerEmail = "vesa@vaadin.com";
+	private String customerEmail = "test_pathmind@skymind.io";
 
 	@Test
 	public void testProfessionalProductExists() throws StripeException
@@ -42,22 +44,33 @@ public class StripeServiceTest extends PathmindApplicationTests
 	}
 
 	@Test
-	public void testGetCustomer() throws StripeException
-	{
-		final Customer customer = stripeService.getCustomer(customerEmail);
-		assertEquals("Vesa Nieminen", customer.getName());
-	}
-
-	@Test
 	public void testCustomerAlreadyExists()
 	{
 		assertTrue(stripeService.customerAlreadyExists(customerEmail));
 	}
+	
+	@Test
+	public void testGetCustomer() throws StripeException
+	{
+		final Customer customer = stripeService.getCustomer(customerEmail);
+		assertEquals("Pathmind Test", customer.getName());
+	}
+
 
 	@Test
 	public void testUserHasActiveProfessionalSubscription()
 	{
+		assertFalse(stripeService.userHasActiveProfessionalSubscription(customerEmail));
+	}
+
+	@Test
+	public void testSubscribeAndCancellation() throws StripeException
+	{
+		final Customer customer = stripeService.getCustomer(customerEmail);
+		assertNotNull(stripeService.createSubscription(customer));
 		assertTrue(stripeService.userHasActiveProfessionalSubscription(customerEmail));
+		stripeService.cancelSubscription(customerEmail, false);
+		assertFalse(stripeService.userHasActiveProfessionalSubscription(customerEmail));
 	}
 
 }

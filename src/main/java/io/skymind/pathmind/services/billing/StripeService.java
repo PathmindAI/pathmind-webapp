@@ -1,22 +1,25 @@
 package io.skymind.pathmind.services.billing;
 
-import com.stripe.Stripe;
-import com.stripe.exception.StripeException;
-import com.stripe.model.Customer;
-import com.stripe.model.PaymentMethod;
-import com.stripe.model.Subscription;
-import io.skymind.pathmind.data.PathmindUser;
-import io.skymind.pathmind.db.dao.UserDAO;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Customer;
+import com.stripe.model.PaymentMethod;
+import com.stripe.model.Subscription;
+
+import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.db.dao.UserDAO;
 
 /**
  * This class is used to manage credit card subscription of the Pathmind application.
@@ -196,14 +199,18 @@ public class StripeService
 	 * 
 	 * @return updated subscription instance
 	 */
-	public Subscription cancelSubscription(String email)
+	public Subscription cancelSubscription(String email, boolean cancelAtPeriodEnd)
 	{
 		try {
 			Customer customer = getCustomer(email);
 			Subscription subscription = customer.getSubscriptions().getData().get(0);
-			Map<String, Object> params = new HashMap<>();
-			params.put("cancel_at_period_end", true);
-			return subscription.update(params);
+			if (cancelAtPeriodEnd) {
+				Map<String, Object> params = new HashMap<>();
+				params.put("cancel_at_period_end", true);
+				return subscription.update(params);
+			} else {
+				return subscription.cancel();
+			}
 		} catch (StripeException e) {
 			log.info("Could not cancel Stripe subscription for: " + email);
 			throw new RuntimeException(e);
@@ -254,7 +261,8 @@ public class StripeService
 			log.info("Could not retrieve customer from Stripe: " + email);
 			return null;
 		}
-		if (customer.getSubscriptions() == null ||
+		if (customer == null || 
+				customer.getSubscriptions() == null ||
 				customer.getSubscriptions().getData() == null ||
 				customer.getSubscriptions().getData().isEmpty()
 				) {
