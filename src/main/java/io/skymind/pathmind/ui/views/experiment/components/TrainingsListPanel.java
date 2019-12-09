@@ -4,11 +4,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Consumer;
 
-import org.springframework.stereotype.Component;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSingleSelectionModel;
@@ -147,7 +144,7 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
     public void init(Experiment experiment, long defaultSelectedPolicyId) {
         this.experiment = experiment;
 
-        DateAndTimeUtils.withUserTimeZone(timeZonneId -> {
+        DateAndTimeUtils.withUserTimeZoneId(timeZonneId -> {
         	grid.setDataProvider(new ListDataProvider<>(experiment.getPolicies()));
         });
 

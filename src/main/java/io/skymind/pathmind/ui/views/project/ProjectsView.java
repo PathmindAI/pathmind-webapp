@@ -134,7 +134,7 @@ public class ProjectsView extends PathMindDefaultView
 	@Override
 	protected void initScreen(BeforeEnterEvent event)
 	{
-		DateAndTimeUtils.withUserTimeZone(timeZoneId -> {
+		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
 			projectGrid.setItems(projects);
 		});
 		archivesTabPanel.initData();
