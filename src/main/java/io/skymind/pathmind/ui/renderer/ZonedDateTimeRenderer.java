@@ -5,9 +5,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.data.renderer.BasicRenderer;
 import com.vaadin.flow.function.ValueProvider;
+
+import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 /**
  * 
@@ -32,7 +33,7 @@ public class ZonedDateTimeRenderer<SOURCE> extends BasicRenderer<SOURCE, LocalDa
 
 	private String formatDateTimeInUserTimezone(LocalDateTime dateTime) {
 		ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneId.systemDefault());
-		String userTimeZoneId = UI.getCurrent().getInternals().getExtendedClientDetails().getTimeZoneId();
+		String userTimeZoneId = DateAndTimeUtils.getUserTimeZoneId();
 		if (userTimeZoneId != null) {
 			zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.of(userTimeZoneId));
 		}
