@@ -27,7 +27,7 @@ public class AccountEditView extends PathMindDefaultView {
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("ACCOUNT EDIT");
+		return new ScreenTitlePanel("ACCOUNT", "Edit");
 	}
 
 	@Override
