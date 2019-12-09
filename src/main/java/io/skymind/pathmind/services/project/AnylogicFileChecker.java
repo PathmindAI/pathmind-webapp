@@ -2,8 +2,7 @@ package io.skymind.pathmind.services.project;
 
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.utils.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.FileSystemUtils;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,9 +23,9 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 /*To validate the model.jar uploaded by the user*/
+@Slf4j
 public class AnylogicFileChecker implements FileChecker {
 
-    private static final Logger log = LogManager.getLogger(AnylogicFileChecker.class);
     private String uuid = UUID.randomUUID().toString();
     private File jarTempDir = null;
 

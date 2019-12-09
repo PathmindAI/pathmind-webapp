@@ -15,19 +15,20 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.dom.DomEventListener;
 import io.skymind.pathmind.data.Model;
+import io.skymind.pathmind.ui.components.LabelFactory;
+import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
+@Slf4j
 public class UploadModelWizardPanel extends VerticalLayout
 {
-	private static Logger log = LogManager.getLogger(UploadModelWizardPanel.class);
 	private final Model model;
 
-	private Label projectNameLabel = new Label();
+	private Label projectNameLabel;
 
 	private Button checkYourModelButton = new Button("Check Your model");
 
@@ -43,12 +44,13 @@ public class UploadModelWizardPanel extends VerticalLayout
 	{
 		this.model = model;
 
+		projectNameLabel = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
 		projectNameLabel.getStyle().set("margin-top", "0px");
-
+		
 		setupUploadPanel();
 		setupFileCheckPanel();
 
-		add(getProjectH3(),
+		add(LabelFactory.createLabel("Project", CssMindPathStyles.SECTION_TITLE_LABEL),
 				projectNameLabel,
 				GuiUtils.getFullWidthHr(),
 				getInstructionsDiv(),
@@ -118,12 +120,6 @@ public class UploadModelWizardPanel extends VerticalLayout
 
 	public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
 		checkYourModelButton.addClickListener(listener);
-	}
-
-	private H3 getProjectH3() {
-		H3 h3 = new H3("Project");
-		h3.getStyle().set("margin-bottom", "0px");
-		return h3;
 	}
 
 	// TODO -> CSS -> Move CSS to styles.css

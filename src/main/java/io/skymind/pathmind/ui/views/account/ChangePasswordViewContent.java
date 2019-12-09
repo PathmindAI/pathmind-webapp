@@ -15,6 +15,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.services.UserService;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +54,9 @@ public class ChangePasswordViewContent extends PolymerTemplate<ChangePasswordVie
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
 	@Autowired
 	public ChangePasswordViewContent(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink) {
@@ -70,6 +74,7 @@ public class ChangePasswordViewContent extends PolymerTemplate<ChangePasswordVie
 			if (validate())  {
 				if (userService.changePassword(user, newPassword.getValue())) {
 					NotificationUtils.showNotification("Password was successfully changed.", NotificationVariant.LUMO_SUCCESS);
+					segmentIntegrator.passwordChanged();
 					getUI().ifPresent(ui -> ui.navigate(AccountView.class));
 				} else {
 					NotificationUtils.showNotification("There was an error during changing password, please try again",
