@@ -1,12 +1,10 @@
 package io.skymind.pathmind.services.training.progress;
 
-import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.policy.HyperParameters;
-import io.skymind.pathmind.data.policy.RewardScore;
 import com.opencsv.CSVReader;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.policy.HyperParameters;
 import io.skymind.pathmind.data.policy.RewardScore;
+import io.skymind.pathmind.data.utils.RunUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.StringReader;
@@ -31,14 +29,22 @@ public class ProgressInterpreter {
         final Policy policy = new Policy();
         policy.setExternalId(keyString);
 
-        StringBuilder buffer = new StringBuilder();
-        // looks something like this:
-        // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128_2019-08-05_13-56-455cdir_3f
-
         int keyLength = keyString.length();
-        String id = keyString.substring(keyLength - TRIAL_ID_LEN);
-        String dateTime = keyString.substring(keyLength - TRIAL_ID_LEN - DATE_LEN, keyLength - TRIAL_ID_LEN);
-        keyString = keyString.substring(0, keyLength - TRIAL_ID_LEN - DATE_LEN - 1);
+        String id = null;
+        String dateTime = null;
+
+
+        if (keyString.endsWith(RunUtils.TEMPORARY_POSTFIX)) {
+            // looks something like this:
+            // PPO_PathmindEnvironment_0_gamma=0.99,lr=1.0E-5,sgd_minibatch_size=128_1TEMP
+            keyString = keyString.substring(0, keyLength - RunUtils.TEMPORARY_POSTFIX.length() - 2);
+        } else {
+            // looks something like this:
+            // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128_2019-08-05_13-56-455cdir_3f
+            id = keyString.substring(keyLength - TRIAL_ID_LEN);
+            dateTime = keyString.substring(keyLength - TRIAL_ID_LEN - DATE_LEN, keyLength - TRIAL_ID_LEN);
+            keyString = keyString.substring(0, keyLength - TRIAL_ID_LEN - DATE_LEN - 1);
+        }
 
         // keyString now looks like :
         // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128
@@ -52,9 +58,11 @@ public class ProgressInterpreter {
         });
 
         try {
-            final LocalDateTime utcTime = LocalDateTime.parse(dateTime, dateFormat);
-            final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();
-            policy.setStartedAt(time);
+            if (dateTime != null) {
+                final LocalDateTime utcTime = LocalDateTime.parse(dateTime, dateFormat);
+                final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();
+                policy.setStartedAt(time);
+            }
         } catch (Exception e) {
             log.debug(e.getMessage());
         }
