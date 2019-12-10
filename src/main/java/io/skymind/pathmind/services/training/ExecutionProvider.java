@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.training;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 public interface ExecutionProvider {
@@ -64,7 +65,16 @@ public interface ExecutionProvider {
      * @param trainingRun Training Run Name, as given as a key by `progress(jobHandle)`
      * @return policy file contents or null if no such file is available
      */
-    public byte[] policy(String jobHandle, String trainingRun);
+    byte[] policy(String jobHandle, String trainingRun);
+
+    /**
+     * Download the last checkpoint file from the given jobHandle and trainingRun
+     *
+     * @param jobHandle
+     * @param trainingRun
+     * @return
+     */
+    Map.Entry<@NotNull String, byte[]> snapshot(String jobHandle, String trainingRun);
 
     /**
      *  Download the current console output for the given jobHandle. Best used for debugging purposes; usually not
@@ -73,5 +83,5 @@ public interface ExecutionProvider {
      * @param jobHandle Job Handle
      * @return Console Output
      */
-    public String console(String jobHandle);
+    String console(String jobHandle);
 }

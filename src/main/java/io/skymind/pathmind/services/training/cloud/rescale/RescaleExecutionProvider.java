@@ -15,6 +15,7 @@ import io.skymind.pathmind.services.training.versions.RescaleFileManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -172,6 +173,15 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     }
 
     @Override
+    public Map.Entry<@NotNull String, byte[]> snapshot(String jobHandle, String trainingRun) {
+        return client.outputFiles(jobHandle, "1").getResults()
+                .stream()
+                .filter(it -> it.getPath().endsWith(trainingRun + "/checkpoint.zip"))
+                .map(it -> Map.entry(it.getId(), client.fileContents(it.getId())))
+                .findFirst().orElse(null);
+    }
+
+    @Override
     public String console(String jobHandle) {
         final RunStatus runStatus = status(jobHandle);
 
@@ -302,7 +312,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "  cd $OLDPWD;\n" +
                         "  cp trial_* ../output;\n" +
                         "  cd `find \"$DIR\"/.. -iname checkpoint_* -type d | sort -V | tail -1`;\n"+
-                        "  zip $OLDPWD/../output/$(basename $PWD)_$(basename `dirname $DIR`).zip ./* ;\n"+
+                        "  zip $OLDPWD/../output/$(basename `dirname $DIR`)/checkpoint.zip ./* ;\n"+
                         "  cd $OLDPWD;\n" +
                 "done"
         ));

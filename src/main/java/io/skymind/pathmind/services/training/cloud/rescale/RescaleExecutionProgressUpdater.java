@@ -84,12 +84,20 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
                 // todo make saving to enum or static final variable (currently defined in PolicyDAO).
                 final byte[] policyFile = provider.policy(rescaleJobId, finishPolicyName);
                 runDAO.savePolicyFile(runId, finishPolicyName, policyFile);
+
+                // save the last checkpoint
+                Map.Entry<String, byte[]> entry = provider.snapshot(rescaleJobId, finishPolicyName);
+                if (entry != null) {
+                    final byte[] checkPointFile = entry.getValue();
+                    runDAO.saveCheckpointFile(runId, finishPolicyName, checkPointFile);
+                }
             });
             // STEPH -> REFACTOR -> Combined so that this is transactional. For now I just left it as is for the merge
             // conflict just to process the PR and will clean it up as part of another ticket.
             runDAO.cleanUpTemporary(runId);
         }
     }
+
 
     private void setStoppedAtForFinishedPolicies(List<Policy> policies, List<String> finishedPolicyNamesFromRescale) {
         policies.stream()
