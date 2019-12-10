@@ -1,14 +1,20 @@
 package io.skymind.pathmind.ui.views.dashboard;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
-import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.data.renderer.NumberRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
+
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.db.dao.PolicyDAO;
@@ -19,17 +25,13 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.dashboard.filter.DashboardFilter;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 
 
 @Route(value= Routes.DASHBOARD_URL, layout = MainLayout.class)
@@ -108,13 +110,13 @@ public class DashboardView extends PathMindDefaultView
 				.setHeader("Duration")
 				.setResizable(true)
 				.setSortable(true);
-		Grid.Column<Policy> startedColumn = dashboardGrid.addColumn(new LocalDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+		Grid.Column<Policy> startedColumn = dashboardGrid.addColumn(new ZonedDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Policy::getStartedAt, Comparator.nullsFirst(Comparator.naturalOrder())))
 				.setHeader("Started")
 				.setAutoWidth(true)
 				.setResizable(true)
 				.setSortable(true);
-		dashboardGrid.addColumn(new LocalDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+		dashboardGrid.addColumn(new ZonedDateTimeRenderer<>(policy -> policy.getRun().getStoppedAt(), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(policy -> policy.getRun().getStoppedAt()))
 				.setHeader("Completed")
 				.setComparator(getCompletedComparator())
@@ -151,6 +153,9 @@ public class DashboardView extends PathMindDefaultView
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
-		dashboardGrid.setItems(policies);
+		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+			// dashboardGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
+			dashboardGrid.setItems(policies);
+		});
 	}
 }

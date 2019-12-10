@@ -1,4 +1,4 @@
-import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
+import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 /**
  * `payment-view-content`
@@ -230,11 +230,11 @@ class PaymentViewContent extends PolymerElement {
 
     const style = {
       base: {
-        fontSize: '17px',
-        iconColor: '#666EE8',
-        color: '#31325F',
-        lineHeight: '40px',
-        fontWeight: 300,
+        fontSize: "17px",
+        iconColor: "#666EE8",
+        color: "#31325F",
+        lineHeight: "40px",
+        fontWeight: 300
         //'::placeholder': {
         //    color: '#CFD7E0',
         //},
@@ -247,14 +247,23 @@ class PaymentViewContent extends PolymerElement {
     const elements = this.stripe.elements();
     // Create a new credit card field with Stripe, hide the postal code because we have a Vaadin field for that.
     // Also override the styles
-    this.cardElement = elements.create('card', {hidePostalCode: true, style: style});
+    this.cardElement = elements.create("card", {
+      hidePostalCode: true,
+      style: style
+    });
     // Find an element with #card-element id and mount that with the new Stripe credit card element
     // This creates an iFrame to Stripe services.
-    this.cardElement.mount('#card-element');
+    this.cardElement.mount("#card-element");
     // Add a listener to the card element to know when it's ready.
-    this.cardElement.addEventListener('change', event => this.isStripeComplete = event.complete);
+    this.cardElement.addEventListener(
+      "change",
+      event => (this.isStripeComplete = event.complete)
+    );
     // If there's an error coming from Stripe set it visible
-    this.cardElement.addEventListener('change', ({error}) => this.message = error ? error.message : '');
+    this.cardElement.addEventListener(
+      "change",
+      ({ error }) => (this.message = error ? error.message : "")
+    );
   }
 
   and(a, b) {
@@ -266,23 +275,25 @@ class PaymentViewContent extends PolymerElement {
   submit() {
     if (this.isStripeComplete) {
       const paymentView = this;
-      this.stripe.createPaymentMethod('card', this.cardElement, {
-        billing_details: {
-          name: this.name,
-          address: {
-            line1: this.address,
-            city:  this.city,
-            state:  this.state,
-            postal_code:  this.postal_code
+      this.stripe
+        .createPaymentMethod("card", this.cardElement, {
+          billing_details: {
+            name: this.name,
+            address: {
+              line1: this.address,
+              city: this.city,
+              state: this.state,
+              postal_code: this.postal_code
+            }
           }
-        }
-      }).then(function(result) {
-        if (result.error) {
-          this.paymentError = result.error.message;
-        } else {
-          paymentView.setPaymentMethod(result.paymentMethod);
-        }
-      });
+        })
+        .then(function(result) {
+          if (result.error) {
+            this.paymentError = result.error.message;
+          } else {
+            paymentView.setPaymentMethod(result.paymentMethod);
+          }
+        });
     }
   }
 
@@ -294,21 +305,18 @@ class PaymentViewContent extends PolymerElement {
   // Called every time the form changes. Validation for the Vaadin elements happens on the server side as well.
   // NOTE: DO NOT SEND ANY CREDIT CARD RELATED INFORMATION TO THE BACKEND. STRIPE SHOULD ONLY MANAGE THAT!
   formUpdated() {
-    this.$server.validateForm(
-        {
-          billing_details: {
-            name: this.name,
-            address: {
-              line1: this.address,
-              city: this.city,
-              state: this.state,
-              postal_code: this.postal_code
-            }
-          }
+    this.$server.validateForm({
+      billing_details: {
+        name: this.name,
+        address: {
+          line1: this.address,
+          city: this.city,
+          state: this.state,
+          postal_code: this.postal_code
         }
-    );
+      }
+    });
   }
-
 }
 
 customElements.define(PaymentViewContent.is, PaymentViewContent);
