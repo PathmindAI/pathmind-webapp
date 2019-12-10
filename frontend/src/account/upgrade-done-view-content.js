@@ -1,4 +1,4 @@
-import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
+import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 /**
  * `upgrade-done-view-content`
@@ -124,9 +124,7 @@ class UpgradeDoneViewContent extends PolymerElement {
     return "upgrade-done-view-content";
   }
 
-  static get properties() {
-  }
-
+  static get properties() {}
 }
 
 customElements.define(UpgradeDoneViewContent.is, UpgradeDoneViewContent);

@@ -14,7 +14,6 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
-import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -33,6 +32,7 @@ import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.BackButton;
 import io.skymind.pathmind.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
@@ -107,12 +107,12 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 				.setHeader("Model")
 				.setResizable(true)
 				.setSortable(true);
-		modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+		modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getDateCreated))
 				.setHeader("Date Created")
 				.setResizable(true)
 				.setSortable(true);
-		Grid.Column<Model> lastActivityColumn = modelGrid.addColumn(new LocalDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+		Grid.Column<Model> lastActivityColumn = modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setResizable(true)
@@ -155,7 +155,10 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
-		modelGrid.setItems(models);
+		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+			// modelGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
+			modelGrid.setItems(models);
+		});
 		archivesTabPanel.initData();
 		titlePanel.setSubtitle(projectName);
 	}
