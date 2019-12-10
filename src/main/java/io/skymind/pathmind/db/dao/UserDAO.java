@@ -1,11 +1,12 @@
 package io.skymind.pathmind.db.dao;
 
-import io.skymind.pathmind.bus.EventBus;
-import io.skymind.pathmind.bus.events.UserUpdateBusEvent;
-import io.skymind.pathmind.data.PathmindUser;
 import org.jooq.DSLContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
+
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.UserUpdateBusEvent;
+import io.skymind.pathmind.data.PathmindUser;
 
 @Repository
 public class UserDAO

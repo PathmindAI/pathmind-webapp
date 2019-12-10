@@ -24,6 +24,9 @@ public class Routes {
     public static final String ACCOUNT_EDIT_URL = "account/edit";
     public static final String ACCOUNT_URL = "account";
     public static final String ACCOUNT_CHANGE_PASS_URL = "account/change-password";
+    public static final String ACCOUNT_UPGRADE_URL = "account/upgrade";
+    public static final String PAYMENT_URL = "payment";
+    public static final String UPGRADE_DONE = "upgrade-done";
 
     public static final String NEW_PROJECT = "newProject";
     public static final String EXPERIMENTS_URL = "experiments";

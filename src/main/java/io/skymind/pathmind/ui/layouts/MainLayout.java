@@ -2,6 +2,7 @@ package io.skymind.pathmind.ui.layouts;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.InitialPageSettings;
@@ -30,6 +31,8 @@ import io.skymind.pathmind.ui.utils.VaadinUtils;
 @CssImport(value = "./styles/views/experiments-view.css")
 @CssImport(value = "./styles/views/new-experiment-view.css")
 @CssImport(value = "./styles/views/pathmind-dialog-view.css", id = "pathmind-dialog-view")
+// Stripe should be added to every page to be able to use their fraud detection mechanism
+@JavaScript("https://js.stripe.com/v3/")
 @Theme(Lumo.class)
 public class MainLayout extends AppLayout implements PageConfigurator
 {

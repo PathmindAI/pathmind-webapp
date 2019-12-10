@@ -21,7 +21,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row16;
+import org.jooq.Row17;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PathmindUser extends TableImpl<PathmindUserRecord> {
 
-    private static final long serialVersionUID = 319183585;
+    private static final long serialVersionUID = -886765742;
 
     /**
      * The reference instance of <code>public.pathmind_user</code>
@@ -139,6 +139,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     public final TableField<PathmindUserRecord, LocalDateTime> PASSWORD_RESET_SEND_AT = createField(DSL.name("password_reset_send_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
 
     /**
+     * The column <code>public.pathmind_user.stripe_customer_id</code>.
+     */
+    public final TableField<PathmindUserRecord, String> STRIPE_CUSTOMER_ID = createField(DSL.name("stripe_customer_id"), org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
+
+    /**
      * Create a <code>public.pathmind_user</code> table reference
      */
     public PathmindUser() {
@@ -218,11 +223,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row16 type methods
+    // Row17 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row16<Long, String, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime> fieldsRow() {
-        return (Row16) super.fieldsRow();
+    public Row17<Long, String, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime, String> fieldsRow() {
+        return (Row17) super.fieldsRow();
     }
 }

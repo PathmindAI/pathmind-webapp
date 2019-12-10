@@ -1,13 +1,18 @@
 package io.skymind.pathmind.db.dao;
 
-import io.skymind.pathmind.data.PathmindUser;
-import io.skymind.pathmind.security.SecurityUtils;
-import org.jooq.DSLContext;
-import org.springframework.stereotype.Repository;
+import static io.skymind.pathmind.data.db.Tables.EXPERIMENT;
+import static io.skymind.pathmind.data.db.Tables.MODEL;
+import static io.skymind.pathmind.data.db.Tables.PATHMIND_USER;
+import static io.skymind.pathmind.data.db.Tables.POLICY;
+import static io.skymind.pathmind.data.db.Tables.PROJECT;
+import static io.skymind.pathmind.data.db.Tables.RUN;
 
 import java.util.UUID;
 
-import static io.skymind.pathmind.data.db.Tables.*;
+import org.jooq.DSLContext;
+
+import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.security.SecurityUtils;
 
 class UserRepository
 {
@@ -79,6 +84,7 @@ class UserRepository
                 .set(PATHMIND_USER.EMAIL_VERIFICATION_TOKEN, pathmindUser.getEmailVerificationToken())
                 .set(PATHMIND_USER.EMAIL_VERIFIED_AT, pathmindUser.getEmailVerifiedAt())
                 .set(PATHMIND_USER.PASSWORD_RESET_SEND_AT, pathmindUser.getPasswordResetSendAt())
+                .set(PATHMIND_USER.STRIPE_CUSTOMER_ID, pathmindUser.getStripeCustomerId())
                 .where(PATHMIND_USER.ID.eq(pathmindUser.getId()))
                 .execute();
     }

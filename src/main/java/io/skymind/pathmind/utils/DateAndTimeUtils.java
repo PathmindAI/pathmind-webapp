@@ -3,6 +3,7 @@ package io.skymind.pathmind.utils;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -66,6 +67,7 @@ public class DateAndTimeUtils
 			}
 		};
 	}
+
 	/**
 	 * Calls retrieveExtendedClientDetails to read the userTimeZone from client.
 	 * This call is done in an async way, and the value is cached by Page, so for each UI, the call is done only once.
@@ -83,5 +85,11 @@ public class DateAndTimeUtils
 	public static String getUserTimeZoneId() {
 		return UI.getCurrent().getInternals().getExtendedClientDetails().getTimeZoneId();
 	}
-	
+
+	/**
+	 * This is used in Stripe integration, since Stripe keeps Timestamps as epochSeconds
+	 */
+	public static LocalDateTime fromEpoch(long epoch) {
+		return LocalDateTime.ofInstant(Instant.ofEpochSecond(epoch), ZoneId.systemDefault());
+	}
 }
