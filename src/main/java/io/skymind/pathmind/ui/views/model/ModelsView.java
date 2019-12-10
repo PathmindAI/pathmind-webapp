@@ -147,9 +147,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	@Override
 	protected void initLoadData() throws InvalidDataException {
 		models = modelDAO.getModelsForProject(projectId);
-		if(models == null || models.isEmpty())
-			throw new InvalidDataException("Attempted to access Models for Project: " + projectId);
-		// It was either a left join on all the models to get the project or a separate database call to get the project's name.
 		projectName = projectDAO.getProject(projectId).getName();
 	}
 
