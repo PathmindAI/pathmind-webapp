@@ -46,14 +46,14 @@ class RescaleFile {
    private String owner;
    @NotNull
    private String encodedEncryptionKey;
-   private int decryptedSize;
+   private long decryptedSize;
    @NotNull
    private String md5;
 
    // for deserialization
    private RescaleFile(){}
 
-   public RescaleFile(int typeId, @NotNull String id, @NotNull String name, boolean isUploaded, boolean isDeleted, boolean viewInBrowser, @NotNull LocalDateTime dateUploaded, @Nullable String relativePath, @NotNull String downloadUrl, @NotNull String path, @NotNull List<String> sharedWith, @NotNull String owner, @NotNull String encodedEncryptionKey, int decryptedSize, @NotNull String md5) {
+   public RescaleFile(int typeId, @NotNull String id, @NotNull String name, boolean isUploaded, boolean isDeleted, boolean viewInBrowser, @NotNull LocalDateTime dateUploaded, @Nullable String relativePath, @NotNull String downloadUrl, @NotNull String path, @NotNull List<String> sharedWith, @NotNull String owner, @NotNull String encodedEncryptionKey, long decryptedSize, @NotNull String md5) {
       this.typeId = typeId;
       this.id = id;
       this.name = name;
@@ -184,11 +184,11 @@ class RescaleFile {
       this.encodedEncryptionKey = encodedEncryptionKey;
    }
 
-   public int getDecryptedSize() {
+   public long getDecryptedSize() {
       return this.decryptedSize;
    }
 
-   public void setDecryptedSize(int decryptedSize) {
+   public void setDecryptedSize(long decryptedSize) {
       this.decryptedSize = decryptedSize;
    }
 
