@@ -16,6 +16,7 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.JSON;
 import org.jooq.Name;
@@ -42,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ExecutionProviderMetaData extends TableImpl<ExecutionProviderMetaDataRecord> {
 
-    private static final long serialVersionUID = -702325607;
+    private static final long serialVersionUID = -1118604824;
 
     /**
      * The reference instance of <code>public.execution_provider_meta_data</code>
@@ -60,7 +61,7 @@ public class ExecutionProviderMetaData extends TableImpl<ExecutionProviderMetaDa
     /**
      * The column <code>public.execution_provider_meta_data.id</code>.
      */
-    public final TableField<ExecutionProviderMetaDataRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ExecutionProviderMetaDataRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('execution_provider_meta_data_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.execution_provider_meta_data.provider_class</code>.
@@ -118,6 +119,11 @@ public class ExecutionProviderMetaData extends TableImpl<ExecutionProviderMetaDa
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.EXECUTION_PROVIDER_META_DATA_PKEY, Indexes.EXECUTION_PROVIDER_META_DATA_PROVIDER_CLASS_KEY_KEY);
+    }
+
+    @Override
+    public Identity<ExecutionProviderMetaDataRecord, Long> getIdentity() {
+        return Keys.IDENTITY_EXECUTION_PROVIDER_META_DATA;
     }
 
     @Override
