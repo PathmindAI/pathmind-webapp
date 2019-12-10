@@ -1,162 +1,76 @@
 package io.skymind.pathmind.ui.views.project;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.data.Model;
+
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.data.utils.ModelUtils;
 import io.skymind.pathmind.data.utils.ProjectUtils;
 import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.Routes;
-import io.skymind.pathmind.security.SecurityUtils;
-import io.skymind.pathmind.services.project.ProjectFileCheckService;
-import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
 import io.skymind.pathmind.ui.utils.FormUtils;
-import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.ui.views.model.ModelsView;
 import io.skymind.pathmind.ui.views.project.components.panels.NewProjectLogoWizardPanel;
-import io.skymind.pathmind.ui.views.project.components.wizard.*;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Arrays;
-import java.util.List;
+import io.skymind.pathmind.ui.views.project.components.wizard.CreateANewProjectWizardPanel;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.NEW_PROJECT, layout = MainLayout.class)
-@Slf4j
-public class NewProjectView extends PathMindDefaultView implements StatusUpdater
+public class NewProjectView extends PathMindDefaultView 
 {
 
 	@Autowired
 	private ProjectDAO projectDAO;
 	
 	@Autowired
-	private ProjectFileCheckService projectFileCheckService ;
-	
-	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 
 	private Project project;
-	private Model model;
 
 	private Binder<Project> projectBinder;
-	private Binder<Model> modelBinder;
-
-	private UI ui;
 
 	private NewProjectLogoWizardPanel logoPanel;
-	private NewProjectStatusWizardPanel statusPanel;
 	private CreateANewProjectWizardPanel createProjectPanel;
-	private PathminderHelperWizardPanel pathminderHelperWizardPanel;
-	private UploadModelWizardPanel uploadModelWizardPanel;
-	private ModelDetailsWizardPanel modelDetailsWizardPanel;
-
-	private List<Component> wizardPanels;
-
-	private PathmindUserDetails user;
 
 	public NewProjectView()
 	{
 		super();
-		this.ui = UI.getCurrent();
-		this.user = SecurityUtils.getUser();
 	}
 
 	protected Component getMainContent()
 	{
 		this.project = ProjectUtils.generateNewDefaultProject();
-		this.model = ModelUtils.generateNewDefaultModel();
-
 		projectBinder = new Binder<>(Project.class);
-		modelBinder = new Binder<>(Model.class);
 
 		logoPanel = new NewProjectLogoWizardPanel();
-		statusPanel = new NewProjectStatusWizardPanel();
 		createProjectPanel = new CreateANewProjectWizardPanel(projectBinder, projectDAO);
-		pathminderHelperWizardPanel = new PathminderHelperWizardPanel();
-		uploadModelWizardPanel = new UploadModelWizardPanel(model);
-		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
-
-		wizardPanels = Arrays.asList(
-				createProjectPanel,
-				pathminderHelperWizardPanel,
-				uploadModelWizardPanel,
-				modelDetailsWizardPanel);
 
 		// This is only used in case we setup MockDefaultValues through ProjectUtils above.
 		projectBinder.readBean(project);
 
-		setVisibleWizardPanel(createProjectPanel);
-
 		createProjectPanel.addButtonClickListener(click -> handleNewProjectClicked());
-		pathminderHelperWizardPanel.addButtonClickListener(click -> handleNextStepClicked());
-		uploadModelWizardPanel.addButtonClickListener(click -> handleUploadWizardClicked());
-		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked());
 
 		return WrapperUtils.wrapFormCenterVertical(
 				logoPanel,
-				statusPanel,
-				createProjectPanel,
-				pathminderHelperWizardPanel,
-				uploadModelWizardPanel,
-				modelDetailsWizardPanel);
-	}
-
-	private void handleMoreDetailsClicked()
-	{
-		ExceptionWrapperUtils.handleButtonClicked(() ->
-		{
-			// Project has already passed validations in a previous panel of the wizard.
-			if(!FormUtils.isValidForm(modelBinder, model))
-				return;
-
-			final long experimentId = projectDAO.setupNewProject(project, model);
-			segmentIntegrator.projectCreated();
-			
-			UI.getCurrent().navigate(NewExperimentView.class, experimentId);
-		});
-	}
-
-	private void handleUploadWizardClicked() {
-		if (user.getEmail().equals("edward@skymind.io")) { // This is Ed!
-			log.info("User is Ed, skipping file check");
-			fileSuccessfullyVerified();
-		} else {
-			uploadModelWizardPanel.showFileCheckPanel();
-			projectFileCheckService.checkFile(this, model.getFile());
-		}
-	}
-
-	private void handleNextStepClicked() {
-		setVisibleWizardPanel(uploadModelWizardPanel);
-		statusPanel.setUploadModel();
+				createProjectPanel);
 	}
 
 	private void handleNewProjectClicked()
 	{
 		if(!FormUtils.isValidForm(projectBinder, project))
 			return;
-
-		pathminderHelperWizardPanel.setProjectName(project.getName());
-		uploadModelWizardPanel.setProjectName(project.getName());
-		setVisibleWizardPanel(pathminderHelperWizardPanel);
-		statusPanel.setPathmindHelper();
-	}
-
-	private void setVisibleWizardPanel(Component wizardPanel) {
-		wizardPanels.stream()
-				.forEach(panel -> panel.setVisible(panel.equals(wizardPanel)));
+		
+		final long projectId = projectDAO.createNewProject(project);
+		segmentIntegrator.projectCreated();
+		UI.getCurrent().navigate(ModelsView.class, projectId);
 	}
 
 	/**
@@ -165,36 +79,10 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 	protected VerticalLayout getTitlePanel() {
 		return null;
 	}
-
-	@Override
-	public void updateStatus(double percentage) {
-		PushUtils.push(ui, () ->
-			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(percentage));
-	}
-
-	@Override
-	public void updateError(String error) {
-		PushUtils.push(ui, () -> {
-			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
-			uploadModelWizardPanel.setError(error);
-			segmentIntegrator.modelImported(false);
-		});
-	}
-
-	@Override
-	public void fileSuccessfullyVerified() {
-		PushUtils.push(ui, () -> {
-			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
-			setVisibleWizardPanel(modelDetailsWizardPanel);
-			projectBinder.readBean(project);
-			modelBinder.readBean(model);
-			statusPanel.setModelDetails();
-			segmentIntegrator.modelImported(true);
-		});
-	}
-
+	
 	@Override
 	protected boolean isAccessAllowedForUser() {
 		return true;
 	}
+
 }
