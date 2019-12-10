@@ -154,6 +154,7 @@ public class DashboardView extends PathMindDefaultView
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+			// dashboardGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			dashboardGrid.setItems(policies);
 		});
 	}

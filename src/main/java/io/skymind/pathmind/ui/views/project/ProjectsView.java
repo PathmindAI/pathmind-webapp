@@ -135,6 +135,7 @@ public class ProjectsView extends PathMindDefaultView
 	protected void initScreen(BeforeEnterEvent event)
 	{
 		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+			// projectGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			projectGrid.setItems(projects);
 		});
 		archivesTabPanel.initData();

@@ -80,6 +80,7 @@ public class ArchivesTabPanel<T extends ArchivableData> extends TabPanel
 	 */
 	public void initData() {
 		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+			// Grid column renderers might be using timeZone to format dates and times. Making sure here that timezone is loaded properly
 			grid.setItems(getFilteredModels(getItems.get(), false));
 		});
 	}

@@ -144,7 +144,8 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
     public void init(Experiment experiment, long defaultSelectedPolicyId) {
         this.experiment = experiment;
 
-        DateAndTimeUtils.withUserTimeZoneId(timeZonneId -> {
+        DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+            // grid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
         	grid.setDataProvider(new ListDataProvider<>(experiment.getPolicies()));
         });
 

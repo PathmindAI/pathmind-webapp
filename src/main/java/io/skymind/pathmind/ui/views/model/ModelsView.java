@@ -156,6 +156,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	@Override
 	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
 		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+			// modelGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			modelGrid.setItems(models);
 		});
 		archivesTabPanel.initData();
