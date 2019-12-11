@@ -64,6 +64,14 @@ public class ExecutionProviderMetaDataDAO
         delete(modelFileKey(modelId));
     }
 
+    public void putCheckPointFileKey(String policyExternalId, Object value) {
+        put(checkPointFileKey(policyExternalId), value);
+    }
+
+    public String getCheckPointFileKey(String policyExternalId) {
+        return get(checkPointFileKey(policyExternalId));
+    }
+
     private void put(String key, Object value) {
         ExecutionProviderMetaDataRepository.put(ctx, mapper, RESCALE_EXECUTION_PROVIDER, key, value);
     }
@@ -88,5 +96,9 @@ public class ExecutionProviderMetaDataDAO
     // STEPH -> REFACTOR -> Should be removed.
     private String runIdKey(long runId){
         return "runId:" + runId;
+    }
+
+    private String checkPointFileKey(String policyExternalId) {
+        return "checkPointFileId:" + policyExternalId;
     }
 }

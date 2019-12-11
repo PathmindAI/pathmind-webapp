@@ -24,6 +24,8 @@ public class JobSpec {
 
     private final RunType type;
     private final Supplier<byte[]> modelFileSupplier;
+
+    private String parentPolicyExternalId;
     private Supplier<byte[]> snapshotSupplier;
 
     private final List<Double> learningRates;
@@ -106,6 +108,14 @@ public class JobSpec {
 
     public void setSnapshot(Supplier<byte[]> snapshotSupplier) {
         this.snapshotSupplier = snapshotSupplier;
+    }
+
+    public String getParentPolicyExternalId() {
+        return parentPolicyExternalId;
+    }
+
+    public void setParentPolicyExternalId(String parentPolicyExternalId) {
+        this.parentPolicyExternalId = parentPolicyExternalId;
     }
 
     public ExecutionEnvironment getEnv() {

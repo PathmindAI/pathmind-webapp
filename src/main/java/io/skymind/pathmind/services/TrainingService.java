@@ -170,7 +170,9 @@ public class TrainingService {
         );
 
         final JSONB progress = policyDAO.getProgress(policy.getId());
+
         spec.setSnapshot(() -> policyDAO.getSnapshotFile(policy.getId()));
+        spec.setParentPolicyExternalId(policy.getExternalId());
 
         final String executionId = executionProvider.execute(spec);
 
