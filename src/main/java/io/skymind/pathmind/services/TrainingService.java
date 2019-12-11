@@ -17,6 +17,7 @@ import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.JSONB;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -31,7 +32,6 @@ public class TrainingService {
     private final PolicyDAO policyDAO;
     private ExecutionEnvironment executionEnvironment;
 
-    // TODO: Move direct db access into a DAO.
     public TrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO) {
         this.executionProvider = executionProvider;
         this.runDAO = runDAO;
@@ -98,7 +98,7 @@ public class TrainingService {
                 100, // Max 100 iterations for a discovery run.
                 executionEnvironment,
                 RunType.DiscoveryRun,
-                () ->modelDAO.getModelFile(model.getId()),
+                () -> modelDAO.getModelFile(model.getId()),
                 Arrays.asList(1e-3, 1e-5), // Learning rate
                 Arrays.asList(0.9, 0.99), // gamma
                 Arrays.asList(64), // batch size
@@ -129,7 +129,7 @@ public class TrainingService {
                 100, // Max 100 iterations for a test run
                 executionEnvironment,
                 RunType.DiscoveryRun,
-                () ->modelDAO.getModelFile(model.getId()),
+                () -> modelDAO.getModelFile(model.getId()),
                 Arrays.asList(1e-3, 1e-5), // Learning rate
                 Arrays.asList(0.9, 0.99), // gamma
                 Arrays.asList(128), // batch size
@@ -169,15 +169,22 @@ public class TrainingService {
                 -1        // no limit
         );
 
+        final JSONB progress = policyDAO.getProgress(policy.getId());
+        spec.setSnapshot(() -> policyDAO.getSnapshotFile(policy.getId()));
+
         final String executionId = executionProvider.execute(spec);
 
         runDAO.markAsStarting(run.getId());
         log.info("Started FULL training job with id {}", executionId);
 
-        addTempPolicy(spec, run);
+        addTempPolicy(spec, run, progress);
     }
 
     private void addTempPolicy(JobSpec spec, Run run) {
+        addTempPolicy(spec, run, null);
+    }
+
+    private void addTempPolicy(JobSpec spec, Run run, JSONB progress) {
         // this is for ui filling gap until ui get a training progress from backend(rescale)
         Policy tempPolicy = new Policy();
 
@@ -192,6 +199,10 @@ public class TrainingService {
         tempPolicy.setName(name);
         tempPolicy.setExternalId(name);
         tempPolicy.setRunId(run.getId());
+
+        if (progress != null) {
+            tempPolicy.setProgress(progress.toString());
+        }
 
         policyDAO.insertPolicy(tempPolicy);
     }

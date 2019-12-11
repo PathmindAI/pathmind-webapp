@@ -7,7 +7,6 @@ import org.jooq.JSONB;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -186,4 +185,20 @@ class PolicyRepository
 				.where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.like("%" + tempKeyword)))
 				.execute();
 	}
+
+	protected static JSONB getProgress(DSLContext ctx, long policyId) {
+		return ctx.select(POLICY.PROGRESS)
+				.from(POLICY)
+				.where(POLICY.ID.eq(policyId))
+				.fetchOne()
+				.get(POLICY.PROGRESS);
+	}
+
+	protected static byte[] getSnapshotFile(DSLContext ctx, long policyId) {
+		return ctx.select(POLICY.SNAPSHOT)
+				.from(POLICY)
+				.where(POLICY.ID.eq(policyId))
+				.fetchOne(POLICY.SNAPSHOT);
+	}
+
 }
