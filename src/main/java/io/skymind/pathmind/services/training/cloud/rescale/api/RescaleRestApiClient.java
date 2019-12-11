@@ -63,7 +63,9 @@ public class RescaleRestApiClient {
     public PagedResult<JobSummary> jobList() {
         return client.get().uri("/jobs/?page_size=9999")
                 .retrieve()
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
                 .bodyToMono(new ParameterizedTypeReference<PagedResult<JobSummary>>() {})
+                .onErrorMap(RuntimeException::new)
                 .block();
     }
 
@@ -73,54 +75,75 @@ public class RescaleRestApiClient {
                 .contentType(MediaType.APPLICATION_JSON).body(Mono.just(job), Job.class)
                 .retrieve()
                 .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(Job.class).block();
+                .bodyToMono(Job.class)
+                .onErrorMap(RuntimeException::new)
+                .block();
     }
 
     public void jobSubmit(String jobId){
         client.post().uri("/jobs/"+jobId+"/submit/")
                 .retrieve()
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
                 .bodyToMono(Void.class)
+                .onErrorMap(RuntimeException::new)
                 .block();
     }
 
     public void jobStop(String jobId){
         client.post().uri("/jobs/"+jobId+"/stop/")
                 .retrieve()
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
                 .bodyToMono(Void.class)
+                .onErrorMap(RuntimeException::new)
                 .block();
     }
 
     public void jobDelete(String jobId){
         client.delete().uri("/jobs/"+jobId+"/")
                 .retrieve()
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
                 .bodyToMono(Void.class)
+                .onErrorMap(RuntimeException::new)
                 .block();
     }
 
     public Job jobDetails(String jobId){
         return client.get().uri("/jobs/"+jobId+"/")
                 .retrieve()
-                .bodyToMono(Job.class).block();
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .bodyToMono(Job.class)
+                .onErrorMap(RuntimeException::new)
+                .block();
     }
 
     public PagedResult<JobStatus> jobStatusHistory(String jobId){
         return client.get().uri("/jobs/"+jobId+"/statuses/")
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<PagedResult<JobStatus>>(){}).block();
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .bodyToMono(new ParameterizedTypeReference<PagedResult<JobStatus>>(){})
+                .onErrorMap(RuntimeException::new)
+                .block();
     }
 
     public PagedResult<JobStatus> jobClusterStatusHistory(String jobId){
         return client.get().uri("/jobs/"+jobId+"/cluster_statuses/")
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<PagedResult<JobStatus>>(){}).block();
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .bodyToMono(new ParameterizedTypeReference<PagedResult<JobStatus>>(){})
+                .onErrorMap(RuntimeException::new)
+                .block();
     }
 
     public PagedResult<JobRun> jobRuns(String jobId){
         return client.get().uri("/jobs/"+jobId+"/runs/")
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<PagedResult<JobRun>>(){}).block();
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .bodyToMono(new ParameterizedTypeReference<PagedResult<JobRun>>(){})
+                .onErrorMap(RuntimeException::new)
+                .block();
     }
 
+    // Github issue #569 -> Can you please add the error handling on this DH as I'm not familiar enough with it to do it on a List.
     public List<DirectoryFileReference> workingFiles(String jobId, String run){
         return  client.get().uri("/jobs/"+jobId+"/runs/"+run+"/directory-contents/?page_size=9999")
                 .retrieve()
@@ -129,10 +152,12 @@ public class RescaleRestApiClient {
     }
 
     public PagedResult<RescaleFile> outputFiles(String jobId, String run){
-        return client
-                .get().uri("/jobs/"+jobId+"/runs/"+run+"/files/?page_size=1000")
+        return client.get().uri("/jobs/"+jobId+"/runs/"+run+"/files/?page_size=1000")
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<PagedResult<RescaleFile>>(){}).block();
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .bodyToMono(new ParameterizedTypeReference<PagedResult<RescaleFile>>(){})
+                .onErrorMap(RuntimeException::new)
+                .block();
     }
 
     public String tailConsole(String jobId, String run){
@@ -140,15 +165,21 @@ public class RescaleRestApiClient {
     }
 
     public byte[] tail(String jobId, String run, String filename){
-        return client
-                .get().uri("/jobs/"+jobId+"/runs/"+run+"/tail/"+filename)
+        return client.get().uri("/jobs/"+jobId+"/runs/"+run+"/tail/"+filename)
                 .retrieve()
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
                 .bodyToMono(byte[].class)
+                .onErrorMap(RuntimeException::new)
                 .block();
     }
 
     public byte[] fileContents(String fileId) {
-        return client.get().uri("/files/"+fileId+"/contents/").retrieve().bodyToMono(byte[].class).block();
+        return client.get().uri("/files/"+fileId+"/contents/")
+                .retrieve()
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .bodyToMono(byte[].class)
+                .onErrorMap(RuntimeException::new)
+                .block();
     }
 
     public byte[] outputFile(String jobId, String run, String filename){
@@ -161,8 +192,6 @@ public class RescaleRestApiClient {
     public String consoleOutput(String jobId, String run){
         return new String(outputFile(jobId, run, TrainingFile.RESCALE_LOG));
     }
-
-
 
     /**
      * Uses a different client library to work around the fact that rescale doesn't support `Transfer-Encoding: chunked`
@@ -212,13 +241,18 @@ public class RescaleRestApiClient {
         return client
                 .get().uri("/files/?page_size=9999")
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<PagedResult<RescaleFile>>(){}).block();
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .bodyToMono(new ParameterizedTypeReference<PagedResult<RescaleFile>>(){})
+                .onErrorMap(RuntimeException::new)
+                .block();
     }
 
     public void deleteFile(String fileId){
         client.delete().uri("/files/"+fileId+"/")
                 .retrieve()
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
                 .bodyToMono(Void.class)
+                .onErrorMap(RuntimeException::new)
                 .block();
     }
 
