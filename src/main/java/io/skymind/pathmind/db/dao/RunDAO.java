@@ -9,6 +9,7 @@ import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import org.jooq.DSLContext;
@@ -92,7 +93,7 @@ public class RunDAO
         if (policies.size() > 0 && PolicyRepository.isTemporaryPolicy(ctx, run.getId(), RunUtils.TEMPORARY_POSTFIX)) {
             Policy policy = policies.get(0);
             //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
-            PolicyRepository.updatePolicyNameAndExternalId(transactionCtx, run.getId(), policy.getExternalId(), PolicyUtils.generatePolicyTempName(policy, run));
+            PolicyRepository.updatePolicyNameAndExternalId(transactionCtx, run.getId(), policy.getExternalId(), PolicyUtils.generatePolicyTempName(policy.getExternalId(), run.getRunType()));
         }
     }
 
@@ -150,4 +151,24 @@ public class RunDAO
             log.info("Cleaned Temporary Policies in " + runId);
         }
     }
+
+    public List<RewardScore> getScores(long runId, String policyExtId) {
+        Policy policy =  PolicyRepository.getPolicy(ctx, runId, policyExtId);
+
+        // check temporary policy
+        if (policy == null) {
+            int runType = RunRepository.getRunType(ctx, runId).getValue();
+            policy = PolicyRepository.getPolicy(ctx, runId, PolicyUtils.generatePolicyTempName(policyExtId, runType));
+        }
+
+        if (policy == null) {
+            return null;
+        }
+
+        PolicyUtils.processProgressJson(policy, policy.getProgress());
+
+        return policy.getScores();
+    }
+
+
 }

@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.training.cloud.rescale;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
@@ -111,7 +112,10 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
         final Map<String, String> rawProgress = provider.progress(rescaleJobId, jobStatus);
         return rawProgress.entrySet().stream()
                 .filter(e -> !stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).contains(e.getKey()))
-                .map(ProgressInterpreter::interpret)
+                .map(e -> {
+                    List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
+                    return ProgressInterpreter.interpret(e, previousScores);
+                })
                 .collect(Collectors.toList());
     }
 
