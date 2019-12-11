@@ -94,22 +94,20 @@ public class UserDaoTest extends PathmindApplicationTests
 	}
 
 	@Test
-	public void testInsertTransactionRollback()
+	public void testDatabaseInsertConstraints()
 	{
 		PathmindUser pathmindUser = getNewPathmindUser();
 		userDAO.insertUser(pathmindUser);
-		int count = dslContext.fetchCount(PATHMIND_USER);
-		boolean rollback = false;
 
 		try {
 			// we try to add a user with the same email again which results in a constraint violation
 			userDAO.insertUser(pathmindUser);
 			Assert.fail();
 		} catch (DataAccessException ignore) {
-			rollback = true;
+			// Pass the test
+		} catch (Throwable t) {
+			Assert.fail();
 		}
-
-		assertTrue(rollback);
 	}
 
 	@Test
@@ -121,17 +119,15 @@ public class UserDaoTest extends PathmindApplicationTests
 		PathmindUser updatedPathmindUser = getNewPathmindUser();
 		changePathmindUser(updatedPathmindUser);
 		userDAO.insertUser(updatedPathmindUser);
-		boolean rollback = false;
 
 		try {
 			updatedPathmindUser.setEmail(pathmindUser.getEmail());
 			userDAO.update(updatedPathmindUser);
 			Assert.fail();
 		} catch (DataAccessException ignore) {
-			rollback = true;
+			// Pass the test
+		} catch (Throwable t) {
+			Assert.fail();
 		}
-
-		assertTrue(rollback);
 	}
-
 }

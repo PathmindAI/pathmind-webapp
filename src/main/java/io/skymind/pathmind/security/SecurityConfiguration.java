@@ -1,7 +1,7 @@
 package io.skymind.pathmind.security;
 
 import io.skymind.pathmind.data.PathmindUser;
-import io.skymind.pathmind.db.repositories.UserRepository;
+import io.skymind.pathmind.db.dao.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -90,15 +90,14 @@ public class SecurityConfiguration {
             this.passwordEncoder = passwordEncoder;
         }
 
-            @Bean
-            @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-            public CurrentUser currentUser (UserRepository userRepository){
-            final String username = SecurityUtils.getUsername();
-            PathmindUser user =
-                    username != null ? userRepository.findByEmailIgnoreCase(username) :
-                            null;
-            return () -> user;
-        }
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public CurrentUser currentUser(UserDAO userDAO) {
+        final String username = SecurityUtils.getUsername();
+        PathmindUser user =
+                username != null ? userDAO.findByEmailIgnoreCase(username) : null;
+        return () -> user;
+    }
 
         /**
          * Registers our UserDetailsService and the password encoder to be used on login attempts.

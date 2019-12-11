@@ -534,6 +534,12 @@
         </update>
     </changeSet>
 
+    <changeSet id="20191031-1" author="vesa@vaadin.com">
+        <addColumn tableName="PATHMIND_USER">
+            <column name="STRIPE_CUSTOMER_ID" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
     <!-- #456 Remove the default projects from the initial development from the database as they are no longer working with all the changes since
     Now technically I should just be able to do DELETE FROM POLICY since there is only sample data but to avoid any accidental errors I'm forcing
     a massive left join with a WHERE pathmind_user.email="steph@followsteph.com" so even if there is an error it can only delete the data from the
@@ -551,6 +557,13 @@
             DELETE FROM PROJECT WHERE ID IN
                 (SELECT PROJECT.ID FROM PROJECT LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
         </sql>
+    </changeSet>
+    
+    <changeSet id="20191209-1" author="onur@vaadin.com">
+        <update tableName="PATHMIND_USER">
+            <column name="STRIPE_CUSTOMER_ID" value="cus_GKPM6sw8wTtgjg"/>
+            <where>EMAIL='test_pathmind@skymind.io'</where>
+        </update>
     </changeSet>
 
 </databaseChangeLog>
