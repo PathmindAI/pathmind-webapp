@@ -19,8 +19,8 @@ import io.skymind.pathmind.ui.utils.FormUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.model.ModelsView;
+import io.skymind.pathmind.ui.views.project.components.panels.CreateANewProjectPanel;
 import io.skymind.pathmind.ui.views.project.components.panels.NewProjectLogoWizardPanel;
-import io.skymind.pathmind.ui.views.project.components.wizard.CreateANewProjectWizardPanel;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.NEW_PROJECT, layout = MainLayout.class)
@@ -38,7 +38,7 @@ public class NewProjectView extends PathMindDefaultView
 	private Binder<Project> projectBinder;
 
 	private NewProjectLogoWizardPanel logoPanel;
-	private CreateANewProjectWizardPanel createProjectPanel;
+	private CreateANewProjectPanel createProjectPanel;
 
 	public NewProjectView()
 	{
@@ -51,7 +51,7 @@ public class NewProjectView extends PathMindDefaultView
 		projectBinder = new Binder<>(Project.class);
 
 		logoPanel = new NewProjectLogoWizardPanel();
-		createProjectPanel = new CreateANewProjectWizardPanel(projectBinder, projectDAO);
+		createProjectPanel = new CreateANewProjectPanel(projectBinder, projectDAO);
 
 		// This is only used in case we setup MockDefaultValues through ProjectUtils above.
 		projectBinder.readBean(project);

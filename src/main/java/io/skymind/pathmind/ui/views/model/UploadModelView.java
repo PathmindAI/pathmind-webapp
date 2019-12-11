@@ -34,9 +34,9 @@ import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.ui.views.model.components.UploadModelStatusWizardPanel;
-import io.skymind.pathmind.ui.views.project.components.wizard.ModelDetailsWizardPanel;
-import io.skymind.pathmind.ui.views.project.components.wizard.UploadModelWizardPanel;
+import io.skymind.pathmind.ui.views.model.components.UploadModelWizardPanel;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
