@@ -10,6 +10,7 @@ import com.vaadin.flow.component.grid.Grid.Column;
 
 import io.skymind.pathmind.data.ArchivableData;
 import io.skymind.pathmind.ui.components.TabPanel;
+import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 /**
  * If this class is used within a view with a grid then it will automatically add the Archived column in the grid
@@ -78,6 +79,9 @@ public class ArchivesTabPanel<T extends ArchivableData> extends TabPanel
 	 * This needs to be called because there is are no listeners for the grid to know if grid.setItems() has been called.
 	 */
 	public void initData() {
-		grid.setItems(getFilteredModels(getItems.get(), false));
+		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+			// Grid column renderers might be using timeZone to format dates and times. Making sure here that timezone is loaded properly
+			grid.setItems(getFilteredModels(getItems.get(), false));
+		});
 	}
 }
