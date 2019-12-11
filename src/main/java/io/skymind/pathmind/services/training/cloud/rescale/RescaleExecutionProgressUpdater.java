@@ -6,6 +6,7 @@ import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
@@ -25,11 +26,13 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
     private final RescaleExecutionProvider provider;
     private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RunDAO runDAO;
+    private EmailNotificationService emailNotificationService;
 
-    public RescaleExecutionProgressUpdater(RescaleExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO){
+    public RescaleExecutionProgressUpdater(RescaleExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, EmailNotificationService emailNotificationService){
         this.provider = provider;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.runDAO = runDAO;
+        this.emailNotificationService = emailNotificationService;
     }
 
     @Override
@@ -45,24 +48,29 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
         // since runDAO.updateRun() is now transactional. In any case it's no worse than today and as a result I'm pushing this to another ticket.
         runsWithRescaleJobs.parallelStream().forEach(run ->
         {
-            final String rescaleJobId = rescaleJobIds.get(run.getId());
-            final RunStatus jobStatus = provider.status(rescaleJobId);
+            try {
+                final String rescaleJobId = rescaleJobIds.get(run.getId());
+                final RunStatus jobStatus = provider.status(rescaleJobId);
 
-            final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus);
-            final List<String> finishedPolicyNamesFromRescale = getTerminatedPolicesFromProvider(rescaleJobId);
+                final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus);
+                final List<String> finishedPolicyNamesFromRescale = getTerminatedPolicesFromProvider(rescaleJobId);
 
-            setStoppedAtForFinishedPolicies(policies, finishedPolicyNamesFromRescale);
+                setStoppedAtForFinishedPolicies(policies, finishedPolicyNamesFromRescale);
 
-            runDAO.updateRun(run, jobStatus, policies);
+                runDAO.updateRun(run, jobStatus, policies);
 
-            // STEPH -> REFACTOR -> QUESTION -> Does this need to be transactional with runDAO.updateRun and put
-            // into updateRun()? For now I left it here, it's no worse than what's in production today. I mainly kept it out
-            // updateRun() because savePolicyFilesForCompletedRuns() calls another provider and as a result it doesn't belong
-            // in the database layer. I would recommend breaking up savePolicyFilesForCompletedRuns() and pulling out the
-            // service component so that if there is a policyFile (byte[]) then it's done before the updateRun()
-            // method is called and we can just do a simple isPolicyFile != null check as to whether or not to
-            // also update it in the database.
-            savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus);
+                // STEPH -> REFACTOR -> QUESTION -> Does this need to be transactional with runDAO.updateRun and put
+                // into updateRun()? For now I left it here, it's no worse than what's in production today. I mainly kept it out
+                // updateRun() because savePolicyFilesForCompletedRuns() calls another provider and as a result it doesn't belong
+                // in the database layer. I would recommend breaking up savePolicyFilesForCompletedRuns() and pulling out the
+                // service component so that if there is a policyFile (byte[]) then it's done before the updateRun()
+                // method is called and we can just do a simple isPolicyFile != null check as to whether or not to
+                // also update it in the database.
+                savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus);
+            } catch (Exception e) {
+                log.error("Error for run: " + run.getId() + " : " + e.getMessage(), e);
+                emailNotificationService.sendEmailExceptionNotification("Error for run: " + run.getId() + " : " + e.getMessage(), e);
+            }
         });
     }
 
