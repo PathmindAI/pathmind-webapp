@@ -1,22 +1,20 @@
 package io.skymind.pathmind.ui.views.project.components.panels;
 
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridSortOrder;
-import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.data.provider.SortDirection;
-import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
-import io.skymind.pathmind.constants.RunType;
-import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Model;
-import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.data.utils.ExperimentUtils;
-import io.skymind.pathmind.utils.DateAndTimeUtils;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.data.provider.SortDirection;
+
+import io.skymind.pathmind.constants.RunType;
+import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
+import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 /**
  * This is a class because it's expected to be re-used in the ConsoleView when it's brought back.
@@ -30,7 +28,7 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setAutoWidth(true)
 				.setResizable(true)
 				.setSortable(true);
-		Grid.Column<Experiment> lastActivityColumn = addColumn(new LocalDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+		Grid.Column<Experiment> lastActivityColumn = addColumn(new ZonedDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Experiment::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setAutoWidth(true)

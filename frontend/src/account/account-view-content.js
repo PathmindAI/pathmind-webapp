@@ -9,12 +9,12 @@ class AccountViewContent extends PolymerElement {
   static get template() {
     return html`
       <style include="shared-styles pathmind-dialog-view">
-      	.small {
-      		font-size: small;
-      	}
-    	.small:empty {
-    		display: none;
-    	}
+        .small {
+          font-size: small;
+        }
+        .small:empty {
+          display: none;
+        }
       </style>
       <div class="content">
         <vaadin-tabs>
@@ -56,14 +56,14 @@ class AccountViewContent extends PolymerElement {
             <vaadin-vertical-layout class="info">
               <div class="title">Current Subscription</div>
               <div class="data">{{subscription}}</div>
-    		  <div class="data small">{{subscriptionCancellationNote}}</div>
+              <div class="data small">{{subscriptionCancellationNote}}</div>
             </vaadin-vertical-layout>
             <vaadin-button id="upgradeBtn">
               Upgrade
             </vaadin-button>
-    		<vaadin-button id="cancelSubscriptionBtn" theme="error">
-    		  Cancel
-    		</vaadin-button>
+            <vaadin-button id="cancelSubscriptionBtn" theme="error">
+              Cancel
+            </vaadin-button>
           </vaadin-horizontal-layout>
           <vaadin-horizontal-layout
             style="width: 100%;"
