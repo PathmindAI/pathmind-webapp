@@ -126,10 +126,10 @@ class RunRepository
                 .execute();
     }
 
-    protected static RunType getRunType(DSLContext ctx, long runId) {
+    protected static int getRunType(DSLContext ctx, long runId) {
         return ctx.select(Tables.RUN.RUN_TYPE)
                 .from(Tables.RUN)
                 .where(Tables.RUN.ID.eq(runId))
-                .fetchOneInto(RunType.class);
+                .fetchOneInto(Integer.class).intValue();
     }
 }

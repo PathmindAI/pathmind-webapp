@@ -53,15 +53,10 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         String modelId = uploadModelIfNeeded(job);
 
         // Get checkpoint file id
-        String checkpointId = uploadCheckpointIfNeeded(job);
+        String checkpointId = null;
 
         if (job.getSnapshot() != null) {
-            try {
-                RescaleFile rescaleFile = client.fileUpload(job.getSnapshot(), "checkpoint.zip");
-                files.add(new FileReference(rescaleFile.getId(), false));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            checkpointId = uploadCheckpointIfNeeded(job);
         }
 
         final ExecutionEnvironment env = job.getEnv();

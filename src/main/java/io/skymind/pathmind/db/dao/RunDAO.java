@@ -157,7 +157,7 @@ public class RunDAO
 
         // check temporary policy
         if (policy == null) {
-            int runType = RunRepository.getRunType(ctx, runId).getValue();
+            int runType = RunRepository.getRunType(ctx, runId);
             policy = PolicyRepository.getPolicy(ctx, runId, PolicyUtils.generatePolicyTempName(policyExtId, runType));
         }
 
