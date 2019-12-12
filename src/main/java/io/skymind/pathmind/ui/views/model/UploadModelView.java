@@ -3,6 +3,7 @@ package io.skymind.pathmind.ui.views.model;
 import java.util.Arrays;
 import java.util.List;
 
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,7 +22,6 @@ import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ModelUtils;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
@@ -50,7 +50,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private ModelDAO modelDAO;
 	
 	@Autowired
-	private ProjectFileCheckService projectFileCheckService ;
+	private ProjectFileCheckService projectFileCheckService;
+
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
 	private Model model;
 
@@ -101,12 +104,12 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 	
 	@Override
-	protected void initLoadData() throws InvalidDataException {
+	protected void initLoadData() {
 		project = projectDAO.getProject(projectId);
 	}
 	
 	@Override
-	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
+	protected void initScreen(BeforeEnterEvent event) {
 		uploadModelWizardPanel.setProjectName(project.getName());
 	}
 
@@ -156,6 +159,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
 			uploadModelWizardPanel.setError(error);
+			segmentIntegrator.modelImported(false);
 		});
 	}
 
@@ -166,6 +170,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			setVisibleWizardPanel(modelDetailsWizardPanel);
 			modelBinder.readBean(model);
 			statusPanel.setModelDetails();
+			segmentIntegrator.modelImported(true);
 		});
 	}
 
