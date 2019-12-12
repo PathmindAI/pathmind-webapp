@@ -572,7 +572,7 @@
             <column name="PROVIDER_CLASS_TEMP" type="INT" defaultValue="1"/>
             <column name="TYPE_TEMP" type="INT"/>
             <column name="KEY_TEMP" type="BIGINT"/>
-            <column name="VALUE_TEMP" type="varchar(6)"/>
+            <column name="VALUE_TEMP" type="varchar(36)"/>
         </addColumn>
         <comment>Convert the data to the new column formats - this is a bit complex but it can be done in SQL.</comment>
         <sql>
