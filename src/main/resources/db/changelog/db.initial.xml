@@ -573,4 +573,28 @@
         </update>
     </changeSet>
 
+    <changeSet id="20191210-1" author="steph@followsteph.com">
+        <comment>Convert the EXECUTION_PROVIDER_META_DATA to be more efficient and easier to use and maintain</comment>
+        <addColumn tableName="EXECUTION_PROVIDER_META_DATA">
+            <column name="PROVIDER_CLASS_TEMP" type="INT" defaultValue="1"/>
+            <column name="TYPE_TEMP" type="INT"/>
+            <column name="KEY_TEMP" type="BIGINT"/>
+            <column name="VALUE_TEMP" type="varchar(36)"/>
+        </addColumn>
+        <comment>Convert the data to the new column formats - this is a bit complex but it can be done in SQL.</comment>
+        <sql>
+            UPDATE EXECUTION_PROVIDER_META_DATA SET TYPE_TEMP = (CASE WHEN (SUBSTRING(KEY FROM 0 FOR POSITION(':' IN KEY)) = 'modelFileId') THEN 0 ELSE 1 END);
+            UPDATE EXECUTION_PROVIDER_META_DATA SET KEY_TEMP = CAST(SUBSTRING(KEY FROM POSITION(':' IN KEY) + 1) AS BIGINT);
+            UPDATE EXECUTION_PROVIDER_META_DATA SET VALUE_TEMP = value #>> '{}';
+        </sql>
+        <dropColumn tableName="EXECUTION_PROVIDER_META_DATA" columnName="PROVIDER_CLASS"/>
+        <dropColumn tableName="EXECUTION_PROVIDER_META_DATA" columnName="KEY"/>
+        <dropColumn tableName="EXECUTION_PROVIDER_META_DATA" columnName="VALUE"/>
+        <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="PROVIDER_CLASS" oldColumnName="PROVIDER_CLASS_TEMP"/>
+        <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="TYPE" oldColumnName="TYPE_TEMP"/>
+        <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="KEY" oldColumnName="KEY_TEMP"/>
+        <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="VALUE" oldColumnName="VALUE_TEMP"/>
+        <addUniqueConstraint tableName="EXECUTION_PROVIDER_META_DATA" constraintName="UNIQUE_PROVIDER_CLASS_TYPE_KEY" columnNames="PROVIDER_CLASS, TYPE, KEY" />
+    </changeSet>
+
 </databaseChangeLog>

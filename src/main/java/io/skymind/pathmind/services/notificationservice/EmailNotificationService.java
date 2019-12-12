@@ -7,6 +7,7 @@ import io.skymind.pathmind.exception.PathMindException;
 import io.skymind.pathmind.security.Routes;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -114,4 +115,26 @@ public class EmailNotificationService
 		return applicationURL + "/" + Routes.RESET_PASSWORD_URL + "/" + pathmindUser.getEmailVerificationToken();
 	}
 
+	// DH -> Should we decide to add email notifications for special exceptions then we just need to replace
+	// the log entries below with mailHelper and set it up according to our preferences.
+	public void sendEmailExceptionNotification(Throwable t) {
+		// Example
+		log.error("Subject: Exception: " + t.getMessage());
+		log.error("to: " + "default email address setup in application.properties");
+		log.error("Message:" + ExceptionUtils.getStackTrace(t));
+	}
+
+	public void sendEmailExceptionNotification(String title, Throwable t) {
+		// Example
+		log.error("Subject: Exception: " + title);
+		log.error("to: " + "default email address setup in application.properties");
+		log.error("Message:" + ExceptionUtils.getStackTrace(t));
+	}
+
+	public void sendEmailErrorNotification(String title, String message) {
+		// Example
+		log.error("Subject: Exception: " + title);
+		log.error("to: " + "default email address setup in application.properties");
+		log.error("Message:" + message);
+	}
 }
