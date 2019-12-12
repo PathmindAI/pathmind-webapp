@@ -1,11 +1,17 @@
 package io.skymind.pathmind.ui.views.project;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
+
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ModelUtils;
@@ -25,12 +31,12 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.ui.views.project.components.panels.NewProjectLogoWizardPanel;
-import io.skymind.pathmind.ui.views.project.components.wizard.*;
+import io.skymind.pathmind.ui.views.project.components.wizard.CreateANewProjectWizardPanel;
+import io.skymind.pathmind.ui.views.project.components.wizard.ModelDetailsWizardPanel;
+import io.skymind.pathmind.ui.views.project.components.wizard.NewProjectStatusWizardPanel;
+import io.skymind.pathmind.ui.views.project.components.wizard.PathminderHelperWizardPanel;
+import io.skymind.pathmind.ui.views.project.components.wizard.UploadModelWizardPanel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Arrays;
-import java.util.List;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.NEW_PROJECT, layout = MainLayout.class)
@@ -101,7 +107,7 @@ public class NewProjectView extends PathMindDefaultView implements StatusUpdater
 
 		createProjectPanel.addButtonClickListener(click -> handleNewProjectClicked());
 		pathminderHelperWizardPanel.addButtonClickListener(click -> handleNextStepClicked());
-		uploadModelWizardPanel.addButtonClickListener(click -> handleUploadWizardClicked());
+		uploadModelWizardPanel.addFileUploadCompletedListener(() -> handleUploadWizardClicked());
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked());
 
 		return WrapperUtils.wrapFormCenterVertical(
