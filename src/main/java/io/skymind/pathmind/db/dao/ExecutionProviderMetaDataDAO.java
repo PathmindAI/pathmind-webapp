@@ -1,20 +1,45 @@
 package io.skymind.pathmind.db.dao;
 
 import org.jooq.DSLContext;
-import org.springframework.security.access.intercept.RunAsImplAuthenticationProvider;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Repository
 public class ExecutionProviderMetaDataDAO
 {
-    private static final int RESCALE_EXECUTION_PROVIDER_CLASS = 1;
 
-    private static final int MODEL_FILE_ID_TYPE = 0;
-    private static final int RUN_ID_TYPE = 1;
+    public enum ExecutionProviderClass {
+        // These numeric ids are stored to the database so if changed, database migrations are needed
+        Rescale(1);
+
+        private final int id;
+
+        ExecutionProviderClass(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+    }
+
+    public enum IdType {
+        // These numeric ids are stored to the database so if changed, database migrations are needed
+        ModelFile(0),
+        Run(1);
+
+        private final int id;
+
+        IdType(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+    }
 
     private final DSLContext ctx;
 
@@ -23,44 +48,44 @@ public class ExecutionProviderMetaDataDAO
     }
 
     public void putRescaleRunJobId(long runId, String value) {
-        put(RESCALE_EXECUTION_PROVIDER_CLASS, RUN_ID_TYPE, runId, value);
+        put(ExecutionProviderClass.Rescale, IdType.Run, runId, value);
     }
 
     public Map<Long, String> getRescaleRunJobIds(List<Long> runIds) {
-        return get(RUN_ID_TYPE, runIds);
+        return get(IdType.Run, runIds);
     }
 
     // STEPH -> REFACTOR -> Was never called before. It was a service of a service but it was never ultimately called in the code.
     public void deleteRescaleRunJobId(long runId) {
-        delete(RUN_ID_TYPE, runId);
+        delete(IdType.Run, runId);
     }
 
     public void putModelFileKey(long modelId, String value) {
-        put(RESCALE_EXECUTION_PROVIDER_CLASS, MODEL_FILE_ID_TYPE, modelId, value);
+        put(ExecutionProviderClass.Rescale, IdType.ModelFile, modelId, value);
     }
 
     public String getModelFileKey(long modelId) {
-        return get(MODEL_FILE_ID_TYPE, modelId);
+        return get(IdType.ModelFile, modelId);
     }
 
     // STEPH -> REFACTOR -> Was never called before. It was a service of a service but it was never ultimately called in the code.
     public void deleteModelFileKey(long modelId) {
-        delete(MODEL_FILE_ID_TYPE, modelId);
+        delete(IdType.Run, modelId);
     }
 
-    private void put(int providerClass, int type, long key, String value) {
-        ExecutionProviderMetaDataRepository.put(ctx, providerClass, type, key, value);
+    private void put(ExecutionProviderClass providerClass, IdType type, long key, String value) {
+        ExecutionProviderMetaDataRepository.put(ctx, providerClass.getId(), type.getId(), key, value);
     }
 
-    private String get(int type, long key) {
-        return ExecutionProviderMetaDataRepository.get(ctx, type, key);
+    private String get(IdType type, long key) {
+        return ExecutionProviderMetaDataRepository.get(ctx, type.getId(), key);
     }
 
-    private Map<Long, String> get(int type, List<Long> keys) {
-        return ExecutionProviderMetaDataRepository.get(ctx, type, keys);
+    private Map<Long, String> get(IdType type, List<Long> keys) {
+        return ExecutionProviderMetaDataRepository.get(ctx, type.getId(), keys);
     }
 
-    private void delete(int type, long key) {
-        ExecutionProviderMetaDataRepository.delete(ctx, type, key);
+    private void delete(IdType type, long key) {
+        ExecutionProviderMetaDataRepository.delete(ctx, type.getId(), key);
     }
 }
