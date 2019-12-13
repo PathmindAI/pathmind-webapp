@@ -60,6 +60,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	private Grid<Model> modelGrid;
 	private Div instructionsDiv;
 	private ScreenTitlePanel titlePanel;
+	private SearchBox<Model> searchBox;
 
 	public ModelsView()
 	{
@@ -71,6 +72,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		setupGrid();
 		setupArchivesTabPanel();
 		setupInstructionsDiv();
+		searchBox = getSearchBox();
 		
 		addClassName("models-view");
 
@@ -80,8 +82,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
 				new ViewSection(
-  				WrapperUtils.wrapWidthFullCenterHorizontal(getBackToProjectsButton()),
-						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
+						WrapperUtils.wrapWidthFullCenterHorizontal(getBackToProjectsButton()),
+						WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
 						archivesTabPanel,
 						modelGrid,
 						instructionsDiv
@@ -120,7 +122,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 				(modelId, isArchivable) -> modelDAO.archive(modelId, isArchivable));
 	}
 
-	private SearchBox getSearchBox() {
+	private SearchBox<Model> getSearchBox() {
 		return new SearchBox<Model>(modelGrid, new ModelFilter());
 	}
 
@@ -181,10 +183,16 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 			// modelGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			modelGrid.setItems(models);
 		});
-		instructionsDiv.setVisible(models.isEmpty());
-		modelGrid.setVisible(!models.isEmpty());
+		arrangeGridAndInstructionsVisibility(!models.isEmpty());
 		archivesTabPanel.initData();
 		titlePanel.setSubtitle(projectName);
+	}
+	
+	private void arrangeGridAndInstructionsVisibility(boolean hasModels) {
+		instructionsDiv.setVisible(!hasModels);
+		modelGrid.setVisible(hasModels);
+		archivesTabPanel.setVisible(hasModels);
+		searchBox.setVisible(hasModels);
 	}
 
 	@Override
