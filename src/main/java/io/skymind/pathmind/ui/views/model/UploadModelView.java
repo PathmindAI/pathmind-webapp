@@ -3,6 +3,7 @@ package io.skymind.pathmind.ui.views.model;
 import java.util.Arrays;
 import java.util.List;
 
+import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +44,14 @@ import io.skymind.pathmind.ui.views.model.components.UploadModelWizardPanel;
 @Slf4j
 public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<Long> {
 
+	private static final String PROJECT_NOT_FOUND_EXCEPTION_MESSAGE = "Project with ID %s was not found";
+
 	@Autowired
 	private ProjectDAO projectDAO;
-	
+
 	@Autowired
 	private ModelDAO modelDAO;
-	
+
 	@Autowired
 	private ProjectFileCheckService projectFileCheckService;
 
@@ -68,7 +71,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private List<Component> wizardPanels;
 
 	private PathmindUserDetails user;
-	private long projectId; 
+	private long projectId;
 	private Project project;
 
 	public UploadModelView()
@@ -102,12 +105,16 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel);
 	}
-	
-	@Override
-	protected void initLoadData() {
-		project = projectDAO.getProject(projectId);
-	}
-	
+
+    @Override
+    protected void initLoadData() throws InvalidDataException {
+        final var foundProject = projectDAO.getProject(projectId);
+        if (foundProject == null) {
+            throw new InvalidDataException(String.format(PROJECT_NOT_FOUND_EXCEPTION_MESSAGE, projectId));
+        }
+        this.project = foundProject;
+    }
+
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		uploadModelWizardPanel.setProjectName(project.getName());
@@ -182,6 +189,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	@Override
 	public void setParameter(BeforeEvent event, Long projectId) {
 		this.projectId = projectId;
-		
+
 	}
 }
