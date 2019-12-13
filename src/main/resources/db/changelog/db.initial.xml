@@ -597,4 +597,8 @@
         <addUniqueConstraint tableName="EXECUTION_PROVIDER_META_DATA" constraintName="UNIQUE_PROVIDER_CLASS_TYPE_KEY" columnNames="PROVIDER_CLASS, TYPE, KEY" />
     </changeSet>
 
+    <changeSet id="20191212-1" author="daehyun@skymind.io">
+        <modifyDataType tableName="EXECUTION_PROVIDER_META_DATA" columnName="KEY" newDataType="NVARCHAR"></modifyDataType>
+    </changeSet>
+
 </databaseChangeLog>
