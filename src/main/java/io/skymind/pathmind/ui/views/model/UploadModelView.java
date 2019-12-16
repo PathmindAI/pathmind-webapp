@@ -27,15 +27,16 @@ import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
 import io.skymind.pathmind.ui.utils.FormUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.ui.views.model.components.UploadModelStatusWizardPanel;
-import io.skymind.pathmind.ui.views.project.components.wizard.ModelDetailsWizardPanel;
-import io.skymind.pathmind.ui.views.project.components.wizard.UploadModelWizardPanel;
+import io.skymind.pathmind.ui.views.model.components.UploadModelWizardPanel;
 import lombok.extern.slf4j.Slf4j;
 
 @CssImport("./styles/styles.css")
@@ -43,14 +44,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<Long> {
 
+	private static final String PROJECT_NOT_FOUND_EXCEPTION_MESSAGE = "Project with ID %s was not found";
+
 	@Autowired
 	private ProjectDAO projectDAO;
-	
+
 	@Autowired
 	private ModelDAO modelDAO;
-	
+
 	@Autowired
-	private ProjectFileCheckService projectFileCheckService ;
+	private ProjectFileCheckService projectFileCheckService;
+
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
 	private Model model;
 
@@ -65,7 +71,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private List<Component> wizardPanels;
 
 	private PathmindUserDetails user;
-	private long projectId; 
+	private long projectId;
 	private Project project;
 
 	public UploadModelView()
@@ -99,14 +105,18 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel);
 	}
-	
+
+    @Override
+    protected void initLoadData() throws InvalidDataException {
+        final var foundProject = projectDAO.getProject(projectId);
+        if (foundProject == null) {
+            throw new InvalidDataException(String.format(PROJECT_NOT_FOUND_EXCEPTION_MESSAGE, projectId));
+        }
+        this.project = foundProject;
+    }
+
 	@Override
-	protected void initLoadData() throws InvalidDataException {
-		project = projectDAO.getProject(projectId);
-	}
-	
-	@Override
-	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
+	protected void initScreen(BeforeEnterEvent event) {
 		uploadModelWizardPanel.setProjectName(project.getName());
 	}
 
@@ -156,6 +166,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
 			uploadModelWizardPanel.setError(error);
+			segmentIntegrator.modelImported(false);
 		});
 	}
 
@@ -166,6 +177,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			setVisibleWizardPanel(modelDetailsWizardPanel);
 			modelBinder.readBean(model);
 			statusPanel.setModelDetails();
+			segmentIntegrator.modelImported(true);
 		});
 	}
 
@@ -177,6 +189,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	@Override
 	public void setParameter(BeforeEvent event, Long projectId) {
 		this.projectId = projectId;
-		
+
 	}
 }

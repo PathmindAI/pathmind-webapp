@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.project.components.wizard;
+package io.skymind.pathmind.ui.views.project.components.panels;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -15,12 +15,12 @@ import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 
-public class CreateANewProjectWizardPanel extends VerticalLayout
+public class CreateANewProjectPanel extends VerticalLayout
 {
 	private TextField projectNameTextField = new TextField("Give your project a name");
 	private Button createProjectButton = new Button("Create Project");
 
-	public CreateANewProjectWizardPanel(Binder<Project> binder, ProjectDAO projectDao)
+	public CreateANewProjectPanel(Binder<Project> binder, ProjectDAO projectDao)
 	{
 		projectNameTextField.setWidthFull();
 		createProjectButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);

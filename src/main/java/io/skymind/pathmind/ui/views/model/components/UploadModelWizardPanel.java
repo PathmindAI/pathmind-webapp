@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.project.components.wizard;
+package io.skymind.pathmind.ui.views.model.components;
 
 import java.io.IOException;
 

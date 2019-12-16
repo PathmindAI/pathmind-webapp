@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
@@ -80,6 +81,18 @@ public class RunDAO
             updateFirstPolicy(run, policies, transactionCtx);
             updatePolicies(run, policies, transactionCtx);
         });
+
+        // The EventBus updates have to be done AFTER the transaction is completed and NOT during in case the transaction fails.
+        fireEventBusUpdates(run, policies);
+    }
+
+    private void fireEventBusUpdates(Run run, List<Policy> policies) {
+        // An event for each policy since we only need to update some of the policies in a run.
+        policies.stream().forEach(policy -> EventBus.post(new PolicyUpdateBusEvent(policy)));
+        // This is only needed because if the run is completed then with the current API there are no policies
+        // to update. By updating the run we can then let all the interested policies on screen know to update themselves.
+        if(policies.isEmpty())
+            EventBus.post(new RunUpdateBusEvent(run));
     }
 
     // STEPH -> REFACTOR -> QUESTION -> Rename method with an explanation of what this does? It generates a temp policy name but why? And why get only index 0.

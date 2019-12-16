@@ -2,6 +2,7 @@ package io.skymind.pathmind.ui.views.experiment.components;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSingleSelectionModel;
@@ -9,30 +10,43 @@ import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
-import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
+import io.skymind.pathmind.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.utils.PolicyUtils;
+import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.function.Consumer;
 
-@Component
-public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSubscriber {
+@SpringComponent
+@UIScope
+public class TrainingsListPanel extends VerticalLayout
+{
     private Grid<Policy> grid;
 
     private Experiment experiment;
 
+    private TrainingListPolicyUpdateSubscriber policyUpdateSubscriber;
+    private TrainingListRunUpdateSubscriber runUpdateSubscriber;
+
     public TrainingsListPanel() {
         setupGrid();
         add(grid);
+
+        policyUpdateSubscriber = new TrainingListPolicyUpdateSubscriber();
+        runUpdateSubscriber = new TrainingListRunUpdateSubscriber();
 
         // Always force at least one item to be selected.
         ((GridSingleSelectionModel<Policy>) grid.getSelectionModel()).setDeselectAllowed(false);
@@ -48,14 +62,14 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
                 .setResizable(true)
                 .setSortable(true);
 
-        Grid.Column<Policy> startedColumn = grid.addColumn(new LocalDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+        Grid.Column<Policy> startedColumn = grid.addColumn(new ZonedDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
                 .setComparator(Comparator.comparing(Policy::getStartedAt, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .setHeader("Started")
                 .setAutoWidth(true)
                 .setResizable(true)
                 .setSortable(true);
 
-        grid.addColumn(new LocalDateTimeRenderer<>(policy -> PolicyUtils.getRunCompletedTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+        grid.addColumn(new ZonedDateTimeRenderer<>(policy -> PolicyUtils.getRunCompletedTime(policy), DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
                 .setComparator(Comparator.comparing(policy -> PolicyUtils.getRunCompletedTime(policy)))
                 .setHeader("Completed")
                 .setAutoWidth(true)
@@ -63,7 +77,7 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
                 .setSortable(true);
 
         Grid.Column<Policy> scoreColumn = grid.addColumn(policy -> PolicyUtils.getFormattedLastScore(policy))
-        		.setComparator(Comparator.comparing(policy -> PolicyUtils.getLastScore(policy), Comparator.nullsLast(Comparator.naturalOrder())))
+                .setComparator(Comparator.comparing(policy -> PolicyUtils.getLastScore(policy), Comparator.nullsLast(Comparator.naturalOrder())))
                 .setHeader("Score")
                 .setAutoWidth(true)
                 .setTextAlign(ColumnTextAlign.END)
@@ -103,8 +117,19 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
                 selectionPolicy.getFirstSelectedItem().ifPresent(p -> consumer.accept(p)));
     }
 
+    private void updatedRunForPoliciesInGrid(Run run) {
+        experiment.getPolicies().stream()
+                .filter(policy -> policy.getRunId() == run.getId())
+                .forEach(policy -> {
+                    policy.setRun(run);
+                    grid.getDataProvider().refreshItem(policy);
+                });
+        // BUG -> If you search/filter after an update the grid uses the old value in the row.
+        // TODO -> Re-select same policy
+        // TODO -> refilter according to the search box.
+    }
 
-    private void updatedGrid(Policy updatedPolicy) {
+    private void updatePolicyInGrid(Policy updatedPolicy) {
         experiment.getPolicies().stream()
                 .filter(policy -> policy.getId() == updatedPolicy.getId())
                 .findAny()
@@ -141,7 +166,10 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
     public void init(Experiment experiment, long defaultSelectedPolicyId) {
         this.experiment = experiment;
 
-        grid.setDataProvider(new ListDataProvider<>(experiment.getPolicies()));
+        DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+            // grid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
+            grid.setDataProvider(new ListDataProvider<>(experiment.getPolicies()));
+        });
 
         if (!experiment.getPolicies().isEmpty() && defaultSelectedPolicyId < 0) {
             grid.select(experiment.getPolicies().get(0));
@@ -155,28 +183,56 @@ public class TrainingsListPanel extends VerticalLayout implements PolicyUpdateSu
 
     @Override
     protected void onDetach(DetachEvent event) {
-        EventBus.unsubscribe(this);
+        EventBus.unsubscribe(policyUpdateSubscriber);
+        EventBus.unsubscribe(runUpdateSubscriber);
     }
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this);
-    }
-
-    @Override
-    public void handleBusEvent(PolicyUpdateBusEvent event) {
-        PushUtils.push(this, () -> updatedGrid(event.getPolicy()));
-    }
-
-    @Override
-    public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-        return experiment.getId() == event.getPolicy().getExperiment().getId();
+        EventBus.subscribe(policyUpdateSubscriber);
+        EventBus.subscribe(runUpdateSubscriber);
     }
 
     public void selectPolicyWithId(String policyId) {
-    	experiment.getPolicies().stream()
-        	.filter(policy -> Long.toString(policy.getId()).equals(policyId))
-        	.findAny()
-        	.ifPresent(policy -> grid.select(policy));
+        experiment.getPolicies().stream()
+                .filter(policy -> Long.toString(policy.getId()).equals(policyId))
+                .findAny()
+                .ifPresent(policy -> grid.select(policy));
+    }
+
+    class TrainingListPolicyUpdateSubscriber implements PolicyUpdateSubscriber
+    {
+        @Override
+        public void handleBusEvent(PolicyUpdateBusEvent event) {
+            PushUtils.push(getUI(), () -> updatePolicyInGrid(event.getPolicy()));
+        }
+
+        @Override
+        public boolean filterBusEvent(PolicyUpdateBusEvent event) {
+            return experiment.getId() == event.getPolicy().getExperiment().getId();
+        }
+
+        @Override
+        public Optional<UI> getUI() {
+            return TrainingsListPanel.this.getUI();
+        }
+    }
+
+    class TrainingListRunUpdateSubscriber implements RunUpdateSubscriber
+    {
+        @Override
+        public boolean filterBusEvent(RunUpdateBusEvent event) {
+            return experiment.getId() == event.getRun().getExperiment().getId();
+        }
+
+        @Override
+        public void handleBusEvent(RunUpdateBusEvent event) {
+            PushUtils.push(getUI(), () -> updatedRunForPoliciesInGrid(event.getRun()));
+        }
+
+        @Override
+        public Optional<UI> getUI() {
+            return TrainingsListPanel.this.getUI();
+        }
     }
 }
