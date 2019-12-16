@@ -21,7 +21,7 @@ public class ModelAnalyzerApiClientTest {
         ObjectMapper objectMapper = ObjectMapperHolder.getJsonMapper();
 
         final ModelAnalyzerApiClient client = new ModelAnalyzerApiClient(
-                "http://localhost:8081",
+                "http://pathmindmodelanalyzer-env-1.zmjtstudaf.us-east-1.elasticbeanstalk.com",
                 null,
                 objectMapper,
                 WebClient.builder());
