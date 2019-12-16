@@ -92,7 +92,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private void addUploadSucceedListener(MultiFileMemoryBuffer buffer) {
 		upload.addAllFilesUploadedListener(() -> {
 			try {
-				model.setFile(FileUtils.createZipFileFromBuffer(buffer));
+				model.setFile(FileUtils.createZipFileFromBuffer(buffer, upload.getFilePathMap()));
 				fileCheckerCommand.execute();
 				log.info("Upload completed");
 			} catch (IOException e) {
