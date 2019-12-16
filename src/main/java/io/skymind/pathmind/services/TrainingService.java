@@ -24,14 +24,16 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class TrainingService {
+public class TrainingService
+{
+    private static final int MINUTE = 60;
+
     private final ExecutionProvider executionProvider;
     private final RunDAO runDAO;
     private final ModelDAO modelDAO;
     private final PolicyDAO policyDAO;
     private ExecutionEnvironment executionEnvironment;
 
-    // TODO: Move direct db access into a DAO.
     public TrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO) {
         this.executionProvider = executionProvider;
         this.runDAO = runDAO;
@@ -43,36 +45,14 @@ public class TrainingService {
     }
 
     public void startTestRun(Experiment exp){
-        final Run run = runDAO.createRun(exp, RunType.TestRun);
-        // Get model from the database, as the one we can get from the experiment doesn't have all fields
-        final Model model = modelDAO.getModel(exp.getModelId());
-
-        final JobSpec spec = new JobSpec(
-                exp.getProject().getPathmindUserId(),
-                model.getId(),
-                exp.getId(),
-                run.getId(),
-                "", // not collected via UI yet
-                "",    // not collected via UI yet
-                exp.getRewardFunction(),
-                model.getNumberOfPossibleActions(),
-                model.getNumberOfObservations(),
-                50, // Max 50 iterations for a test run
-                executionEnvironment,
-                RunType.TestRun,
-                () -> modelDAO.getModelFile(model.getId()),
+        startRun(RunType.TestRun,
+                exp,
+                50,
                 Arrays.asList(1e-5),
                 Arrays.asList(0.99),
                 Arrays.asList(128),
-                15 * 60        // 15 mins
-        );
-
-        final String executionId = executionProvider.execute(spec);
-
-        runDAO.markAsStarting(run.getId());
-        log.info("Started TEST training job with id {}", executionId);
-
-        addTempPolicy(spec, run);
+                15 * MINUTE,
+                true);
     }
 
     public void startDiscoveryRun(Experiment exp){
@@ -80,104 +60,40 @@ public class TrainingService {
         startDiscoveryRunJob2(exp);
     }
 
-    public void startDiscoveryRunJob1(Experiment exp){
-        final Run run = runDAO.createRun(exp, RunType.DiscoveryRun);
-        // Get model from the database, as the one we can get from the experiment doesn't have all fields
-        final Model model = modelDAO.getModel(exp.getModelId());
-
-        final JobSpec spec = new JobSpec(
-                exp.getProject().getPathmindUserId(),
-                model.getId(),
-                exp.getId(),
-                run.getId(),
-                "", // not collected via UI yet
-                "",    // not collected via UI yet
-                exp.getRewardFunction(),
-                model.getNumberOfPossibleActions(),
-                model.getNumberOfObservations(),
-                100, // Max 100 iterations for a discovery run.
-                executionEnvironment,
-                RunType.DiscoveryRun,
-                () ->modelDAO.getModelFile(model.getId()),
+    public void startDiscoveryRunJob1(Experiment exp) {
+        startRun(RunType.DiscoveryRun,
+                exp,
+                100,
                 Arrays.asList(1e-3, 1e-5), // Learning rate
                 Arrays.asList(0.9, 0.99), // gamma
                 Arrays.asList(64), // batch size
-                30 * 60 // 30 mins
-        );
-
-        final String executionId = executionProvider.execute(spec);
-
-        runDAO.markAsStarting(run.getId());
-        log.info("Started DISCOVERY training job with id {}", executionId);
+                30 * MINUTE,
+                false);
     }
 
-    public void startDiscoveryRunJob2(Experiment exp){
-        final Run run = runDAO.createRun(exp, RunType.DiscoveryRun);
-        // Get model from the database, as the one we can get from the experiment doesn't have all fields
-        final Model model = modelDAO.getModel(exp.getModelId());
-
-        final JobSpec spec = new JobSpec(
-                exp.getProject().getPathmindUserId(),
-                model.getId(),
-                exp.getId(),
-                run.getId(),
-                "", // not collected via UI yet
-                "",    // not collected via UI yet
-                exp.getRewardFunction(),
-                model.getNumberOfPossibleActions(),
-                model.getNumberOfObservations(),
-                100, // Max 100 iterations for a test run
-                executionEnvironment,
-                RunType.DiscoveryRun,
-                () ->modelDAO.getModelFile(model.getId()),
+    public void startDiscoveryRunJob2(Experiment exp) {
+        startRun(RunType.DiscoveryRun,
+                exp,
+                100,
                 Arrays.asList(1e-3, 1e-5), // Learning rate
                 Arrays.asList(0.9, 0.99), // gamma
                 Arrays.asList(128), // batch size
-                30 * 60 // 30 mins
-        );
-
-        final String executionId = executionProvider.execute(spec);
-
-        runDAO.markAsStarting(run.getId());
-        log.info("Started DISCOVERY training job with id {}", executionId);
-
-        addTempPolicy(spec, run);
+                30 * MINUTE,
+                true);
     }
 
     public void startFullRun(Experiment exp, Policy policy){
-        final Run run = runDAO.createRun(exp, RunType.FullRun);
-        // Get model from the database, as the one we can get from the experiment doesn't have all fields
-        final Model model = modelDAO.getModel(exp.getModelId());
-
-        final JobSpec spec = new JobSpec(
-                exp.getProject().getPathmindUserId(),
-                model.getId(),
-                exp.getId(),
-                run.getId(),
-                "", // not collected via UI yet
-                "",    // not collected via UI yet
-                exp.getRewardFunction(),
-                model.getNumberOfPossibleActions(),
-                model.getNumberOfObservations(),
-                500, // Max 100 iterations for a test run
-                executionEnvironment,
-                RunType.FullRun,
-                () -> modelDAO.getModelFile(model.getId()),
+        startRun(RunType.FullRun,
+                exp,
+                500,
                 Arrays.asList(policy.getHyperParameters().getLearningRate()),
                 Arrays.asList(policy.getHyperParameters().getGamma()),
                 Arrays.asList(policy.getHyperParameters().getBatchSize()),
-                -1        // no limit
-        );
-
-        final String executionId = executionProvider.execute(spec);
-
-        runDAO.markAsStarting(run.getId());
-        log.info("Started FULL training job with id {}", executionId);
-
-        addTempPolicy(spec, run);
+                -1, // no limit
+                true);
     }
 
-    private void addTempPolicy(JobSpec spec, Run run) {
+    private Policy generateTempPolicy(JobSpec spec, Run run) {
         // this is for ui filling gap until ui get a training progress from backend(rescale)
         Policy tempPolicy = new Policy();
 
@@ -193,7 +109,7 @@ public class TrainingService {
         tempPolicy.setExternalId(name);
         tempPolicy.setRunId(run.getId());
 
-        policyDAO.insertPolicy(tempPolicy);
+        return tempPolicy;
     }
 
     // STEPH -> REFACTOR -> This should be in the DAO layer and not the service layer as this is information on how data is stored
@@ -216,5 +132,41 @@ public class TrainingService {
         );
 
         return name;
+    }
+
+    private void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, boolean isAddTempPolicy)
+    {
+        final Run run = runDAO.createRun(exp, runType);
+        // Get model from the database, as the one we can get from the experiment doesn't have all fields
+        final Model model = modelDAO.getModel(exp.getModelId());
+
+        final JobSpec spec = new JobSpec(
+                exp.getProject().getPathmindUserId(),
+                model.getId(),
+                exp.getId(),
+                run.getId(),
+                "", // not collected via UI yet
+                "",    // not collected via UI yet
+                exp.getRewardFunction(),
+                model.getNumberOfPossibleActions(),
+                model.getNumberOfObservations(),
+                iterations,
+                executionEnvironment,
+                runType,
+                () -> modelDAO.getModelFile(model.getId()),
+                learningRates,
+                gammas,
+                batchSizes,
+                maxTimeInSec
+        );
+
+        // IMPORTANT -> There are multiple database calls within executionProvider.execute.
+        final String executionId = executionProvider.execute(spec);
+
+        runDAO.markAsStarting(run.getId());
+        log.info("Started " + runType + " training job with id {}", executionId);
+
+        if(isAddTempPolicy)
+            policyDAO.insertPolicy(generateTempPolicy(spec, run));
     }
 }
