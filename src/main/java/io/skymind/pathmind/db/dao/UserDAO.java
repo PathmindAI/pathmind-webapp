@@ -1,130 +1,82 @@
 package io.skymind.pathmind.db.dao;
 
+import org.jooq.DSLContext;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Repository;
+
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.UserUpdateBusEvent;
 import io.skymind.pathmind.data.PathmindUser;
-import io.skymind.pathmind.db.repositories.UserRepository;
-import io.skymind.pathmind.security.SecurityUtils;
-import org.jooq.DSLContext;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import static io.skymind.pathmind.data.db.Tables.*;
 
 @Repository
-public class UserDAO extends UserRepository
+public class UserDAO
 {
-
 	private final DSLContext ctx;
+	protected PasswordEncoder passwordEncoder;
 
-	public UserDAO(DSLContext ctx)
-	{
+	public UserDAO(DSLContext ctx, PasswordEncoder passwordEncoder) {
 		this.ctx = ctx;
+		this.passwordEncoder = passwordEncoder;
 	}
 
-	@Transactional
-	public long insertUser(PathmindUser pathmindUser)
-	{
-		long pathmindUserId = ctx.insertInto(PATHMIND_USER)
-				.set(PATHMIND_USER.NAME, pathmindUser.getName())
-				.set(PATHMIND_USER.EMAIL, pathmindUser.getEmail())
-				.set(PATHMIND_USER.PASSWORD, passwordEncoder.encode(pathmindUser.getPassword()))
-				.set(PATHMIND_USER.ACCOUNT_TYPE, pathmindUser.getAccountType())
-				.set(PATHMIND_USER.FIRSTNAME, pathmindUser.getFirstname())
-				.set(PATHMIND_USER.LASTNAME, pathmindUser.getLastname())
-				.set(PATHMIND_USER.DELETE_AT, pathmindUser.getDeleteAt())
-				.set(PATHMIND_USER.EMAIL_VERIFICATION_TOKEN, pathmindUser.getEmailVerificationToken())
-				.set(PATHMIND_USER.EMAIL_VERIFIED_AT, pathmindUser.getEmailVerifiedAt())
-				.returning(PATHMIND_USER.ID)
-				.fetchOne()
-				.getValue(PATHMIND_USER.ID);
+	public long insertUser(PathmindUser pathmindUser) {
+		long pathmindUserId = UserRepository.insertUser(ctx, pathmindUser, passwordEncoder.encode(pathmindUser.getPassword()));
 		pathmindUser.setId(pathmindUserId);
 		return pathmindUserId;
 	}
 
-	@Transactional
-	public void update(PathmindUser pathmindUser)
-	{
-		ctx.update(PATHMIND_USER)
-				.set(PATHMIND_USER.NAME, pathmindUser.getName())
-				.set(PATHMIND_USER.EMAIL, pathmindUser.getEmail())
-				.set(PATHMIND_USER.ACCOUNT_TYPE, pathmindUser.getAccountType())
-				.set(PATHMIND_USER.FIRSTNAME, pathmindUser.getFirstname())
-				.set(PATHMIND_USER.LASTNAME, pathmindUser.getLastname())
-				.set(PATHMIND_USER.ADDRESS, pathmindUser.getAddress())
-				.set(PATHMIND_USER.CITY, pathmindUser.getCity())
-				.set(PATHMIND_USER.STATE, pathmindUser.getState())
-				.set(PATHMIND_USER.COUNTRY, pathmindUser.getCountry())
-				.set(PATHMIND_USER.ZIP, pathmindUser.getZip())
-				.set(PATHMIND_USER.DELETE_AT, pathmindUser.getDeleteAt())
-				.set(PATHMIND_USER.EMAIL_VERIFICATION_TOKEN, pathmindUser.getEmailVerificationToken())
-				.set(PATHMIND_USER.EMAIL_VERIFIED_AT, pathmindUser.getEmailVerifiedAt())
-				.set(PATHMIND_USER.PASSWORD_RESET_SEND_AT, pathmindUser.getPasswordResetSendAt())
-				.where(PATHMIND_USER.ID.eq(pathmindUser.getId()))
-				.execute();
-
+	public void update(PathmindUser pathmindUser) {
+		UserRepository.update(ctx, pathmindUser);
 		EventBus.post(new UserUpdateBusEvent(pathmindUser));
 	}
 
-	@Transactional
-	public void delete(long id)
-	{
-		ctx.delete(PATHMIND_USER)
-				.where(PATHMIND_USER.ID.eq(id))
-				.execute();
+	public void delete(long id) {
+		UserRepository.delete(ctx, id);
 	}
 
 	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
 	// now I'm using these method names so that we understand what needs to be done eventually.
 	public boolean isUserAllowedAccessToProject(long projectId) {
-		int count = ctx.selectCount()
-			.from(PROJECT)
-			.where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
-			.fetchOne(0, int.class);
-		return count > 0;
+		return UserRepository.isUserAllowedAccessToProject(ctx, projectId);
 	}
 
 	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
 	// now I'm using these method names so that we understand what needs to be done eventually.
 	public boolean isUserAllowedAccessToModel(long modelId) {
-		int count = ctx.selectCount()
-				.from(MODEL)
-				.leftJoin(PROJECT)
-					.on(MODEL.PROJECT_ID.eq(PROJECT.ID))
-				.where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
-				.fetchOne(0, int.class);
-		return count > 0;
+		return UserRepository.isUserAllowedAccessToModel(ctx, modelId);
 	}
 
 	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
 	// now I'm using these method names so that we understand what needs to be done eventually.
 	public boolean isUserAllowedAccessToExperiment(long experimentId) {
-		int count = ctx.selectCount()
-				.from(EXPERIMENT)
-				.leftJoin(MODEL)
-					.on(EXPERIMENT.MODEL_ID.eq(MODEL.ID))
-				.leftJoin(PROJECT)
-					.on(MODEL.PROJECT_ID.eq(PROJECT.ID))
-				.where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
-				.fetchOne(0, int.class);
-		return count > 0;
+		return UserRepository.isUserAllowedAccessToExperiment(ctx, experimentId);
 	}
 
 	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
 	// now I'm using these method names so that we understand what needs to be done eventually.
 	public boolean isUserAllowedAccessToPolicy(long policyId) {
-		int count = ctx.selectCount()
-				.from(POLICY)
-				.leftJoin(RUN)
-					.on(POLICY.RUN_ID.eq(RUN.ID))
-				.leftJoin(EXPERIMENT)
-					.on(RUN.EXPERIMENT_ID.eq(EXPERIMENT.ID))
-				.leftJoin(MODEL)
-					.on(EXPERIMENT.MODEL_ID.eq(MODEL.ID))
-				.leftJoin(PROJECT)
-					.on(MODEL.PROJECT_ID.eq(PROJECT.ID))
-				.where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
-				.fetchOne(0, int.class);
-		return count > 0;
+		return UserRepository.isUserAllowedAccessToPolicy(ctx, policyId);
+	}
+
+	public PathmindUser findByEmailIgnoreCase(String email) {
+		return UserRepository.findByEmailIgnoreCase(ctx, email);
+	}
+
+	public PathmindUser findById(long id) {
+		return UserRepository.findById(ctx, id);
+	}
+
+	public PathmindUser findByToken(String token) {
+		return UserRepository.findByToken(ctx, token);
+	}
+
+	/**
+	 * Change a user's password.
+	 * @param id the id of the user whose password will be changed
+	 * @param newPassword the new password
+	 * @return whether the password was updated or not
+	 */
+	public boolean changePassword(long id, String newPassword) {
+		return UserRepository.changePassword(ctx, id, passwordEncoder.encode(newPassword));
 	}
 }

@@ -22,6 +22,7 @@ public class PathmindUser
 	private LocalDateTime emailVerifiedAt;
 	private UUID emailVerificationToken;
 	private LocalDateTime passwordResetSendAt;
+	private String stripeCustomerId;
 
 	private List<Project> projects;
 
@@ -176,6 +177,16 @@ public class PathmindUser
 
 	public void setPasswordResetSendAt(LocalDateTime passwordResetSendAt) {
 		this.passwordResetSendAt = passwordResetSendAt;
+	}
+
+	public String getStripeCustomerId()
+	{
+		return stripeCustomerId;
+	}
+
+	public void setStripeCustomerId(String stripeCustomerId)
+	{
+		this.stripeCustomerId = stripeCustomerId;
 	}
 }
 

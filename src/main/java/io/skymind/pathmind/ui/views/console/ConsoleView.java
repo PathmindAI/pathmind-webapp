@@ -18,16 +18,14 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.CONSOLE_URL, layout = MainLayout.class)
+@Slf4j
 public class ConsoleView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
-	private Logger log = LogManager.getLogger(ConsoleView.class);
-
 	@Autowired
 	private UserDAO userDAO;
 

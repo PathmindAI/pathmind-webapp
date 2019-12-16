@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.views.login;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -20,7 +21,8 @@ import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
-
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.ui.utils.VaadinUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -78,6 +80,9 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 
 	@Autowired
 	private EmailNotificationService emailNotificationService;
+	
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
 	private PathmindUser user;
 	private Binder<PathmindUser> binder;
@@ -88,6 +93,11 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 		user = new PathmindUser();
 		initView();
 		initBinder();
+	}
+	
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		getElement().appendChild(segmentIntegrator.getElement());
 	}
 
 	private void initView() {
@@ -123,6 +133,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 				user.setPassword(newPassword.getValue());
 				user = userService.signup(user);
                 emailNotificationService.sendVerificationEmail(user);
+                segmentIntegrator.userRegistered();
 				Notification.show("You successfully signed up.", 3000, Notification.Position.TOP_END);
 				UI.getCurrent().navigate(LoginView.class);
 			} else {

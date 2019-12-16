@@ -1,111 +1,117 @@
 package io.skymind.pathmind.services.training.progress;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.supercsv.io.CsvMapReader;
-import org.supercsv.prefs.CsvPreference;
+import com.opencsv.CSVReader;
+import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.policy.HyperParameters;
+import io.skymind.pathmind.data.policy.RewardScore;
+import io.skymind.pathmind.data.utils.RunUtils;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
+@Slf4j
 public class ProgressInterpreter {
-
-    private static Logger log = LogManager.getLogger(ProgressInterpreter.class);
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss");
 
-    public static Progress interpretKey(String keyString) {
-        final Progress progress = new Progress();
-        progress.setId(keyString);
+    private static final int TRIAL_ID_LEN = 8;
+    private static final int DATE_LEN = 19;
 
-        final HashMap<String, String> hyperParameters = new HashMap<>();
+    public static Policy interpretKey(String keyString) {
+        final Policy policy = new Policy();
+        policy.setExternalId(keyString);
 
-        StringBuilder buffer = new StringBuilder();
-        // looks something like this:
-        // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128_2019-08-05_13-56-455cdir_3f
+        int keyLength = keyString.length();
+        String id = null;
+        String dateTime = null;
 
-        final char[] key = keyString.toCharArray();
 
-        boolean alg = false;
-        boolean envName = false;
-        boolean runCounter = false;
-        boolean params = false;
-
-        // PERFORMANCE -> Can we minimize this for our needs since it's so expensive... Do we need to parse for the algo? Is there a quick way to just get the hyperParams
-        // as that seems to eb all we ever end up using from this parsing...
-        int lastFoundIdx = 0;
-        for (int i = 0; i < key.length; i++) {
-            final char cur = key[i];
-            if(cur == '_'){
-                if(!alg){
-                    alg = true;
-                    progress.setAlgorithm(buffer.toString());
-                    buffer.setLength(0);
-                }else if(!envName){
-                    envName = true;
-                    buffer.setLength(0);
-                }else if(!runCounter){
-                    runCounter = true;
-                    buffer.setLength(0);
-                }
-                lastFoundIdx = i;
-            } else if(Character.isDigit(cur) && lastFoundIdx == i - 1 && alg && envName && runCounter && !params){
-                params = true;
-                String parameters = buffer.toString();
-                parameters = parameters.substring(1, parameters.length() - 1);
-                Arrays.stream(parameters.split(",")).forEach(it -> {
-                    final String[] split = it.split("=");
-                    hyperParameters.put(split[0], split[1]);
-                });
-                progress.setHyperParameters(Collections.unmodifiableMap(hyperParameters));
-                buffer.setLength(0);
-            }
-            buffer.append(cur);
+        if (keyString.endsWith(RunUtils.TEMPORARY_POSTFIX)) {
+            // looks something like this:
+            // PPO_PathmindEnvironment_0_gamma=0.99,lr=1.0E-5,sgd_minibatch_size=128_1TEMP
+            keyString = keyString.substring(0, keyLength - RunUtils.TEMPORARY_POSTFIX.length() - 2);
+        } else {
+            // looks something like this:
+            // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128_2019-08-05_13-56-455cdir_3f
+            id = keyString.substring(keyLength - TRIAL_ID_LEN);
+            dateTime = keyString.substring(keyLength - TRIAL_ID_LEN - DATE_LEN, keyLength - TRIAL_ID_LEN);
+            keyString = keyString.substring(0, keyLength - TRIAL_ID_LEN - DATE_LEN - 1);
         }
 
+        // keyString now looks like :
+        // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128
+        List<String> list = Arrays.asList(keyString.split("_", 4));
+
+        policy.setAlgorithm(list.get(0));
+
+        Arrays.stream(list.get(3).split(",")).forEach(it -> {
+            final String[] split = it.split("=");
+            setHyperParameter(policy, split[0], split[1]);
+        });
+
         try {
-            final String dateTime = buffer.toString().substring(0, 19);
-            final LocalDateTime utcTime = LocalDateTime.parse(dateTime, dateFormat);
-            final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();
-            progress.setStartedAt(time);
+            if (dateTime != null) {
+                final LocalDateTime utcTime = LocalDateTime.parse(dateTime, dateFormat);
+                final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();
+                policy.setStartedAt(time);
+            }
         } catch (Exception e) {
             log.debug(e.getMessage());
         }
 
-        return progress;
+        return policy;
     }
 
-    public static Progress interpret(Map.Entry<String, String> entry){
-        final Progress progress = interpretKey(entry.getKey());
+    private static void setHyperParameter(Policy policy, String name, String value) {
+        switch (name) {
+            case HyperParameters.LEARNING_RATE:
+                policy.getHyperParameters().setLearningRate(Double.valueOf(value));
+                break;
+            case HyperParameters.GAMMA:
+                policy.getHyperParameters().setGamma(Double.valueOf(value));
+                break;
+            case HyperParameters.BATCH_SIZE:
+                policy.getHyperParameters().setBatchSize(Integer.valueOf(value));
+                break;
+        }
+    }
 
-        try {
-            final CsvMapReader mapReader = new CsvMapReader(new StringReader(entry.getValue()), CsvPreference.STANDARD_PREFERENCE);
-            final String[] header = mapReader.getHeader(true);
+    public static Policy interpret(Map.Entry<String, String> entry){
+        final Policy policy = interpretKey(entry.getKey());
 
-            final ArrayList<RewardScore> scores = new ArrayList<>();
-            Map<String, String> map;
-            while( (map = mapReader.read(header)) != null ) {
-                final String max = map.get("episode_reward_max");
-                final String min = map.get("episode_reward_min");
-                final String mean = map.get("episode_reward_mean");
+        final ArrayList<RewardScore> scores = new ArrayList<>();
+
+        try (CSVReader reader = new CSVReader(new StringReader(entry.getValue()))) {
+
+            String[] record = null;
+            //skip header row
+            reader.readNext();
+
+            while((record = reader.readNext()) != null){
+                final String max = record[0];   // episode_reward_max
+                final String min = record[1];   // episode_reward_min
+                final String mean = record[2];  // episode_reward_mean
+
                 scores.add(new RewardScore(
                         Double.valueOf(max.equals("nan") ? "NaN" : max),
                         Double.valueOf(min.equals("nan") ? "NaN" : min),
                         Double.valueOf(mean.equals("nan") ? "NaN" : mean),
-                        Integer.parseInt(map.get("training_iteration"))
+                        Integer.parseInt(record[9]) // training_iteration
                 ));
             }
-            progress.setRewardProgression(scores);
-        } catch (IOException e) {
+            policy.setScores(scores);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        return progress;
+        return policy;
     }
-
 }

@@ -1,7 +1,6 @@
 package io.skymind.pathmind.utils;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,8 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 public class FileUtils {
-    private static final Logger log = LogManager.getLogger(FileUtils.class);
 
     /*To list all the .class file from given file path*/
     public static List<String> listFiles(String filePath) {

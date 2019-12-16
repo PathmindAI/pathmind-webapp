@@ -1,7 +1,8 @@
 package io.skymind.pathmind.db.changeset;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.utils.PolicyUtils;
+import io.skymind.pathmind.utils.ObjectMapperHolder;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.change.custom.CustomSqlRollback;
 import liquibase.database.Database;
@@ -13,9 +14,10 @@ import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RawSqlStatement;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,10 +35,9 @@ import java.util.List;
  * IMPORTANT TIP -> If you modify this code please note that you need to run the Maven compile target before you run the liquibase targets
  * otherwise the CODE CHANGES WILL NOT BE REFLECTED IN THE LIQUIBASE TARGETS in any automatic way!!
  */
+@Slf4j
 public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, CustomSqlRollback
 {
-    private static Logger log = LogManager.getLogger(UpdatePolicy_ChangeSet_20191022_2.class);
-
     @Override
     public SqlStatement[] generateStatements(Database database) throws CustomChangeException
     {
@@ -48,7 +49,29 @@ public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, Custo
     }
 
     private void convertJsonValues(List<Policy> policies) {
-        policies.parallelStream().forEach(policy -> PolicyUtils.processProgressJson(policy, policy.getProgress()));
+        ObjectMapper objectMapper = ObjectMapperHolder.getJsonMapper();
+        policies.parallelStream().forEach(policy -> processProgressJson(objectMapper, policy, policy.getProgress()));
+    }
+
+    /**
+     * Copied this code from PolicyUtils.processProgressJson so that it can be changed independently without worrying about breaking
+     * the database changelog.
+     */
+    public static void processProgressJson(ObjectMapper objectMapper, Policy policy, String progressString)
+    {
+        if(StringUtils.isEmpty(progressString))
+            return;
+
+        try {
+            final Policy jsonPolicy = objectMapper.readValue(progressString, Policy.class);
+            policy.setScores(jsonPolicy.getScores());
+            policy.setStartedAt(jsonPolicy.getStartedAt());
+            policy.setStoppedAt(jsonPolicy.getStoppedAt());
+            policy.setAlgorithm(jsonPolicy.getAlgorithm());
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

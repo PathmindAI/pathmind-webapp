@@ -1,11 +1,10 @@
 package io.skymind.pathmind.services.project;
 
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class MockObjectStatusUpdater implements StatusUpdater {
-    private static final Logger log = LogManager.getLogger(MockObjectStatusUpdater.class);
 
     @Override
     public void updateStatus(double percentage) {

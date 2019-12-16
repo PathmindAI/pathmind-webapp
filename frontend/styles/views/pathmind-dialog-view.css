@@ -79,6 +79,7 @@ vaadin-password-field {
 
 .positive-action-btn {
   width: 250px;
+  border-radius: 100px;
 }
 
 .section-title {

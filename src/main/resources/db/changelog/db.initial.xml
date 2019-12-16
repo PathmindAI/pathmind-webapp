@@ -534,4 +534,60 @@
         </update>
     </changeSet>
 
+    <changeSet id="20191031-1" author="vesa@vaadin.com">
+        <addColumn tableName="PATHMIND_USER">
+            <column name="STRIPE_CUSTOMER_ID" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <!-- #456 Remove the default projects from the initial development from the database as they are no longer working with all the changes since
+    Now technically I should just be able to do DELETE FROM POLICY since there is only sample data but to avoid any accidental errors I'm forcing
+    a massive left join with a WHERE pathmind_user.email="steph@followsteph.com" so even if there is an error it can only delete the data from the
+    test account. -->
+    <changeSet id="20191117-1" author="steph@followsteph.com">
+        <sql>
+            DELETE FROM POLICY WHERE ID IN
+                (SELECT POLICY.ID FROM POLICY LEFT JOIN RUN ON RUN.ID = POLICY.RUN_ID LEFT JOIN EXPERIMENT ON EXPERIMENT.ID = RUN.EXPERIMENT_ID LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            DELETE FROM RUN WHERE ID IN
+                (SELECT RUN.ID FROM RUN LEFT JOIN EXPERIMENT ON EXPERIMENT.ID = RUN.EXPERIMENT_ID LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            DELETE FROM EXPERIMENT WHERE ID IN
+                (SELECT EXPERIMENT.ID FROM EXPERIMENT LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            DELETE FROM MODEL WHERE ID IN
+                (SELECT MODEL.ID FROM MODEL LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            DELETE FROM PROJECT WHERE ID IN
+                (SELECT PROJECT.ID FROM PROJECT LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+        </sql>
+    </changeSet>
+    
+    <changeSet id="20191209-1" author="onur@vaadin.com">
+        <update tableName="PATHMIND_USER">
+            <column name="STRIPE_CUSTOMER_ID" value="cus_GKPM6sw8wTtgjg"/>
+            <where>EMAIL='test_pathmind@skymind.io'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="20191210-1" author="steph@followsteph.com">
+        <comment>Convert the EXECUTION_PROVIDER_META_DATA to be more efficient and easier to use and maintain</comment>
+        <addColumn tableName="EXECUTION_PROVIDER_META_DATA">
+            <column name="PROVIDER_CLASS_TEMP" type="INT" defaultValue="1"/>
+            <column name="TYPE_TEMP" type="INT"/>
+            <column name="KEY_TEMP" type="BIGINT"/>
+            <column name="VALUE_TEMP" type="varchar(36)"/>
+        </addColumn>
+        <comment>Convert the data to the new column formats - this is a bit complex but it can be done in SQL.</comment>
+        <sql>
+            UPDATE EXECUTION_PROVIDER_META_DATA SET TYPE_TEMP = (CASE WHEN (SUBSTRING(KEY FROM 0 FOR POSITION(':' IN KEY)) = 'modelFileId') THEN 0 ELSE 1 END);
+            UPDATE EXECUTION_PROVIDER_META_DATA SET KEY_TEMP = CAST(SUBSTRING(KEY FROM POSITION(':' IN KEY) + 1) AS BIGINT);
+            UPDATE EXECUTION_PROVIDER_META_DATA SET VALUE_TEMP = value #>> '{}';
+        </sql>
+        <dropColumn tableName="EXECUTION_PROVIDER_META_DATA" columnName="PROVIDER_CLASS"/>
+        <dropColumn tableName="EXECUTION_PROVIDER_META_DATA" columnName="KEY"/>
+        <dropColumn tableName="EXECUTION_PROVIDER_META_DATA" columnName="VALUE"/>
+        <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="PROVIDER_CLASS" oldColumnName="PROVIDER_CLASS_TEMP"/>
+        <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="TYPE" oldColumnName="TYPE_TEMP"/>
+        <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="KEY" oldColumnName="KEY_TEMP"/>
+        <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="VALUE" oldColumnName="VALUE_TEMP"/>
+        <addUniqueConstraint tableName="EXECUTION_PROVIDER_META_DATA" constraintName="UNIQUE_PROVIDER_CLASS_TYPE_KEY" columnNames="PROVIDER_CLASS, TYPE, KEY" />
+    </changeSet>
+
 </databaseChangeLog>
