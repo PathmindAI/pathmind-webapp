@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -49,12 +48,11 @@ public class FileUtils {
 
     }
     
-	public static byte[] createZipFileFromBuffer(MultiFileMemoryBuffer buffer, Map<String, String> filePathMap) throws IOException {
+	public static byte[] createZipFileFromBuffer(MultiFileMemoryBuffer buffer) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(baos);
 		List<String> folders = new ArrayList<>();
-		for (String filename : buffer.getFiles()) {
-			String filePath = filePathMap.get(filename).substring(1);
+		for (String filePath : buffer.getFiles()) {
 			String folder = parseFolderName(filePath);
 			if (folder != null && !folders.contains(folder)) {
 				zos.putNextEntry(new ZipEntry(folder));

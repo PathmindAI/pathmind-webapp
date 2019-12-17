@@ -15,7 +15,7 @@ import com.vaadin.flow.server.Command;
 
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.ui.components.LabelFactory;
-import io.skymind.pathmind.ui.components.PathmindUpload;
+import io.skymind.pathmind.ui.components.PathmindModelUploader;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -30,7 +30,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private Label projectNameLabel;
 
 	private VerticalLayout uploadModelPanel;
-	private PathmindUpload upload;
+	private PathmindModelUploader upload;
 
 	private ProgressBar fileCheckProgressBar = new ProgressBar();
 	private VerticalLayout fileCheckPanel;
@@ -73,9 +73,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 
 	private void setupUploadPanel()
 	{
-		MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
-
-		upload = new PathmindUpload(buffer);
+		upload = new PathmindModelUploader();
 		upload.setFolderUpload(true);
 
 		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/123
@@ -83,7 +81,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 //		upload.setAcceptedFileTypes("application/zip");
 //		upload.addFailedListener(event -> log.error("ERROR " + event.getReason().getMessage(), e.getReason().getMessage()));
 
-		addUploadSucceedListener(buffer);
+		addUploadSucceedListener(upload.getReceiver());
 		addUploadRemoveFileListener();
 
 		uploadModelPanel = WrapperUtils.wrapWidthFullCenterVertical(upload);
@@ -92,7 +90,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private void addUploadSucceedListener(MultiFileMemoryBuffer buffer) {
 		upload.addAllFilesUploadedListener(() -> {
 			try {
-				model.setFile(FileUtils.createZipFileFromBuffer(buffer, upload.getFilePathMap()));
+				model.setFile(FileUtils.createZipFileFromBuffer(buffer));
 				fileCheckerCommand.execute();
 				log.info("Upload completed");
 			} catch (IOException e) {

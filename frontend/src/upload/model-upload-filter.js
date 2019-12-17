@@ -5,18 +5,18 @@ function filter(files) {
     files,
     file =>
       (file.filePath = file.webkitRelativePath.substring(
-        file.webkitRelativePath.indexOf("/")
+        file.webkitRelativePath.indexOf("/") + 1
       ))
   );
   return Array.from(files).filter(file => matchesFilter(file.filePath));
 }
 
 function matchesFilter(filePath) {
-  if (filePath.match("^/model.jar")) {
+  if (filePath.match("^model.jar")) {
     return true;
-  } else if (filePath.match("^/database//*")) {
+  } else if (filePath.match("^database//*")) {
     return true;
-  } else if (filePath.match("^/lib//*")) {
+  } else if (filePath.match("^lib//*")) {
     return !BLACK_LIST.includes(filePath);
   }
   return false;
