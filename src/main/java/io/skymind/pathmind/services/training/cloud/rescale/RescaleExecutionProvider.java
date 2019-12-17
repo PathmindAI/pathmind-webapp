@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RescaleExecutionProvider implements ExecutionProvider {
 
+    private static final String DEFAULT_RUN_ID = "1";
+
     private final RescaleRestApiClient client;
     private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RescaleFileManager fileManager;
@@ -90,7 +92,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
             if (statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))) {
                 final JobStatus status = statuses.stream().filter(it -> it.getStatus().equals("Completed")).findFirst().get();
 
-                List<String> errs = client.outputFiles(jobHandle, "1").getResults()
+                List<String> errs = client.outputFiles(jobHandle, DEFAULT_RUN_ID).getResults()
                         .parallelStream()
                         .filter(f -> f.getPath().endsWith(TrainingFile.RAY_TRIAL_ERROR) && f.getDecryptedSize() > 0)
                         .map(f -> new String(client.fileContents(f.getId())))
@@ -99,7 +101,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 // since we added error check logic to the script,
                 // errors.log will have the same number of line with the number of KNOWN_ERROR_MSGS
                 // if the line number is greater than the size of KNOWN_ERROR_MSGS, it has an error
-                String errorLogFileContents = new String(client.outputFile(jobHandle, "1", TrainingFile.KNOWN_ERROR));
+                String errorLogFileContents = new String(client.outputFile(jobHandle, DEFAULT_RUN_ID, TrainingFile.KNOWN_ERROR));
                 if (errorLogFileContents != null && !errorLogFileContents.isEmpty()
                         && errorLogFileContents.split("\n").length > KNOWN_ERROR_MSGS.size()) {
                     errs.add("error!");
@@ -131,7 +133,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     public Map<String, String> progress(String jobHandle, RunStatus runStatus) {
         if (runStatus.equals(RunStatus.Completed)) {
             // Job is done, we have to look at finished files
-            return client.outputFiles(jobHandle, "1").getResults()
+            return client.outputFiles(jobHandle, DEFAULT_RUN_ID).getResults()
                     .parallelStream()
                     .filter(it -> it.getPath().endsWith("progress.csv"))
                     .map(it -> {
@@ -144,12 +146,12 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         } else if (runStatus.equals(RunStatus.Running)) {
             // Job is still running, we have to tail files
             try {
-                return client.workingFiles(jobHandle, "1")
+                return client.workingFiles(jobHandle, DEFAULT_RUN_ID)
                         .parallelStream()
                         .filter(it -> it.getPath().endsWith("progress.csv"))
                         .map(it -> {
                             final String key = new File(it.getPath()).getParentFile().getName();
-                            final String contents = new String(client.tail(jobHandle, "1", it.getPath()));
+                            final String contents = new String(client.tail(jobHandle, DEFAULT_RUN_ID, it.getPath()));
                             return Map.entry(key, contents);
                         })
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -164,7 +166,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     @Override
     public byte[] policy(String jobHandle, String trainingRun) {
-        return client.outputFiles(jobHandle, "1").getResults()
+        return client.outputFiles(jobHandle, DEFAULT_RUN_ID).getResults()
                 .stream()
                 .filter(it -> it.getPath().endsWith("policy_" + trainingRun + ".zip"))
                 .map(it -> client.fileContents(it.getId()))
@@ -176,9 +178,9 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         final RunStatus runStatus = status(jobHandle);
 
         if (runStatus.equals(RunStatus.Completed)) {
-            return client.consoleOutput(jobHandle, "1");
+            return client.consoleOutput(jobHandle, DEFAULT_RUN_ID);
         } else if (runStatus.equals(RunStatus.Running)) {
-            return client.tailConsole(jobHandle, "1");
+            return client.tailConsole(jobHandle, DEFAULT_RUN_ID);
         }
 
         return null;
@@ -193,17 +195,17 @@ public class RescaleExecutionProvider implements ExecutionProvider {
      */
     public String getFileAnytime(String jobHandle, String fileName) {
         try {
-            return client.workingFiles(jobHandle, "1")
+            return client.workingFiles(jobHandle, DEFAULT_RUN_ID)
                     .parallelStream()
                     .filter(it -> it.getPath().endsWith(fileName))
                     .findAny()
-                    .map(it -> new String(client.tail(jobHandle, "1", it.getPath())))
+                    .map(it -> new String(client.tail(jobHandle, DEFAULT_RUN_ID, it.getPath())))
                     .get();
         } catch (Exception e) {
             try {
                 log.debug("getFileAnytime tail: " + e.getMessage(), e);
 
-                return client.outputFiles(jobHandle, "1")
+                return client.outputFiles(jobHandle, DEFAULT_RUN_ID)
                         .getResults()
                         .parallelStream()
                         .filter(it -> it.getPath().endsWith(fileName))
