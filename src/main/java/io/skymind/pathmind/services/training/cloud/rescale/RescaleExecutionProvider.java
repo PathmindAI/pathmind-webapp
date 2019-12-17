@@ -1,12 +1,14 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
 import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.cloud.rescale.api.RescaleRestApiClient;
-import io.skymind.pathmind.services.training.cloud.rescale.api.dto.*;
+import io.skymind.pathmind.services.training.cloud.rescale.api.dto.FileReference;
+import io.skymind.pathmind.services.training.cloud.rescale.api.dto.Job;
+import io.skymind.pathmind.services.training.cloud.rescale.api.dto.JobAnalysis;
+import io.skymind.pathmind.services.training.cloud.rescale.api.dto.JobStatus;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
@@ -25,7 +27,6 @@ import java.util.stream.Collectors;
 public class RescaleExecutionProvider implements ExecutionProvider {
 
     private final RescaleRestApiClient client;
-    private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RescaleFileManager fileManager;
     private static final List<String> KNOWN_ERROR_MSGS = new ArrayList<>();
 
@@ -37,9 +38,8 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         KNOWN_ERROR_MSGS.add("java.lang.ArrayIndexOutOfBoundsException");
     }
 
-    public RescaleExecutionProvider(RescaleRestApiClient client, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
+    public RescaleExecutionProvider(RescaleRestApiClient client) {
         this.client = client;
-        this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.fileManager = RescaleFileManager.getInstance();
     }
 
@@ -48,16 +48,13 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         List<String> instructions = new ArrayList<>();
         List<FileReference> files = new ArrayList<>();
 
-        // Get model file id, either uploading it if necessary, or just collecting it form the spec if available
-        String modelId = uploadModelIfNeeded(job);
-
         final ExecutionEnvironment env = job.getEnv();
 
         // Set up which files are needed, and how to install them
         installRllib(env.getRllibVersion(), instructions, files);
         installAnyLogic(env.getAnylogicVersion(), instructions, files);
         installHelper(env.getPathmindHelperVersion(), instructions, files);
-        installModel(modelId, instructions, files);
+        installModel(job.getModelFileId(), instructions, files);
 
         // Set up variables
         setupVariables(job, instructions);
@@ -72,9 +69,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         checkErrors(instructions);
 
         // Start actual execution of the job
-        final String rescaleJobId = startTrainingRun(job, instructions, files);
-        executionProviderMetaDataDAO.putRescaleRunJobId(job.getRunId(), rescaleJobId);
-        return rescaleJobId;
+        return startTrainingRun(job, instructions, files);
     }
 
     @Override
@@ -217,24 +212,12 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         }
     }
 
-
-    /**
-     * Get Model file from database if it wasn't uploaded yet.
-     */
-    private String uploadModelIfNeeded(JobSpec job) {
-        String fileId = executionProviderMetaDataDAO.getModelFileKey(job.getModelId());
-        if (fileId == null) {
-            final RescaleFile rescaleFile;
-            try {
-                rescaleFile = client.fileUpload(job.getModelFile(), "model.zip");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            executionProviderMetaDataDAO.putModelFileKey(job.getModelId(), rescaleFile.getId());
-            fileId = rescaleFile.getId();
+    public String uploadModel(byte[] modelFile) {
+        try {
+            return client.fileUpload(modelFile, "model.zip").getId();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        return fileId;
     }
 
     private String startTrainingRun(JobSpec job, List<String> instructions, List<FileReference> files) {
