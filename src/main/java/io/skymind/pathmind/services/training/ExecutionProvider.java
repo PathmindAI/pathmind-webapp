@@ -16,6 +16,14 @@ public interface ExecutionProvider {
     String execute(JobSpec job);
 
     /**
+     * Uploads the model file.
+     *
+     * @param modelFile The modelFile
+     * @return The model file id
+     */
+    String uploadModel(byte[] modelFile);
+
+    /**
      * Stops the execution of the training  job identified by the given job handle.
      * Does nothing if the job is already stopped
      *
