@@ -74,14 +74,13 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private void setupUploadPanel()
 	{
 		upload = new PathmindModelUploader();
-		upload.setFolderUpload(true);
 
 		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/123
 //		upload.setMaxFileSize(PathmindConstants.MAX_UPLOAD_FILE_SIZE);
 //		upload.setAcceptedFileTypes("application/zip");
 //		upload.addFailedListener(event -> log.error("ERROR " + event.getReason().getMessage(), e.getReason().getMessage()));
 
-		addUploadSucceedListener(upload.getReceiver());
+		addUploadSucceedListener((MultiFileMemoryBuffer)upload.getReceiver());
 		addUploadRemoveFileListener();
 
 		uploadModelPanel = WrapperUtils.wrapWidthFullCenterVertical(upload);
@@ -123,14 +122,8 @@ public class UploadModelWizardPanel extends VerticalLayout
 				"<ol>" +
 					"<li>Make sure you have <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">Pathmind Helper</a> installed in your model.</li>" +
 					"<li><a href=\"https://help.anylogic.com/topic/com.anylogic.help/html/standalone/Export_Java_Application.html\" target=\"_blank\">Export your model as a standalone Java application.</a></li>" +
-					"<li>Open the exported folder.</li>" +
-					"<li>Create a zip file that contains:</li>" +
-						"<ul>" +
-							"<li>model.jar</li>" +
-							"<li>the \"database\" folder if needed</li>" +
-							"<li>custom libraries from the \"lib\" folder if needed. (This is uncommon)</li>" +
-						"</ul>" +
-					"<li>Upload the new zip file below." +
+					"<li>Click Upload files button.</li>" +
+					"<li>Select the exported folder.</li>" +
 				"</ol>");
 		return div;
 	}
