@@ -79,6 +79,8 @@ class AccountUpgradeViewContent extends PolymerElement {
         .feature-available {
           padding-left: 0px;
           color: var(--pm-text-color);
+          align-self: center;
+          font-weight: bold;
         }
 
         .highlight {
@@ -115,32 +117,9 @@ class AccountUpgradeViewContent extends PolymerElement {
               <span class="price">Free</span>
             </span>
 
-            <vaadin-vertical-layout class="features-list">
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Unlimited</span> Model imports
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">20</span> Test Runs
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">1</span> Full Runs
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">1</span> Export of trained policy
-              </div>
-              <div class="feature">
-                <span class="highlight">Online</span> tech support (upgrade to
-                Professional)
-              </div>
-              <div class="feature">
-                <span class="highlight">Full Runs</span> (upgrade to
-                Professional)
-              </div>
-            </vaadin-vertical-layout>
+            <div class="feature feature-available">
+              Details coming soon.
+            </div>
 
             <vaadin-button id="freeBtn" theme="tertiary" disabled
               >Current Plan</vaadin-button
@@ -152,42 +131,10 @@ class AccountUpgradeViewContent extends PolymerElement {
               <span class="title">Professional</span>
               <span class="details">Monthly Subscription</span>
             </vaadin-vertical-layout>
-            <span class="price-cont">
-              <span class="pre-part">$</span>
-              <span class="price">500</span>
-              <span class="post-part">/ month</span>
-            </span>
 
-            <vaadin-vertical-layout class="features-list">
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Unlimited</span> Model imports
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Unlimited</span> Test Runs
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Package of</span> Discovery and Full
-                Runs
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Unlimited</span> Export of trained
-                policy
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Advanced</span> access to run set up and
-                tunning
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Online</span> tech support (upgrade to
-                Professional)
-              </div>
-            </vaadin-vertical-layout>
+            <div class="feature feature-available">
+              Details coming soon.
+            </div>
 
             <vaadin-button
               id="proBtn"
@@ -206,36 +153,9 @@ class AccountUpgradeViewContent extends PolymerElement {
               <span class="post-part">Contact Pathmind for more details</span>
             </span>
 
-            <vaadin-vertical-layout class="features-list">
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Unlimited</span> Model imports
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Unlimited</span> Test Runs
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Unlimited</span> export of trained
-                policy
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Additional</span> CPU/GPU cloud compute
-                options
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Enterprise</span> tech support (upgrade
-                to Professional)
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Professional</span> services
-                consultation
-              </div>
-            </vaadin-vertical-layout>
+            <div class="feature feature-available">
+              Details coming soon.
+            </div>
 
             <a href="{{contactLink}}">
               <vaadin-button
