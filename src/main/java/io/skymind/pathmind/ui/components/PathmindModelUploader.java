@@ -31,11 +31,11 @@ public class PathmindModelUploader extends Upload {
 	
 	private List<Command> allFilesCompletedListeners = new ArrayList<>();
 	
-	private MultiFileMemoryBufferWithFileStructure receiver = new MultiFileMemoryBufferWithFileStructure();
 	
 	public PathmindModelUploader() {
 		super();
-		setReceiver(receiver);
+		setReceiver(new MultiFileMemoryBufferWithFileStructure());
+		setupFolderUpload();
 		addUploadStartListener(evt -> uploadStarted(evt));
 		addUploadErrorListener(evt -> {
 			numOfFilesUploaded--;
@@ -55,7 +55,7 @@ public class PathmindModelUploader extends Upload {
 		numOfFilesUploaded++;
 		String filePath = evt.getDetailFile().getString("filePath");
 		String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-		receiver.addFilePath(filePath, fileName);
+		MultiFileMemoryBufferWithFileStructure.class.cast(getReceiver()).addFilePath(filePath, fileName);
 	}
 
 	public void addAllFilesUploadedListener(Command command) {
@@ -67,14 +67,12 @@ public class PathmindModelUploader extends Upload {
 		allFilesCompletedListeners.forEach(listener -> listener.execute());
 	}
 
-	public void setFolderUpload(boolean folderUpload) {
+	public void setupFolderUpload() {
+		// Currently it's not possible to drop a folder
+		setDropAllowed(false);
 		getElement().executeJs("$0.$.fileInput.webkitdirectory = true");
 		getElement().executeJs("$0.$.fileInput.mozdirectory = true");
 		getElement().executeJs("window.addClientSideFiltering($0)");
-	}
-	
-	public MultiFileMemoryBuffer getReceiver() {
-		return receiver;
 	}
 	
 	class MultiFileMemoryBufferWithFileStructure extends MultiFileMemoryBuffer {
