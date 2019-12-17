@@ -11,6 +11,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -20,6 +21,7 @@ import reactor.core.publisher.Mono;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 @Slf4j
 @Service
@@ -56,25 +58,30 @@ public class ModelAnalyzerApiClient {
         // todo when we need to use this endpoint, need to change return type
         String result = client.get().uri("/actuator/health")
                 .retrieve()
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
                 .bodyToMono(String.class)
+                .onErrorMap(RuntimeException::new)
                 .block();
         return result;
     }
 
     public HyperparametersDTO analyze(File file) throws IOException {
-
-        final CloseableHttpClient client = HttpClients.custom().setDefaultHeaders(Arrays.asList(
-                new BasicHeader("Authorization", "Token "+ token)
-        )).build();
-
-
         final HttpPost post = new HttpPost(this.url + "/api/v1/extract-hyperparameters");
         post.setEntity(MultipartEntityBuilder.create()
                 .addBinaryBody("file", file, ContentType.MULTIPART_FORM_DATA, file.getName())
                 .build());
 
-        final CloseableHttpResponse resp = client.execute(post);
 
-        return objectMapper.readValue(resp.getEntity().getContent(), HyperparametersDTO.class);
+        try (final CloseableHttpClient client = getCloseableHttpClient();
+        final CloseableHttpResponse resp = client.execute(post)) {
+            return objectMapper.readValue(resp.getEntity().getContent(), HyperparametersDTO.class);
+        }
+    }
+
+
+    private CloseableHttpClient getCloseableHttpClient() {
+        return HttpClients.custom().setDefaultHeaders(
+                Arrays.asList(new BasicHeader("Authorization", "Token "+ this.token)))
+                .build();
     }
 }
