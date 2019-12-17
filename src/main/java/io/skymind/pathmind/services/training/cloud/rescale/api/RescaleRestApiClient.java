@@ -20,10 +20,8 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
@@ -254,9 +252,5 @@ public class RescaleRestApiClient {
                 .bodyToMono(Void.class)
                 .onErrorMap(RuntimeException::new)
                 .block();
-    }
-
-    public InputStream policyFile(String jobId){
-        return new ByteArrayInputStream(outputFile(jobId, "1", "policy.zip"));
     }
 }
