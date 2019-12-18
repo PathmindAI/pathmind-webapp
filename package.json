@@ -19,7 +19,7 @@
     "webpack-dev-server": "3.9.0",
     "webpack-merge": "4.2.2"
   },
-  "vaadinAppPackageHash": "2f19b0c95a7d837400091fa5e154a47a62489d7d15a5dd2a51792a3dee88daa5",
+  "vaadinAppPackageHash": "Main dependencies updated, force install",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
