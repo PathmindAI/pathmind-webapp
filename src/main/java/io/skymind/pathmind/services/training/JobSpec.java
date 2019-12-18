@@ -11,6 +11,9 @@ public class JobSpec {
     private final long experimentId;
     private final long runId;
 
+    private final String modelFileId;
+    private String checkpointFileId;
+
     private final String variables;
     private final String reset;
     private final String reward;
@@ -23,7 +26,6 @@ public class JobSpec {
     private final ExecutionEnvironment env;
 
     private final RunType type;
-    private final Supplier<byte[]> modelFileSupplier;
 
     private final List<Double> learningRates;
     private final List<Double> gammas;
@@ -31,11 +33,12 @@ public class JobSpec {
 
     private final int maxTimeInSec;
 
-    public JobSpec(long userId, long modelId, long experimentId, long runId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, Supplier<byte[]> modelFileSupplier, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec) {
+    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
         this.runId = runId;
+        this.modelFileId = modelFileId;
         this.variables = variables;
         this.reset = reset;
         this.reward = reward;
@@ -44,7 +47,6 @@ public class JobSpec {
         this.iterations = iterations;
         this.env = env;
         this.type = type;
-        this.modelFileSupplier = modelFileSupplier;
         this.learningRates = learningRates;
         this.gammas = gammas;
         this.batchSizes = batchSizes;
@@ -95,10 +97,6 @@ public class JobSpec {
         return type;
     }
 
-    public byte[] getModelFile() {
-        return modelFileSupplier.get();
-    }
-
     public ExecutionEnvironment getEnv() {
         return env;
     }
@@ -121,5 +119,17 @@ public class JobSpec {
 
     public int getMaxTimeInSec() {
         return maxTimeInSec;
+    }
+
+    public String getModelFileId() {
+        return modelFileId;
+    }
+
+    public String getCheckpointFileId() {
+        return checkpointFileId;
+    }
+
+    public void setCheckpointFileId(String checkpointFileId) {
+        this.checkpointFileId = checkpointFileId;
     }
 }

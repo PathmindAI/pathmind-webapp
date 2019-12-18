@@ -16,11 +16,11 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
-import org.jooq.JSON;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row4;
+import org.jooq.Row5;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ExecutionProviderMetaData extends TableImpl<ExecutionProviderMetaDataRecord> {
 
-    private static final long serialVersionUID = -702325607;
+    private static final long serialVersionUID = 837053152;
 
     /**
      * The reference instance of <code>public.execution_provider_meta_data</code>
@@ -60,22 +60,27 @@ public class ExecutionProviderMetaData extends TableImpl<ExecutionProviderMetaDa
     /**
      * The column <code>public.execution_provider_meta_data.id</code>.
      */
-    public final TableField<ExecutionProviderMetaDataRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ExecutionProviderMetaDataRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('execution_provider_meta_data_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.execution_provider_meta_data.provider_class</code>.
      */
-    public final TableField<ExecutionProviderMetaDataRecord, String> PROVIDER_CLASS = createField(DSL.name("provider_class"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
+    public final TableField<ExecutionProviderMetaDataRecord, Integer> PROVIDER_CLASS = createField(DSL.name("provider_class"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.execution_provider_meta_data.type</code>.
+     */
+    public final TableField<ExecutionProviderMetaDataRecord, Integer> TYPE = createField(DSL.name("type"), org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * The column <code>public.execution_provider_meta_data.key</code>.
      */
-    public final TableField<ExecutionProviderMetaDataRecord, String> KEY = createField(DSL.name("key"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
+    public final TableField<ExecutionProviderMetaDataRecord, String> KEY = createField(DSL.name("key"), org.jooq.impl.SQLDataType.VARCHAR, this, "");
 
     /**
      * The column <code>public.execution_provider_meta_data.value</code>.
      */
-    public final TableField<ExecutionProviderMetaDataRecord, JSON> VALUE = createField(DSL.name("value"), org.jooq.impl.SQLDataType.JSON, this, "");
+    public final TableField<ExecutionProviderMetaDataRecord, String> VALUE = createField(DSL.name("value"), org.jooq.impl.SQLDataType.VARCHAR(36), this, "");
 
     /**
      * Create a <code>public.execution_provider_meta_data</code> table reference
@@ -117,7 +122,12 @@ public class ExecutionProviderMetaData extends TableImpl<ExecutionProviderMetaDa
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.EXECUTION_PROVIDER_META_DATA_PKEY, Indexes.EXECUTION_PROVIDER_META_DATA_PROVIDER_CLASS_KEY_KEY);
+        return Arrays.<Index>asList(Indexes.EXECUTION_PROVIDER_META_DATA_PKEY, Indexes.UNIQUE_PROVIDER_CLASS_TYPE_KEY);
+    }
+
+    @Override
+    public Identity<ExecutionProviderMetaDataRecord, Long> getIdentity() {
+        return Keys.IDENTITY_EXECUTION_PROVIDER_META_DATA;
     }
 
     @Override
@@ -127,7 +137,7 @@ public class ExecutionProviderMetaData extends TableImpl<ExecutionProviderMetaDa
 
     @Override
     public List<UniqueKey<ExecutionProviderMetaDataRecord>> getKeys() {
-        return Arrays.<UniqueKey<ExecutionProviderMetaDataRecord>>asList(Keys.EXECUTION_PROVIDER_META_DATA_PKEY, Keys.EXECUTION_PROVIDER_META_DATA_PROVIDER_CLASS_KEY_KEY);
+        return Arrays.<UniqueKey<ExecutionProviderMetaDataRecord>>asList(Keys.EXECUTION_PROVIDER_META_DATA_PKEY, Keys.UNIQUE_PROVIDER_CLASS_TYPE_KEY);
     }
 
     @Override
@@ -157,11 +167,11 @@ public class ExecutionProviderMetaData extends TableImpl<ExecutionProviderMetaDa
     }
 
     // -------------------------------------------------------------------------
-    // Row4 type methods
+    // Row5 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<Long, String, String, JSON> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row5<Long, Integer, Integer, String, String> fieldsRow() {
+        return (Row5) super.fieldsRow();
     }
 }

@@ -4,11 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import org.jooq.DSLContext;
@@ -64,6 +66,10 @@ public class RunDAO
         RunRepository.savePolicyFile(ctx, runId, externalId, policyFile);
     }
 
+    public void saveCheckpointFile(long runId, String externalId, byte[] checkpointFile) {
+        RunRepository.saveCheckpointFile(ctx, runId, externalId, checkpointFile);
+    }
+
     public Map<Long, List<String>> getStoppedPolicyNamesForRuns(List<Long> runIds) {
         return RunRepository.getStoppedPolicyNamesForRuns(ctx, runIds);
     }
@@ -80,6 +86,18 @@ public class RunDAO
             updateFirstPolicy(run, policies, transactionCtx);
             updatePolicies(run, policies, transactionCtx);
         });
+
+        // The EventBus updates have to be done AFTER the transaction is completed and NOT during in case the transaction fails.
+        fireEventBusUpdates(run, policies);
+    }
+
+    private void fireEventBusUpdates(Run run, List<Policy> policies) {
+        // An event for each policy since we only need to update some of the policies in a run.
+        policies.stream().forEach(policy -> EventBus.post(new PolicyUpdateBusEvent(policy)));
+        // This is only needed because if the run is completed then with the current API there are no policies
+        // to update. By updating the run we can then let all the interested policies on screen know to update themselves.
+        if(policies.isEmpty())
+            EventBus.post(new RunUpdateBusEvent(run));
     }
 
     // STEPH -> REFACTOR -> QUESTION -> Rename method with an explanation of what this does? It generates a temp policy name but why? And why get only index 0.
@@ -88,7 +106,7 @@ public class RunDAO
         if (policies.size() > 0 && PolicyRepository.isTemporaryPolicy(ctx, run.getId(), RunUtils.TEMPORARY_POSTFIX)) {
             Policy policy = policies.get(0);
             //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
-            PolicyRepository.updatePolicyNameAndExternalId(transactionCtx, run.getId(), policy.getExternalId(), PolicyUtils.generatePolicyTempName(policy, run));
+            PolicyRepository.updatePolicyNameAndExternalId(transactionCtx, run.getId(), policy.getExternalId(), PolicyUtils.generatePolicyTempName(policy.getExternalId(), run.getRunType()));
         }
     }
 
@@ -146,4 +164,24 @@ public class RunDAO
             log.info("Cleaned Temporary Policies in " + runId);
         }
     }
+
+    public List<RewardScore> getScores(long runId, String policyExtId) {
+        Policy policy =  PolicyRepository.getPolicy(ctx, runId, policyExtId);
+
+        // check temporary policy
+        if (policy == null) {
+            int runType = RunRepository.getRunType(ctx, runId);
+            policy = PolicyRepository.getPolicy(ctx, runId, PolicyUtils.generatePolicyTempName(policyExtId, runType));
+        }
+
+        if (policy == null) {
+            return null;
+        }
+
+        PolicyUtils.processProgressJson(policy, policy.getProgress());
+
+        return policy.getScores();
+    }
+
+
 }

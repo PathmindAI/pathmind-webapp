@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.project.components.wizard;
+package io.skymind.pathmind.ui.views.model.components;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
@@ -9,8 +9,8 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
+
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.ui.binders.ModelBinders;
 import io.skymind.pathmind.ui.components.PathmindTextArea;

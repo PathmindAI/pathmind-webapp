@@ -15,11 +15,13 @@ public class AuthenticationLogger
 	public void auditEventHappened(AuditApplicationEvent auditApplicationEvent) {
 
 		AuditEvent auditEvent = auditApplicationEvent.getAuditEvent();
-		log.info(auditEvent.getType() + " - Principal " + auditEvent.getPrincipal());
-
 		WebAuthenticationDetails details = (WebAuthenticationDetails) auditEvent.getData().get("details");
-		log.info("  Remote IP address: " + details.getRemoteAddress());
-		log.info("  Session Id: " + details.getSessionId());
+
+		if(!"anonymousUser".equals(auditEvent.getPrincipal())) {
+			log.info(auditEvent.getType() + " - Principal " + auditEvent.getPrincipal());
+			log.info("  Remote IP address: " + details.getRemoteAddress());
+			log.info("  Session Id: " + details.getSessionId());
+		}
 	}
 
 }
