@@ -22,6 +22,11 @@ import elemental.json.Json;
  * - Added <code>addAllFilesUploadedListener</code> method, that is triggered after all files are uploaded
  * - Added MultiFileMemoryBufferWithFileStructure as default receiver, which works with file path, instead of filename
  * - The filter is done in client side, see model-upload-filter.js and black-list.js for details
+ * 
+ * Additionally,
+ * - webkitdirectory attribute might not work in all browsers (https://github.com/SkymindIO/pathmind-webapp/issues/628)
+ * - currently custom libraries are identified by making a string comparison with the black-list, this method can be improved 
+ * (https://github.com/SkymindIO/pathmind-webapp/issues/629) 
  */
 
 @JavaScript("/src/upload/model-upload-filter.js")
@@ -36,7 +41,7 @@ public class PathmindModelUploader extends Upload {
 		super();
 		setReceiver(new MultiFileMemoryBufferWithFileStructure());
 		setupFolderUpload();
-		addUploadStartListener(evt -> uploadStarted(evt));
+		addUploadStartListener(this::uploadStarted);
 		addUploadErrorListener(evt -> {
 			numOfFilesUploaded--;
 			if (numOfFilesUploaded == 0) {
@@ -72,7 +77,7 @@ public class PathmindModelUploader extends Upload {
 		setDropAllowed(false);
 		getElement().executeJs("$0.$.fileInput.webkitdirectory = true");
 		getElement().executeJs("$0.$.fileInput.mozdirectory = true");
-		getElement().executeJs("window.addClientSideFiltering($0)");
+		getElement().executeJs("window.Pathmind.ModelUploader.addClientSideFiltering($0)");
 	}
 	
 	class MultiFileMemoryBufferWithFileStructure extends MultiFileMemoryBuffer {

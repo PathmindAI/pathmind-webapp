@@ -21,11 +21,13 @@ function matchesFilter(filePath) {
   }
   return false;
 }
-
-window.addClientSideFiltering = function(upload) {
-  upload._addFiles = function(files) {
-    files = filter(files);
-    console.log(files);
-    Array.prototype.forEach.call(files, upload._addFile.bind(upload));
-  };
+window.Pathmind = {
+		ModelUploader: {
+			addClientSideFiltering: function(upload) {
+				  upload._addFiles = function(files) {
+					    files = filter(files);
+					    Array.prototype.forEach.call(files, upload._addFile.bind(upload));
+				  }
+			}
+		}
 };
