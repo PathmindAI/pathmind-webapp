@@ -12,6 +12,7 @@ public class JobSpec {
     private final long runId;
 
     private final String modelFileId;
+    private String checkpointFileId;
 
     private final String variables;
     private final String reset;
@@ -122,5 +123,13 @@ public class JobSpec {
 
     public String getModelFileId() {
         return modelFileId;
+    }
+
+    public String getCheckpointFileId() {
+        return checkpointFileId;
+    }
+
+    public void setCheckpointFileId(String checkpointFileId) {
+        this.checkpointFileId = checkpointFileId;
     }
 }

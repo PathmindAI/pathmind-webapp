@@ -17,11 +17,12 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.JSONB;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row10;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = -1683981285;
+    private static final long serialVersionUID = 1537032827;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -61,7 +62,7 @@ public class Policy extends TableImpl<PolicyRecord> {
     /**
      * The column <code>public.policy.id</code>.
      */
-    public final TableField<PolicyRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<PolicyRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('policy_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.policy.run_id</code>.
@@ -104,6 +105,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     public final TableField<PolicyRecord, String> ALGORITHM = createField(DSL.name("algorithm"), org.jooq.impl.SQLDataType.VARCHAR(3), this, "");
 
     /**
+     * The column <code>public.policy.snapshot</code>.
+     */
+    public final TableField<PolicyRecord, byte[]> SNAPSHOT = createField(DSL.name("snapshot"), org.jooq.impl.SQLDataType.BLOB, this, "");
+
+    /**
      * Create a <code>public.policy</code> table reference
      */
     public Policy() {
@@ -144,6 +150,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.POLICY_PKEY, Indexes.POLICY_RUN_ID_EXTERNAL_ID_KEY);
+    }
+
+    @Override
+    public Identity<PolicyRecord, Long> getIdentity() {
+        return Keys.IDENTITY_POLICY;
     }
 
     @Override
@@ -192,11 +203,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row10 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<Long, Long, String, String, JSONB, byte[], LocalDateTime, LocalDateTime, String> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row10<Long, Long, String, String, JSONB, byte[], LocalDateTime, LocalDateTime, String, byte[]> fieldsRow() {
+        return (Row10) super.fieldsRow();
     }
 }
