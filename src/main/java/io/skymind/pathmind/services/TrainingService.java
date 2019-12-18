@@ -187,8 +187,13 @@ public class TrainingService {
         if (basePolicy != null) {
             progress = policyDAO.getProgress(basePolicy.getId());
 
-            spec.setSnapshot(() -> policyDAO.getSnapshotFile(basePolicy.getId()));
-            spec.setParentPolicyExternalId(basePolicy.getExternalId());
+            String checkpointFileId = executionProviderMetaDataDAO.getCheckPointFileKey(basePolicy.getExternalId());
+            if (checkpointFileId == null) {
+                checkpointFileId = executionProvider.uploadCheckpoint(policyDAO.getSnapshotFile(basePolicy.getId()));
+                executionProviderMetaDataDAO.putCheckPointFileKey(basePolicy.getExternalId(), checkpointFileId);
+            }
+
+            spec.setCheckpointFileId(checkpointFileId);
         }
 
         // IMPORTANT -> There are multiple database calls within executionProvider.execute.

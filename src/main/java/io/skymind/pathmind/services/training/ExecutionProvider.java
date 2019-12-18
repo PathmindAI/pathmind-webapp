@@ -85,6 +85,14 @@ public interface ExecutionProvider {
     Map.Entry<@NotNull String, byte[]> snapshot(String jobHandle, String trainingRun);
 
     /**
+     * upload checkpoint file
+     *
+     * @param checkpointFile
+     * @return rescale file id for the checkpoint file
+     */
+    String uploadCheckpoint(byte[] checkpointFile);
+
+    /**
      *  Download the current console output for the given jobHandle. Best used for debugging purposes; usually not
      *  exposed to end users.
      *

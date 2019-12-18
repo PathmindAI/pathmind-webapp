@@ -12,6 +12,7 @@ public class JobSpec {
     private final long runId;
 
     private final String modelFileId;
+    private String checkpointFileId;
 
     private final String variables;
     private final String reset;
@@ -25,9 +26,6 @@ public class JobSpec {
     private final ExecutionEnvironment env;
 
     private final RunType type;
-
-    private String parentPolicyExternalId;
-    private Supplier<byte[]> snapshotSupplier;
 
     private final List<Double> learningRates;
     private final List<Double> gammas;
@@ -99,22 +97,6 @@ public class JobSpec {
         return type;
     }
 
-    public byte[] getSnapshot() {
-        return snapshotSupplier != null ? snapshotSupplier.get() : null;
-    }
-
-    public void setSnapshot(Supplier<byte[]> snapshotSupplier) {
-        this.snapshotSupplier = snapshotSupplier;
-    }
-
-    public String getParentPolicyExternalId() {
-        return parentPolicyExternalId;
-    }
-
-    public void setParentPolicyExternalId(String parentPolicyExternalId) {
-        this.parentPolicyExternalId = parentPolicyExternalId;
-    }
-
     public ExecutionEnvironment getEnv() {
         return env;
     }
@@ -141,5 +123,13 @@ public class JobSpec {
 
     public String getModelFileId() {
         return modelFileId;
+    }
+
+    public String getCheckpointFileId() {
+        return checkpointFileId;
+    }
+
+    public void setCheckpointFileId(String checkpointFileId) {
+        this.checkpointFileId = checkpointFileId;
     }
 }

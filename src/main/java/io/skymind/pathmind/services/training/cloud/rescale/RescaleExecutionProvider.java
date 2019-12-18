@@ -1,12 +1,14 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
 import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.cloud.rescale.api.RescaleRestApiClient;
-import io.skymind.pathmind.services.training.cloud.rescale.api.dto.*;
+import io.skymind.pathmind.services.training.cloud.rescale.api.dto.FileReference;
+import io.skymind.pathmind.services.training.cloud.rescale.api.dto.Job;
+import io.skymind.pathmind.services.training.cloud.rescale.api.dto.JobAnalysis;
+import io.skymind.pathmind.services.training.cloud.rescale.api.dto.JobStatus;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
@@ -28,7 +30,6 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     private static final String DEFAULT_RUN_ID = "1";
 
     private final RescaleRestApiClient client;
-    private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RescaleFileManager fileManager;
     private static final List<String> KNOWN_ERROR_MSGS = new ArrayList<>();
 
@@ -40,9 +41,8 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         KNOWN_ERROR_MSGS.add("java.lang.ArrayIndexOutOfBoundsException");
     }
 
-    public RescaleExecutionProvider(RescaleRestApiClient client, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
+    public RescaleExecutionProvider(RescaleRestApiClient client) {
         this.client = client;
-        this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.fileManager = RescaleFileManager.getInstance();
     }
 
@@ -51,13 +51,6 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         List<String> instructions = new ArrayList<>();
         List<FileReference> files = new ArrayList<>();
 
-        // Get checkpoint file id
-        String checkpointId = null;
-
-        if (job.getSnapshot() != null) {
-            checkpointId = uploadCheckpointIfNeeded(job);
-        }
-
         final ExecutionEnvironment env = job.getEnv();
 
         // Set up which files are needed, and how to install them
@@ -65,10 +58,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         installAnyLogic(env.getAnylogicVersion(), instructions, files);
         installHelper(env.getPathmindHelperVersion(), instructions, files);
         installModel(job.getModelFileId(), instructions, files);
-
-        if (job.getSnapshot() != null) {
-            installCheckpoint(checkpointId, instructions, files);
-        }
+        installCheckpoint(job.getCheckpointFileId(), instructions, files);
 
         // Set up variables
         setupVariables(job, instructions);
@@ -235,6 +225,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         }
     }
 
+    @Override
     public String uploadModel(byte[] modelFile) {
         try {
             return client.fileUpload(modelFile, "model.zip").getId();
@@ -243,23 +234,13 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         }
     }
 
-    /**
-     *  Upload checkpoint file if necessary
-     */
-    private String uploadCheckpointIfNeeded(JobSpec jobSpec) {
-        String fileId = executionProviderMetaDataDAO.getCheckPointFileKey(jobSpec.getParentPolicyExternalId());
-
-        if (fileId == null) {
-            final RescaleFile rescaleFile;
-            try {
-                rescaleFile = client.fileUpload(jobSpec.getSnapshot(), "checkpoint.zip");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            fileId = rescaleFile.getId();
+    @Override
+    public String uploadCheckpoint(byte[] checkpointFile) {
+        try {
+            return client.fileUpload(checkpointFile, "checkpoint.zip").getId();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        return fileId;
     }
 
     private String startTrainingRun(JobSpec job, List<String> instructions, List<FileReference> files) {
@@ -345,17 +326,19 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     }
 
     private void installCheckpoint(String checkpointId, List<String> instructions, List<FileReference> files) {
-        files.add(new FileReference(checkpointId, false));
+        if (checkpointId != null) {
+            files.add(new FileReference(checkpointId, false));
 
-        instructions.addAll(Arrays.asList(
-                "mkdir checkpoint",
-                "unzip ../checkpoint.zip -d checkpoint",
-                "rm ../checkpoint.zip"
-        ));
+            instructions.addAll(Arrays.asList(
+                    "mkdir checkpoint",
+                    "unzip ../checkpoint.zip -d checkpoint",
+                    "rm ../checkpoint.zip"
+            ));
 
-        instructions.add(
-                varExp("CHECKPOINT", "$(find checkpoint -name \"checkpoint-*\" ! -name \"checkpoint-*.*\")")
-        );
+            instructions.add(
+                    varExp("CHECKPOINT", "$(find checkpoint -name \"checkpoint-*\" ! -name \"checkpoint-*.*\")")
+            );
+        }
     }
 
     private void installModel(String modelId, List<String> instructions, List<FileReference> files) {
