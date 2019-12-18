@@ -19,7 +19,7 @@ import io.skymind.pathmind.ui.components.PathmindModelUploader;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
-import io.skymind.pathmind.utils.FileUtils;
+import io.skymind.pathmind.utils.UploadUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -89,7 +89,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private void addUploadSucceedListener(MultiFileMemoryBuffer buffer) {
 		upload.addAllFilesUploadedListener(() -> {
 			try {
-				model.setFile(FileUtils.createZipFileFromBuffer(buffer));
+				model.setFile(UploadUtils.createZipFileFromBuffer(buffer));
 				fileCheckerCommand.execute();
 				log.info("Upload completed");
 			} catch (IOException e) {
