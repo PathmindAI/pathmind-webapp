@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.training.cloud.rescale;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
@@ -92,12 +93,25 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
                 // todo make saving to enum or static final variable (currently defined in PolicyDAO).
                 final byte[] policyFile = provider.policy(rescaleJobId, finishPolicyName);
                 runDAO.savePolicyFile(runId, finishPolicyName, policyFile);
+
+                // save the last checkpoint
+                Map.Entry<String, byte[]> entry = provider.snapshot(rescaleJobId, finishPolicyName);
+                if (entry != null) {
+                    final byte[] checkPointFile = entry.getValue();
+                    runDAO.saveCheckpointFile(runId, finishPolicyName, checkPointFile);
+                }
+
+                // save meta data for checkpoint
+                if (executionProviderMetaDataDAO.getCheckPointFileKey(finishPolicyName) == null) {
+                    executionProviderMetaDataDAO.putCheckPointFileKey(finishPolicyName, entry.getKey());
+                }
             });
             // STEPH -> REFACTOR -> Combined so that this is transactional. For now I just left it as is for the merge
             // conflict just to process the PR and will clean it up as part of another ticket.
             runDAO.cleanUpTemporary(runId);
         }
     }
+
 
     private void setStoppedAtForFinishedPolicies(List<Policy> policies, List<String> finishedPolicyNamesFromRescale) {
         policies.stream()
@@ -111,7 +125,10 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
         final Map<String, String> rawProgress = provider.progress(rescaleJobId, jobStatus);
         return rawProgress.entrySet().stream()
                 .filter(e -> !stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).contains(e.getKey()))
-                .map(ProgressInterpreter::interpret)
+                .map(e -> {
+                    List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
+                    return ProgressInterpreter.interpret(e, previousScores);
+                })
                 .collect(Collectors.toList());
     }
 

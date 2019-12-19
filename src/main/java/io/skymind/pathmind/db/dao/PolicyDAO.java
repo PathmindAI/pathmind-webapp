@@ -4,6 +4,7 @@ import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.data.Policy;
 import org.jooq.DSLContext;
+import org.jooq.JSONB;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -49,4 +50,13 @@ public class PolicyDAO
     public List<Policy> getActivePoliciesForUser(long userId) {
         return PolicyRepository.getActivePoliciesForUser(ctx, userId);
     }
+
+    public JSONB getProgress(long policyId) {
+        return PolicyRepository.getProgress(ctx, policyId);
+    }
+
+    public byte[] getSnapshotFile(long policyId) {
+        return PolicyRepository.getSnapshotFile(ctx, policyId);
+    }
+
 }
