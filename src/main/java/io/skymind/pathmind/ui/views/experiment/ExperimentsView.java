@@ -190,10 +190,10 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
     @Override
     protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
-    	DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
-			// experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
-    		experimentGrid.setItems(experiments);
-		});
+        DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+            // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
+            experimentGrid.setItems(experiments);
+        });
         archivesTabPanel.initData();
         getObservationTextArea.setValue(currentModel.getGetObservationForRewardFunction());
         showRewardFunction(experiments.get(0));
