@@ -10,7 +10,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -40,6 +39,7 @@ import io.skymind.pathmind.ui.views.experiment.filter.ExperimentFilter;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.model.ModelsView;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
+import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENTS_URL, layout = MainLayout.class)
@@ -190,7 +190,10 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
     @Override
     protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
-        experimentGrid.setItems(experiments);
+    	DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+			// experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
+    		experimentGrid.setItems(experiments);
+		});
         archivesTabPanel.initData();
         getObservationTextArea.setValue(currentModel.getGetObservationForRewardFunction());
         showRewardFunction(experiments.get(0));
