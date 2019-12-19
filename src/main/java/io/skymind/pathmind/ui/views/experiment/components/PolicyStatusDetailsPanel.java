@@ -2,6 +2,7 @@ package io.skymind.pathmind.ui.views.experiment.components;
 
 import java.util.Arrays;
 
+import io.skymind.pathmind.data.utils.RunUtils;
 import org.springframework.stereotype.Component;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -25,7 +26,7 @@ public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUp
 	private Label statusLabel = new Label(RunStatus.NotStarted.toString());
 	private Label runProgressLabel = new Label();
 	private Label runTypeLabel = new Label();
-	private Label elapsedTimeLabel = new Label();
+	private ElapsedTimer elapsedTimeLabel = new ElapsedTimer();
 
 	private Policy policy;
 
@@ -81,7 +82,7 @@ public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUp
 
 		statusLabel.setText(PolicyUtils.getRunStatus(policy).toString());
 		runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());
-		elapsedTimeLabel.setText(PolicyUtils.getElapsedTime(policy));
+		updateElapsedTimer(policy);
 		DateAndTimeUtils.withUserTimeZoneId(userTimeZone -> {
 			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(PolicyUtils.getRunCompletedTime(policy), userTimeZone));
 		});
@@ -110,5 +111,21 @@ public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUp
 	@Override
 	public boolean filterBusEvent(PolicyUpdateBusEvent event) {
 		return getPolicy().getId() == event.getPolicy().getId();
+	}
+
+	private void updateElapsedTimer(Policy policy) {
+		final var runStatus = PolicyUtils.getRunStatus(policy);
+		final var elapsedTime = RunUtils.getElapsedTime(policy.getRun());
+		switch (runStatus) {
+			case Starting:
+				elapsedTimeLabel.updateTimer("startTimer", elapsedTime);
+				break;
+			case Running:
+				elapsedTimeLabel.updateTimer("setTimer", elapsedTime);
+				break;
+			case Completed:
+				elapsedTimeLabel.updateTimer("stopTimer", elapsedTime);
+				break;
+		}
 	}
 }
