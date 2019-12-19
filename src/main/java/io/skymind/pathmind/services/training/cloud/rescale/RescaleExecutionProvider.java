@@ -17,6 +17,7 @@ import io.skymind.pathmind.services.training.versions.RescaleFileManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -57,6 +58,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         installAnyLogic(env.getAnylogicVersion(), instructions, files);
         installHelper(env.getPathmindHelperVersion(), instructions, files);
         installModel(job.getModelFileId(), instructions, files);
+        installCheckpoint(job.getCheckpointFileId(), instructions, files);
 
         // Set up variables
         setupVariables(job, instructions);
@@ -169,6 +171,15 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     }
 
     @Override
+    public Map.Entry<@NotNull String, byte[]> snapshot(String jobHandle, String trainingRun) {
+        return client.outputFiles(jobHandle, DEFAULT_RUN_ID).getResults()
+                .stream()
+                .filter(it -> it.getPath().endsWith(trainingRun + "/checkpoint.zip"))
+                .map(it -> Map.entry(it.getId(), client.fileContents(it.getId())))
+                .findFirst().orElse(null);
+    }
+
+    @Override
     public String console(String jobHandle) {
         final RunStatus runStatus = status(jobHandle);
 
@@ -214,9 +225,19 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         }
     }
 
+    @Override
     public String uploadModel(byte[] modelFile) {
         try {
             return client.fileUpload(modelFile, "model.zip").getId();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String uploadCheckpoint(byte[] checkpointFile) {
+        try {
+            return client.fileUpload(checkpointFile, "checkpoint.zip").getId();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -237,6 +258,10 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     private String var(String name, String value) {
         return "export " + name + "='" + value.replace("'", "\\'") + "'";
+    }
+
+    private String varExp(String name, String value) {
+        return "export " + name + "=" + value.replace("'", "\\'");
     }
 
     private void setupVariables(JobSpec job, List<String> instructions) {
@@ -286,6 +311,9 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "  zip -r $OLDPWD/../output/policy_$(basename `dirname $DIR`).zip .;\n" +
                         "  cd $OLDPWD;\n" +
                         "  cp trial_* ../output;\n" +
+                        "  cd `find \"$DIR\"/.. -iname checkpoint_* -type d | sort -V | tail -1`;\n"+
+                        "  zip $OLDPWD/../output/$(basename `dirname $DIR`)/checkpoint.zip ./* ;\n"+
+                        "  cd $OLDPWD;\n" +
                 "done"
         ));
     }
@@ -295,6 +323,22 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 "cd ..",
                 "rm -rf work conda jdk8u222-b10"
         ));
+    }
+
+    private void installCheckpoint(String checkpointId, List<String> instructions, List<FileReference> files) {
+        if (checkpointId != null) {
+            files.add(new FileReference(checkpointId, false));
+
+            instructions.addAll(Arrays.asList(
+                    "mkdir checkpoint",
+                    "unzip ../checkpoint.zip -d checkpoint",
+                    "rm ../checkpoint.zip"
+            ));
+
+            instructions.add(
+                    varExp("CHECKPOINT", "$(find checkpoint -name \"checkpoint-*\" ! -name \"checkpoint-*.*\")")
+            );
+        }
     }
 
     private void installModel(String modelId, List<String> instructions, List<FileReference> files) {

@@ -85,9 +85,14 @@ public class ProgressInterpreter {
     }
 
     public static Policy interpret(Map.Entry<String, String> entry){
+        return interpret(entry, null);
+    }
+
+    public static Policy interpret(Map.Entry<String, String> entry, List<RewardScore> previousScores){
         final Policy policy = interpretKey(entry.getKey());
 
-        final ArrayList<RewardScore> scores = new ArrayList<>();
+        final List<RewardScore> scores = previousScores == null || previousScores.size() == 0 ? new ArrayList<>() : previousScores;
+        final int lastIteration = scores.size() == 0 ? -1 : scores.get(scores.size() - 1).getIteration();
 
         try (CSVReader reader = new CSVReader(new StringReader(entry.getValue()))) {
 
@@ -96,16 +101,20 @@ public class ProgressInterpreter {
             reader.readNext();
 
             while((record = reader.readNext()) != null){
-                final String max = record[0];   // episode_reward_max
-                final String min = record[1];   // episode_reward_min
-                final String mean = record[2];  // episode_reward_mean
+                final int iter = Integer.parseInt(record[9]); // training_iteration
 
-                scores.add(new RewardScore(
-                        Double.valueOf(max.equals("nan") ? "NaN" : max),
-                        Double.valueOf(min.equals("nan") ? "NaN" : min),
-                        Double.valueOf(mean.equals("nan") ? "NaN" : mean),
-                        Integer.parseInt(record[9]) // training_iteration
-                ));
+                if (iter > lastIteration) {
+                    final String max = record[0];   // episode_reward_max
+                    final String min = record[1];   // episode_reward_min
+                    final String mean = record[2];  // episode_reward_mean
+
+                    scores.add(new RewardScore(
+                            Double.valueOf(max.equals("nan") ? "NaN" : max),
+                            Double.valueOf(min.equals("nan") ? "NaN" : min),
+                            Double.valueOf(mean.equals("nan") ? "NaN" : mean),
+                            iter
+                    ));
+                }
             }
             policy.setScores(scores);
         } catch (Exception e) {
