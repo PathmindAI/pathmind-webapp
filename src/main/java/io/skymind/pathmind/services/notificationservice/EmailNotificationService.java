@@ -30,6 +30,12 @@ public class EmailNotificationService
 	@Value("${pathmind.application.url}")
 	private String applicationURL;
 
+	@Value("${pathmind.server-issues-notifications.enabled}")
+	private boolean isErrorEmailSendingEnabled;
+
+	@Value("${pathmind.server-issues-notifications.email}")
+	private String errorEmailAddress;
+
 	private UserDAO userDAO;
 	private MailHelper mailHelper;
 
@@ -115,26 +121,68 @@ public class EmailNotificationService
 		return applicationURL + "/" + Routes.RESET_PASSWORD_URL + "/" + pathmindUser.getEmailVerificationToken();
 	}
 
-	// DH -> Should we decide to add email notifications for special exceptions then we just need to replace
-	// the log entries below with mailHelper and set it up according to our preferences.
+	// TODO - once we migrate to AWS and have EFK we should remove this
+	// https://github.com/SkymindIO/pathmind-webapp/issues/594
 	public void sendEmailExceptionNotification(Throwable t) {
-		// Example
-		log.error("Subject: Exception: " + t.getMessage());
-		log.error("to: " + "default email address setup in application.properties");
-		log.error("Message:" + ExceptionUtils.getStackTrace(t));
+
+		if (!isErrorEmailSendingEnabled) {
+			log.info("Error Email sending has been disabled, not sending the email to: " + errorEmailAddress);
+			log.info("Subject: Exception: " + t.getMessage());
+			log.info("Message:" + ExceptionUtils.getStackTrace(t));
+			return;
+		}
+
+		Mail errorEmail;
+		try {
+			String subject = "Exception: " + t.getMessage();
+			String message =  ExceptionUtils.getStackTrace(t);
+			errorEmail = mailHelper.createErrorEmail(errorEmailAddress, subject, message);
+		} catch (PathMindException e) {
+			log.warn("Could not send error notification email");
+			return;
+		}
+		mailHelper.sendMail(errorEmail);
 	}
 
 	public void sendEmailExceptionNotification(String title, Throwable t) {
-		// Example
-		log.error("Subject: Exception: " + title);
-		log.error("to: " + "default email address setup in application.properties");
-		log.error("Message:" + ExceptionUtils.getStackTrace(t));
+
+		if (!isErrorEmailSendingEnabled) {
+			log.info("Error Email sending has been disabled, not sending the email to: " + errorEmailAddress);
+			log.info("Subject: Exception: " + title);
+			log.info("Message:" + ExceptionUtils.getStackTrace(t));
+			return;
+		}
+
+		Mail errorEmail;
+		try {
+			String subject = "Exception: " + title;
+			String message =  ExceptionUtils.getStackTrace(t);
+			errorEmail = mailHelper.createErrorEmail(errorEmailAddress, subject, message);
+		} catch (PathMindException e) {
+			log.warn("Could not send error notification email");
+			return;
+		}
+		mailHelper.sendMail(errorEmail);
 	}
 
-	public void sendEmailErrorNotification(String title, String message) {
-		// Example
-		log.error("Subject: Exception: " + title);
-		log.error("to: " + "default email address setup in application.properties");
-		log.error("Message:" + message);
+	public void sendEmailExceptionNotification(String title, String message) {
+
+
+		if (!isErrorEmailSendingEnabled) {
+			log.info("Error Email sending has been disabled, not sending the email to: " + errorEmailAddress);
+			log.info("Subject: Exception: " + title);
+			log.info("Message:" + message);
+			return;
+		}
+
+		Mail errorEmail;
+		try {
+			String subject = "Exception: " + title;
+			errorEmail = mailHelper.createErrorEmail(errorEmailAddress, subject, message);
+		} catch (PathMindException e) {
+			log.warn("Could not send error notification email");
+			return;
+		}
+		mailHelper.sendMail(errorEmail);
 	}
 }

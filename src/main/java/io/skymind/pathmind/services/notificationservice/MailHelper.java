@@ -5,6 +5,7 @@ import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import com.sendgrid.helpers.mail.objects.Personalization;
 import io.skymind.pathmind.exception.PathMindException;
@@ -100,6 +101,21 @@ public class MailHelper
 		personalization.addDynamicTemplateData("hours", hours);
 		personalization.addTo(new Email(to));
 		mail.addPersonalization(personalization);
+		return mail;
+	}
+
+	public Mail createErrorEmail(String to, String subject, String message) throws PathMindException
+	{
+		if (StringUtils.isAnyEmpty(to, subject, message)) {
+			throw new PathMindException("Email fields are missing");
+		}
+
+		Email fromAddress = new Email(from);
+		Email toAddress = new Email(to);
+		Content content = new Content("text/plain", message);
+
+		Mail mail = new Mail(fromAddress, subject, toAddress, content);
+
 		return mail;
 	}
 
