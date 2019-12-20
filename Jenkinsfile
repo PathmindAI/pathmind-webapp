@@ -60,8 +60,8 @@ pipeline {
 
     }
 
-    //all is built and run from the dev
-    agent { node { label 'dev' } }
+    //all is built and run from the master
+    agent { node { label 'master' } }
 
     // Pipeline stages
     stages {
