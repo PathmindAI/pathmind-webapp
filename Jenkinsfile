@@ -109,25 +109,19 @@ pipeline {
 		}
         }
 
-/*	////////// Step 4 //////////
+	////////// Step 4 //////////
 	stage("Deploying to ${DOCKER_TAG}") {
-            when {
-                anyOf {
-                    DOCKER_TAG 'test'
-                    DOCKER_TAG 'dev'
-                }
-            }
-
             steps {
 		script {
-			echo "Updating helm charts"
-			//sh "helm upgrade --install pathmind ${WORKSPACE}/helm/pathmind -f ${WORKSPACE}/helm/pathmind/values_${DOCKER_TAG}.yaml"
-			sh "sleep 30"
+			if (${DOCKER_TAG} == 'dev' || ${DOCKER_TAG} == 'test')  {
+				echo "Updating helm chart"
+				sh "helm upgrade --install pathmind ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}.yaml"
+			}
 		}
             }
         }
 
-	////////// Step 5 //////////
+/*	////////// Step 5 //////////
 	stage("Testing in ${DOCKER_TAG}") {
             steps {
 		echo "Testing in ${DOCKER_TAG}"

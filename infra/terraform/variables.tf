@@ -1,0 +1,3 @@
+variable "awsaccesskey" {}
+variable "awssecretaccesskey" {}
+

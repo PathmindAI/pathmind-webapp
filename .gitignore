@@ -33,3 +33,11 @@ build/
 
 webpack.generated.js
 .vagrant/
+
+## #Terraform tmp files ###
+.terraform/
+terraform.tfvars
+
+### Vim tmp files ###
+*swp
+
