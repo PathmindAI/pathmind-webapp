@@ -109,7 +109,7 @@ pipeline {
 		}
         }
 
-	////////// Step 4 //////////
+/*	////////// Step 4 //////////
 	stage("Deploying to ${DOCKER_TAG}") {
             when {
                 anyOf {
@@ -183,7 +183,7 @@ pipeline {
 		echo "Testing in Production"
 		//sh "python ${WORKSPACE}/src/jenkins/tests/web_prod.py"
             }
-        }
+        } */
    }
 }
 
