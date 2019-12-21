@@ -30,9 +30,7 @@ public class ProgressInterpreter {
         policy.setExternalId(keyString);
 
         int keyLength = keyString.length();
-        String id = null;
         String dateTime = null;
-
 
         if (keyString.endsWith(RunUtils.TEMPORARY_POSTFIX)) {
             // looks something like this:
@@ -41,7 +39,6 @@ public class ProgressInterpreter {
         } else {
             // looks something like this:
             // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128_2019-08-05_13-56-455cdir_3f
-            id = keyString.substring(keyLength - TRIAL_ID_LEN);
             dateTime = keyString.substring(keyLength - TRIAL_ID_LEN - DATE_LEN, keyLength - TRIAL_ID_LEN);
             keyString = keyString.substring(0, keyLength - TRIAL_ID_LEN - DATE_LEN - 1);
         }

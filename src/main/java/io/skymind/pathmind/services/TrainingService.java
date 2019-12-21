@@ -29,6 +29,8 @@ public class TrainingService
 {
     private static final int MINUTE = 60;
 
+    private static final String PATHMIND_ENVIRONMENT = "PathmindEnvironment";
+
     private final ExecutionProvider executionProvider;
     private final RunDAO runDAO;
     private final ModelDAO modelDAO;
@@ -100,39 +102,31 @@ public class TrainingService
         // this is for ui filling gap until ui get a training progress from backend(rescale)
         Policy tempPolicy = new Policy();
 
-        String name = getTempPolicyName(Algorithm.PPO.toString(),
-                "PathmindEnvironment",
-                spec.getLearningRates(),
-                spec.getGammas(),
-                spec.getBatchSizes(),
-                run.getRunType());
-
         tempPolicy.setAlgorithmEnum(Algorithm.PPO);
-        tempPolicy.setName(name);
-        tempPolicy.setExternalId(name);
         tempPolicy.setRunId(run.getId());
+        tempPolicy.getHyperParameters().setLearningRate(spec.getLearningRates().get(0));
+        tempPolicy.getHyperParameters().setGamma(spec.getGammas().get(0));
+        tempPolicy.getHyperParameters().setBatchSize(spec.getBatchSizes().get(0));
+        tempPolicy.setName(getTempPolicyName(tempPolicy, run.getRunType()));
+        tempPolicy.setExternalId(tempPolicy.getName());
 
         return tempPolicy;
     }
 
-    // STEPH -> REFACTOR -> This should be in the DAO layer and not the service layer as this is information on how data is stored
-    // within the database. However for now I'm just quickly putting it here so that we can process the PR asap.
-    private String getTempPolicyName(String algorithm, String environment, List<Double> lrs, List<Double> gammas, List<Integer> batchSize, int runType) {
+    private String getTempPolicyName(Policy policy, int runType) {
         String hyperparameters = String.join(
                 ",",
-                "gamma=" + gammas.get(0),
-                "lr=" + lrs.get(0),
-                "sgd_minibatch_size=" + batchSize.get(0)
-        );
+                "gamma=" + policy.getHyperParameters().getGamma(),
+                "lr=" + policy.getHyperParameters().getLearningRate(),
+                "sgd_minibatch_size=" + policy.getHyperParameters().getBatchSize());
 
         String name = String.join(
                 "_",
-                algorithm,
-                environment,
+                policy.getAlgorithm(),
+                PATHMIND_ENVIRONMENT,
                 "0",
                 hyperparameters,
-                runType + RunUtils.TEMPORARY_POSTFIX
-        );
+                runType + RunUtils.TEMPORARY_POSTFIX);
 
         return name;
     }

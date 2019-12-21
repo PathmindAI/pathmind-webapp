@@ -10,6 +10,7 @@ import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.data.db.Tables.*;
@@ -46,7 +47,7 @@ class PolicyRepository
 
 	protected static Policy getPolicy(DSLContext ctx, long policyId) {
         Record record = ctx
-                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM)
+                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
                 .select(EXPERIMENT.ID, EXPERIMENT.NAME)
                 .select(MODEL.ID, MODEL.NAME)
@@ -67,9 +68,7 @@ class PolicyRepository
 		policy.setProgress(null);
 
 		policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
-		// STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
-		// the HyperParameters are moved into the database we can delete this code.
-		policy.setHyperParameters(PolicyUtils.getHyperParametersFromName(policy));
+		addHyperParameters(record, policy);
 
 		addParentDataModelObjects(record, policy);
 
@@ -81,6 +80,16 @@ class PolicyRepository
 		policy.setExperiment(record.into(EXPERIMENT).into(Experiment.class));
 		policy.setModel(record.into(MODEL).into(Model.class));
 		policy.setProject(record.into(PROJECT).into(Project.class));
+	}
+
+	// STEPH -> This should eventually be mapped into a RecordMapper but since there are other issues I cannot do that yet.
+	// As for now I have to do a nullable check because when creating a new temp policy we do not seem to set the
+	// initial values for these properties. The name seems to have the possibility of a list of these values but
+	// after that it's always one.
+	private static void addHyperParameters(Record record, Policy policy) {
+		policy.getHyperParameters().setLearningRate(Optional.ofNullable(record.get(POLICY.LEARNING_RATE)).orElse(0.0));
+		policy.getHyperParameters().setGamma(Optional.ofNullable(record.get(POLICY.GAMMA)).orElse(0.0));
+		policy.getHyperParameters().setBatchSize(Optional.ofNullable(record.get(POLICY.BATCH_SIZE)).orElse(0));
 	}
 
 	protected static boolean hasPolicyFile(DSLContext ctx, long policyId) {
@@ -102,15 +111,15 @@ class PolicyRepository
 
 	protected static long insertPolicy(DSLContext ctx, Policy policy) {
 		return ctx.insertInto(POLICY)
-				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM)
-				.values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm())
+				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
+				.values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm(), policy.getHyperParameters().getLearningRate(), policy.getHyperParameters().getGamma(), policy.getHyperParameters().getBatchSize())
 				.returning(POLICY.ID)
 				.fetchOne()
 				.getValue(POLICY.ID);
 	}
 
 	protected static List<Policy> getPoliciesForExperiment(DSLContext ctx, long experimentId) {
-		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.RUN_ID)
+		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.RUN_ID, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
 				.select(EXPERIMENT.asterisk())
 				.select(RUN.asterisk())
 				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.ARCHIVED)
@@ -133,9 +142,7 @@ class PolicyRepository
 					// we might as well do it here.
 					// PERFORMANCE => can this be simplified? It's very expensive just to get Notes (both interpretKey and the HashMap of HyperParameters
 					PolicyUtils.processProgressJson(policy, record.get(POLICY.PROGRESS).toString());
-					// STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
-					// the HyperParameters are moved into the database we can delete this code.
-					policy.setHyperParameters(PolicyUtils.getHyperParametersFromName(policy));
+					addHyperParameters(record, policy);
 					policy.setProgress(null);
 
 					addParentDataModelObjects(record, policy);
@@ -161,8 +168,8 @@ class PolicyRepository
 	protected static long updateOrInsertPolicy(DSLContext ctx, Policy policy, JSONB progressJson)
 	{
 		return ctx.insertInto(POLICY)
-				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM)
-				.values(policy.getExternalId(), policy.getRunId(), policy.getExternalId(), progressJson, policy.getStartedAt(), policy.getStoppedAt(), policy.getAlgorithm())
+				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
+				.values(policy.getExternalId(), policy.getRunId(), policy.getExternalId(), progressJson, policy.getStartedAt(), policy.getStoppedAt(), policy.getAlgorithm(), policy.getHyperParameters().getLearningRate(), policy.getHyperParameters().getGamma(), policy.getHyperParameters().getBatchSize())
 				.onConflict(POLICY.RUN_ID, POLICY.EXTERNAL_ID)
 				.doUpdate()
 				.set(POLICY.PROGRESS, progressJson)

@@ -21,7 +21,7 @@ import org.jooq.Index;
 import org.jooq.JSONB;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row12;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = -1683981285;
+    private static final long serialVersionUID = -1371520121;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -102,6 +102,21 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.algorithm</code>.
      */
     public final TableField<PolicyRecord, String> ALGORITHM = createField(DSL.name("algorithm"), org.jooq.impl.SQLDataType.VARCHAR(3), this, "");
+
+    /**
+     * The column <code>public.policy.learning_rate</code>.
+     */
+    public final TableField<PolicyRecord, Double> LEARNING_RATE = createField(DSL.name("learning_rate"), org.jooq.impl.SQLDataType.DOUBLE, this, "");
+
+    /**
+     * The column <code>public.policy.gamma</code>.
+     */
+    public final TableField<PolicyRecord, Double> GAMMA = createField(DSL.name("gamma"), org.jooq.impl.SQLDataType.DOUBLE, this, "");
+
+    /**
+     * The column <code>public.policy.batch_size</code>.
+     */
+    public final TableField<PolicyRecord, Integer> BATCH_SIZE = createField(DSL.name("batch_size"), org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * Create a <code>public.policy</code> table reference
@@ -192,11 +207,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row12 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<Long, Long, String, String, JSONB, byte[], LocalDateTime, LocalDateTime, String> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row12<Long, Long, String, String, JSONB, byte[], LocalDateTime, LocalDateTime, String, Double, Double, Integer> fieldsRow() {
+        return (Row12) super.fieldsRow();
     }
 }

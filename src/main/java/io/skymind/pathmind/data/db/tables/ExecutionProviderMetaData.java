@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ExecutionProviderMetaData extends TableImpl<ExecutionProviderMetaDataRecord> {
 
-    private static final long serialVersionUID = 812173682;
+    private static final long serialVersionUID = -493862481;
 
     /**
      * The reference instance of <code>public.execution_provider_meta_data</code>
@@ -79,7 +79,7 @@ public class ExecutionProviderMetaData extends TableImpl<ExecutionProviderMetaDa
     /**
      * The column <code>public.execution_provider_meta_data.value</code>.
      */
-    public final TableField<ExecutionProviderMetaDataRecord, String> VALUE = createField(DSL.name("value"), org.jooq.impl.SQLDataType.VARCHAR(6), this, "");
+    public final TableField<ExecutionProviderMetaDataRecord, String> VALUE = createField(DSL.name("value"), org.jooq.impl.SQLDataType.VARCHAR(36), this, "");
 
     /**
      * Create a <code>public.execution_provider_meta_data</code> table reference

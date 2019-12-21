@@ -590,4 +590,19 @@
         <addUniqueConstraint tableName="EXECUTION_PROVIDER_META_DATA" constraintName="UNIQUE_PROVIDER_CLASS_TYPE_KEY" columnNames="PROVIDER_CLASS, TYPE, KEY" />
     </changeSet>
 
+    <changeSet id="20191220-01" author="steph@followsteph.com">
+        <addColumn tableName="POLICY">
+            <column name="LEARNING_RATE" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="GAMMA" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BATCH_SIZE" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191220_01"/>
+    </changeSet>
+
 </databaseChangeLog>
