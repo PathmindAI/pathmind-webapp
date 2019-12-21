@@ -39,6 +39,8 @@ public class SegmentIntegrator
 	private static final String EVENT_SAVE_DRAFT = "Save Draft";
 	private static final String EVENT_CHANGE_PW = "Change Password";
 	private static final String EVENT_EDIT_INFO = "Edit Info";
+	private static final String EVENT_ACCOUNT_UPGRADE = "Account Upgrade";
+	private static final String EVENT_CANCEL_SUBSCRIPTION = "Cancel Subscription";
 
 	public SegmentIntegrator(@Value("${skymind.segment.key}") String key,
 			@Value("${skymind.segment.enabled}") Boolean enabled) {
@@ -94,6 +96,14 @@ public class SegmentIntegrator
 
 	public void infoEdited() {
 		track(EVENT_EDIT_INFO);
+	}
+
+	public void accountUpgraded() {
+		track(EVENT_ACCOUNT_UPGRADE);
+	}
+	
+	public void subscriptionCancelled() {
+		track(EVENT_CANCEL_SUBSCRIPTION);
 	}
 
 	private void track(String event) {

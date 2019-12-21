@@ -27,6 +27,7 @@ import elemental.json.JsonObject;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.services.billing.StripeService;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 
 /**
@@ -45,16 +46,20 @@ public class PaymentViewContent extends PolymerTemplate<PaymentViewContent.Model
 	private static Logger log = LogManager.getLogger(PaymentViewContent.class);
 	
 	private StripeService stripeService;
+	
+	private SegmentIntegrator segmentIntegrator;
 
 	private PathmindUser user;
 
 	@Autowired
 	public PaymentViewContent(@Value("${pathmind.stripe.public.key}") String publicKey,
 					   StripeService stripeService,
+					   SegmentIntegrator segmentIntegrator,
 					   CurrentUser currentUser,
 					   @Value("${pathmind.contact-support.address}") String contactLink)
 	{
 		this.stripeService = stripeService;
+		this.segmentIntegrator = segmentIntegrator;
 		user = currentUser.getUser();
 
 		getModel().setContactLink(contactLink);
@@ -87,6 +92,7 @@ public class PaymentViewContent extends PolymerTemplate<PaymentViewContent.Model
 		try {
 			Customer customer = createOrUpdateCustomer(paymentMethod);
 			final Subscription subscription = stripeService.createSubscription(customer);
+			segmentIntegrator.accountUpgraded();
 			UI.getCurrent().navigate(UpgradeDoneView.class);
 		} catch (StripeException e) {
 			log.warn("There was an error creating a subscription for the customer: " + user.getEmail());
