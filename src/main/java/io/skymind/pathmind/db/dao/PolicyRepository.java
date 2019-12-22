@@ -72,6 +72,12 @@ class PolicyRepository
 		return policy;
     }
 
+    protected static Policy getPolicy(DSLContext ctx, long runId, String policyExternalId) {
+        return ctx.selectFrom(POLICY)
+                .where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.in(policyExternalId)))
+                .fetchOneInto(Policy.class);
+    }
+
 	private static void addParentDataModelObjects(Record record, Policy policy) {
 		policy.setRun(record.into(RUN).into(Run.class));
 		policy.setExperiment(record.into(EXPERIMENT).into(Experiment.class));
@@ -98,8 +104,8 @@ class PolicyRepository
 
 	protected static long insertPolicy(DSLContext ctx, Policy policy) {
 		return ctx.insertInto(POLICY)
-				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
-				.values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize())
+				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.PROGRESS)
+				.values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize(), JSONB.valueOf(policy.getProgress()))
 				.returning(POLICY.ID)
 				.fetchOne()
 				.getValue(POLICY.ID);
@@ -180,5 +186,20 @@ class PolicyRepository
 		ctx.delete(POLICY)
 				.where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.like("%" + tempKeyword)))
 				.execute();
+	}
+
+	protected static JSONB getProgress(DSLContext ctx, long policyId) {
+		return ctx.select(POLICY.PROGRESS)
+				.from(POLICY)
+				.where(POLICY.ID.eq(policyId))
+				.fetchOne()
+				.get(POLICY.PROGRESS);
+	}
+
+	protected static byte[] getSnapshotFile(DSLContext ctx, long policyId) {
+		return ctx.select(POLICY.SNAPSHOT)
+				.from(POLICY)
+				.where(POLICY.ID.eq(policyId))
+				.fetchOne(POLICY.SNAPSHOT);
 	}
 }

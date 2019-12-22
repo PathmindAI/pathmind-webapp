@@ -558,7 +558,14 @@
                 (SELECT PROJECT.ID FROM PROJECT LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
         </sql>
     </changeSet>
-    
+
+    <changeSet id="20191125-1" author="daehyun@skymind.io">
+        <comment>Add snapshot file column</comment>
+        <addColumn tableName="POLICY">
+            <column name="SNAPSHOT" type="bytea"/>
+        </addColumn>
+    </changeSet>
+
     <changeSet id="20191209-1" author="onur@vaadin.com">
         <update tableName="PATHMIND_USER">
             <column name="STRIPE_CUSTOMER_ID" value="cus_GKPM6sw8wTtgjg"/>
@@ -588,6 +595,10 @@
         <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="KEY" oldColumnName="KEY_TEMP"/>
         <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="VALUE" oldColumnName="VALUE_TEMP"/>
         <addUniqueConstraint tableName="EXECUTION_PROVIDER_META_DATA" constraintName="UNIQUE_PROVIDER_CLASS_TYPE_KEY" columnNames="PROVIDER_CLASS, TYPE, KEY" />
+    </changeSet>
+
+    <changeSet id="20191212-1" author="daehyun@skymind.io">
+        <modifyDataType tableName="EXECUTION_PROVIDER_META_DATA" columnName="KEY" newDataType="NVARCHAR"></modifyDataType>
     </changeSet>
 
     <changeSet id="20191220-01" author="steph@followsteph.com">

@@ -127,9 +127,9 @@ public class PolicyUtils
     // original name ex: PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_2019-10-11_21-16-2858waz_89
     // get rid of time and extra info
     // add run type and "TEMP"
-    public static String generatePolicyTempName(Policy policy, Run run)
+    public static String generatePolicyTempName(String policyExtId, int runType)
     {
-        String policyTempName = policy.getExternalId().substring(0, policy.getExternalId().length() - 27) + run.getRunType() + RunUtils.TEMPORARY_POSTFIX;
+        String policyTempName = policyExtId.substring(0, policyExtId.length() - 27) + runType + RunUtils.TEMPORARY_POSTFIX;
 
         Matcher matcher = lrPattern.matcher(policyTempName);
 
@@ -142,6 +142,7 @@ public class PolicyUtils
             policyTempName = policyTempName.replaceFirst(lrPatternStr, lr);
         }
 
+        //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
         return policyTempName;
     }
 

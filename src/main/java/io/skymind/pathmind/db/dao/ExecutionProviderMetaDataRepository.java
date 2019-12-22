@@ -2,7 +2,7 @@ package io.skymind.pathmind.db.dao;
 
 import org.jooq.DSLContext;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -11,7 +11,7 @@ import static io.skymind.pathmind.data.db.Tables.EXECUTION_PROVIDER_META_DATA;
 // IMPORTANT -> The WHERE for ProviderClass is NOT included since it's always the same one providerClass at this time.
 class ExecutionProviderMetaDataRepository
 {
-    protected static void put(DSLContext ctx, int providerClass, int type, long key, String value)
+    protected static void put(DSLContext ctx, int providerClass, int type, String key, String value)
     {
         ctx.insertInto(EXECUTION_PROVIDER_META_DATA)
                 .set(EXECUTION_PROVIDER_META_DATA.PROVIDER_CLASS, providerClass)
@@ -21,7 +21,7 @@ class ExecutionProviderMetaDataRepository
                 .execute();
     }
 
-    protected static String get(DSLContext ctx, int type, long key)
+    protected static String get(DSLContext ctx, int type, String key)
     {
         Optional<String> optional = ctx.select(EXECUTION_PROVIDER_META_DATA.VALUE)
                 .from(EXECUTION_PROVIDER_META_DATA)
@@ -32,7 +32,7 @@ class ExecutionProviderMetaDataRepository
         return optional.isPresent() ? optional.get() : null;
     }
 
-    protected static Map<Long, String> get(DSLContext ctx, int type, List<Long> keys)
+    protected static Map<String, String> get(DSLContext ctx, int type, Collection<?> keys)
     {
         return ctx.select(EXECUTION_PROVIDER_META_DATA.KEY, EXECUTION_PROVIDER_META_DATA.VALUE)
                 .from(EXECUTION_PROVIDER_META_DATA)
@@ -46,7 +46,7 @@ class ExecutionProviderMetaDataRepository
                 });
     }
 
-    protected static void delete(DSLContext ctx, int type, long key) {
+    protected static void delete(DSLContext ctx, int type, String key) {
         ctx.deleteFrom(EXECUTION_PROVIDER_META_DATA)
                 .where(EXECUTION_PROVIDER_META_DATA.TYPE.eq(type)
                         .and(EXECUTION_PROVIDER_META_DATA.KEY.eq(key)));
