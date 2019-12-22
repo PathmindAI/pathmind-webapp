@@ -1,9 +1,9 @@
 package io.skymind.pathmind.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.skymind.pathmind.constants.Algorithm;
-import io.skymind.pathmind.data.policy.HyperParameters;
 import io.skymind.pathmind.data.policy.RewardScore;
 import org.apache.commons.lang3.StringUtils;
 
@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
+// The @JsonIgnoreProperties will only be here until I have finished moving the json code out of the database.
+@JsonIgnoreProperties(value = { "hyperParameters" })
 public class Policy extends Data
 {
 	@JsonIgnore
@@ -25,7 +27,12 @@ public class Policy extends Data
     private LocalDateTime startedAt;
     private LocalDateTime stoppedAt;
 
-    private HyperParameters hyperParameters = new HyperParameters();
+	@JsonIgnore
+	private double learningRate;
+	@JsonIgnore
+	private double gamma;
+	@JsonIgnore
+	private int batchSize;
 
     // For now this is hardcoded: https://github.com/SkymindIO/pathmind-webapp/issues/101
     private Algorithm algorithm = Algorithm.PPO;
@@ -172,11 +179,27 @@ public class Policy extends Data
 		this.scores = scores;
 	}
 
-    public HyperParameters getHyperParameters() {
-        return hyperParameters;
-    }
+	public double getLearningRate() {
+		return learningRate;
+	}
 
-    public void setHyperParameters(HyperParameters hyperParameters) {
-        this.hyperParameters = hyperParameters;
-    }
+	public void setLearningRate(double learningRate) {
+		this.learningRate = learningRate;
+	}
+
+	public double getGamma() {
+		return gamma;
+	}
+
+	public void setGamma(double gamma) {
+		this.gamma = gamma;
+	}
+
+	public int getBatchSize() {
+		return batchSize;
+	}
+
+	public void setBatchSize(int batchSize) {
+		this.batchSize = batchSize;
+	}
 }

@@ -1,9 +1,10 @@
 package io.skymind.pathmind.services.training.progress;
 
 import com.opencsv.CSVReader;
+import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.policy.HyperParameters;
 import io.skymind.pathmind.data.policy.RewardScore;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,14 +70,14 @@ public class ProgressInterpreter {
 
     private static void setHyperParameter(Policy policy, String name, String value) {
         switch (name) {
-            case HyperParameters.LEARNING_RATE:
-                policy.getHyperParameters().setLearningRate(Double.valueOf(value));
+            case PolicyUtils.LEARNING_RATE:
+                policy.setLearningRate(Double.valueOf(value));
                 break;
-            case HyperParameters.GAMMA:
-                policy.getHyperParameters().setGamma(Double.valueOf(value));
+            case PolicyUtils.GAMMA:
+                policy.setGamma(Double.valueOf(value));
                 break;
-            case HyperParameters.BATCH_SIZE:
-                policy.getHyperParameters().setBatchSize(Integer.valueOf(value));
+            case PolicyUtils.BATCH_SIZE:
+                policy.setBatchSize(Integer.valueOf(value));
                 break;
         }
     }

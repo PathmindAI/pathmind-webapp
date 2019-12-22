@@ -7,10 +7,8 @@ import org.jooq.JSONB;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.data.db.Tables.*;
@@ -68,7 +66,6 @@ class PolicyRepository
 		policy.setProgress(null);
 
 		policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
-		addHyperParameters(record, policy);
 
 		addParentDataModelObjects(record, policy);
 
@@ -80,16 +77,6 @@ class PolicyRepository
 		policy.setExperiment(record.into(EXPERIMENT).into(Experiment.class));
 		policy.setModel(record.into(MODEL).into(Model.class));
 		policy.setProject(record.into(PROJECT).into(Project.class));
-	}
-
-	// STEPH -> This should eventually be mapped into a RecordMapper but since there are other issues I cannot do that yet.
-	// As for now I have to do a nullable check because when creating a new temp policy we do not seem to set the
-	// initial values for these properties. The name seems to have the possibility of a list of these values but
-	// after that it's always one.
-	private static void addHyperParameters(Record record, Policy policy) {
-		policy.getHyperParameters().setLearningRate(Optional.ofNullable(record.get(POLICY.LEARNING_RATE)).orElse(0.0));
-		policy.getHyperParameters().setGamma(Optional.ofNullable(record.get(POLICY.GAMMA)).orElse(0.0));
-		policy.getHyperParameters().setBatchSize(Optional.ofNullable(record.get(POLICY.BATCH_SIZE)).orElse(0));
 	}
 
 	protected static boolean hasPolicyFile(DSLContext ctx, long policyId) {
@@ -112,7 +99,7 @@ class PolicyRepository
 	protected static long insertPolicy(DSLContext ctx, Policy policy) {
 		return ctx.insertInto(POLICY)
 				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
-				.values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm(), policy.getHyperParameters().getLearningRate(), policy.getHyperParameters().getGamma(), policy.getHyperParameters().getBatchSize())
+				.values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize())
 				.returning(POLICY.ID)
 				.fetchOne()
 				.getValue(POLICY.ID);
@@ -137,12 +124,13 @@ class PolicyRepository
 					policy.setId(record.get(POLICY.ID));
 					policy.setName(record.get(POLICY.NAME));
 					policy.setRunId(record.get(POLICY.RUN_ID));
+					policy.setLearningRate(record.get(POLICY.LEARNING_RATE));
+					policy.setGamma(record.get(POLICY.GAMMA));
+					policy.setBatchSize(record.get(POLICY.BATCH_SIZE));
 
-					// TODO -> Although we process everything we could also get the values from the database. However until scores is also stored in the database
+					// PERFORMANCE -> TODO -> Although we process everything we could also get the values from the database. However until scores is also stored in the database
 					// we might as well do it here.
-					// PERFORMANCE => can this be simplified? It's very expensive just to get Notes (both interpretKey and the HashMap of HyperParameters
 					PolicyUtils.processProgressJson(policy, record.get(POLICY.PROGRESS).toString());
-					addHyperParameters(record, policy);
 					policy.setProgress(null);
 
 					addParentDataModelObjects(record, policy);
@@ -169,7 +157,7 @@ class PolicyRepository
 	{
 		return ctx.insertInto(POLICY)
 				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
-				.values(policy.getExternalId(), policy.getRunId(), policy.getExternalId(), progressJson, policy.getStartedAt(), policy.getStoppedAt(), policy.getAlgorithm(), policy.getHyperParameters().getLearningRate(), policy.getHyperParameters().getGamma(), policy.getHyperParameters().getBatchSize())
+				.values(policy.getExternalId(), policy.getRunId(), policy.getExternalId(), progressJson, policy.getStartedAt(), policy.getStoppedAt(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize())
 				.onConflict(POLICY.RUN_ID, POLICY.EXTERNAL_ID)
 				.doUpdate()
 				.set(POLICY.PROGRESS, progressJson)

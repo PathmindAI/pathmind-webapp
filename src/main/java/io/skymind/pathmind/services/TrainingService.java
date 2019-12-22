@@ -91,9 +91,9 @@ public class TrainingService
         startRun(RunType.FullRun,
                 exp,
                 500,
-                Arrays.asList(policy.getHyperParameters().getLearningRate()),
-                Arrays.asList(policy.getHyperParameters().getGamma()),
-                Arrays.asList(policy.getHyperParameters().getBatchSize()),
+                Arrays.asList(policy.getLearningRate()),
+                Arrays.asList(policy.getGamma()),
+                Arrays.asList(policy.getBatchSize()),
                 -1, // no limit
                 true);
     }
@@ -104,9 +104,9 @@ public class TrainingService
 
         tempPolicy.setAlgorithmEnum(Algorithm.PPO);
         tempPolicy.setRunId(run.getId());
-        tempPolicy.getHyperParameters().setLearningRate(spec.getLearningRates().get(0));
-        tempPolicy.getHyperParameters().setGamma(spec.getGammas().get(0));
-        tempPolicy.getHyperParameters().setBatchSize(spec.getBatchSizes().get(0));
+        tempPolicy.setLearningRate(spec.getLearningRates().get(0));
+        tempPolicy.setGamma(spec.getGammas().get(0));
+        tempPolicy.setBatchSize(spec.getBatchSizes().get(0));
         tempPolicy.setName(getTempPolicyName(tempPolicy, run.getRunType()));
         tempPolicy.setExternalId(tempPolicy.getName());
 
@@ -116,9 +116,9 @@ public class TrainingService
     private String getTempPolicyName(Policy policy, int runType) {
         String hyperparameters = String.join(
                 ",",
-                "gamma=" + policy.getHyperParameters().getGamma(),
-                "lr=" + policy.getHyperParameters().getLearningRate(),
-                "sgd_minibatch_size=" + policy.getHyperParameters().getBatchSize());
+                "gamma=" + policy.getGamma(),
+                "lr=" + policy.getLearningRate(),
+                "sgd_minibatch_size=" + policy.getBatchSize());
 
         String name = String.join(
                 "_",
