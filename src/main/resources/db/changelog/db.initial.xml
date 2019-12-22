@@ -592,13 +592,13 @@
 
     <changeSet id="20191220-01" author="steph@followsteph.com">
         <addColumn tableName="POLICY">
-            <column name="LEARNING_RATE" type="DOUBLE">
+            <column name="LEARNING_RATE" type="DOUBLE" defaultValue="0">
                 <constraints nullable="false"/>
             </column>
-            <column name="GAMMA" type="DOUBLE">
+            <column name="GAMMA" type="DOUBLE" defaultValue="0">
                 <constraints nullable="false"/>
             </column>
-            <column name="BATCH_SIZE" type="INT">
+            <column name="BATCH_SIZE" type="INT" defaultValue="0">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
