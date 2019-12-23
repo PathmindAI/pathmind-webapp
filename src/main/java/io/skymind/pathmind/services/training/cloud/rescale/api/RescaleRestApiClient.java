@@ -20,10 +20,8 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
@@ -52,8 +50,8 @@ public class RescaleRestApiClient {
                 .defaultHeader("Authorization", "Token "+apiKey)
                 .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .filter(ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
-                            log.info("Request: {} {}", clientRequest.method(), clientRequest.url());
-                            clientRequest.headers().forEach((name, values) -> values.forEach(value -> log.info("{}={}", name, value)));
+//                            log.info("Request: {} {}", clientRequest.method(), clientRequest.url());
+//                            clientRequest.headers().forEach((name, values) -> values.forEach(value -> log.info("{}={}", name, value)));
                             return Mono.just(clientRequest);
                         })
                 )
@@ -254,9 +252,5 @@ public class RescaleRestApiClient {
                 .bodyToMono(Void.class)
                 .onErrorMap(RuntimeException::new)
                 .block();
-    }
-
-    public InputStream policyFile(String jobId){
-        return new ByteArrayInputStream(outputFile(jobId, "1", "policy.zip"));
     }
 }
