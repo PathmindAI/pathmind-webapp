@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.DomEvent;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
@@ -42,6 +45,7 @@ public class PathmindModelUploader extends Upload {
 		setReceiver(new MultiFileMemoryBufferWithFileStructure());
 		setupFolderUpload();
 		addUploadStartListener(this::uploadStarted);
+		addNoFilesToUploadListener(evt -> triggerAllFilesCompletedListeners());
 		addUploadErrorListener(evt -> {
 			numOfFilesUploaded--;
 			if (numOfFilesUploaded == 0) {
@@ -56,6 +60,14 @@ public class PathmindModelUploader extends Upload {
 		});
 	}
 	
+	/**
+	 * If all files are filtered out, still trigger zip file creation,
+	 * so an invalid zip file will be created, and user will be notified
+	 */
+	private void addNoFilesToUploadListener(ComponentEventListener<NoFileToUploadEvent> listener) {
+		addListener(NoFileToUploadEvent.class, listener);
+	}
+
 	private void uploadStarted(UploadStartEvent<Upload> evt) {
 		numOfFilesUploaded++;
 		String filePath = evt.getDetailFile().getString("filePath");
@@ -79,6 +91,19 @@ public class PathmindModelUploader extends Upload {
 		getElement().executeJs("$0.$.fileInput.mozdirectory = true");
 		getElement().executeJs("window.Pathmind.ModelUploader.addClientSideFiltering($0)");
 	}
+
+	/**
+	 * In upload component, for each file, upload-start, upload-succeeded or upload-failed events are dispatched,
+	 * but in ModelUploader, since filtering is applied in client-side, there may be cases where server-side is not notified at all because all files are filtered out.
+	 *  <code>no-file-to-upload</code> event is dispatched in this cases, to notify server-side that user triggered an upload operation, but there is no file to upload.
+	 */
+	@DomEvent("no-file-to-upload")
+    public static class NoFileToUploadEvent extends ComponentEvent<PathmindModelUploader> {
+
+        public NoFileToUploadEvent(PathmindModelUploader source, boolean fromClient) {
+            super(source, fromClient);
+        }
+    }
 	
 	class MultiFileMemoryBufferWithFileStructure extends MultiFileMemoryBuffer {
 		private Map<String, String> filePathMap = new HashMap<>();

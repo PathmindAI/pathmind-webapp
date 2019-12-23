@@ -22,12 +22,21 @@ function matchesFilter(filePath) {
   return false;
 }
 window.Pathmind = {
-		ModelUploader: {
-			addClientSideFiltering: function(upload) {
-				  upload._addFiles = function(files) {
-					    files = filter(files);
-					    Array.prototype.forEach.call(files, upload._addFile.bind(upload));
-				  }
-			}
-		}
+  ModelUploader: {
+    addClientSideFiltering: function(upload) {
+      upload._addFiles = function(files) {
+        files = filter(files);
+        if (files.length > 0) {
+          Array.prototype.forEach.call(files, upload._addFile.bind(upload));
+        } else {
+          upload.dispatchEvent(
+            new CustomEvent("no-file-to-upload", {
+              bubbles: true,
+              composed: true
+            })
+          );
+        }
+      };
+    }
+  }
 };
