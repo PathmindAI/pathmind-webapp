@@ -21,6 +21,7 @@ import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.services.billing.StripeService;
 import io.skymind.pathmind.ui.components.dialog.SubscriptionCancelDialog;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 @Tag("account-view-content")
@@ -45,12 +46,15 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 	private Button editPaymentBtn;
 	
 	private StripeService stripeService;
+	
+	private SegmentIntegrator segmentIntegrator;
 
 	private PathmindUser user;
 
 	@Autowired
-	public AccountViewContent(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink, StripeService stripeService) {
+	public AccountViewContent(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink, StripeService stripeService, SegmentIntegrator segmentIntegrator) {
         this.stripeService = stripeService;
+        this.segmentIntegrator = segmentIntegrator;
 		getModel().setContactLink(contactLink);
 		user = currentUser.getUser();
 	}
@@ -78,6 +82,7 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 	private void cancelSubscription(Subscription subscription) {
 		SubscriptionCancelDialog subscriptionCancelDialog = new SubscriptionCancelDialog(subscription.getCurrentPeriodEnd(), () -> {
 			Subscription updatedSubscription = stripeService.cancelSubscription(user.getEmail(), true);
+			segmentIntegrator.subscriptionCancelled();
 			initContent(updatedSubscription);
 			initBtns(updatedSubscription);
 		});
