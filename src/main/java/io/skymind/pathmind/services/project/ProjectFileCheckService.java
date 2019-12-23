@@ -40,7 +40,7 @@ public class ProjectFileCheckService {
                         if (params != null) {
                             ((AnylogicFileCheckResult)(result)).setNumAction(Integer.parseInt(params.getActions()));
                             ((AnylogicFileCheckResult)(result)).setNumObservation(Integer.parseInt(params.getObservations()));
-                            ((AnylogicFileCheckResult)(result)).setRewardFunction(params.getRewardFunction());
+                            ((AnylogicFileCheckResult)(result)).setRewardVariableFunction(params.getRewardFunction());
                         }
                         statusUpdater.fileSuccessfullyVerified(result);
                     }
