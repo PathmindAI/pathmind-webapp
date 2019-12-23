@@ -36,12 +36,7 @@ public class ProjectFileCheckService {
                     final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
 
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
-                        HyperparametersDTO params = client.analyze(tempFile);
-                        if (params != null) {
-                            ((AnylogicFileCheckResult)(result)).setNumAction(Integer.parseInt(params.getActions()));
-                            ((AnylogicFileCheckResult)(result)).setNumObservation(Integer.parseInt(params.getObservations()));
-                            ((AnylogicFileCheckResult)(result)).setRewardVariableFunction(params.getRewardFunction());
-                        }
+                        setHyperparams(result, client.analyze(tempFile));
                         statusUpdater.fileSuccessfullyVerified(result);
                     }
                 } finally {
@@ -56,6 +51,22 @@ public class ProjectFileCheckService {
             }
         };
         checkerExecutorService.submit(runnable);
+    }
+
+    private void setHyperparams(FileCheckResult result, HyperparametersDTO params) {
+        if (params != null) {
+            if (params.getActions() != null) {
+                ((AnylogicFileCheckResult) (result)).setNumAction(Integer.parseInt(params.getActions()));
+            }
+
+            if (params.getObservations() != null) {
+                ((AnylogicFileCheckResult)(result)).setNumObservation(Integer.parseInt(params.getObservations()));
+            }
+
+            ((AnylogicFileCheckResult)(result)).setRewardVariableFunction(params.getRewardFunction());
+        } else {
+            log.info("Model Analyzer returns null for the given model");
+        }
     }
 
 }
