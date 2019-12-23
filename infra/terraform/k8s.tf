@@ -17,7 +17,7 @@ resource "aws_s3_bucket" "kops_state" {
 #Create k8s cluster
 resource "null_resource" "k8s" {
   provisioner "local-exec" {
-    command = "scripts/create_cluster.sh ${local.cluster_name} ${local.kops_bucket}"
+    command = "scripts/create_cluster.sh '${local.region}' '${local.cluster_name}' '${local.kops_bucket}' '${local.master_zones}' '${local.node_zones}'"
   }
   provisioner "local-exec" {
     when    = destroy

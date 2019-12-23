@@ -1,22 +1,23 @@
 #!/usr/bin/bash
+set -e
 
-if [ "$1" == "" ] || [ "$2" == "" ]
+if [ "$1" == "" ] || [ "$2" == "" ] || [ "$3" == "" ] || [ "$4" == "" ] || [ "$5" == "" ]
 then
-	echo "Usage create_cluster.sh <cluster_name> <state_bucket>"
-	echo "Example create_cluster.sh  pathmind.k8s.local pathmind-kops-state"
+	echo "Usage create_cluster.sh <region> <cluster_name> <state_bucket> <master_zones> <node_zones>"
+	echo "Example create_cluster.sh us-east-1 pathmind.k8s.local pathmind-kops-state us-east-1a us-east-1a"
 	exit 2
 fi
 
-export NAME=$1
-BUCKET_NAME=$2
+REGION=$1
+export NAME=$2
+BUCKET_NAME=$3
+MASTER_ZONES=$4
+ZONES=$5
 export KOPS_STATE_STORE="s3://${BUCKET_NAME}/k8s.${NAME}"
-REGION="us-east-1"
+#REGION="us-east-1"
 #MASTER_ZONES="us-east-1a,us-east-1b,us-east-1c"
-MASTER_ZONES="us-east-1a"
 #ZONES="us-east-1a,us-east-1b,us-east-1c"
-ZONES="us-east-1a"
-#NODE_COUNT=3
-NODE_COUNT=1
+NODE_COUNT=2
 NODE_SIZE="t2.medium"
 MASTER_SIZE="t2.medium"
 
@@ -39,6 +40,8 @@ ${NAME}
 
 kops update cluster ${NAME} --yes
 
+set +e
+
 while true
 do
 	kops validate cluster $NAME > /dev/null
@@ -46,5 +49,10 @@ do
 	then
 		exit 0
 	fi
-	sleep 5
+	sleep 30
 done
+
+
+#Create Bastion host
+#kops create instancegroup bastions --role Bastion --subnet utility-us-east-1a --name ${NAME}
+#kops update cluster ${NAME} --yes
