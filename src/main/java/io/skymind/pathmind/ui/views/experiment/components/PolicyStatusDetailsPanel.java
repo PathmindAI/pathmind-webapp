@@ -20,6 +20,8 @@ import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
+import static io.skymind.pathmind.constants.RunStatus.isRunning;
+
 @Component
 public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUpdateSubscriber
 {
@@ -116,16 +118,6 @@ public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUp
 	private void updateElapsedTimer(Policy policy) {
 		final var runStatus = PolicyUtils.getRunStatus(policy);
 		final var elapsedTime = RunUtils.getElapsedTime(policy.getRun());
-		switch (runStatus) {
-			case Starting:
-				elapsedTimeLabel.updateTimer("startTimer", elapsedTime);
-				break;
-			case Running:
-				elapsedTimeLabel.updateTimer("setTimer", elapsedTime);
-				break;
-			case Completed:
-				elapsedTimeLabel.updateTimer("stopTimer", elapsedTime);
-				break;
-		}
+		elapsedTimeLabel.updateTimer(elapsedTime, isRunning(runStatus));
 	}
 }

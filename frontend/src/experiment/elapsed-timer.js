@@ -12,32 +12,51 @@ class ElapsedTimer extends PolymerElement {
           display: block;
         }
       </style>
-      [[_formattedTime]]
+      [[formattedTime]]
     `;
   }
 
   static get properties() {
     return {
+      /**
+       * Start time for the timer (in seconds)
+       */
       offset: {
         type: Number,
         value: 0
       },
+
+      /**
+       * Actual time for the timer (including offset)
+       */
       currentTime: {
         type: Number,
         notify: true,
         value: 0
       },
+
+      /**
+       * True if the timer is running
+       */
       isRunning: {
         type: Boolean,
         reflectToAttribute: true,
         notify: true,
         value: false
       },
-      _elapsedTime: {
+
+      /**
+       * Time the timer has been running since it was started
+       */
+      elapsedTime: {
         type: Number,
         value: 0
       },
-      _formattedTime: {
+
+      /**
+       * Formatted time to be rendered on UI
+       */
+      formattedTime: {
         type: String,
         value: "0"
       }
@@ -48,42 +67,35 @@ class ElapsedTimer extends PolymerElement {
     super();
   }
 
+  updateTimer(time, isRunning) {
+    isRunning ? this.startTimer(time) : this.stopTimer(time);
+  }
+
   startTimer(time) {
     this.offset = time;
-    this._elapsedTime = performance.now() / 1000;
+    this.elapsedTime = performance.now() / 1000;
     this.isRunning = true;
-    window.requestAnimationFrame(this._increaseTimer.bind(this));
+    window.requestAnimationFrame(this.increaseTimer.bind(this));
   }
 
   stopTimer(time) {
     this.isRunning = false;
-    this._formattedTime = this._formatTime(time);
+    this.formattedTime = this.formatTime(time);
   }
 
-  setTimer(time) {
-    this.offset = time;
-    if (!this.isRunning) {
-      this.start(time);
-    }
-    this._formattedTime = this._formatTime(time);
-  }
-
-  _increaseTimer(timestamp) {
+  increaseTimer(timestamp) {
     if (!this.isRunning) {
       return;
     }
     const now = timestamp / 1000;
-    const progress = now - this._elapsedTime;
-    this.currentTime = this.currentTime + progress;
-    this._formattedTime = this._formatTime(this.currentTime);
-    this._elapsedTime = now;
-    window.requestAnimationFrame(this._increaseTimer.bind(this));
+    this.currentTime = now - this.elapsedTime + +this.offset;
+    this.formattedTime = this.formatTime(this.currentTime);
+    window.requestAnimationFrame(this.increaseTimer.bind(this));
   }
 
-  _formatTime(time) {
+  formatTime(time) {
     const timeString = time.toString().split(".");
     let secs = timeString[0];
-    secs = +secs + +this.offset;
 
     let mins = Math.floor(secs / 60);
     const hours = Math.floor(mins / 60);

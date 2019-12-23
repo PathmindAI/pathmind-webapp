@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class ElapsedTimer extends Label {
 
-    void updateTimer(String functionName, long time) {
-        getElement().callJsFunction(functionName, String.valueOf(time));
+    void updateTimer(long time, boolean isRunning) {
+        getElement().callJsFunction("updateTimer", String.valueOf(time), isRunning);
     }
 }
