@@ -50,8 +50,8 @@ public class RescaleRestApiClient {
                 .defaultHeader("Authorization", "Token "+apiKey)
                 .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .filter(ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
-                            log.info("Request: {} {}", clientRequest.method(), clientRequest.url());
-                            clientRequest.headers().forEach((name, values) -> values.forEach(value -> log.info("{}={}", name, value)));
+//                            log.info("Request: {} {}", clientRequest.method(), clientRequest.url());
+//                            clientRequest.headers().forEach((name, values) -> values.forEach(value -> log.info("{}={}", name, value)));
                             return Mono.just(clientRequest);
                         })
                 )
