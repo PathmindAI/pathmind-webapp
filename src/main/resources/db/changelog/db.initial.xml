@@ -601,6 +601,7 @@
         <modifyDataType tableName="EXECUTION_PROVIDER_META_DATA" columnName="KEY" newDataType="NVARCHAR"></modifyDataType>
     </changeSet>
 
+    <!-- #472 - Add hyperparameters as their own database columns as part of reducing our reliance on storing data in json -->
     <changeSet id="20191220-01" author="steph@followsteph.com">
         <addColumn tableName="POLICY">
             <column name="LEARNING_RATE" type="DOUBLE" defaultValue="0">
