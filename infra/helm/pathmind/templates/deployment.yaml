@@ -45,18 +45,22 @@ spec:
             periodSeconds: 5
           env:
             - name: APPLICATION_URL
-              value: {{ .Values.env.APPLICATION_URL }}
+              value: "{{ .Values.env.APPLICATION_URL }}"
             - name: DB_URL
               valueFrom:
                 secretKeyRef:
-                  name: DB_URL
+                  name: dburl
                   key: DB_URL
             - name: INTERCOM_APP_ID 
-              value: {{ .Values.env.INTERCOM_APP_ID }}
+              value: "{{ .Values.env.INTERCOM_APP_ID }}"
             - name: SEGMENT_KEY
               valueFrom:
                 secretKeyRef:
-                  name: SEGMENT_KEY
+                  name: segmentkey
                   key: SEGMENT_KEY
             - name: WEBSITE_HTTPLOGGING_RETENTION_DAYS
-              value: {{ .Values.env.WEBSITE_HTTPLOGGING_RETENTION_DAYS }}
+              value: "{{ .Values.env.WEBSITE_HTTPLOGGING_RETENTION_DAYS }}"
+            - name: PATHMIND_LOG_FILE_PATH
+              value: "{{ .Values.env.PATHMIND_LOG_FILE_PATH }}"
+            - name: SCM_COMMAND_IDLE_TIMEOUT
+              value: "{{ .Values.env.SCM_COMMAND_IDLE_TIMEOUT }}"

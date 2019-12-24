@@ -40,7 +40,7 @@ pipeline {
     // Some global default variables
     environment {
         IMAGE_NAME = 'pathmind'
-        DOCKER_TAG = 'dev'
+        DOCKER_TAG = 'test'
 	/*if(env.BRANCH_NAME == 'master'){
         	DOCKER_TAG = "prod"
 	}
@@ -109,7 +109,7 @@ pipeline {
 		}
         }
 
-	////////// Step 4 //////////
+/*	////////// Step 4 //////////
 	stage("Deploying to ${DOCKER_TAG}") {
             steps {
 		script {
@@ -121,7 +121,7 @@ pipeline {
             }
         }
 
-/*	////////// Step 5 //////////
+	////////// Step 5 //////////
 	stage("Testing in ${DOCKER_TAG}") {
             steps {
 		echo "Testing in ${DOCKER_TAG}"

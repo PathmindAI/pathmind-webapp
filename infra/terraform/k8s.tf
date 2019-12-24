@@ -146,4 +146,25 @@ resource "null_resource" "awssecretaccesskey" {
 }
 
 
+resource "null_resource" "db_url_secret" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic dburl --from-literal DB_URL=${var.DB_URL}"
+  }
+  provisioner "local-exec" {
+    when    = destroy
+    command = "kubectl delete secret dburl"
+  }
+  depends_on = [null_resource.configmap_ingress_nginx]
+}
+
+resource "null_resource" "segment_key_secret" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic segmentkey --from-literal SEGMENT_KEY=${var.SEGMENT_KEY}"
+  }
+  provisioner "local-exec" {
+    when    = destroy
+    command = "kubectl delete secret segmentkey"
+  }
+  depends_on = [null_resource.configmap_ingress_nginx]
+}
 

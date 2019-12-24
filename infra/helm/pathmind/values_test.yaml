@@ -17,6 +17,9 @@ env:
   APPLICATION_URL: http://test.danieljj.com
   INTERCOM_APP_ID: q51xonft
   WEBSITE_HTTPLOGGING_RETENTION_DAYS: 7
+  PATHMIND_LOG_FILE_PATH: /tmp/
+  SCM_COMMAND_IDLE_TIMEOUT: 1800
+  
 
 ingress:
   enabled: false
