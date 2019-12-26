@@ -14,5 +14,5 @@ RUN apt-get update -y && \
 RUN mvn package -Pproduction 
 
 EXPOSE 80
-ENTRYPOINT ["sleep","10000000000"]
+ENTRYPOINT ["sleep","10000"]
 #ENTRYPOINT ["java", "-Xmx4096m", "-XX:+UseG1GC", "-Dvaadin.productionMode", "-jar", "/app/target/pathmind-0.0.1-SNAPSHOT.jar", "--server.port=80"]
