@@ -109,8 +109,8 @@ pipeline {
 		}
         }
 
-/*	////////// Step 4 //////////
-	stage("Deploying to ${DOCKER_TAG}") {
+	////////// Step 4 //////////
+	stage('Deploying to helm chart') {
             steps {
 		script {
 			if (${DOCKER_TAG} == 'dev' || ${DOCKER_TAG} == 'test')  {
@@ -120,7 +120,7 @@ pipeline {
 		}
             }
         }
-
+/*
 	////////// Step 5 //////////
 	stage("Testing in ${DOCKER_TAG}") {
             steps {
