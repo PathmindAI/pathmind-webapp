@@ -93,7 +93,7 @@ pipeline {
             }
         }
 
-/*        ////////// Step 2 //////////
+        ////////// Step 2 //////////
         stage('Build Docker Images') {
 		parallel {
 			stage('Build pathmind image') {
@@ -113,7 +113,7 @@ pipeline {
 				}
 			}
 		}
-        } */
+        } 
 
 	////////// Step 4 //////////
 	stage('Deploying helm chart') {
