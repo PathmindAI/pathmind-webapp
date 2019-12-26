@@ -23,6 +23,10 @@ ingress:
       paths: [/:80:pathmind]
     - host: jenkins.danieljj.com
       paths: [/:8080:jenkins]
+    - host: grafana.danieljj.com
+      paths: [/:80:prometheus-grafana]
+    - host: logging.danieljj.com
+      paths: [/:5601:efk-kibana]
 
   tls: []
   #  - secretName: chart-example-tls
