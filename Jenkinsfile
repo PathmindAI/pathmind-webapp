@@ -75,6 +75,9 @@ pipeline {
                 // Validate kubectl
                 sh "kubectl cluster-info"
 
+                // Helm version
+                sh "helm version"
+
                 // patch helm
                 sh "kubectl --namespace kube-system patch deploy tiller-deploy -p '{\"spec\":{\"template\":{\"spec\":{\"serviceAccount\":\"tiller\"}}}}'"
 
