@@ -168,3 +168,5 @@ resource "null_resource" "segment_key_secret" {
   depends_on = [null_resource.configmap_ingress_nginx]
 }
 
+
+
