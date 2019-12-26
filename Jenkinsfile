@@ -120,7 +120,7 @@ pipeline {
             steps {
 		script {
 			//if (${DOCKER_TAG} == 'dev' || ${DOCKER_TAG} == 'test')  {
-				echo "Updating helm chart"
+				echo "Updating helm chart "
 				//sh "helm upgrade --install pathmind ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}.yaml"
 				sh "helm install --name pathmind ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}.yaml"
 			//}
