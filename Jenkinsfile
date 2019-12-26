@@ -66,7 +66,7 @@ pipeline {
     // Pipeline stages
     stages {
 
-        ////////// Step 1 //////////
+/*        ////////// Step 1 //////////
         stage('Git clone and setup') {
             steps {
                 echo "Check out code"
@@ -82,7 +82,7 @@ pipeline {
                 script {
                     branch = GIT_BRANCH.replaceAll('/', '-').replaceAll('\\*', '-')
                     API_ID = "${IMAGE_NAME}-${DOCKER_TAG}-${branch}"
-                    echo "Global api Id set to ${API_ID}"
+                    echo "Global pathmind Id set to ${API_ID}"
                 }
             }
         }
@@ -90,7 +90,7 @@ pipeline {
         ////////// Step 2 //////////
         stage('Build Docker Images') {
 		parallel {
-			stage('Build api image') {
+			stage('Build pathmind image') {
 				steps {
 					buildDockerImage("${IMAGE_NAME}","${API_ID}")
 				}
@@ -101,13 +101,13 @@ pipeline {
 	////////// Step 3 //////////
         stage('Publish Docker Images') {
 		parallel {
-			stage('Publish api image') {
+			stage('Publish pathmind image') {
 				steps {
 					publishDockerImage("${IMAGE_NAME}")
 				}
 			}
 		}
-        }
+        } */
 
 	////////// Step 4 //////////
 	stage('Deploying to helm chart') {
