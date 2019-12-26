@@ -75,6 +75,9 @@ pipeline {
                 // Validate kubectl
                 sh "kubectl cluster-info"
 
+                // Init helm client
+                sh "helm init"
+
 		//clean docker
 		sh "docker system prune -a -f"
 
