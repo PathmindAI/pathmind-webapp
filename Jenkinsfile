@@ -66,7 +66,7 @@ pipeline {
     // Pipeline stages
     stages {
 
-/*        ////////// Step 1 //////////
+        ////////// Step 1 //////////
         stage('Git clone and setup') {
             steps {
                 echo "Check out code"
@@ -90,7 +90,7 @@ pipeline {
             }
         }
 
-        ////////// Step 2 //////////
+/*        ////////// Step 2 //////////
         stage('Build Docker Images') {
 		parallel {
 			stage('Build pathmind image') {
