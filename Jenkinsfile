@@ -76,7 +76,7 @@ pipeline {
                 sh "kubectl cluster-info"
 
                 // patch helm
-                sh "kubectl --namespace kube-system patch deploy tiller-deploy -p '{\"spec\":{\"template\":{\"spec\":{\"serviceAccount\":\"tiller\"}}}}' deployment.extensions/tiller-deploy patched"
+                sh "kubectl --namespace kube-system patch deploy tiller-deploy -p '{\"spec\":{\"template\":{\"spec\":{\"serviceAccount\":\"tiller\"}}}}'"
 
 		//clean docker
 		sh "docker system prune -a -f"
