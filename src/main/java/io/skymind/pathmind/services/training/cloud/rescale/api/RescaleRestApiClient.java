@@ -25,7 +25,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -91,12 +90,15 @@ public class RescaleRestApiClient {
         return get("/jobs/" + jobId + "/runs/", new ParameterizedTypeReference<PagedResult<JobRun>>(){});
     }
 
-    // Github issue #569 -> Can you please add the error handling on this DH as I'm not familiar enough with it to do it on a List.
     public List<DirectoryFileReference> workingFiles(String jobId, String run){
         return  client.get().uri("/jobs/" + jobId + "/runs/" + run + "/directory-contents/?page_size=9999")
                 .retrieve()
+                .onStatus(HttpStatus::is4xxClientError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .onStatus(HttpStatus::is5xxServerError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
                 .bodyToFlux(DirectoryFileReference.class)
-                .toStream().collect(Collectors.toList());
+                .onErrorMap(RuntimeException::new)
+                .toStream()
+                .collect(Collectors.toList());
     }
 
     public PagedResult<RescaleFile> outputFiles(String jobId, String run){
@@ -186,12 +188,13 @@ public class RescaleRestApiClient {
         try {
             Mono<T> mono = client.get().uri(uri)
                     .retrieve()
-                    .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                    .onStatus(HttpStatus::is4xxClientError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                    .onStatus(HttpStatus::is5xxServerError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
                     .bodyToMono(bodyType)
                     .onErrorMap(RuntimeException::new);
 
             return isFile ? mono.block() : mono.block(TIMEOUT);
-        } catch (IllegalStateException e) {
+        } catch (IllegalStateException e) { // If block() exceeds TIMEOUT, it will throw IllegalStateException
             log.error(e.getMessage());
             return null;
         }
@@ -201,11 +204,12 @@ public class RescaleRestApiClient {
         try {
             return client.get().uri(uri)
                     .retrieve()
-                    .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                    .onStatus(HttpStatus::is4xxClientError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                    .onStatus(HttpStatus::is5xxServerError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
                     .bodyToMono(typeReference)
                     .onErrorMap(RuntimeException::new)
                     .block(TIMEOUT);
-        } catch (IllegalStateException e) {
+        } catch (IllegalStateException e) { // If block() exceeds TIMEOUT, it will throw IllegalStateException
             log.error(e.getMessage());
 
             return (T) new PagedResult<T>(0, new ArrayList()){};
@@ -215,7 +219,8 @@ public class RescaleRestApiClient {
     private <T> void post(String uri, Class<T> bodyType) {
         client.post().uri(uri)
                 .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .onStatus(HttpStatus::is4xxClientError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .onStatus(HttpStatus::is5xxServerError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
                 .bodyToMono(bodyType)
                 .onErrorMap(RuntimeException::new)
                 .block();
@@ -224,7 +229,8 @@ public class RescaleRestApiClient {
     private <T> void delete(String uri, Class<T> bodyType) {
         client.delete().uri(uri)
                 .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .onStatus(HttpStatus::is4xxClientError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .onStatus(HttpStatus::is5xxServerError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
                 .bodyToMono(bodyType)
                 .onErrorMap(RuntimeException::new)
                 .block();
