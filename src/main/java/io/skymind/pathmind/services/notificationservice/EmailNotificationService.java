@@ -1,20 +1,23 @@
 package io.skymind.pathmind.services.notificationservice;
 
-import com.sendgrid.helpers.mail.Mail;
-import io.skymind.pathmind.data.PathmindUser;
-import io.skymind.pathmind.db.dao.UserDAO;
-import io.skymind.pathmind.exception.PathMindException;
-import io.skymind.pathmind.security.Routes;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.UUID;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.UUID;
+import com.sendgrid.helpers.mail.Mail;
+
+import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.exception.PathMindException;
+import io.skymind.pathmind.security.Routes;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -113,6 +116,38 @@ public class EmailNotificationService
 	private String createResetPasswordLink(PathmindUser pathmindUser)
 	{
 		return applicationURL + "/" + Routes.RESET_PASSWORD_URL + "/" + pathmindUser.getEmailVerificationToken();
+	}
+
+	/**
+	 * Sends training completed email to a Pathmind user.
+	 *
+	 * @param pathmindUser
+	 */
+	public void sendTrainingCompletedEmail(PathmindUser pathmindUser, Experiment experiment, boolean isSuccessful)
+	{
+		Objects.requireNonNull(pathmindUser);
+		if (!isEmailSendingEnabled) {
+			log.info("Email sending has been disabled, not sending the email to: " + pathmindUser.getEmail());
+			return;
+		}
+		
+		final String experimentPageLink = createExperimentPageLink(experiment);
+		Mail trainingCompletedMail;
+		try {
+			String username = StringUtils.isBlank(pathmindUser.getName()) ? pathmindUser.getEmail() : StringUtils.capitalize(pathmindUser.getName());
+			trainingCompletedMail = mailHelper.createTrainingCompletedEmail(pathmindUser.getEmail(), username, experiment.getProject().getName(), 
+					experimentPageLink, isSuccessful);
+		} catch (PathMindException e) {
+			log.warn("Could not create email due to missing data in the PathmindUser object");
+			return;
+		}
+		mailHelper.sendMail(trainingCompletedMail);
+	}
+
+	
+
+	private String createExperimentPageLink(Experiment experiment) {
+		return applicationURL + "/" + Routes.EXPERIMENT_URL + "/" + experiment.getId();
 	}
 
 	// DH -> Should we decide to add email notifications for special exceptions then we just need to replace
