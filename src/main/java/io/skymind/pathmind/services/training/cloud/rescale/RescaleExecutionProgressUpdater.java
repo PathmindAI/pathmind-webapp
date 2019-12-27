@@ -11,12 +11,13 @@ import org.springframework.stereotype.Service;
 
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
+import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.security.SecurityUtils;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
@@ -29,12 +30,14 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
     private final RescaleExecutionProvider provider;
     private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RunDAO runDAO;
+    private final UserDAO userDAO;
     private EmailNotificationService emailNotificationService;
 
-    public RescaleExecutionProgressUpdater(RescaleExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, EmailNotificationService emailNotificationService){
+    public RescaleExecutionProgressUpdater(RescaleExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, UserDAO userDAO, EmailNotificationService emailNotificationService){
         this.provider = provider;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.runDAO = runDAO;
+        this.userDAO = userDAO;
         this.emailNotificationService = emailNotificationService;
     }
 
@@ -92,7 +95,8 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
 								&& executing.getStatusEnum() != RunStatus.Error);
 				if (!hasExecutingRuns) {
 					boolean isSuccessful = jobStatus == RunStatus.Completed;
-					emailNotificationService.sendTrainingCompletedEmail(SecurityUtils.getUser(), run.getExperiment(), isSuccessful);
+					PathmindUser user = userDAO.findById(run.getExperiment().getProject().getPathmindUserId());
+					emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), isSuccessful);
 				}
 			}
 		}
