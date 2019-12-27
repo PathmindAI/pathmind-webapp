@@ -59,7 +59,7 @@ public class RescaleRestApiClient {
     }
 
     public Job jobCreate(Job job){
-        return get("/jobs/", Job.class);
+        return post("/jobs/", Job.class, job);
     }
 
     public void jobSubmit(String jobId){
@@ -216,8 +216,8 @@ public class RescaleRestApiClient {
         }
     }
 
-    private <T> void post(String uri, Class<T> bodyType) {
-        client.post().uri(uri)
+    private <T> T post(String uri, Class<T> bodyType) {
+        return client.post().uri(uri)
                 .retrieve()
                 .onStatus(HttpStatus::is4xxClientError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
                 .onStatus(HttpStatus::is5xxServerError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
@@ -226,8 +226,21 @@ public class RescaleRestApiClient {
                 .block();
     }
 
-    private <T> void delete(String uri, Class<T> bodyType) {
-        client.delete().uri(uri)
+    private <T> T post(String uri, Class<T> bodyType, T body) {
+        return client.post().uri(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(body), bodyType)
+                .retrieve()
+                .onStatus(HttpStatus::is4xxClientError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .onStatus(HttpStatus::is5xxServerError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+
+                .bodyToMono(bodyType)
+                .onErrorMap(RuntimeException::new)
+                .block();
+    }
+
+    private <T> T delete(String uri, Class<T> bodyType) {
+        return client.delete().uri(uri)
                 .retrieve()
                 .onStatus(HttpStatus::is4xxClientError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
                 .onStatus(HttpStatus::is5xxServerError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
