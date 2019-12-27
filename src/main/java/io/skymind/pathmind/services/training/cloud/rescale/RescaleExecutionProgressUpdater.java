@@ -1,24 +1,27 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
-import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.data.policy.RewardScore;
-import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
-import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
-import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
-import io.skymind.pathmind.services.training.constant.TrainingFile;
-import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.constants.RunType;
+import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.policy.RewardScore;
+import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.security.SecurityUtils;
+import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
+import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
+import io.skymind.pathmind.services.training.constant.TrainingFile;
+import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -67,6 +70,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
                 // method is called and we can just do a simple isPolicyFile != null check as to whether or not to
                 // also update it in the database.
                 savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus);
+                sendNotificationMail(jobStatus, run);
             } catch (Exception e) {
                 log.error("Error for run: " + run.getId() + " : " + e.getMessage(), e);
                 emailNotificationService.sendEmailExceptionNotification("Error for run: " + run.getId() + " : " + e.getMessage(), e);
@@ -74,7 +78,28 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
         });
     }
 
-    private List<Run> getRunsWithRescaleJobs(List<Long> runIds, Map<Long, String> rescaleJobIds) {
+    /**
+     * Send notification mail if Run is completed successfully or with error
+     * and if the Run type is discovery or full run 
+     */
+    private void sendNotificationMail(RunStatus jobStatus, Run run) {
+		if (jobStatus == RunStatus.Completed || jobStatus == RunStatus.Error) {
+			if (run.getRunTypeEnum() == RunType.DiscoveryRun ||  run.getRunTypeEnum() == RunType.FullRun) {
+				boolean hasExecutingRuns = runDAO
+						.getRunsForExperiment(run.getExperimentId()).stream()
+						.anyMatch(executing -> executing.getRunType() == run.getRunType()
+								&& executing.getStatusEnum() != RunStatus.Completed
+								&& executing.getStatusEnum() != RunStatus.Error);
+				if (!hasExecutingRuns) {
+					boolean isSuccessful = jobStatus == RunStatus.Completed;
+					emailNotificationService.sendTrainingCompletedEmail(SecurityUtils.getUser(), run.getExperiment(), isSuccessful);
+				}
+			}
+		}
+		
+	}
+
+	private List<Run> getRunsWithRescaleJobs(List<Long> runIds, Map<Long, String> rescaleJobIds) {
         final List<Long> runIdsWithRecaleJobs = runIds.stream()
             .filter(runId -> isInRescaleRunJobIds(rescaleJobIds, runId))
             .collect(Collectors.toList());

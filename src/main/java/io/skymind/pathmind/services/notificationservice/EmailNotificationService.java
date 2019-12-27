@@ -16,6 +16,7 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.PathMindException;
+import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.Routes;
 import lombok.extern.slf4j.Slf4j;
 
@@ -123,7 +124,7 @@ public class EmailNotificationService
 	 *
 	 * @param pathmindUser
 	 */
-	public void sendTrainingCompletedEmail(PathmindUser pathmindUser, Experiment experiment, boolean isSuccessful)
+	public void sendTrainingCompletedEmail(PathmindUserDetails pathmindUser, Experiment experiment, boolean isSuccessful)
 	{
 		Objects.requireNonNull(pathmindUser);
 		if (!isEmailSendingEnabled) {
