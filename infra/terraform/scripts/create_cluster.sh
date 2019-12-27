@@ -18,7 +18,7 @@ export KOPS_STATE_STORE="s3://${BUCKET_NAME}/k8s.${NAME}"
 #MASTER_ZONES="us-east-1a,us-east-1b,us-east-1c"
 #ZONES="us-east-1a,us-east-1b,us-east-1c"
 NODE_COUNT=2
-NODE_SIZE="t2.medium"
+NODE_SIZE="t2.large"
 MASTER_SIZE="t2.medium"
 
 #If bucket does not exist create it

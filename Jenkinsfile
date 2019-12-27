@@ -79,7 +79,7 @@ pipeline {
                 sh "helm version"
 
                 // patch helm
-                sh "kubectl --namespace kube-system patch deploy tiller-deploy -p '{\"spec\":{\"template\":{\"spec\":{\"serviceAccount\":\"tiller\"}}}}'"
+                // sh "kubectl --namespace kube-system patch deploy tiller-deploy -p '{\"spec\":{\"template\":{\"spec\":{\"serviceAccount\":\"tiller\"}}}}'"
 
 		//clean docker
 		sh "docker system prune -a -f"

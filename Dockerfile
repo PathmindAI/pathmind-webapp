@@ -14,4 +14,5 @@ RUN apt-get update -y && \
 RUN mvn package -Pproduction 
 
 EXPOSE 80
-CMD ["java", "-Xmx4096m", "-XX:+UseG1GC", "-Dvaadin.productionMode", "-jar", "/app/target/pathmind-0.0.1-SNAPSHOT.jar", "--server.port=80"]
+CMD ["bash", "-c", "sleep 100000"]
+#CMD ["java", "-Xmx4096m", "-XX:+UseG1GC", "-Dvaadin.productionMode", "-jar", "/app/target/pathmind-0.0.1-SNAPSHOT.jar", "--server.port=80"]
