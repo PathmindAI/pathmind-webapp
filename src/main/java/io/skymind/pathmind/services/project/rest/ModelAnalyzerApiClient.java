@@ -74,7 +74,12 @@ public class ModelAnalyzerApiClient {
 
         try (final CloseableHttpClient client = getCloseableHttpClient();
         final CloseableHttpResponse resp = client.execute(post)) {
-            return objectMapper.readValue(resp.getEntity().getContent(), HyperparametersDTO.class);
+            try {
+                return objectMapper.readValue(resp.getEntity().getContent(), HyperparametersDTO.class);
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+                return null;
+            }
         }
     }
 
