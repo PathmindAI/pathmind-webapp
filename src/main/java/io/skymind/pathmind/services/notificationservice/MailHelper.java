@@ -25,7 +25,7 @@ public class MailHelper
 {
 	public static final String PATHMIND_VERIFICATION_EMAIL_SUBJECT = "Pathmind verification email";
 	public static final String PATHMIND_RESET_PASSWORD_EMAIL_SUBJECT = "Pathmind reset password email";
-	public static final String PATHMIND_TRAINING_SUCCESSFUL_EMAIL_SUBJECT = "Pathmind training completed successfully email";
+	public static final String PATHMIND_TRAINING_COMPLETED_EMAIL_SUBJECT = "Pathmind training completed successfully email";
 	public static final String PATHMIND_TRAINING_FAILED_EMAIL_SUBJECT = "Pathmind training failed email";
 
 	@Value("${sendgrid.verification-mail.id}")
@@ -34,8 +34,8 @@ public class MailHelper
 	@Value("${sendgrid.resetpassword-mail.id}")
 	private String resetPasswordTemplateId;
 
-	@Value("${sendgrid.trainingsuccessful-mail.id}")
-	private String trainingSuccessfulTemplateId;
+	@Value("${sendgrid.trainingcompleted-mail.id}")
+	private String trainingCompletedTemplateId;
 
 	@Value("${sendgrid.trainingfailed-mail.id}")
 	private String trainingFailedTemplateId;
@@ -133,10 +133,10 @@ public class MailHelper
 		}
 		Mail mail = new Mail();
 		mail.setFrom(new Email(from));
-		mail.setTemplateId(isSuccessful ? trainingSuccessfulTemplateId : trainingFailedTemplateId);
+		mail.setTemplateId(isSuccessful ? trainingCompletedTemplateId : trainingFailedTemplateId);
 		
 		Personalization personalization = new Personalization();
-		personalization.addDynamicTemplateData("subject", isSuccessful ? PATHMIND_TRAINING_SUCCESSFUL_EMAIL_SUBJECT : PATHMIND_TRAINING_FAILED_EMAIL_SUBJECT);
+		personalization.addDynamicTemplateData("subject", isSuccessful ? PATHMIND_TRAINING_COMPLETED_EMAIL_SUBJECT : PATHMIND_TRAINING_FAILED_EMAIL_SUBJECT);
 		personalization.addDynamicTemplateData("name", name);
 		personalization.addDynamicTemplateData("projectName", projectName);
 		personalization.addDynamicTemplateData("experimentPageLink", experimentPageLink);
