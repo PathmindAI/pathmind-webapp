@@ -95,8 +95,8 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
 								&& executing.getStatusEnum() != RunStatus.Error);
 				if (!hasExecutingRuns) {
 					boolean isSuccessful = jobStatus == RunStatus.Completed;
-					PathmindUser user = userDAO.findById(run.getExperiment().getProject().getPathmindUserId());
-					emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), isSuccessful);
+					PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
+					emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);
 				}
 			}
 		}

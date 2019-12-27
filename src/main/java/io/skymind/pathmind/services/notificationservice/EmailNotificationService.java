@@ -14,6 +14,7 @@ import com.sendgrid.helpers.mail.Mail;
 
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.PathMindException;
 import io.skymind.pathmind.security.Routes;
@@ -123,7 +124,7 @@ public class EmailNotificationService
 	 *
 	 * @param pathmindUser
 	 */
-	public void sendTrainingCompletedEmail(PathmindUser pathmindUser, Experiment experiment, boolean isSuccessful)
+	public void sendTrainingCompletedEmail(PathmindUser pathmindUser, Experiment experiment, Project project, boolean isSuccessful)
 	{
 		Objects.requireNonNull(pathmindUser);
 		if (!isEmailSendingEnabled) {
@@ -135,8 +136,7 @@ public class EmailNotificationService
 		Mail trainingCompletedMail;
 		try {
 			String username = StringUtils.isBlank(pathmindUser.getName()) ? pathmindUser.getEmail() : StringUtils.capitalize(pathmindUser.getName());
-			trainingCompletedMail = mailHelper.createTrainingCompletedEmail(pathmindUser.getEmail(), username, experiment.getProject().getName(), 
-					experimentPageLink, isSuccessful);
+			trainingCompletedMail = mailHelper.createTrainingCompletedEmail(pathmindUser.getEmail(), username, project.getName(), experimentPageLink, isSuccessful);
 		} catch (PathMindException e) {
 			log.warn("Could not create email due to missing data in the PathmindUser object");
 			return;
