@@ -16,7 +16,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -49,12 +48,6 @@ public class RescaleRestApiClient {
                 .baseUrl(rescaleBaseUrl)
                 .defaultHeader("Authorization", "Token "+apiKey)
                 .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .filter(ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
-//                            log.info("Request: {} {}", clientRequest.method(), clientRequest.url());
-//                            clientRequest.headers().forEach((name, values) -> values.forEach(value -> log.info("{}={}", name, value)));
-                            return Mono.just(clientRequest);
-                        })
-                )
                 .build();
     }
 
