@@ -626,6 +626,10 @@
             UPDATE POLICY SET name=SPLIT_PART(external_id, '_', 3);
             UPDATE POLICY SET NOTES=concat('sgd_minibatch_size=', batch_size, ', lr=', learning_rate, ', gamma=', gamma);
         </sql>
+        <rollback>
+            <dropColumn tableName="POLICY" columnName="NOTES"/>
+            <sql>UPDATE POLICY SET name=external_Id</sql>
+        </rollback>
     </changeSet>
 
 
