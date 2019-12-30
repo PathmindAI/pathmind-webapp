@@ -5,8 +5,6 @@ import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.data.policy.HyperParameters;
-import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import io.skymind.pathmind.utils.ObjectMapperHolder;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +21,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PolicyUtils
 {
+    public static final String LEARNING_RATE = "lr";
+    public static final String GAMMA = "gamma";
+    public static final String BATCH_SIZE = "sgd_minibatch_size";
+
     private static final String lrPatternStr = "lr=.*,";
     private static final Pattern lrPattern = Pattern.compile(lrPatternStr);
 
@@ -110,12 +112,6 @@ public class PolicyUtils
         }
     }
 
-    // STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
-    // the HyperParameters are moved into the database we can delete this code.
-    public static HyperParameters getHyperParametersFromName(Policy policy) {
-        return ProgressInterpreter.interpretKey(policy.getName()).getHyperParameters();
-    }
-
     public static List<Number> getMeanScores(Policy policy) {
         return policy.getScores().stream()
             .map(rewardScore -> rewardScore.getMean())
@@ -123,9 +119,9 @@ public class PolicyUtils
     }
 
     public static String getFormatHyperParameters(Policy policy) {
-        return  HyperParameters.BATCH_SIZE + "=" + policy.getHyperParameters().getBatchSize() + ", " +
-                HyperParameters.LEARNING_RATE + "=" + policy.getHyperParameters().getLearningRate() + ", " +
-                HyperParameters.GAMMA + "=" + policy.getHyperParameters().getGamma();
+        return  BATCH_SIZE + "=" + policy.getBatchSize() + ", " +
+                LEARNING_RATE + "=" + policy.getLearningRate() + ", " +
+                GAMMA + "=" + policy.getGamma();
     }
 
     // original name ex: PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_2019-10-11_21-16-2858waz_89
@@ -159,8 +155,5 @@ public class PolicyUtils
         policy.setProject(run.getProject());
         // For performance reasons.
         policy.setParsedName(parsePolicyName(policy.getName()));
-        // STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
-        // the HyperParameters are moved into the database we can delete this code.
-        policy.setHyperParameters(getHyperParametersFromName(policy));
     }
 }

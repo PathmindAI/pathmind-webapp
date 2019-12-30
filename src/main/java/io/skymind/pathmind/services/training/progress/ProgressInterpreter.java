@@ -1,9 +1,10 @@
 package io.skymind.pathmind.services.training.progress;
 
 import com.opencsv.CSVReader;
+import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.policy.HyperParameters;
 import io.skymind.pathmind.data.policy.RewardScore;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,9 +31,7 @@ public class ProgressInterpreter {
         policy.setExternalId(keyString);
 
         int keyLength = keyString.length();
-        String id = null;
         String dateTime = null;
-
 
         if (keyString.endsWith(RunUtils.TEMPORARY_POSTFIX)) {
             // looks something like this:
@@ -41,7 +40,6 @@ public class ProgressInterpreter {
         } else {
             // looks something like this:
             // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128_2019-08-05_13-56-455cdir_3f
-            id = keyString.substring(keyLength - TRIAL_ID_LEN);
             dateTime = keyString.substring(keyLength - TRIAL_ID_LEN - DATE_LEN, keyLength - TRIAL_ID_LEN);
             keyString = keyString.substring(0, keyLength - TRIAL_ID_LEN - DATE_LEN - 1);
         }
@@ -72,14 +70,14 @@ public class ProgressInterpreter {
 
     private static void setHyperParameter(Policy policy, String name, String value) {
         switch (name) {
-            case HyperParameters.LEARNING_RATE:
-                policy.getHyperParameters().setLearningRate(Double.valueOf(value));
+            case PolicyUtils.LEARNING_RATE:
+                policy.setLearningRate(Double.valueOf(value));
                 break;
-            case HyperParameters.GAMMA:
-                policy.getHyperParameters().setGamma(Double.valueOf(value));
+            case PolicyUtils.GAMMA:
+                policy.setGamma(Double.valueOf(value));
                 break;
-            case HyperParameters.BATCH_SIZE:
-                policy.getHyperParameters().setBatchSize(Integer.valueOf(value));
+            case PolicyUtils.BATCH_SIZE:
+                policy.setBatchSize(Integer.valueOf(value));
                 break;
         }
     }
