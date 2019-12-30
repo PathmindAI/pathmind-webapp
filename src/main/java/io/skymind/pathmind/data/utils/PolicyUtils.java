@@ -34,7 +34,6 @@ public class PolicyUtils
     }
 
     public static RunStatus getRunStatus(Policy policy) {
-        System.out.println("called " + policy.getId());
         if (policy.getRun().getRunTypeEnum() == RunType.DiscoveryRun && policy.getRun().getStatusEnum() == RunStatus.Running) {
             return policy.getStoppedAt() == null ? RunStatus.Running : RunStatus.Completed;
         } else {
