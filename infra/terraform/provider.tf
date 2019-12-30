@@ -17,9 +17,3 @@ provider "template" {
 
 provider "external" {}
 
-provider "helm" {
-  kubernetes {
-    config_path = "/home/ec2-user/.kube/config"
-  }
-}
-

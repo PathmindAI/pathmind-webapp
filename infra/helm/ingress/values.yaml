@@ -26,7 +26,7 @@ ingress:
     - host: grafana.danieljj.com
       paths: [/:80:prometheus-grafana]
     - host: logging.danieljj.com
-      paths: [/:5601:efk-kibana]
+      paths: [/:5601:kibana]
 
   tls: []
   #  - secretName: chart-example-tls

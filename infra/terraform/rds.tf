@@ -2,24 +2,28 @@
 # Data sources to get VPC, subnets and security group details
 ##############################################################
 #Get k8s vpc id
-data "external" "vpc_id" {
-  program    = ["bash", "./scripts/get_vpc_id.sh", "${local.cluster_name}"]
+#data "external" "vpc_id" {
+#  program    = ["bash", "./scripts/get_vpc_id.sh", "${local.cluster_name}"]
+#  depends_on = [null_resource.k8s]
+#}
+
+data "aws_vpc" "selected" {
+  filter {
+    name   = "tag:Name"
+    values = [local.cluster_name]
+  }
   depends_on = [null_resource.k8s]
 }
 
-data "aws_vpc" "default" {
-  default = true
-}
-
 data "aws_subnet_ids" "all" {
-  vpc_id = data.external.vpc_id.result.vpc_id
+  vpc_id = data.aws_vpc.selected.id
 }
 
 resource "aws_security_group" "pathminddb" {
   name = "pathminddb"
 
   description = "RDS postgres servers (terraform-managed)"
-  vpc_id = data.external.vpc_id.result.vpc_id
+  vpc_id = data.aws_vpc.selected.id
 
   # Only postgres in
   ingress {
@@ -36,6 +40,7 @@ resource "aws_security_group" "pathminddb" {
     protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  depends_on = [null_resource.k8s]
 }
 
 
