@@ -624,13 +624,14 @@
         </addColumn>
         <sql>
             UPDATE POLICY SET name=SPLIT_PART(external_id, '_', 3);
-            UPDATE POLICY SET NOTES=concat('sgd_minibatch_size=', batch_size, ', lr=', learning_rate, ', gamma=', gamma);
+<!--        The following line fails in liquibase but works in postgres directly. Therefore this code has been implemented in the Java changeset code -->
+<!--        UPDATE POLICY SET NOTES=concat('sgd_minibatch_size=', batch_size, ', lr=', learning_rate, ', gamma=', gamma);-->
         </sql>
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191229_01"/>
         <rollback>
             <dropColumn tableName="POLICY" columnName="NOTES"/>
             <sql>UPDATE POLICY SET name=external_Id</sql>
         </rollback>
     </changeSet>
-
 
 </databaseChangeLog>
