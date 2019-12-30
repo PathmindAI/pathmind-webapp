@@ -617,4 +617,16 @@
         <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191220_01"/>
     </changeSet>
 
+    <!-- #3870 - Policy.notes and Policy.name should be in the database -->
+    <changeSet id="20191229-01" author="steph@followsteph.com">
+        <addColumn tableName="POLICY">
+            <column name="NOTES" type="VARCHAR"/>
+        </addColumn>
+        <sql>
+            UPDATE POLICY SET name=SPLIT_PART(external_id, '_', 3);
+            UPDATE POLICY SET NOTES=concat('sgd_minibatch_size=', batch_size, ', lr=', learning_rate, ', gamma=', gamma);
+        </sql>
+    </changeSet>
+
+
 </databaseChangeLog>

@@ -1,7 +1,6 @@
 package io.skymind.pathmind.services.training.progress;
 
 import com.opencsv.CSVReader;
-import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
@@ -20,7 +19,12 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class ProgressInterpreter {
+public class ProgressInterpreter
+{
+    private static final int ALGORITHM = 0;
+    private static final int NAME = 2;
+    private static final int HYPERPARAMETERS = 3;
+
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss");
 
     private static final int TRIAL_ID_LEN = 8;
@@ -48,12 +52,16 @@ public class ProgressInterpreter {
         // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128
         List<String> list = Arrays.asList(keyString.split("_", 4));
 
-        policy.setAlgorithm(list.get(0));
+        policy.setAlgorithm(list.get(ALGORITHM));
+        policy.setName(list.get(NAME));
 
-        Arrays.stream(list.get(3).split(",")).forEach(it -> {
+        Arrays.stream(list.get(HYPERPARAMETERS).split(",")).forEach(it -> {
             final String[] split = it.split("=");
             setHyperParameter(policy, split[0], split[1]);
         });
+
+        // Generated from the hyperparameters
+        policy.setNotes(PolicyUtils.generateDefaultNotes(policy));
 
         try {
             if (dateTime != null) {
@@ -88,7 +96,11 @@ public class ProgressInterpreter {
 
     public static Policy interpret(Map.Entry<String, String> entry, List<RewardScore> previousScores){
         final Policy policy = interpretKey(entry.getKey());
+        interpretScores(entry, previousScores, policy);
+        return policy;
+    }
 
+    private static void interpretScores(Map.Entry<String, String> entry, List<RewardScore> previousScores, Policy policy) {
         final List<RewardScore> scores = previousScores == null || previousScores.size() == 0 ? new ArrayList<>() : previousScores;
         final int lastIteration = scores.size() == 0 ? -1 : scores.get(scores.size() - 1).getIteration();
 
@@ -118,7 +130,5 @@ public class ProgressInterpreter {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        return policy;
     }
 }
