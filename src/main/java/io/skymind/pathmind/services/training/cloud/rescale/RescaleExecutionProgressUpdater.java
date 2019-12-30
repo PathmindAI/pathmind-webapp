@@ -63,6 +63,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
 
                 setStoppedAtForFinishedPolicies(policies, finishedPolicyNamesFromRescale);
 
+                sendNotificationMail(jobStatus, run);
                 runDAO.updateRun(run, jobStatus, policies);
 
                 // STEPH -> REFACTOR -> QUESTION -> Does this need to be transactional with runDAO.updateRun and put
@@ -73,7 +74,6 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
                 // method is called and we can just do a simple isPolicyFile != null check as to whether or not to
                 // also update it in the database.
                 savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus);
-                sendNotificationMail(jobStatus, run);
             } catch (Exception e) {
                 log.error("Error for run: " + run.getId() + " : " + e.getMessage(), e);
                 emailNotificationService.sendEmailExceptionNotification("Error for run: " + run.getId() + " : " + e.getMessage(), e);
@@ -90,10 +90,13 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
 			if (run.getRunTypeEnum() == RunType.DiscoveryRun ||  run.getRunTypeEnum() == RunType.FullRun) {
 				boolean hasExecutingRuns = runDAO
 						.getRunsForExperiment(run.getExperimentId()).stream()
-						.anyMatch(executing -> executing.getRunType() == run.getRunType()
+						.anyMatch(executing -> executing.getId() != run.getId() 
+								&& executing.getRunType() == run.getRunType()
 								&& executing.getStatusEnum() != RunStatus.Completed
 								&& executing.getStatusEnum() != RunStatus.Error);
-				if (!hasExecutingRuns) {
+				// Send mail, if the experiment doesn't have another run still in progress,
+				// and stopped at is not set yet (will be set after this step)
+				if (!hasExecutingRuns && run.getStoppedAt() == null) {
 					boolean isSuccessful = jobStatus == RunStatus.Completed;
 					PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
 					emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);
