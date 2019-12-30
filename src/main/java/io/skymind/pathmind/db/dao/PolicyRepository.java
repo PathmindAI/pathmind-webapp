@@ -45,7 +45,8 @@ class PolicyRepository
 
 	protected static Policy getPolicy(DSLContext ctx, long policyId) {
         Record record = ctx
-                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM)
+				.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
+                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
                 .select(EXPERIMENT.ID, EXPERIMENT.NAME)
                 .select(MODEL.ID, MODEL.NAME)
@@ -66,9 +67,6 @@ class PolicyRepository
 		policy.setProgress(null);
 
 		policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
-		// STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
-		// the HyperParameters are moved into the database we can delete this code.
-		policy.setHyperParameters(PolicyUtils.getHyperParametersFromName(policy));
 
 		addParentDataModelObjects(record, policy);
 
@@ -107,15 +105,15 @@ class PolicyRepository
 
 	protected static long insertPolicy(DSLContext ctx, Policy policy) {
 		return ctx.insertInto(POLICY)
-                .columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM, POLICY.PROGRESS)
-                .values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm(), JSONB.valueOf(policy.getProgress()))
+				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.PROGRESS)
+				.values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize(), JSONB.valueOf(policy.getProgress()))
 				.returning(POLICY.ID)
 				.fetchOne()
 				.getValue(POLICY.ID);
 	}
 
 	protected static List<Policy> getPoliciesForExperiment(DSLContext ctx, long experimentId) {
-		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.RUN_ID)
+		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.RUN_ID, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
 				.select(EXPERIMENT.asterisk())
 				.select(RUN.asterisk())
 				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.ARCHIVED)
@@ -133,14 +131,13 @@ class PolicyRepository
 					policy.setId(record.get(POLICY.ID));
 					policy.setName(record.get(POLICY.NAME));
 					policy.setRunId(record.get(POLICY.RUN_ID));
+					policy.setLearningRate(record.get(POLICY.LEARNING_RATE));
+					policy.setGamma(record.get(POLICY.GAMMA));
+					policy.setBatchSize(record.get(POLICY.BATCH_SIZE));
 
-					// TODO -> Although we process everything we could also get the values from the database. However until scores is also stored in the database
+					// PERFORMANCE -> TODO -> Although we process everything we could also get the values from the database. However until scores is also stored in the database
 					// we might as well do it here.
-					// PERFORMANCE => can this be simplified? It's very expensive just to get Notes (both interpretKey and the HashMap of HyperParameters
 					PolicyUtils.processProgressJson(policy, record.get(POLICY.PROGRESS).toString());
-					// STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
-					// the HyperParameters are moved into the database we can delete this code.
-					policy.setHyperParameters(PolicyUtils.getHyperParametersFromName(policy));
 					policy.setProgress(null);
 
 					addParentDataModelObjects(record, policy);
@@ -166,8 +163,8 @@ class PolicyRepository
 	protected static long updateOrInsertPolicy(DSLContext ctx, Policy policy, JSONB progressJson)
 	{
 		return ctx.insertInto(POLICY)
-				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM)
-				.values(policy.getExternalId(), policy.getRunId(), policy.getExternalId(), progressJson, policy.getStartedAt(), policy.getStoppedAt(), policy.getAlgorithm())
+				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
+				.values(policy.getExternalId(), policy.getRunId(), policy.getExternalId(), progressJson, policy.getStartedAt(), policy.getStoppedAt(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize())
 				.onConflict(POLICY.RUN_ID, POLICY.EXTERNAL_ID)
 				.doUpdate()
 				.set(POLICY.PROGRESS, progressJson)
