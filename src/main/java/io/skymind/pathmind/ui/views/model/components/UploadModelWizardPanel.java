@@ -2,25 +2,24 @@ package io.skymind.pathmind.ui.views.model.components;
 
 import java.io.IOException;
 
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Text;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.progressbar.ProgressBarVariant;
-import com.vaadin.flow.component.upload.Upload;
-import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.dom.DomEventListener;
+import com.vaadin.flow.server.Command;
 
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.ui.components.LabelFactory;
+import io.skymind.pathmind.ui.components.PathmindModelUploader;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.utils.UploadUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -30,13 +29,13 @@ public class UploadModelWizardPanel extends VerticalLayout
 
 	private Label projectNameLabel;
 
-	private Button checkYourModelButton = new Button("Check Your model");
-
 	private VerticalLayout uploadModelPanel;
-	private Upload upload;
+	private PathmindModelUploader upload;
 
 	private ProgressBar fileCheckProgressBar = new ProgressBar();
 	private VerticalLayout fileCheckPanel;
+	
+	private Command fileCheckerCommand;
 
 	private Text errorText;
 
@@ -55,10 +54,8 @@ public class UploadModelWizardPanel extends VerticalLayout
 				GuiUtils.getFullWidthHr(),
 				getInstructionsDiv(),
 				uploadModelPanel,
-				fileCheckPanel,
-				WrapperUtils.wrapWidthFullCenterHorizontal(checkYourModelButton));
+				fileCheckPanel);
 
-		checkYourModelButton.setVisible(false);
 		fileCheckPanel.setVisible(false);
 
 		setClassName("view-section"); // adds the white 'panel' style with rounded corners
@@ -76,30 +73,25 @@ public class UploadModelWizardPanel extends VerticalLayout
 
 	private void setupUploadPanel()
 	{
-		MemoryBuffer buffer = new MemoryBuffer();
-
-		upload = new Upload(buffer);
+		upload = new PathmindModelUploader();
 
 		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/123
 //		upload.setMaxFileSize(PathmindConstants.MAX_UPLOAD_FILE_SIZE);
 //		upload.setAcceptedFileTypes("application/zip");
 //		upload.addFailedListener(event -> log.error("ERROR " + event.getReason().getMessage(), e.getReason().getMessage()));
 
-		addUploadSucceedListener(buffer);
+		addUploadSucceedListener((MultiFileMemoryBuffer)upload.getReceiver());
 		addUploadRemoveFileListener();
 
 		uploadModelPanel = WrapperUtils.wrapWidthFullCenterVertical(upload);
 	}
 
-	private void addUploadSucceedListener(MemoryBuffer buffer) {
-		upload.addSucceededListener(event -> {
+	private void addUploadSucceedListener(MultiFileMemoryBuffer buffer) {
+		upload.addAllFilesUploadedListener(() -> {
 			try {
-				final byte[] bytes = buffer.getInputStream().readAllBytes();
-				model.setFile(bytes);
-
+				model.setFile(UploadUtils.createZipFileFromBuffer(buffer));
+				fileCheckerCommand.execute();
 				log.info("Upload completed");
-				checkYourModelButton.setVisible(true);
-				checkYourModelButton.click(); // Rigging this to automatically run the file check
 			} catch (IOException e) {
 				// TODO -> We need to do something if this fails.
 				log.error("Upload failed", e);
@@ -118,8 +110,8 @@ public class UploadModelWizardPanel extends VerticalLayout
 		});
 	}
 
-	public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
-		checkYourModelButton.addClickListener(listener);
+	public void addFileUploadCompletedListener(Command command) {
+		fileCheckerCommand = command;
 	}
 
 	// TODO -> CSS -> Move CSS to styles.css
@@ -130,14 +122,8 @@ public class UploadModelWizardPanel extends VerticalLayout
 				"<ol>" +
 					"<li>Make sure you have <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">Pathmind Helper</a> installed in your model.</li>" +
 					"<li><a href=\"https://help.anylogic.com/topic/com.anylogic.help/html/standalone/Export_Java_Application.html\" target=\"_blank\">Export your model as a standalone Java application.</a></li>" +
-					"<li>Open the exported folder.</li>" +
-					"<li>Create a zip file that contains:</li>" +
-						"<ul>" +
-							"<li>model.jar</li>" +
-							"<li>the \"database\" folder if needed</li>" +
-							"<li>custom libraries from the \"lib\" folder if needed. (This is uncommon)</li>" +
-						"</ul>" +
-					"<li>Upload the new zip file below." +
+					"<li>Click Upload files button.</li>" +
+					"<li>Select the exported folder.</li>" +
 				"</ol>");
 		return div;
 	}
@@ -149,7 +135,6 @@ public class UploadModelWizardPanel extends VerticalLayout
 	public void showFileCheckPanel() {
 		upload.setVisible(false);
 		fileCheckPanel.setVisible(true);
-		checkYourModelButton.setVisible(false);
 		setFileCheckStatusProgressBarValue(0);
 	}
 

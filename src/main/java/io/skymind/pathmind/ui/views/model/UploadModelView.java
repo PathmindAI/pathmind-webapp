@@ -3,9 +3,6 @@ package io.skymind.pathmind.ui.views.model;
 import java.util.Arrays;
 import java.util.List;
 
-import io.skymind.pathmind.exception.InvalidDataException;
-import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
@@ -23,12 +20,14 @@ import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ModelUtils;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
 import io.skymind.pathmind.ui.utils.FormUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
@@ -38,6 +37,7 @@ import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.ui.views.model.components.UploadModelStatusWizardPanel;
 import io.skymind.pathmind.ui.views.model.components.UploadModelWizardPanel;
+import lombok.extern.slf4j.Slf4j;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
@@ -97,7 +97,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 		setVisibleWizardPanel(uploadModelWizardPanel);
 
-		uploadModelWizardPanel.addButtonClickListener(click -> handleUploadWizardClicked());
+		uploadModelWizardPanel.addFileUploadCompletedListener(() -> handleUploadWizardClicked());
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked());
 
 		return WrapperUtils.wrapFormCenterVertical(
