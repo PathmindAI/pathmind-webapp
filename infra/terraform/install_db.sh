@@ -21,7 +21,7 @@ dburl="host=$endpoint port=5432 dbname=pathminddb user=pathmind password=${dbpas
 
 ssh admin@`aws elb --output=table describe-load-balancers|grep DNSName.\*bastion|awk '{print $4}'` sudo apt-get update
 ssh admin@`aws elb --output=table describe-load-balancers|grep DNSName.\*bastion|awk '{print $4}'` sudo apt-get install postgresql -y
-ssh admin@`aws elb --output=table describe-load-balancers|grep DNSName.\*bastion|awk '{print $4}'` printf "%s\n%s\nus-east-1\njson" "AKIA4G2DQUWTNYKNB75F" "AE55Akjz1NfuhRMEBaul5/byPbJz8FmN9xgl9WZe" | aws configure
+ssh admin@`aws elb --output=table describe-load-balancers|grep DNSName.\*bastion|awk '{print $4}'` "printf '%s\n%s\nus-east-1\njson' 'AKIA4G2DQUWTNYKNB75F' 'AE55Akjz1NfuhRMEBaul5/byPbJz8FmN9xgl9WZe' | aws configure"
 ssh admin@`aws elb --output=table describe-load-balancers|grep DNSName.\*bastion|awk '{print $4}'` aws s3 cp s3://${s3_bucket}/${s3_file} $tmp_dir
 ssh admin@`aws elb --output=table describe-load-balancers|grep DNSName.\*bastion|awk '{print $4}'` gunzip -f ${tmp_dir}/${s3_file}
 s3_file=`echo ${s3_file} | sed 's/.gz$//g'`
