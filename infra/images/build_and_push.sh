@@ -7,13 +7,11 @@
 # machine and combined with the account and region to form the repository name for ECR.
 docker_folder=$1
 image=$2
-GIT_USERNAME=$3
-GIT_PASSWORD=$4
 
-if [ "$docker_folder" == "" ] || [ "$image" == "" ] || [ "$GIT_USERNAME" == "" ] || [ "$GIT_PASSWORD" == "" ]
+if [ "$docker_folder" == "" ] || [ "$image" == "" ]
 then
-	    echo "Usage: $0 <docker-folder> <image-name> <git-user> <git-password>"
-	        exit 1
+	    echo "Usage: $0 <docker-folder> <image-name>"
+            exit 1
 fi
 
 # Get the account number associated with the current IAM credentials
@@ -47,6 +45,6 @@ $(aws ecr get-login --region ${region} --no-include-email)
 # Build the docker image locally with the image name and then push it to ECR
 # with the full name.
 
-docker build  -t ${image} --build-arg GIT_USERNAME=${GIT_USERNAME} --build-arg GIT_PASSWORD=${GIT_PASSWORD} --build-arg AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}  --build-arg AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}  -f ${docker_folder}/Dockerfile ${docker_folder}/. && \
+docker build  -t ${image} -f ${docker_folder}/Dockerfile ${docker_folder}/. && \
 	docker tag ${image} ${fullname} && \
 	docker push ${fullname}

@@ -1,25 +1,9 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: kibana
-  namespace: default
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: kibana
-  template:
-    metadata:
-      labels:
-        app: kibana
-    spec:
-      containers:
-      - name: kibana
-        image: kubedb/kibana:6.3.0
-        volumeMounts:
-        - name:  kibana-config
-          mountPath: /usr/share/kibana/config
-      volumes:
-      - name:  kibana-config
-        configMap:
-          name: kibana-config
+xpack.security.enabled: false
+server.host: 0.0.0.0
+
+elasticsearch.url: "http://es-kibana.default.svc:9200"
+elasticsearch.username: "kibanauser"
+elasticsearch.password: "kibana@secret"
+
+searchguard.auth.type: "basicauth"
+searchguard.cookie.secure: false

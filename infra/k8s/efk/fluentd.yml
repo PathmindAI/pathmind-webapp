@@ -69,6 +69,10 @@ spec:
             value: "http"
           - name: FLUENTD_SYSTEMD_CONF
             value: disable
+          - name: FLUENT_ELASTICSEARCH_USER
+            value: "kibanauser"
+          - name: FLUENT_ELASTICSEARCH_PASSWORD
+            value: "kibana@secret"
         resources:
           limits:
             memory: 512Mi

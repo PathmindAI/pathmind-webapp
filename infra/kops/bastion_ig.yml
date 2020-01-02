@@ -1,0 +1,18 @@
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: pathmind.k8s.local
+  creationTimestamp: null
+  name: bastions
+spec:
+  image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2019-09-26
+  machineType: t2.micro
+  maxSize: 1
+  minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: bastions
+  role: Bastion
+  subnets:
+  - utility-us-east-1a
+
