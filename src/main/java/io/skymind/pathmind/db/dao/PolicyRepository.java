@@ -45,7 +45,7 @@ class PolicyRepository
 
 	protected static Policy getPolicy(DSLContext ctx, long policyId) {
         Record record = ctx
-				.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
+				.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
                 .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
                 .select(EXPERIMENT.ID, EXPERIMENT.NAME)
@@ -65,8 +65,6 @@ class PolicyRepository
 		// PERFORMANCE -> Until we remove the json progress string this is to help optimizing the memory usage.
 		PolicyUtils.processProgressJson(policy, policy.getProgress());
 		policy.setProgress(null);
-
-		policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
 
 		addParentDataModelObjects(record, policy);
 
@@ -105,15 +103,15 @@ class PolicyRepository
 
 	protected static long insertPolicy(DSLContext ctx, Policy policy) {
 		return ctx.insertInto(POLICY)
-				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.PROGRESS)
-				.values(policy.getName(), policy.getRunId(), policy.getName(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize(), JSONB.valueOf(policy.getProgress()))
+				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.PROGRESS, POLICY.NOTES)
+				.values(policy.getName(), policy.getRunId(), policy.getExternalId(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize(), JSONB.valueOf(policy.getProgress()), policy.getNotes())
 				.returning(POLICY.ID)
 				.fetchOne()
 				.getValue(POLICY.ID);
 	}
 
 	protected static List<Policy> getPoliciesForExperiment(DSLContext ctx, long experimentId) {
-		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.RUN_ID, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
+		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.RUN_ID, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
 				.select(EXPERIMENT.asterisk())
 				.select(RUN.asterisk())
 				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.ARCHIVED)
@@ -134,16 +132,15 @@ class PolicyRepository
 					policy.setLearningRate(record.get(POLICY.LEARNING_RATE));
 					policy.setGamma(record.get(POLICY.GAMMA));
 					policy.setBatchSize(record.get(POLICY.BATCH_SIZE));
+					policy.setNotes(record.get(POLICY.NOTES));
 
 					// PERFORMANCE -> TODO -> Although we process everything we could also get the values from the database. However until scores is also stored in the database
 					// we might as well do it here.
 					PolicyUtils.processProgressJson(policy, record.get(POLICY.PROGRESS).toString());
 					policy.setProgress(null);
 
+//					.. here here here notes on ALL SQL calls.
 					addParentDataModelObjects(record, policy);
-
-					// Helper for performance reasons
-					policy.setParsedName(PolicyUtils.parsePolicyName(policy.getName()));
 
 					return policy;
 				});
@@ -151,20 +148,18 @@ class PolicyRepository
 		return policies;
 	}
 
-	protected static void updatePolicyNameAndExternalId(DSLContext ctx, long runId, String newExternalId, String oldExternalId) {
+	protected static void updatePolicyExternalId(DSLContext ctx, long runId, String newExternalId, String oldExternalId) {
 		ctx.update(POLICY)
-				.set(POLICY.NAME, newExternalId)
 				.set(POLICY.EXTERNAL_ID, newExternalId)
 				.where(POLICY.RUN_ID.eq(runId), POLICY.EXTERNAL_ID.eq(oldExternalId))
 				.execute();
 	}
 
 	// STEPH -> Still passing progressJSon as a temporary solution until I have the time to completely replace it and put the data in the database.
-	protected static long updateOrInsertPolicy(DSLContext ctx, Policy policy, JSONB progressJson)
-	{
+	protected static long updateOrInsertPolicy(DSLContext ctx, Policy policy, JSONB progressJson) {
 		return ctx.insertInto(POLICY)
-				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
-				.values(policy.getExternalId(), policy.getRunId(), policy.getExternalId(), progressJson, policy.getStartedAt(), policy.getStoppedAt(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize())
+				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS, POLICY.STARTEDAT, POLICY.STOPPEDAT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
+				.values(policy.getName(), policy.getRunId(), policy.getExternalId(), progressJson, policy.getStartedAt(), policy.getStoppedAt(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize(), policy.getNotes())
 				.onConflict(POLICY.RUN_ID, POLICY.EXTERNAL_ID)
 				.doUpdate()
 				.set(POLICY.PROGRESS, progressJson)

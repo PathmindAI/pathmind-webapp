@@ -36,6 +36,9 @@ public class Policy extends Data
 	@JsonIgnore
 	private int batchSize;
 
+	@JsonIgnore
+	private String notes;
+
     // For now this is hardcoded: https://github.com/SkymindIO/pathmind-webapp/issues/101
     private Algorithm algorithm = Algorithm.PPO;
 
@@ -52,10 +55,6 @@ public class Policy extends Data
 	private Experiment experiment;
 	@JsonIgnore
 	private Run run;
-
-	// Helper for now for performance reasons.
-	@JsonIgnore
-	private String parsedName;
 
 	public long getRunId() {
 		return runId;
@@ -163,22 +162,12 @@ public class Policy extends Data
 		this.stoppedAt = stoppedAt;
 	}
 
-	public String getParsedName() {
-		return parsedName;
-	}
-
-	public void setParsedName(String parsedName) {
-		this.parsedName = parsedName;
-	}
-
-	// STEPH -> Clean this up when we add notes to the database.
-	@JsonIgnore
 	public String getNotes() {
-		throw new RuntimeException("Should not be used");
+		return notes;
 	}
 
 	public void setNotes(String notes) {
-		// The notes are currently just the hyperParameters
+		this.notes = notes;
 	}
 
 	public List<RewardScore> getScores() {

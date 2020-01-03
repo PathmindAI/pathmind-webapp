@@ -105,10 +105,10 @@ class RunRepository
     }
 
     protected static Map<Long, List<String>> getStoppedPolicyNamesForRuns(DSLContext ctx, List<Long> runIds) {
-        return ctx.select(POLICY.NAME, POLICY.RUN_ID)
+        return ctx.select(POLICY.EXTERNAL_ID, POLICY.RUN_ID)
                 .from(POLICY)
                 .where(POLICY.RUN_ID.in(runIds)).and(POLICY.STOPPEDAT.isNotNull())
-                .fetchGroups(POLICY.RUN_ID, POLICY.NAME);
+                .fetchGroups(POLICY.RUN_ID, POLICY.EXTERNAL_ID);
     }
 
     protected static void markAsStarting(DSLContext ctx, long runId){

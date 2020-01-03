@@ -37,7 +37,7 @@ public class PolicyHighlightPanel extends VerticalLayout implements PolicyUpdate
 
 	public void update(Policy policy) {
 		this.policy = policy;
-		policyLabel.setText(PolicyUtils.getParsedPolicyName(policy));
+		policyLabel.setText(policy.getName());
 		scoreLabel.setText(PolicyUtils.getFormattedLastScore(policy));
 		algorithmLabel.setText(policy.getAlgorithmEnum().name());
 	}

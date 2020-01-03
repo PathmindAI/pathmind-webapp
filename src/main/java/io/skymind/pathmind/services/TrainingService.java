@@ -6,6 +6,7 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
@@ -112,8 +113,9 @@ public class TrainingService
         tempPolicy.setLearningRate(spec.getLearningRates().get(0));
         tempPolicy.setGamma(spec.getGammas().get(0));
         tempPolicy.setBatchSize(spec.getBatchSizes().get(0));
-        tempPolicy.setName(getTempPolicyName(tempPolicy, run.getRunType()));
-        tempPolicy.setExternalId(tempPolicy.getName());
+        tempPolicy.setExternalId(getTempPolicyName(tempPolicy, run.getRunType()));
+        tempPolicy.setName(PolicyUtils.parsePolicyName(tempPolicy.getExternalId()));
+        tempPolicy.setNotes(PolicyUtils.generateDefaultNotes(tempPolicy));
 
         if (progress != null) {
             tempPolicy.setProgress(progress.toString());

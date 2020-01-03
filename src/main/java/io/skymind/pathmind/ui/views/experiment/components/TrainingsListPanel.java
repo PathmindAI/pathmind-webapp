@@ -62,7 +62,7 @@ public class TrainingsListPanel extends VerticalLayout
                 .setResizable(true)
                 .setSortable(true);
 
-        Grid.Column<Policy> startedColumn = grid.addColumn(new ZonedDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+        grid.addColumn(new ZonedDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
                 .setComparator(Comparator.comparing(Policy::getStartedAt, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .setHeader("Started")
                 .setAutoWidth(true)
@@ -84,7 +84,7 @@ public class TrainingsListPanel extends VerticalLayout
                 .setResizable(true)
                 .setSortable(true);
 
-        grid.addColumn(policy -> PolicyUtils.getParsedPolicyName(policy))
+        grid.addColumn(Policy::getName)
                 .setHeader("Policy")
                 .setAutoWidth(true)
                 .setResizable(true)
@@ -96,13 +96,13 @@ public class TrainingsListPanel extends VerticalLayout
                 .setResizable(true)
                 .setSortable(true);
 
-        grid.addColumn(policy -> policy.getAlgorithmEnum())
+        grid.addColumn(Policy::getAlgorithmEnum)
                 .setHeader("Algorithm")
                 .setAutoWidth(true)
                 .setResizable(true)
                 .setSortable(true);
 
-        grid.addColumn(policy -> PolicyUtils.getFormatHyperParameters(policy))
+        grid.addColumn(Policy::getNotes)
                 .setHeader("Notes")
                 .setAutoWidth(true)
                 .setResizable(true)
@@ -155,6 +155,9 @@ public class TrainingsListPanel extends VerticalLayout
         experiment.getPolicies().stream()
                 .filter(policy -> policy.getId() == updatedPolicy.getId())
                 .forEach(policy -> {
+                    // TODO -> REFACTOR -> Do all the values need to be reset?
+                    policy.setName(updatedPolicy.getName());
+                    policy.setNotes(updatedPolicy.getNotes());
                     policy.setExternalId(updatedPolicy.getExternalId());
                     policy.setScores(updatedPolicy.getScores());
                     policy.setRun(updatedPolicy.getRun());
