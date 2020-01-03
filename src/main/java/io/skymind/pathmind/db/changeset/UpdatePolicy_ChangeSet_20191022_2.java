@@ -1,7 +1,7 @@
 package io.skymind.pathmind.db.changeset;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.utils.ObjectMapperHolder;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.change.custom.CustomSqlRollback;
@@ -43,12 +43,12 @@ public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, Custo
     {
         // IMPORTANT -> Do NOT close the connection as it's used by liquibase for the rest of the changesets.
         Connection connection = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
-        List<Policy> policies = getPoliciesFromDatabase(connection);
+        List<Changeset201910222_2_Policy> policies = getPoliciesFromDatabase(connection);
         convertJsonValues(policies);
         return updatePoliciesInDatabase(policies);
     }
 
-    private void convertJsonValues(List<Policy> policies) {
+    private void convertJsonValues(List<Changeset201910222_2_Policy> policies) {
         ObjectMapper objectMapper = ObjectMapperHolder.getJsonMapper();
         policies.parallelStream().forEach(policy -> processProgressJson(objectMapper, policy, policy.getProgress()));
     }
@@ -57,14 +57,13 @@ public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, Custo
      * Copied this code from PolicyUtils.processProgressJson so that it can be changed independently without worrying about breaking
      * the database changelog.
      */
-    public static void processProgressJson(ObjectMapper objectMapper, Policy policy, String progressString)
+    public static void processProgressJson(ObjectMapper objectMapper, Changeset201910222_2_Policy policy, String progressString)
     {
         if(StringUtils.isEmpty(progressString))
             return;
 
         try {
-            final Policy jsonPolicy = objectMapper.readValue(progressString, Policy.class);
-            policy.setScores(jsonPolicy.getScores());
+            final Changeset201910222_2_Policy jsonPolicy = objectMapper.readValue(progressString, Changeset201910222_2_Policy.class);
             policy.setStartedAt(jsonPolicy.getStartedAt());
             policy.setStoppedAt(jsonPolicy.getStoppedAt());
             policy.setAlgorithm(jsonPolicy.getAlgorithm());
@@ -78,12 +77,12 @@ public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, Custo
     public SqlStatement[] generateRollbackStatements(Database database) throws CustomChangeException, RollbackImpossibleException {
         // IMPORTANT -> Do NOT close the connection as it's used by liquibase for the rest of the changesets.
         Connection connection = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
-        List<Policy> policies = getPoliciesFromDatabase(connection);
+        List<Changeset201910222_2_Policy> policies = getPoliciesFromDatabase(connection);
         convertJsonValues(policies);
         return rollbackPoliciesInDatabase(policies);
     }
 
-    private SqlStatement[] rollbackPoliciesInDatabase(List<Policy> policies)
+    private SqlStatement[] rollbackPoliciesInDatabase(List<Changeset201910222_2_Policy> policies)
     {
         return policies.stream().map(policy ->
                 new RawSqlStatement(
@@ -96,7 +95,7 @@ public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, Custo
         ).toArray(SqlStatement[]::new);
     }
 
-    private SqlStatement[] updatePoliciesInDatabase(List<Policy> policies)
+    private SqlStatement[] updatePoliciesInDatabase(List<Changeset201910222_2_Policy> policies)
     {
         return policies.stream().map(policy ->
             new RawSqlStatement(
@@ -115,13 +114,13 @@ public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, Custo
         return "'" + localDateTime.withNano(0) + "'";
     }
 
-    private List<Policy> getPoliciesFromDatabase(Connection connection) throws CustomChangeException {
-        ArrayList<Policy> policies = new ArrayList<>();
+    private List<Changeset201910222_2_Policy> getPoliciesFromDatabase(Connection connection) throws CustomChangeException {
+        ArrayList<Changeset201910222_2_Policy> policies = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT ID, PROGRESS FROM POLICY")) {
             ResultSet result = preparedStatement.executeQuery();
             while(result.next()) {
-                Policy policy = new Policy();
-                policy.setId(result.getInt("ID"));
+                Changeset201910222_2_Policy policy = new Changeset201910222_2_Policy();
+                policy.setId(result.getLong("ID"));
                 policy.setProgress(result.getString("PROGRESS"));
                 policies.add(policy);
             }
@@ -150,5 +149,64 @@ public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, Custo
     @Override
     public ValidationErrors validate(Database database) {
         return null;
+    }
+}
+
+@JsonIgnoreProperties(value = {"id", "rewardProgression", "hyperParameters"})
+class Changeset201910222_2_Policy {
+    private long id;
+    private String progress;
+    private LocalDateTime startedAt;
+    private LocalDateTime stoppedAt;
+    private String algorithm;
+
+    public Changeset201910222_2_Policy() {
+    }
+
+    public Changeset201910222_2_Policy(String progress, LocalDateTime startedAt, LocalDateTime stoppedAt, String algorithm) {
+        this.progress = progress;
+        this.startedAt = startedAt;
+        this.stoppedAt = stoppedAt;
+        this.algorithm = algorithm;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getProgress() {
+        return progress;
+    }
+
+    public void setProgress(String progress) {
+        this.progress = progress;
+    }
+
+    public LocalDateTime getStartedAt() {
+        return startedAt;
+    }
+
+    public void setStartedAt(LocalDateTime startedAt) {
+        this.startedAt = startedAt;
+    }
+
+    public LocalDateTime getStoppedAt() {
+        return stoppedAt;
+    }
+
+    public void setStoppedAt(LocalDateTime stoppedAt) {
+        this.stoppedAt = stoppedAt;
+    }
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
     }
 }

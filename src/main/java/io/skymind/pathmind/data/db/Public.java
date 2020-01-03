@@ -10,6 +10,7 @@ import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
 import io.skymind.pathmind.data.db.tables.Policy;
 import io.skymind.pathmind.data.db.tables.Project;
+import io.skymind.pathmind.data.db.tables.RewardScore;
 import io.skymind.pathmind.data.db.tables.Run;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 2071164656;
+    private static final long serialVersionUID = -580752836;
 
     /**
      * The reference instance of <code>public</code>
@@ -73,6 +74,11 @@ public class Public extends SchemaImpl {
      * The table <code>public.project</code>.
      */
     public final Project PROJECT = io.skymind.pathmind.data.db.tables.Project.PROJECT;
+
+    /**
+     * The table <code>public.reward_score</code>.
+     */
+    public final RewardScore REWARD_SCORE = io.skymind.pathmind.data.db.tables.RewardScore.REWARD_SCORE;
 
     /**
      * The table <code>public.run</code>.
@@ -125,6 +131,7 @@ public class Public extends SchemaImpl {
             PathmindUser.PATHMIND_USER,
             Policy.POLICY,
             Project.PROJECT,
+            RewardScore.REWARD_SCORE,
             Run.RUN);
     }
 }

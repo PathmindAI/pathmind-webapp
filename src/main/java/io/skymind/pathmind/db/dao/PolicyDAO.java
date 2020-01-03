@@ -3,11 +3,15 @@ package io.skymind.pathmind.db.dao;
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.policy.RewardScore;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class PolicyDAO
@@ -19,11 +23,16 @@ public class PolicyDAO
     }
 
     public Policy getPolicy(long policyId) {
-          return PolicyRepository.getPolicy(ctx, policyId);
+          Policy policy = PolicyRepository.getPolicy(ctx, policyId);
+          policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(ctx, policyId));
+          return policy;
     }
 
     public List<Policy> getPoliciesForExperiment(long experimentId) {
-        return PolicyRepository.getPoliciesForExperiment(ctx, experimentId);
+        List<Policy> policies = PolicyRepository.getPoliciesForExperiment(ctx, experimentId);
+        Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(ctx, PolicyUtils.convertToPolicyIds(policies));
+        policies.stream().forEach(policy -> policy.setScores(rewardScores.get(policy.getId())));
+        return policies;
     }
 
     /**
@@ -43,16 +52,13 @@ public class PolicyDAO
         long policyId = PolicyRepository.insertPolicy(ctx, policy);
         // STEPH -> This should not be required since the GUI has the parent objects but until I have to the time it's an extra database call.
         Policy savedPolicy = PolicyRepository.getPolicy(ctx, policyId);
+        savedPolicy.setScores(RewardScoreRepository.getRewardScoresForPolicy(ctx, savedPolicy.getId()));
         EventBus.post(new PolicyUpdateBusEvent(savedPolicy));
         return policyId;
     }
 
     public List<Policy> getActivePoliciesForUser(long userId) {
         return PolicyRepository.getActivePoliciesForUser(ctx, userId);
-    }
-
-    public JSONB getProgress(long policyId) {
-        return PolicyRepository.getProgress(ctx, policyId);
     }
 
     public byte[] getSnapshotFile(long policyId) {

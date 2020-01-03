@@ -8,6 +8,13 @@
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS"
         logicalFilePath="db.initial.xml">
 
+    <changeSet author="steph@followsteph.com" id="1">
+        <sql>
+            DROP FUNCTION update_model_activity_date;
+            DROP FUNCTION update_project_activity_date;
+        </sql>
+    </changeSet>
+
     <changeSet author="paul.dubs@skymind.io" id="20190918">
         <createTable tableName="PATHMIND_USER">
             <column autoIncrement="true" name="ID" type="BIGINT">
@@ -617,7 +624,7 @@
         <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191220_01"/>
     </changeSet>
 
-    <!-- #3870 - Policy.notes and Policy.name should be in the database -->
+    <!-- #387 - Policy.notes and Policy.name should be in the database -->
     <changeSet id="20191229-01" author="steph@followsteph.com">
         <addColumn tableName="POLICY">
             <column name="NOTES" type="VARCHAR"/>
@@ -631,6 +638,36 @@
         <rollback>
             <dropColumn tableName="POLICY" columnName="NOTES"/>
             <sql>UPDATE POLICY SET name=external_Id</sql>
+        </rollback>
+    </changeSet>
+
+    <!-- #388 - Policy scores should be stored in their own table rather than in a json column -->
+    <changeSet id="20200101-01" author="steph@followsteph.com">
+        <createTable tableName="REWARD_SCORE">
+            <column name="POLICY_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MAX" type="DECIMAL(27,17)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MIN" type="DECIMAL(27,17)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MEAN" type="DECIMAL(27,17)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITERATION" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="REWARD_SCORE" indexName="REWARD_SCORE_POLICY_ID_INDEX">
+            <column name="POLICY_ID"/>
+        </createIndex>
+        <dropColumn tableName="POLICY" columnName="progress"/>
+        <rollback>
+            <!-- We cannot rollbak the progress column once it's deleted. -->
+            <dropIndex tableName="REWARD_SCORE" indexName="REWARD_SCORE_POLICY_ID_INDEX"/>
+            <dropTable tableName="REWARD_SCORE"/>
         </rollback>
     </changeSet>
 

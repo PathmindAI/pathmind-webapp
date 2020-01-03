@@ -20,8 +20,6 @@ public class Policy extends Data
 	@JsonProperty("id")
 	private String externalId;
 	@JsonIgnore
-	private String progress;
-	@JsonIgnore
 	private byte[] file;
 	@JsonIgnore
 	private byte[] snapshot;
@@ -70,14 +68,6 @@ public class Policy extends Data
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
-	}
-
-	public String getProgress() {
-		return progress;
-	}
-
-	public void setProgress(String progress) {
-		this.progress = progress;
 	}
 
 	public byte[] getFile() {
