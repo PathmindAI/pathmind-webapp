@@ -2,8 +2,9 @@ package io.skymind.pathmind.security;
 
 import com.vaadin.flow.server.ServletHelper.RequestType;
 import com.vaadin.flow.shared.ApplicationConstants;
-import io.skymind.pathmind.ui.views.CustomRouteNotFoundError;
+
 import io.skymind.pathmind.ui.views.login.LoginView;
+import io.skymind.pathmind.ui.views.errors.PageNotFoundView;
 import io.skymind.pathmind.ui.views.login.EmailVerificationView;
 import io.skymind.pathmind.ui.views.login.ResetPasswordView;
 import io.skymind.pathmind.ui.views.login.SignUpView;
@@ -90,7 +91,7 @@ public class SecurityUtils
 				|| SignUpView.class.equals(securedClass)
 				|| ResetPasswordView.class.equals(securedClass)
 				|| EmailVerificationView.class.equals(securedClass)
-				|| CustomRouteNotFoundError.class.equals(securedClass);
+				|| PageNotFoundView.class.equals(securedClass);
 
 		// Always allow access to public views
 		if (publicView) {
