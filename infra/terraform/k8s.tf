@@ -132,8 +132,21 @@ resource "null_resource" "pathmind" {
     when = "destroy"
     command = "helm delete pathmind"
   }
-  depends_on = ["null_resource.awsaccesskey","null_resource.awssecretaccesskey","null_resource.db_url_secret","null_resource.segment_key_secret","null_resource.pathmind-db"]
+  depends_on = ["null_resource.awsaccesskey","null_resource.awssecretaccesskey","null_resource.db_url_secret","null_resource.segment_key_secret","null_resource.trainer"]
 }
+
+#install trainer
+resource "null_resource" "trainer" {
+  provisioner "local-exec" {
+    command = "helm install trainer ../helm/trainer"
+  }
+  provisioner "local-exec" {
+    when = "destroy"
+    command = "helm delete trainer"
+  }
+  depends_on = ["null_resource.pathmind-db"]
+}
+
 
 #install kubedb
 resource "null_resource" "kubedb" {
