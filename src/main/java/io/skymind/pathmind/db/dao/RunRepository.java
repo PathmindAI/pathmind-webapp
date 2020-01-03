@@ -1,5 +1,19 @@
 package io.skymind.pathmind.db.dao;
 
+import static io.skymind.pathmind.data.db.Tables.POLICY;
+import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
+import static io.skymind.pathmind.data.db.tables.Model.MODEL;
+import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
+import static io.skymind.pathmind.data.db.tables.Run.RUN;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.jooq.DSLContext;
+import org.jooq.Record;
+
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
@@ -8,19 +22,6 @@ import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.data.db.tables.records.RunRecord;
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-
-import static io.skymind.pathmind.data.db.Tables.POLICY;
-import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
-import static io.skymind.pathmind.data.db.tables.Model.MODEL;
-import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
-import static io.skymind.pathmind.data.db.tables.Run.RUN;
 
 class RunRepository
 {
@@ -78,6 +79,24 @@ class RunRepository
                 .fetchInto(Run.class);
     }
 
+    protected static List<Long> getExecutingRunsOfExperimentWithType(DSLContext ctx, long experimentId, int runType) {
+    	return ctx.select(Tables.RUN.ID)
+    			.from(Tables.RUN)
+    			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
+    			.and(Tables.RUN.RUN_TYPE.eq(runType))
+    			.and(Tables.RUN.STATUS.notIn(Arrays.asList(RunStatus.Completed, RunStatus.Error)))
+    			.fetch(Tables.RUN.ID);
+    }
+    
+    public static List<Long> getRunsOfExperimentWithTypeAndSentNotification(DSLContext ctx, long experimentId, int runType) {
+    	return ctx.select(Tables.RUN.ID)
+    			.from(Tables.RUN)
+    			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
+    			.and(Tables.RUN.RUN_TYPE.eq(runType))
+    			.and(Tables.RUN.NOTIFICATION_SENT_AT.isNotNull())
+    			.fetch(Tables.RUN.ID);
+	}
+    
     protected static List<Long> getExecutingRuns(DSLContext ctx) {
         return ctx.selectDistinct(Tables.RUN.ID)
                 .from(Tables.RUN)
@@ -124,6 +143,12 @@ class RunRepository
                 .set(Tables.RUN.STOPPED_AT, run.getStoppedAt())
                 .where(Tables.RUN.ID.eq(run.getId()))
                 .execute();
+    }
+    
+    protected static void markAsNotificationSent(DSLContext ctx, long runId){
+    	ctx.update(Tables.RUN)
+    	.set(Tables.RUN.NOTIFICATION_SENT_AT, LocalDateTime.now())
+    	.where(Tables.RUN.ID.eq(runId)).execute();
     }
 
     protected static int getRunType(DSLContext ctx, long runId) {

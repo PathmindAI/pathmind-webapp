@@ -1,7 +1,20 @@
 package io.skymind.pathmind.db.dao;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+import org.jooq.DSLContext;
+import org.jooq.JSONB;
+import org.jooq.impl.DSL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
@@ -13,17 +26,6 @@ import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
-import org.jooq.DSLContext;
-import org.jooq.JSONB;
-import org.jooq.impl.DSL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 @Repository
 public class RunDAO
@@ -56,6 +58,18 @@ public class RunDAO
 
     public List<Run> getRunsForExperiment(long experimentId) {
         return RunRepository.getRunsForExperiment(ctx, experimentId);
+    }
+
+    public boolean hasExecutingRunsOfType(long experimentId, int runType) {
+    	return !RunRepository.getExecutingRunsOfExperimentWithType(ctx, experimentId, runType).isEmpty();
+    }
+    
+    public boolean hasRunsWithSentNotification(long experimentId, int runType) {
+    	return !RunRepository.getRunsOfExperimentWithTypeAndSentNotification(ctx, experimentId, runType).isEmpty();
+    }
+    
+    public void markAsNotificationSent(long runId){
+    	RunRepository.markAsNotificationSent(ctx, runId);
     }
 
     public List<Long> getExecutingRuns() {
