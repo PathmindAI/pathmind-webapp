@@ -34,7 +34,6 @@ public class Routes {
     public static final String NEW_EXPERIMENT = "newExperiment";
     public static final String UPLOAD_MODEL = "uploadModel";
     public static final String ERROR_URL = "error";
-    public static final String PAGE_NOT_FOUND_URL = "page-not-found";
 
     public static final String CONSOLE_URL = "console";
     public static final String INVALID_DATA_URL = "invalidData";
