@@ -633,5 +633,11 @@
             <sql>UPDATE POLICY SET name=external_Id</sql>
         </rollback>
     </changeSet>
+    
+    <changeSet id="20200103-01" author="onur@vaadin.com">
+        <addColumn tableName="RUN">
+         	<column name="NOTIFICATION_SENT_AT" type="DATETIME"/>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>
