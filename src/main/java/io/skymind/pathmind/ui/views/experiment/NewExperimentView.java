@@ -2,7 +2,6 @@ package io.skymind.pathmind.ui.views.experiment;
 
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,10 +38,15 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.ui.utils.*;
+import io.skymind.pathmind.ui.utils.FormUtils;
+import io.skymind.pathmind.ui.utils.GuiUtils;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
+import io.skymind.pathmind.ui.utils.PushUtils;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
+import lombok.extern.slf4j.Slf4j;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
@@ -167,22 +171,20 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleStartRunButtonClicked() {
-        ExceptionWrapperUtils.handleButtonClicked(() ->
-        {
-            if (!FormUtils.isValidForm(binder, experiment))
-                return;
+        if (!FormUtils.isValidForm(binder, experiment)) {
+        	return;
+        }
 
-            experimentDAO.updateRewardFunction(experiment);
-            segmentIntegrator.rewardFuntionCreated();
-            
-            trainingService.startTestRun(experiment);
-            segmentIntegrator.testRunStarted();
+        experimentDAO.updateRewardFunction(experiment);
+        segmentIntegrator.rewardFuntionCreated();
+        
+        trainingService.startTestRun(experiment);
+        segmentIntegrator.testRunStarted();
 
-            ConfirmDialog confirmDialog = new RunConfirmDialog();
-            confirmDialog.open();
+        ConfirmDialog confirmDialog = new RunConfirmDialog();
+        confirmDialog.open();
 
-            UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
-        });
+        UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
     }
 
     private Component getTopStatusPanel() {
@@ -208,15 +210,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleSaveDraftClicked() {
-        ExceptionWrapperUtils.handleButtonClicked(() ->
-        {
-            if (!FormUtils.isValidForm(binder, experiment))
-                return;
+        if (!FormUtils.isValidForm(binder, experiment)) {
+        	return;
+        }
 
-            experimentDAO.updateRewardFunction(experiment);
-            segmentIntegrator.draftSaved();
-            NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
-        });
+        experimentDAO.updateRewardFunction(experiment);
+        segmentIntegrator.draftSaved();
+        NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
     }
 
 	@Override
