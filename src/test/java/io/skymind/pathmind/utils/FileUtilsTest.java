@@ -20,8 +20,8 @@ import static org.hamcrest.CoreMatchers.is;
 @RunWith(MockitoJUnitRunner.class)
 public class FileUtilsTest {
 
-    private String validPath ="./src/test/resources/static/Test_Class_Files/model";
-    private String inValidPath ="./src/test/resources/static/model";
+    private String validPath = FileUtils.getSystemIndependentFilePath("./src/test/resources/static/Test_Class_Files/model");
+    private String inValidPath = FileUtils.getSystemIndependentFilePath("./src/test/resources/static/model");
 
     @InjectMocks
     FileUtils fileUtils;
@@ -29,7 +29,7 @@ public class FileUtilsTest {
     @Test
     public void testListFilesSuccess() {
         List<String> expectedList = new ArrayList<>();
-        expectedList.add("./src/test/resources/static/Test_Class_Files/model/coffeeshop/Simulation.class");
+        expectedList.add(FileUtils.getSystemIndependentFilePath("./src/test/resources/static/Test_Class_Files/model/coffeeshop/Simulation.class"));
         List<String> fileList = fileUtils.listFiles(validPath);
         assertThat(fileList, is(equalTo(expectedList)));
     }
