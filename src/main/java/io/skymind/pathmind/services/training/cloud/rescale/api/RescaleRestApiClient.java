@@ -16,15 +16,15 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +34,8 @@ public class RescaleRestApiClient {
     private final String apiKey;
     private final ObjectMapper objectMapper;
     private final WebClient client;
+
+    private static final Duration TIMEOUT = Duration.ofSeconds(5);
 
     public RescaleRestApiClient(
             @Value("${skymind.rescale.base-url}") String rescaleBaseUrl,
@@ -49,113 +51,58 @@ public class RescaleRestApiClient {
                 .baseUrl(rescaleBaseUrl)
                 .defaultHeader("Authorization", "Token "+apiKey)
                 .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .filter(ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
-//                            log.info("Request: {} {}", clientRequest.method(), clientRequest.url());
-//                            clientRequest.headers().forEach((name, values) -> values.forEach(value -> log.info("{}={}", name, value)));
-                            return Mono.just(clientRequest);
-                        })
-                )
                 .build();
     }
 
     public PagedResult<JobSummary> jobList() {
-        return client.get().uri("/jobs/?page_size=9999")
-                .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(new ParameterizedTypeReference<PagedResult<JobSummary>>() {})
-                .onErrorMap(RuntimeException::new)
-                .block();
+        return get("/jobs/?page_size=9999", new ParameterizedTypeReference<PagedResult<JobSummary>>() {});
     }
 
     public Job jobCreate(Job job){
-        return client
-                .post().uri("/jobs/")
-                .contentType(MediaType.APPLICATION_JSON).body(Mono.just(job), Job.class)
-                .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(Job.class)
-                .onErrorMap(RuntimeException::new)
-                .block();
+        return post("/jobs/", Job.class, job);
     }
 
     public void jobSubmit(String jobId){
-        client.post().uri("/jobs/"+jobId+"/submit/")
-                .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(Void.class)
-                .onErrorMap(RuntimeException::new)
-                .block();
+        post("/jobs/" + jobId + "/submit/", Void.class);
     }
 
     public void jobStop(String jobId){
-        client.post().uri("/jobs/"+jobId+"/stop/")
-                .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(Void.class)
-                .onErrorMap(RuntimeException::new)
-                .block();
+        post("/jobs/" + jobId + "/stop/", Void.class);
     }
 
     public void jobDelete(String jobId){
-        client.delete().uri("/jobs/"+jobId+"/")
-                .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(Void.class)
-                .onErrorMap(RuntimeException::new)
-                .block();
+        delete("/jobs/" + jobId + "/", Void.class);
     }
 
     public Job jobDetails(String jobId){
-        return client.get().uri("/jobs/"+jobId+"/")
-                .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(Job.class)
-                .onErrorMap(RuntimeException::new)
-                .block();
+        return get("/jobs/" + jobId + "/", Job.class);
     }
 
     public PagedResult<JobStatus> jobStatusHistory(String jobId){
-        return client.get().uri("/jobs/"+jobId+"/statuses/")
-                .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(new ParameterizedTypeReference<PagedResult<JobStatus>>(){})
-                .onErrorMap(RuntimeException::new)
-                .block();
+        return get("/jobs/" + jobId + "/statuses/", new ParameterizedTypeReference<PagedResult<JobStatus>>(){});
     }
 
     public PagedResult<JobStatus> jobClusterStatusHistory(String jobId){
-        return client.get().uri("/jobs/"+jobId+"/cluster_statuses/")
-                .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(new ParameterizedTypeReference<PagedResult<JobStatus>>(){})
-                .onErrorMap(RuntimeException::new)
-                .block();
+        return get("/jobs/" + jobId + "/cluster_statuses/", new ParameterizedTypeReference<PagedResult<JobStatus>>(){});
     }
 
     public PagedResult<JobRun> jobRuns(String jobId){
-        return client.get().uri("/jobs/"+jobId+"/runs/")
-                .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(new ParameterizedTypeReference<PagedResult<JobRun>>(){})
-                .onErrorMap(RuntimeException::new)
-                .block();
+        return get("/jobs/" + jobId + "/runs/", new ParameterizedTypeReference<PagedResult<JobRun>>(){});
     }
 
-    // Github issue #569 -> Can you please add the error handling on this DH as I'm not familiar enough with it to do it on a List.
     public List<DirectoryFileReference> workingFiles(String jobId, String run){
-        return  client.get().uri("/jobs/"+jobId+"/runs/"+run+"/directory-contents/?page_size=9999")
+        return  client.get().uri("/jobs/" + jobId + "/runs/" + run + "/directory-contents/?page_size=9999")
                 .retrieve()
+                .onStatus(HttpStatus::is4xxClientError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .onStatus(HttpStatus::is5xxServerError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
                 .bodyToFlux(DirectoryFileReference.class)
-                .toStream().collect(Collectors.toList());
+                .onErrorMap(RuntimeException::new)
+                .toStream()
+                .collect(Collectors.toList());
     }
 
     public PagedResult<RescaleFile> outputFiles(String jobId, String run){
-        return client.get().uri("/jobs/"+jobId+"/runs/"+run+"/files/?page_size=1000")
-                .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(new ParameterizedTypeReference<PagedResult<RescaleFile>>(){})
-                .onErrorMap(RuntimeException::new)
-                .block();
+        return get("/jobs/" + jobId + "/runs/" + run + "/files/?page_size=1000", new ParameterizedTypeReference<PagedResult<RescaleFile>>(){});
     }
 
     public String tailConsole(String jobId, String run){
@@ -163,21 +110,11 @@ public class RescaleRestApiClient {
     }
 
     public byte[] tail(String jobId, String run, String filename){
-        return client.get().uri("/jobs/"+jobId+"/runs/"+run+"/tail/"+filename)
-                .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(byte[].class)
-                .onErrorMap(RuntimeException::new)
-                .block();
+        return get("/jobs/" + jobId + "/runs/" + run + "/tail/" + filename, byte[].class, true);
     }
 
     public byte[] fileContents(String fileId) {
-        return client.get().uri("/files/"+fileId+"/contents/")
-                .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(byte[].class)
-                .onErrorMap(RuntimeException::new)
-                .block();
+        return get("/files/" + fileId + "/contents/", byte[].class, true);
     }
 
     public byte[] outputFile(String jobId, String run, String filename){
@@ -231,25 +168,83 @@ public class RescaleRestApiClient {
 
     private CloseableHttpClient getCloseableHttpClient() {
         return HttpClients.custom().setDefaultHeaders(
-                Arrays.asList(new BasicHeader("Authorization", "Token "+apiKey)))
+                Arrays.asList(new BasicHeader("Authorization", "Token " + apiKey)))
                 .build();
     }
 
     public PagedResult<RescaleFile> filesList(){
-        return client
-                .get().uri("/files/?page_size=9999")
+        return get("/files/?page_size=9999", new ParameterizedTypeReference<PagedResult<RescaleFile>>(){});
+    }
+
+    public void deleteFile(String fileId){
+        delete("/files/" + fileId + "/", Void.class);
+    }
+
+    private <T> T get(String uri, Class<T> bodyType) {
+        return get(uri, bodyType, false);
+    }
+
+    private <T> T get(String uri, Class<T> bodyType, boolean isFile) {
+        try {
+            Mono<T> mono = client.get().uri(uri)
+                    .retrieve()
+                    .onStatus(HttpStatus::is4xxClientError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                    .onStatus(HttpStatus::is5xxServerError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                    .bodyToMono(bodyType)
+                    .onErrorMap(RuntimeException::new);
+
+            return isFile ? mono.block() : mono.block(TIMEOUT);
+        } catch (IllegalStateException e) { // If block() exceeds TIMEOUT, it will throw IllegalStateException
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
+    private <T> T get(String uri, ParameterizedTypeReference<T> typeReference) {
+        try {
+            return client.get().uri(uri)
+                    .retrieve()
+                    .onStatus(HttpStatus::is4xxClientError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                    .onStatus(HttpStatus::is5xxServerError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                    .bodyToMono(typeReference)
+                    .onErrorMap(RuntimeException::new)
+                    .block(TIMEOUT);
+        } catch (IllegalStateException e) { // If block() exceeds TIMEOUT, it will throw IllegalStateException
+            log.error(e.getMessage());
+
+            return (T) new PagedResult<T>(0, new ArrayList()){};
+        }
+    }
+
+    private <T> T post(String uri, Class<T> bodyType) {
+        return client.post().uri(uri)
                 .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(new ParameterizedTypeReference<PagedResult<RescaleFile>>(){})
+                .onStatus(HttpStatus::is4xxClientError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .onStatus(HttpStatus::is5xxServerError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .bodyToMono(bodyType)
                 .onErrorMap(RuntimeException::new)
                 .block();
     }
 
-    public void deleteFile(String fileId){
-        client.delete().uri("/files/"+fileId+"/")
+    private <T> T post(String uri, Class<T> bodyType, T body) {
+        return client.post().uri(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(body), bodyType)
                 .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), it -> it.bodyToMono(String.class).map(RuntimeException::new))
-                .bodyToMono(Void.class)
+                .onStatus(HttpStatus::is4xxClientError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .onStatus(HttpStatus::is5xxServerError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+
+                .bodyToMono(bodyType)
+                .onErrorMap(RuntimeException::new)
+                .block();
+    }
+
+    private <T> T delete(String uri, Class<T> bodyType) {
+        return client.delete().uri(uri)
+                .retrieve()
+                .onStatus(HttpStatus::is4xxClientError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .onStatus(HttpStatus::is5xxServerError, it -> it.bodyToMono(String.class).map(RuntimeException::new))
+                .bodyToMono(bodyType)
                 .onErrorMap(RuntimeException::new)
                 .block();
     }
