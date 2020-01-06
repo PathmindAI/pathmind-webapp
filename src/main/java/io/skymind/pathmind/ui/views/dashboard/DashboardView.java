@@ -23,6 +23,7 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
+import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
@@ -66,8 +67,10 @@ public class DashboardView extends PathMindDefaultView
 		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
 		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-				dashboardGrid,
+				new ViewSection(
+					WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
+					dashboardGrid
+				),
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
 
 		return gridWrapper;
