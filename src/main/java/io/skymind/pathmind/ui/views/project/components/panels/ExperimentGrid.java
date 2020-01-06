@@ -36,17 +36,6 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setSortable(true);
 		addColumn(experiment -> {
 			Optional<Run> run = experiment.getRuns().stream()
-					.filter(r -> r.getRunTypeEnum().equals(RunType.TestRun))
-					.findAny();
-
-			return run.isPresent() ? run.get().getStatusEnum() : "Draft";
-		})
-				.setHeader("Test Run")
-				.setAutoWidth(true)
-				.setResizable(true)
-				.setSortable(true);
-		addColumn(experiment -> {
-			Optional<Run> run = experiment.getRuns().stream()
 					.filter(r -> r.getRunTypeEnum().equals(RunType.DiscoveryRun))
 					.findAny();
 

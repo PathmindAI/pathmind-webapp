@@ -76,10 +76,6 @@ public class PolicyUtils
         return policy.getScores().get(policy.getScores().size() - 1).getMean();
     }
 
-    public static String getParsedPolicyName(Policy policy) {
-        return policy.getParsedName();
-    }
-
     public static final String getElapsedTime(Policy policy) {
         return DateAndTimeUtils.formatDurationTime(RunUtils.getElapsedTime(policy.getRun()));
     }
@@ -118,7 +114,7 @@ public class PolicyUtils
             .collect(Collectors.toList());
     }
 
-    public static String getFormatHyperParameters(Policy policy) {
+    public static String generateDefaultNotes(Policy policy) {
         return  BATCH_SIZE + "=" + policy.getBatchSize() + ", " +
                 LEARNING_RATE + "=" + policy.getLearningRate() + ", " +
                 GAMMA + "=" + policy.getGamma();
@@ -148,12 +144,9 @@ public class PolicyUtils
 
     public static void loadPolicyDataModel(Policy policy, long policyId, Run run) {
         policy.setId(policyId);
-        policy.setName(policy.getExternalId());
         policy.setRun(run);
         policy.setExperiment(run.getExperiment());
         policy.setModel(run.getModel());
         policy.setProject(run.getProject());
-        // For performance reasons.
-        policy.setParsedName(parsePolicyName(policy.getName()));
     }
 }
