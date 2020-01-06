@@ -1,10 +1,5 @@
 package io.skymind.pathmind.ui.views.model;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -14,7 +9,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ModelUtils;
@@ -24,6 +18,8 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
+import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
+import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -38,6 +34,10 @@ import io.skymind.pathmind.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.ui.views.model.components.UploadModelStatusWizardPanel;
 import io.skymind.pathmind.ui.views.model.components.UploadModelWizardPanel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Arrays;
+import java.util.List;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
@@ -136,7 +136,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private void handleUploadWizardClicked() {
 		if (user.getEmail().equals("edward@skymind.io")) { // This is Ed!
 			log.info("User is Ed, skipping file check");
-			fileSuccessfullyVerified();
+			fileSuccessfullyVerified(null);
 		} else {
 			uploadModelWizardPanel.showFileCheckPanel();
 			projectFileCheckService.checkFile(this, model.getFile());
@@ -171,10 +171,17 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	@Override
-	public void fileSuccessfullyVerified() {
+	public void fileSuccessfullyVerified(FileCheckResult result) {
 		PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
 			setVisibleWizardPanel(modelDetailsWizardPanel);
+
+			if (result != null) {
+				model.setNumberOfPossibleActions(((AnylogicFileCheckResult) (result)).getNumAction());
+				model.setNumberOfObservations(((AnylogicFileCheckResult) (result)).getNumObservation());
+				model.setGetObservationForRewardFunction(((AnylogicFileCheckResult) (result)).getRewardVariableFunction());
+			}
+
 			modelBinder.readBean(model);
 			statusPanel.setModelDetails();
 			segmentIntegrator.modelImported(true);
@@ -189,6 +196,5 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	@Override
 	public void setParameter(BeforeEvent event, Long projectId) {
 		this.projectId = projectId;
-
 	}
 }

@@ -1,14 +1,11 @@
 package io.skymind.pathmind.ui.views.project;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
-
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ProjectUtils;
 import io.skymind.pathmind.db.dao.ProjectDAO;
@@ -21,15 +18,16 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.model.ModelsView;
 import io.skymind.pathmind.ui.views.project.components.panels.CreateANewProjectPanel;
 import io.skymind.pathmind.ui.views.project.components.panels.NewProjectLogoWizardPanel;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.NEW_PROJECT, layout = MainLayout.class)
-public class NewProjectView extends PathMindDefaultView 
+public class NewProjectView extends PathMindDefaultView
 {
 
 	@Autowired
 	private ProjectDAO projectDAO;
-	
+
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 
@@ -67,7 +65,7 @@ public class NewProjectView extends PathMindDefaultView
 	{
 		if(!FormUtils.isValidForm(projectBinder, project))
 			return;
-		
+
 		final long projectId = projectDAO.createNewProject(project);
 		segmentIntegrator.projectCreated();
 		UI.getCurrent().navigate(ModelsView.class, projectId);
@@ -79,10 +77,9 @@ public class NewProjectView extends PathMindDefaultView
 	protected VerticalLayout getTitlePanel() {
 		return null;
 	}
-	
+
 	@Override
 	protected boolean isAccessAllowedForUser() {
 		return true;
 	}
-
 }
