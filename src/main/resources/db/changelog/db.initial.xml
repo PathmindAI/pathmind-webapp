@@ -647,13 +647,13 @@
             <column name="POLICY_ID" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="MAX" type="DECIMAL(27,17)">
-                <constraints nullable="false"/>
-            </column>
             <column name="MIN" type="DECIMAL(27,17)">
                 <constraints nullable="false"/>
             </column>
             <column name="MEAN" type="DECIMAL(27,17)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MAX" type="DECIMAL(27,17)">
                 <constraints nullable="false"/>
             </column>
             <column name="ITERATION" type="INT">
@@ -663,9 +663,11 @@
         <createIndex tableName="REWARD_SCORE" indexName="REWARD_SCORE_POLICY_ID_INDEX">
             <column name="POLICY_ID"/>
         </createIndex>
-        <dropColumn tableName="POLICY" columnName="progress"/>
+        <!-- Commenting out the drop for now. Either it will be added as a new changeset or I will re-instate it before I commit this change. -->
+        <!-- <dropColumn tableName="POLICY" columnName="progress"/> -->
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200101_01"/>
         <rollback>
-            <!-- We cannot rollbak the progress column once it's deleted. -->
+            <!-- We cannot rollback the progress column once it's deleted. -->
             <dropIndex tableName="REWARD_SCORE" indexName="REWARD_SCORE_POLICY_ID_INDEX"/>
             <dropTable tableName="REWARD_SCORE"/>
         </rollback>

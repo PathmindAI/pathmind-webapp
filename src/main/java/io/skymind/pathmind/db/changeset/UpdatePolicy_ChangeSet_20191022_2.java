@@ -152,6 +152,7 @@ public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, Custo
     }
 }
 
+// This has to be outside of the class due to the Json parsing.
 @JsonIgnoreProperties(value = {"id", "rewardProgression", "hyperParameters"})
 class Changeset201910222_2_Policy {
     private long id;
