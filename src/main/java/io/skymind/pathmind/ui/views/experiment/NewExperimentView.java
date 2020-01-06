@@ -2,7 +2,6 @@ package io.skymind.pathmind.ui.views.experiment;
 
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,10 +38,16 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.ui.utils.*;
+import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
+import io.skymind.pathmind.ui.utils.FormUtils;
+import io.skymind.pathmind.ui.utils.GuiUtils;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
+import io.skymind.pathmind.ui.utils.PushUtils;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
+import lombok.extern.slf4j.Slf4j;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
@@ -160,7 +165,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private Component getTopButtonPanel() {
-        final Button startRunButton = new Button("Start Test Run", new Image("frontend/images/start.svg", "run"),
+        final Button startRunButton = new Button("Start Discovery Run", new Image("frontend/images/start.svg", "run"),
                 click -> handleStartRunButtonClicked());
         startRunButton.addClassNames("large-image-btn","run");
         return WrapperUtils.wrapWidthFullCenterVertical(startRunButton);
@@ -175,8 +180,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             experimentDAO.updateRewardFunction(experiment);
             segmentIntegrator.rewardFuntionCreated();
             
-            trainingService.startTestRun(experiment);
-            segmentIntegrator.testRunStarted();
+            trainingService.startDiscoveryRun(experiment);
+            segmentIntegrator.discoveryRunStarted();
 
             ConfirmDialog confirmDialog = new RunConfirmDialog();
             confirmDialog.open();
