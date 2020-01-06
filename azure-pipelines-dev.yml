@@ -42,9 +42,9 @@ steps:
       jdkArchitectureOption: 'x64'
       publishJUnitResults: true
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
-      goals: 'vaadim:build-frontend'
+      goals: 'vaadin:build-frontend'
 
-  - script: 'mvn package -Pproduction'
+  - script: 'mvn clean package -Pproduction'
 
   - task: CopyFiles@2
     inputs:
