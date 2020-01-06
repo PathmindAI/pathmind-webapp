@@ -141,7 +141,7 @@ html {
 
 .dashboard-view .view-section {
   flex: 1;
-  max-width: 1200px;
+  max-width: 1480px;
   align-self: center;
 }
 
@@ -213,4 +213,9 @@ account-view {
   html {
     font-size: 13px;
   }
+}
+
+/* General Helper Styles */
+.style-text-align-center {
+  text-align: center;
 }
