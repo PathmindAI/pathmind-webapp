@@ -5,7 +5,7 @@
 
 variables:
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-  MAVEN_OPTS: '-Xmx1072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Pproduction'
+  MAVEN_OPTS: '-Xmx1072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
 
 trigger:
   - dev
@@ -65,4 +65,3 @@ steps:
     inputs:
       artifactName: 'drop'
       pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-
