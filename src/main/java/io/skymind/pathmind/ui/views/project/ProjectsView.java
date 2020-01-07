@@ -1,11 +1,5 @@
 package io.skymind.pathmind.ui.views.project;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -15,7 +9,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
-
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -33,6 +26,11 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.model.ModelsView;
 import io.skymind.pathmind.ui.views.project.filter.ProjectFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 @CssImport("./styles/styles.css")
 @Route(value= Routes.PROJECTS_URL, layout = MainLayout.class)

@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -23,6 +25,7 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
+import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
@@ -54,6 +57,7 @@ public class DashboardView extends PathMindDefaultView
 	public DashboardView()
 	{
 		super();
+		addClassName("dashboard-view");
 	}
 
 	protected Component getMainContent()
@@ -66,9 +70,11 @@ public class DashboardView extends PathMindDefaultView
 		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
 		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
+			new ViewSection(
 				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-				dashboardGrid,
-				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
+				dashboardGrid
+			),
+			WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
 
 		return gridWrapper;
 	}
@@ -89,11 +95,21 @@ public class DashboardView extends PathMindDefaultView
 				.setHeader("Project")
 				.setResizable(true)
 				.setSortable(true);
-		dashboardGrid.addColumn(policy -> policy.getModel().getName())
+		dashboardGrid.addColumn(new ComponentRenderer<>(policy -> {
+					Div cell = new Div();
+					cell.setText(policy.getModel().getName());
+					cell.addClassName("style-text-align-center");
+					return cell;
+				}))
 				.setHeader("Model")
 				.setResizable(true)
 				.setSortable(true);
-		dashboardGrid.addColumn(policy -> policy.getExperiment().getName())
+		dashboardGrid.addColumn(new ComponentRenderer<>(policy -> {
+					Div cell = new Div();
+					cell.setText(policy.getExperiment().getName());
+					cell.addClassName("style-text-align-center");
+					return cell;
+				}))
 				.setHeader("Experiment")
 				.setResizable(true)
 				.setSortable(true);
