@@ -79,23 +79,17 @@ class RunRepository
                 .fetchInto(Run.class);
     }
 
-    protected static List<Long> getExecutingRunsOfExperimentWithType(DSLContext ctx, long experimentId, int runType) {
+    protected static List<Long> getAlreadyNotifiedOrStillExecutingRunsWithType(DSLContext ctx, long experimentId, int runType) {
     	return ctx.select(Tables.RUN.ID)
     			.from(Tables.RUN)
     			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
     			.and(Tables.RUN.RUN_TYPE.eq(runType))
-    			.and(Tables.RUN.STATUS.notIn(Arrays.asList(RunStatus.Completed.getValue(), RunStatus.Error.getValue())))
+    			.and(
+    					Tables.RUN.STATUS.notIn(Arrays.asList(RunStatus.Completed.getValue(), RunStatus.Error.getValue()))
+    				.or(Tables.RUN.NOTIFICATION_SENT_AT.isNotNull())
+    			)
     			.fetch(Tables.RUN.ID);
     }
-    
-    public static List<Long> getRunsOfExperimentWithTypeAndSentNotification(DSLContext ctx, long experimentId, int runType) {
-    	return ctx.select(Tables.RUN.ID)
-    			.from(Tables.RUN)
-    			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
-    			.and(Tables.RUN.RUN_TYPE.eq(runType))
-    			.and(Tables.RUN.NOTIFICATION_SENT_AT.isNotNull())
-    			.fetch(Tables.RUN.ID);
-	}
     
     protected static List<Long> getExecutingRuns(DSLContext ctx) {
         return ctx.selectDistinct(Tables.RUN.ID)

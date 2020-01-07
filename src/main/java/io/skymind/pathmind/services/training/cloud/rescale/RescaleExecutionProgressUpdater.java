@@ -91,10 +91,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
 			if (run.getRunTypeEnum() == RunType.DiscoveryRun ||  run.getRunTypeEnum() == RunType.FullRun) {
 				
 				// Do not send notification if there is another run with same run type still executing or the notification is already been sent
-				boolean canSendNotification = !runDAO.hasExecutingRunsOfType(run.getExperimentId(), run.getRunType())
-						&& !runDAO.hasRunsWithSentNotification(run.getExperimentId(), run.getRunType());
-				
-				if (canSendNotification) {
+				if (runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
 					boolean isSuccessful = jobStatus == RunStatus.Completed;
 					PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
 					emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);

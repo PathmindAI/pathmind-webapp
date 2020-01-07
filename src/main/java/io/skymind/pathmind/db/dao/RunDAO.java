@@ -60,13 +60,14 @@ public class RunDAO
         return RunRepository.getRunsForExperiment(ctx, experimentId);
     }
 
-    public boolean hasExecutingRunsOfType(long experimentId, int runType) {
-    	return !RunRepository.getExecutingRunsOfExperimentWithType(ctx, experimentId, runType).isEmpty();
-    }
-    
-    public boolean hasRunsWithSentNotification(long experimentId, int runType) {
-    	return !RunRepository.getRunsOfExperimentWithTypeAndSentNotification(ctx, experimentId, runType).isEmpty();
-    }
+    /**
+     * Returns true if 
+     * - there is no other run with same run type that still executing
+     * - notification is not sent yet for any other run
+     */
+    public boolean shouldSendNotification(long experimentId, int runType) {
+		return RunRepository.getAlreadyNotifiedOrStillExecutingRunsWithType(ctx, experimentId, runType).isEmpty();
+	}
     
     public void markAsNotificationSent(long runId){
     	RunRepository.markAsNotificationSent(ctx, runId);
