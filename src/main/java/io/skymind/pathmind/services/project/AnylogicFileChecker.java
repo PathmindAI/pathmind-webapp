@@ -4,11 +4,8 @@ import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.utils.FileUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.FileSystemUtils;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,11 +44,12 @@ public class AnylogicFileChecker implements FileChecker {
                 if (unZippedJar != null) {
                     //Passing unzipped jar to check whether it is valid or not
                     checkJarFile(unZippedJar, anylogicFileCheckResult);
-                    statusUpdater.updateStatus(0.50);
+                    statusUpdater.updateStatus(0.30);
 
                     if (anylogicFileCheckResult.isModelJarFilePresent()) {
-                        //Check for PathmindHelper class instace in uploaded model.jar
+                        //Check for PathmindHelper class instance in uploaded model.jar
                         checkHelpers(unZippedJar, anylogicFileCheckResult);
+                        statusUpdater.updateStatus(0.50);
 
                         if (anylogicFileCheckResult.isHelperPresent()) {
                             statusUpdater.updateStatus(0.90);

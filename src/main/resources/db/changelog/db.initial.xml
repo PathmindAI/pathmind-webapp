@@ -634,6 +634,15 @@
         </rollback>
     </changeSet>
     
+    <!-- #501 - Add DB constraint for unique project name -->
+    <changeSet id="20200102-01" author="onur@vaadin.com">
+        <comment>If there are duplicated project names, update them before adding db constraint</comment>
+        <sql>
+            UPDATE PROJECT SET NAME = NAME || '-' || ID where (PATHMIND_USER_ID, NAME) IN (SELECT PATHMIND_USER_ID, NAME FROM PROJECT GROUP BY PATHMIND_USER_ID, NAME HAVING COUNT(NAME) > 1);
+        </sql>
+        <addUniqueConstraint tableName="PROJECT" constraintName="UNIQUE_PROJECT_NAME_PATHMIND_USER_ID" columnNames="PATHMIND_USER_ID, NAME" />
+    </changeSet>
+    
     <changeSet id="20200103-01" author="onur@vaadin.com">
         <addColumn tableName="RUN">
          	<column name="NOTIFICATION_SENT_AT" type="DATETIME"/>
