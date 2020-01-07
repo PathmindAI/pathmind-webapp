@@ -126,7 +126,6 @@ pipeline {
 		}
             }
         }
-
 /*
 	////////// Step 5 //////////
 	stage("Testing in ${DOCKER_TAG}") {
