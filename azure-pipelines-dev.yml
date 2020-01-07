@@ -42,7 +42,7 @@ steps:
       jdkArchitectureOption: 'x64'
       publishJUnitResults: true
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
-      goals: 'clean package'
+      goals: 'clean package -Pproduction'
       profile: 'production'
 
   - task: CopyFiles@2
