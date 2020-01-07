@@ -34,6 +34,8 @@ build/
 webpack.generated.js
 .vagrant/
 
+.DS_Store
+
 ## #Terraform tmp files ###
 .terraform/
 terraform.tfvars

@@ -1,11 +1,13 @@
 package io.skymind.pathmind.services.training.cloud.rescale.api.dto;
 
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
 
+@NoArgsConstructor
 public class PagedResult<T> {
     @NotNull
     private int count;
@@ -45,6 +47,11 @@ public class PagedResult<T> {
     }
 
     public void setResults(List<T> results) {
+        this.results = results;
+    }
+
+    public PagedResult(@NotNull int count, @NotNull List<T> results) {
+        this.count = count;
         this.results = results;
     }
 }
