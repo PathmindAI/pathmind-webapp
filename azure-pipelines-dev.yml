@@ -44,7 +44,7 @@ steps:
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       goals: 'vaadin:build-frontend'
 
-  - script: 'mvn package -Pproduction'
+  - script: 'mvn clean package -Pproduction'
 
   - task: CopyFiles@2
     inputs:
