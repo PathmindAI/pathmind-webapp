@@ -19,13 +19,7 @@ steps:
   - task: UseNode@1
     inputs:
       versionSpec: $(node_version)
-  #- script: npm install
   - script: ls '$(System.DefaultWorkingDirectory)'
-
-  - task: Npm@1
-    inputs:
-      workingDir: '$(System.DefaultWorkingDirectory)'
-      command: 'install'
 
   - task: CacheBeta@0
     inputs:
