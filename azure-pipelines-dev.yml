@@ -5,7 +5,7 @@
 
 variables:
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-  MAVEN_OPTS: '-Xmx1072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+  MAVEN_OPTS: '-Xmx1072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Pproduction'
 
 trigger:
   - dev
@@ -42,9 +42,7 @@ steps:
       jdkArchitectureOption: 'x64'
       publishJUnitResults: true
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
-      goals: 'vaadin:build-frontend'
-
-  - script: 'mvn clean package -Pproduction'
+      goals: 'clean package'
 
   - task: CopyFiles@2
     inputs:
