@@ -33,3 +33,5 @@ build/
 
 webpack.generated.js
 .vagrant/
+
+.DS_Store
