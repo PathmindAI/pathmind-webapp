@@ -642,5 +642,15 @@
         </sql>
         <addUniqueConstraint tableName="PROJECT" constraintName="UNIQUE_PROJECT_NAME_PATHMIND_USER_ID" columnNames="PATHMIND_USER_ID, NAME" />
     </changeSet>
+    
+    <changeSet id="20200107-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <comment>Delete PATHMIND_USER.NAME column</comment>
+        <dropColumn tableName="PATHMIND_USER" columnName="NAME"/>
+        <rollback>
+            <addColumn tableName="PATHMIND_USER">
+                <column name="NAME" type="VARCHAR(255)"/>
+            </addColumn>
+        </rollback>
+    </changeSet>
 
 </databaseChangeLog>
