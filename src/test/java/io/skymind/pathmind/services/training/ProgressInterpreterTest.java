@@ -23,9 +23,9 @@ public class ProgressInterpreterTest {
 
         assertEquals("PPO", policy.getAlgorithm());
         assertEquals(time, policy.getStartedAt());
-        assertEquals(0.99, policy.getHyperParameters().getGamma(), 0.001);
-        assertEquals(5e-05, policy.getHyperParameters().getLearningRate(), 0.001);
-        assertEquals(128, policy.getHyperParameters().getBatchSize());
+        assertEquals(0.99, policy.getGamma(), 0.001);
+        assertEquals(5e-05, policy.getLearningRate(), 0.001);
+        assertEquals(128, policy.getBatchSize());
         assertEquals(17, policy.getScores().size());
         assertEquals(76.00000045448542, policy.getScores().get(16).getMax(), 0);
     }

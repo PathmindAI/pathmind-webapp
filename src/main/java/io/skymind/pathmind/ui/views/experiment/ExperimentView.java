@@ -1,5 +1,9 @@
 package io.skymind.pathmind.ui.views.experiment;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -8,7 +12,11 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.WildcardParameter;
 
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
@@ -21,7 +29,6 @@ import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
@@ -29,11 +36,12 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.components.*;
+import io.skymind.pathmind.ui.views.experiment.components.PolicyChartPanel;
+import io.skymind.pathmind.ui.views.experiment.components.PolicyHighlightPanel;
+import io.skymind.pathmind.ui.views.experiment.components.PolicyStatusDetailsPanel;
+import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
+import io.skymind.pathmind.ui.views.experiment.components.TrainingsListPanel;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
@@ -70,7 +78,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private SegmentIntegrator segmentIntegrator;
 
     private Button runFullTraining;
-    private Button runDiscoveryTraining;
 
     public ExperimentView() {
         super();
@@ -112,15 +119,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
             RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
             boolean canStartFurtherRuns = PolicyUtils.getRunStatus(selectedPolicy) != RunStatus.Error;
-            if (selectedRunType == RunType.TestRun && experiment.getPolicies().size() == 1) {
-                runDiscoveryTraining.setVisible(true);
-                runDiscoveryTraining.setEnabled(canStartFurtherRuns);
-            } else if (selectedRunType == RunType.DiscoveryRun) {
-                runDiscoveryTraining.setVisible(false);
+            if (selectedRunType == RunType.DiscoveryRun) {
                 runFullTraining.setVisible(true);
                 runFullTraining.setEnabled(canStartFurtherRuns);
             } else if (selectedRunType == RunType.FullRun) {
-                runDiscoveryTraining.setVisible(false);
                 runFullTraining.setVisible(false);
             }
         });
@@ -153,16 +155,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         runFullTraining.setVisible(false);
         runFullTraining.addClassNames("large-image-btn", "run");
 
-        runDiscoveryTraining = new Button("Start Discovery Run", new Image("frontend/images/start.svg", "run"), click -> {
-            final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
-            trainingService.startDiscoveryRun(experiment);
-            segmentIntegrator.discoveryRunStarted();
-            new RunConfirmDialog().open();
-        });
-        runDiscoveryTraining.setVisible(false);
-        runDiscoveryTraining.addClassNames("large-image-btn", "run");
-
-
         final HorizontalLayout buttons = WrapperUtils.wrapWidthFullCenterHorizontal(
                 new NewExperimentButton(experimentDAO, experiment.getModelId(), "TODO")
         );
@@ -171,7 +163,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         exportPolicyButton.setVisible(false);
 
         return WrapperUtils.wrapSizeFullVertical(
-                WrapperUtils.wrapWidthFullCenterHorizontal(runDiscoveryTraining, runFullTraining),
+        		WrapperUtils.wrapWidthFullCenterHorizontal(runFullTraining),
                 policyHighlightPanel,
                 policyStatusDetailsPanel,
                 rewardFunctionEditor,
@@ -215,11 +207,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     @Override
     protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
-        experiment.getPolicies().stream()
-                .filter(p -> p.getRun().getRunTypeEnum().equals(RunType.DiscoveryRun))
-                .findAny()
-                .ifPresent(p -> runDiscoveryTraining.setVisible(false));
-
         screenTitlePanel.setSubtitle(experiment.getProject().getName());
         rewardFunctionEditor.setValue(experiment.getRewardFunction());
         policyChartPanel.init(experiment);
