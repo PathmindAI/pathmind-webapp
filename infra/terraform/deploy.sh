@@ -7,7 +7,7 @@ MASTER_ZONES=`grep master_zones terraform.tfvars | awk -F'=' '{print $2}' | sed 
 ZONES=`grep node_zones terraform.tfvars | awk -F'=' '{print $2}' | sed "s/ //g" | sed 's/"//g'`
 export KOPS_STATE_STORE="s3://${BUCKET_NAME}/k8s.${NAME}"
 REGION=`aws configure list | grep region | awk '{print $2}'`
-NODE_COUNT=4
+NODE_COUNT=2
 NODE_SIZE="t2.large"
 MASTER_SIZE="t2.medium"
 

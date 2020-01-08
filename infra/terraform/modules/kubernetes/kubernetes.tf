@@ -169,8 +169,8 @@ resource "aws_autoscaling_group" "master-us-east-1a-masters-pathmind-k8s-local" 
 resource "aws_autoscaling_group" "nodes-pathmind-k8s-local" {
   name                 = "nodes.pathmind.k8s.local"
   launch_configuration = "${aws_launch_configuration.nodes-pathmind-k8s-local.id}"
-  max_size             = 4
-  min_size             = 4
+  max_size             = 2
+  min_size             = 2
   vpc_zone_identifier  = ["${aws_subnet.us-east-1a-pathmind-k8s-local.id}", "${aws_subnet.us-east-1b-pathmind-k8s-local.id}", "${aws_subnet.us-east-1c-pathmind-k8s-local.id}"]
 
   tag = {
