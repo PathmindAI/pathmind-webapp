@@ -154,7 +154,7 @@ public class TrainingService
         // Get model file id, either uploading it if necessary, or just getting it from the metadata database table
         String modelFileId = executionProviderMetaDataDAO.getModelFileKey(exp.getModelId());
         if (modelFileId == null) {
-            modelFileId = executionProvider.uploadModel(modelDAO.getModelFile(model.getId()));
+            modelFileId = executionProvider.uploadModel(model.getId(), modelDAO.getModelFile(model.getId()));
             executionProviderMetaDataDAO.putModelFileKey(exp.getModelId(), modelFileId);
         }
 

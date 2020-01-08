@@ -19,10 +19,11 @@ public interface ExecutionProvider {
     /**
      * Uploads the model file.
      *
+     * @param modelId The Model ID
      * @param modelFile The modelFile
      * @return The model file id
      */
-    String uploadModel(byte[] modelFile);
+    String uploadModel(long modelId, byte[] modelFile);
 
     /**
      * Stops the execution of the training  job identified by the given job handle.

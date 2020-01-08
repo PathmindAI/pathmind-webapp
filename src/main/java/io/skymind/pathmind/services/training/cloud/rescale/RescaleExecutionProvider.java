@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
+//@Service
 @Slf4j
 public class RescaleExecutionProvider implements ExecutionProvider {
 
@@ -232,7 +232,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public String uploadModel(byte[] modelFile) {
+    public String uploadModel(long modelId, byte[] modelFile) {
         try {
             return client.fileUpload(modelFile, "model.zip").getId();
         } catch (IOException e) {
