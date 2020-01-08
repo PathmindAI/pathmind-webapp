@@ -8,13 +8,6 @@
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS"
         logicalFilePath="db.initial.xml">
 
-    <changeSet author="steph@followsteph.com" id="1">
-        <sql>
-            DROP FUNCTION update_model_activity_date;
-            DROP FUNCTION update_project_activity_date;
-        </sql>
-    </changeSet>
-
     <changeSet author="paul.dubs@skymind.io" id="20190918">
         <createTable tableName="PATHMIND_USER">
             <column autoIncrement="true" name="ID" type="BIGINT">

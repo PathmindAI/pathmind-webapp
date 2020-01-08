@@ -1,6 +1,5 @@
 package io.skymind.pathmind.db.dao;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
@@ -14,7 +13,6 @@ import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import org.jooq.DSLContext;
-import org.jooq.JSONB;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,12 +131,13 @@ public class RunDAO
             // update ONLY the most recent policy and ignore the others since really all we're doing is updating to get the progress.
             // IMPORTANT -> The most recent policy may NOT be the last policy in the list.
             long policyId = PolicyRepository.updateOrInsertPolicy(transactionCtx, policy);
-            int startIteration = RewardScoreRepository.getMaxRewardScoreIteration(transactionCtx, policy.getId());
-            if(startIteration > 0)
-                RewardScoreRepository.updateRewardScores(transactionCtx, policy, startIteration);
-
             // Load up the Policy object so that we can push it to the GUI for the event. We may not need everything in here any more...
             PolicyUtils.loadPolicyDataModel(policy, policyId, run);
+
+            int startIteration = RewardScoreRepository.getMaxRewardScoreIteration(transactionCtx, policy.getId());
+            if(startIteration >= 0)
+                RewardScoreRepository.insertRewardScores(transactionCtx, policy, startIteration);
+
             // STEPH -> REFACTOR -> Now that it's transactional is it ok to post to the eventbus? For now this is no worse then what we are doing in production today
             // but we should look at putting this after the transaction has been completed. The only issue is that it's a list of policies that may need
             // to be updated. As in this should technically be placed outside of the transaction in updateRun() rather than here. Again it's no worse then what we
