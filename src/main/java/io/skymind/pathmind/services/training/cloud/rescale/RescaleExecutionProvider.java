@@ -1,6 +1,7 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
 import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
@@ -190,6 +191,11 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         }
 
         return null;
+    }
+
+    @Override
+    public ExecutionProviderMetaDataDAO.ExecutionProviderClass executionProviderClass() {
+        return ExecutionProviderMetaDataDAO.ExecutionProviderClass.Rescale;
     }
 
     /**
