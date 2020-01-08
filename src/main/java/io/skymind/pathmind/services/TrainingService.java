@@ -51,17 +51,6 @@ public class TrainingService
         executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_1, PathmindHelper.VERSION_0_0_24, RLLib.VERSION_0_7_0);
     }
 
-    public void startTestRun(Experiment exp){
-        startRun(RunType.TestRun,
-                exp,
-                50,
-                Arrays.asList(1e-5),
-                Arrays.asList(0.99),
-                Arrays.asList(128),
-                15 * MINUTE
-        );
-    }
-
     public void startDiscoveryRun(Experiment exp){
         startDiscoveryRunJob1(exp);
         startDiscoveryRunJob2(exp);

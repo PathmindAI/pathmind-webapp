@@ -122,10 +122,6 @@ class AccountUpgradeViewContent extends PolymerElement {
               </div>
               <div class="feature feature-available">
                 <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">20</span> Test Runs
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
                 <span class="highlight">1</span> Full Runs
               </div>
               <div class="feature feature-available">
@@ -162,10 +158,6 @@ class AccountUpgradeViewContent extends PolymerElement {
               <div class="feature feature-available">
                 <iron-icon icon="vaadin:check"></iron-icon>
                 <span class="highlight">Unlimited</span> Model imports
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Unlimited</span> Test Runs
               </div>
               <div class="feature feature-available">
                 <iron-icon icon="vaadin:check"></iron-icon>
@@ -210,10 +202,6 @@ class AccountUpgradeViewContent extends PolymerElement {
               <div class="feature feature-available">
                 <iron-icon icon="vaadin:check"></iron-icon>
                 <span class="highlight">Unlimited</span> Model imports
-              </div>
-              <div class="feature feature-available">
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <span class="highlight">Unlimited</span> Test Runs
               </div>
               <div class="feature feature-available">
                 <iron-icon icon="vaadin:check"></iron-icon>

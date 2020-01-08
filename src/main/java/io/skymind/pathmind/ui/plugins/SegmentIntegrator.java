@@ -32,7 +32,6 @@ public class SegmentIntegrator
 	private static final String EVENT_IMPORT_MODEL = "Import Model";
 	private static final String EVENT_CREATE_PROJECT = "Create Project";
 	private static final String EVENT_CREATE_REWARD_FUNTION = "Create Reward Function";
-	private static final String EVENT_START_TEST_RUN = "Start Test Run";
 	private static final String EVENT_START_DISCOVERY_RUN = "Start Discovery Run";
 	private static final String EVENT_START_FULL_RUN = "Start Full Run";
 	private static final String EVENT_EXPORT_POLICY = "Export Policy";
@@ -68,10 +67,6 @@ public class SegmentIntegrator
 
 	public void rewardFuntionCreated() {
 		track(EVENT_CREATE_REWARD_FUNTION);
-	}
-
-	public void testRunStarted() {
-		track(EVENT_START_TEST_RUN);
 	}
 
 	public void discoveryRunStarted() {
