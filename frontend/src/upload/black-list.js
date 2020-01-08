@@ -12,6 +12,8 @@ export const BLACK_LIST = [
   "lib/slf4j-license.txt",
   "lib/AnyLogic Model End User Agreement.pdf",
   "lib/PathmindHelper.jar",
+  "lib/RLlibPolicyHelper-0.0.1-SNAPSHOT.jar",
+  "lib/PathmindPolicy.jar",
   "lib/AnyLogic Model End User Agreement.txt",
   "lib/edl-1.0.txt",
   "lib/license.txt",
