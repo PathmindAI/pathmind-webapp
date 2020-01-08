@@ -76,8 +76,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         setupArchivesTabPanel();
 
         return WrapperUtils.wrapSizeFullVertical(
-                WrapperUtils.wrapWidthFullCenterHorizontal(getBackToModelsButton()),
-                WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
+                WrapperUtils.wrapWidthFullBetweenHorizontal(getBackToModelsButton(), getSearchBox()),
                 archivesTabPanel,
                 WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         WrapperUtils.wrapSizeFullVertical(

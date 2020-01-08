@@ -81,14 +81,14 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
 		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-				new ViewSection(
-						WrapperUtils.wrapWidthFullCenterHorizontal(getBackToProjectsButton()),
-						WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-						archivesTabPanel,
-						modelGrid,
-						instructionsDiv
-				),
-				WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
+			getBackToProjectsButton(),
+			new ViewSection(
+				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
+				archivesTabPanel,
+				modelGrid,
+				instructionsDiv
+			),
+			WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
 		);
 		return gridWrapper;
 	}
