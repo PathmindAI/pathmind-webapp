@@ -1,6 +1,9 @@
 package io.skymind.pathmind.utils;
 
-import java.io.ByteArrayOutputStream;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tika.Tika;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -8,16 +11,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import org.apache.tika.Tika;
-
-import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FileUtils {
@@ -46,5 +42,12 @@ public class FileUtils {
         Tika tika = new Tika();
         return tika.detect(stream).equals("application/zip");
 
+    }
+
+    /**
+     * To convert a file path with / to File.separator based on the OS.
+     */
+    public static String getSystemIndependentFilePath(String filepath) {
+        return filepath.replaceAll("/", Matcher.quoteReplacement(File.separator));
     }
 }
