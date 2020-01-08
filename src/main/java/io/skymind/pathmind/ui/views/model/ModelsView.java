@@ -156,7 +156,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	}
 
 	private Button getBackToProjectsButton() {
-		return new BackButton("Back to Projects",
+		return new BackButton("Projects > " + projectName,
 				click -> UI.getCurrent().navigate(ProjectsView.class));
 	}
 

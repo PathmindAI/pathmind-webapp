@@ -78,6 +78,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     @Autowired
     private SegmentIntegrator segmentIntegrator;
 
+    private String projectName;
     private Button runFullTraining;
 
     public ExperimentView() {
@@ -93,6 +94,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     @Override
     protected Component getMainContent() {
+      projectName = getProjectName();
+
       SplitLayout mainSplitLayout = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
         getLeftPanel(),
         getRightPanel(),
@@ -178,8 +181,20 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private Button getBackToExperimentsButton() {
-        return new BackButton("Back to Experiments",
+        return new BackButton("Projects > " + projectName + " > Model #" + getModelNumber() + " > Experiment #" + getExperimentNumber(),
                 click -> UI.getCurrent().navigate(ExperimentsView.class, experiment.getModelId()));
+    }
+
+    private String getProjectName() {
+        return experiment.getProject().getName();
+    }
+
+    private String getModelNumber() {
+        return experiment.getModel().getName();
+    }
+
+    private String getExperimentNumber() {
+        return experiment.getName();
     }
 
     /**
@@ -219,7 +234,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     @Override
     protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
-        screenTitlePanel.setSubtitle(experiment.getProject().getName());
+        screenTitlePanel.setSubtitle(projectName);
         rewardFunctionEditor.setValue(experiment.getRewardFunction());
         policyChartPanel.init(experiment);
         trainingsListPanel.init(experiment, policyId);

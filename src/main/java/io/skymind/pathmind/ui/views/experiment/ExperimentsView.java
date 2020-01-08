@@ -55,6 +55,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
     private long modelId;
     private Model currentModel;
+	private String projectName;
     private List<Experiment> experiments;
 
     private ArchivesTabPanel<Experiment> archivesTabPanel;
@@ -74,6 +75,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         setupGetObservationTextArea();
         setupRewardFunctionEditor();
         setupArchivesTabPanel();
+        projectName = getProjectName();
 
         return WrapperUtils.wrapSizeFullVertical(
                 WrapperUtils.wrapWidthFullBetweenHorizontal(getBackToModelsButton(), getSearchBox()),
@@ -102,7 +104,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
      * that there has to be at least one experiment to be able to get here.
      */
     private Button getBackToModelsButton() {
-        return new BackButton("Back to Models",
+        return new BackButton("Projects > " + projectName + " > Model #" + getModelNumber(),
                 click -> UI.getCurrent().navigate(ModelsView.class, experiments.get(0).getProject().getId()));
     }
 
@@ -173,6 +175,10 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         return experiments.get(0).getProject().getName();
     }
 
+    private String getModelNumber() {
+        return experiments.get(0).getModel().getName();
+    }
+
     @Override
     protected void initLoadData() throws InvalidDataException {
         experiments = experimentDAO.getExperimentsForModel(modelId);
@@ -196,7 +202,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         archivesTabPanel.initData();
         getObservationTextArea.setValue(currentModel.getGetObservationForRewardFunction());
         showRewardFunction(experiments.get(0));
-        titlePanel.setSubtitle(getProjectName());
+        titlePanel.setSubtitle(projectName);
     }
 
     @Override
