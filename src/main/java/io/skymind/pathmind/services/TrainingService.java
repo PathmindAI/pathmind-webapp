@@ -198,6 +198,6 @@ public class TrainingService
         runDAO.markAsStarting(run.getId());
         log.info("Started " + runType + " training job with id {}", executionId);
 
-        policyDAO.insertPolicy(generateTempPolicy(spec, run, progress));
+//        policyDAO.insertPolicy(generateTempPolicy(spec, run, progress));
     }
 }

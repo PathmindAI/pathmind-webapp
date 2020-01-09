@@ -1,21 +1,26 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
-import com.amazonaws.util.IOUtils;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
+import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.services.training.versions.AnyLogic;
+import io.skymind.pathmind.services.training.versions.PathmindHelper;
+import io.skymind.pathmind.services.training.versions.RLLib;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class AWSExecutionProvider implements ExecutionProvider {
     private final AWSApiClient client;
 
@@ -25,7 +30,32 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public String execute(JobSpec job) {
-        throw new UnsupportedOperationException("Not currently supported");
+        List<String> instructions = new ArrayList<>();
+        List<String> files = new ArrayList<>();
+
+        final ExecutionEnvironment env = job.getEnv();
+
+        // Set up which files are needed, and how to install them
+        installRllib(env.getRllibVersion(), instructions, files);
+        installAnyLogic(env.getAnylogicVersion(), instructions, files);
+        installHelper(env.getPathmindHelperVersion(), instructions, files);
+        installModel(job.getModelFileId(), instructions, files);
+        installCheckpoint(job.getCheckpointFileId(), instructions, files);
+
+        // Set up variables
+        setupVariables(job, instructions);
+
+        // Set up instructions to run that specific type of job
+        runTraining(instructions);
+
+        // Clean up working directory, so only the required files stay around for automatic saving by rescale
+//        cleanup(instructions);
+
+        // Check errors
+//        checkErrors(instructions);
+
+        // Start actual execution of the job
+        return startTrainingRun(job, instructions, files);
     }
 
     @Override
@@ -35,8 +65,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
             model = File.createTempFile("pathmind", UUID.randomUUID().toString());
             FileUtils.writeByteArrayToFile(model, modelFile);
             client.fileUpload("test-training-dynamic-files.pathmind.com", modelId + "/model.zip", model);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         } finally {
             if (model != null) {
                 model.delete();
@@ -89,4 +119,191 @@ public class AWSExecutionProvider implements ExecutionProvider {
     public ExecutionProviderMetaDataDAO.ExecutionProviderClass executionProviderClass() {
         return ExecutionProviderMetaDataDAO.ExecutionProviderClass.AWS;
     }
+
+    private void installRllib(RLLib rllibVersion, List<String> instructions, List<String> files) {
+        switch (rllibVersion) {
+            case VERSION_0_7_0:
+                instructions.addAll(Arrays.asList(
+                        // Setup JVM
+                        "tar xf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
+                        "rm -rf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
+                        "export JAVA_HOME=`pwd`/jdk8u222-b10",
+                        "export JDK_HOME=$JAVA_HOME",
+                        "export JRE_HOME=$JAVA_HOME/jre",
+                        "export PATH=$JAVA_HOME/bin:$PATH",
+                        "export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH",
+
+                        // Setup Anaconda
+                        "mkdir conda",
+                        "cd conda",
+                        "tar xf ../rllibpack.tar.gz",
+                        "rm ../rllibpack.tar.gz",
+                        "source bin/activate",
+                        "cd ..",
+
+                        // Setup NativeRL
+                        "mkdir work",
+                        "cd work",
+                        "unzip ../nativerl-1.0.0-SNAPSHOT-bin.zip",
+                        "rm ../nativerl-1.0.0-SNAPSHOT-bin.zip",
+                        "mv nativerl-bin/* .",
+                        "mv examples/train.sh .",
+                        "cd .."
+                ));
+
+//                files.addAll(this.fileManager.getFiles(rllibVersion));
+                files.add("aws2 s3 cp s3://sagemaker-files.pathmind.com/rllibpack.tar.gz rllibpack.tar.gz");
+                files.add("aws2 s3 cp s3://sagemaker-files.pathmind.com/nativerl-1.0.0-SNAPSHOT-bin.zip nativerl-1.0.0-SNAPSHOT-bin.zip");
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported RLLib Version: " + rllibVersion);
+        }
+    }
+
+    private void installAnyLogic(AnyLogic anylogicVersion, List<String> instructions, List<String> files) {
+        switch (anylogicVersion) {
+            case VERSION_8_5:
+                instructions.addAll(Arrays.asList(
+                        "unzip baseEnv.zip",
+                        "rm baseEnv.zip",
+                        "mv baseEnv/* work/",
+                        "rm -r baseEnv"
+                ));
+
+//                files.addAll(this.fileManager.getFiles(anylogicVersion));
+                files.add("aws2 s3 cp s3://sagemaker-files.pathmind.com/baseEnv.zip baseEnv.zip");
+                break;
+            case VERSION_8_5_1:
+                instructions.addAll(Arrays.asList(
+                        "unzip baseEnv.zip",
+                        "rm baseEnv.zip",
+                        "mv baseEnv/* work/",
+                        "rm -r baseEnv"
+                ));
+
+//                files.addAll(this.fileManager.getFiles(anylogicVersion));
+                files.add("aws2 s3 cp s3://sagemaker-files.pathmind.com/baseEnv.zip baseEnv.zip");
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported AnyLogic Version: " + anylogicVersion);
+        }
+    }
+
+    private void installHelper(PathmindHelper pathmindHelperVersion, List<String> instructions, List<String> files) {
+        switch (pathmindHelperVersion) {
+            case VERSION_0_0_24:
+                instructions.addAll(Arrays.asList(
+                        "mv PathmindPolicy.jar work/lib/"
+                ));
+
+//                files.addAll(this.fileManager.getFiles(pathmindHelperVersion));
+                files.add("aws2 s3 cp s3://sagemaker-files.pathmind.com/PathmindPolicy.jar PathmindPolicy.jar");
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported Pathmind Helper Version: " + pathmindHelperVersion);
+        }
+    }
+
+    private void installModel(String modelId, List<String> instructions, List<String> files) {
+//        files.add(new FileReference(modelId, false));
+        //todo change bucket name and file name ({modelId}/model.zip)
+//        files.add("aws2 s3 cp s3://sagemaker-files.pathmind.com/PathmindPolicy.jar PathmindPolicy.jar");
+        instructions.addAll(Arrays.asList(
+                "cd work",
+                "unzip ../model.zip",
+                "rm ../model.zip"
+        ));
+    }
+
+    private void installCheckpoint(String checkpointId, List<String> instructions, List<String> files) {
+//        if (checkpointId != null) {
+//            files.add(new FileReference(checkpointId, false));
+//
+//            instructions.addAll(Arrays.asList(
+//                    "mkdir checkpoint",
+//                    "unzip ../checkpoint.zip -d checkpoint",
+//                    "rm ../checkpoint.zip"
+//            ));
+//
+//            instructions.add(
+//                    varExp("CHECKPOINT", "$(find checkpoint -name \"checkpoint-*\" ! -name \"checkpoint-*.*\")")
+//            );
+//        }
+    }
+
+    private String var(String name, String value) {
+        return "export " + name + "='" + value.replace("'", "\\'") + "'";
+    }
+
+    private String varExp(String name, String value) {
+        return "export " + name + "=" + value.replace("'", "\\'");
+    }
+
+    private void setupVariables(JobSpec job, List<String> instructions) {
+        instructions.addAll(Arrays.asList(
+                var("CLASS_SNIPPET", job.getVariables()),
+                var("RESET_SNIPPET", job.getReset()),
+                var("REWARD_SNIPPET", job.getReward()),
+                var("METRICS_SNIPPET", job.getMetrics()),
+                var("DISCRETE_ACTIONS", String.valueOf(job.getActions())),
+                var("CONTINUOUS_OBSERVATIONS", String.valueOf(job.getObservations())),
+                var("MAX_ITERATIONS", String.valueOf(job.getIterations())),
+                var("RANDOM_SEED", "1"),
+                var("MAX_REWARD_MEAN", String.valueOf(Integer.MAX_VALUE)), // disabled for now
+                var("TEST_ITERATIONS", "0"), // disabled for now
+
+                // Not yet picked up by training script
+                var("LEARNING_RATES", job.getLearningRates().stream().map(Object::toString).collect(Collectors.joining(","))),
+                var("GAMMAS", job.getGammas().stream().map(Object::toString).collect(Collectors.joining(","))),
+                var("BATCH_SIZES", job.getBatchSizes().stream().map(Object::toString).collect(Collectors.joining(","))),
+
+                // Still has to be set, but doesn't actually do something, needs to be removed from train.sh
+                var("STEP_TIME", "1"),
+                var("STOP_TIME", "420"),
+                var("TIME_UNIT", "MINUTE"),
+                var("MAX_TIME_IN_SEC", String.valueOf(job.getMaxTimeInSec()))
+        ));
+    }
+
+    private void runTraining(List<String> instructions) {
+        instructions.addAll(Arrays.asList(
+                // ensure empty files are there as needed
+                "echo > setup.sh",
+                "mkdir -p database",
+                "touch database/db.properties",
+
+                // actually start training
+                "source train.sh",
+
+                // temporary workaround, as train.sh as it is in nativerl with id doRCLd, only takes care of a single policy file
+                // by doing this here, we can iterate a bit quicker
+                "mkdir -p ../output",
+                "for DIR in `find \"$OUTPUT_DIR\" -iname model -type d`; do \n" +
+                        "  cd $DIR;\n" +
+                        "  mkdir -p $OLDPWD/../output/$(basename `dirname $DIR`)/;\n" +
+                        "  cp ../progress.csv $OLDPWD/../output/$(basename `dirname $DIR`)/; \n"+
+                        "  cp ../../*.json $OLDPWD/../output/; \n"+
+                        "  zip -r $OLDPWD/../output/policy_$(basename `dirname $DIR`).zip .;\n" +
+                        "  cd $OLDPWD;\n" +
+                        "  cp trial_* ../output;\n" +
+                        "  cd `find \"$DIR\"/.. -iname checkpoint_* -type d | sort -V | tail -1`;\n"+
+                        "  zip $OLDPWD/../output/$(basename `dirname $DIR`)/checkpoint.zip ./* ;\n"+
+                        "  cd $OLDPWD;\n" +
+                        "done"
+        ));
+    }
+
+    private void cleanup(List<String> instructions) {
+        instructions.addAll(Arrays.asList(
+                "cd ..",
+                "rm -rf work conda jdk8u222-b10"
+        ));
+    }
+
+    private String startTrainingRun(JobSpec job, List<String> instructions, List<String> files) {
+        log.info("kepricondebug train script1 : " + String.join(" ;\n", files));
+        log.info("kepricondebug train script2 : " + String.join(" ;\n", instructions));
+        return null;
+    }
+
 }
