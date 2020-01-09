@@ -14,20 +14,26 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * TODO -> Implement correctly, this is just a quick stub.
  */
 @CssImport("./styles/styles.css")
 @ParentLayout(MainLayout.class)
+@Slf4j
 public class ErrorView extends PathMindDefaultView implements HasErrorParameter<Exception>
 {
+	private String errorId;
+	
 	public ErrorView() {
 		super();
 	}
 	
 	@Override
  	public int setErrorParameter(BeforeEnterEvent event, ErrorParameter<Exception> parameter) {
+		errorId = PathmindErrorHandler.generateUniqueErrorId();
+ 		log.error(String.format("Error #%s: %s", errorId, parameter.getException().getMessage()), parameter.getException());
  		return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
  	}
 
@@ -39,7 +45,7 @@ public class ErrorView extends PathMindDefaultView implements HasErrorParameter<
 	@Override
 	protected Component getMainContent() {
 		return WrapperUtils.wrapWidthFullCenterVertical(
-				new Label("An unexpected error occurred. Please contact Skymind for assistance."));
+				new Label(String.format("An unexpected error occurred. Please contact Skymind for assistance (#%s).", errorId)));
 	}
 
 	@Override

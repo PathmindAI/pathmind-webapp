@@ -15,27 +15,33 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * TODO -> Implement correctly, this is just a quick stub.
  */
 @CssImport("./styles/styles.css")
 @ParentLayout(MainLayout.class)
+@Slf4j
 public class InvalidDataView extends PathMindDefaultView implements HasErrorParameter<InvalidDataException>
 {
+	private String errorId;
+	
 	public InvalidDataView() {
 		super();
 	}
 	
 	@Override
  	public int setErrorParameter(BeforeEnterEvent event, ErrorParameter<InvalidDataException> parameter) {
- 		return HttpServletResponse.SC_FORBIDDEN;
+ 		errorId = PathmindErrorHandler.generateUniqueErrorId();
+ 		log.error(String.format("Error #%s: %s", errorId, parameter.getException().getMessage()), parameter.getException());
+		return HttpServletResponse.SC_FORBIDDEN;
  	}
 
 	@Override
 	protected Component getMainContent() {
 		return WrapperUtils.wrapWidthFullCenterHorizontal(
-				new Label("This link is invalid.\nPlease contact Skymind if you believe this is an error."));
+				new Label(String.format("This link is invalid. Please contact Pathmind if you believe this is an error (#%s).", errorId)));
 	}
 
 	@Override
