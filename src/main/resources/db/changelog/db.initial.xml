@@ -644,20 +644,15 @@
     </changeSet>
 
     <!-- #388 - Policy scores should be stored in their own table rather than in a json column -->
-    <changeSet id="20200101-01" author="steph@followsteph.com">
+    <changeSet id="20200109-01" author="steph@followsteph.com">
         <createTable tableName="REWARD_SCORE">
             <column name="POLICY_ID" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="MIN" type="DECIMAL(27,17)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="MEAN" type="DECIMAL(27,17)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="MAX" type="DECIMAL(27,17)">
-                <constraints nullable="false"/>
-            </column>
+            <!-- We have to allow NULL to be able to represent NaN as JOOQ uses BigDecimal which does not accept NaN as a value -->
+            <column name="MIN" type="DECIMAL(27,17)"/>
+            <column name="MEAN" type="DECIMAL(27,17)"/>
+            <column name="MAX" type="DECIMAL(27,17)"/>
             <column name="ITERATION" type="INT">
                 <constraints nullable="false"/>
             </column>
