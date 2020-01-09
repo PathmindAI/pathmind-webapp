@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.Id;
@@ -26,7 +25,7 @@ public class VerificationEmailSentView extends PolymerTemplate<SignUpView.Model>
 	private SegmentIntegrator segmentIntegrator;
 	
 	public VerificationEmailSentView() {
-		backToLogin.addClickListener(evt -> UI.getCurrent().navigate(LoginView.class));
+		backToLogin.addClickListener(evt -> getUI().ifPresent(ui -> ui.navigate(LoginView.class)));
 	}
 	
 	@Override

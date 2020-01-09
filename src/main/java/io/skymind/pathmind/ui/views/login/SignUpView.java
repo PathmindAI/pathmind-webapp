@@ -134,7 +134,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 				user = userService.signup(user);
                 emailNotificationService.sendVerificationEmail(user);
                 segmentIntegrator.userRegistered();
-				UI.getCurrent().navigate(VerificationEmailSentView.class);
+                getUI().ifPresent(ui -> ui.navigate(VerificationEmailSentView.class));
 			} else {
 				newPassword.setInvalid(true);
 				passwordValidationNotes.removeAll();
