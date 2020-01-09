@@ -26,4 +26,13 @@ resource "aws_sqs_queue" "training_queue" {
   }
 }
 
+resource "aws_sqs_queue" "test_training_queue" {
+  name                      = "test-training-queue.fifo"
+  fifo_queue                  = true
+  content_based_deduplication = true
+
+  tags = {
+    Environment = "pathmind"
+  }
+}
 

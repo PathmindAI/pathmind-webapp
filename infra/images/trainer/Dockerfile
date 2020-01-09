@@ -6,6 +6,7 @@ RUN apt-get update && \
 	apt-get install python -y && \
 	apt-get install curl -y && \
 	apt-get install vim -y && \
+	apt-get install jq -y && \
 	curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
 	python get-pip.py && \
 	pip install awscli && \

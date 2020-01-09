@@ -64,3 +64,5 @@ spec:
               value: "{{ .Values.env.PATHMIND_LOG_FILE_PATH }}"
             - name: SCM_COMMAND_IDLE_TIMEOUT
               value: "{{ .Values.env.SCM_COMMAND_IDLE_TIMEOUT }}"
+            - name: ENVIRONMENT
+              value: "{{ .Values.env.ENVIRONMENT }}"
