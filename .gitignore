@@ -38,6 +38,7 @@ webpack.generated.js
 .terraform/
 terraform.tfvars
 terraform.tfstate*
+infra/terraform/modules/
 
 ### Vim tmp files ###
 *swp
