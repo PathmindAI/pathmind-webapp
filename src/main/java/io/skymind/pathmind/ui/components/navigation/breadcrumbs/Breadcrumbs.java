@@ -15,15 +15,24 @@ public class Breadcrumbs extends HorizontalLayout
 		RouterLink projectsPageLink = createBreadcrumb("Projects", ProjectsView.class, null);
 		add(projectsPageLink);
 
+		Span arrow1 = new Span(">");
+		add(arrow1);
+
 		RouterLink projectPageLink = createBreadcrumb(breadcrumbsData.getProjectName(), ModelsView.class, breadcrumbsData.getProjectId());
 		add(projectPageLink);
 
 		if (breadcrumbsData.getModelNumber() != null) {
+			Span arrow2 = new Span(">");
+			add(arrow2);
+
 			RouterLink modelPageLink = createBreadcrumb("Model #" + breadcrumbsData.getModelNumber(), ExperimentsView.class, breadcrumbsData.getModelId());
 			add(modelPageLink);
 		}
 
 		if (breadcrumbsData.getExperimentNumber() != null) {
+			Span arrow3 = new Span(">");
+			add(arrow3);
+
 			RouterLink experimentPageLink = createBreadcrumbExperiment("Experiment #" + breadcrumbsData.getExperimentNumber(), ExperimentView.class, breadcrumbsData.getExperimentPageParameter());
 			add(experimentPageLink);
 		}
