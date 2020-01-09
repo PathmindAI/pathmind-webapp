@@ -64,6 +64,10 @@ public class AWSApiClient {
         return s3Client.listObjectsV2(bucketName);
     }
 
+    public ListObjectsV2Result listObjects(String bucketName, String path) {
+        return s3Client.listObjectsV2(bucketName, path);
+    }
+
     public String fileUpload(String bucketName, String keyId, File file) {
         return s3Client.putObject(bucketName, keyId, file).getETag();
     }

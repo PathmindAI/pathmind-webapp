@@ -9,7 +9,11 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
+import io.skymind.pathmind.utils.ObjectMapperHolder;
 
 import java.io.File;
 import java.util.List;
@@ -55,14 +59,16 @@ public class AWSApiClientTest {
 ////        return AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
 //    }
 
-    public static void main(String[] args) {
-        AWSApiClient client = new AWSApiClient(KEY_ID, SECRET_ACCESS_KEY);
+    public static void main(String[] args) throws JsonProcessingException {
+        ObjectMapper objectMapper = ObjectMapperHolder.getJsonMapper();
+        AWSApiClient client = new AWSApiClient(KEY_ID, SECRET_ACCESS_KEY, objectMapper);
 
         String bucketName = "test-training-dynamic-files.pathmind.com";
-        File model = new File("/home/kepricon/Desktop/model.zip");
+        String queueName = "https://sqs.us-east-1.amazonaws.com/839270835622/test-training-queue.fifo";
+//        File model = new File("/home/kepricon/Desktop/model.zip");
 
-//        client.listObjects(bucketName).getObjectSummaries().stream()
-//                .forEach(os -> System.out.println("o* " + os.getKey()));
+        client.listObjects(bucketName, "id15/output/").getObjectSummaries().stream()
+                .forEach(os -> System.out.println("o* " + os));
 
 //        client.fileUpload(bucketName, "id2/model.zip", model);
 //
@@ -70,13 +76,16 @@ public class AWSApiClientTest {
 //                .forEach(os -> System.out.println("o* " + os.getKey()));
 
 //        byte[] contents = client.fileContents(bucketName, "id2/model.zip");
-        byte[] contents = client.fileContents(bucketName, "id1/script.sh");
-        System.out.println(new String(contents));
+//        byte[] contents = client.fileContents(bucketName, "id1/script.sh");
+//        System.out.println(new String(contents));
 
 //        client.fileDelete(bucketName, "id2/model.zip");
 //
 //        client.listObjects(bucketName).getObjectSummaries().stream()
 //                .forEach(os -> System.out.println("o* " + os.getKey()));
+
+//        Job job = new Job(bucketName, "id1");
+//        System.out.println(client.jobSubmit(queueName, job));
     }
 
 }

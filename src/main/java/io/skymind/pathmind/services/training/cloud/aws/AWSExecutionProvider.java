@@ -16,15 +16,16 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
+//@Service
 @Slf4j
 public class AWSExecutionProvider implements ExecutionProvider {
     private final AWSApiClient client;
+
+    private final String bucketName = "test-training-dynamic-files.pathmind.com";
 
     public AWSExecutionProvider(AWSApiClient client) {
         this.client = client;
@@ -89,6 +90,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public Map<String, String> progress(String jobHandle) {
+        client.listObjects("bucketName", jobHandle + "/output/").getObjectSummaries().stream()
+                .forEach(os -> log.info("o* " + os));
         throw new UnsupportedOperationException("Not currently supported");
     }
 
@@ -306,11 +309,11 @@ public class AWSExecutionProvider implements ExecutionProvider {
         File script = null;
         try {
             script = File.createTempFile("pathmind", UUID.randomUUID().toString());
+            files.addAll(instructions);
             String scriptStr = String.join(" ;\n", files);
-            scriptStr += String.join(" ;\n", instructions);
 
             FileUtils.writeStringToFile(script, scriptStr, Charset.defaultCharset());
-            String bucketName = "test-training-dynamic-files.pathmind.com";
+
             String queueName = "https://sqs.us-east-1.amazonaws.com/839270835622/test-training-queue.fifo";
             String id = "id" + job.getModelId();
 
