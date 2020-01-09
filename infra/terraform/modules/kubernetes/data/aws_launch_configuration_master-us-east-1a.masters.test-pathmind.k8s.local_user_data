@@ -203,7 +203,7 @@ kubeControllerManager:
   attachDetachReconcileSyncPeriod: 1m0s
   cloudProvider: aws
   clusterCIDR: 100.96.0.0/11
-  clusterName: pathmind.k8s.local
+  clusterName: test-pathmind.k8s.local
   configureCloudRoutes: false
   image: k8s.gcr.io/kube-controller-manager:v1.15.6
   leaderElection:
@@ -275,17 +275,17 @@ Assets:
 - 522115e0f11d83c08435a05e76120c89ea320782ccaff8e301bd14588ec50145@https://storage.googleapis.com/kubernetes-release/release/v1.15.6/bin/linux/amd64/kubectl
 - 3ca15c0a18ee830520cf3a95408be826cbd255a1535a38e0be9608b25ad8bf64@https://storage.googleapis.com/kubernetes-release/network-plugins/cni-plugins-amd64-v0.7.5.tgz
 - 71b7bc444ba0a5f7cd7a36e91b594c1c3d13890e160d85e0dfde38c46a24e416@https://artifacts.k8s.io/binaries/kops/1.15.0/linux/amd64/utils.tar.gz,https://github.com/kubernetes/kops/releases/download/1.15.0/linux-amd64-utils.tar.gz,https://kubeupv2.s3.amazonaws.com/kops/1.15.0/linux/amd64/utils.tar.gz
-ClusterName: pathmind.k8s.local
-ConfigBase: s3://pathmind-kops-state/k8s.pathmind.k8s.local/pathmind.k8s.local
+ClusterName: test-pathmind.k8s.local
+ConfigBase: s3://test-pathmind-kops-state/k8s.test-pathmind.k8s.local/test-pathmind.k8s.local
 InstanceGroupName: master-us-east-1a
 Tags:
 - _automatic_upgrades
 - _aws
 channels:
-- s3://pathmind-kops-state/k8s.pathmind.k8s.local/pathmind.k8s.local/addons/bootstrap-channel.yaml
+- s3://test-pathmind-kops-state/k8s.test-pathmind.k8s.local/test-pathmind.k8s.local/addons/bootstrap-channel.yaml
 etcdManifests:
-- s3://pathmind-kops-state/k8s.pathmind.k8s.local/pathmind.k8s.local/manifests/etcd/main.yaml
-- s3://pathmind-kops-state/k8s.pathmind.k8s.local/pathmind.k8s.local/manifests/etcd/events.yaml
+- s3://test-pathmind-kops-state/k8s.test-pathmind.k8s.local/test-pathmind.k8s.local/manifests/etcd/main.yaml
+- s3://test-pathmind-kops-state/k8s.test-pathmind.k8s.local/test-pathmind.k8s.local/manifests/etcd/events.yaml
 protokubeImage:
   hash: 42a9c4324fe26d63ce11f3dd7836371bc93fa06ca8f479807728f3746e27061b
   name: protokube:1.15.0

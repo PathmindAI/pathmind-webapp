@@ -40,7 +40,7 @@ pipeline {
     // Some global default variables
     environment {
         IMAGE_NAME = 'pathmind'
-        DOCKER_TAG = 'dev'
+        DOCKER_TAG = 'test'
 	/*if(env.BRANCH_NAME == 'master'){
         	DOCKER_TAG = "prod"
 	}

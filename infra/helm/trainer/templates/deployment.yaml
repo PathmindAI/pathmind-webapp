@@ -40,4 +40,13 @@ spec:
               secretKeyRef:
                 name: awssecretaccesskey
                 key: AWS_SECRET_ACCESS_KEY
+          - name: ENVIRONMENT
+            value: "{{ .Values.env.ENVIRONMENT }}"
+          - name: SQS_URL
+            value: "{{ .Values.env.SQS_URL }}"
+          - name: NAME
+            value: "{{ .Values.env.NAME }}"
+          - name: KOPS_STATE_STORE
+            value: "{{ .Values.env.KOPS_STATE_STORE }}"
+
 

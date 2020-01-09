@@ -16,6 +16,9 @@ if ! aws s3api head-bucket --bucket ${BUCKET_NAME} 2>/dev/null; then
 	aws s3api create-bucket --bucket ${BUCKET_NAME} --region ${REGION}
 fi
 
+#remove old module
+rm -rf modules 2> /dev/null
+
 #Create cluster
 kops create cluster \
 --cloud=aws \

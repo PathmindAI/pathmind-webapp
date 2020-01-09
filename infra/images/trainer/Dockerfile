@@ -1,5 +1,12 @@
 FROM ubuntu
 
+#Set workdir
+WORKDIR /app
+
+#Copy files
+COPY spot_ig_template.yaml .
+COPY trigger.sh .
+
 #basic packages
 RUN apt-get update && \
 	apt-get install postgresql -y && \
