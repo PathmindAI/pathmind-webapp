@@ -232,12 +232,17 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public String uploadModel(long modelId, byte[] modelFile) {
+    public String uploadModel(byte[] modelFile) {
         try {
             return client.fileUpload(modelFile, "model.zip").getId();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String uploadModel(long modelId, byte[] modelFile) {
+        throw new UnsupportedOperationException("Not currently supported");
     }
 
     @Override

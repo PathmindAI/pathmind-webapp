@@ -62,12 +62,17 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public String uploadModel(long modelId, byte[] modelFile) {
+    public String uploadModel(byte[] modelFile) {
+        throw new UnsupportedOperationException("Not currently supported");
+    }
+
+    @Override
+    public String uploadModel(long runId, byte[] modelFile) {
         File model = null;
         try {
             model = File.createTempFile("pathmind", UUID.randomUUID().toString());
             FileUtils.writeByteArrayToFile(model, modelFile);
-            return client.fileUpload("test-training-dynamic-files.pathmind.com", "id" + modelId + "/model.zip", model);
+            return client.fileUpload("test-training-dynamic-files.pathmind.com", "id" + runId + "/model.zip", model);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return null;
@@ -315,7 +320,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             FileUtils.writeStringToFile(script, scriptStr, Charset.defaultCharset());
 
             String queueName = "https://sqs.us-east-1.amazonaws.com/839270835622/test-training-queue.fifo";
-            String id = "id" + job.getModelId();
+            String id = "id" + job.getRunId();
 
             client.fileUpload("test-training-dynamic-files.pathmind.com", id + "/script.sh", script);
             return client.jobSubmit(queueName, new Job(bucketName, id));
