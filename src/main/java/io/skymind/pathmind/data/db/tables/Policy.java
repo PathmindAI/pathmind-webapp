@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = 1818877567;
+    private static final long serialVersionUID = 1310510437;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -90,14 +90,14 @@ public class Policy extends TableImpl<PolicyRecord> {
     public final TableField<PolicyRecord, byte[]> FILE = createField(DSL.name("file"), org.jooq.impl.SQLDataType.BLOB, this, "");
 
     /**
-     * The column <code>public.policy.startedat</code>.
+     * The column <code>public.policy.started_at</code>.
      */
-    public final TableField<PolicyRecord, LocalDateTime> STARTEDAT = createField(DSL.name("startedat"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+    public final TableField<PolicyRecord, LocalDateTime> STARTED_AT = createField(DSL.name("started_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
 
     /**
-     * The column <code>public.policy.stoppedat</code>.
+     * The column <code>public.policy.stopped_at</code>.
      */
-    public final TableField<PolicyRecord, LocalDateTime> STOPPEDAT = createField(DSL.name("stoppedat"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+    public final TableField<PolicyRecord, LocalDateTime> STOPPED_AT = createField(DSL.name("stopped_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
 
     /**
      * The column <code>public.policy.algorithm</code>.
