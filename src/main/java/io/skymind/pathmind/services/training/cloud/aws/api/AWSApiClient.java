@@ -9,7 +9,14 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.amazonaws.util.IOUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,34 +27,49 @@ import java.util.List;
 @Service
 public class AWSApiClient {
     private final AWSCredentials credentials;
-    private final AmazonS3 s3client;
+    private final AmazonS3 s3Client;
+    private final AmazonSQS sqsClient;
+    private final ObjectMapper objectMapper;
 
     public AWSApiClient(
             @Value("${pathmind.aws.key.id}") String keyId,
-            @Value("${pathmind.aws.secret_key}") String secretAccessKey) {
+            @Value("${pathmind.aws.secret_key}") String secretAccessKey,
+            ObjectMapper objectMapper) {
 
-        credentials = new BasicAWSCredentials(
+        this.credentials = new BasicAWSCredentials(
                 keyId,
                 secretAccessKey
         );
 
-        s3client = createConnectionWithCredentials(credentials);
+        this.s3Client = AmazonS3ClientBuilder
+                .standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withRegion(Regions.US_EAST_1)
+                .build();
+
+        this.sqsClient = AmazonSQSClientBuilder
+                .standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withRegion(Regions.US_EAST_1)
+                .build();
+
+        this.objectMapper = objectMapper;
     }
 
     public List<Bucket> listBuckets() {
-        return s3client.listBuckets();
+        return s3Client.listBuckets();
     }
 
     public ListObjectsV2Result listObjects(String bucketName) {
-        return s3client.listObjectsV2(bucketName);
+        return s3Client.listObjectsV2(bucketName);
     }
 
-    public void fileUpload(String bucketName, String keyId, File file) {
-        s3client.putObject(bucketName, keyId, file);
+    public String fileUpload(String bucketName, String keyId, File file) {
+        return s3Client.putObject(bucketName, keyId, file).getETag();
     }
 
     public byte[] fileContents(String bucketName, String keyId) {
-        S3Object o = s3client.getObject(bucketName, keyId);
+        S3Object o = s3Client.getObject(bucketName, keyId);
         try {
             return IOUtils.toByteArray(o.getObjectContent());
         } catch (IOException e) {
@@ -57,16 +79,16 @@ public class AWSApiClient {
     }
 
     public void fileDelete(String bucketName, String keyId) {
-        s3client.deleteObject(bucketName, keyId);
+        s3Client.deleteObject(bucketName, keyId);
     }
 
+    public String jobSubmit(String queueUrl, Job job) throws JsonProcessingException {
+        SendMessageRequest send_msg_request = new SendMessageRequest()
+                .withQueueUrl(queueUrl)
+                .withMessageGroupId("training")
+                .withMessageBody(objectMapper.writeValueAsString(job));
 
-    private static AmazonS3 createConnectionWithCredentials(AWSCredentials credentials) {
-        return AmazonS3ClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.US_EAST_1)
-                .build();
+        SendMessageResult result = sqsClient.sendMessage(send_msg_request);
+        return result.getMessageId();
     }
-
 }

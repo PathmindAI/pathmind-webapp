@@ -6,6 +6,7 @@ import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,14 +66,14 @@ public class AWSExecutionProvider implements ExecutionProvider {
         try {
             model = File.createTempFile("pathmind", UUID.randomUUID().toString());
             FileUtils.writeByteArrayToFile(model, modelFile);
-            client.fileUpload("test-training-dynamic-files.pathmind.com", modelId + "/model.zip", model);
+            return client.fileUpload("test-training-dynamic-files.pathmind.com", "id" + modelId + "/model.zip", model);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            return null;
         } finally {
             if (model != null) {
                 model.delete();
             }
-            return null;
         }
     }
 
@@ -301,9 +303,27 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     private String startTrainingRun(JobSpec job, List<String> instructions, List<String> files) {
-        log.info("kepricondebug train script1 : " + String.join(" ;\n", files));
-        log.info("kepricondebug train script2 : " + String.join(" ;\n", instructions));
-        return null;
+        File script = null;
+        try {
+            script = File.createTempFile("pathmind", UUID.randomUUID().toString());
+            String scriptStr = String.join(" ;\n", files);
+            scriptStr += String.join(" ;\n", instructions);
+
+            FileUtils.writeStringToFile(script, scriptStr, Charset.defaultCharset());
+            String bucketName = "test-training-dynamic-files.pathmind.com";
+            String queueName = "https://sqs.us-east-1.amazonaws.com/839270835622/test-training-queue.fifo";
+            String id = "id" + job.getModelId();
+
+            client.fileUpload("test-training-dynamic-files.pathmind.com", id + "/script.sh", script);
+            return client.jobSubmit(queueName, new Job(bucketName, id));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return null;
+        } finally {
+            if (script != null) {
+                script.delete();
+            }
+        }
     }
 
 }
