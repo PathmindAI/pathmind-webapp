@@ -1,0 +1,27 @@
+.breadcrumb {
+  position: relative;
+  color: var(--pm-tertiary-text-color);
+}
+
+.breadcrumb:hover {
+  color: var(--lumo-primary-text-color);
+  text-decoration: underline;
+}
+
+.breadcrumb:not(:last-child) {
+  margin-right: var(--lumo-space-l);
+}
+
+.breadcrumb:not(:last-child)::after {
+  content: ">";
+  position: absolute;
+  width: var(--lumo-space-l);
+  top: 50%;
+  color: var(--pm-tertiary-text-color);
+  text-align: center;
+  transform: translateY(-50%);
+}
+
+.breadcrumb:last-child {
+  color: var(--lumo-primary-text-color);
+}
