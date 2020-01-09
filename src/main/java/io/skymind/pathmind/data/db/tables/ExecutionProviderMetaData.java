@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ExecutionProviderMetaData extends TableImpl<ExecutionProviderMetaDataRecord> {
 
-    private static final long serialVersionUID = 812173682;
+    private static final long serialVersionUID = 634732379;
 
     /**
      * The reference instance of <code>public.execution_provider_meta_data</code>
@@ -74,12 +74,12 @@ public class ExecutionProviderMetaData extends TableImpl<ExecutionProviderMetaDa
     /**
      * The column <code>public.execution_provider_meta_data.key</code>.
      */
-    public final TableField<ExecutionProviderMetaDataRecord, Long> KEY = createField(DSL.name("key"), org.jooq.impl.SQLDataType.BIGINT, this, "");
+    public final TableField<ExecutionProviderMetaDataRecord, String> KEY = createField(DSL.name("key"), org.jooq.impl.SQLDataType.VARCHAR, this, "");
 
     /**
      * The column <code>public.execution_provider_meta_data.value</code>.
      */
-    public final TableField<ExecutionProviderMetaDataRecord, String> VALUE = createField(DSL.name("value"), org.jooq.impl.SQLDataType.VARCHAR(6), this, "");
+    public final TableField<ExecutionProviderMetaDataRecord, String> VALUE = createField(DSL.name("value"), org.jooq.impl.SQLDataType.VARCHAR(36), this, "");
 
     /**
      * Create a <code>public.execution_provider_meta_data</code> table reference
@@ -165,7 +165,7 @@ public class ExecutionProviderMetaData extends TableImpl<ExecutionProviderMetaDa
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Long, Integer, Integer, Long, String> fieldsRow() {
+    public Row5<Long, Integer, Integer, String, String> fieldsRow() {
         return (Row5) super.fieldsRow();
     }
 }

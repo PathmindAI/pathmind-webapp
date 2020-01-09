@@ -558,7 +558,14 @@
                 (SELECT PROJECT.ID FROM PROJECT LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
         </sql>
     </changeSet>
-    
+
+    <changeSet id="20191125-1" author="daehyun@skymind.io">
+        <comment>Add snapshot file column</comment>
+        <addColumn tableName="POLICY">
+            <column name="SNAPSHOT" type="bytea"/>
+        </addColumn>
+    </changeSet>
+
     <changeSet id="20191209-1" author="onur@vaadin.com">
         <update tableName="PATHMIND_USER">
             <column name="STRIPE_CUSTOMER_ID" value="cus_GKPM6sw8wTtgjg"/>
@@ -588,6 +595,62 @@
         <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="KEY" oldColumnName="KEY_TEMP"/>
         <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="VALUE" oldColumnName="VALUE_TEMP"/>
         <addUniqueConstraint tableName="EXECUTION_PROVIDER_META_DATA" constraintName="UNIQUE_PROVIDER_CLASS_TYPE_KEY" columnNames="PROVIDER_CLASS, TYPE, KEY" />
+    </changeSet>
+
+    <changeSet id="20191212-1" author="daehyun@skymind.io">
+        <modifyDataType tableName="EXECUTION_PROVIDER_META_DATA" columnName="KEY" newDataType="NVARCHAR"></modifyDataType>
+    </changeSet>
+
+    <!-- #472 - Add hyperparameters as their own database columns as part of reducing our reliance on storing data in json -->
+    <changeSet id="20191220-01" author="steph@followsteph.com">
+        <addColumn tableName="POLICY">
+            <column name="LEARNING_RATE" type="DOUBLE" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="GAMMA" type="DOUBLE" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BATCH_SIZE" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191220_01"/>
+    </changeSet>
+
+    <!-- #387 - Policy.notes and Policy.name should be in the database -->
+    <changeSet id="20191229-01" author="steph@followsteph.com">
+        <addColumn tableName="POLICY">
+            <column name="NOTES" type="VARCHAR"/>
+        </addColumn>
+        <sql>
+            UPDATE POLICY SET name=SPLIT_PART(external_id, '_', 3);
+<!--        The following line fails in liquibase but works in postgres directly. Therefore this code has been implemented in the Java changeset code -->
+<!--        UPDATE POLICY SET NOTES=concat('sgd_minibatch_size=', batch_size, ', lr=', learning_rate, ', gamma=', gamma);-->
+        </sql>
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191229_01"/>
+        <rollback>
+            <dropColumn tableName="POLICY" columnName="NOTES"/>
+            <sql>UPDATE POLICY SET name=external_Id</sql>
+        </rollback>
+    </changeSet>
+    
+    <!-- #501 - Add DB constraint for unique project name -->
+    <changeSet id="20200102-01" author="onur@vaadin.com">
+        <comment>If there are duplicated project names, update them before adding db constraint</comment>
+        <sql>
+            UPDATE PROJECT SET NAME = NAME || '-' || ID where (PATHMIND_USER_ID, NAME) IN (SELECT PATHMIND_USER_ID, NAME FROM PROJECT GROUP BY PATHMIND_USER_ID, NAME HAVING COUNT(NAME) > 1);
+        </sql>
+        <addUniqueConstraint tableName="PROJECT" constraintName="UNIQUE_PROJECT_NAME_PATHMIND_USER_ID" columnNames="PATHMIND_USER_ID, NAME" />
+    </changeSet>
+
+    <!-- #681 and #682 - Need to name the StartedAt and StoppedAt columns with an underscore -->
+    <changeSet id="20200109-01" author="steph@followsteph.com">
+        <renameColumn tableName="POLICY" oldColumnName="STARTEDAT" newColumnName="STARTED_AT"/>
+        <renameColumn tableName="POLICY" oldColumnName="STOPPEDAT" newColumnName="STOPPED_AT"/>
+        <rollback>
+            <renameColumn tableName="POLICY" oldColumnName="STARTED_AT" newColumnName="STARTEDAT"/>
+            <renameColumn tableName="POLICY" oldColumnName="STOPPED_AT" newColumnName="STOPPEDAT"/>
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>

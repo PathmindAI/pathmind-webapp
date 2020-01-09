@@ -5,9 +5,6 @@ import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.data.policy.HyperParameters;
-import io.skymind.pathmind.data.policy.HyperParameters;
-import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import io.skymind.pathmind.utils.ObjectMapperHolder;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +21,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PolicyUtils
 {
+    public static final String LEARNING_RATE = "lr";
+    public static final String GAMMA = "gamma";
+    public static final String BATCH_SIZE = "sgd_minibatch_size";
+
     private static final String lrPatternStr = "lr=.*,";
     private static final Pattern lrPattern = Pattern.compile(lrPatternStr);
 
@@ -75,10 +76,6 @@ public class PolicyUtils
         return policy.getScores().get(policy.getScores().size() - 1).getMean();
     }
 
-    public static String getParsedPolicyName(Policy policy) {
-        return policy.getParsedName();
-    }
-
     public static final String getElapsedTime(Policy policy) {
         return DateAndTimeUtils.formatDurationTime(RunUtils.getElapsedTime(policy.getRun()));
     }
@@ -111,30 +108,24 @@ public class PolicyUtils
         }
     }
 
-    // STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
-    // the HyperParameters are moved into the database we can delete this code.
-    public static HyperParameters getHyperParametersFromName(Policy policy) {
-        return ProgressInterpreter.interpretKey(policy.getName()).getHyperParameters();
-    }
-
     public static List<Number> getMeanScores(Policy policy) {
         return policy.getScores().stream()
             .map(rewardScore -> rewardScore.getMean())
             .collect(Collectors.toList());
     }
 
-    public static String getFormatHyperParameters(Policy policy) {
-        return  HyperParameters.BATCH_SIZE + "=" + policy.getHyperParameters().getBatchSize() + ", " +
-                HyperParameters.LEARNING_RATE + "=" + policy.getHyperParameters().getLearningRate() + ", " +
-                HyperParameters.GAMMA + "=" + policy.getHyperParameters().getGamma();
+    public static String generateDefaultNotes(Policy policy) {
+        return  BATCH_SIZE + "=" + policy.getBatchSize() + ", " +
+                LEARNING_RATE + "=" + policy.getLearningRate() + ", " +
+                GAMMA + "=" + policy.getGamma();
     }
 
     // original name ex: PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_2019-10-11_21-16-2858waz_89
     // get rid of time and extra info
     // add run type and "TEMP"
-    public static String generatePolicyTempName(Policy policy, Run run)
+    public static String generatePolicyTempName(String policyExtId, int runType)
     {
-        String policyTempName = policy.getExternalId().substring(0, policy.getExternalId().length() - 27) + run.getRunType() + RunUtils.TEMPORARY_POSTFIX;
+        String policyTempName = policyExtId.substring(0, policyExtId.length() - 27) + runType + RunUtils.TEMPORARY_POSTFIX;
 
         Matcher matcher = lrPattern.matcher(policyTempName);
 
@@ -147,20 +138,15 @@ public class PolicyUtils
             policyTempName = policyTempName.replaceFirst(lrPatternStr, lr);
         }
 
+        //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
         return policyTempName;
     }
 
     public static void loadPolicyDataModel(Policy policy, long policyId, Run run) {
         policy.setId(policyId);
-        policy.setName(policy.getExternalId());
         policy.setRun(run);
         policy.setExperiment(run.getExperiment());
         policy.setModel(run.getModel());
         policy.setProject(run.getProject());
-        // For performance reasons.
-        policy.setParsedName(parsePolicyName(policy.getName()));
-        // STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
-        // the HyperParameters are moved into the database we can delete this code.
-        policy.setHyperParameters(getHyperParametersFromName(policy));
     }
 }

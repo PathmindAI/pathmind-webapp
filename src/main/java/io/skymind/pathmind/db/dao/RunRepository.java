@@ -97,11 +97,18 @@ class RunRepository
                 .execute();
     }
 
+    protected static void saveCheckpointFile(DSLContext ctx, long runId, String externalId, byte[] checkpointFile) {
+        ctx.update(POLICY)
+                .set(POLICY.SNAPSHOT, checkpointFile)
+                .where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.eq(externalId)))
+                .execute();
+    }
+
     protected static Map<Long, List<String>> getStoppedPolicyNamesForRuns(DSLContext ctx, List<Long> runIds) {
-        return ctx.select(POLICY.NAME, POLICY.RUN_ID)
+        return ctx.select(POLICY.EXTERNAL_ID, POLICY.RUN_ID)
                 .from(POLICY)
-                .where(POLICY.RUN_ID.in(runIds)).and(POLICY.STOPPEDAT.isNotNull())
-                .fetchGroups(POLICY.RUN_ID, POLICY.NAME);
+                .where(POLICY.RUN_ID.in(runIds)).and(POLICY.STOPPED_AT.isNotNull())
+                .fetchGroups(POLICY.RUN_ID, POLICY.EXTERNAL_ID);
     }
 
     protected static void markAsStarting(DSLContext ctx, long runId){
@@ -117,5 +124,12 @@ class RunRepository
                 .set(Tables.RUN.STOPPED_AT, run.getStoppedAt())
                 .where(Tables.RUN.ID.eq(run.getId()))
                 .execute();
+    }
+
+    protected static int getRunType(DSLContext ctx, long runId) {
+        return ctx.select(Tables.RUN.RUN_TYPE)
+                .from(Tables.RUN)
+                .where(Tables.RUN.ID.eq(runId))
+                .fetchOneInto(Integer.class).intValue();
     }
 }

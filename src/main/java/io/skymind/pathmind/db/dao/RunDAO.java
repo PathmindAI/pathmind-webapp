@@ -10,6 +10,7 @@ import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import org.jooq.DSLContext;
@@ -65,6 +66,10 @@ public class RunDAO
         RunRepository.savePolicyFile(ctx, runId, externalId, policyFile);
     }
 
+    public void saveCheckpointFile(long runId, String externalId, byte[] checkpointFile) {
+        RunRepository.saveCheckpointFile(ctx, runId, externalId, checkpointFile);
+    }
+
     public Map<Long, List<String>> getStoppedPolicyNamesForRuns(List<Long> runIds) {
         return RunRepository.getStoppedPolicyNamesForRuns(ctx, runIds);
     }
@@ -101,7 +106,7 @@ public class RunDAO
         if (policies.size() > 0 && PolicyRepository.isTemporaryPolicy(ctx, run.getId(), RunUtils.TEMPORARY_POSTFIX)) {
             Policy policy = policies.get(0);
             //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
-            PolicyRepository.updatePolicyNameAndExternalId(transactionCtx, run.getId(), policy.getExternalId(), PolicyUtils.generatePolicyTempName(policy, run));
+            PolicyRepository.updatePolicyExternalId(transactionCtx, run.getId(), policy.getExternalId(), PolicyUtils.generatePolicyTempName(policy.getExternalId(), run.getRunType()));
         }
     }
 
@@ -159,4 +164,24 @@ public class RunDAO
             log.info("Cleaned Temporary Policies in " + runId);
         }
     }
+
+    public List<RewardScore> getScores(long runId, String policyExtId) {
+        Policy policy =  PolicyRepository.getPolicy(ctx, runId, policyExtId);
+
+        // check temporary policy
+        if (policy == null) {
+            int runType = RunRepository.getRunType(ctx, runId);
+            policy = PolicyRepository.getPolicy(ctx, runId, PolicyUtils.generatePolicyTempName(policyExtId, runType));
+        }
+
+        if (policy == null) {
+            return null;
+        }
+
+        PolicyUtils.processProgressJson(policy, policy.getProgress());
+
+        return policy.getScores();
+    }
+
+
 }

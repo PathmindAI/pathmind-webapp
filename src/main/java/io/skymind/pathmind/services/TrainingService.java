@@ -6,6 +6,7 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
@@ -18,6 +19,7 @@ import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.JSONB;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -28,6 +30,8 @@ import java.util.List;
 public class TrainingService
 {
     private static final int MINUTE = 60;
+
+    private static final String PATHMIND_ENVIRONMENT = "PathmindEnvironment";
 
     private final ExecutionProvider executionProvider;
     private final RunDAO runDAO;
@@ -54,8 +58,8 @@ public class TrainingService
                 Arrays.asList(1e-5),
                 Arrays.asList(0.99),
                 Arrays.asList(128),
-                15 * MINUTE,
-                true);
+                15 * MINUTE
+        );
     }
 
     public void startDiscoveryRun(Experiment exp){
@@ -70,8 +74,8 @@ public class TrainingService
                 Arrays.asList(1e-3, 1e-5), // Learning rate
                 Arrays.asList(0.9, 0.99), // gamma
                 Arrays.asList(64), // batch size
-                30 * MINUTE,
-                false);
+                30 * MINUTE
+        );
     }
 
     public void startDiscoveryRunJob2(Experiment exp) {
@@ -81,64 +85,68 @@ public class TrainingService
                 Arrays.asList(1e-3, 1e-5), // Learning rate
                 Arrays.asList(0.9, 0.99), // gamma
                 Arrays.asList(128), // batch size
-                30 * MINUTE,
-                true);
+                30 * MINUTE
+        );
     }
 
     public void startFullRun(Experiment exp, Policy policy){
         startRun(RunType.FullRun,
                 exp,
                 500,
-                Arrays.asList(policy.getHyperParameters().getLearningRate()),
-                Arrays.asList(policy.getHyperParameters().getGamma()),
-                Arrays.asList(policy.getHyperParameters().getBatchSize()),
+                Arrays.asList(policy.getLearningRate()),
+                Arrays.asList(policy.getGamma()),
+                Arrays.asList(policy.getBatchSize()),
                 -1, // no limit
-                true);
+                policy);          // base policy
     }
 
     private Policy generateTempPolicy(JobSpec spec, Run run) {
+        return generateTempPolicy(spec, run, null);
+    }
+
+    private Policy generateTempPolicy(JobSpec spec, Run run, JSONB progress) {
         // this is for ui filling gap until ui get a training progress from backend(rescale)
         Policy tempPolicy = new Policy();
 
-        String name = getTempPolicyName(Algorithm.PPO.toString(),
-                "PathmindEnvironment",
-                spec.getLearningRates(),
-                spec.getGammas(),
-                spec.getBatchSizes(),
-                run.getRunType());
-
         tempPolicy.setAlgorithmEnum(Algorithm.PPO);
-        tempPolicy.setName(name);
-        tempPolicy.setExternalId(name);
         tempPolicy.setRunId(run.getId());
+        tempPolicy.setLearningRate(spec.getLearningRates().get(0));
+        tempPolicy.setGamma(spec.getGammas().get(0));
+        tempPolicy.setBatchSize(spec.getBatchSizes().get(0));
+        tempPolicy.setExternalId(getTempPolicyName(tempPolicy, run.getRunType()));
+        tempPolicy.setName(PolicyUtils.parsePolicyName(tempPolicy.getExternalId()));
+        tempPolicy.setNotes(PolicyUtils.generateDefaultNotes(tempPolicy));
+
+        if (progress != null) {
+            tempPolicy.setProgress(progress.toString());
+        }
 
         return tempPolicy;
     }
 
-    // STEPH -> REFACTOR -> This should be in the DAO layer and not the service layer as this is information on how data is stored
-    // within the database. However for now I'm just quickly putting it here so that we can process the PR asap.
-    private String getTempPolicyName(String algorithm, String environment, List<Double> lrs, List<Double> gammas, List<Integer> batchSize, int runType) {
+    private String getTempPolicyName(Policy policy, int runType) {
         String hyperparameters = String.join(
                 ",",
-                "gamma=" + gammas.get(0),
-                "lr=" + lrs.get(0),
-                "sgd_minibatch_size=" + batchSize.get(0)
-        );
+                "gamma=" + policy.getGamma(),
+                "lr=" + policy.getLearningRate(),
+                "sgd_minibatch_size=" + policy.getBatchSize());
 
         String name = String.join(
                 "_",
-                algorithm,
-                environment,
+                policy.getAlgorithm(),
+                PATHMIND_ENVIRONMENT,
                 "0",
                 hyperparameters,
-                runType + RunUtils.TEMPORARY_POSTFIX
-        );
+                runType + RunUtils.TEMPORARY_POSTFIX);
 
         return name;
     }
 
-    private void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, boolean isAddTempPolicy)
-    {
+    private void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec) {
+        startRun(runType, exp, iterations, learningRates, gammas, batchSizes, maxTimeInSec, null);
+    }
+
+    private void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, Policy basePolicy) {
         final Run run = runDAO.createRun(exp, runType);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelDAO.getModel(exp.getModelId());
@@ -170,6 +178,19 @@ public class TrainingService
                 maxTimeInSec
         );
 
+        JSONB progress = null;
+        if (basePolicy != null) {
+            progress = policyDAO.getProgress(basePolicy.getId());
+
+            String checkpointFileId = executionProviderMetaDataDAO.getCheckPointFileKey(basePolicy.getExternalId());
+            if (checkpointFileId == null) {
+                checkpointFileId = executionProvider.uploadCheckpoint(policyDAO.getSnapshotFile(basePolicy.getId()));
+                executionProviderMetaDataDAO.putCheckPointFileKey(basePolicy.getExternalId(), checkpointFileId);
+            }
+
+            spec.setCheckpointFileId(checkpointFileId);
+        }
+
         // IMPORTANT -> There are multiple database calls within executionProvider.execute.
         final String executionId = executionProvider.execute(spec);
         executionProviderMetaDataDAO.putRescaleRunJobId(spec.getRunId(),executionId);
@@ -177,7 +198,6 @@ public class TrainingService
         runDAO.markAsStarting(run.getId());
         log.info("Started " + runType + " training job with id {}", executionId);
 
-        if(isAddTempPolicy)
-            policyDAO.insertPolicy(generateTempPolicy(spec, run));
+        policyDAO.insertPolicy(generateTempPolicy(spec, run, progress));
     }
 }

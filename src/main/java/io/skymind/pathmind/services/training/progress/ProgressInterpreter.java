@@ -2,8 +2,8 @@ package io.skymind.pathmind.services.training.progress;
 
 import com.opencsv.CSVReader;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.policy.HyperParameters;
 import io.skymind.pathmind.data.policy.RewardScore;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,7 +19,12 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class ProgressInterpreter {
+public class ProgressInterpreter
+{
+    private static final int ALGORITHM = 0;
+    private static final int NAME = 2;
+    private static final int HYPERPARAMETERS = 3;
+
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss");
 
     private static final int TRIAL_ID_LEN = 8;
@@ -30,9 +35,7 @@ public class ProgressInterpreter {
         policy.setExternalId(keyString);
 
         int keyLength = keyString.length();
-        String id = null;
         String dateTime = null;
-
 
         if (keyString.endsWith(RunUtils.TEMPORARY_POSTFIX)) {
             // looks something like this:
@@ -41,7 +44,6 @@ public class ProgressInterpreter {
         } else {
             // looks something like this:
             // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128_2019-08-05_13-56-455cdir_3f
-            id = keyString.substring(keyLength - TRIAL_ID_LEN);
             dateTime = keyString.substring(keyLength - TRIAL_ID_LEN - DATE_LEN, keyLength - TRIAL_ID_LEN);
             keyString = keyString.substring(0, keyLength - TRIAL_ID_LEN - DATE_LEN - 1);
         }
@@ -50,12 +52,16 @@ public class ProgressInterpreter {
         // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128
         List<String> list = Arrays.asList(keyString.split("_", 4));
 
-        policy.setAlgorithm(list.get(0));
+        policy.setAlgorithm(list.get(ALGORITHM));
+        policy.setName(list.get(NAME));
 
-        Arrays.stream(list.get(3).split(",")).forEach(it -> {
+        Arrays.stream(list.get(HYPERPARAMETERS).split(",")).forEach(it -> {
             final String[] split = it.split("=");
             setHyperParameter(policy, split[0], split[1]);
         });
+
+        // Generated from the hyperparameters
+        policy.setNotes(PolicyUtils.generateDefaultNotes(policy));
 
         try {
             if (dateTime != null) {
@@ -72,22 +78,31 @@ public class ProgressInterpreter {
 
     private static void setHyperParameter(Policy policy, String name, String value) {
         switch (name) {
-            case HyperParameters.LEARNING_RATE:
-                policy.getHyperParameters().setLearningRate(Double.valueOf(value));
+            case PolicyUtils.LEARNING_RATE:
+                policy.setLearningRate(Double.valueOf(value));
                 break;
-            case HyperParameters.GAMMA:
-                policy.getHyperParameters().setGamma(Double.valueOf(value));
+            case PolicyUtils.GAMMA:
+                policy.setGamma(Double.valueOf(value));
                 break;
-            case HyperParameters.BATCH_SIZE:
-                policy.getHyperParameters().setBatchSize(Integer.valueOf(value));
+            case PolicyUtils.BATCH_SIZE:
+                policy.setBatchSize(Integer.valueOf(value));
                 break;
         }
     }
 
     public static Policy interpret(Map.Entry<String, String> entry){
-        final Policy policy = interpretKey(entry.getKey());
+        return interpret(entry, null);
+    }
 
-        final ArrayList<RewardScore> scores = new ArrayList<>();
+    public static Policy interpret(Map.Entry<String, String> entry, List<RewardScore> previousScores){
+        final Policy policy = interpretKey(entry.getKey());
+        interpretScores(entry, previousScores, policy);
+        return policy;
+    }
+
+    private static void interpretScores(Map.Entry<String, String> entry, List<RewardScore> previousScores, Policy policy) {
+        final List<RewardScore> scores = previousScores == null || previousScores.size() == 0 ? new ArrayList<>() : previousScores;
+        final int lastIteration = scores.size() == 0 ? -1 : scores.get(scores.size() - 1).getIteration();
 
         try (CSVReader reader = new CSVReader(new StringReader(entry.getValue()))) {
 
@@ -96,22 +111,24 @@ public class ProgressInterpreter {
             reader.readNext();
 
             while((record = reader.readNext()) != null){
-                final String max = record[0];   // episode_reward_max
-                final String min = record[1];   // episode_reward_min
-                final String mean = record[2];  // episode_reward_mean
+                final int iter = Integer.parseInt(record[9]); // training_iteration
 
-                scores.add(new RewardScore(
-                        Double.valueOf(max.equals("nan") ? "NaN" : max),
-                        Double.valueOf(min.equals("nan") ? "NaN" : min),
-                        Double.valueOf(mean.equals("nan") ? "NaN" : mean),
-                        Integer.parseInt(record[9]) // training_iteration
-                ));
+                if (iter > lastIteration) {
+                    final String max = record[0];   // episode_reward_max
+                    final String min = record[1];   // episode_reward_min
+                    final String mean = record[2];  // episode_reward_mean
+
+                    scores.add(new RewardScore(
+                            Double.valueOf(max.equals("nan") ? "NaN" : max),
+                            Double.valueOf(min.equals("nan") ? "NaN" : min),
+                            Double.valueOf(mean.equals("nan") ? "NaN" : mean),
+                            iter
+                    ));
+                }
             }
             policy.setScores(scores);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        return policy;
     }
 }
