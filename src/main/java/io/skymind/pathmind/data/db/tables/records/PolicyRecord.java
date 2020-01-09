@@ -31,7 +31,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements Record14<Long, Long, String, String, JSONB, byte[], LocalDateTime, LocalDateTime, String, byte[], Double, Double, Integer, String> {
 
-    private static final long serialVersionUID = -861674272;
+    private static final long serialVersionUID = 23690080;
 
     /**
      * Setter for <code>public.policy.id</code>.
@@ -118,30 +118,30 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
     }
 
     /**
-     * Setter for <code>public.policy.startedat</code>.
+     * Setter for <code>public.policy.started_at</code>.
      */
-    public void setStartedat(LocalDateTime value) {
+    public void setStartedAt(LocalDateTime value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>public.policy.startedat</code>.
+     * Getter for <code>public.policy.started_at</code>.
      */
-    public LocalDateTime getStartedat() {
+    public LocalDateTime getStartedAt() {
         return (LocalDateTime) get(6);
     }
 
     /**
-     * Setter for <code>public.policy.stoppedat</code>.
+     * Setter for <code>public.policy.stopped_at</code>.
      */
-    public void setStoppedat(LocalDateTime value) {
+    public void setStoppedAt(LocalDateTime value) {
         set(7, value);
     }
 
     /**
-     * Getter for <code>public.policy.stoppedat</code>.
+     * Getter for <code>public.policy.stopped_at</code>.
      */
-    public LocalDateTime getStoppedat() {
+    public LocalDateTime getStoppedAt() {
         return (LocalDateTime) get(7);
     }
 
@@ -284,12 +284,12 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
 
     @Override
     public Field<LocalDateTime> field7() {
-        return Policy.POLICY.STARTEDAT;
+        return Policy.POLICY.STARTED_AT;
     }
 
     @Override
     public Field<LocalDateTime> field8() {
-        return Policy.POLICY.STOPPEDAT;
+        return Policy.POLICY.STOPPED_AT;
     }
 
     @Override
@@ -354,12 +354,12 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
 
     @Override
     public LocalDateTime component7() {
-        return getStartedat();
+        return getStartedAt();
     }
 
     @Override
     public LocalDateTime component8() {
-        return getStoppedat();
+        return getStoppedAt();
     }
 
     @Override
@@ -424,12 +424,12 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
 
     @Override
     public LocalDateTime value7() {
-        return getStartedat();
+        return getStartedAt();
     }
 
     @Override
     public LocalDateTime value8() {
-        return getStoppedat();
+        return getStoppedAt();
     }
 
     @Override
@@ -500,13 +500,13 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
 
     @Override
     public PolicyRecord value7(LocalDateTime value) {
-        setStartedat(value);
+        setStartedAt(value);
         return this;
     }
 
     @Override
     public PolicyRecord value8(LocalDateTime value) {
-        setStoppedat(value);
+        setStoppedAt(value);
         return this;
     }
 
@@ -579,7 +579,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
     /**
      * Create a detached, initialised PolicyRecord
      */
-    public PolicyRecord(Long id, Long runId, String externalId, String name, JSONB progress, byte[] file, LocalDateTime startedat, LocalDateTime stoppedat, String algorithm, byte[] snapshot, Double learningRate, Double gamma, Integer batchSize, String notes) {
+    public PolicyRecord(Long id, Long runId, String externalId, String name, JSONB progress, byte[] file, LocalDateTime startedAt, LocalDateTime stoppedAt, String algorithm, byte[] snapshot, Double learningRate, Double gamma, Integer batchSize, String notes) {
         super(Policy.POLICY);
 
         set(0, id);
@@ -588,8 +588,8 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
         set(3, name);
         set(4, progress);
         set(5, file);
-        set(6, startedat);
-        set(7, stoppedat);
+        set(6, startedAt);
+        set(7, stoppedAt);
         set(8, algorithm);
         set(9, snapshot);
         set(10, learningRate);
