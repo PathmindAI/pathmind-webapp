@@ -30,7 +30,8 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
-import io.skymind.pathmind.ui.components.buttons.BackButton;
+import io.skymind.pathmind.ui.components.navigation.breadcrumbs.Breadcrumbs;
+import io.skymind.pathmind.ui.components.navigation.breadcrumbs.BreadcrumbsData;
 import io.skymind.pathmind.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
@@ -155,9 +156,11 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		return models;
 	}
 
-	private Button getBackToProjectsButton() {
-		return new BackButton("Projects > " + projectName,
-				click -> UI.getCurrent().navigate(ProjectsView.class));
+	private Breadcrumbs getBackToProjectsButton() {
+		BreadcrumbsData breadcrumbsData = new BreadcrumbsData();
+		breadcrumbsData.setProjectName(projectName);
+		breadcrumbsData.setProjectId(projectId);
+		return new Breadcrumbs(breadcrumbsData);
 	}
 
 	@Override

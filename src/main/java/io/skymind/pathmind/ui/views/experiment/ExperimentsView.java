@@ -28,7 +28,8 @@ import io.skymind.pathmind.ui.components.PathmindTextArea;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
-import io.skymind.pathmind.ui.components.buttons.BackButton;
+import io.skymind.pathmind.ui.components.navigation.breadcrumbs.Breadcrumbs;
+import io.skymind.pathmind.ui.components.navigation.breadcrumbs.BreadcrumbsData;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.buttons.ShowRewardFunctionButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -78,7 +79,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         projectName = getProjectName();
 
         return WrapperUtils.wrapSizeFullVertical(
-                WrapperUtils.wrapWidthFullBetweenHorizontal(getBackToModelsButton(), getSearchBox()),
+                WrapperUtils.wrapWidthFullBetweenHorizontal(setBreadcrumbs(), getSearchBox()),
                 archivesTabPanel,
                 WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         WrapperUtils.wrapSizeFullVertical(
@@ -103,9 +104,17 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
      * Using any experiment's getProject().getId() since they should all be the same. I'm assuming at this point
      * that there has to be at least one experiment to be able to get here.
      */
-    private Button getBackToModelsButton() {
-        return new BackButton("Projects > " + projectName + " > Model #" + getModelNumber(),
-                click -> UI.getCurrent().navigate(ModelsView.class, experiments.get(0).getProject().getId()));
+    private Breadcrumbs setBreadcrumbs() {
+        long projectId = experiments.get(0).getProject().getId();
+        String modelNumber = ExperimentUtils.getModelNumber(experiments.get(0));
+        
+		BreadcrumbsData breadcrumbsData = new BreadcrumbsData();
+		breadcrumbsData.setProjectName(projectName);
+        breadcrumbsData.setProjectId(projectId);
+		breadcrumbsData.setModelNumber(modelNumber);
+		breadcrumbsData.setModelId(modelId);
+        
+		return new Breadcrumbs(breadcrumbsData);
     }
 
     private void setupGetObservationTextArea() {
@@ -172,11 +181,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     // It's either get the project name from the first experiment (which has to exist for the page to load) or
     // we need to do a separate database call.
     private String getProjectName() {
-        return experiments.get(0).getProject().getName();
-    }
-
-    private String getModelNumber() {
-        return experiments.get(0).getModel().getName();
+        return ExperimentUtils.getProjectName(experiments.get(0));
     }
 
     @Override
