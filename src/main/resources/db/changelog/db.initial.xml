@@ -642,6 +642,12 @@
         </sql>
         <addUniqueConstraint tableName="PROJECT" constraintName="UNIQUE_PROJECT_NAME_PATHMIND_USER_ID" columnNames="PATHMIND_USER_ID, NAME" />
     </changeSet>
+    
+    <changeSet id="20200103-01" author="onur@vaadin.com">
+        <addColumn tableName="RUN">
+         	<column name="NOTIFICATION_SENT_AT" type="DATETIME"/>
+        </addColumn>
+    </changeSet>
 
     <!-- #681 and #682 - Need to name the StartedAt and StoppedAt columns with an underscore -->
     <changeSet id="20200109-01" author="steph@followsteph.com">
