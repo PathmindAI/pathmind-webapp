@@ -3,11 +3,10 @@ package io.skymind.pathmind.ui.views.errors;
 import java.time.LocalDateTime;
 import java.util.Random;
 
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.server.ErrorEvent;
 import com.vaadin.flow.server.ErrorHandler;
 
-import io.skymind.pathmind.ui.components.CloseableNotification;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -18,12 +17,9 @@ public class PathmindErrorHandler implements ErrorHandler {
 		String errorId = generateUniqueErrorId();
 		
 		log.error(String.format("Error #%s: %s", errorId, event.getThrowable().getMessage()), event.getThrowable());
-		String errorMessage = String.format("An unexpected error occurred: #%s <br>Please contact Skymind for assistance.", errorId);
+		String errorMessage = String.format("<b>An unexpected error occurred</b><br>Please contact Skymind for assistance.<br>#%s", errorId);
 		
-		CloseableNotification errorNotification = new CloseableNotification(errorMessage);
-		errorNotification.setDuration(-1);
-		errorNotification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-		errorNotification.open();
+		NotificationUtils.showError(errorMessage);
 	}
 	
 	/**
