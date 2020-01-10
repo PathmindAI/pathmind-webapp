@@ -12,7 +12,7 @@ spec:
   maxSize: 1
   minSize: 1
   nodeLabels:
-    kops.k8s.io/instancegroup: "{{MAX_PRICE}}"
+    kops.k8s.io/instancegroup: "{{IG_NAME}}"
     on-demand: "false"
   role: Node
   subnets:
