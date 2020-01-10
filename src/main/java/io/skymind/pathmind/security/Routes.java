@@ -3,7 +3,7 @@ package io.skymind.pathmind.security;
 public class Routes {
     public static final String WITH_PARAMETER = "/**";
 
-    public static final String ROOT_URL = "/";
+    public static final String ROOT_URL = "";
 
     public static final String LOGIN_URL = "sign-in";
     public static final String LOGIN_PROCESSING_URL = "sign-in";

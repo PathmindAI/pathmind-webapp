@@ -1,15 +1,16 @@
 package io.skymind.pathmind.data;
 
+import java.time.LocalDateTime;
+
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
-
-import java.time.LocalDateTime;
 
 public class Run extends Data
 {
 	private int runType;
 	private LocalDateTime startedAt;
 	private LocalDateTime stoppedAt;
+	private LocalDateTime notificationSentAt;
 	private long experimentId;
 	private int status;
 
@@ -105,5 +106,13 @@ public class Run extends Data
 
 	public void setProject(Project project) {
 		this.project = project;
+	}
+
+	public LocalDateTime getNotificationSentAt() {
+		return notificationSentAt;
+	}
+
+	public void setNotificationSentAt(LocalDateTime notificationSentAt) {
+		this.notificationSentAt = notificationSentAt;
 	}
 }

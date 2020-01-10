@@ -14,8 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.vaadin.flow.server.ServletHelper.RequestType;
 import com.vaadin.flow.shared.ApplicationConstants;
 
-import io.skymind.pathmind.ui.views.CustomRouteNotFoundError;
-import io.skymind.pathmind.ui.views.login.EmailVerificationView;
 import io.skymind.pathmind.ui.views.login.LoginView;
 import io.skymind.pathmind.ui.views.login.ResetPasswordView;
 import io.skymind.pathmind.ui.views.login.SignUpView;
@@ -90,12 +88,9 @@ public class SecurityUtils
 	 */
 	public static boolean isAccessGranted(Class<?> securedClass) {
 		final boolean publicView = LoginView.class.equals(securedClass)
-				//|| AccessDeniedView.class.equals(securedClass)
 				|| SignUpView.class.equals(securedClass)
 				|| ResetPasswordView.class.equals(securedClass)
-				|| EmailVerificationView.class.equals(securedClass)
-				|| VerificationEmailSentView.class.equals(securedClass)
-				|| CustomRouteNotFoundError.class.equals(securedClass);
+				|| VerificationEmailSentView.class.equals(securedClass);
 
 		// Always allow access to public views
 		if (publicView) {
