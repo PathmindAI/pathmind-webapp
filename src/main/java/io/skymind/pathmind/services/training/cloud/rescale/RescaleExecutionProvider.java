@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
+//@Service
 @Slf4j
 public class RescaleExecutionProvider implements ExecutionProvider {
 

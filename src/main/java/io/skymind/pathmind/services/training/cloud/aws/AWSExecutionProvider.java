@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//@Service
+@Service
 @Slf4j
 public class AWSExecutionProvider implements ExecutionProvider {
     private final AWSApiClient client;
@@ -95,9 +95,11 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public Map<String, String> progress(String jobHandle) {
-        client.listObjects("bucketName", jobHandle + "/output/").getObjectSummaries().stream()
+        client.listObjects(bucketName, jobHandle + "/output/").getObjectSummaries().stream()
                 .forEach(os -> log.info("o* " + os));
-        throw new UnsupportedOperationException("Not currently supported");
+
+        return null;
+//        throw new UnsupportedOperationException("Not currently supported");
     }
 
     @Override
@@ -162,8 +164,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 ));
 
 //                files.addAll(this.fileManager.getFiles(rllibVersion));
-                files.add("aws2 s3 cp s3://sagemaker-files.pathmind.com/rllibpack.tar.gz rllibpack.tar.gz");
-                files.add("aws2 s3 cp s3://sagemaker-files.pathmind.com/nativerl-1.0.0-SNAPSHOT-bin.zip nativerl-1.0.0-SNAPSHOT-bin.zip");
+                files.add("aws2 s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/rllibpack.tar.gz rllibpack.tar.gz");
+                files.add("aws2 s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/nativerl-1.0.0-SNAPSHOT-bin.zip nativerl-1.0.0-SNAPSHOT-bin.zip");
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported RLLib Version: " + rllibVersion);
@@ -181,7 +183,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 ));
 
 //                files.addAll(this.fileManager.getFiles(anylogicVersion));
-                files.add("aws2 s3 cp s3://sagemaker-files.pathmind.com/baseEnv.zip baseEnv.zip");
+                files.add("aws2 s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/baseEnv.zip baseEnv.zip");
                 break;
             case VERSION_8_5_1:
                 instructions.addAll(Arrays.asList(
@@ -192,7 +194,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 ));
 
 //                files.addAll(this.fileManager.getFiles(anylogicVersion));
-                files.add("aws2 s3 cp s3://sagemaker-files.pathmind.com/baseEnv.zip baseEnv.zip");
+                files.add("aws2 s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/baseEnv.zip baseEnv.zip");
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported AnyLogic Version: " + anylogicVersion);
@@ -207,7 +209,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 ));
 
 //                files.addAll(this.fileManager.getFiles(pathmindHelperVersion));
-                files.add("aws2 s3 cp s3://sagemaker-files.pathmind.com/PathmindPolicy.jar PathmindPolicy.jar");
+                files.add("aws2 s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/PathmindPolicy.jar PathmindPolicy.jar");
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported Pathmind Helper Version: " + pathmindHelperVersion);

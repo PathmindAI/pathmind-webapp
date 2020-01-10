@@ -24,7 +24,7 @@ import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import lombok.extern.slf4j.Slf4j;
 
-@Service
+//@Service
 @Slf4j
 public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater {
     private final RescaleExecutionProvider provider;

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-//@Service
+@Service
 @Slf4j
 public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
 
@@ -33,6 +33,10 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         final List<Long> runIds = runDAO.getExecutingRuns();
         final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(runIds);
         final Map<Long, String> rescaleJobIds = executionProviderMetaDataDAO.getRescaleRunJobIds(runIds);
+
+        runIds.parallelStream().forEach(run -> {
+            provider.progress("id" + run);
+        });
 
         log.info("kepricondebug1 : " + runIds);
         log.info("kepricondebug2 : " + rescaleJobIds);

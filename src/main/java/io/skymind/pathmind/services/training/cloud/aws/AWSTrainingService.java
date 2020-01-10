@@ -1,4 +1,4 @@
-package io.skymind.pathmind.services.training.cloud.rescale;
+package io.skymind.pathmind.services.training.cloud.aws;
 
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
@@ -18,10 +18,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-//@Service
+@Service
 @Slf4j
-public class RescaleTrainingService extends TrainingService {
-    public RescaleTrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
+public class AWSTrainingService extends TrainingService {
+    public AWSTrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
         super(executionProvider, runDAO, modelDAO, policyDAO, executionProviderMetaDataDAO);
     }
 
@@ -30,19 +30,14 @@ public class RescaleTrainingService extends TrainingService {
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelDAO.getModel(exp.getModelId());
 
-        // Get model file id, either uploading it if necessary, or just getting it from the metadata database table
-        String modelFileId = executionProviderMetaDataDAO.getModelFileKey(exp.getModelId());
-        if (modelFileId == null) {
-            modelFileId = executionProvider.uploadModel(modelDAO.getModelFile(model.getId()));
-            executionProviderMetaDataDAO.putModelFileKey(exp.getModelId(), modelFileId);
-        }
+        executionProvider.uploadModel(run.getId(), modelDAO.getModelFile(model.getId()));
 
         final JobSpec spec = new JobSpec(
                 exp.getProject().getPathmindUserId(),
                 model.getId(),
                 exp.getId(),
                 run.getId(),
-                modelFileId,
+                null,
                 "", // not collected via UI yet
                 "",    // not collected via UI yet
                 exp.getRewardFunction(),
@@ -79,4 +74,6 @@ public class RescaleTrainingService extends TrainingService {
 
         policyDAO.insertPolicy(generateTempPolicy(spec, run, progress));
     }
+
+
 }
