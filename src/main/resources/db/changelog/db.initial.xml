@@ -617,7 +617,7 @@
         <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191220_01"/>
     </changeSet>
 
-    <!-- #3870 - Policy.notes and Policy.name should be in the database -->
+    <!-- #387 - Policy.notes and Policy.name should be in the database -->
     <changeSet id="20191229-01" author="steph@followsteph.com">
         <addColumn tableName="POLICY">
             <column name="NOTES" type="VARCHAR"/>
@@ -641,6 +641,22 @@
             UPDATE PROJECT SET NAME = NAME || '-' || ID where (PATHMIND_USER_ID, NAME) IN (SELECT PATHMIND_USER_ID, NAME FROM PROJECT GROUP BY PATHMIND_USER_ID, NAME HAVING COUNT(NAME) > 1);
         </sql>
         <addUniqueConstraint tableName="PROJECT" constraintName="UNIQUE_PROJECT_NAME_PATHMIND_USER_ID" columnNames="PATHMIND_USER_ID, NAME" />
+    </changeSet>
+    
+    <changeSet id="20200103-01" author="onur@vaadin.com">
+        <addColumn tableName="RUN">
+         	<column name="NOTIFICATION_SENT_AT" type="DATETIME"/>
+        </addColumn>
+    </changeSet>
+
+    <!-- #681 and #682 - Need to name the StartedAt and StoppedAt columns with an underscore -->
+    <changeSet id="20200109-01" author="steph@followsteph.com">
+        <renameColumn tableName="POLICY" oldColumnName="STARTEDAT" newColumnName="STARTED_AT"/>
+        <renameColumn tableName="POLICY" oldColumnName="STOPPEDAT" newColumnName="STOPPED_AT"/>
+        <rollback>
+            <renameColumn tableName="POLICY" oldColumnName="STARTED_AT" newColumnName="STARTEDAT"/>
+            <renameColumn tableName="POLICY" oldColumnName="STOPPED_AT" newColumnName="STOPPEDAT"/>
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>
