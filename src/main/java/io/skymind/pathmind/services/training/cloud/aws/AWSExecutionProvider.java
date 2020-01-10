@@ -1,11 +1,13 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.ExperimentState;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,11 +27,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AWSExecutionProvider implements ExecutionProvider {
     private final AWSApiClient client;
+    private final ObjectMapper objectMapper;
 
     private final String bucketName = "test-training-dynamic-files.pathmind.com";
 
-    public AWSExecutionProvider(AWSApiClient client) {
+    public AWSExecutionProvider(AWSApiClient client, ObjectMapper objectMapper) {
         this.client = client;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -90,16 +95,32 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public RunStatus status(String jobHandle) {
-        throw new UnsupportedOperationException("Not currently supported");
+//        List<String> errors = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_ERROR);
+//        List<String> completes = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_COMPLETE);
+//        List<String> trials = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_LIST).stream()
+//                .filter(it -> !it.endsWith(".json"))
+//                .collect(Collectors.toList());
+
+        // todo need to change to use database once Daniel create proper database(TRAINER_JOB)
+        ExperimentState experimentState = getExperimentState(jobHandle);
+
+        if (experimentState != null) {
+            return RunStatus.Running;
+        } else {
+            return RunStatus.NotStarted;
+        }
     }
 
     @Override
     public Map<String, String> progress(String jobHandle) {
-        client.listObjects(bucketName, jobHandle + "/output/").getObjectSummaries().stream()
-                .forEach(os -> log.info("o* " + os));
-
-        return null;
-//        throw new UnsupportedOperationException("Not currently supported");
+        return client.listObjects(bucketName, jobHandle + "/output/").getObjectSummaries().parallelStream()
+                .filter(it -> it.getKey().endsWith("progress.csv"))
+                .map(it -> {
+                    final String key = new File(it.getKey()).getParentFile().getName();
+                    final String contents = new String(client.fileContents(bucketName, it.getKey()));
+                    return Map.entry(key, contents);
+                })
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     @Override
@@ -130,6 +151,39 @@ public class AWSExecutionProvider implements ExecutionProvider {
     @Override
     public ExecutionProviderMetaDataDAO.ExecutionProviderClass executionProviderClass() {
         return ExecutionProviderMetaDataDAO.ExecutionProviderClass.AWS;
+    }
+
+    public Optional<byte[]> getFile(String jobHandle, String fileName) {
+        return client.listObjects(bucketName, jobHandle + "/output/").getObjectSummaries().parallelStream()
+                .filter(it -> it.getKey().endsWith(fileName))
+                .findAny()
+                .map(it -> client.fileContents(bucketName, it.getKey()));
+    }
+
+    public List<String> getTrialStatus(String jobHandle, String fileName) {
+        Optional<byte[]> listOpt = getFile(jobHandle, fileName);
+        if (listOpt.isPresent()) {
+            return Arrays.stream(new String(listOpt.get()).split("\n"))
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public ExperimentState getExperimentState(String jobHandle) {
+        Optional<ExperimentState> expOpt = client.listObjects(bucketName, jobHandle + "/output/").getObjectSummaries().parallelStream()
+                .filter(it -> it.getKey().endsWith(".json") && it.getKey().contains("experiment_state-"))
+                .findAny()
+                .map(it -> {
+                    try {
+                        return objectMapper.readValue(client.fileContents(bucketName, it.getKey()), ExperimentState.class);
+                    } catch (IOException e) {
+                        log.error(e.getMessage(), e);
+                        return  null;
+                    }
+                });
+
+        return expOpt != null && expOpt.isPresent() ? expOpt.get() : null;
     }
 
     private void installRllib(RLLib rllibVersion, List<String> instructions, List<String> files) {
