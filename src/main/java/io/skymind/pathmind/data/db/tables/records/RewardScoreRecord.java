@@ -29,7 +29,7 @@ import org.jooq.impl.TableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RewardScoreRecord extends TableRecordImpl<RewardScoreRecord> implements Record5<Long, BigDecimal, BigDecimal, BigDecimal, Integer> {
 
-    private static final long serialVersionUID = -1645748024;
+    private static final long serialVersionUID = 215963636;
 
     /**
      * Setter for <code>public.reward_score.policy_id</code>.
@@ -46,44 +46,44 @@ public class RewardScoreRecord extends TableRecordImpl<RewardScoreRecord> implem
     }
 
     /**
-     * Setter for <code>public.reward_score.max</code>.
-     */
-    public void setMax(BigDecimal value) {
-        set(1, value);
-    }
-
-    /**
-     * Getter for <code>public.reward_score.max</code>.
-     */
-    public BigDecimal getMax() {
-        return (BigDecimal) get(1);
-    }
-
-    /**
      * Setter for <code>public.reward_score.min</code>.
      */
     public void setMin(BigDecimal value) {
-        set(2, value);
+        set(1, value);
     }
 
     /**
      * Getter for <code>public.reward_score.min</code>.
      */
     public BigDecimal getMin() {
-        return (BigDecimal) get(2);
+        return (BigDecimal) get(1);
     }
 
     /**
      * Setter for <code>public.reward_score.mean</code>.
      */
     public void setMean(BigDecimal value) {
-        set(3, value);
+        set(2, value);
     }
 
     /**
      * Getter for <code>public.reward_score.mean</code>.
      */
     public BigDecimal getMean() {
+        return (BigDecimal) get(2);
+    }
+
+    /**
+     * Setter for <code>public.reward_score.max</code>.
+     */
+    public void setMax(BigDecimal value) {
+        set(3, value);
+    }
+
+    /**
+     * Getter for <code>public.reward_score.max</code>.
+     */
+    public BigDecimal getMax() {
         return (BigDecimal) get(3);
     }
 
@@ -122,17 +122,17 @@ public class RewardScoreRecord extends TableRecordImpl<RewardScoreRecord> implem
 
     @Override
     public Field<BigDecimal> field2() {
-        return RewardScore.REWARD_SCORE.MAX;
-    }
-
-    @Override
-    public Field<BigDecimal> field3() {
         return RewardScore.REWARD_SCORE.MIN;
     }
 
     @Override
-    public Field<BigDecimal> field4() {
+    public Field<BigDecimal> field3() {
         return RewardScore.REWARD_SCORE.MEAN;
+    }
+
+    @Override
+    public Field<BigDecimal> field4() {
+        return RewardScore.REWARD_SCORE.MAX;
     }
 
     @Override
@@ -147,17 +147,17 @@ public class RewardScoreRecord extends TableRecordImpl<RewardScoreRecord> implem
 
     @Override
     public BigDecimal component2() {
-        return getMax();
-    }
-
-    @Override
-    public BigDecimal component3() {
         return getMin();
     }
 
     @Override
-    public BigDecimal component4() {
+    public BigDecimal component3() {
         return getMean();
+    }
+
+    @Override
+    public BigDecimal component4() {
+        return getMax();
     }
 
     @Override
@@ -172,17 +172,17 @@ public class RewardScoreRecord extends TableRecordImpl<RewardScoreRecord> implem
 
     @Override
     public BigDecimal value2() {
-        return getMax();
-    }
-
-    @Override
-    public BigDecimal value3() {
         return getMin();
     }
 
     @Override
-    public BigDecimal value4() {
+    public BigDecimal value3() {
         return getMean();
+    }
+
+    @Override
+    public BigDecimal value4() {
+        return getMax();
     }
 
     @Override
@@ -198,19 +198,19 @@ public class RewardScoreRecord extends TableRecordImpl<RewardScoreRecord> implem
 
     @Override
     public RewardScoreRecord value2(BigDecimal value) {
-        setMax(value);
-        return this;
-    }
-
-    @Override
-    public RewardScoreRecord value3(BigDecimal value) {
         setMin(value);
         return this;
     }
 
     @Override
-    public RewardScoreRecord value4(BigDecimal value) {
+    public RewardScoreRecord value3(BigDecimal value) {
         setMean(value);
+        return this;
+    }
+
+    @Override
+    public RewardScoreRecord value4(BigDecimal value) {
+        setMax(value);
         return this;
     }
 
@@ -244,13 +244,13 @@ public class RewardScoreRecord extends TableRecordImpl<RewardScoreRecord> implem
     /**
      * Create a detached, initialised RewardScoreRecord
      */
-    public RewardScoreRecord(Long policyId, BigDecimal max, BigDecimal min, BigDecimal mean, Integer iteration) {
+    public RewardScoreRecord(Long policyId, BigDecimal min, BigDecimal mean, BigDecimal max, Integer iteration) {
         super(RewardScore.REWARD_SCORE);
 
         set(0, policyId);
-        set(1, max);
-        set(2, min);
-        set(3, mean);
+        set(1, min);
+        set(2, mean);
+        set(3, max);
         set(4, iteration);
     }
 }
