@@ -9,8 +9,11 @@ import java.math.BigDecimal;
  */
 public class JooqUtils
 {
-    // We actually have to return the value for NaN rather than the constant for JOOQ to work.
     public static BigDecimal getSafeBigDecimal(double value) {
         return Double.isNaN(value) ? null : new BigDecimal(value);
+    }
+
+    public static double getSafeDouble(BigDecimal value) {
+        return value == null ? Double.NaN : value.doubleValue();
     }
 }

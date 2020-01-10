@@ -678,7 +678,7 @@
         </createIndex>
         <!-- Commenting out the drop for now. Either it will be added as a new changeset or I will re-instate it before I commit this change. -->
         <!-- <dropColumn tableName="POLICY" columnName="progress"/> -->
-        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200101_01"/>
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200110_01"/>
         <rollback>
             <!-- We cannot rollback the progress column once it's deleted. -->
             <dropIndex tableName="REWARD_SCORE" indexName="REWARD_SCORE_POLICY_ID_INDEX"/>

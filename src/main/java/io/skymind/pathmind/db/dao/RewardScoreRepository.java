@@ -20,7 +20,11 @@ class RewardScoreRepository
 				.from(REWARD_SCORE)
 				.where(REWARD_SCORE.POLICY_ID.eq(policyId))
 				.orderBy(REWARD_SCORE.ITERATION)
-				.fetchInto(RewardScore.class);
+				.fetch(record -> new RewardScore(
+						JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MIN)),
+						JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MEAN)),
+						JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MAX)),
+						record.get(REWARD_SCORE.ITERATION)));
     }
 
 	protected static Map<Long, List<RewardScore>> getRewardScoresForPolicies(DSLContext ctx, List<Long> policyIds) {
@@ -28,7 +32,14 @@ class RewardScoreRepository
 				.from(REWARD_SCORE)
 				.where(REWARD_SCORE.POLICY_ID.in(policyIds))
 				.orderBy(REWARD_SCORE.POLICY_ID, REWARD_SCORE.ITERATION)
-				.fetchGroups(REWARD_SCORE.POLICY_ID, RewardScore.class);
+				.fetchGroups(REWARD_SCORE.POLICY_ID, record -> {
+					System.out.println("Here");
+					return new RewardScore(
+							JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MIN)),
+							JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MEAN)),
+							JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MAX)),
+							record.get(REWARD_SCORE.ITERATION));
+				});
 	}
 
 	protected static int getMaxRewardScoreIteration(DSLContext ctx, long policyId) {
