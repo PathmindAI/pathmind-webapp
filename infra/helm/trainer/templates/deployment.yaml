@@ -48,5 +48,7 @@ spec:
             value: "{{ .Values.env.NAME }}"
           - name: KOPS_STATE_STORE
             value: "{{ .Values.env.KOPS_STATE_STORE }}"
+          - name: RL_IMAGE
+            value: "{{ .Values.env.RL_IMAGE }}"
 
 

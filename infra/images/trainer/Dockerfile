@@ -5,7 +5,9 @@ WORKDIR /app
 
 #Copy files
 COPY spot_ig_template.yaml .
-COPY trigger.sh .
+COPY trigger.py .
+COPY requirements.txt .
+COPY rl_training_deployment.yaml .
 
 #basic packages
 RUN apt-get update && \
@@ -16,7 +18,7 @@ RUN apt-get update && \
 	apt-get install jq -y && \
 	curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
 	python get-pip.py && \
-	pip install awscli && \
+	pip install -r requirements.txt && \
 	curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.17.0/bin/linux/amd64/kubectl && \
 	chmod +x ./kubectl && \
 	mv ./kubectl /usr/local/bin/kubectl && \

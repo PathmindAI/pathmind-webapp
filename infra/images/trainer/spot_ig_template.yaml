@@ -14,7 +14,10 @@ spec:
   nodeLabels:
     kops.k8s.io/instancegroup: "{{IG_NAME}}"
     on-demand: "false"
+    dedicated: {{IG_NAME}}
   role: Node
+  taints:
+  - dedicated={{IG_NAME}}:NoSchedule
   subnets:
   - us-east-1a
   - us-east-1b
