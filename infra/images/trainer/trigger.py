@@ -6,6 +6,7 @@ import json
 import sh
 import traceback
 import logging
+import psycopg2
 
 def load_ig_template():
     """
@@ -33,6 +34,7 @@ def process_message(message):
     s3bucket=body['S3Bucket']
     s3path=body['S3Path']
     job_id=s3path
+    ReceiptHandle=(message['Messages'][0]['ReceiptHandle']
 
     #replace values in template an dcreate spot ig yaml file
     JOB_IG_FILE=job_id+"_"+IG_FILE
@@ -55,6 +57,12 @@ def process_message(message):
             line=line.replace('{{ENVIRONMENT}}',ENVIRONMENT)
             file.write(line+'\n')
 
+    #Delete message
+    response = client.delete_message(
+        QueueUrl=SQS_URL
+        ReceiptHandle=ReceiptHandle
+    )
+
     #Create spot ig and deployment
     try:
         sh.kops('create','-f',JOB_IG_FILE)
@@ -62,6 +70,7 @@ def process_message(message):
         sh.kubectl('apply','-f',JOB_DEPLOYMENT_FILE)
     except Exception as e:
         logging.error(traceback.format_exc())
+
 
 def main():
     """

@@ -16,6 +16,7 @@ RUN apt-get update && \
 	apt-get install curl -y && \
 	apt-get install vim -y && \
 	apt-get install jq -y && \
+	apt-get install libpq-dev -y && \
 	curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
 	python get-pip.py && \
 	pip install -r requirements.txt && \

@@ -32,5 +32,5 @@ RUN apt-get update && \
 #use bsdtar instead of tar
 RUN cp /usr/bin/bsdtar /bin/tar
 
-CMD ["bash","-c","sleep 10000000"]
+CMD ["bash","-c","/app/do_training.sh"]
 

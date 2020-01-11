@@ -2,6 +2,7 @@ variable "region" { default = "us-east-1"}
 variable "awsaccesskey" {}
 variable "awssecretaccesskey" {}
 variable "DB_URL" {}
+variable "DB_URL_CLI" {}
 variable "SEGMENT_KEY" {}
 variable "environment" { }
 variable "db_allocated_storage" { }

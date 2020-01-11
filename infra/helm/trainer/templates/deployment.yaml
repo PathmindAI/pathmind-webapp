@@ -50,5 +50,11 @@ spec:
             value: "{{ .Values.env.KOPS_STATE_STORE }}"
           - name: RL_IMAGE
             value: "{{ .Values.env.RL_IMAGE }}"
+          - name: DB_URL_CLI
+            valueFrom:
+              secretKeyRef:
+                name: dburlcli
+                key: DB_URL_CLI
+
 
 
