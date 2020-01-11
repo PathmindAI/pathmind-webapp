@@ -1,16 +1,12 @@
 package io.skymind.pathmind.data.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-import io.skymind.pathmind.utils.ObjectMapperHolder;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,8 +23,6 @@ public class PolicyUtils
 
     private static final String lrPatternStr = "lr=.*,";
     private static final Pattern lrPattern = Pattern.compile(lrPatternStr);
-
-    private static final ObjectMapper OBJECT_MAPPER = ObjectMapperHolder.getJsonMapper();
 
     private PolicyUtils() {
     }
@@ -86,25 +80,6 @@ public class PolicyUtils
         } catch (Exception e) {
             log.debug(e.getMessage(), e);
             return null;
-        }
-    }
-
-    public static void processProgressJson(Policy policy, String progressString)
-    {
-        if(StringUtils.isEmpty(progressString))
-            return;
-
-        try {
-            // STEPH -> Is this needed any more other than the setScores? Don't we already have all of this in the database? Once
-            // the scores are in the database all this parsing can also be deleted.
-            final Policy jsonPolicy = OBJECT_MAPPER.readValue(progressString, Policy.class);
-            policy.setScores(jsonPolicy.getScores());
-            policy.setStartedAt(jsonPolicy.getStartedAt());
-            policy.setStoppedAt(jsonPolicy.getStoppedAt());
-            policy.setAlgorithm(jsonPolicy.getAlgorithm());
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException(e);
         }
     }
 

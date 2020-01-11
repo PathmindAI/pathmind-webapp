@@ -1,9 +1,7 @@
 package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.data.*;
-import io.skymind.pathmind.data.utils.PolicyUtils;
 import org.jooq.DSLContext;
-import org.jooq.JSONB;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
@@ -104,7 +102,7 @@ class PolicyRepository
 	}
 
 	protected static List<Policy> getPoliciesForExperiment(DSLContext ctx, long experimentId) {
-		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.RUN_ID, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
+		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.RUN_ID, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
 				.select(EXPERIMENT.asterisk())
 				.select(RUN.asterisk())
 				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.ARCHIVED)
@@ -117,18 +115,8 @@ class PolicyRepository
 				.where(RUN.EXPERIMENT_ID.eq(experimentId))
 				.orderBy(POLICY.ID)
 				.fetch(record -> {
-					final Policy policy = new Policy();
-					policy.setExternalId(record.get(POLICY.EXTERNAL_ID));
-					policy.setId(record.get(POLICY.ID));
-					policy.setName(record.get(POLICY.NAME));
-					policy.setRunId(record.get(POLICY.RUN_ID));
-					policy.setLearningRate(record.get(POLICY.LEARNING_RATE));
-					policy.setGamma(record.get(POLICY.GAMMA));
-					policy.setBatchSize(record.get(POLICY.BATCH_SIZE));
-					policy.setNotes(record.get(POLICY.NOTES));
-
+					Policy policy = record.into(POLICY).into(Policy.class);
 					addParentDataModelObjects(record, policy);
-
 					return policy;
 				});
 

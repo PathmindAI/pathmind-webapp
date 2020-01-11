@@ -1,20 +1,5 @@
 package io.skymind.pathmind.db.dao;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-
-import org.jooq.DSLContext;
-import org.jooq.JSONB;
-import org.jooq.impl.DSL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
@@ -43,11 +28,9 @@ public class RunDAO
     private static Logger log = LoggerFactory.getLogger(RunDAO.class);
 
     private final DSLContext ctx;
-    private final ObjectMapper mapper;
 
-    public RunDAO(DSLContext ctx, ObjectMapper mapper) {
+    public RunDAO(DSLContext ctx) {
         this.ctx = ctx;
-        this.mapper = mapper;
     }
 
     public Run getRun(long runId) {
@@ -169,6 +152,7 @@ public class RunDAO
             // but we should look at putting this after the transaction has been completed. The only issue is that it's a list of policies that may need
             // to be updated. As in this should technically be placed outside of the transaction in updateRun() rather than here. Again it's no worse then what we
             // have in place today, and if I'm correct the worse place is that we'd have an update that isn't legit and it would be corrected on the next update anyways.
+            // Created a github issue:
             EventBus.post(new PolicyUpdateBusEvent(policy));
         }
     }

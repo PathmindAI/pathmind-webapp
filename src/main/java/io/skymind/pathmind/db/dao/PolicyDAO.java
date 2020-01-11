@@ -6,12 +6,10 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import org.jooq.DSLContext;
-import org.jooq.JSONB;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Repository
 public class PolicyDAO
