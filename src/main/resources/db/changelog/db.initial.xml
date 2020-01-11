@@ -676,7 +676,7 @@
         <createIndex tableName="REWARD_SCORE" indexName="REWARD_SCORE_POLICY_ID_INDEX">
             <column name="POLICY_ID"/>
         </createIndex>
-        <!-- Commenting out the drop for now. Either it will be added as a new changeset or I will re-instate it before I commit this change. -->
+        <!-- The POLICY.PROGRESS column will be added as a new changeset in a follow-up PR as a safety precaution. -->
         <!-- <dropColumn tableName="POLICY" columnName="progress"/> -->
         <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200110_01"/>
         <rollback>
