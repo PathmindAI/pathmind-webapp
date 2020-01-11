@@ -2,6 +2,7 @@ package io.skymind.pathmind.services.training.cloud.aws;
 
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
@@ -40,21 +41,24 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         final List<Long> runIds = runDAO.getExecutingRuns();
         final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(runIds);
 //        final Map<Long, String> rescaleJobIds = executionProviderMetaDataDAO.getRescaleRunJobIds(runIds);
+        final List<Run>  runs = runDAO.getRuns(runIds);
 
         log.info("kepricondebug0 : " + runIds);
 
-        runIds.parallelStream().forEach(runId -> {
+        runs.parallelStream().forEach(run -> {
 
-            String jobHandle = "id" + runId;
-            RunStatus runStatus = provider.status("id" + runId);
+            String jobHandle = "id" + run.getId();
+            RunStatus runStatus = provider.status(jobHandle);
 
-            final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, runId);
+            final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId());
             final List<String> finishedPolicyNamesFromAWS = getTerminatedPolicesFromProvider(jobHandle);
 
 
             log.info("kepricondebug1 : " + runStatus);
             log.info("kepricondebug2 : " + policies.stream().map(Policy::getExternalId).collect(Collectors.toList()));
             log.info("kepricondebug3 : " + finishedPolicyNamesFromAWS);
+
+            runDAO.updateRun(run, runStatus, policies);
         });
 
 
