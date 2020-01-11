@@ -340,23 +340,24 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 "touch database/db.properties",
 
                 // actually start training
-                "source train.sh",
+                "source train.sh"
+//                "source train.sh",
 
-                // temporary workaround, as train.sh as it is in nativerl with id doRCLd, only takes care of a single policy file
-                // by doing this here, we can iterate a bit quicker
-                "mkdir -p ../output",
-                "for DIR in `find \"$OUTPUT_DIR\" -iname model -type d`; do \n" +
-                        "  cd $DIR;\n" +
-                        "  mkdir -p $OLDPWD/../output/$(basename `dirname $DIR`)/;\n" +
-                        "  cp ../progress.csv $OLDPWD/../output/$(basename `dirname $DIR`)/; \n"+
-                        "  cp ../../*.json $OLDPWD/../output/; \n"+
-                        "  zip -r $OLDPWD/../output/policy_$(basename `dirname $DIR`).zip .;\n" +
-                        "  cd $OLDPWD;\n" +
-                        "  cp trial_* ../output;\n" +
-                        "  cd `find \"$DIR\"/.. -iname checkpoint_* -type d | sort -V | tail -1`;\n"+
-                        "  zip $OLDPWD/../output/$(basename `dirname $DIR`)/checkpoint.zip ./* ;\n"+
-                        "  cd $OLDPWD;\n" +
-                        "done"
+//                // temporary workaround, as train.sh as it is in nativerl with id doRCLd, only takes care of a single policy file
+//                // by doing this here, we can iterate a bit quicker
+//                "mkdir -p ../output",
+//                "for DIR in `find \"$OUTPUT_DIR\" -iname model -type d`; do \n" +
+//                        "  cd $DIR;\n" +
+//                        "  mkdir -p $OLDPWD/../output/$(basename `dirname $DIR`)/;\n" +
+//                        "  cp ../progress.csv $OLDPWD/../output/$(basename `dirname $DIR`)/; \n"+
+//                        "  cp ../../*.json $OLDPWD/../output/; \n"+
+//                        "  zip -r $OLDPWD/../output/policy_$(basename `dirname $DIR`).zip .;\n" +
+//                        "  cd $OLDPWD;\n" +
+//                        "  cp trial_* ../output;\n" +
+//                        "  cd `find \"$DIR\"/.. -iname checkpoint_* -type d | sort -V | tail -1`;\n"+
+//                        "  zip $OLDPWD/../output/$(basename `dirname $DIR`)/checkpoint.zip ./* ;\n"+
+//                        "  cd $OLDPWD;\n" +
+//                        "done"
         ));
     }
 
