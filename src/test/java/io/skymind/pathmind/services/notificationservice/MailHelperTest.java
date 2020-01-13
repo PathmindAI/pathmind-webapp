@@ -31,8 +31,8 @@ public class MailHelperTest
 		final UUID emailVerificationToken = UUID.randomUUID();
 		String emailLink = "http://testurl/verify" + emailVerificationToken.toString();
 		pathmindUser.setEmailVerificationToken(emailVerificationToken);
-		final String test_user = "Test User";
-		pathmindUser.setName(test_user);
+		pathmindUser.setFirstname("Test");
+		pathmindUser.setLastname("User");
 
 		final Mail verificationEmail = mailHelper.createVerificationEmail(pathmindUser.getEmail(), pathmindUser.getName(), emailLink);
 		final Personalization personalization = verificationEmail.getPersonalization().get(0);
@@ -41,7 +41,7 @@ public class MailHelperTest
 		final String emailVerificationLink = (String) personalization.getDynamicTemplateData().get("emailVerificationLink");
 
 		assertEquals(MailHelper.PATHMIND_VERIFICATION_EMAIL_SUBJECT, subject);
-		assertEquals(test_user, name);
+		assertEquals("Test User", name);
 		assertEquals(emailLink, emailVerificationLink);
 	}
 
