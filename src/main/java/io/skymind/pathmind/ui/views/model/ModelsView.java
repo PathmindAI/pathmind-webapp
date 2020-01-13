@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -38,7 +37,6 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
 import io.skymind.pathmind.ui.views.model.filter.ModelFilter;
-import io.skymind.pathmind.ui.views.project.ProjectsView;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 @CssImport("./styles/styles.css")

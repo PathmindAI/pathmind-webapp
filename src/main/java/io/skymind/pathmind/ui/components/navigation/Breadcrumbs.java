@@ -11,9 +11,12 @@ import io.skymind.pathmind.ui.views.project.ProjectsView;
 import io.skymind.pathmind.ui.views.model.ModelsView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 
 public class Breadcrumbs extends HorizontalLayout
 {
+	private static final String BREADCRUMB_CLASSNAME = "breadcrumb";
+
 	public Breadcrumbs(Project project) {
 		this(project, null, null);
 	}
@@ -44,7 +47,7 @@ public class Breadcrumbs extends HorizontalLayout
 			Span arrow3 = new Span(">");
 			add(arrow3);
 
-			RouterLink experimentPageLink = createBreadcrumb("Experiment #" + experiment.getName(), ExperimentView.class, experiment.getId());
+			RouterLink experimentPageLink = createBreadcrumbExperiment("Experiment #" + experiment.getName(), ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
 			add(experimentPageLink);
 		}
 
@@ -54,7 +57,13 @@ public class Breadcrumbs extends HorizontalLayout
 
 	private RouterLink createBreadcrumb(String name, Class navigationTarget, Long pageParameter) {
 		RouterLink breadcrumb = new RouterLink(name, navigationTarget, pageParameter);
-		breadcrumb.addClassName("breadcrumb");
+		breadcrumb.addClassName(BREADCRUMB_CLASSNAME);
+		return breadcrumb;
+	}
+
+	private RouterLink createBreadcrumbExperiment(String name, Class navigationTarget, String pageParameter) {
+		RouterLink breadcrumb = new RouterLink(name, navigationTarget, pageParameter);
+		breadcrumb.addClassName(BREADCRUMB_CLASSNAME);
 		return breadcrumb;
 	}
 }

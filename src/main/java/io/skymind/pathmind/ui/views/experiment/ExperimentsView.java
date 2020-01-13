@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -37,7 +36,6 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.filter.ExperimentFilter;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
-import io.skymind.pathmind.ui.views.model.ModelsView;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
@@ -104,8 +102,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
      * that there has to be at least one experiment to be able to get here.
      */
     private Breadcrumbs createBreadcrumbs() {
-		// long projectId = experiments.get(0).getProject().getId();
-		// String modelNumber = ExperimentUtils.getModelNumber(experiments.get(0));
 		return new Breadcrumbs(experiments.get(0).getProject(), currentModel);
     }
 
