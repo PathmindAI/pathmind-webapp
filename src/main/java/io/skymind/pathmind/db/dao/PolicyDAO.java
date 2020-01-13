@@ -6,7 +6,9 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -46,13 +48,21 @@ public class PolicyDAO
         return PolicyRepository.getPolicyFile(ctx, policyId);
     }
 
+    @Transactional
     public long insertPolicy(Policy policy) {
-        long policyId = PolicyRepository.insertPolicy(ctx, policy);
+        ctx.transaction(configuration ->
+        {
+            DSLContext transactionCtx = DSL.using(configuration);
+
+            policy.setId(PolicyRepository.insertPolicy(transactionCtx, policy));
+            RewardScoreRepository.insertRewardScores(transactionCtx, policy.getId(), policy.getScores());
+        });
+
         // STEPH -> This should not be required since the GUI has the parent objects but until I have to the time it's an extra database call.
-        Policy savedPolicy = PolicyRepository.getPolicy(ctx, policyId);
+        Policy savedPolicy = PolicyRepository.getPolicy(ctx, policy.getId());
         savedPolicy.setScores(RewardScoreRepository.getRewardScoresForPolicy(ctx, savedPolicy.getId()));
         EventBus.post(new PolicyUpdateBusEvent(savedPolicy));
-        return policyId;
+        return savedPolicy.getId();
     }
 
     public List<Policy> getActivePoliciesForUser(long userId) {
