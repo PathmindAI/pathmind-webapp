@@ -677,7 +677,6 @@
             <column name="POLICY_ID"/>
         </createIndex>
         <!-- The POLICY.PROGRESS column will be added as a new changeset in a follow-up PR as a safety precaution. -->
-        <!-- <dropColumn tableName="POLICY" columnName="progress"/> -->
         <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200110_01"/>
         <rollback>
             <!-- We cannot rollback the progress column once it's deleted. -->
