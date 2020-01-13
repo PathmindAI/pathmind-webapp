@@ -21,4 +21,16 @@ public class ExperimentUtils
 	public static boolean isDraftRunType(Experiment experiment) {
 		return experiment.getRuns().isEmpty();
 	}
+
+	public static String getProjectName(Experiment experiment) {
+		return experiment.getProject().getName();
+	}
+
+	public static String getModelNumber(Experiment experiment) {
+		return experiment.getModel().getName();
+	}
+
+	public static String getExperimentNumber(Experiment experiment) {
+		return experiment.getName();
+	}
 }
