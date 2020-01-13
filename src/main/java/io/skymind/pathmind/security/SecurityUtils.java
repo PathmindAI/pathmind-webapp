@@ -18,6 +18,7 @@ import io.skymind.pathmind.ui.views.login.EmailVerificationView;
 import io.skymind.pathmind.ui.views.login.LoginView;
 import io.skymind.pathmind.ui.views.login.ResetPasswordView;
 import io.skymind.pathmind.ui.views.login.SignUpView;
+import io.skymind.pathmind.ui.views.login.VerificationEmailSentView;
 
 public class SecurityUtils
 {
@@ -90,7 +91,8 @@ public class SecurityUtils
 		final boolean publicView = LoginView.class.equals(securedClass)
 				|| SignUpView.class.equals(securedClass)
 				|| ResetPasswordView.class.equals(securedClass)
-				|| EmailVerificationView.class.equals(securedClass);
+				|| EmailVerificationView.class.equals(securedClass)
+				|| VerificationEmailSentView.class.equals(securedClass);
 
 		// Always allow access to public views
 		if (publicView) {
