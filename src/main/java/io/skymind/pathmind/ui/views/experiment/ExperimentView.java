@@ -31,8 +31,7 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.components.navigation.breadcrumbs.Breadcrumbs;
-import io.skymind.pathmind.ui.components.navigation.breadcrumbs.BreadcrumbsData;
+import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -81,7 +80,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private SegmentIntegrator segmentIntegrator;
 
     private String projectName;
-    private String experimentPageParameter;
     private Button runFullTraining;
 
     public ExperimentView() {
@@ -107,7 +105,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
       mainSplitLayout.addSplitterDragendListener(evt -> getUI().ifPresent(ui -> ui.getPage().executeJs("Array.from(window.document.getElementsByTagName('vaadin-chart')).forEach( el => el.__reflow());")));
     
       VerticalLayout mainLayout = WrapperUtils.wrapSizeFullVertical(
-          setBreadcrumbs(),
+          createBreadcrumbs(),
           mainSplitLayout
       );
       
@@ -183,21 +181,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 buttons);
     }
 
-    private Breadcrumbs setBreadcrumbs() {
-        long projectId = experiment.getProject().getId();
-        String modelNumber = ExperimentUtils.getModelNumber(experiment);
-        long modelId = experiment.getModelId();
-        String experimentNumber = ExperimentUtils.getExperimentNumber(experiment);
-        
-		BreadcrumbsData breadcrumbsData = new BreadcrumbsData();
-		breadcrumbsData.setProjectName(projectName);
-        breadcrumbsData.setProjectId(projectId);
-		breadcrumbsData.setModelNumber(modelNumber);
-        breadcrumbsData.setModelId(modelId);
-		breadcrumbsData.setExperimentNumber(experimentNumber);
-		breadcrumbsData.setExperimentPageParameter(experimentPageParameter);
-        
-        return new Breadcrumbs(breadcrumbsData);
+    private Breadcrumbs createBreadcrumbs() {        
+		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
     }
 
     /**
@@ -220,8 +205,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentId = Long.parseLong(segments[EXPERIMENT_ID_SEGMENT]);
         if (segments.length > 1 && NumberUtils.isDigits(segments[POLICY_ID_SEGMENT]))
             policyId = Long.parseLong(segments[POLICY_ID_SEGMENT]);
-
-        experimentPageParameter = parameter;
     }
 
     @Override

@@ -28,8 +28,7 @@ import io.skymind.pathmind.ui.components.PathmindTextArea;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
-import io.skymind.pathmind.ui.components.navigation.breadcrumbs.Breadcrumbs;
-import io.skymind.pathmind.ui.components.navigation.breadcrumbs.BreadcrumbsData;
+import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.buttons.ShowRewardFunctionButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -79,7 +78,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
         projectName = getProjectName();
 
         return WrapperUtils.wrapSizeFullVertical(
-                WrapperUtils.wrapWidthFullBetweenHorizontal(setBreadcrumbs(), getSearchBox()),
+                WrapperUtils.wrapWidthFullBetweenHorizontal(createBreadcrumbs(), getSearchBox()),
                 archivesTabPanel,
                 WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         WrapperUtils.wrapSizeFullVertical(
@@ -101,20 +100,13 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
     }
 
     /**
-     * Using any experiment's getProject().getId() since they should all be the same. I'm assuming at this point
+     * Using any experiment's getProject() since they should all be the same. I'm assuming at this point
      * that there has to be at least one experiment to be able to get here.
      */
-    private Breadcrumbs setBreadcrumbs() {
-        long projectId = experiments.get(0).getProject().getId();
-        String modelNumber = ExperimentUtils.getModelNumber(experiments.get(0));
-        
-		BreadcrumbsData breadcrumbsData = new BreadcrumbsData();
-		breadcrumbsData.setProjectName(projectName);
-        breadcrumbsData.setProjectId(projectId);
-		breadcrumbsData.setModelNumber(modelNumber);
-		breadcrumbsData.setModelId(modelId);
-        
-		return new Breadcrumbs(breadcrumbsData);
+    private Breadcrumbs createBreadcrumbs() {
+		// long projectId = experiments.get(0).getProject().getId();
+		// String modelNumber = ExperimentUtils.getModelNumber(experiments.get(0));
+		return new Breadcrumbs(experiments.get(0).getProject(), currentModel);
     }
 
     private void setupGetObservationTextArea() {

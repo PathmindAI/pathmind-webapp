@@ -30,8 +30,7 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
-import io.skymind.pathmind.ui.components.navigation.breadcrumbs.Breadcrumbs;
-import io.skymind.pathmind.ui.components.navigation.breadcrumbs.BreadcrumbsData;
+import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
@@ -82,7 +81,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
 		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-			setBreadcrumbs(),
+			createBreadcrumbs(),
 			new ViewSection(
 				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
 				archivesTabPanel,
@@ -156,11 +155,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		return models;
 	}
 
-	private Breadcrumbs setBreadcrumbs() {
-		BreadcrumbsData breadcrumbsData = new BreadcrumbsData();
-		breadcrumbsData.setProjectName(projectName);
-		breadcrumbsData.setProjectId(projectId);
-		return new Breadcrumbs(breadcrumbsData);
+	private Breadcrumbs createBreadcrumbs() {
+		return new Breadcrumbs(projectDAO.getProject(projectId));
 	}
 
 	@Override
