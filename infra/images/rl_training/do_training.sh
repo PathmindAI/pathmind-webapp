@@ -6,7 +6,7 @@ aws s3 sync ${s3_url} ./
 
 #Set the status in trainer_job
 psql "$DB_URL_CLI" << EOF
-update public.trainer_job set status=3 where job_id='${S3PATH}';
+update public.trainer_job set status=3,ec2_create_date=now() where job_id='${S3PATH}';
 commit;
 EOF
 
@@ -57,7 +57,7 @@ done
 
 #Set the status in trainer_job
 psql "$DB_URL_CLI" << EOF
-update public.trainer_job set status=4 where job_id='${S3PATH}';
+update public.trainer_job set status=4,ec2_end_date=now()  where job_id='${S3PATH}';
 commit;
 EOF
 
