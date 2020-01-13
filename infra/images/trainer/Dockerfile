@@ -6,6 +6,7 @@ WORKDIR /app
 #Copy files
 COPY spot_ig_template.yaml .
 COPY trigger.py .
+COPY LoggerInit.py .
 COPY requirements.txt .
 COPY rl_training_deployment.yaml .
 
@@ -27,4 +28,5 @@ RUN apt-get update && \
 	chmod +x ./kops && \
 	mv ./kops /usr/local/bin/
 
-CMD ["bash","-c","sleep 10000000"]
+CMD ["python","trigger.py"]
+#CMD ["bash","-c","sleep 10000000"]

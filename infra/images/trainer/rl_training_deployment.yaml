@@ -1,22 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rltraining
+  name: {{JOB_ID}}
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: rltraining
+      app: {{JOB_ID}}
   template:
     metadata:
       labels:
-        app: rltraining
+        app: {{JOB_ID}}
     spec:
       containers:
-      - name: rltraining
+      - name: {{JOB_ID}}
         image: {{IMAGE}}
+        imagePullPolicy: Always
         env:
+        - name: SQS_URL
+          value: {{SQS_URL}}
         - name: S3BUCKET
           value: {{S3BUCKET}}
         - name: S3PATH
@@ -35,6 +38,11 @@ spec:
             secretKeyRef:
               name: awssecretaccesskey
               key: AWS_SECRET_ACCESS_KEY
+        - name: DB_URL_CLI
+          valueFrom:
+            secretKeyRef:
+              name: dburlcli
+              key: DB_URL_CLI
       tolerations:
       - key: "dedicated"
         operator: "Equal"
