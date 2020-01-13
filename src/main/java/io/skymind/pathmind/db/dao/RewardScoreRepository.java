@@ -50,15 +50,15 @@ class RewardScoreRepository
 	 * This is due to a limitation in JOOQ which does not allow dynamic multi-row inserts https://github.com/jOOQ/jOOQ/issues/6604
 	 * we have to rely on batching.
 	 */
-	protected static void insertRewardScores(DSLContext ctx, Policy policy, int startIteration) {
-		List<Query> insertQueries = policy.getScores().subList(startIteration, policy.getScores().size()).stream().map(rewardScore ->
+	protected static void insertRewardScores(DSLContext ctx, long policyId, List<RewardScore> rewardScores) {
+		List<Query> insertQueries = rewardScores.stream().map(rewardScore ->
 				ctx.insertInto(REWARD_SCORE)
 					.columns(REWARD_SCORE.MIN, REWARD_SCORE.MEAN, REWARD_SCORE.MAX, REWARD_SCORE.ITERATION, REWARD_SCORE.POLICY_ID)
 					.values(JooqUtils.getSafeBigDecimal(rewardScore.getMin()),
 							JooqUtils.getSafeBigDecimal(rewardScore.getMean()),
 							JooqUtils.getSafeBigDecimal(rewardScore.getMax()),
 							rewardScore.getIteration(),
-							policy.getId())).collect(Collectors.toList());
+							policyId)).collect(Collectors.toList());
 
 		ctx.batch(insertQueries).execute();
 	}

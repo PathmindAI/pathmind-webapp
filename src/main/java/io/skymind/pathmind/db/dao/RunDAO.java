@@ -145,8 +145,10 @@ public class RunDAO
             PolicyUtils.loadPolicyDataModel(policy, policyId, run);
 
             int startIteration = RewardScoreRepository.getMaxRewardScoreIteration(transactionCtx, policy.getId());
-            if(startIteration >= 0)
-                RewardScoreRepository.insertRewardScores(transactionCtx, policy, startIteration);
+            if(startIteration >= 0) {
+                List<RewardScore> newRewardScores = policy.getScores().subList(startIteration, policy.getScores().size());
+                RewardScoreRepository.insertRewardScores(transactionCtx, policy.getId(), newRewardScores);
+            }
 
             // STEPH -> REFACTOR -> Now that it's transactional is it ok to post to the eventbus? For now this is no worse then what we are doing in production today
             // but we should look at putting this after the transaction has been completed. The only issue is that it's a list of policies that may need
