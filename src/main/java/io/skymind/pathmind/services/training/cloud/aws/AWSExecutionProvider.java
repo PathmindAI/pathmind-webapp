@@ -9,6 +9,7 @@ import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.ExperimentState;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
+import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
@@ -96,15 +97,18 @@ public class AWSExecutionProvider implements ExecutionProvider {
     @Override
     public RunStatus status(String jobHandle) {
 //        List<String> errors = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_ERROR);
-//        List<String> completes = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_COMPLETE);
-//        List<String> trials = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_LIST).stream()
-//                .filter(it -> !it.endsWith(".json"))
-//                .collect(Collectors.toList());
+        List<String> completes = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_COMPLETE);
+        List<String> trials = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_LIST).stream()
+                .filter(it -> !it.endsWith(".json"))
+                .collect(Collectors.toList());
 
         // todo need to change to use database once Daniel create proper database(TRAINER_JOB)
         ExperimentState experimentState = getExperimentState(jobHandle);
 
         if (experimentState != null) {
+            if (trials.size() == completes.size()) {
+                return RunStatus.Completed;
+            }
             return RunStatus.Running;
         } else {
             return RunStatus.NotStarted;
@@ -130,12 +134,14 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public byte[] policy(String jobHandle, String trainingRun) {
-        throw new UnsupportedOperationException("Not currently supported");
+        Optional<byte[]> optional = getFile(jobHandle, "policy_" + trainingRun + ".zip");
+        return optional.isPresent() ? optional.get() : null;
     }
 
     @Override
     public Map.Entry<@NotNull String, byte[]> snapshot(String jobHandle, String trainingRun) {
-        throw new UnsupportedOperationException("Not currently supported");
+        Optional<byte[]> optional = getFile(jobHandle, "checkpoint.zip");
+        return optional.isPresent() ? Map.entry(jobHandle, optional.get()): null;
     }
 
     @Override
