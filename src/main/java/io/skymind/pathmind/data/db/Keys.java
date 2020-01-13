@@ -11,6 +11,7 @@ import io.skymind.pathmind.data.db.tables.PathmindUser;
 import io.skymind.pathmind.data.db.tables.Policy;
 import io.skymind.pathmind.data.db.tables.Project;
 import io.skymind.pathmind.data.db.tables.Run;
+import io.skymind.pathmind.data.db.tables.TrainerJob;
 import io.skymind.pathmind.data.db.tables.records.ExecutionProviderMetaDataRecord;
 import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
 import io.skymind.pathmind.data.db.tables.records.ModelRecord;
@@ -18,10 +19,12 @@ import io.skymind.pathmind.data.db.tables.records.PathmindUserRecord;
 import io.skymind.pathmind.data.db.tables.records.PolicyRecord;
 import io.skymind.pathmind.data.db.tables.records.ProjectRecord;
 import io.skymind.pathmind.data.db.tables.records.RunRecord;
+import io.skymind.pathmind.data.db.tables.records.TrainerJobRecord;
 
 import javax.annotation.processing.Generated;
 
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.UniqueKey;
 import org.jooq.impl.Internal;
 
@@ -44,6 +47,13 @@ public class Keys {
     // IDENTITY definitions
     // -------------------------------------------------------------------------
 
+    public static final Identity<ExecutionProviderMetaDataRecord, Long> IDENTITY_EXECUTION_PROVIDER_META_DATA = Identities0.IDENTITY_EXECUTION_PROVIDER_META_DATA;
+    public static final Identity<ExperimentRecord, Long> IDENTITY_EXPERIMENT = Identities0.IDENTITY_EXPERIMENT;
+    public static final Identity<ModelRecord, Long> IDENTITY_MODEL = Identities0.IDENTITY_MODEL;
+    public static final Identity<PathmindUserRecord, Long> IDENTITY_PATHMIND_USER = Identities0.IDENTITY_PATHMIND_USER;
+    public static final Identity<PolicyRecord, Long> IDENTITY_POLICY = Identities0.IDENTITY_POLICY;
+    public static final Identity<ProjectRecord, Long> IDENTITY_PROJECT = Identities0.IDENTITY_PROJECT;
+    public static final Identity<RunRecord, Long> IDENTITY_RUN = Identities0.IDENTITY_RUN;
 
     // -------------------------------------------------------------------------
     // UNIQUE and PRIMARY KEY definitions
@@ -60,6 +70,7 @@ public class Keys {
     public static final UniqueKey<ProjectRecord> PROJECT_PKEY = UniqueKeys0.PROJECT_PKEY;
     public static final UniqueKey<ProjectRecord> UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = UniqueKeys0.UNIQUE_PROJECT_NAME_PATHMIND_USER_ID;
     public static final UniqueKey<RunRecord> RUN_PKEY = UniqueKeys0.RUN_PKEY;
+    public static final UniqueKey<TrainerJobRecord> TRAINER_JOB_PKEY = UniqueKeys0.TRAINER_JOB_PKEY;
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -75,6 +86,16 @@ public class Keys {
     // [#1459] distribute members to avoid static initialisers > 64kb
     // -------------------------------------------------------------------------
 
+    private static class Identities0 {
+        public static Identity<ExecutionProviderMetaDataRecord, Long> IDENTITY_EXECUTION_PROVIDER_META_DATA = Internal.createIdentity(ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.ID);
+        public static Identity<ExperimentRecord, Long> IDENTITY_EXPERIMENT = Internal.createIdentity(Experiment.EXPERIMENT, Experiment.EXPERIMENT.ID);
+        public static Identity<ModelRecord, Long> IDENTITY_MODEL = Internal.createIdentity(Model.MODEL, Model.MODEL.ID);
+        public static Identity<PathmindUserRecord, Long> IDENTITY_PATHMIND_USER = Internal.createIdentity(PathmindUser.PATHMIND_USER, PathmindUser.PATHMIND_USER.ID);
+        public static Identity<PolicyRecord, Long> IDENTITY_POLICY = Internal.createIdentity(Policy.POLICY, Policy.POLICY.ID);
+        public static Identity<ProjectRecord, Long> IDENTITY_PROJECT = Internal.createIdentity(Project.PROJECT, Project.PROJECT.ID);
+        public static Identity<RunRecord, Long> IDENTITY_RUN = Internal.createIdentity(Run.RUN, Run.RUN.ID);
+    }
+
     private static class UniqueKeys0 {
         public static final UniqueKey<ExecutionProviderMetaDataRecord> EXECUTION_PROVIDER_META_DATA_PKEY = Internal.createUniqueKey(ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, "execution_provider_meta_data_pkey", ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.ID);
         public static final UniqueKey<ExecutionProviderMetaDataRecord> UNIQUE_PROVIDER_CLASS_TYPE_KEY = Internal.createUniqueKey(ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, "unique_provider_class_type_key", ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.PROVIDER_CLASS, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.TYPE, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.KEY);
@@ -87,6 +108,7 @@ public class Keys {
         public static final UniqueKey<ProjectRecord> PROJECT_PKEY = Internal.createUniqueKey(Project.PROJECT, "project_pkey", Project.PROJECT.ID);
         public static final UniqueKey<ProjectRecord> UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = Internal.createUniqueKey(Project.PROJECT, "unique_project_name_pathmind_user_id", Project.PROJECT.PATHMIND_USER_ID, Project.PROJECT.NAME);
         public static final UniqueKey<RunRecord> RUN_PKEY = Internal.createUniqueKey(Run.RUN, "run_pkey", Run.RUN.ID);
+        public static final UniqueKey<TrainerJobRecord> TRAINER_JOB_PKEY = Internal.createUniqueKey(TrainerJob.TRAINER_JOB, "trainer_job_pkey", TrainerJob.TRAINER_JOB.JOB_ID);
     }
 
     private static class ForeignKeys0 {

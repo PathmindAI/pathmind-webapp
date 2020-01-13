@@ -526,7 +526,7 @@
         </addColumn>
         <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191022_2"/>
     </changeSet>
-  
+
     <!-- #370 Since all the existing users are hardcoded in the DB, let's mark their accounts as validated. -->
     <changeSet id="20191030" author="vesa@vaadin.com">
         <update tableName="PATHMIND_USER">
@@ -565,7 +565,7 @@
             <column name="SNAPSHOT" type="bytea"/>
         </addColumn>
     </changeSet>
-    
+
     <changeSet id="20191209-1" author="onur@vaadin.com">
         <update tableName="PATHMIND_USER">
             <column name="STRIPE_CUSTOMER_ID" value="cus_GKPM6sw8wTtgjg"/>
@@ -645,7 +645,7 @@
 
     <changeSet id="20200103-01" author="onur@vaadin.com">
         <addColumn tableName="RUN">
-            <column name="NOTIFICATION_SENT_AT" type="DATETIME"/>
+         	<column name="NOTIFICATION_SENT_AT" type="DATETIME"/>
         </addColumn>
     </changeSet>
 
@@ -656,6 +656,16 @@
         <rollback>
             <renameColumn tableName="POLICY" oldColumnName="STARTED_AT" newColumnName="STARTEDAT"/>
             <renameColumn tableName="POLICY" oldColumnName="STOPPED_AT" newColumnName="STOPPEDAT"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200109-02" author="krystian.walaszczyk@ext.vaadin.com">
+        <comment>Delete PATHMIND_USER.NAME column</comment>
+        <dropColumn tableName="PATHMIND_USER" columnName="NAME"/>
+        <rollback>
+            <addColumn tableName="PATHMIND_USER">
+                <column name="NAME" type="VARCHAR(255)"/>
+            </addColumn>
         </rollback>
     </changeSet>
 

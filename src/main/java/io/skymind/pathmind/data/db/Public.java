@@ -11,6 +11,7 @@ import io.skymind.pathmind.data.db.tables.PathmindUser;
 import io.skymind.pathmind.data.db.tables.Policy;
 import io.skymind.pathmind.data.db.tables.Project;
 import io.skymind.pathmind.data.db.tables.Run;
+import io.skymind.pathmind.data.db.tables.TrainerJob;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import java.util.List;
 import javax.annotation.processing.Generated;
 
 import org.jooq.Catalog;
+import org.jooq.Sequence;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
 
@@ -36,7 +38,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -1455313339;
+    private static final long serialVersionUID = 1390723924;
 
     /**
      * The reference instance of <code>public</code>
@@ -79,6 +81,11 @@ public class Public extends SchemaImpl {
     public final Run RUN = io.skymind.pathmind.data.db.tables.Run.RUN;
 
     /**
+     * The table <code>public.trainer_job</code>.
+     */
+    public final TrainerJob TRAINER_JOB = io.skymind.pathmind.data.db.tables.TrainerJob.TRAINER_JOB;
+
+    /**
      * No further instances allowed
      */
     private Public() {
@@ -89,6 +96,24 @@ public class Public extends SchemaImpl {
     @Override
     public Catalog getCatalog() {
         return DefaultCatalog.DEFAULT_CATALOG;
+    }
+
+    @Override
+    public final List<Sequence<?>> getSequences() {
+        List result = new ArrayList();
+        result.addAll(getSequences0());
+        return result;
+    }
+
+    private final List<Sequence<?>> getSequences0() {
+        return Arrays.<Sequence<?>>asList(
+            Sequences.EXECUTION_PROVIDER_META_DATA_ID_SEQ,
+            Sequences.EXPERIMENT_ID_SEQ,
+            Sequences.MODEL_ID_SEQ,
+            Sequences.PATHMIND_USER_ID_SEQ,
+            Sequences.POLICY_ID_SEQ,
+            Sequences.PROJECT_ID_SEQ,
+            Sequences.RUN_ID_SEQ);
     }
 
     @Override
@@ -106,6 +131,7 @@ public class Public extends SchemaImpl {
             PathmindUser.PATHMIND_USER,
             Policy.POLICY,
             Project.PROJECT,
-            Run.RUN);
+            Run.RUN,
+            TrainerJob.TRAINER_JOB);
     }
 }
