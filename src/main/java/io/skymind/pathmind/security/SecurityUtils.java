@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.vaadin.flow.server.ServletHelper.RequestType;
 import com.vaadin.flow.shared.ApplicationConstants;
 
+import io.skymind.pathmind.ui.views.errors.PageNotFoundView;
 import io.skymind.pathmind.ui.views.login.EmailVerificationView;
 import io.skymind.pathmind.ui.views.login.LoginView;
 import io.skymind.pathmind.ui.views.login.ResetPasswordView;
@@ -33,10 +34,12 @@ public class SecurityUtils
 	 */
 	public static String getUsername() {
 		SecurityContext context = SecurityContextHolder.getContext();
-		Object principal = context.getAuthentication().getPrincipal();
-		if(principal instanceof UserDetails) {
-			UserDetails userDetails = (UserDetails) context.getAuthentication().getPrincipal();
-			return userDetails.getUsername();
+		if (context != null && context.getAuthentication() != null) {
+			Object principal = context.getAuthentication().getPrincipal();
+			if(principal instanceof UserDetails) {
+				UserDetails userDetails = (UserDetails) context.getAuthentication().getPrincipal();
+				return userDetails.getUsername();
+			}
 		}
 		// Anonymous or no authentication.
 		return null;
@@ -90,6 +93,7 @@ public class SecurityUtils
 		final boolean publicView = LoginView.class.equals(securedClass)
 				|| SignUpView.class.equals(securedClass)
 				|| ResetPasswordView.class.equals(securedClass)
+				|| PageNotFoundView.class.equals(securedClass)
 				|| EmailVerificationView.class.equals(securedClass);
 
 		// Always allow access to public views
