@@ -52,8 +52,6 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
 //        final Map<Long, String> rescaleJobIds = executionProviderMetaDataDAO.getRescaleRunJobIds(runIds);
         final List<Run>  runs = runDAO.getRuns(runIds);
 
-        log.info("kepricondebug0 : " + runIds);
-
         runs.parallelStream().forEach(run -> {
             try {
 
