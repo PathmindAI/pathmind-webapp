@@ -1,5 +1,10 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.function.Consumer;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
@@ -12,6 +17,7 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
@@ -24,11 +30,6 @@ import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 @SpringComponent
 @UIScope
@@ -172,16 +173,16 @@ public class TrainingsListPanel extends VerticalLayout
         DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
             // grid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
             grid.setDataProvider(new ListDataProvider<>(experiment.getPolicies()));
+            if (!experiment.getPolicies().isEmpty() && defaultSelectedPolicyId < 0) {
+            	grid.select(experiment.getPolicies().get(0));
+            } else {
+            	experiment.getPolicies().stream()
+            	.filter(policy -> policy.getId() == defaultSelectedPolicyId)
+            	.findAny()
+            	.ifPresent(policy -> grid.select(policy));
+            }
         });
 
-        if (!experiment.getPolicies().isEmpty() && defaultSelectedPolicyId < 0) {
-            grid.select(experiment.getPolicies().get(0));
-        } else {
-            experiment.getPolicies().stream()
-                    .filter(policy -> policy.getId() == defaultSelectedPolicyId)
-                    .findAny()
-                    .ifPresent(policy -> grid.select(policy));
-        }
     }
 
     @Override
