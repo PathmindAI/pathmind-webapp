@@ -48,11 +48,21 @@
   color: var(--pm-danger-color);
 }
 
-:host([part="vaadin-login-submit"]) {
+/* Primary Button Styles */
+:host([theme~="primary"]) {
   width: auto !important;
   height: 40px;
   padding: 0px 50px;
-  margin-top: 50px !important;
+}
+
+:host([theme~="primary"]:hover) {
+  color: var(--pm-primary-color);
+  background-color: white;
+  border: 1px solid var(--pm-primary-color);
+}
+
+:host([theme~="primary"]:hover)::before {
+  opacity: 0;
 }
 
 /* This is to override all Vaadin-Button on the webapp */

@@ -6,10 +6,6 @@
   overflow: auto;
 }
 
-.login-panel-cont * {
-  flex-shrink: 0;
-}
-
 landing-page {
   display: flex;
   flex-direction: column;
@@ -37,8 +33,12 @@ landing-page {
   margin-top: 0;
 }
 
+vaadin-password-field input {
+  flex-shrink: 0;
+}
+
 .welcome-text {
-  color: #ed7820;
+  color: var(--pm-orange-color);
   font-size: 16px;
 }
 
@@ -57,6 +57,10 @@ landing-page {
 
 .login-panel {
   margin: auto;
+}
+
+vaadin-button[part="vaadin-login-submit"] {
+  margin-top: 50px !important;
 }
 
 .account-help-wrapper {

@@ -12,11 +12,13 @@ html {
   --pm-danger-color: #d80947;
 
   /* pathmind color palette */
+  --pm-orange-color: #ed7820;
   --pm-gray-color-light: #d0d0d0;
 
   /* pathmind-theme */
   --lumo-font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   --lumo-font-size-xl: 1.5rem;
+  --lumo-font-size-m: 1rem;
   --lumo-font-size-s: 0.75rem;
   --lumo-font-size-xs: 0.625rem;
   --lumo-size-xl: 3rem;
@@ -92,8 +94,8 @@ html {
 }
 
 .light-text-label {
-  font-size: 16px;
-  color: #ed7820;
+  font-size: var(--lumo-font-size-m);
+  color: var(--pm-orange-color);
 }
 
 .logo-label {
