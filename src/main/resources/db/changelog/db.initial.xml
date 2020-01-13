@@ -659,6 +659,16 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20200109-02" author="krystian.walaszczyk@ext.vaadin.com">
+        <comment>Delete PATHMIND_USER.NAME column</comment>
+        <dropColumn tableName="PATHMIND_USER" columnName="NAME"/>
+        <rollback>
+            <addColumn tableName="PATHMIND_USER">
+                <column name="NAME" type="VARCHAR(255)"/>
+            </addColumn>
+        </rollback>
+    </changeSet>
+
     <!-- #388 - Policy scores should be stored in their own table rather than in a json column -->
     <changeSet id="20200110-01" author="steph@followsteph.com">
         <createTable tableName="REWARD_SCORE">
