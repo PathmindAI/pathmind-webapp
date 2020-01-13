@@ -673,7 +673,7 @@
     <changeSet id="20200110-01" author="steph@followsteph.com">
         <createTable tableName="REWARD_SCORE">
             <column name="POLICY_ID" type="BIGINT">
-                <constraints nullable="false"/>
+                <constraints nullable="false" foreignKeyName="PM_FK_REWARD_SCORE_POLICY" references="POLICY(ID)"/>
             </column>
             <!-- We have to allow NULL to be able to represent NaN as JOOQ uses BigDecimal which does not accept NaN as a value -->
             <column name="MIN" type="DECIMAL(27,17)"/>
