@@ -1,6 +1,7 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
 import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
@@ -23,7 +24,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
+//@Service
 @Slf4j
 public class RescaleExecutionProvider implements ExecutionProvider {
 
@@ -192,6 +193,11 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         return null;
     }
 
+    @Override
+    public ExecutionProviderMetaDataDAO.ExecutionProviderClass executionProviderClass() {
+        return ExecutionProviderMetaDataDAO.ExecutionProviderClass.Rescale;
+    }
+
     /**
      * get the contents for the given files regardless of the status of job(running or complete)
      *
@@ -232,6 +238,11 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String uploadModel(long modelId, byte[] modelFile) {
+        throw new UnsupportedOperationException("Not currently supported");
     }
 
     @Override

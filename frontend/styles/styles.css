@@ -1,14 +1,18 @@
 html {
   /* pathmind-colors */
   --pm-primary-color: #4f97aa;
-  --pm-secondary-text-color: #b3b6c2;
   --pm-text-color: #1a2949;
+  --pm-secondary-text-color: #b3b6c2;
+  --pm-tertiary-text-color: #888888;
   --pm-app-bg-color: #f0f1f6;
   --pm-highlight-light: rgba(240, 241, 246, 0.25);
   --pm-highlight-medium: rgba(240, 241, 246, 0.5);
   --pm-highlight-strong: rgba(240, 241, 246, 0.5);
   --pm-friendly-color: #3a966b;
   --pm-danger-color: #d80947;
+
+  /* pathmind color palette */
+  --pm-gray-color-light: #d0d0d0;
 
   /* pathmind-theme */
   --lumo-font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -137,7 +141,7 @@ html {
 
 .dashboard-view .view-section {
   flex: 1;
-  max-width: 1200px;
+  max-width: 1480px;
   align-self: center;
 }
 
@@ -209,4 +213,19 @@ account-view {
   html {
     font-size: 13px;
   }
+}
+
+/* General Helper Styles */
+.style-text-align-center {
+  text-align: center;
+}
+
+.tag {
+  padding: 4px 8px;
+  background: var(--lumo-contrast-10pct);
+  border-radius: var(--lumo-border-radius);
+  margin: 2px;
+}
+.tag:empty {
+  display: none;
 }

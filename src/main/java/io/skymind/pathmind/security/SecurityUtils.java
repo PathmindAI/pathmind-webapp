@@ -1,21 +1,24 @@
 package io.skymind.pathmind.security;
 
-import com.vaadin.flow.server.ServletHelper.RequestType;
-import com.vaadin.flow.shared.ApplicationConstants;
-import io.skymind.pathmind.ui.views.CustomRouteNotFoundError;
-import io.skymind.pathmind.ui.views.login.LoginView;
-import io.skymind.pathmind.ui.views.login.EmailVerificationView;
-import io.skymind.pathmind.ui.views.login.ResetPasswordView;
-import io.skymind.pathmind.ui.views.login.SignUpView;
+import java.util.stream.Stream;
+
+import javax.naming.AuthenticationException;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.naming.AuthenticationException;
-import javax.servlet.http.HttpServletRequest;
-import java.util.stream.Stream;
+import com.vaadin.flow.server.ServletHelper.RequestType;
+import com.vaadin.flow.shared.ApplicationConstants;
+
+import io.skymind.pathmind.ui.views.login.EmailVerificationView;
+import io.skymind.pathmind.ui.views.login.LoginView;
+import io.skymind.pathmind.ui.views.login.ResetPasswordView;
+import io.skymind.pathmind.ui.views.login.SignUpView;
+import io.skymind.pathmind.ui.views.login.VerificationEmailSentView;
 
 public class SecurityUtils
 {
@@ -86,11 +89,10 @@ public class SecurityUtils
 	 */
 	public static boolean isAccessGranted(Class<?> securedClass) {
 		final boolean publicView = LoginView.class.equals(securedClass)
-				//|| AccessDeniedView.class.equals(securedClass)
 				|| SignUpView.class.equals(securedClass)
 				|| ResetPasswordView.class.equals(securedClass)
 				|| EmailVerificationView.class.equals(securedClass)
-				|| CustomRouteNotFoundError.class.equals(securedClass);
+				|| VerificationEmailSentView.class.equals(securedClass);
 
 		// Always allow access to public views
 		if (publicView) {

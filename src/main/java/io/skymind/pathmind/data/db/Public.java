@@ -11,6 +11,7 @@ import io.skymind.pathmind.data.db.tables.PathmindUser;
 import io.skymind.pathmind.data.db.tables.Policy;
 import io.skymind.pathmind.data.db.tables.Project;
 import io.skymind.pathmind.data.db.tables.Run;
+import io.skymind.pathmind.data.db.tables.TrainerJob;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +38,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 2071164656;
+    private static final long serialVersionUID = 1390723924;
 
     /**
      * The reference instance of <code>public</code>
@@ -78,6 +79,11 @@ public class Public extends SchemaImpl {
      * The table <code>public.run</code>.
      */
     public final Run RUN = io.skymind.pathmind.data.db.tables.Run.RUN;
+
+    /**
+     * The table <code>public.trainer_job</code>.
+     */
+    public final TrainerJob TRAINER_JOB = io.skymind.pathmind.data.db.tables.TrainerJob.TRAINER_JOB;
 
     /**
      * No further instances allowed
@@ -125,6 +131,7 @@ public class Public extends SchemaImpl {
             PathmindUser.PATHMIND_USER,
             Policy.POLICY,
             Project.PROJECT,
-            Run.RUN);
+            Run.RUN,
+            TrainerJob.TRAINER_JOB);
     }
 }

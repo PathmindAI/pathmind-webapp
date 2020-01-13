@@ -1,18 +1,5 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
-import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.data.policy.RewardScore;
-import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
-import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
-import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
-import io.skymind.pathmind.services.training.constant.TrainingFile;
-import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,18 +7,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service
+import org.springframework.stereotype.Service;
+
+import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.constants.RunType;
+import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.policy.RewardScore;
+import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
+import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
+import io.skymind.pathmind.services.training.constant.TrainingFile;
+import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
+import lombok.extern.slf4j.Slf4j;
+
+//@Service
 @Slf4j
 public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater {
     private final RescaleExecutionProvider provider;
     private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RunDAO runDAO;
+    private final UserDAO userDAO;
     private EmailNotificationService emailNotificationService;
 
-    public RescaleExecutionProgressUpdater(RescaleExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, EmailNotificationService emailNotificationService){
+    public RescaleExecutionProgressUpdater(RescaleExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, UserDAO userDAO, EmailNotificationService emailNotificationService){
         this.provider = provider;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.runDAO = runDAO;
+        this.userDAO = userDAO;
         this.emailNotificationService = emailNotificationService;
     }
 
@@ -67,6 +73,8 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
                 // method is called and we can just do a simple isPolicyFile != null check as to whether or not to
                 // also update it in the database.
                 savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus);
+                
+                sendNotificationMail(jobStatus, run);
             } catch (Exception e) {
                 log.error("Error for run: " + run.getId() + " : " + e.getMessage(), e);
                 emailNotificationService.sendEmailExceptionNotification("Error for run: " + run.getId() + " : " + e.getMessage(), e);
@@ -74,7 +82,27 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
         });
     }
 
-    private List<Run> getRunsWithRescaleJobs(List<Long> runIds, Map<Long, String> rescaleJobIds) {
+    /**
+     * Send notification mail if Run is completed successfully or with error
+     * and if the Run type is discovery or full run 
+     */
+    private void sendNotificationMail(RunStatus jobStatus, Run run) {
+		if (jobStatus == RunStatus.Completed || jobStatus == RunStatus.Error) {
+			if (run.getRunTypeEnum() == RunType.DiscoveryRun ||  run.getRunTypeEnum() == RunType.FullRun) {
+				
+				// Do not send notification if there is another run with same run type still executing or the notification is already been sent
+				if (runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
+					boolean isSuccessful = jobStatus == RunStatus.Completed;
+					PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
+					emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);
+					runDAO.markAsNotificationSent(run.getId());
+				}
+			}
+		}
+		
+	}
+
+	private List<Run> getRunsWithRescaleJobs(List<Long> runIds, Map<Long, String> rescaleJobIds) {
         final List<Long> runIdsWithRecaleJobs = runIds.stream()
             .filter(runId -> isInRescaleRunJobIds(rescaleJobIds, runId))
             .collect(Collectors.toList());

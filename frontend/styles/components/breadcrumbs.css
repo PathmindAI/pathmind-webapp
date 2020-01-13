@@ -1,0 +1,15 @@
+.breadcrumb {
+  position: relative;
+  color: var(--pm-tertiary-text-color);
+}
+
+.breadcrumb:hover,
+.breadcrumb:last-child {
+  color: var(--lumo-primary-text-color);
+}
+
+.breadcrumb ~ span {
+  color: var(--pm-tertiary-text-color);
+  margin: 0 var(--lumo-space-xs);
+  cursor: default;
+}

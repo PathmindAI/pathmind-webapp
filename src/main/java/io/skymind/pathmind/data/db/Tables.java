@@ -11,6 +11,7 @@ import io.skymind.pathmind.data.db.tables.PathmindUser;
 import io.skymind.pathmind.data.db.tables.Policy;
 import io.skymind.pathmind.data.db.tables.Project;
 import io.skymind.pathmind.data.db.tables.Run;
+import io.skymind.pathmind.data.db.tables.TrainerJob;
 
 import javax.annotation.processing.Generated;
 
@@ -62,4 +63,9 @@ public class Tables {
      * The table <code>public.run</code>.
      */
     public static final Run RUN = Run.RUN;
+
+    /**
+     * The table <code>public.trainer_job</code>.
+     */
+    public static final TrainerJob TRAINER_JOB = TrainerJob.TRAINER_JOB;
 }

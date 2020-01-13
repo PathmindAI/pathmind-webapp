@@ -1,5 +1,10 @@
 package io.skymind.pathmind.ui.views.login;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -7,7 +12,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
@@ -17,16 +21,12 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
+
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.ui.utils.VaadinUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
-import java.util.List;
 
 @Tag("sign-up-view")
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
@@ -134,8 +134,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 				user = userService.signup(user);
                 emailNotificationService.sendVerificationEmail(user);
                 segmentIntegrator.userRegistered();
-				Notification.show("You successfully signed up.", 3000, Notification.Position.TOP_END);
-				UI.getCurrent().navigate(LoginView.class);
+                getUI().ifPresent(ui -> ui.navigate(VerificationEmailSentView.class));
 			} else {
 				newPassword.setInvalid(true);
 				passwordValidationNotes.removeAll();

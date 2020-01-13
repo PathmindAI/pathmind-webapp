@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -30,7 +29,7 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
-import io.skymind.pathmind.ui.components.buttons.BackButton;
+import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
@@ -38,7 +37,6 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
 import io.skymind.pathmind.ui.views.model.filter.ModelFilter;
-import io.skymind.pathmind.ui.views.project.ProjectsView;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 @CssImport("./styles/styles.css")
@@ -81,14 +79,14 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
 		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-				new ViewSection(
-						WrapperUtils.wrapWidthFullCenterHorizontal(getBackToProjectsButton()),
-						WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-						archivesTabPanel,
-						modelGrid,
-						instructionsDiv
-				),
-				WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
+			createBreadcrumbs(),
+			new ViewSection(
+				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
+				archivesTabPanel,
+				modelGrid,
+				instructionsDiv
+			),
+			WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
 		);
 		return gridWrapper;
 	}
@@ -155,9 +153,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		return models;
 	}
 
-	private Button getBackToProjectsButton() {
-		return new BackButton("Back to Projects",
-				click -> UI.getCurrent().navigate(ProjectsView.class));
+	private Breadcrumbs createBreadcrumbs() {
+		return new Breadcrumbs(projectDAO.getProject(projectId));
 	}
 
 	@Override
