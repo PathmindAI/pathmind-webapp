@@ -53,7 +53,6 @@ class UserRepository
     protected static long insertUser(DSLContext ctx, PathmindUser pathmindUser, String password)
     {
         return ctx.insertInto(PATHMIND_USER)
-                .set(PATHMIND_USER.NAME, pathmindUser.getName())
                 .set(PATHMIND_USER.EMAIL, pathmindUser.getEmail())
                 .set(PATHMIND_USER.PASSWORD, password)
                 .set(PATHMIND_USER.ACCOUNT_TYPE, pathmindUser.getAccountType())
@@ -70,7 +69,6 @@ class UserRepository
     protected static void update(DSLContext ctx, PathmindUser pathmindUser)
     {
         ctx.update(PATHMIND_USER)
-                .set(PATHMIND_USER.NAME, pathmindUser.getName())
                 .set(PATHMIND_USER.EMAIL, pathmindUser.getEmail())
                 .set(PATHMIND_USER.ACCOUNT_TYPE, pathmindUser.getAccountType())
                 .set(PATHMIND_USER.FIRSTNAME, pathmindUser.getFirstname())
