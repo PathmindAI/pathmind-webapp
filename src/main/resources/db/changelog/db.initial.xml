@@ -170,45 +170,6 @@
             </column>
         </createTable>
         <addUniqueConstraint tableName="EXECUTION_PROVIDER_META_DATA" columnNames="PROVIDER_CLASS, KEY" />
-
-        <createTable tableName="TRAINER_JOB">
-            <column name="JOB_ID" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="SQS_URL" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="S3PATH" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="S3BUCKET" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="RECEIPTHANDLE" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>            
-            <column name="EC2_INSTANCE_TYPE" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="EC2_MAX_PRICE" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="CREATE_DATE" type="DATETIME" defaultValueComputed="NOW()">
-                <constraints nullable="false"/>
-            </column>
-            <column name="EC2_CREATE_DATE" type="DATETIME">
-                <constraints nullable="true"/>
-            </column>
-            <column name="EC2_CREATE_DATE" type="DATETIME">
-                <constraints nullable="true"/>
-            </column>            
-            <column name="STATUS" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="DESCRIPTION" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
     </changeSet>
 
     <changeSet id="20190918-2" author="paul.dubs@skymind.io">
@@ -638,6 +599,47 @@
 
     <changeSet id="20191212-1" author="daehyun@skymind.io">
         <modifyDataType tableName="EXECUTION_PROVIDER_META_DATA" columnName="KEY" newDataType="NVARCHAR"></modifyDataType>
+    </changeSet>
+
+    <changeSet id="20200113-01" author="daniel@pathmind.com">
+        <createTable tableName="TRAINER_JOB">
+            <column name="JOB_ID" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SQS_URL" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="S3PATH" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="S3BUCKET" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RECEIPTHANDLE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>            
+            <column name="EC2_INSTANCE_TYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EC2_MAX_PRICE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATE_DATE" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EC2_CREATE_DATE" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>
+            <column name="EC2_CREATE_DATE" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>            
+            <column name="STATUS" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 
 </databaseChangeLog>
