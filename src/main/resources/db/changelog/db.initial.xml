@@ -662,7 +662,7 @@
     <changeSet id="20200113-01" author="daniel@pathmind.com">
         <createTable tableName="TRAINER_JOB">
             <column name="JOB_ID" type="VARCHAR(255)">
-                <constraints nullable="false"/>
+                <constraints primaryKey="true"/>
             </column>
             <column name="SQS_URL" type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -688,7 +688,7 @@
             <column name="EC2_CREATE_DATE" type="DATETIME">
                 <constraints nullable="true"/>
             </column>
-            <column name="EC2_CREATE_DATE" type="DATETIME">
+            <column name="EC2_END_DATE" type="DATETIME">
                 <constraints nullable="true"/>
             </column>
             <column name="STATUS" type="INT">
