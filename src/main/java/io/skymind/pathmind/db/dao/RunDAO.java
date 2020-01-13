@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class RunDAO
@@ -144,9 +145,12 @@ public class RunDAO
             // Load up the Policy object so that we can push it to the GUI for the event. We may not need everything in here any more...
             PolicyUtils.loadPolicyDataModel(policy, policyId, run);
 
-            int startIteration = RewardScoreRepository.getMaxRewardScoreIteration(transactionCtx, policy.getId());
-            if(startIteration >= 0) {
-                List<RewardScore> newRewardScores = policy.getScores().subList(startIteration, policy.getScores().size());
+            // Only insert new RewardScores
+            int maxRewardScoreIteration = RewardScoreRepository.getMaxRewardScoreIteration(transactionCtx, policy.getId());
+            if(maxRewardScoreIteration >= 0) {
+                List<RewardScore> newRewardScores = policy.getScores().stream()
+                        .filter(score -> score.getIteration() > maxRewardScoreIteration)
+                        .collect(Collectors.toList());
                 RewardScoreRepository.insertRewardScores(transactionCtx, policy.getId(), newRewardScores);
             }
 

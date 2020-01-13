@@ -1,6 +1,5 @@
 package io.skymind.pathmind.db.dao;
 
-import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.db.utils.JooqUtils;
 import org.jooq.DSLContext;

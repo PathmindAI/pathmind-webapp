@@ -59,8 +59,9 @@ public class PolicyDAO
         });
 
         // STEPH -> This should not be required since the GUI has the parent objects but until I have to the time it's an extra database call.
+        // NOTE -> Although we insert the RewardScore the data model object RewardScore does not have a reference to PolicyId so we don't need
+        // to do anything special to link the RewardScore to the policy, it's all done through the Policy data model object.
         Policy savedPolicy = PolicyRepository.getPolicy(ctx, policy.getId());
-        savedPolicy.setScores(RewardScoreRepository.getRewardScoresForPolicy(ctx, savedPolicy.getId()));
         EventBus.post(new PolicyUpdateBusEvent(savedPolicy));
         return savedPolicy.getId();
     }
