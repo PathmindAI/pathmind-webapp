@@ -7,10 +7,11 @@
 # machine and combined with the account and region to form the repository name for ECR.
 docker_folder=$1
 image=$2
+tag=$3
 
-if [ "$docker_folder" == "" ] || [ "$image" == "" ]
+if [ "$docker_folder" == "" ] || [ "$image" == "" ] || [ "$tag" == "" ]
 then
-	    echo "Usage: $0 <docker-folder> <image-name>"
+	    echo "Usage: $0 <docker-folder> <image-name> <tag>"
             exit 1
 fi
 
@@ -28,7 +29,7 @@ region=$(aws configure get region)
 region=${region:-us-east-1}
 
 
-fullname="${account}.dkr.ecr.${region}.amazonaws.com/${image}:latest"
+fullname="${account}.dkr.ecr.${region}.amazonaws.com/${image}:${tag}"
 
 # If the repository doesn't exist in ECR, create it.
 

@@ -85,6 +85,10 @@ spec:
         - name: varlibdockercontainers
           mountPath: /var/lib/docker/containers
           readOnly: true
+      tolerations:
+      - key: "dedicated"
+        operator: "Exists"
+        effect: "NoSchedule"
       terminationGracePeriodSeconds: 30
       volumes:
       - name: varlog

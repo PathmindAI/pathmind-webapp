@@ -565,7 +565,7 @@
             <column name="SNAPSHOT" type="bytea"/>
         </addColumn>
     </changeSet>
-
+    
     <changeSet id="20191209-1" author="onur@vaadin.com">
         <update tableName="PATHMIND_USER">
             <column name="STRIPE_CUSTOMER_ID" value="cus_GKPM6sw8wTtgjg"/>
@@ -624,8 +624,8 @@
         </addColumn>
         <sql>
             UPDATE POLICY SET name=SPLIT_PART(external_id, '_', 3);
-<!--        The following line fails in liquibase but works in postgres directly. Therefore this code has been implemented in the Java changeset code -->
-<!--        UPDATE POLICY SET NOTES=concat('sgd_minibatch_size=', batch_size, ', lr=', learning_rate, ', gamma=', gamma);-->
+            <!--        The following line fails in liquibase but works in postgres directly. Therefore this code has been implemented in the Java changeset code -->
+            <!--        UPDATE POLICY SET NOTES=concat('sgd_minibatch_size=', batch_size, ', lr=', learning_rate, ', gamma=', gamma);-->
         </sql>
         <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191229_01"/>
         <rollback>
@@ -633,7 +633,7 @@
             <sql>UPDATE POLICY SET name=external_Id</sql>
         </rollback>
     </changeSet>
-    
+
     <!-- #501 - Add DB constraint for unique project name -->
     <changeSet id="20200102-01" author="onur@vaadin.com">
         <comment>If there are duplicated project names, update them before adding db constraint</comment>
@@ -642,10 +642,10 @@
         </sql>
         <addUniqueConstraint tableName="PROJECT" constraintName="UNIQUE_PROJECT_NAME_PATHMIND_USER_ID" columnNames="PATHMIND_USER_ID, NAME" />
     </changeSet>
-    
+
     <changeSet id="20200103-01" author="onur@vaadin.com">
         <addColumn tableName="RUN">
-         	<column name="NOTIFICATION_SENT_AT" type="DATETIME"/>
+            <column name="NOTIFICATION_SENT_AT" type="DATETIME"/>
         </addColumn>
     </changeSet>
 
@@ -657,6 +657,47 @@
             <renameColumn tableName="POLICY" oldColumnName="STARTED_AT" newColumnName="STARTEDAT"/>
             <renameColumn tableName="POLICY" oldColumnName="STOPPED_AT" newColumnName="STOPPEDAT"/>
         </rollback>
+    </changeSet>
+
+    <changeSet id="20200113-01" author="daniel@pathmind.com">
+        <createTable tableName="TRAINER_JOB">
+            <column name="JOB_ID" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SQS_URL" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="S3PATH" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="S3BUCKET" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RECEIPTHANDLE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EC2_INSTANCE_TYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EC2_MAX_PRICE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATE_DATE" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EC2_CREATE_DATE" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>
+            <column name="EC2_CREATE_DATE" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>
+            <column name="STATUS" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 
 </databaseChangeLog>

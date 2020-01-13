@@ -86,6 +86,18 @@ resource "null_resource" "db_url_secret" {
   depends_on = ["null_resource.configmap_ingress_nginx"]
 }
 
+resource "null_resource" "db_url_cli_secret" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic dburlcli --from-literal DB_URL_CLI=${var.DB_URL_CLI}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret dburlcli"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}
+
+
 resource "null_resource" "segment_key_secret" {
   provisioner "local-exec" {
     command = "kubectl create secret generic segmentkey --from-literal SEGMENT_KEY=${var.SEGMENT_KEY}"
@@ -126,7 +138,7 @@ resource "null_resource" "prometheus" {
 #install pathmind
 resource "null_resource" "pathmind" {
   provisioner "local-exec" {
-    command = "helm install pathmind ../helm/pathmind -f ../helm/pathmind/values_test.yaml"
+    command = "helm install pathmind ../helm/pathmind -f ../helm/pathmind/values_${var.environment}.yaml"
   }
   provisioner "local-exec" {
     when = "destroy"
@@ -138,13 +150,13 @@ resource "null_resource" "pathmind" {
 #install trainer
 resource "null_resource" "trainer" {
   provisioner "local-exec" {
-    command = "helm install trainer ../helm/trainer"
+    command = "helm install trainer ../helm/trainer -f ../helm/trainer/values_${var.environment}.yaml"
   }
   provisioner "local-exec" {
     when = "destroy"
     command = "helm delete trainer"
   }
-  depends_on = ["null_resource.pathmind-db"]
+  depends_on = ["null_resource.pathmind-db","null_resource.db_url_cli_secret"]
 }
 
 

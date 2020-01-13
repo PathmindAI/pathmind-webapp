@@ -1,25 +1,24 @@
-# Default values for pathmind.
+# Default values for trainer.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 2
+replicaCount: 1
 
 image:
-  repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind
-  tag: test
+  repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/trainer
+  tag: dev
   pullPolicy: Always
 
-service:
-  type: NodePort
-  port: 80
+#service:
+#  type: NodePort
+#  port: 80
 
 env:
-  APPLICATION_URL: http://test.danieljj.com
-  INTERCOM_APP_ID: q51xonft
-  WEBSITE_HTTPLOGGING_RETENTION_DAYS: 7
-  PATHMIND_LOG_FILE_PATH: /tmp/
-  SCM_COMMAND_IDLE_TIMEOUT: 1800
-  ENVIRONMENT: test
+  SQS_URL: https://queue.amazonaws.com/839270835622/dev-training-queue.fifo
+  ENVIRONMENT: dev
+  NAME: dev-pathmind.k8s.local
+  KOPS_STATE_STORE: s3://dev-pathmind-kops-state/k8s.dev-pathmind.k8s.local
+  RL_IMAGE: 839270835622.dkr.ecr.us-east-1.amazonaws.com/rl_training:dev
   
 
 ingress:

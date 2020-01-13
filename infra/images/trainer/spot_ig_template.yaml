@@ -1,0 +1,24 @@
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+  creationTimestamp: null
+  labels:
+    kops.k8s.io/cluster: {{CLUSTER_NAME}}
+  name: {{IG_NAME}}
+spec:
+  image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2019-09-26
+  machineType: {{INSTANCE_TYPE}}
+  maxPrice: "{{MAX_PRICE}}"
+  maxSize: 1
+  minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: "{{IG_NAME}}"
+    on-demand: "false"
+    dedicated: {{IG_NAME}}
+  role: Node
+  taints:
+  - dedicated={{IG_NAME}}:NoSchedule
+  subnets:
+  - us-east-1a
+  - us-east-1b
+  - us-east-1c

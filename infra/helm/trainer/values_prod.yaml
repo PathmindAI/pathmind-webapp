@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/trainer
-  tag: latest
+  tag: prod
   pullPolicy: Always
 
 #service:
@@ -14,7 +14,12 @@ image:
 #  port: 80
 
 env:
-  #SCM_COMMAND_IDLE_TIMEOUT: 1800
+  SQS_URL: https://queue.amazonaws.com/839270835622/prod-training-queue.fifo
+  ENVIRONMENT: prod
+  NAME: pathmind.k8s.local
+  KOPS_STATE_STORE: s3://pathmind-kops-state/k8s.pathmind.k8s.local
+  RL_IMAGE: 839270835622.dkr.ecr.us-east-1.amazonaws.com/rl_training:prod
+
   
 
 ingress:
