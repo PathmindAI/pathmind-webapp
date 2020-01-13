@@ -147,10 +147,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         policyStatusDetailsPanel = new PolicyStatusDetailsPanel();
 
         runFullTraining = new Button("Start Full Run", new Image("frontend/images/start.svg", "run"), click -> {
-            final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
-            trainingService.startFullRun(experiment, policy);
-            segmentIntegrator.fullRunStarted();
-            new RunConfirmDialog().open();
+            final var experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
+            if(experiment.isPresent()) {
+                trainingService.startFullRun(experiment.get(), policy);
+                segmentIntegrator.fullRunStarted();
+                new RunConfirmDialog().open();
+            }
         });
         runFullTraining.setVisible(false);
         runFullTraining.addClassNames("large-image-btn", "run");
@@ -199,9 +201,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     @Override
     protected void initLoadData() throws InvalidDataException {
-        experiment = experimentDAO.getExperiment(experimentId);
-        if (experiment == null)
-            throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
+        experiment = experimentDAO.getExperiment(experimentId)
+            .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
     }
 

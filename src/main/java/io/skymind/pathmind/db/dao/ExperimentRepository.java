@@ -5,6 +5,7 @@ import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -18,8 +19,11 @@ import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.data.db.tables.Model.MODEL;
 import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
 
+@Slf4j
 class ExperimentRepository
 {
+	private static final String EXPERIMENT_NOT_FOUND = "Experiment with ID %s was not found";
+
 	protected static Experiment getExperiment(DSLContext ctx, long experimentId) {
 		Record record = ctx
 				.select(EXPERIMENT.asterisk())
@@ -30,6 +34,11 @@ class ExperimentRepository
 				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
 				.where(EXPERIMENT.ID.eq(experimentId))
 				.fetchOne();
+
+		if(record == null) {
+			log.error(String.format(EXPERIMENT_NOT_FOUND, experimentId));
+			return null;
+		}
 
 		Experiment experiment = record.into(EXPERIMENT).into(Experiment.class);
 		addParentDataModelObjects(record, experiment);

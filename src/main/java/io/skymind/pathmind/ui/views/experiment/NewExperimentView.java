@@ -236,11 +236,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     protected void initLoadData() throws InvalidDataException {
-        experiment = experimentDAO.getExperiment(experimentId);
+        experiment = experimentDAO.getExperiment(experimentId)
+                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		if(MockDefaultValues.isDebugAccelerate() && StringUtils.isEmpty(experiment.getRewardFunction()))
 			experiment.setRewardFunction(MockDefaultValues.NEW_EXPERIMENT_REWARD_FUNCTION);
-        if (experiment == null)
-            throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
     }
 
     @Override
