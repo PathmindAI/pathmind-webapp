@@ -3,8 +3,8 @@
 }
 
 :host [part="label"] {
-  color: #888888;
-  font-size: 0.85714285rem;
+  color: var(--pm-tertiary-text-color);
+  font-size: var(--lumo-font-size-s);
 }
 
 /* Search box text field */

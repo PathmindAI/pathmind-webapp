@@ -21,7 +21,20 @@ landing-page {
 
 .login-panel-cont .content {
   width: 400px;
-  margin: auto;
+  padding: 0;
+  margin: 60px auto 0;
+}
+
+.login-panel-cont .inner-content {
+  font-size: var(--lumo-font-size-s);
+  text-align: center;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+.login-panel-cont h3 {
+  color: var(--pm-text-color);
+  text-align: center;
+  margin-top: 0;
 }
 
 .welcome-text {
@@ -30,42 +43,7 @@ landing-page {
 }
 
 .logo {
-  margin-bottom: 60px;
-}
-
-.title {
-  width: 100%;
-  box-shadow: inset 0px -2px 0px 0px #b3b6c2;
-  padding: 0 10px;
-  box-sizing: border-box;
-}
-
-.title label {
-  font-size: 12px;
-  color: var(--pm-primary-color);
-  position: relative;
-  width: auto;
-  display: inline-block;
-  line-height: 32px;
-}
-
-.title label:after {
-  content: "";
-  position: absolute;
-  display: block;
-  background: var(--pm-primary-color);
-  height: 2px;
-  left: 4px;
-  right: 4px;
-  bottom: 0;
-}
-
-.sign-in-btn {
-  margin-top: 50px;
-}
-
-vaadin-button[part="vaadin-login-submit"] {
-  border-radius: 100px;
+  margin-bottom: 25px;
 }
 
 .email-not-verified-cont {
@@ -81,13 +59,22 @@ vaadin-button[part="vaadin-login-submit"] {
   margin: auto;
 }
 
+.account-help-wrapper {
+  margin-top: 48px;
+}
+
+.account-help-wrapper a {
+  display: inline-block;
+  font-weight: 700;
+  margin-left: var(--lumo-space-xs);
+}
+
 .policy {
-  margin: auto;
-  color: #696969;
-  font-size: 0.7em;
+  font-size: var(--lumo-font-size-xs);
+  color: var(--pm-tertiary-text-color);
 }
 
 .policy a {
   font-weight: 700;
-  color: #696969;
+  color: var(--pm-tertiary-text-color);
 }

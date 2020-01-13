@@ -49,6 +49,9 @@
 }
 
 :host([part="vaadin-login-submit"]) {
+  width: auto !important;
+  height: 40px;
+  padding: 0px 50px;
   margin-top: 50px !important;
 }
 
