@@ -93,7 +93,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public RunStatus status(String jobHandle) {
-//        List<String> errors = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_ERROR);
+        List<String> errors = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_ERROR);
         List<String> completes = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_COMPLETE);
         List<String> trials = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_LIST).stream()
                 .filter(it -> !it.endsWith(".json"))
@@ -103,13 +103,18 @@ public class AWSExecutionProvider implements ExecutionProvider {
         ExperimentState experimentState = getExperimentState(jobHandle);
 
         if (experimentState != null) {
+            if (errors.size() > 0) {
+                return RunStatus.Error;
+            }
+
             if (trials.size() == completes.size()) {
                 return RunStatus.Completed;
             }
+
             return RunStatus.Running;
-        } else {
-            return RunStatus.NotStarted;
         }
+
+        return RunStatus.Starting;
     }
 
     @Override
@@ -166,11 +171,14 @@ public class AWSExecutionProvider implements ExecutionProvider {
     public List<String> getTrialStatus(String jobHandle, String fileName) {
         Optional<byte[]> listOpt = getFile(jobHandle, fileName);
         if (listOpt.isPresent()) {
-            return Arrays.stream(new String(listOpt.get()).split("\n"))
+            String contents = new String(listOpt.get());
+            if (!contents.isEmpty()) {
+                return Arrays.stream(contents.split("\n"))
                     .collect(Collectors.toList());
-        } else {
-            return Collections.emptyList();
+            }
         }
+
+        return Collections.emptyList();
     }
 
     public ExperimentState getExperimentState(String jobHandle) {
