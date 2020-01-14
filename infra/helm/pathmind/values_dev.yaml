@@ -20,6 +20,8 @@ env:
   PATHMIND_LOG_FILE_PATH: /tmp/
   SCM_COMMAND_IDLE_TIMEOUT: 1800
   ENVIRONMENT: dev
+  SQS_URL: https://queue.amazonaws.com/839270835622/dev-training-queue.fifo
+  S3_BUCKET: dev-training-dynamic-files.pathmind.com
   
 
 ingress:

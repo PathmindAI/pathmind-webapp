@@ -78,4 +78,7 @@ spec:
                 secretKeyRef:
                   name: awssecretaccesskey
                   key: AWS_SECRET_ACCESS_KEY
- 
+            - name: SQS_URL
+              value: "{{ .Values.env.SQS_URL }}"
+            - name: S3_BUCKET
+              value: "{{ .Values.env.S3_BUCKET }}"
