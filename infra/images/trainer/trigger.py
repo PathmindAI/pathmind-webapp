@@ -34,6 +34,7 @@ def execute_psql(sql_string):
         psql_connection.commit()
     except Exception as e:
         app_logger.error(traceback.format_exc())
+        app_logger.error(sql_string.replace('\n',' ')
     psql_cursor.close()
     psql_connection.close()
 

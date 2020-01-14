@@ -710,4 +710,8 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="20191212-1" author="daniel@pathmind.com">
+        <modifyDataType tableName="TRAINER_JOB" columnName="RECEIPTHANDLE" newDataType="VARCHAR(1000)"></modifyDataType>
+    </changeSet>
+
 </databaseChangeLog>
