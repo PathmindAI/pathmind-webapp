@@ -18,7 +18,7 @@ landing-page {
 .login-panel-cont .content {
   width: 400px;
   padding: 0;
-  margin: 60px auto 0;
+  margin: 50px auto 0;
 }
 
 .login-panel-cont .inner-content {
@@ -31,10 +31,6 @@ landing-page {
   color: var(--pm-text-color);
   text-align: center;
   margin-top: 0;
-}
-
-vaadin-password-field input {
-  flex-shrink: 0;
 }
 
 .welcome-text {

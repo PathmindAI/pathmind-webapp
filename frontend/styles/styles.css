@@ -19,8 +19,8 @@ html {
   --lumo-font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   --lumo-font-size-xl: 1.5rem;
   --lumo-font-size-m: 1rem;
-  --lumo-font-size-s: 0.75rem;
-  --lumo-font-size-xs: 0.625rem;
+  --lumo-font-size-s: 0.875rem;
+  --lumo-font-size-xs: 0.75rem;
   --lumo-size-xl: 3rem;
   --lumo-size-l: 2.5rem;
   --lumo-size-m: 2rem;
@@ -44,8 +44,8 @@ html {
   --lumo-tertiary-text-color: #d7d7d7;
   --lumo-base-color: #ffffff;
   --lumo-primary-text-color: var(--pm-primary-color);
-  --lumo-primary-color-50pct: rgba(88, 137, 247, 0.5);
-  --lumo-primary-color-10pct: rgba(88, 137, 247, 0.1);
+  --lumo-primary-color-50pct: rgba(79, 151, 170, 0.5);
+  --lumo-primary-color-10pct: rgba(79, 151, 170, 0.1);
   --lumo-primary-color: var(--pm-primary-color);
   --lumo-border-radius: 6px;
 }
