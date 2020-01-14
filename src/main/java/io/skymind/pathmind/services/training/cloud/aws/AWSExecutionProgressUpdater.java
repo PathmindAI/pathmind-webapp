@@ -11,15 +11,12 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
-import io.skymind.pathmind.services.training.cloud.aws.api.dto.ExperimentState;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -130,23 +127,12 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     }
 
     private void setStoppedAtForFinishedPolicies(List<Policy> policies, String jobHandle) {
-        ExperimentState experimentState = provider.getExperimentState(jobHandle);
+        Map<String, LocalDateTime> terminatedTrials = provider.getTerminatedTrials(jobHandle);
 
-        if (experimentState != null) {
-            Map<String, LocalDateTime> terminatedTrials = experimentState.getCheckpoints().stream()
-                    .filter(checkPoint -> checkPoint.getStatus().equals("TERMINATED"))
-                    .map(it -> {
-                        final String key = it.getId();
-                        final LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(it.getLastUpdateTime()), ZoneId.systemDefault());
-                        return Map.entry(key, date);
-                    })
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-            policies.stream()
-                    .filter(policy -> policy.getStoppedAt() == null)
-                    .filter(policy -> terminatedTrials.containsKey(policy.getExternalId()))
-                    .forEach(policy -> policy.setStoppedAt(terminatedTrials.get(policy.getExternalId())));
-        }
+        policies.stream()
+                .filter(policy -> policy.getStoppedAt() == null)
+                .filter(policy -> terminatedTrials.containsKey(policy.getExternalId()))
+                .forEach(policy -> policy.setStoppedAt(terminatedTrials.get(policy.getExternalId())));
     }
 
     private List<Policy> getPoliciesFromProgressProvider(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId) {

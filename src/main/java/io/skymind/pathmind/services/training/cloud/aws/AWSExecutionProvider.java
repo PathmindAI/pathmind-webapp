@@ -20,6 +20,9 @@ import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -107,7 +110,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 return RunStatus.Error;
             }
 
-            if (trials.size() == completes.size()) {
+            if (completes.size() > 0 && completes.size() == trials.size()) {
                 return RunStatus.Completed;
             }
 
@@ -181,7 +184,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         return Collections.emptyList();
     }
 
-    public ExperimentState getExperimentState(String jobHandle) {
+    private ExperimentState getExperimentState(String jobHandle) {
         Optional<ExperimentState> expOpt = client.listObjects(jobHandle + "/output/").getObjectSummaries().parallelStream()
                 .filter(it -> it.getKey().endsWith(".json") && it.getKey().contains("experiment_state-"))
                 .findAny()
@@ -195,6 +198,23 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 });
 
         return expOpt != null && expOpt.isPresent() ? expOpt.get() : null;
+    }
+
+    public Map<String, LocalDateTime> getTerminatedTrials(String jobHandle) {
+        ExperimentState experimentState = getExperimentState(jobHandle);
+
+        if (experimentState != null) {
+            return experimentState.getCheckpoints().stream()
+                    .filter(checkPoint -> checkPoint.getStatus().equals("TERMINATED"))
+                    .map(it -> {
+                        final String key = it.getId();
+                        final LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(it.getLastUpdateTime()), ZoneId.systemDefault());
+                        return Map.entry(key, date);
+                    })
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        }
+
+        return Collections.emptyMap();
     }
 
     private void installRllib(RLLib rllibVersion, List<String> instructions, List<String> files) {
