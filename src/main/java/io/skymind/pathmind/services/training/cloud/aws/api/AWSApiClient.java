@@ -31,16 +31,19 @@ public class AWSApiClient {
     private final AmazonSQS sqsClient;
     private final ObjectMapper objectMapper;
 
+    private final Regions regions;
     private final String bucketName;
     private final String queueUrl;
 
     public AWSApiClient(
+            @Value("${pathmind.aws.region}") String region,
             @Value("${pathmind.aws.key.id}") String keyId,
             @Value("${pathmind.aws.secret_key}") String secretAccessKey,
             @Value("${pathmind.aws.s3.bucket}") String bucketName,
             @Value("${pathmind.aws.sqs_url}") String queueUrl,
             ObjectMapper objectMapper) {
 
+        this.regions = Regions.fromName(region);
         this.credentials = new BasicAWSCredentials(
                 keyId,
                 secretAccessKey
@@ -49,13 +52,13 @@ public class AWSApiClient {
         this.s3Client = AmazonS3ClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.US_EAST_1)
+                .withRegion(regions)
                 .build();
 
         this.sqsClient = AmazonSQSClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.US_EAST_1)
+                .withRegion(regions)
                 .build();
 
         this.bucketName = bucketName;
