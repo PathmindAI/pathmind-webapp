@@ -108,4 +108,16 @@ public class AWSApiClient {
         SendMessageResult result = sqsClient.sendMessage(send_msg_request);
         return result.getMessageId();
     }
+
+    public String jobStop(String jobId) throws JsonProcessingException {
+        Job job = new Job(bucketName, jobId, true);
+
+        SendMessageRequest send_msg_request = new SendMessageRequest()
+                .withQueueUrl(queueUrl)
+                .withMessageGroupId("training")
+                .withMessageBody(objectMapper.writeValueAsString(job));
+
+        SendMessageResult result = sqsClient.sendMessage(send_msg_request);
+        return result.getMessageId();
+    }
 }
