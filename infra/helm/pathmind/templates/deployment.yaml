@@ -66,3 +66,16 @@ spec:
               value: "{{ .Values.env.SCM_COMMAND_IDLE_TIMEOUT }}"
             - name: ENVIRONMENT
               value: "{{ .Values.env.ENVIRONMENT }}"
+            - name: AWS_DEFAULT_REGION
+              value: "us-east-1"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: awsaccesskey
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: awssecretaccesskey
+                  key: AWS_SECRET_ACCESS_KEY
+ 
