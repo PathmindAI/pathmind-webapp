@@ -18,10 +18,11 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row17;
+import org.jooq.Row16;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PathmindUser extends TableImpl<PathmindUserRecord> {
 
-    private static final long serialVersionUID = -886765742;
+    private static final long serialVersionUID = -358440974;
 
     /**
      * The reference instance of <code>public.pathmind_user</code>
@@ -61,12 +62,7 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     /**
      * The column <code>public.pathmind_user.id</code>.
      */
-    public final TableField<PathmindUserRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
-
-    /**
-     * The column <code>public.pathmind_user.name</code>.
-     */
-    public final TableField<PathmindUserRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<PathmindUserRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('pathmind_user_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.pathmind_user.email</code>.
@@ -187,6 +183,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     }
 
     @Override
+    public Identity<PathmindUserRecord, Long> getIdentity() {
+        return Keys.IDENTITY_PATHMIND_USER;
+    }
+
+    @Override
     public UniqueKey<PathmindUserRecord> getPrimaryKey() {
         return Keys.PATHMIND_USER_PKEY;
     }
@@ -223,11 +224,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row17 type methods
+    // Row16 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row17<Long, String, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime, String> fieldsRow() {
-        return (Row17) super.fieldsRow();
+    public Row16<Long, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime, String> fieldsRow() {
+        return (Row16) super.fieldsRow();
     }
 }
