@@ -31,9 +31,14 @@ public class AWSApiClient {
     private final AmazonSQS sqsClient;
     private final ObjectMapper objectMapper;
 
+    private final String bucketName;
+    private final String queueUrl;
+
     public AWSApiClient(
             @Value("${pathmind.aws.key.id}") String keyId,
             @Value("${pathmind.aws.secret_key}") String secretAccessKey,
+            @Value("${pathmind.aws.s3.bucket}") String bucketName,
+            @Value("${pathmind.aws.sqs_url}") String queueUrl,
             ObjectMapper objectMapper) {
 
         this.credentials = new BasicAWSCredentials(
@@ -53,6 +58,9 @@ public class AWSApiClient {
                 .withRegion(Regions.US_EAST_1)
                 .build();
 
+        this.bucketName = bucketName;
+        this.queueUrl = queueUrl;
+
         this.objectMapper = objectMapper;
     }
 
@@ -60,19 +68,19 @@ public class AWSApiClient {
         return s3Client.listBuckets();
     }
 
-    public ListObjectsV2Result listObjects(String bucketName) {
+    public ListObjectsV2Result listObjects() {
         return s3Client.listObjectsV2(bucketName);
     }
 
-    public ListObjectsV2Result listObjects(String bucketName, String path) {
+    public ListObjectsV2Result listObjects(String path) {
         return s3Client.listObjectsV2(bucketName, path);
     }
 
-    public String fileUpload(String bucketName, String keyId, File file) {
+    public String fileUpload(String keyId, File file) {
         return s3Client.putObject(bucketName, keyId, file).getETag();
     }
 
-    public byte[] fileContents(String bucketName, String keyId) {
+    public byte[] fileContents(String keyId) {
         S3Object o = s3Client.getObject(bucketName, keyId);
         try {
             return IOUtils.toByteArray(o.getObjectContent());
@@ -86,7 +94,9 @@ public class AWSApiClient {
         s3Client.deleteObject(bucketName, keyId);
     }
 
-    public String jobSubmit(String queueUrl, Job job) throws JsonProcessingException {
+    public String jobSubmit(String jobId) throws JsonProcessingException {
+        Job job = new Job(bucketName, jobId);
+
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
                 .withMessageGroupId("training")

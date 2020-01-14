@@ -8,7 +8,6 @@ import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.ExperimentState;
-import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
@@ -29,8 +28,6 @@ import java.util.stream.Collectors;
 public class AWSExecutionProvider implements ExecutionProvider {
     private final AWSApiClient client;
     private final ObjectMapper objectMapper;
-
-    private final String bucketName = "test-training-dynamic-files.pathmind.com";
 
     public AWSExecutionProvider(AWSApiClient client, ObjectMapper objectMapper) {
         this.client = client;
@@ -78,7 +75,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         try {
             model = File.createTempFile("pathmind", UUID.randomUUID().toString());
             FileUtils.writeByteArrayToFile(model, modelFile);
-            return client.fileUpload("test-training-dynamic-files.pathmind.com", "id" + runId + "/model.zip", model);
+            return client.fileUpload("id" + runId + "/model.zip", model);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return null;
@@ -117,11 +114,11 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public Map<String, String> progress(String jobHandle) {
-        return client.listObjects(bucketName, jobHandle + "/output/").getObjectSummaries().parallelStream()
+        return client.listObjects(jobHandle + "/output/").getObjectSummaries().parallelStream()
                 .filter(it -> it.getKey().endsWith("progress.csv"))
                 .map(it -> {
                     final String key = new File(it.getKey()).getParentFile().getName();
-                    final String contents = new String(client.fileContents(bucketName, it.getKey()));
+                    final String contents = new String(client.fileContents(it.getKey()));
                     return Map.entry(key, contents);
                 })
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -160,10 +157,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     public Optional<byte[]> getFile(String jobHandle, String fileName) {
-        return client.listObjects(bucketName, jobHandle + "/output/").getObjectSummaries().parallelStream()
+        return client.listObjects(jobHandle + "/output/").getObjectSummaries().parallelStream()
                 .filter(it -> it.getKey().endsWith(fileName))
                 .findAny()
-                .map(it -> client.fileContents(bucketName, it.getKey()));
+                .map(it -> client.fileContents(it.getKey()));
     }
 
     public List<String> getTrialStatus(String jobHandle, String fileName) {
@@ -177,12 +174,12 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     public ExperimentState getExperimentState(String jobHandle) {
-        Optional<ExperimentState> expOpt = client.listObjects(bucketName, jobHandle + "/output/").getObjectSummaries().parallelStream()
+        Optional<ExperimentState> expOpt = client.listObjects(jobHandle + "/output/").getObjectSummaries().parallelStream()
                 .filter(it -> it.getKey().endsWith(".json") && it.getKey().contains("experiment_state-"))
                 .findAny()
                 .map(it -> {
                     try {
-                        return objectMapper.readValue(client.fileContents(bucketName, it.getKey()), ExperimentState.class);
+                        return objectMapper.readValue(client.fileContents(it.getKey()), ExperimentState.class);
                     } catch (IOException e) {
                         log.error(e.getMessage(), e);
                         return  null;
@@ -386,8 +383,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
             String queueName = "https://sqs.us-east-1.amazonaws.com/839270835622/test-training-queue.fifo";
             String id = "id" + job.getRunId();
 
-            client.fileUpload("test-training-dynamic-files.pathmind.com", id + "/script.sh", script);
-            return client.jobSubmit(queueName, new Job(bucketName, id));
+            client.fileUpload(id + "/script.sh", script);
+            return client.jobSubmit(id);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return null;
