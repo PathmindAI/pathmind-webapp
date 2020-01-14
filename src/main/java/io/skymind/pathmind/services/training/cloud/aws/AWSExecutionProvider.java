@@ -220,7 +220,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         "cd .."
                 ));
 
-//                files.addAll(this.fileManager.getFiles(rllibVersion));
                 files.add("aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz");
                 files.add("aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/rllibpack.tar.gz rllibpack.tar.gz");
                 files.add("aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/nativerl-1.0.0-SNAPSHOT-bin.zip nativerl-1.0.0-SNAPSHOT-bin.zip");
@@ -240,7 +239,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         "rm -r baseEnv"
                 ));
 
-//                files.addAll(this.fileManager.getFiles(anylogicVersion));
                 files.add("aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/baseEnv.zip baseEnv.zip");
                 break;
             case VERSION_8_5_1:
@@ -251,7 +249,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         "rm -r baseEnv"
                 ));
 
-//                files.addAll(this.fileManager.getFiles(anylogicVersion));
                 files.add("aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/baseEnv.zip baseEnv.zip");
                 break;
             default:
@@ -266,7 +263,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         "mv PathmindPolicy.jar work/lib/"
                 ));
 
-//                files.addAll(this.fileManager.getFiles(pathmindHelperVersion));
                 files.add("aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/PathmindPolicy.jar PathmindPolicy.jar");
                 break;
             default:
@@ -344,23 +340,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
                 // actually start training
                 "source train.sh"
-//                "source train.sh",
-
-//                // temporary workaround, as train.sh as it is in nativerl with id doRCLd, only takes care of a single policy file
-//                // by doing this here, we can iterate a bit quicker
-//                "mkdir -p ../output",
-//                "for DIR in `find \"$OUTPUT_DIR\" -iname model -type d`; do \n" +
-//                        "  cd $DIR;\n" +
-//                        "  mkdir -p $OLDPWD/../output/$(basename `dirname $DIR`)/;\n" +
-//                        "  cp ../progress.csv $OLDPWD/../output/$(basename `dirname $DIR`)/; \n"+
-//                        "  cp ../../*.json $OLDPWD/../output/; \n"+
-//                        "  zip -r $OLDPWD/../output/policy_$(basename `dirname $DIR`).zip .;\n" +
-//                        "  cd $OLDPWD;\n" +
-//                        "  cp trial_* ../output;\n" +
-//                        "  cd `find \"$DIR\"/.. -iname checkpoint_* -type d | sort -V | tail -1`;\n"+
-//                        "  zip $OLDPWD/../output/$(basename `dirname $DIR`)/checkpoint.zip ./* ;\n"+
-//                        "  cd $OLDPWD;\n" +
-//                        "done"
         ));
     }
 
@@ -380,7 +359,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
             FileUtils.writeStringToFile(script, scriptStr, Charset.defaultCharset());
 
-            String queueName = "https://sqs.us-east-1.amazonaws.com/839270835622/test-training-queue.fifo";
             String id = "id" + job.getRunId();
 
             client.fileUpload(id + "/script.sh", script);
