@@ -202,9 +202,9 @@ account-view {
   width: 275px;
 }
 
-@media (max-width: 1448px) {
+@media (min-width: 1201px) {
   html {
-    font-size: 15px;
+    font-size: 16px;
   }
 }
 

@@ -4,7 +4,7 @@
 
 :host [part="label"] {
   color: var(--pm-tertiary-text-color);
-  font-size: var(--lumo-font-size-s);
+  font-size: var(--lumo-font-size-xs);
 }
 
 /* Search box text field */

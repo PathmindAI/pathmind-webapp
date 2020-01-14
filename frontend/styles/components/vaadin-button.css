@@ -50,9 +50,8 @@
 
 /* Primary Button Styles */
 :host([theme~="primary"]) {
-  width: auto !important;
+  min-width: 225px;
   height: 40px;
-  padding: 0px 50px;
 }
 
 :host([theme~="primary"]:hover) {
