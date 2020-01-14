@@ -1,0 +1,3 @@
+[part="items"] ::slotted(.vaadin-menu-item) {
+  cursor: pointer;
+}
