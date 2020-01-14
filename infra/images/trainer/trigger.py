@@ -34,7 +34,7 @@ def execute_psql(sql_string):
         psql_connection.commit()
     except Exception as e:
         app_logger.error(traceback.format_exc())
-        app_logger.error(sql_string.replace('\n',' ')
+        app_logger.error(sql_string.replace('\n',' '))
     psql_cursor.close()
     psql_connection.close()
 
@@ -131,7 +131,8 @@ def process_message(message):
         receipthandle,
         ec2_instance_type,
         ec2_max_price,
-        status)
+        status,
+        description)
         VALUES (
         '{job_id}',
         '{SQS_URL}',
@@ -140,7 +141,8 @@ def process_message(message):
         '{ReceiptHandle}',
         '{ec2_instance_type}',
         '{ec2_max_price}',
-        {status})
+        {status},
+        'pathmind training job')
     """.format(
         job_id=job_id,
         SQS_URL=SQS_URL,

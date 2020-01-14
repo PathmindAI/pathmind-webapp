@@ -10,7 +10,7 @@ update public.trainer_job set status=3,ec2_create_date=now() where job_id='${S3P
 commit;
 EOF
 
-bash script.sh &
+bash script.sh | tee process_output.log &
 
 sleep $sleep_time
 
@@ -33,6 +33,7 @@ aws s3 cp --recursive ./work/PPO ${s3_url}/output/
 aws s3 cp ./work/trial_complete ${s3_url}/output/trial_complete
 aws s3 cp ./work/trial_error ${s3_url}/output/trial_error
 aws s3 cp ./work/trial_list ${s3_url}/output/trial_list
+aws s3 cp process_output.log ${s3_url}/output/process_output.log
 
 #Generate final files
 cd work
