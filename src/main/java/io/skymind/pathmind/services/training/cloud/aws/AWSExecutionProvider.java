@@ -309,20 +309,20 @@ public class AWSExecutionProvider implements ExecutionProvider {
         ));
     }
 
-    private void installCheckpoint(String checkpointId, List<String> instructions, List<String> files) {
-//        if (checkpointId != null) {
-//            files.add(new FileReference(checkpointId, false));
-//
-//            instructions.addAll(Arrays.asList(
-//                    "mkdir checkpoint",
-//                    "unzip ../checkpoint.zip -d checkpoint",
-//                    "rm ../checkpoint.zip"
-//            ));
-//
-//            instructions.add(
-//                    varExp("CHECKPOINT", "$(find checkpoint -name \"checkpoint-*\" ! -name \"checkpoint-*.*\")")
-//            );
-//        }
+    private void installCheckpoint(String checkpointS3Path, List<String> instructions, List<String> files) {
+        if (checkpointS3Path != null) {
+            files.add("aws s3 cp s3://${ENVIRONMENT}-training-dynamic-files.pathmind.com/" + checkpointS3Path  + " checkpoint.zip");
+
+            instructions.addAll(Arrays.asList(
+                    "mkdir checkpoint",
+                    "unzip ../checkpoint.zip -d checkpoint",
+                    "rm ../checkpoint.zip"
+            ));
+
+            instructions.add(
+                    varExp("CHECKPOINT", "$(find checkpoint -name \"checkpoint-*\" ! -name \"checkpoint-*.*\")")
+            );
+        }
     }
 
     private String var(String name, String value) {

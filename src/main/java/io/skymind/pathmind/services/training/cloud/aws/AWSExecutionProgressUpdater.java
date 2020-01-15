@@ -113,11 +113,13 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                 if (entry != null) {
                     final byte[] checkPointFile = entry.getValue();
                     runDAO.saveCheckpointFile(runId, finishPolicyName, checkPointFile);
-                }
+                    log.debug("checkpoint saved for " + finishPolicyName);
 
-                // save meta data for checkpoint
-                if (executionProviderMetaDataDAO.getCheckPointFileKey(finishPolicyName) == null) {
-                    executionProviderMetaDataDAO.putCheckPointFileKey(finishPolicyName, entry.getKey());
+                    // save meta data for checkpoint
+                    if (executionProviderMetaDataDAO.getCheckPointFileKey(finishPolicyName) == null) {
+                        executionProviderMetaDataDAO.putCheckPointFileKey(finishPolicyName, entry.getKey());
+                        log.debug("checkpoint metadata saved for " + finishPolicyName);
+                    }
                 }
             });
             // STEPH -> REFACTOR -> Combined so that this is transactional. For now I just left it as is for the merge

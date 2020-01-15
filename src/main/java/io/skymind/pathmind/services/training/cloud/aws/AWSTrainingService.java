@@ -62,7 +62,9 @@ public class AWSTrainingService extends TrainingService {
                 executionProviderMetaDataDAO.putCheckPointFileKey(basePolicy.getExternalId(), checkpointFileId);
             }
 
-            spec.setCheckpointFileId(checkpointFileId);
+            // for AWS provider, need to pass s3 path
+            String checkpointS3Path = checkpointFileId + "/output/" + basePolicy.getExternalId() + "/" + "checkpoint.zip";
+            spec.setCheckpointFileId(checkpointS3Path);
         }
 
         // IMPORTANT -> There are multiple database calls within executionProvider.execute.
