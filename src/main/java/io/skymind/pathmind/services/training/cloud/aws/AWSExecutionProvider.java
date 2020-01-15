@@ -9,6 +9,7 @@ import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.ExperimentState;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
+import io.skymind.pathmind.services.training.versions.AWSFileManager;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
@@ -31,10 +32,12 @@ import java.util.stream.Collectors;
 public class AWSExecutionProvider implements ExecutionProvider {
     private final AWSApiClient client;
     private final ObjectMapper objectMapper;
+    private final AWSFileManager fileManager;
 
     public AWSExecutionProvider(AWSApiClient client, ObjectMapper objectMapper) {
         this.client = client;
         this.objectMapper = objectMapper;
+        this.fileManager = AWSFileManager.getInstance();
     }
 
     @Override
@@ -248,9 +251,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         "cd .."
                 ));
 
-                files.add("aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz");
-                files.add("aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/rllibpack.tar.gz rllibpack.tar.gz");
-                files.add("aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/nativerl-1.0.0-SNAPSHOT-bin.zip nativerl-1.0.0-SNAPSHOT-bin.zip");
+                files.addAll(fileManager.getFiles(rllibVersion));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported RLLib Version: " + rllibVersion);
@@ -259,16 +260,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private void installAnyLogic(AnyLogic anylogicVersion, List<String> instructions, List<String> files) {
         switch (anylogicVersion) {
-            case VERSION_8_5:
-                instructions.addAll(Arrays.asList(
-                        "unzip baseEnv.zip",
-                        "rm baseEnv.zip",
-                        "mv baseEnv/* work/",
-                        "rm -r baseEnv"
-                ));
-
-                files.add("aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/baseEnv.zip baseEnv.zip");
-                break;
             case VERSION_8_5_1:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip",
@@ -277,7 +268,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         "rm -r baseEnv"
                 ));
 
-                files.add("aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/baseEnv.zip baseEnv.zip");
+                files.addAll(fileManager.getFiles(anylogicVersion));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported AnyLogic Version: " + anylogicVersion);
@@ -291,7 +282,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         "mv PathmindPolicy.jar work/lib/"
                 ));
 
-                files.add("aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/PathmindPolicy.jar PathmindPolicy.jar");
+                files.addAll(fileManager.getFiles(pathmindHelperVersion));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported Pathmind Helper Version: " + pathmindHelperVersion);
@@ -299,9 +290,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     private void installModel(String modelId, List<String> instructions, List<String> files) {
-//        files.add(new FileReference(modelId, false));
-        //todo change bucket name and file name ({modelId}/model.zip)
-//        files.add("aws2 s3 cp s3://sagemaker-files.pathmind.com/PathmindPolicy.jar PathmindPolicy.jar");
         instructions.addAll(Arrays.asList(
                 "cd work",
                 "unzip ../model.zip",
@@ -311,7 +299,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private void installCheckpoint(String checkpointS3Path, List<String> instructions, List<String> files) {
         if (checkpointS3Path != null) {
-            files.add("aws s3 cp s3://${ENVIRONMENT}-training-dynamic-files.pathmind.com/" + checkpointS3Path  + " checkpoint.zip");
+            files.add(fileManager.buildCheckpointCopyCmd(checkpointS3Path, "checkpoint.zip"));
 
             instructions.addAll(Arrays.asList(
                     "mkdir checkpoint",
