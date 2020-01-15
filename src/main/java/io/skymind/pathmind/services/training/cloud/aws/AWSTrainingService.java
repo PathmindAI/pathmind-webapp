@@ -57,14 +57,11 @@ public class AWSTrainingService extends TrainingService {
             progress = policyDAO.getProgress(basePolicy.getId());
 
             String checkpointFileId = executionProviderMetaDataDAO.getCheckPointFileKey(basePolicy.getExternalId());
-            if (checkpointFileId == null) {
-                checkpointFileId = executionProvider.uploadCheckpoint(policyDAO.getSnapshotFile(basePolicy.getId()));
-                executionProviderMetaDataDAO.putCheckPointFileKey(basePolicy.getExternalId(), checkpointFileId);
+            if (checkpointFileId != null) {
+                // for AWS provider, need to pass s3 path
+                String checkpointS3Path = checkpointFileId + "/output/" + basePolicy.getExternalId() + "/" + "checkpoint.zip";
+                spec.setCheckpointFileId(checkpointS3Path);
             }
-
-            // for AWS provider, need to pass s3 path
-            String checkpointS3Path = checkpointFileId + "/output/" + basePolicy.getExternalId() + "/" + "checkpoint.zip";
-            spec.setCheckpointFileId(checkpointS3Path);
         }
 
         // IMPORTANT -> There are multiple database calls within executionProvider.execute.
