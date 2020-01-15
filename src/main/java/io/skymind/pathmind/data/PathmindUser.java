@@ -7,7 +7,6 @@ import java.util.UUID;
 public class PathmindUser
 {
 	private long id;
-	private String name;
 	private String email;
 	private String password;
 	private int accountType;
@@ -82,7 +81,6 @@ public class PathmindUser
 
 	public void setFirstname(String firstname) {
 		this.firstname = firstname;
-		updateName();
 	}
 
 	public String getLastname() {
@@ -91,12 +89,6 @@ public class PathmindUser
 
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
-		updateName();
-	}
-
-	private void updateName() {
-		name = firstname != null ? firstname : "";
-		name += lastname != null ? " " + lastname : "";
 	}
 
 	public String getAddress() {
@@ -140,11 +132,7 @@ public class PathmindUser
 	}
 
 	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+		return firstname + " " + lastname;
 	}
 
 	public LocalDateTime getDeleteAt() {

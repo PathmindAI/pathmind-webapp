@@ -219,3 +219,13 @@ account-view {
 .style-text-align-center {
   text-align: center;
 }
+
+.tag {
+  padding: 4px 8px;
+  background: var(--lumo-contrast-10pct);
+  border-radius: var(--lumo-border-radius);
+  margin: 2px;
+}
+.tag:empty {
+  display: none;
+}

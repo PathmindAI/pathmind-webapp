@@ -20,6 +20,7 @@ public class Routes {
     public static final String SIGN_UP_URL = "early-access-sign-up";
     public static final String RESET_PASSWORD_URL = "reset-password";
     public static final String EMAIL_VERIFICATION_URL = "email-verification";
+    public static final String VERIFICATION_EMAIL_SENT_URL = "verification-email-sent";
 
     public static final String ACCOUNT_EDIT_URL = "account/edit";
     public static final String ACCOUNT_URL = "account";
