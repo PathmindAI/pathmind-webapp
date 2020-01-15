@@ -3,6 +3,7 @@ package io.skymind.pathmind.db.dao;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
@@ -198,5 +199,9 @@ public class RunDAO
         return policy.getScores();
     }
 
+    // TODO KW: 15.01.2020 - is it needed?
+    public Optional<Run> getRecentRunForExperiment(long experimentId) {
+        return Optional.ofNullable(RunRepository.getRecentRunForExperiment(ctx, experimentId));
+    }
 
 }

@@ -42,4 +42,12 @@ public class ExperimentDAO
 	public void archive(long experimentId, boolean isArchive) {
 		ExperimentRepository.archive(ctx, experimentId, isArchive);
 	}
+
+	public List<Experiment> getLatestExperimentsForUser(long userId, int offset, int limit) {
+		return ExperimentRepository.getLatestExperimentsForUser(ctx, userId, offset, limit);
+	}
+
+	public int getCountExperimentsForUser(long userId) {
+		return ExperimentRepository.getCountExperimentsForUser(ctx, userId);
+	}
 }
