@@ -17,7 +17,6 @@ variable "cluster_name" {  }
 variable "kops_bucket" {  }
 variable "db_s3_bucket" { }
 variable "db_s3_file" { }
-variable "dbidentifier" {  }
 variable "master_zones" {  }
 variable "node_zones" {  }
 

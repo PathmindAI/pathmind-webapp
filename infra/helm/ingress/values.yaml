@@ -26,6 +26,8 @@ ingress:
       paths: [/:80:prometheus-grafana]
     - host: logging.danieljj.com
       paths: [/:5601:kibana]
+    - host: pgadmin.danieljj.com
+      paths: [/:80:pgadmin]
 
   tls: []
   #  - secretName: chart-example-tls

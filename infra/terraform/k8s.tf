@@ -205,6 +205,18 @@ resource "null_resource" "es-custom-config" {
   depends_on = ["null_resource.es-auth"]
 }
 
+#pgadmin
+resource "null_resource" "pgadmin" {
+  provisioner "local-exec" {
+    command = "kubectl apply -f ../k8s/pgadmin.yaml"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete deployment pgadmin; kubectl delete svc pgadmin"
+  }
+  depends_on = ["aws_db_instance.rds"]
+}
+
 #elasticserach
 resource "null_resource" "es" {
   provisioner "local-exec" {
