@@ -27,7 +27,7 @@ public class DashboardDataProvider extends AbstractBackEndDataProvider<Dashboard
 
 	@Override
 	protected int sizeInBackEnd(Query<DashboardItem, Void> query) {
-		return service.getDashboardItemsForUser(SecurityUtils.getUserId(), 0, 100).size();
+		return service.countTotalDashboardItemsForUser(SecurityUtils.getUserId());
 	}
 
 
