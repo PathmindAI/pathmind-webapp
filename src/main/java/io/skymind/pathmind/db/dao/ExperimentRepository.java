@@ -153,6 +153,7 @@ class ExperimentRepository
 	private static void addParentDataModelObjects(Experiment experiment, Record record) {
 		experiment.setModel(record.into(Tables.MODEL).into(Model.class));
 		experiment.setProject(record.into(Tables.PROJECT).into(Project.class));
+		// TODO KW: 16.01.2020 investigate why does JOOQ assign values to NAME and ID fields
 		experiment.setRuns(List.of(record.into(Tables.RUN).into(Run.class)));
 	}
 
