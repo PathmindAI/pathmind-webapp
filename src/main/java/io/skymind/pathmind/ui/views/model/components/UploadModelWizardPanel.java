@@ -45,16 +45,19 @@ public class UploadModelWizardPanel extends VerticalLayout
 	{
 		this.model = model;
 
+		// TODO: Check from client side whether folder upload is supported or not
+		boolean isFolderUploadSupported = false;
+		
 		projectNameLabel = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
 		projectNameLabel.getStyle().set("margin-top", "0px");
 		
-		setupUploadPanel();
+		setupUploadPanel(isFolderUploadSupported);
 		setupFileCheckPanel();
 
 		add(LabelFactory.createLabel("Project", CssMindPathStyles.SECTION_TITLE_LABEL),
 				projectNameLabel,
 				GuiUtils.getFullWidthHr(),
-				getInstructionsDiv(),
+				getInstructionsDiv(isFolderUploadSupported),
 				uploadModelPanel,
 				fileCheckPanel);
 
@@ -73,10 +76,8 @@ public class UploadModelWizardPanel extends VerticalLayout
 				errorText);
 	}
 
-	private void setupUploadPanel()
+	private void setupUploadPanel(boolean isFolderUploadSupported)
 	{
-		// TODO: Check from client side whether folder upload is supported or not
-		boolean isFolderUploadSupported = true;
 		upload = new PathmindModelUploader(isFolderUploadSupported);
 
 		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/123
@@ -123,9 +124,18 @@ public class UploadModelWizardPanel extends VerticalLayout
 	public void addFileUploadCompletedListener(Command command) {
 		fileCheckerCommand = command;
 	}
+	
+	private Div getInstructionsDiv(boolean isFolderUploadSupported) {
+		if (isFolderUploadSupported) {
+			return getInstructionsForFolderUploadDiv();
+		} else {
+			return getInstructionsForZipUploadDiv();
+		}
+		
+	}
 
 	// TODO -> CSS -> Move CSS to styles.css
-	private Div getInstructionsDiv() {
+	private Div getInstructionsForFolderUploadDiv() {
 		Div div = new Div();
 		div.setWidthFull();
 		div.getElement().setProperty("innerHTML",
@@ -134,6 +144,25 @@ public class UploadModelWizardPanel extends VerticalLayout
 					"<li><a href=\"https://help.anylogic.com/topic/com.anylogic.help/html/standalone/Export_Java_Application.html\" target=\"_blank\">Export your model as a standalone Java application.</a></li>" +
 					"<li>Click Upload files button.</li>" +
 					"<li>Select the exported folder.</li>" +
+				"</ol>");
+		return div;
+	}
+	
+	private Div getInstructionsForZipUploadDiv() {
+		Div div = new Div();
+		div.setWidthFull();
+		div.getElement().setProperty("innerHTML",
+				"<ol>" +
+					"<li>Make sure you have <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">Pathmind Helper</a> installed in your model.</li>" +
+					"<li><a href=\"https://help.anylogic.com/topic/com.anylogic.help/html/standalone/Export_Java_Application.html\" target=\"_blank\">Export your model as a standalone Java application.</a></li>" +
+					"<li>Open the exported folder.</li>" +
+					"<li>Create a zip file that contains:</li>" +
+						"<ul>" +
+							"<li>model.jar</li>" +
+							"<li>the \"database\" folder if needed</li>" +
+							"<li>custom libraries from the \"lib\" folder if needed. (This is uncommon)</li>" +
+						"</ul>" +
+					"<li>Upload the new zip file below." +
 				"</ol>");
 		return div;
 	}
