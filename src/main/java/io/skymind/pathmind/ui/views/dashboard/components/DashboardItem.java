@@ -2,8 +2,6 @@ package io.skymind.pathmind.ui.views.dashboard.components;
 
 import static io.skymind.pathmind.constants.RunStatus.isRunning;
 
-import java.util.List;
-
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -11,7 +9,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.constants.Stage;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
@@ -19,6 +16,7 @@ import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.ui.components.ElapsedTimer;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.ui.views.dashboard.filter.utils.DashboardUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 public class DashboardItem extends HorizontalLayout {
@@ -38,7 +36,7 @@ public class DashboardItem extends HorizontalLayout {
 			timestamp = new Span(DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getLastActivityDate(), timeZoneId));
 		});
 		
-		currentStage = calculateCurrentStage();
+		currentStage = DashboardUtils.calculateStage(experiment);
 		stages = createStages();
 		VerticalLayout wrapper = new VerticalLayout(timestamp, breadcrumb, stages);
 		wrapper.setPadding(false);
@@ -61,24 +59,6 @@ public class DashboardItem extends HorizontalLayout {
 		} else {
 			return experiment;
 		}
-	}
-
-	private Stage calculateCurrentStage() {
-		if (experiment.getModel().getId() == 0) {
-			return Stage.SetUpSimulation;
-		} else if (experiment.getId() == 0) {
-			return Stage.WriteRewardFunction;
-		} else if (!hasCompletedRunOfType(experiment.getRuns(), RunType.DiscoveryRun)) {
-			return Stage.DiscoveryRunTraining;
-		} else if (!hasCompletedRunOfType(experiment.getRuns(), RunType.FullRun)) {
-			return Stage.FullRunTraining;
-		} else {
-			return Stage.Export;
-		}
-	}
-
-	private boolean hasCompletedRunOfType(List<Run> runs, RunType runType) {
-		return runs.stream().anyMatch(run -> run.getRunTypeEnum() == runType && run.getStatusEnum() == RunStatus.Completed);
 	}
 
 	private HorizontalLayout createStages() {
