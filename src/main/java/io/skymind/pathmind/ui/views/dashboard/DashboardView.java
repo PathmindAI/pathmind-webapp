@@ -1,7 +1,5 @@
 package io.skymind.pathmind.ui.views.dashboard;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
@@ -11,19 +9,17 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 
-import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
-import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.dashboard.components.DashboardItem;
-import io.skymind.pathmind.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
+import io.skymind.pathmind.ui.views.dashboard.dataprovider.DashboardDataProvider;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 
@@ -32,10 +28,11 @@ public class DashboardView extends PathMindDefaultView
 {
 	@Autowired
 	private PolicyDAO policyDAO;
+	
+	@Autowired
+	private DashboardDataProvider dataProvider;
 
-	private Grid<Policy> dashboardGrid;
-
-	private List<Policy> policies;
+	private Grid<Experiment> dashboardGrid;
 
 	@Override
 	protected boolean isAccessAllowedForUser() {
@@ -43,14 +40,12 @@ public class DashboardView extends PathMindDefaultView
 		return true;
 	}
 
-	public DashboardView()
-	{
+	public DashboardView(){
 		super();
 		addClassName("dashboard-view");
 	}
 
-	protected Component getMainContent()
-	{
+	protected Component getMainContent(){
 		setupDashboardGrid();
 
 		// BUG -> I didn't have to really investigate but it looks like we may need
@@ -70,10 +65,10 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid.addClassName("dashboard");
 		dashboardGrid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
 		dashboardGrid.addComponentColumn(p -> new DashboardItem(p));
-
-		dashboardGrid.addItemClickListener(event -> {
-			getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(event.getItem())));
-		});
+		dashboardGrid.setPageSize(10);
+//		dashboardGrid.addItemClickListener(event -> {
+//			getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(event.getItem())));
+//		});
 	}
 
 	@Override
@@ -83,15 +78,14 @@ public class DashboardView extends PathMindDefaultView
 
 	@Override
 	protected void initLoadData() throws InvalidDataException {
-		// Policies can never be null since it's not a url generated query.
-		policies = policyDAO.getActivePoliciesForUser(SecurityUtils.getUserId());
+		// Do nothing, data is loaded by Dashboard Data Provider
 	}
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
-			// dashboardGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
-			dashboardGrid.setItems(policies);
+			// dashboardGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting data provider
+			dashboardGrid.setDataProvider(dataProvider);
 		});
 	}
 }
