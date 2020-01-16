@@ -105,8 +105,8 @@ public class AWSApiClient {
                 .withMessageGroupId("training")
                 .withMessageBody(objectMapper.writeValueAsString(job));
 
-        SendMessageResult result = sqsClient.sendMessage(send_msg_request);
-        return result.getMessageId();
+        sqsClient.sendMessage(send_msg_request);
+        return jobId;
     }
 
     public String jobStop(String jobId) throws JsonProcessingException {

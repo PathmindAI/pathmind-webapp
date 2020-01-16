@@ -11,7 +11,6 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
-import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,17 +45,15 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         // Getting all these values beforehand in single database calls rather than in loops of database calls.
         final List<Long> runIds = runDAO.getExecutingRuns();
         final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(runIds);
-//        final Map<Long, String> rescaleJobIds = executionProviderMetaDataDAO.getRescaleRunJobIds(runIds);
-        final List<Run>  runs = runDAO.getRuns(runIds);
+        final Map<Long, String> rescaleJobIds = executionProviderMetaDataDAO.getRescaleRunJobIds(runIds);
+        final List<Run> runsWithRescaleJobs = getRunsWithRescaleJobs(runIds, rescaleJobIds);
 
-        runs.parallelStream().forEach(run -> {
+        runsWithRescaleJobs.parallelStream().forEach(run -> {
             try {
-
-                String jobHandle = "id" + run.getId();
+                String jobHandle = rescaleJobIds.get(run.getId());
                 RunStatus runStatus = provider.status(jobHandle);
 
-                final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId());
-                final List<String> finishedPolicyNamesFromAWS = getTerminatedPolicesFromProvider(jobHandle);
+                final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(), jobHandle);
 
                 setStoppedAtForFinishedPolicies(policies, jobHandle);
 
@@ -100,6 +97,19 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         }
     }
 
+    private List<Run> getRunsWithRescaleJobs(List<Long> runIds, Map<Long, String> rescaleJobIds) {
+        final List<Long> runIdsWithRecaleJobs = runIds.stream()
+                .filter(runId -> isInRescaleRunJobIds(rescaleJobIds, runId))
+                .collect(Collectors.toList());
+        return runDAO.getRuns(runIdsWithRecaleJobs);
+    }
+
+    private boolean isInRescaleRunJobIds(Map<Long, String> rescaleJobIds, Long runId) {
+        if(rescaleJobIds.get(runId) == null)
+            log.error("Run {} marked as executing but no rescale run id found for it.", runId);
+        return rescaleJobIds.get(runId) != null;
+    }
+
     //todo get rid of duplicated code from RescaleExecutionProgressUpdater and AWSExecutionProgressUpdater
     private void savePolicyFilesAndCleanupForCompletedRuns(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String jobHandle, RunStatus jobStatus) {
         if(jobStatus == RunStatus.Completed) {
@@ -137,8 +147,8 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                 .forEach(policy -> policy.setStoppedAt(terminatedTrials.get(policy.getExternalId())));
     }
 
-    private List<Policy> getPoliciesFromProgressProvider(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId) {
-        final Map<String, String> rawProgress = provider.progress("id" + runId);
+    private List<Policy> getPoliciesFromProgressProvider(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String jobHandle) {
+        final Map<String, String> rawProgress = provider.progress(jobHandle);
         return rawProgress.entrySet().stream()
                 .filter(e -> !stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).contains(e.getKey()))
                 .map(e -> {
@@ -146,9 +156,5 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                     return ProgressInterpreter.interpret(e, previousScores);
                 })
                 .collect(Collectors.toList());
-    }
-
-    private List<String> getTerminatedPolicesFromProvider(String jobHandle) {
-        return provider.getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_COMPLETE);
     }
 }

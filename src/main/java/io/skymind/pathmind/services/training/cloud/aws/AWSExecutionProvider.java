@@ -34,6 +34,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private final ObjectMapper objectMapper;
     private final AWSFileManager fileManager;
 
+    private static final String AWS_JOB_ID_PREFIX = "id";
+
     public AWSExecutionProvider(AWSApiClient client, ObjectMapper objectMapper) {
         this.client = client;
         this.objectMapper = objectMapper;
@@ -81,7 +83,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         try {
             model = File.createTempFile("pathmind", UUID.randomUUID().toString());
             FileUtils.writeByteArrayToFile(model, modelFile);
-            return client.fileUpload("id" + runId + "/model.zip", model);
+            return client.fileUpload(buildJobId(runId)+ "/model.zip", model);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return null;
@@ -375,10 +377,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
             FileUtils.writeStringToFile(script, scriptStr, Charset.defaultCharset());
 
-            String id = "id" + job.getRunId();
+            String jobId = buildJobId(job.getRunId());
 
-            client.fileUpload(id + "/script.sh", script);
-            return client.jobSubmit(id);
+            client.fileUpload(jobId + "/script.sh", script);
+            return client.jobSubmit(jobId);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return null;
@@ -389,4 +391,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         }
     }
 
+    private String buildJobId(long runId) {
+        return AWS_JOB_ID_PREFIX + runId;
+    }
 }
