@@ -26,4 +26,8 @@ public class DashboardItemService {
 				.map(DashboardItem::ofExperiment)
 				.collect(toList());
 	}
+
+	public int countTotalDashboardItemsForUser(long userId) {
+		return experimentDAO.getCountExperimentsForUser(userId);
+	}
 }
