@@ -62,6 +62,8 @@ update public.trainer_job set status=4,ec2_end_date=now()  where job_id='${S3PAT
 commit;
 EOF
 
+sleep 30
+
 #Send sqs notification to destroy
 aws sqs send-message \
         --queue-url ${SQS_URL} \
