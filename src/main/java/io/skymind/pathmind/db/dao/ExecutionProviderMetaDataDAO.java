@@ -52,19 +52,18 @@ public class ExecutionProviderMetaDataDAO {
         this.providerClass = provider.executionProviderClass();
     }
 
-    public void putRescaleRunJobId(long runId, String value) {
+    public void putProviderRunJobId(long runId, String value) {
         put(this.providerClass, IdType.Run, String.valueOf(runId), value);
     }
 
-    public Map<Long, String> getRescaleRunJobIds(List<Long> runIds) {
-
+    public Map<Long, String> getProviderRunJobIds(List<Long> runIds) {
         return get(this.providerClass, IdType.Run, runIds).entrySet().stream()
                 .map(e -> Map.entry(Long.valueOf(e.getKey()), e.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     // STEPH -> REFACTOR -> Was never called before. It was a service of a service but it was never ultimately called in the code.
-    public void deleteRescaleRunJobId(long runId) {
+    public void deleteProviderRunJobId(long runId) {
         delete(this.providerClass, IdType.Run, String.valueOf(runId));
     }
 

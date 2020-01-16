@@ -66,7 +66,7 @@ public class AWSTrainingService extends TrainingService {
 
         // IMPORTANT -> There are multiple database calls within executionProvider.execute.
         final String executionId = executionProvider.execute(spec);
-        executionProviderMetaDataDAO.putRescaleRunJobId(spec.getRunId(),executionId);
+        executionProviderMetaDataDAO.putProviderRunJobId(spec.getRunId(),executionId);
 
         runDAO.markAsStarting(run.getId());
         log.info("Started " + runType + " training job with id {}", executionId);

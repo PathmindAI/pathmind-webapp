@@ -45,12 +45,12 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         // Getting all these values beforehand in single database calls rather than in loops of database calls.
         final List<Long> runIds = runDAO.getExecutingRuns();
         final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(runIds);
-        final Map<Long, String> rescaleJobIds = executionProviderMetaDataDAO.getRescaleRunJobIds(runIds);
-        final List<Run> runsWithRescaleJobs = getRunsWithRescaleJobs(runIds, rescaleJobIds);
+        final Map<Long, String> awsJobIds = executionProviderMetaDataDAO.getProviderRunJobIds(runIds);
+        final List<Run> runsWithAwsJobs = getRunsWithAwsJobs(runIds, awsJobIds);
 
-        runsWithRescaleJobs.parallelStream().forEach(run -> {
+        runsWithAwsJobs.parallelStream().forEach(run -> {
             try {
-                String jobHandle = rescaleJobIds.get(run.getId());
+                String jobHandle = awsJobIds.get(run.getId());
                 RunStatus runStatus = provider.status(jobHandle);
 
                 final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(), jobHandle);
@@ -76,8 +76,6 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         });
     }
 
-    //todo get rid of duplicated code from RescaleExecutionProgressUpdater and AWSExecutionProgressUpdater
-
     /**
      * Send notification mail if Run is completed successfully or with error
      * and if the Run type is discovery or full run
@@ -97,20 +95,19 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         }
     }
 
-    private List<Run> getRunsWithRescaleJobs(List<Long> runIds, Map<Long, String> rescaleJobIds) {
+    private List<Run> getRunsWithAwsJobs(List<Long> runIds, Map<Long, String> awsJobIds) {
         final List<Long> runIdsWithRecaleJobs = runIds.stream()
-                .filter(runId -> isInRescaleRunJobIds(rescaleJobIds, runId))
+                .filter(runId -> isInAwsRunJobIds(awsJobIds, runId))
                 .collect(Collectors.toList());
         return runDAO.getRuns(runIdsWithRecaleJobs);
     }
 
-    private boolean isInRescaleRunJobIds(Map<Long, String> rescaleJobIds, Long runId) {
-        if(rescaleJobIds.get(runId) == null)
-            log.error("Run {} marked as executing but no rescale run id found for it.", runId);
-        return rescaleJobIds.get(runId) != null;
+    private boolean isInAwsRunJobIds(Map<Long, String> awsJobIds, Long runId) {
+        if(awsJobIds.get(runId) == null)
+            log.error("Run {} marked as executing but no aws run id found for it.", runId);
+        return awsJobIds.get(runId) != null;
     }
 
-    //todo get rid of duplicated code from RescaleExecutionProgressUpdater and AWSExecutionProgressUpdater
     private void savePolicyFilesAndCleanupForCompletedRuns(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String jobHandle, RunStatus jobStatus) {
         if(jobStatus == RunStatus.Completed) {
             stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).stream().forEach(finishPolicyName -> {

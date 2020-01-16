@@ -14,7 +14,6 @@ import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.JSONB;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -72,7 +71,7 @@ public class RescaleTrainingService extends TrainingService {
 
         // IMPORTANT -> There are multiple database calls within executionProvider.execute.
         final String executionId = executionProvider.execute(spec);
-        executionProviderMetaDataDAO.putRescaleRunJobId(spec.getRunId(),executionId);
+        executionProviderMetaDataDAO.putProviderRunJobId(spec.getRunId(),executionId);
 
         runDAO.markAsStarting(run.getId());
         log.info("Started " + runType + " training job with id {}", executionId);

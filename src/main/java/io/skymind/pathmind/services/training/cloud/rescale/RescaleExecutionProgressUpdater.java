@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Service;
-
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.PathmindUser;
@@ -47,7 +45,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
         // Getting all these values beforehand in single database calls rather than in loops of database calls.
         final List<Long> runIds = runDAO.getExecutingRuns();
         final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(runIds);
-        final Map<Long, String> rescaleJobIds = executionProviderMetaDataDAO.getRescaleRunJobIds(runIds);
+        final Map<Long, String> rescaleJobIds = executionProviderMetaDataDAO.getProviderRunJobIds(runIds);
         final List<Run> runsWithRescaleJobs = getRunsWithRescaleJobs(runIds, rescaleJobIds);
 
         // STEPH -> REFACTOR -> This is NOT transactional. That being said the only thing that may need to be is savePolicyFilesForCompletedRuns()
