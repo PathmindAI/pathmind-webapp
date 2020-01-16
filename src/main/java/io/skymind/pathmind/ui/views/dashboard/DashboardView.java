@@ -10,9 +10,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 
 import io.skymind.pathmind.constants.Stage;
-import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.DashboardItem;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -20,7 +19,7 @@ import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.dashboard.components.DashboardItem;
+import io.skymind.pathmind.ui.views.dashboard.components.DashboardLine;
 import io.skymind.pathmind.ui.views.dashboard.dataprovider.DashboardDataProvider;
 import io.skymind.pathmind.ui.views.dashboard.filter.utils.DashboardUtils;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
@@ -33,15 +32,12 @@ import io.skymind.pathmind.utils.DateAndTimeUtils;
 public class DashboardView extends PathMindDefaultView
 {
 	@Autowired
-	private PolicyDAO policyDAO;
-	
-	@Autowired
 	private DashboardDataProvider dataProvider;
 
 	@Autowired
 	private ExperimentDAO experimentDAO;
 
-	private Grid<Experiment> dashboardGrid;
+	private Grid<DashboardItem> dashboardGrid;
 
 	@Override
 	protected boolean isAccessAllowedForUser() {
@@ -73,22 +69,22 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid = new Grid<>();
 		dashboardGrid.addClassName("dashboard");
 		dashboardGrid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
-		dashboardGrid.addComponentColumn(p -> new DashboardItem(p));
+		dashboardGrid.addComponentColumn(item -> new DashboardLine(item));
 		dashboardGrid.setPageSize(10);
 		dashboardGrid.addItemClickListener(event -> navigateFromDashboard(event.getItem()));
 	}
 
-	private void navigateFromDashboard(Experiment item) {
+	private void navigateFromDashboard(DashboardItem item) {
 		Stage stage = DashboardUtils.calculateStage(item);
 		switch (stage) {
 			case SetUpSimulation :
 				getUI().ifPresent(ui -> ui.navigate(UploadModelView.class, item.getProject().getId()));
 				break;
 			case WriteRewardFunction:
-				ExperimentViewNavigationUtils.createAndNavigateToNewExperiment(experimentDAO, item.getModelId());
+				ExperimentViewNavigationUtils.createAndNavigateToNewExperiment(experimentDAO, item.getModel().getId());
 				break;
 			default :
-				getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(item)));
+				getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(item.getExperiment())));
 				break;
 		}
 	}

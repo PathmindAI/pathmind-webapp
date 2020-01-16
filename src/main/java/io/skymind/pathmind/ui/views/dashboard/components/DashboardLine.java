@@ -10,8 +10,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.Stage;
-import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Model;
+import io.skymind.pathmind.data.DashboardItem;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.ui.components.ElapsedTimer;
@@ -19,46 +18,30 @@ import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.views.dashboard.filter.utils.DashboardUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
-public class DashboardItem extends HorizontalLayout {
+public class DashboardLine extends HorizontalLayout {
 
 	private Span timestamp;
 	private Breadcrumbs breadcrumb;
 	private HorizontalLayout stages;
 	
 	private Stage currentStage;
-	private Experiment experiment;
+	private DashboardItem item;
 	
-	public DashboardItem(Experiment experiment) {
-		this.experiment = experiment;
-		setClassName("dashboard-item");
-		breadcrumb = new Breadcrumbs(experiment.getProject(), getModelIfExist(experiment.getModel()), getExperimentIfExist(experiment));
+	public DashboardLine(DashboardItem item) {
+		this.item = item;
+		setClassName("dashboard-line");
+		breadcrumb = new Breadcrumbs(item.getProject(), item.getModel(), item.getExperiment());
 		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
-			timestamp = new Span(DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getLastActivityDate(), timeZoneId));
+			timestamp = new Span(DateAndTimeUtils.formatDateAndTimeShortFormatter(item.getLatestUpdateTime(), timeZoneId));
 		});
 		
-		currentStage = DashboardUtils.calculateStage(experiment);
+		currentStage = DashboardUtils.calculateStage(item);
 		stages = createStages();
 		VerticalLayout wrapper = new VerticalLayout(timestamp, breadcrumb, stages);
 		wrapper.setPadding(false);
 		Span navigateIcon = new Span(VaadinIcon.CHEVRON_RIGHT.create());
 		navigateIcon.setClassName("navigate-icon");
 		add(wrapper, navigateIcon);
-	}
-
-	private Model getModelIfExist(Model model) {
-		if (model.getId() == 0) {
-			return null;
-		} else {
-			return model;
-		}
-	}
-
-	private Experiment getExperimentIfExist(Experiment experiment) {
-		if (experiment.getId() == 0) {
-			return null;
-		} else {
-			return experiment;
-		}
 	}
 
 	private HorizontalLayout createStages() {
@@ -99,7 +82,7 @@ public class DashboardItem extends HorizontalLayout {
 	
 	// TODO: How to find latest Run?
 	private Run getLatestRun() {
-		return experiment.getRuns().stream().findAny().get();
+		return item.getExperiment().getRuns().stream().findAny().get();
 	}
 
 	private boolean isTrainingInProgress(Stage stage) {

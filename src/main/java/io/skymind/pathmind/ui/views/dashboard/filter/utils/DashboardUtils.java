@@ -5,19 +5,19 @@ import java.util.List;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.constants.Stage;
-import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.DashboardItem;
 import io.skymind.pathmind.data.Run;
 
 public class DashboardUtils {
 
-	public static Stage calculateStage(Experiment experiment) {
-		if (experiment.getModel().getId() == 0) {
+	public static Stage calculateStage(DashboardItem item) {
+		if (item.getModel() == null) {
 			return Stage.SetUpSimulation;
-		} else if (!hasAnyRuns(experiment.getRuns())) {
+		} else if (!hasAnyRuns(item.getExperiment().getRuns())) {
 			return Stage.WriteRewardFunction;
-		} else if (!hasCompletedRunOfType(experiment.getRuns(), RunType.DiscoveryRun)) {
+		} else if (!hasCompletedRunOfType(item.getExperiment().getRuns(), RunType.DiscoveryRun)) {
 			return Stage.DiscoveryRunTraining;
-		} else if (!hasCompletedRunOfType(experiment.getRuns(), RunType.FullRun)) {
+		} else if (!hasCompletedRunOfType(item.getExperiment().getRuns(), RunType.FullRun)) {
 			return Stage.FullRunTraining;
 		} else {
 			return Stage.Export;

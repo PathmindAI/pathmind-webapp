@@ -230,7 +230,7 @@ account-view {
   display: none;
 }
 
-.dashboard-item {
+.dashboard-line {
   background: white;
   border-radius: var(--lumo-border-radius);
   box-sizing: border-box;
@@ -244,7 +244,7 @@ account-view {
 .navigate-icon {
   display: none;
 }
-.dashboard-item:hover > .navigate-icon {
+.dashboard-line:hover > .navigate-icon {
   display: inline-flex;
 }
 
