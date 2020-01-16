@@ -8,6 +8,8 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.progressbar.ProgressBarVariant;
+import com.vaadin.flow.component.upload.Receiver;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.dom.DomEventListener;
@@ -73,23 +75,31 @@ public class UploadModelWizardPanel extends VerticalLayout
 
 	private void setupUploadPanel()
 	{
-		upload = new PathmindModelUploader();
+		// TODO: Check from client side whether folder upload is supported or not
+		boolean isFolderUploadSupported = true;
+		upload = new PathmindModelUploader(isFolderUploadSupported);
 
 		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/123
 //		upload.setMaxFileSize(PathmindConstants.MAX_UPLOAD_FILE_SIZE);
 //		upload.setAcceptedFileTypes("application/zip");
 //		upload.addFailedListener(event -> log.error("ERROR " + event.getReason().getMessage(), e.getReason().getMessage()));
 
-		addUploadSucceedListener((MultiFileMemoryBuffer)upload.getReceiver());
+		addUploadSucceedListener(upload.getReceiver(), isFolderUploadSupported);
 		addUploadRemoveFileListener();
 
 		uploadModelPanel = WrapperUtils.wrapWidthFullCenterVertical(upload);
 	}
 
-	private void addUploadSucceedListener(MultiFileMemoryBuffer buffer) {
+	private void addUploadSucceedListener(Receiver receiver, boolean isFolderUploadSupported) {
 		upload.addAllFilesUploadedListener(() -> {
 			try {
-				model.setFile(UploadUtils.createZipFileFromBuffer(buffer));
+				if (isFolderUploadSupported) {
+					MultiFileMemoryBuffer buffer = MultiFileMemoryBuffer.class.cast(receiver);
+					model.setFile(UploadUtils.createZipFileFromBuffer(buffer));
+				} else {
+					MemoryBuffer buffer = MemoryBuffer.class.cast(receiver);
+					model.setFile(buffer.getInputStream().readAllBytes());
+				}
 				fileCheckerCommand.execute();
 				log.info("Upload completed");
 			} catch (IOException e) {

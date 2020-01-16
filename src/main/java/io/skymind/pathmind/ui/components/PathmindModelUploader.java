@@ -14,6 +14,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DomEvent;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.server.Command;
 
@@ -40,12 +41,16 @@ public class PathmindModelUploader extends Upload {
 	private List<Command> allFilesCompletedListeners = new ArrayList<>();
 	
 	
-	public PathmindModelUploader() {
+	public PathmindModelUploader(boolean isFolderUploadSupported) {
 		super();
-		setReceiver(new MultiFileMemoryBufferWithFileStructure());
-		setupFolderUpload();
+		if (isFolderUploadSupported) {
+			setReceiver(new MultiFileMemoryBufferWithFileStructure());
+			setupFolderUpload();
+			addNoFilesToUploadListener(evt -> triggerAllFilesCompletedListeners());
+		} else {
+			setReceiver(new MemoryBuffer());
+		}
 		addUploadStartListener(this::uploadStarted);
-		addNoFilesToUploadListener(evt -> triggerAllFilesCompletedListeners());
 		addUploadErrorListener(evt -> {
 			numOfFilesUploaded--;
 			if (numOfFilesUploaded == 0) {
