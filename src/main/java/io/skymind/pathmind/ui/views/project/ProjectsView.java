@@ -19,6 +19,7 @@ import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
+import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -63,7 +64,10 @@ public class ProjectsView extends PathMindDefaultView
 				),
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
 		gridWrapper.addClassName("content");
-		return gridWrapper;
+		
+		return WrapperUtils.wrapSizeFullVertical(
+				createBreadcrumbs(),
+				gridWrapper);
 	}
 
 	private SearchBox<Project> getSearchBox() {
@@ -108,6 +112,10 @@ public class ProjectsView extends PathMindDefaultView
 
 	private List<Project> getProjects() {
 		return projects;
+	}
+
+	private Breadcrumbs createBreadcrumbs() {        
+		return new Breadcrumbs(null, null, null);
 	}
 
 	@Override
