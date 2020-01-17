@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.components;
 
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
@@ -9,7 +10,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 @Tag("elapsed-timer")
 @JsModule("/src/experiment/elapsed-timer.js")
-public class ElapsedTimer extends PolymerTemplate<TemplateModel> {
+public class ElapsedTimer extends PolymerTemplate<TemplateModel> implements HasStyle {
 
 	@Id("time-text")
 	private Span timeText;
