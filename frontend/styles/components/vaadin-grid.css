@@ -35,6 +35,8 @@ vaadin-grid-cell-content vaadin-grid-sorter[direction] {
 
 :host(.dashboard) {
   background: transparent;
+  max-width: 960px;
+  margin: auto;
 }
 
 :host(.dashboard) [part~="cell"]:not(:empty):not([details-cell]) {

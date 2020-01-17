@@ -242,8 +242,6 @@ account-view {
   overflow: hidden;
   box-shadow: 0 3px 5px var(--lumo-shade-10pct);
   padding: var(--lumo-space-l) var(--lumo-space-m);
-  max-width: 960px;
-  margin: auto;
   align-items: center;
 }
 .navigate-icon {
