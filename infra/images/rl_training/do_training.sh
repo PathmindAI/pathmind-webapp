@@ -62,7 +62,9 @@ update public.trainer_job set status=4,ec2_end_date=now()  where job_id='${S3PAT
 commit;
 EOF
 
-sleep 30
+psql "$DB_URL_CLI" << EOF
+select job_id ,create_date,ec2_create_date,ec2_end_date,status from public.trainer_job where job_id='${S3PATH}';
+EOF
 
 #Send sqs notification to destroy
 aws sqs send-message \

@@ -73,9 +73,10 @@ def process_message(message):
                 .format(s3bucket=s3bucket,
                         s3path=s3path))
         sql_script="""
-                update public.trainer_job set status=5 where job_id='{job_id}'
+                update public.trainer_job set status=5,ec2_end_date=NOW()
+                where job_id='{job_id}'
         """.format(job_id=job_id)
-        execute_psql(sql_script)
+        #execute_psql(sql_script)
         try:
             app_logger.info('Deleting deployment {job_id}'.format(job_id=job_id))
             sh.kubectl('delete','deployment',job_id)
