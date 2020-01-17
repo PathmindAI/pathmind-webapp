@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -75,7 +74,7 @@ public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUp
 		return fieldLabel;
 	}
 
-	private void removeTopMargins(HasStyle... labels) {
+	private void removeTopMargins(Label... labels) {
 		Arrays.stream(labels).forEach(label ->
 				label.getStyle().set("margin-top", "0px"));
 	}

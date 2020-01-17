@@ -67,7 +67,6 @@ public class DashboardLine extends HorizontalLayout {
 		} else if (stage.getValue() == currentStage.getValue()) {
 			if (isTrainingInProgress(stage)) {
 				ElapsedTimer elapsedTimer = new ElapsedTimer();
-				elapsedTimer.setTextAlignment("center");
 				updateElapsedTimer(elapsedTimer, getLatestRun());
 				item = new Span(VaadinIcon.HOURGLASS.create(), new Text(stage.toString()), elapsedTimer);
 			} else {
