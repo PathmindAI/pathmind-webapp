@@ -15,6 +15,7 @@ import liquibase.resource.ResourceAccessor;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RawSqlStatement;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -46,22 +47,24 @@ public class UpdatePolicy_ChangeSet_20200110_01 implements CustomSqlChange, Cust
         List<Changeset20200110Policy> policies = getPoliciesFromDatabase(connection);
         // I'm NOT using parallel streams since it's only done once and it's much easier to track any issues if it's done in order.
         ObjectMapper OBJECT_MAPPER = ObjectMapperHolder.getJsonMapper();
-        return policies.stream().map(policy -> {
-            try {
-                Changeset20200110Policy jsonPolicy = OBJECT_MAPPER.readValue(policy.getProgress(), Changeset20200110Policy.class);
-                return jsonPolicy.getRewardProgression().stream().map(rewardScore ->
-                        new RawSqlStatement("INSERT INTO REWARD_SCORE (POLICY_ID, MIN, MEAN, MAX, ITERATION) VALUES " +
-                                "(" + policy.getId() + ", " +
-                                getDoubleValue(rewardScore.getMin()) + ", " +
-                                getDoubleValue(rewardScore.getMean()) + ", " +
-                                getDoubleValue(rewardScore.getMax()) + ", " +
-                                rewardScore.getIteration() + ")"))
-                        .collect(Collectors.toList());
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-                // Throwing a RuntimeException to stop all the database processing because if there is an exception then we have a bigger issue.
-                throw new RuntimeException(e.getMessage(), e);
-            }
+        return policies.stream()
+                .filter(policy -> StringUtils.isNotEmpty(policy.getProgress()))
+                .map(policy -> {
+                        try {
+                            Changeset20200110Policy jsonPolicy = OBJECT_MAPPER.readValue(policy.getProgress(), Changeset20200110Policy.class);
+                            return jsonPolicy.getRewardProgression().stream().map(rewardScore ->
+                                    new RawSqlStatement("INSERT INTO REWARD_SCORE (POLICY_ID, MIN, MEAN, MAX, ITERATION) VALUES " +
+                                            "(" + policy.getId() + ", " +
+                                            getDoubleValue(rewardScore.getMin()) + ", " +
+                                            getDoubleValue(rewardScore.getMean()) + ", " +
+                                            getDoubleValue(rewardScore.getMax()) + ", " +
+                                            rewardScore.getIteration() + ")"))
+                                    .collect(Collectors.toList());
+                        } catch (IOException e) {
+                            log.error(e.getMessage(), e);
+                            // Throwing a RuntimeException to stop all the database processing because if there is an exception then we have a bigger issue.
+                            throw new RuntimeException(e.getMessage(), e);
+                        }
         // we need to collect first because each map is a List<RawSqlStatement> that then needs to be combined through addAll.
         }).collect(ArrayList::new, List::addAll, List::addAll)
                 .toArray(SqlStatement[]::new);
