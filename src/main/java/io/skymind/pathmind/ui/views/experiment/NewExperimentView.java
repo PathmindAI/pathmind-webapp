@@ -36,6 +36,7 @@ import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.PathmindTextArea;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
+import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.FormUtils;
@@ -93,11 +94,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected Component getMainContent() {
         binder = new Binder<>(Experiment.class);
-
-        return WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                getLeftPanel(),
-                getRightPanel(),
-                DEFAULT_SPLIT_PANE_RATIO);
+        return WrapperUtils.wrapWidthFullVertical(
+                createBreadcrumbs(),
+                WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                        getLeftPanel(),
+                        getRightPanel(),
+                        DEFAULT_SPLIT_PANE_RATIO)
+                );
     }
 
     private Component getLeftPanel() {
@@ -217,6 +220,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         experimentDAO.updateRewardFunction(experiment);
         segmentIntegrator.draftSaved();
         NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
+    }
+
+    private Breadcrumbs createBreadcrumbs() {        
+        return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
     }
 
 	@Override
