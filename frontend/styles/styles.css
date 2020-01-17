@@ -256,6 +256,9 @@ account-view {
 .stages-container {
   align-items: baseline;
 }
+.stages-container > span {
+  text-align: center;
+}
 .stages-container > span > iron-icon {
   width: 16px;
   margin-right: 4px;
