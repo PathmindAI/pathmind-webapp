@@ -48,13 +48,13 @@ public class DashboardLine extends HorizontalLayout {
 		HorizontalLayout stagesContainer = new HorizontalLayout();
 		stagesContainer.setClassName("stages-container");
 		stagesContainer.add(createStageItem(Stage.SetUpSimulation));
-		stagesContainer.add(createSeperator());
+		stagesContainer.add(createSeparator());
 		stagesContainer.add(createStageItem(Stage.WriteRewardFunction));
-		stagesContainer.add(createSeperator());
+		stagesContainer.add(createSeparator());
 		stagesContainer.add(createStageItem(Stage.DiscoveryRunTraining));
-		stagesContainer.add(createSeperator());
+		stagesContainer.add(createSeparator());
 		stagesContainer.add(createStageItem(Stage.FullRunTraining));
-		stagesContainer.add(createSeperator());
+		stagesContainer.add(createSeparator());
 		stagesContainer.add(createStageItem(Stage.Export));
 		return stagesContainer;
 	}
@@ -67,6 +67,7 @@ public class DashboardLine extends HorizontalLayout {
 		} else if (stage.getValue() == currentStage.getValue()) {
 			if (isTrainingInProgress(stage)) {
 				ElapsedTimer elapsedTimer = new ElapsedTimer();
+				elapsedTimer.setTextAlignment("center");
 				updateElapsedTimer(elapsedTimer, getLatestRun());
 				item = new Span(VaadinIcon.HOURGLASS.create(), new Text(stage.toString()), elapsedTimer);
 			} else {
@@ -92,7 +93,7 @@ public class DashboardLine extends HorizontalLayout {
 		return RunStatus.isRunning(getLatestRun().getStatusEnum());
 	}
 
-	private Span createSeperator() {
+	private Span createSeparator() {
 		return new Span(">");
 	}
 	

@@ -9,10 +9,13 @@ class ElapsedTimer extends PolymerElement {
     return html`
       <style>
         :host {
-          display: block;
+          display: flex;
+        }
+        span {
+          width: 100%;
         }
       </style>
-      [[formattedTime]]
+      <span id="time-text">[[formattedTime]]</span>
     `;
   }
 
