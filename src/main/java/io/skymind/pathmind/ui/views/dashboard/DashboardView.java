@@ -11,7 +11,6 @@ import com.vaadin.flow.router.Route;
 
 import io.skymind.pathmind.constants.Stage;
 import io.skymind.pathmind.data.DashboardItem;
-import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
@@ -23,6 +22,7 @@ import io.skymind.pathmind.ui.views.dashboard.components.DashboardLine;
 import io.skymind.pathmind.ui.views.dashboard.dataprovider.DashboardDataProvider;
 import io.skymind.pathmind.ui.views.dashboard.filter.utils.DashboardUtils;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.model.UploadModelView;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
@@ -33,9 +33,6 @@ public class DashboardView extends PathMindDefaultView
 {
 	@Autowired
 	private DashboardDataProvider dataProvider;
-
-	@Autowired
-	private ExperimentDAO experimentDAO;
 
 	private Grid<DashboardItem> dashboardGrid;
 
@@ -81,7 +78,7 @@ public class DashboardView extends PathMindDefaultView
 				getUI().ifPresent(ui -> ui.navigate(UploadModelView.class, item.getProject().getId()));
 				break;
 			case WriteRewardFunction:
-				ExperimentViewNavigationUtils.createAndNavigateToNewExperiment(experimentDAO, item.getModel().getId());
+				getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, item.getExperiment().getId()));
 				break;
 			default :
 				getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(item.getExperiment())));
