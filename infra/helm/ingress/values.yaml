@@ -17,6 +17,7 @@ ingress:
   enabled: true
   annotations: 
     nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/affinity-mode: persistent
   hosts:
     - host: app.danieljj.com
       paths: [/:80:pathmind]
