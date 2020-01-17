@@ -41,6 +41,7 @@ aws s3 cp ./work/trial_complete ${s3_url}/output/trial_complete
 aws s3 cp ./work/trial_error ${s3_url}/output/trial_error
 aws s3 cp ./work/trial_list ${s3_url}/output/trial_list
 aws s3 cp process_output.log ${s3_url}/output/process_output.log
+aws s3 cp errors.log ${s3_url}/output/errors.log
 
 if [ "$return_code" == 0 ]
 then
