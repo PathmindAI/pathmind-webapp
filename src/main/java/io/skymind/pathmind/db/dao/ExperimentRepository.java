@@ -4,6 +4,7 @@ import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
 import org.jooq.*;
+import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -125,8 +126,11 @@ class ExperimentRepository
 				.where(RUN.STARTED_AT.isNotNull())
 				.orderBy(RUN.EXPERIMENT_ID, RUN.STARTED_AT.desc());
 
+		final Field<LocalDateTime> itemLastActivityDate = DSL.greatest(EXPERIMENT.LAST_ACTIVITY_DATE, MODEL.LAST_ACTIVITY_DATE,
+				PROJECT.LAST_ACTIVITY_DATE);
+
 		final Result<?> result = ctx.select(EXPERIMENT.asterisk(), MODEL.asterisk(), PROJECT.asterisk(),
-				records.asTable().asterisk())
+				records.asTable().asterisk(), itemLastActivityDate)
 				.from(EXPERIMENT)
 					.rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
 					.rightJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
@@ -136,7 +140,7 @@ class ExperimentRepository
 				.where(PATHMIND_USER.ID.eq(userId))
 					.and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
 					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
-				.orderBy(EXPERIMENT.LAST_ACTIVITY_DATE.desc(), EXPERIMENT.ID.desc())
+				.orderBy(itemLastActivityDate.desc(), EXPERIMENT.ID.desc())
 				.offset(offset)
 				.limit(limit)
 				.fetch();
