@@ -23,10 +23,11 @@
 }
 
 .inner-content {
-  margin-top: 5px;
   background: #fff;
   border-radius: var(--lumo-border-radius);
-  padding: 30px 40px;
+  padding: 20px 40px;
+  margin-top: var(--lumo-space-xs);
+  margin-bottom: var(--lumo-space-xs);
 }
 
 .block {

@@ -38,7 +38,6 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
 import io.skymind.pathmind.ui.utils.FormUtils;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
@@ -172,22 +171,20 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleStartRunButtonClicked() {
-        ExceptionWrapperUtils.handleButtonClicked(() ->
-        {
-            if (!FormUtils.isValidForm(binder, experiment))
-                return;
+        if (!FormUtils.isValidForm(binder, experiment)) {
+        	return;
+        }
 
-            experimentDAO.updateRewardFunction(experiment);
-            segmentIntegrator.rewardFuntionCreated();
-            
-            trainingService.startDiscoveryRun(experiment);
-            segmentIntegrator.discoveryRunStarted();
+        experimentDAO.updateRewardFunction(experiment);
+        segmentIntegrator.rewardFuntionCreated();
+        
+        trainingService.startDiscoveryRun(experiment);
+        segmentIntegrator.discoveryRunStarted();
 
-            ConfirmDialog confirmDialog = new RunConfirmDialog();
-            confirmDialog.open();
+        ConfirmDialog confirmDialog = new RunConfirmDialog();
+        confirmDialog.open();
 
-            UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
-        });
+        UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
     }
 
     private Component getTopStatusPanel() {
@@ -213,15 +210,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleSaveDraftClicked() {
-        ExceptionWrapperUtils.handleButtonClicked(() ->
-        {
-            if (!FormUtils.isValidForm(binder, experiment))
-                return;
+        if (!FormUtils.isValidForm(binder, experiment)) {
+        	return;
+        }
 
-            experimentDAO.updateRewardFunction(experiment);
-            segmentIntegrator.draftSaved();
-            NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
-        });
+        experimentDAO.updateRewardFunction(experiment);
+        segmentIntegrator.draftSaved();
+        NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
     }
 
 	@Override
