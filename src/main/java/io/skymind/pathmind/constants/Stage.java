@@ -6,8 +6,7 @@ public enum Stage {
 	WriteRewardFunction(1, "Write reward function"), 
 	DiscoveryRunTraining(2, "Discovery run training"), 
 	FullRunTraining(3, "Full run training"), 
-	Export(4, "Export"),
-	Completed(5, "Completed");
+	Export(4, "Export");
 	
 	private int id;
 	private String name;
