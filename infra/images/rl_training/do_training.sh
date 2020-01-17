@@ -41,6 +41,14 @@ aws s3 cp ./work/trial_complete ${s3_url}/output/trial_complete
 aws s3 cp ./work/trial_error ${s3_url}/output/trial_error
 aws s3 cp ./work/trial_list ${s3_url}/output/trial_list
 aws s3 cp process_output.log ${s3_url}/output/process_output.log
+
+#Check for errors
+touch errors.log
+grep -m 2 "python3: can't open file 'rllibtrain.py'" process_output.log >> errors.log
+grep -m 2 "SyntaxError: invalid syntax" process_output.log >> errors.log
+grep -m 2 "Fatal Python error: Segmentation fault" process_output.log >> errors.log
+grep -m 2 "Worker crashed during call to train()" process_output.log >> errors.log
+grep -m 2 "java.lang.ArrayIndexOutOfBoundsException" process_output.log >> errors.log
 aws s3 cp errors.log ${s3_url}/output/errors.log
 
 if [ "$return_code" == 0 ]
