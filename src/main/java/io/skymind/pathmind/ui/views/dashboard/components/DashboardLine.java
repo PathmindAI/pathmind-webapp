@@ -2,6 +2,8 @@ package io.skymind.pathmind.ui.views.dashboard.components;
 
 import static io.skymind.pathmind.constants.RunStatus.isRunning;
 
+import java.util.Comparator;
+
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -80,9 +82,8 @@ public class DashboardLine extends HorizontalLayout {
 		return item;
 	}
 	
-	// TODO: How to find latest Run?
 	private Run getLatestRun() {
-		return item.getExperiment().getRuns().stream().findAny().get();
+		return item.getExperiment().getRuns().stream().max(Comparator.comparingLong(Run::getId)).get();
 	}
 
 	private boolean isTrainingInProgress(Stage stage) {
