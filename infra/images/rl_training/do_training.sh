@@ -66,8 +66,7 @@ for DIR in `find . -iname model -type d`; do
 	cp trial_* ../result
 	cd `find "$DIR"/.. -iname checkpoint_* -type d | sort -V | tail -1`
 	zip $OLDPWD/../result/$(basename `dirname $DIR`)/checkpoint.zip ./*
-	aws s3 cp $OLDPWD/../result/$(basename `dirname
-	$DIR`)/checkpoint.zip \
+	aws s3 cp $OLDPWD/../result/$(basename `dirname $DIR`)/checkpoint.zip \
 		${s3_url}/output/${S3_DIR}/
 	cd $OLDPWD
 done
