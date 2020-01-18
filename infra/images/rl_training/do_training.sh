@@ -36,6 +36,13 @@ done
 wait $pid
 return_code=$?
 
+if [ "$return_code" == 0 ]
+then
+	status=4
+else
+	status=5
+fi
+
 aws s3 cp --recursive ./work/PPO ${s3_url}/output/
 aws s3 cp ./work/trial_complete ${s3_url}/output/trial_complete
 aws s3 cp ./work/trial_error ${s3_url}/output/trial_error
@@ -43,32 +50,27 @@ aws s3 cp ./work/trial_list ${s3_url}/output/trial_list
 aws s3 cp process_output.log ${s3_url}/output/process_output.log
 aws s3 cp errors.log ${s3_url}/output/errors.log
 
-if [ "$return_code" == 0 ]
-then
-	#Generate final files
-	cd work
-	mkdir -p result
-	for DIR in `find . -iname model -type d`; do
-	        cd $DIR
-	        mkdir -p $OLDPWD/../result/$(basename `dirname $DIR`)/
-	        cp ../progress.csv $OLDPWD/../result/$(basename `dirname $DIR`)
-	        cp ../../*.json $OLDPWD/../result/
-	        zip -r $OLDPWD/../result/policy_$(basename `dirname $DIR`).zip .
-	        S3_DIR=`echo $DIR | cut -f3 -d'/'`
-	        aws s3 cp $OLDPWD/../result/policy_$(basename `dirname $DIR`).zip \
-	                ${s3_url}/output/${S3_DIR}/
-	        cd $OLDPWD
-	        cp trial_* ../result
-	        cd `find "$DIR"/.. -iname checkpoint_* -type d | sort -V | tail -1`
-	        zip $OLDPWD/../result/$(basename `dirname $DIR`)/checkpoint.zip ./*
-	        aws s3 cp $OLDPWD/../result/$(basename `dirname $DIR`)/checkpoint.zip \
-	                ${s3_url}/output/${S3_DIR}/
-	        cd $OLDPWD
-	done
-	status=4
-else
-	status=5
-fi
+#Generate final files
+cd work
+mkdir -p result
+for DIR in `find . -iname model -type d`; do
+	cd $DIR
+	mkdir -p $OLDPWD/../result/$(basename `dirname $DIR`)/
+	cp ../progress.csv $OLDPWD/../result/$(basename `dirname $DIR`)
+	cp ../../*.json $OLDPWD/../result/
+	zip -r $OLDPWD/../result/policy_$(basename `dirname $DIR`).zip .
+	S3_DIR=`echo $DIR | cut -f3 -d'/'`
+	aws s3 cp $OLDPWD/../result/policy_$(basename `dirname $DIR`).zip \
+		${s3_url}/output/${S3_DIR}/
+	cd $OLDPWD
+	cp trial_* ../result
+	cd `find "$DIR"/.. -iname checkpoint_* -type d | sort -V | tail -1`
+	zip $OLDPWD/../result/$(basename `dirname $DIR`)/checkpoint.zip ./*
+	aws s3 cp $OLDPWD/../result/$(basename `dirname
+	$DIR`)/checkpoint.zip \
+		${s3_url}/output/${S3_DIR}/
+	cd $OLDPWD
+done
 
 #Set the status in trainer_job
 psql "$DB_URL_CLI" << EOF
