@@ -6,7 +6,9 @@ aws s3 sync ${s3_url} ./
 
 #Set the status in trainer_job
 psql "$DB_URL_CLI" << EOF
-update public.trainer_job set status=3,ec2_create_date=now() where job_id='${S3PATH}';
+update public.trainer_job 
+set status=3,ec2_create_date=now(),update_date=NOW()
+where job_id='${S3PATH}';
 commit;
 EOF
 
@@ -73,12 +75,16 @@ done
 
 #Set the status in trainer_job
 psql "$DB_URL_CLI" << EOF
-update public.trainer_job set status=${status},ec2_end_date=now()  where job_id='${S3PATH}';
+update public.trainer_job 
+set status=${status},ec2_end_date=now(),update_date=NOW()
+where job_id='${S3PATH}';
 commit;
 EOF
 
 psql "$DB_URL_CLI" << EOF
-select job_id ,create_date,ec2_create_date,ec2_end_date,status from public.trainer_job where job_id='${S3PATH}';
+select job_id ,create_date,update_date,ec2_create_date,ec2_end_date,status
+from public.trainer_job
+where job_id='${S3PATH}';
 EOF
 
 #Send sqs notification to destroy

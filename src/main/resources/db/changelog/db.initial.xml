@@ -714,4 +714,12 @@
         <modifyDataType tableName="TRAINER_JOB" columnName="RECEIPTHANDLE" newDataType="VARCHAR(1000)"></modifyDataType>
     </changeSet>
 
+    <changeSet id="20191219-1" author="daniel.jaramillo@toptal.com">
+        <comment>Add updated date column</comment>
+        <column name="UPDATE_DATE" type="DATETIME" defaultValueComputed="NOW()">
+            <constraints nullable="false"/>
+        </column>
+    </changeSet>
+
+
 </databaseChangeLog>
