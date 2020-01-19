@@ -715,11 +715,11 @@
     </changeSet>
 
     <changeSet id="20191219-1" author="daniel.jaramillo@toptal.com">
-        <comment>Add updated date column</comment>
-        <column name="UPDATE_DATE" type="DATETIME" defaultValueComputed="NOW()">
-            <constraints nullable="false"/>
-        </column>
+        <addColumn tableName="POLICY">
+            <column name="UPDATE_DATE" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
     </changeSet>
-
 
 </databaseChangeLog>
