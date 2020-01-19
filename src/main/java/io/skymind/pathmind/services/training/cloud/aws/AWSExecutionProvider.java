@@ -34,6 +34,16 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private final ObjectMapper objectMapper;
     private final AWSFileManager fileManager;
 
+    private static final List<String> KNOWN_ERROR_MSGS = new ArrayList<>();
+
+    static {
+        KNOWN_ERROR_MSGS.add("python3: can\'t open file \'rllibtrain.py\'");
+        KNOWN_ERROR_MSGS.add("SyntaxError: invalid syntax");
+        KNOWN_ERROR_MSGS.add("Fatal Python error: Segmentation fault");
+        KNOWN_ERROR_MSGS.add("Worker crashed during call to train()");
+        KNOWN_ERROR_MSGS.add("java.lang.ArrayIndexOutOfBoundsException");
+    }
+
     private static final String AWS_JOB_ID_PREFIX = "id";
 
     public AWSExecutionProvider(AWSApiClient client, ObjectMapper objectMapper) {
@@ -66,7 +76,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 //        cleanup(instructions);
 
         // Check errors
-//        checkErrors(instructions);
+        checkErrors(instructions);
 
         // Start actual execution of the job
         return startTrainingRun(job, instructions, files);
@@ -107,11 +117,13 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 .filter(it -> !it.endsWith(".json"))
                 .collect(Collectors.toList());
 
+        List<String> knownErrsCheck = getTrialStatus(jobHandle, TrainingFile.KNOWN_ERROR);
+
         // todo need to change to use database once Daniel create proper database(TRAINER_JOB)
         ExperimentState experimentState = getExperimentState(jobHandle);
 
         if (experimentState != null) {
-            if (errors.size() > 0) {
+            if (errors.size() > 0 || knownErrsCheck.size() > 0) {
                 return RunStatus.Error;
             }
 
@@ -389,6 +401,13 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 script.delete();
             }
         }
+    }
+
+    private void checkErrors(List<String> instructions) {
+        instructions.add("cd ..");
+        instructions.addAll(KNOWN_ERROR_MSGS.stream()
+                .map(msg -> "grep -m 2 \"" + msg + "\" " + TrainingFile.SCRIPT_LOG + " >> " + TrainingFile.KNOWN_ERROR)
+                .collect(Collectors.toList()));
     }
 
     private String buildJobId(long runId) {

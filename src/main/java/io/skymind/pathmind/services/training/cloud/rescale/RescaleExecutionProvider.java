@@ -16,7 +16,6 @@ import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import io.skymind.pathmind.services.training.versions.RescaleFileManager;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.io.File;
@@ -442,7 +441,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     private void checkErrors(List<String> instructions) {
         instructions.addAll(KNOWN_ERROR_MSGS.stream()
-                .map(msg -> "grep -m 2 \"" + msg + "\" " + TrainingFile.RESCALE_LOG + " >> " + TrainingFile.KNOWN_ERROR)
+                .map(msg -> "grep -m 2 \"" + msg + "\" " + TrainingFile.SCRIPT_LOG + " >> " + TrainingFile.KNOWN_ERROR)
                 .collect(Collectors.toList()));
     }
 }
