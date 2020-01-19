@@ -55,7 +55,7 @@ pipeline {
     }
 
     parameters {
-        string (name: 'GIT_BRANCH',           defaultValue: 'dev',  description: 'Git branch to build')
+        string (name: 'GIT_BRANCH',           defaultValue: 'test',  description: 'Git branch to build')
         booleanParam (name: 'DEPLOY_TO_PROD', defaultValue: false,     description: 'If build and tests are good, proceed and deploy to production without manual approval')
 
     }
@@ -77,9 +77,6 @@ pipeline {
 
                 // Helm version
                 sh "helm version"
-
-                // patch helm
-                // sh "kubectl --namespace kube-system patch deploy tiller-deploy -p '{\"spec\":{\"template\":{\"spec\":{\"serviceAccount\":\"tiller\"}}}}'"
 
 		//clean docker
 		sh "docker system prune -a -f"
