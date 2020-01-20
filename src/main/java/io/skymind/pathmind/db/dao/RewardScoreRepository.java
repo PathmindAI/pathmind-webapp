@@ -20,9 +20,9 @@ class RewardScoreRepository
 				.where(REWARD_SCORE.POLICY_ID.eq(policyId))
 				.orderBy(REWARD_SCORE.ITERATION)
 				.fetch(record -> new RewardScore(
+						JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MAX)),
 						JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MIN)),
 						JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MEAN)),
-						JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MAX)),
 						record.get(REWARD_SCORE.ITERATION)));
     }
 
@@ -32,9 +32,9 @@ class RewardScoreRepository
 				.where(REWARD_SCORE.POLICY_ID.in(policyIds))
 				.orderBy(REWARD_SCORE.POLICY_ID, REWARD_SCORE.ITERATION)
 				.fetchGroups(REWARD_SCORE.POLICY_ID, record -> new RewardScore(
+						JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MAX)),
 						JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MIN)),
 						JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MEAN)),
-						JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MAX)),
 						record.get(REWARD_SCORE.ITERATION)));
 	}
 
