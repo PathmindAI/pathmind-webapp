@@ -16,6 +16,7 @@ import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
+import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.server.Command;
 
 import elemental.json.Json;
@@ -40,16 +41,17 @@ public class PathmindModelUploader extends Upload {
 	
 	private List<Command> allFilesCompletedListeners = new ArrayList<>();
 	
-	
-	public PathmindModelUploader(boolean isFolderUploadSupported) {
+	public PathmindModelUploader(boolean isFolderUploadMode) {
 		super();
-		if (isFolderUploadSupported) {
-			setReceiver(new MultiFileMemoryBufferWithFileStructure());
-			setupFolderUpload();
-			addNoFilesToUploadListener(evt -> triggerAllFilesCompletedListeners());
-		} else {
-			setReceiver(new MemoryBuffer());
-		}
+		checkIfFolderUploadSupported(isFolderUploadSupported -> {
+			if (isFolderUploadMode && isFolderUploadSupported) {
+				setReceiver(new MultiFileMemoryBufferWithFileStructure());
+				setupFolderUpload();
+				addNoFilesToUploadListener(evt -> triggerAllFilesCompletedListeners());
+			} else {
+				setReceiver(new MemoryBuffer());
+			}
+		});
 		addUploadStartListener(this::uploadStarted);
 		addUploadErrorListener(evt -> {
 			numOfFilesUploaded--;
@@ -62,6 +64,12 @@ public class PathmindModelUploader extends Upload {
 			if (numOfFilesUploaded == 0) {
 				triggerAllFilesCompletedListeners();
 			}
+		});
+	}
+	
+	public void checkIfFolderUploadSupported(SerializableConsumer<Boolean> consumer) {
+		getElement().executeJs("return window.Pathmind.ModelUploader.isInputDirSupported()").then(Boolean.class, supported -> {
+			consumer.accept(supported);
 		});
 	}
 	
