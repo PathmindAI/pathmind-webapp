@@ -695,4 +695,14 @@
         </rollback>
     </changeSet>
 
+    <!--#641 Add EXPORTED_AT column to track if policy was exported-->
+    <changeSet id="20200120-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <addColumn tableName="POLICY">
+            <column name="EXPORTED_AT" type="DATETIME"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="POLICY" columnName="EXPORTED_AT"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

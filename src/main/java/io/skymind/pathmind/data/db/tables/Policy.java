@@ -21,7 +21,7 @@ import org.jooq.Index;
 import org.jooq.JSONB;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row14;
+import org.jooq.Row15;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = 560207006;
+    private static final long serialVersionUID = -1968044631;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -127,6 +127,11 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.notes</code>.
      */
     public final TableField<PolicyRecord, String> NOTES = createField(DSL.name("notes"), org.jooq.impl.SQLDataType.VARCHAR, this, "");
+
+    /**
+     * The column <code>public.policy.exported_at</code>.
+     */
+    public final TableField<PolicyRecord, LocalDateTime> EXPORTED_AT = createField(DSL.name("exported_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
 
     /**
      * Create a <code>public.policy</code> table reference
@@ -217,11 +222,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row14 type methods
+    // Row15 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<Long, Long, String, String, JSONB, byte[], LocalDateTime, LocalDateTime, String, byte[], Double, Double, Integer, String> fieldsRow() {
-        return (Row14) super.fieldsRow();
+    public Row15<Long, Long, String, String, JSONB, byte[], LocalDateTime, LocalDateTime, String, byte[], Double, Double, Integer, String, LocalDateTime> fieldsRow() {
+        return (Row15) super.fieldsRow();
     }
 }

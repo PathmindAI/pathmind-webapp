@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,4 +18,5 @@ public class DashboardItem {
 	private Experiment experiment;
 	private Run latestRun;
 	private LocalDateTime latestUpdateTime;
+	private boolean policyExported;
 }

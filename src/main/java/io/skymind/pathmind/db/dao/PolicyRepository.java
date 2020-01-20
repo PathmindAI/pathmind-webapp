@@ -6,6 +6,7 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -163,5 +164,22 @@ class PolicyRepository
 				.from(POLICY)
 				.where(POLICY.ID.eq(policyId))
 				.fetchOne(POLICY.SNAPSHOT);
+	}
+
+	public static List<Policy> getExportedPoliciesByRunId(DSLContext ctx, long runId) {
+		return ctx.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT,
+				POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.EXPORTED_AT)
+				.from(POLICY)
+				.where(POLICY.RUN_ID.eq(runId))
+				.and(POLICY.EXPORTED_AT.isNotNull())
+				.fetch(record -> record.into(POLICY).into(Policy.class));
+	}
+
+	static void updateExportedDate(DSLContext ctx, long policyId) {
+		ctx.update(POLICY)
+				.set(POLICY.EXPORTED_AT, LocalDateTime.now())
+				.where(POLICY.ID.eq(policyId))
+				.execute();
+
 	}
 }

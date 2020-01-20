@@ -117,6 +117,7 @@ class ExperimentRepository
 				.execute();
 	}
 
+	// TODO: 20.01.2020 KW - provide javadoc
 	static List<DashboardItem> getDashboardItemsForUser(DSLContext ctx, long userId, int offset, int limit) {
 		final var recentRun = ctx.select(RUN.asterisk())
 				.distinctOn(RUN.EXPERIMENT_ID)
@@ -125,17 +126,25 @@ class ExperimentRepository
 				.orderBy(RUN.EXPERIMENT_ID, RUN.STARTED_AT.desc())
 				.asTable("RECENT_RUN");
 
+		final var runWithExportedPolicies = ctx.select(POLICY.RUN_ID)
+				.from(POLICY)
+				.where(POLICY.EXPORTED_AT.isNotNull())
+				.groupBy(POLICY.RUN_ID)
+				.asTable("RUN_WITH_EXPORTED_POLICIES");
+
 		final Field<LocalDateTime> itemLastActivityDate = DSL.greatest(EXPERIMENT.LAST_ACTIVITY_DATE, MODEL.LAST_ACTIVITY_DATE,
 				PROJECT.LAST_ACTIVITY_DATE);
 
 		final Result<?> result = ctx.select(EXPERIMENT.asterisk(), MODEL.asterisk(), PROJECT.asterisk(),
-				recentRun.asterisk(), itemLastActivityDate.as("ITEM_LAST_ACTIVITY_DATE"))
+				recentRun.asterisk(), itemLastActivityDate.as("ITEM_LAST_ACTIVITY_DATE"), runWithExportedPolicies.asterisk())
 				.from(EXPERIMENT)
 					.rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
 					.leftJoin(recentRun).on(EXPERIMENT.ID.eq(recentRun.field("experiment_id",
-						RUN.EXPERIMENT_ID.getDataType())))
+							RUN.EXPERIMENT_ID.getDataType())))
 					.rightJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
 					.leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
+					.leftJoin(runWithExportedPolicies).on(runWithExportedPolicies.field("run_id", POLICY.RUN_ID.getDataType()).eq(recentRun.field(
+						"experiment_id", RUN.EXPERIMENT_ID.getDataType())))
 				.where(PATHMIND_USER.ID.eq(userId))
 					.and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
 					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
@@ -145,19 +154,20 @@ class ExperimentRepository
 				.fetch();
 
 		return result.stream()
-				.map(record -> mapRecordToDashboardItem(record, recentRun))
+				.map(record -> mapRecordToDashboardItem(record, recentRun, runWithExportedPolicies))
 				.collect(Collectors.toList());
 	}
 
-	private static DashboardItem mapRecordToDashboardItem(Record record, Table<Record> recentRunTable) {
+	private static DashboardItem mapRecordToDashboardItem(Record record, Table<Record> recentRunTable, Table<Record1<Long>> exported) {
 		var experiment = record.into(EXPERIMENT).into(Experiment.class);
 		var model = record.into(MODEL).into(Model.class);
 		var project = record.into(PROJECT).into(Project.class);
 		var run = record.into(recentRunTable).into(Run.class);
+		var policy = record.into(exported).into(Policy.class);
 
 		project = project.getId() == 0 ? null : project;
 		model = model.getId() == 0 ? null : model;
-		if(run.getId() == 0) {
+		if (run.getId() == 0) {
 			run = null;
 			experiment.setRuns(List.of());
 		} else {
@@ -165,13 +175,15 @@ class ExperimentRepository
 		}
 		experiment = experiment.getId() == 0 ? null : experiment;
 
+
 		return DashboardItem.builder()
-			.experiment(experiment)
-			.project(project)
-			.model(model)
-			.latestRun(run)
-			.latestUpdateTime(record.getValue("ITEM_LAST_ACTIVITY_DATE", LocalDateTime.class))
-			.build();
+				.experiment(experiment)
+				.project(project)
+				.model(model)
+				.latestRun(run)
+				.latestUpdateTime(record.getValue("ITEM_LAST_ACTIVITY_DATE", LocalDateTime.class))
+				.policyExported(policy.getRunId() != 0)
+				.build();
 	}
 
 	static int countDashboardItemsForUser(DSLContext ctx, long userId) {
