@@ -24,7 +24,6 @@ import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
 import io.skymind.pathmind.ui.utils.FormUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -122,15 +121,13 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private void handleMoreDetailsClicked()
 	{
-		ExceptionWrapperUtils.handleButtonClicked(() ->
-		{
-			if(!FormUtils.isValidForm(modelBinder, model))
-				return;
+		if(!FormUtils.isValidForm(modelBinder, model)) {
+			return;
+		}
 
-			final long experimentId = modelDAO.addModelToProject(model, project.getId());
+		final long experimentId = modelDAO.addModelToProject(model, project.getId());
 
-			UI.getCurrent().navigate(NewExperimentView.class, experimentId);
-		});
+		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 	}
 
 	private void handleUploadWizardClicked() {

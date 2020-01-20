@@ -1,8 +1,5 @@
 package io.skymind.pathmind.data;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.data.policy.RewardScore;
 import org.apache.commons.lang3.StringUtils;
@@ -11,49 +8,32 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-// The @JsonIgnoreProperties will only be here until I have finished moving the json code out of the database.
-@JsonIgnoreProperties(value = { "hyperParameters" })
 public class Policy extends Data
 {
-	@JsonIgnore
 	private long runId;
-	@JsonProperty("id")
 	private String externalId;
-	@JsonIgnore
-	private String progress;
-	@JsonIgnore
 	private byte[] file;
-	@JsonIgnore
 	private byte[] snapshot;
 
     private LocalDateTime startedAt;
     private LocalDateTime stoppedAt;
 
-	@JsonIgnore
 	private double learningRate;
-	@JsonIgnore
 	private double gamma;
-	@JsonIgnore
 	private int batchSize;
 
-	@JsonIgnore
 	private String notes;
 
     // For now this is hardcoded: https://github.com/SkymindIO/pathmind-webapp/issues/101
     private Algorithm algorithm = Algorithm.PPO;
 
     // REFACTOR -> Same as Progress which is not saved to the database and is parsed back and forth...
-    @JsonProperty("rewardProgression")
     private List<RewardScore> scores;
 
     // Helper GUI attributes not stored in the database
-	@JsonIgnore
 	private Project project;
-	@JsonIgnore
 	private Model model;
-	@JsonIgnore
 	private Experiment experiment;
-	@JsonIgnore
 	private Run run;
 
 	public long getRunId() {
@@ -70,14 +50,6 @@ public class Policy extends Data
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
-	}
-
-	public String getProgress() {
-		return progress;
-	}
-
-	public void setProgress(String progress) {
-		this.progress = progress;
 	}
 
 	public byte[] getFile() {
@@ -128,7 +100,6 @@ public class Policy extends Data
 		this.run = run;
 	}
 
-	@JsonIgnore
 	public Algorithm getAlgorithmEnum() {
 		return algorithm;
 	}

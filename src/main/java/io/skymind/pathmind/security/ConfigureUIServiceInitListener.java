@@ -7,12 +7,12 @@ import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 
 import io.skymind.pathmind.ui.exceptions.AccessDeniedException;
+import io.skymind.pathmind.ui.views.errors.PathmindErrorHandler;
 import io.skymind.pathmind.ui.views.login.LoginView;
 
 /**
  * Adds before enter listener to check access to views.
- * Adds the Offline banner.
- * 
+ * Adds PathmindErrorHandler for Application level error handling
  */
 @SpringComponent
 public class ConfigureUIServiceInitListener implements VaadinServiceInitListener {
@@ -22,6 +22,7 @@ public class ConfigureUIServiceInitListener implements VaadinServiceInitListener
 		event.getSource().addUIInitListener(uiEvent -> {
 			final UI ui = uiEvent.getUI();
 			ui.addBeforeEnterListener(this::beforeEnter);
+			ui.getSession().setErrorHandler(new PathmindErrorHandler());
 		});
 	}
 
