@@ -5,7 +5,6 @@ import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
 import org.jooq.*;
 import org.jooq.impl.DSL;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -118,25 +117,25 @@ class ExperimentRepository
 				.execute();
 	}
 
-	// TODO KW: 15.01.2020 refactor
-	public static List<Experiment> getLatestExperimentsForUser(DSLContext ctx, long userId, int offset, int limit) {
-		final SelectSeekStep2<Record, Long, LocalDateTime> records = ctx.select(RUN.asterisk())
+	static List<DashboardItem> getDashboardItemsForUser(DSLContext ctx, long userId, int offset, int limit) {
+		final var recentRun = ctx.select(RUN.asterisk())
 				.distinctOn(RUN.EXPERIMENT_ID)
 				.from(RUN)
 				.where(RUN.STARTED_AT.isNotNull())
-				.orderBy(RUN.EXPERIMENT_ID, RUN.STARTED_AT.desc());
+				.orderBy(RUN.EXPERIMENT_ID, RUN.STARTED_AT.desc())
+				.asTable("RECENT_RUN");
 
 		final Field<LocalDateTime> itemLastActivityDate = DSL.greatest(EXPERIMENT.LAST_ACTIVITY_DATE, MODEL.LAST_ACTIVITY_DATE,
 				PROJECT.LAST_ACTIVITY_DATE);
 
 		final Result<?> result = ctx.select(EXPERIMENT.asterisk(), MODEL.asterisk(), PROJECT.asterisk(),
-				records.asTable().asterisk(), itemLastActivityDate)
+				recentRun.asterisk(), itemLastActivityDate.as("ITEM_LAST_ACTIVITY_DATE"))
 				.from(EXPERIMENT)
 					.rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+					.leftJoin(recentRun).on(EXPERIMENT.ID.eq(recentRun.field("experiment_id",
+						RUN.EXPERIMENT_ID.getDataType())))
 					.rightJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
 					.leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
-					.leftJoin(records).on(EXPERIMENT.ID.eq(records.field("experiment_id",
-						RUN.EXPERIMENT_ID.getDataType())))
 				.where(PATHMIND_USER.ID.eq(userId))
 					.and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
 					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
@@ -146,22 +145,36 @@ class ExperimentRepository
 				.fetch();
 
 		return result.stream()
-				.map(record -> {
-					Experiment experiment = record.into(EXPERIMENT).into(Experiment.class);
-					addParentDataModelObjects(experiment, record);
-					return experiment;
-				})
+				.map(record -> mapRecordToDashboardItem(record, recentRun))
 				.collect(Collectors.toList());
 	}
 
-	private static void addParentDataModelObjects(Experiment experiment, Record record) {
-		experiment.setModel(record.into(Tables.MODEL).into(Model.class));
-		experiment.setProject(record.into(Tables.PROJECT).into(Project.class));
-		// TODO KW: 16.01.2020 investigate why does JOOQ assign values to NAME and ID fields
-		experiment.setRuns(List.of(record.into(Tables.RUN).into(Run.class)));
+	private static DashboardItem mapRecordToDashboardItem(Record record, Table<Record> recentRunTable) {
+		var experiment = record.into(EXPERIMENT).into(Experiment.class);
+		var model = record.into(MODEL).into(Model.class);
+		var project = record.into(PROJECT).into(Project.class);
+		var run = record.into(recentRunTable).into(Run.class);
+
+		project = project.getId() == 0 ? null : project;
+		model = model.getId() == 0 ? null : model;
+		if(run.getId() == 0) {
+			run = null;
+			experiment.setRuns(List.of());
+		} else {
+			experiment.setRuns(List.of(run));
+		}
+		experiment = experiment.getId() == 0 ? null : experiment;
+
+		return DashboardItem.builder()
+			.experiment(experiment)
+			.project(project)
+			.model(model)
+			.latestRun(run)
+			.latestUpdateTime(record.getValue("ITEM_LAST_ACTIVITY_DATE", LocalDateTime.class))
+			.build();
 	}
 
-	public static int getCountExperimentsForUser(DSLContext ctx, long userId) {
+	static int countDashboardItemsForUser(DSLContext ctx, long userId) {
 		return ctx.selectCount()
 				.from(EXPERIMENT)
 					.rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))

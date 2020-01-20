@@ -153,16 +153,4 @@ class RunRepository
                 .where(Tables.RUN.ID.eq(runId))
                 .fetchOneInto(Integer.class).intValue();
     }
-
-
-    // TODO KW: 15.01.2020 - is it needed?
-    static Run getRecentRunForExperiment(DSLContext ctx, long experimentId){
-        return ctx.select(RUN.asterisk())
-                .distinctOn(RUN.EXPERIMENT_ID)
-                .from(RUN)
-                .where(RUN.STARTED_AT.isNotNull())
-                    .and(RUN.EXPERIMENT_ID.eq(experimentId))
-                .orderBy(RUN.EXPERIMENT_ID, RUN.STARTED_AT.desc())
-                .fetchOneInto(Run.class);
-    }
 }

@@ -198,10 +198,4 @@ public class RunDAO
 
         return policy.getScores();
     }
-
-    // TODO KW: 15.01.2020 - is it needed?
-    public Optional<Run> getRecentRunForExperiment(long experimentId) {
-        return Optional.ofNullable(RunRepository.getRecentRunForExperiment(ctx, experimentId));
-    }
-
 }

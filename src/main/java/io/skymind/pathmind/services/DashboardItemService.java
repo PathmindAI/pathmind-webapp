@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 @Service
 @RequiredArgsConstructor
 public class DashboardItemService {
@@ -21,13 +19,10 @@ public class DashboardItemService {
 	}
 
 	public List<DashboardItem> getDashboardItemsForUser(long userId, int offset, int limit) {
-		var experiments = experimentDAO.getLatestExperimentsForUser(userId, offset, limit);
-		return experiments.stream()
-				.map(DashboardItem::ofExperiment)
-				.collect(toList());
+		return experimentDAO.getDashboardItemsForUser(userId, offset, limit);
 	}
 
 	public int countTotalDashboardItemsForUser(long userId) {
-		return experimentDAO.getCountExperimentsForUser(userId);
+		return experimentDAO.countDashboardItemsForUser(userId);
 	}
 }

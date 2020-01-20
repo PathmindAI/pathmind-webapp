@@ -1,5 +1,6 @@
 package io.skymind.pathmind.db.dao;
 
+import io.skymind.pathmind.data.DashboardItem;
 import io.skymind.pathmind.data.Experiment;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
@@ -43,11 +44,11 @@ public class ExperimentDAO
 		ExperimentRepository.archive(ctx, experimentId, isArchive);
 	}
 
-	public List<Experiment> getLatestExperimentsForUser(long userId, int offset, int limit) {
-		return ExperimentRepository.getLatestExperimentsForUser(ctx, userId, offset, limit);
+	public List<DashboardItem> getDashboardItemsForUser(long userId, int offset, int limit) {
+		return ExperimentRepository.getDashboardItemsForUser(ctx, userId, offset, limit);
 	}
 
-	public int getCountExperimentsForUser(long userId) {
-		return ExperimentRepository.getCountExperimentsForUser(ctx, userId);
+	public int countDashboardItemsForUser(long userId) {
+		return ExperimentRepository.countDashboardItemsForUser(ctx, userId);
 	}
 }
