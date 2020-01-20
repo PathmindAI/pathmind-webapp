@@ -74,11 +74,6 @@ public class PolicyDAO
         return PolicyRepository.getSnapshotFile(ctx, policyId);
     }
 
-    // TODO: 20.01.2020 KW - remove if not needed
-    public List<Policy> getExportedPoliciesByRunId(long runId){
-        return PolicyRepository.getExportedPoliciesByRunId(ctx, runId);
-    }
-
     public void updateExportedDate(long policyId) {
         PolicyRepository.updateExportedDate(ctx, policyId);
     }
