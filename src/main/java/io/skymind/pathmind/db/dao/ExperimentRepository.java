@@ -136,7 +136,8 @@ class ExperimentRepository
 				PROJECT.LAST_ACTIVITY_DATE);
 
 		final Result<?> result = ctx.select(EXPERIMENT.asterisk(), MODEL.asterisk(), PROJECT.asterisk(),
-				recentRun.asterisk(), itemLastActivityDate.as("ITEM_LAST_ACTIVITY_DATE"), runWithExportedPolicies.asterisk())
+				recentRun.asterisk(), itemLastActivityDate.as("ITEM_LAST_ACTIVITY_DATE"),
+				runWithExportedPolicies.asterisk())
 				.from(EXPERIMENT)
 					.rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
 					.leftJoin(recentRun).on(EXPERIMENT.ID.eq(recentRun.field("experiment_id",
@@ -144,7 +145,7 @@ class ExperimentRepository
 					.rightJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
 					.leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
 					.leftJoin(runWithExportedPolicies).on(runWithExportedPolicies.field("run_id", POLICY.RUN_ID.getDataType()).eq(recentRun.field(
-						"experiment_id", RUN.EXPERIMENT_ID.getDataType())))
+						"id", RUN.ID.getDataType())))
 				.where(PATHMIND_USER.ID.eq(userId))
 					.and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
 					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
