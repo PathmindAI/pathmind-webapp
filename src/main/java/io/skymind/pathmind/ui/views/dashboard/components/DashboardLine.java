@@ -2,8 +2,6 @@ package io.skymind.pathmind.ui.views.dashboard.components;
 
 import static io.skymind.pathmind.constants.RunStatus.isRunning;
 
-import java.util.Comparator;
-
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -27,10 +25,10 @@ public class DashboardLine extends HorizontalLayout {
 	private HorizontalLayout stages;
 	
 	private Stage currentStage;
-	private DashboardItem item;
+	private DashboardItem dashboardItem;
 	
 	public DashboardLine(DashboardItem item) {
-		this.item = item;
+		this.dashboardItem = item;
 		setClassName("dashboard-line");
 		breadcrumb = new Breadcrumbs(item.getProject(), item.getModel(), item.getExperiment());
 		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
@@ -69,7 +67,7 @@ public class DashboardLine extends HorizontalLayout {
 		} else if (stage.getValue() == currentStage.getValue()) {
 			if (isTrainingInProgress(stage)) {
 				ElapsedTimer elapsedTimer = new ElapsedTimer();
-				updateElapsedTimer(elapsedTimer, getLatestRun());
+				updateElapsedTimer(elapsedTimer, dashboardItem.getLatestRun());
 				item = new Span(VaadinIcon.HOURGLASS.create(), new Text(stage.toString()), elapsedTimer);
 			} else {
 				item = new Span(stage.toString());
@@ -82,15 +80,11 @@ public class DashboardLine extends HorizontalLayout {
 		return item;
 	}
 	
-	private Run getLatestRun() {
-		return item.getExperiment().getRuns().stream().max(Comparator.comparingLong(Run::getId)).get();
-	}
-
 	private boolean isTrainingInProgress(Stage stage) {
 		if (stage != Stage.DiscoveryRunTraining && stage != Stage.FullRunTraining) {
 			return false;
 		}
-		return RunStatus.isRunning(getLatestRun().getStatusEnum());
+		return RunStatus.isRunning(dashboardItem.getLatestRun().getStatusEnum());
 	}
 
 	private Span createSeparator() {

@@ -1,31 +1,41 @@
 package io.skymind.pathmind.ui.views.dashboard.filter.utils;
 
-import java.util.List;
-
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.constants.Stage;
 import io.skymind.pathmind.data.DashboardItem;
 import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.data.utils.ExperimentUtils;
 
 public class DashboardUtils {
 
 	public static Stage calculateStage(DashboardItem item) {
 		if (item.getModel() == null) {
 			return Stage.SetUpSimulation;
-		} else if (ExperimentUtils.isDraftRunType(item.getExperiment())) {
+		} else if (item.getLatestRun() == null) {
 			return Stage.WriteRewardFunction;
-		} else if (!hasCompletedRunOfType(item.getExperiment().getRuns(), RunType.DiscoveryRun)) {
+		} else if (isInDiscoveryPhase(item.getLatestRun())) {
 			return Stage.DiscoveryRunTraining;
-		} else if (!hasCompletedRunOfType(item.getExperiment().getRuns(), RunType.FullRun)) {
+		} else if (isInFullRunPhase(item.getLatestRun())) {
 			return Stage.FullRunTraining;
 		} else {
 			return Stage.Export;
 		}
 	}
 	
-	private static boolean hasCompletedRunOfType(List<Run> runs, RunType runType) {
-		return runs.stream().anyMatch(run -> run.getRunTypeEnum() == runType && run.getStatusEnum() == RunStatus.Completed);
+	/**
+	 * An item is in discovery phase, if the latest run is discovery run, and it's not completed yet
+	 */
+	private static boolean isInDiscoveryPhase(Run run) {
+		return run.getRunTypeEnum() == RunType.DiscoveryRun && run.getStatusEnum() != RunStatus.Completed;
+	}
+	
+	/**
+	 * An item is in full run phase, if the latest run is full run, and it's not completed yet
+	 * or the latest run is discovery run, and it's completed
+	 */
+	private static boolean isInFullRunPhase(Run run) {
+		return (run.getRunTypeEnum() == RunType.FullRun && run.getStatusEnum() != RunStatus.Completed)
+				|| (run.getRunTypeEnum() == RunType.DiscoveryRun && run.getStatusEnum() == RunStatus.Completed);
+				
 	}
 }
