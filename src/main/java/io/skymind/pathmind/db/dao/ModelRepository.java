@@ -1,6 +1,8 @@
 package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.data.Model;
+import io.skymind.pathmind.data.db.tables.ModelFile;
+import io.skymind.pathmind.data.db.tables.records.ModelFileRecord;
 import io.skymind.pathmind.data.db.tables.records.ModelRecord;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static io.skymind.pathmind.data.db.Tables.MODEL;
+import static io.skymind.pathmind.data.db.Tables.MODEL_FILE;
 
 class ModelRepository
 {
@@ -36,7 +39,7 @@ class ModelRepository
 	}
 
 	protected static byte[] getModelFile(DSLContext ctx, long id) {
-		return ctx.select(MODEL.FILE).from(MODEL).where(MODEL.ID.eq(id)).fetchOne(MODEL.FILE);
+		return ctx.select(MODEL_FILE.FILE).from(MODEL_FILE).where(MODEL_FILE.MODEL_ID.eq(id)).fetchOne(MODEL_FILE.FILE);
 	}
 
 	/**
@@ -61,8 +64,15 @@ class ModelRepository
 		mod.setNumberOfPossibleActions(model.getNumberOfPossibleActions());
 		mod.setNumberOfObservations(model.getNumberOfObservations());
 		mod.setGetObservationForRewardFunction(model.getGetObservationForRewardFunction());
-		mod.setFile(model.getFile());
 		mod.store();
 		return mod.key().get(MODEL.ID);
+	}
+
+	protected static void insertModelFile(DSLContext ctx, long modelId, byte[] file) {
+		final ModelFileRecord mod = MODEL_FILE.newRecord();
+		mod.attach(ctx.configuration());
+		mod.setModelId(modelId);
+		mod.setFile(file);
+		mod.insert();
 	}
 }

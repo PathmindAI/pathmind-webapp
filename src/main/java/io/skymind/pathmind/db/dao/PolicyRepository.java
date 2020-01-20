@@ -77,19 +77,19 @@ class PolicyRepository
 
 	protected static boolean hasPolicyFile(DSLContext ctx, long policyId) {
 		return ctx.select(DSL.one())
-				.from(POLICY)
-				.where(POLICY.ID.eq(policyId)
-						.and(POLICY.FILE.isNotNull())
-						.and(POLICY.FILE.notEqual(SAVING.getBytes())))
+				.from(POLICY_FILE)
+				.where(POLICY_FILE.POLICY_ID.eq(policyId)
+						.and(POLICY_FILE.FILE.isNotNull())
+						.and(POLICY_FILE.FILE.notEqual(SAVING.getBytes())))
 				.fetchOptional().isPresent();
 	}
 
 	protected static byte[] getPolicyFile(DSLContext ctx, long policyId) {
-		return ctx.select(POLICY.FILE)
-				.from(POLICY)
-				.where(POLICY.ID.eq(policyId)
-						.and(POLICY.FILE.isNotNull()))
-				.fetchOne(POLICY.FILE);
+		return ctx.select(POLICY_FILE.FILE)
+				.from(POLICY_FILE)
+				.where(POLICY_FILE.POLICY_ID.eq(policyId)
+						.and(POLICY_FILE.FILE.isNotNull()))
+				.fetchOne(POLICY_FILE.FILE);
 	}
 
 	protected static long insertPolicy(DSLContext ctx, Policy policy) {
@@ -159,9 +159,27 @@ class PolicyRepository
 	}
 
 	protected static byte[] getSnapshotFile(DSLContext ctx, long policyId) {
-		return ctx.select(POLICY.SNAPSHOT)
+		return ctx.select(POLICY_SNAPSHOT.SNAPSHOT)
+				.from(POLICY_SNAPSHOT)
+				.where(POLICY_SNAPSHOT.POLICY_ID.eq(policyId))
+				.fetchOne(POLICY_SNAPSHOT.SNAPSHOT);
+	}
+
+	protected static void savePolicyFile(DSLContext ctx, long runId, String externalId, byte[] policyFile) {
+		ctx.update(POLICY_FILE)
+				.set(POLICY_FILE.FILE, policyFile)
 				.from(POLICY)
-				.where(POLICY.ID.eq(policyId))
-				.fetchOne(POLICY.SNAPSHOT);
+				.where(POLICY.ID.eq(POLICY_FILE.POLICY_ID))
+				.and(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.eq(externalId)))
+				.execute();
+	}
+
+	protected static void saveCheckpointFile(DSLContext ctx, long runId, String externalId, byte[] checkpointFile) {
+		ctx.update(POLICY)
+				.set(POLICY_SNAPSHOT.SNAPSHOT, checkpointFile)
+				.from(POLICY)
+				.where(POLICY.ID.eq(POLICY_FILE.POLICY_ID))
+				.and(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.eq(externalId)))
+				.execute();
 	}
 }

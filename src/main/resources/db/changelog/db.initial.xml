@@ -695,4 +695,43 @@
         </rollback>
     </changeSet>
 
+    <!-- 446 - Separate out bytea columns in database to separate tables (Policy and Model) -->
+    <changeSet id="20200120-01" author="steph@followsteph.com">
+        <createTable tableName="POLICY_FILE">
+            <column name="POLICY_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_POLICY_FILE_POLICY" references="POLICY(ID)"/>
+            </column>
+            <column name="FILE" type="bytea"/>
+        </createTable>
+        <createIndex tableName="POLICY_FILE" indexName="POLICY_FILE_POLICY_ID_INDEX">
+            <column name="POLICY_ID"/>
+        </createIndex>
+        <createTable tableName="POLICY_SNAPSHOT">
+            <column name="POLICY_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_POLICY_SNAPSHOT_POLICY" references="POLICY(ID)"/>
+            </column>
+            <column name="SNAPSHOT" type="bytea"/>
+        </createTable>
+        <createIndex tableName="POLICY_SNAPSHOT" indexName="POLICY_SNAPSHOT_POLICY_ID_INDEX">
+            <column name="POLICY_ID"/>
+        </createIndex>
+        <createTable tableName="MODEL_FILE">
+            <column name="MODEL_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_MODEL_FILE_MODEL" references="MODEL(ID)"/>
+            </column>
+            <column name="FILE" type="bytea"/>
+        </createTable>
+        <createIndex tableName="MODEL_FILE" indexName="MODEL_FILE_MODEL_ID_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+        <sql>
+            INSERT INTO POLICY_FILE (POLICY_ID, FILE) SELECT ID, FILE FROM POLICY;
+            INSERT INTO POLICY_SNAPSHOT (POLICY_ID, SNAPSHOT) SELECT ID, SNAPSHOT FROM POLICY;
+            INSERT INTO MODEL_FILE (MODEL_ID, FILE) SELECT ID, FILE FROM MODEL;
+        </sql>
+        <dropColumn tableName="POLICY" columnName="FILE"/>
+        <dropColumn tableName="POLICY" columnName="SNAPSHOT"/>
+        <dropColumn tableName="MODEL" columnName="FILE"/>
+    </changeSet>
+
 </databaseChangeLog>

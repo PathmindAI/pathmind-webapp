@@ -12,8 +12,8 @@ public class Policy extends Data
 {
 	private long runId;
 	private String externalId;
-	private byte[] file;
-	private byte[] snapshot;
+//	private byte[] file;
+//	private byte[] snapshot;
 
     private LocalDateTime startedAt;
     private LocalDateTime stoppedAt;
@@ -52,21 +52,21 @@ public class Policy extends Data
 		this.externalId = externalId;
 	}
 
-	public byte[] getFile() {
-		return file;
-	}
-
-	public void setFile(byte[] file) {
-		this.file = file;
-	}
-
-	public byte[] getSnapshot() {
-		return snapshot;
-	}
-
-	public void setSnapshot(byte[] snapshot) {
-		this.snapshot = snapshot;
-	}
+//	public byte[] getFile() {
+//		return file;
+//	}
+//
+//	public void setFile(byte[] file) {
+//		this.file = file;
+//	}
+//
+//	public byte[] getSnapshot() {
+//		return snapshot;
+//	}
+//
+//	public void setSnapshot(byte[] snapshot) {
+//		this.snapshot = snapshot;
+//	}
 
 	public Project getProject() {
 		return project;

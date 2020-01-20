@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import org.springframework.stereotype.Service;
 
 import io.skymind.pathmind.constants.RunStatus;
@@ -30,13 +31,15 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
     private final RescaleExecutionProvider provider;
     private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RunDAO runDAO;
+    private final PolicyDAO policyDAO;
     private final UserDAO userDAO;
     private EmailNotificationService emailNotificationService;
 
-    public RescaleExecutionProgressUpdater(RescaleExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, UserDAO userDAO, EmailNotificationService emailNotificationService){
+    public RescaleExecutionProgressUpdater(RescaleExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, PolicyDAO policyDAO, UserDAO userDAO, EmailNotificationService emailNotificationService){
         this.provider = provider;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.runDAO = runDAO;
+        this.policyDAO = policyDAO;
         this.userDAO = userDAO;
         this.emailNotificationService = emailNotificationService;
     }
@@ -120,13 +123,13 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
             stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).stream().forEach(finishPolicyName -> {
                 // todo make saving to enum or static final variable (currently defined in PolicyDAO).
                 final byte[] policyFile = provider.policy(rescaleJobId, finishPolicyName);
-                runDAO.savePolicyFile(runId, finishPolicyName, policyFile);
+                policyDAO.savePolicyFile(runId, finishPolicyName, policyFile);
 
                 // save the last checkpoint
                 Map.Entry<String, byte[]> entry = provider.snapshot(rescaleJobId, finishPolicyName);
                 if (entry != null) {
                     final byte[] checkPointFile = entry.getValue();
-                    runDAO.saveCheckpointFile(runId, finishPolicyName, checkPointFile);
+                    policyDAO.saveCheckpointFile(runId, finishPolicyName, checkPointFile);
                 }
 
                 // save meta data for checkpoint

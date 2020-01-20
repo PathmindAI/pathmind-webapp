@@ -21,7 +21,7 @@ import org.jooq.Index;
 import org.jooq.JSONB;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row14;
+import org.jooq.Row12;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = 560207006;
+    private static final long serialVersionUID = -384771254;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -84,11 +84,6 @@ public class Policy extends TableImpl<PolicyRecord> {
     public final TableField<PolicyRecord, JSONB> PROGRESS = createField(DSL.name("progress"), org.jooq.impl.SQLDataType.JSONB, this, "");
 
     /**
-     * The column <code>public.policy.file</code>.
-     */
-    public final TableField<PolicyRecord, byte[]> FILE = createField(DSL.name("file"), org.jooq.impl.SQLDataType.BLOB, this, "");
-
-    /**
      * The column <code>public.policy.started_at</code>.
      */
     public final TableField<PolicyRecord, LocalDateTime> STARTED_AT = createField(DSL.name("started_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
@@ -102,11 +97,6 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.algorithm</code>.
      */
     public final TableField<PolicyRecord, String> ALGORITHM = createField(DSL.name("algorithm"), org.jooq.impl.SQLDataType.VARCHAR(3), this, "");
-
-    /**
-     * The column <code>public.policy.snapshot</code>.
-     */
-    public final TableField<PolicyRecord, byte[]> SNAPSHOT = createField(DSL.name("snapshot"), org.jooq.impl.SQLDataType.BLOB, this, "");
 
     /**
      * The column <code>public.policy.learning_rate</code>.
@@ -217,11 +207,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row14 type methods
+    // Row12 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<Long, Long, String, String, JSONB, byte[], LocalDateTime, LocalDateTime, String, byte[], Double, Double, Integer, String> fieldsRow() {
-        return (Row14) super.fieldsRow();
+    public Row12<Long, Long, String, String, JSONB, LocalDateTime, LocalDateTime, String, Double, Double, Integer, String> fieldsRow() {
+        return (Row12) super.fieldsRow();
     }
 }
