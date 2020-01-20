@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.dashboard.filter.utils;
+package io.skymind.pathmind.ui.views.dashboard.utils;
 
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
@@ -17,8 +17,10 @@ public class DashboardUtils {
 			return Stage.DiscoveryRunTraining;
 		} else if (isInFullRunPhase(item.getLatestRun())) {
 			return Stage.FullRunTraining;
-		} else {
+		} else if (!item.isPolicyExported()){
 			return Stage.Export;
+		} else {
+			return Stage.Completed;
 		}
 	}
 	

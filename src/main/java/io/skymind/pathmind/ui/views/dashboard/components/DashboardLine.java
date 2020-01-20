@@ -15,7 +15,7 @@ import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.ui.components.ElapsedTimer;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
-import io.skymind.pathmind.ui.views.dashboard.filter.utils.DashboardUtils;
+import io.skymind.pathmind.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 public class DashboardLine extends HorizontalLayout {

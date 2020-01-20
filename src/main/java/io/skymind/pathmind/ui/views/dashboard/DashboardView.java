@@ -20,7 +20,7 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.dashboard.components.DashboardLine;
 import io.skymind.pathmind.ui.views.dashboard.dataprovider.DashboardDataProvider;
-import io.skymind.pathmind.ui.views.dashboard.filter.utils.DashboardUtils;
+import io.skymind.pathmind.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
