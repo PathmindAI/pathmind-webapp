@@ -1,5 +1,8 @@
 package io.skymind.pathmind.ui.views;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
@@ -8,15 +11,12 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.shared.communication.PushMode;
+
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.GuiUtils;
-import io.skymind.pathmind.ui.views.errors.ErrorView;
-import io.skymind.pathmind.ui.views.errors.InvalidDataView;
 import io.skymind.pathmind.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Do NOT implement any default methods for this interface because a large part of it's goal is to remind
@@ -55,38 +55,28 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
         return isDebugAccelerate;
     }
 
-    // TODO handle different exceptions differently.
 	public void beforeEnter(BeforeEnterEvent event)
 	{
-		try {
-			// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/217 Implement a security framework on the views.
-			// Before we do anything we need to confirm the user has permission to access the data.
-			// TODO -> This solution is a band-aid solution and although it does implement enough security for now
-			// we absolutely have to revisit it (as well as the exception). See the method itself for more details.
-			// TODO -> This throws InvalidDataException which is incorrect but it is the best we can do with the current solution
-			// until we decide how we want to implement user data management.
-			if(!isAccessAllowedForUser())
-				throw new InvalidDataException("Item does not exist");
-			// Next we initialize the data from the database in case there is an issue such as an InvalidDataException
-			initLoadData();
-			// If there is an exception in generating the screens we don't want to display any system related information to the user for security reasons.
-			if(!isGenerated)
-				addScreens();
-			// Update the screen based on the parameters if need be.
-			initScreen(event);
-			// Segment plugin added
-			add(segmentIntegrator);
-			isGenerated = true;
-		} catch (InvalidDataException e) {
-			log.info("Invalid data attempt: " + e.getMessage());
-			event.rerouteTo(InvalidDataView.class);
-//		} catch (AccessDeniedException e) {
-//			log.info("Access denied to data for " + SecurityUtils.getUserId() + " : " + e.getMessage());
-//			event.rerouteTo(AccessDeniedView.class);
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			event.rerouteTo(ErrorView.class);
+		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/217 Implement a security framework on the views.
+		// Before we do anything we need to confirm the user has permission to access the data.
+		// TODO -> This solution is a band-aid solution and although it does implement enough security for now
+		// we absolutely have to revisit it (as well as the exception). See the method itself for more details.
+		// TODO -> This throws InvalidDataException which is incorrect but it is the best we can do with the current solution
+		// until we decide how we want to implement user data management.
+		if(!isAccessAllowedForUser()) {
+			throw new InvalidDataException("Item does not exist");
 		}
+		// Next we initialize the data from the database in case there is an issue such as an InvalidDataException
+		initLoadData();
+		// If there is an exception in generating the screens we don't want to display any system related information to the user for security reasons.
+		if(!isGenerated) {
+			addScreens();
+		}
+		// Update the screen based on the parameters if need be.
+		initScreen(event);
+		// Segment plugin added
+		add(segmentIntegrator);
+		isGenerated = true;
 	}
 
 	protected void initLoadData() throws InvalidDataException{
