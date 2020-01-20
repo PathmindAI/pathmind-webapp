@@ -6,8 +6,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
+/**
+ * DTO for dashboard purposes
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,5 +20,8 @@ public class DashboardItem {
 	private Experiment experiment;
 	private Run latestRun;
 	private LocalDateTime latestUpdateTime;
+	/**
+	 * Flag indicates if a policy for {@link DashboardItem#latestRun} was already exported by a user
+	 */
 	private boolean policyExported;
 }
