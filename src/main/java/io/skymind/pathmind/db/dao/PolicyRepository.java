@@ -175,10 +175,10 @@ class PolicyRepository
 	}
 
 	protected static void saveCheckpointFile(DSLContext ctx, long runId, String externalId, byte[] checkpointFile) {
-		ctx.update(POLICY)
+		ctx.update(POLICY_SNAPSHOT)
 				.set(POLICY_SNAPSHOT.SNAPSHOT, checkpointFile)
 				.from(POLICY)
-				.where(POLICY.ID.eq(POLICY_FILE.POLICY_ID))
+				.where(POLICY.ID.eq(POLICY_SNAPSHOT.POLICY_ID))
 				.and(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.eq(externalId)))
 				.execute();
 	}
