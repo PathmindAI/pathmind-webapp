@@ -12,10 +12,15 @@ html {
   --pm-danger-color: #d80947;
 
   /* pathmind color palette */
+  --pm-orange-color: #ed7820;
   --pm-gray-color-light: #d0d0d0;
 
   /* pathmind-theme */
   --lumo-font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --lumo-font-size-xl: 1.5rem;
+  --lumo-font-size-m: 1rem;
+  --lumo-font-size-s: 0.875rem;
+  --lumo-font-size-xs: 0.75rem;
   --lumo-size-xl: 3rem;
   --lumo-size-l: 2.5rem;
   --lumo-size-m: 2rem;
@@ -39,8 +44,8 @@ html {
   --lumo-tertiary-text-color: #d7d7d7;
   --lumo-base-color: #ffffff;
   --lumo-primary-text-color: var(--pm-primary-color);
-  --lumo-primary-color-50pct: rgba(88, 137, 247, 0.5);
-  --lumo-primary-color-10pct: rgba(88, 137, 247, 0.1);
+  --lumo-primary-color-50pct: rgba(79, 151, 170, 0.5);
+  --lumo-primary-color-10pct: rgba(79, 151, 170, 0.1);
   --lumo-primary-color: var(--pm-primary-color);
   --lumo-border-radius: 6px;
 }
@@ -89,8 +94,8 @@ html {
 }
 
 .light-text-label {
-  font-size: 16px;
-  color: #ed7820;
+  font-size: var(--lumo-font-size-m);
+  color: var(--pm-orange-color);
 }
 
 .logo-label {
@@ -197,9 +202,9 @@ account-view {
   width: 275px;
 }
 
-@media (max-width: 1448px) {
+@media (min-width: 1201px) {
   html {
-    font-size: 15px;
+    font-size: 16px;
   }
 }
 
@@ -218,4 +223,14 @@ account-view {
 /* General Helper Styles */
 .style-text-align-center {
   text-align: center;
+}
+
+.tag {
+  padding: 4px 8px;
+  background: var(--lumo-contrast-10pct);
+  border-radius: var(--lumo-border-radius);
+  margin: 2px;
+}
+.tag:empty {
+  display: none;
 }
