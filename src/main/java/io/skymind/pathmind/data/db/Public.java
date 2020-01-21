@@ -10,6 +10,7 @@ import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
 import io.skymind.pathmind.data.db.tables.Policy;
 import io.skymind.pathmind.data.db.tables.Project;
+import io.skymind.pathmind.data.db.tables.RewardScore;
 import io.skymind.pathmind.data.db.tables.Run;
 
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ import java.util.List;
 import javax.annotation.processing.Generated;
 
 import org.jooq.Catalog;
-import org.jooq.Sequence;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
 
@@ -37,7 +37,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 2071164656;
+    private static final long serialVersionUID = 795922387;
 
     /**
      * The reference instance of <code>public</code>
@@ -75,6 +75,11 @@ public class Public extends SchemaImpl {
     public final Project PROJECT = io.skymind.pathmind.data.db.tables.Project.PROJECT;
 
     /**
+     * The table <code>public.reward_score</code>.
+     */
+    public final RewardScore REWARD_SCORE = io.skymind.pathmind.data.db.tables.RewardScore.REWARD_SCORE;
+
+    /**
      * The table <code>public.run</code>.
      */
     public final Run RUN = io.skymind.pathmind.data.db.tables.Run.RUN;
@@ -93,24 +98,6 @@ public class Public extends SchemaImpl {
     }
 
     @Override
-    public final List<Sequence<?>> getSequences() {
-        List result = new ArrayList();
-        result.addAll(getSequences0());
-        return result;
-    }
-
-    private final List<Sequence<?>> getSequences0() {
-        return Arrays.<Sequence<?>>asList(
-            Sequences.EXECUTION_PROVIDER_META_DATA_ID_SEQ,
-            Sequences.EXPERIMENT_ID_SEQ,
-            Sequences.MODEL_ID_SEQ,
-            Sequences.PATHMIND_USER_ID_SEQ,
-            Sequences.POLICY_ID_SEQ,
-            Sequences.PROJECT_ID_SEQ,
-            Sequences.RUN_ID_SEQ);
-    }
-
-    @Override
     public final List<Table<?>> getTables() {
         List result = new ArrayList();
         result.addAll(getTables0());
@@ -125,6 +112,7 @@ public class Public extends SchemaImpl {
             PathmindUser.PATHMIND_USER,
             Policy.POLICY,
             Project.PROJECT,
+            RewardScore.REWARD_SCORE,
             Run.RUN);
     }
 }

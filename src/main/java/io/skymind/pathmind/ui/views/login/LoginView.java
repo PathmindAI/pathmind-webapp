@@ -66,9 +66,7 @@ public class LoginView extends HorizontalLayout
 		img.setClassName("logo");
 		img.setWidth("200px");
 
-		Div title = new Div();
-		title.add(new Label("Sign in to your new account!"));
-		title.setClassName("title");
+		H3 title = new H3("Sign In");
 
 		badCredentials.add(new Span("Incorrect username or password"));
 		badCredentials.setClassName("error-message");
@@ -79,8 +77,8 @@ public class LoginView extends HorizontalLayout
 		Div innerContent = new Div();
 		innerContent.setClassName("inner-content");
 		// Temporarily block new signups for public beta - issue https://github.com/SkymindIO/pathmind-webapp/issues/356
-		// innerContent.add(badCredentials, emailNotVerified, createLoginForm(), createSignUp());
-		innerContent.add(badCredentials, emailNotVerified, createLoginForm());
+		// innerContent.add(title, badCredentials, emailNotVerified, createLoginForm(), createSignUp());
+		innerContent.add(title, badCredentials, emailNotVerified, createLoginForm());
 
 		Div policy = new Div();
 		policy.addClassName("policy");
@@ -93,7 +91,7 @@ public class LoginView extends HorizontalLayout
 		Div loginPanel = new Div();
 		add(loginPanel);
 		loginPanel.setClassName("content");
-		loginPanel.add(welcome, img, title, innerContent, policy);
+		loginPanel.add(welcome, img, innerContent, policy);
 	}
 
 	private void updateEmailNotVerified() {
@@ -120,14 +118,12 @@ public class LoginView extends HorizontalLayout
 	}
 
 	private Component createSignUp() {
-		Label dontHaveAccount = new Label("Don't have an account?");
+		Span dontHaveAccount = new Span("Don't have an account?");
 		dontHaveAccount.getStyle().set("color", "var(--pm-secondary-text-color)");
-		Button start = new Button("Get started");
-		start.setThemeName("tertiary");
-		start.addClickListener(e -> UI.getCurrent().navigate(SignUpView.class));
+		RouterLink start = new RouterLink("Get started", SignUpView.class);
 
 		Div signUpCont = new Div();
-		signUpCont.getStyle().set("flex-shrink", "0");
+		signUpCont.addClassName("account-help-wrapper");
 		signUpCont.add(dontHaveAccount, start);
 
 		return signUpCont;
