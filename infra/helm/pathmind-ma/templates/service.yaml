@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ .Values.name }}
   labels:
-{{ include "pathmind.labels" . | indent 4 }}
+{{ include "pathmind-ma.labels" . | indent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:

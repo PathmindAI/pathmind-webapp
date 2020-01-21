@@ -23,7 +23,7 @@ env:
   SQS_URL: https://queue.amazonaws.com/839270835622/dev-training-queue.fifo
   S3_BUCKET: dev-training-dynamic-files.pathmind.com
 
-name: pathmind  
+name: pathmind-slot
 
 ingress:
   enabled: false

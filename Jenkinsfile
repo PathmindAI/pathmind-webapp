@@ -124,14 +124,6 @@ pipeline {
             }
         }
 /*
-	////////// Step 5 //////////
-	stage("Testing in ${DOCKER_TAG}") {
-            steps {
-		echo "Testing in ${DOCKER_TAG}"
-		//sh "python ${WORKSPACE}/src/jenkins/tests/web_test.py"
-            }
-	}
-
         // Waif for user manual approval, or proceed automatically if DEPLOY_TO_PROD is true
         stage('Go for Production?') {
             when {

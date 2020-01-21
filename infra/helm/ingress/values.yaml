@@ -18,9 +18,12 @@ ingress:
   annotations: 
     nginx.ingress.kubernetes.io/affinity: cookie
     nginx.ingress.kubernetes.io/affinity-mode: persistent
+    nginx.ingress.kubernetes.io/session-cookie-name: route
   hosts:
     - host: app.danieljj.com
-      paths: [/:80:pathmind]
+      paths: [/:80:canary]
+    - host: ma.danieljj.com
+      paths: [/:8080:pathmind-ma]
     - host: jenkins.danieljj.com
       paths: [/:8080:jenkins]
     - host: grafana.danieljj.com
@@ -31,9 +34,9 @@ ingress:
       paths: [/:80:pgadmin]
 
   tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+    #- secretName: chart-example-tls
+    #  hosts:
+    #    - chart-example.local
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

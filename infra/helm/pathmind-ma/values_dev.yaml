@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind
+  repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind-ma
   tag: dev
   pullPolicy: Always
 
@@ -14,16 +14,10 @@ service:
   port: 80
 
 env:
-  APPLICATION_URL: http://dev.danieljj.com
-  INTERCOM_APP_ID: q51xonft
-  WEBSITE_HTTPLOGGING_RETENTION_DAYS: 7
-  PATHMIND_LOG_FILE_PATH: /tmp/
-  SCM_COMMAND_IDLE_TIMEOUT: 1800
   ENVIRONMENT: dev
-  SQS_URL: https://queue.amazonaws.com/839270835622/dev-training-queue.fifo
-  S3_BUCKET: dev-training-dynamic-files.pathmind.com
+  S3BUCKET: dev-training-static-files.pathmind.com
 
-name: pathmind  
+name: pathmind-ma
 
 ingress:
   enabled: false

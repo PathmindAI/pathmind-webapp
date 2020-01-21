@@ -147,6 +147,19 @@ resource "null_resource" "pathmind" {
   depends_on = ["null_resource.awsaccesskey","null_resource.awssecretaccesskey","null_resource.db_url_secret","null_resource.segment_key_secret","null_resource.trainer"]
 }
 
+#install pathmind-slot
+resource "null_resource" "pathmind-slot" {
+  provisioner "local-exec" {
+    command = "helm install pathmind-slot ../helm/pathmind -f ../helm/pathmind/values_${var.environment}_slot.yaml"
+  }
+  provisioner "local-exec" {
+    when = "destroy"
+    command = "helm delete pathmind-slot"
+  }
+  depends_on = ["null_resource.awsaccesskey","null_resource.awssecretaccesskey","null_resource.db_url_secret","null_resource.segment_key_secret","null_resource.trainer"]
+}
+
+
 #install trainer
 resource "null_resource" "trainer" {
   provisioner "local-exec" {
@@ -265,6 +278,18 @@ resource "null_resource" "fluentd" {
   depends_on = ["null_resource.kibana"]
 }
 
+#Install Canary
+resource "null_resource" "canary" {
+  provisioner "local-exec" {
+    command = "sleep 30;kubectl apply -f ../k8s/canary/"
+  }
+  provisioner "local-exec" {
+    when = "destroy"
+    command = "kubectl delete deploy canary;kubectl delete svc canary; kubectl delete configmap nginxcan-config; kubectl delete configmap nginxcan-mainconfig"
+  }
+  depends_on = ["null_resource.jenkins","null_resource.prometheus","null_resource.pathmind","null_resource.kibana","null_resource.pathmind-slot"]
+}
+
 #install ingress
 resource "null_resource" "ingress" {
   provisioner "local-exec" {
@@ -274,9 +299,8 @@ resource "null_resource" "ingress" {
     when = "destroy"
     command = "helm delete ingress"
   }
-  depends_on = ["null_resource.jenkins","null_resource.prometheus","null_resource.pathmind","null_resource.kibana"]
+  depends_on = ["null_resource.canary"]
 }
-
 
 #Install pathmind db
 resource "null_resource" "pathmind-db" {

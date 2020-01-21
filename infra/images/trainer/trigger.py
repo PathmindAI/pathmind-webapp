@@ -6,7 +6,10 @@ import json
 import sh
 import traceback
 import psycopg2
+import time
 from LoggerInit import LoggerInit
+from threading import Thread
+import subprocess
 
 def parse_dburl():
     """
@@ -93,8 +96,8 @@ def process_message(message):
         return True
 
     #create node and deployment
-    ec2_instance_type='t2.2xlarge'
-    ec2_max_price='0.15'
+    ec2_instance_type='m5.2xlarge'
+    ec2_max_price='0.3'
 
     app_logger.info('Starting job s3://{s3bucket}/{s3path}'\
             .format(s3bucket=s3bucket,
@@ -122,37 +125,46 @@ def process_message(message):
             line=line.replace('{{SQS_URL}}',SQS_URL)
             file.write(line+'\n')
 
-    #insert the status to trainer_job
-    sql_script="""
-        INSERT INTO public.trainer_job (
-        job_id,
-        sqs_url,
-        s3path,
-        s3bucket,
-        receipthandle,
-        ec2_instance_type,
-        ec2_max_price,
-        status,
-        description)
-        VALUES (
-        '{job_id}',
-        '{SQS_URL}',
-        '{s3path}',
-        '{s3bucket}',
-        '{ReceiptHandle}',
-        '{ec2_instance_type}',
-        '{ec2_max_price}',
-        {status},
-        'pathmind training job')
-    """.format(
-        job_id=job_id,
-        SQS_URL=SQS_URL,
-        s3path=s3path,
-        s3bucket=s3bucket,
-        ReceiptHandle=ReceiptHandle,
-        ec2_instance_type=ec2_instance_type,
-        ec2_max_price=ec2_max_price,
-        status=1)
+    if 'retry' in body:
+        #Update the description
+        sql_script="""
+            update public.trainer_job
+            set description='spot instance creation failed, trying again',
+            update_date=NOW()
+            where job_id='{job_id}'
+        """.format(job_id=job_id)
+    else:
+        #insert the status to trainer_job
+        sql_script="""
+            INSERT INTO public.trainer_job (
+            job_id,
+            sqs_url,
+            s3path,
+            s3bucket,
+            receipthandle,
+            ec2_instance_type,
+            ec2_max_price,
+            status,
+            description)
+            VALUES (
+            '{job_id}',
+            '{SQS_URL}',
+            '{s3path}',
+            '{s3bucket}',
+            '{ReceiptHandle}',
+            '{ec2_instance_type}',
+            '{ec2_max_price}',
+            {status},
+            'pathmind training job')
+        """.format(
+            job_id=job_id,
+            SQS_URL=SQS_URL,
+            s3path=s3path,
+            s3bucket=s3bucket,
+            ReceiptHandle=ReceiptHandle,
+            ec2_instance_type=ec2_instance_type,
+            ec2_max_price=ec2_max_price,
+            status=1)
     execute_psql(sql_script)
 
     #Delete message
@@ -173,14 +185,61 @@ def process_message(message):
     except Exception as e:
         app_logger.error(traceback.format_exc())
 
+def check_ig_status():
+    """
+    Checks is all ig are created and have nodes associated
+    """
+    sqs = boto3.client('sqs')
+
+    while True:
+        app_logger.info('Checking ig status')
+        p = subprocess.Popen(['kops','validate','cluster',NAME], stdout=subprocess.PIPE)
+        output='\n'.join([i for i in p.communicate() if i is not None]).split('\n')
+        for line in output:
+            if 'did not have enough nodes' in line:
+                job_id=line.split('\t')[1]
+                #Get the bucket id
+                try:
+                    psql_connection = psycopg2.connect(user = psql_con_details['user'],
+                        password = psql_con_details['password'],
+                        host = psql_con_details['host'],
+                        port = psql_con_details['port'],
+                        database = psql_con_details['dbname'])
+                    psql_cursor = psql_connection.cursor()
+                    sql_script="""
+                      select s3bucket from public.trainer_job where job_id='{job_id}'
+                    """.format(job_id=job_id)
+                    psql_cursor.execute(sql_script)
+                    rows = psql_cursor.fetchall()
+                    s3bucket=rows[0][0]
+                    print(s3bucket)
+                except Exception as e:
+                    app_logger.error(traceback.format_exc())
+                    app_logger.error(sql_string.replace('\n',' '))
+                psql_cursor.close()
+                psql_connection.close()
+                #Delete deployment and ig
+                try:
+                    app_logger.info('Deleting deployment {job_id}'.format(job_id=job_id))
+                    sh.kubectl('delete','deployment',job_id)
+                    app_logger.info('Deleting ig {job_id}'.format(job_id=job_id))
+                    sh.kops('delete','ig',job_id,'--yes')
+                except Exception as e:
+                    app_logger.error(traceback.format_exc())
+                #send sqs message again
+                message='{"S3Bucket": "'+s3bucket+'", "S3Path":"'+job_id+'", "retry":"1"}'
+                response = sqs.send_message(
+                    QueueUrl=SQS_URL,
+                    MessageBody=message,
+                    MessageGroupId='training'
+                )
+        time.sleep(20)
+
 
 def main():
     """
     main function listens on sqs queue defined in SQS_URL env variable
     """
-    load_ig_template()
-    load_deployment_template()
-    parse_dburl()
     sqs = boto3.client('sqs')
     while True:
         app_logger.info('Waiting for messages in {SQS_URL}'\
@@ -211,5 +270,19 @@ if __name__ == "__main__":
     mem_deployment_template=[]
     logger=LoggerInit()
     app_logger=logger.get_logger("trainer")
-    main()
+    #Init kubectl
+    sh.kops('export','kubecfg','--name',NAME)
+    #Main thread
+    load_ig_template()
+    load_deployment_template()
+    parse_dburl()
+    worker1 = Thread(target=main, args=())
+    worker1.setDaemon(True)
+    worker1.start()
+    #check ig thread
+    #worker2 = Thread(target=check_ig_status, args=())
+    #worker2.setDaemon(True)
+    #worker2.start()
+    worker1.join()
+    #worker2.join()
 
