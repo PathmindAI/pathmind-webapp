@@ -40,32 +40,53 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private Command fileCheckerCommand;
 
 	private Text errorText;
+	private UploadModeSwitcherButton uploadModeSwitcher;
+	
+	private boolean isFolderUploadMode = true;
 
 	public UploadModelWizardPanel(Model model)
 	{
 		this.model = model;
 
-		// TODO: Check from client side whether folder upload is supported or not
-		boolean isFolderUploadSupported = false;
-		
 		projectNameLabel = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
 		projectNameLabel.getStyle().set("margin-top", "0px");
 		
-		setupUploadPanel(isFolderUploadSupported);
-		setupFileCheckPanel();
-
-		add(LabelFactory.createLabel("Project", CssMindPathStyles.SECTION_TITLE_LABEL),
-				projectNameLabel,
-				GuiUtils.getFullWidthHr(),
-				getInstructionsDiv(isFolderUploadSupported),
-				uploadModelPanel,
-				fileCheckPanel);
-
-		fileCheckPanel.setVisible(false);
+		setupLayout();
 
 		setClassName("view-section"); // adds the white 'panel' style with rounded corners
 
 		setWidthFull();
+	}
+	
+	private void setupLayout() {
+		setupUploadPanel(isFolderUploadMode);
+		setupFileCheckPanel();
+		setupUploadModeSwitchButton();
+		add(LabelFactory.createLabel("Project", CssMindPathStyles.SECTION_TITLE_LABEL),
+				projectNameLabel,
+				GuiUtils.getFullWidthHr(),
+				getInstructionsDiv(isFolderUploadMode),
+				uploadModelPanel,
+				fileCheckPanel,
+				uploadModeSwitcher
+				);
+
+		fileCheckPanel.setVisible(false);
+	}
+
+	private void setupUploadModeSwitchButton() {
+		uploadModeSwitcher = new UploadModeSwitcherButton(isFolderUploadMode, () -> switchUploadMode());
+		upload.isFolderUploadSupported(isFolderUploadSupported -> {
+			uploadModeSwitcher.setVisible(isFolderUploadSupported);
+		});
+	}
+	
+
+	private void switchUploadMode() {
+		isFolderUploadMode = !isFolderUploadMode;
+		
+		removeAll();
+		setupLayout();
 	}
 
 	private void setupFileCheckPanel() {
@@ -76,25 +97,27 @@ public class UploadModelWizardPanel extends VerticalLayout
 				errorText);
 	}
 
-	private void setupUploadPanel(boolean isFolderUploadSupported)
+	private void setupUploadPanel(boolean isFolderUploadMode)
 	{
-		upload = new PathmindModelUploader(isFolderUploadSupported);
+		upload = new PathmindModelUploader(isFolderUploadMode);
 
 		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/123
 //		upload.setMaxFileSize(PathmindConstants.MAX_UPLOAD_FILE_SIZE);
 //		upload.setAcceptedFileTypes("application/zip");
 //		upload.addFailedListener(event -> log.error("ERROR " + event.getReason().getMessage(), e.getReason().getMessage()));
 
-		addUploadSucceedListener(upload.getReceiver(), isFolderUploadSupported);
+		addUploadSucceedListener();
 		addUploadRemoveFileListener();
 
 		uploadModelPanel = WrapperUtils.wrapWidthFullCenterVertical(upload);
 	}
 
-	private void addUploadSucceedListener(Receiver receiver, boolean isFolderUploadSupported) {
+	private void addUploadSucceedListener() {
 		upload.addAllFilesUploadedListener(() -> {
 			try {
-				if (isFolderUploadSupported) {
+				Receiver receiver = upload.getReceiver();
+				// In folder upload mode, receiver is MultiFileMemoryBuffer, so a zip file should be created
+				if (MultiFileMemoryBuffer.class.isInstance(receiver)) {
 					MultiFileMemoryBuffer buffer = MultiFileMemoryBuffer.class.cast(receiver);
 					model.setFile(UploadUtils.createZipFileFromBuffer(buffer));
 				} else {
@@ -125,19 +148,21 @@ public class UploadModelWizardPanel extends VerticalLayout
 		fileCheckerCommand = command;
 	}
 	
-	private Div getInstructionsDiv(boolean isFolderUploadSupported) {
-		if (isFolderUploadSupported) {
-			return getInstructionsForFolderUploadDiv();
-		} else {
-			return getInstructionsForZipUploadDiv();
-		}
-		
+	private Div getInstructionsDiv(boolean isFolderUploadMode) {
+		Div div = new Div();
+		div.setWidthFull();
+		upload.isFolderUploadSupported(isFolderUploadSupported -> {
+			if (isFolderUploadMode && isFolderUploadSupported) {
+				setInstructionsForFolderUploadDiv(div);
+			} else {
+				setInstructionsForZipUploadDiv(div);
+			}
+		});
+		return div;
 	}
 
 	// TODO -> CSS -> Move CSS to styles.css
-	private Div getInstructionsForFolderUploadDiv() {
-		Div div = new Div();
-		div.setWidthFull();
+	private void setInstructionsForFolderUploadDiv(Div div) {
 		div.getElement().setProperty("innerHTML",
 				"<ol>" +
 					"<li>Make sure you have <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">Pathmind Helper</a> installed in your model.</li>" +
@@ -145,12 +170,9 @@ public class UploadModelWizardPanel extends VerticalLayout
 					"<li>Click Upload files button.</li>" +
 					"<li>Select the exported folder.</li>" +
 				"</ol>");
-		return div;
 	}
 	
-	private Div getInstructionsForZipUploadDiv() {
-		Div div = new Div();
-		div.setWidthFull();
+	private void setInstructionsForZipUploadDiv(Div div) {
 		div.getElement().setProperty("innerHTML",
 				"<ol>" +
 					"<li>Make sure you have <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">Pathmind Helper</a> installed in your model.</li>" +
@@ -164,7 +186,6 @@ public class UploadModelWizardPanel extends VerticalLayout
 						"</ul>" +
 					"<li>Upload the new zip file below." +
 				"</ol>");
-		return div;
 	}
 
 	public void setProjectName(String name) {

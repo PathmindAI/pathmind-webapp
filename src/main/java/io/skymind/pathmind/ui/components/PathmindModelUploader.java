@@ -28,8 +28,11 @@ import elemental.json.Json;
  * - Added MultiFileMemoryBufferWithFileStructure as default receiver, which works with file path, instead of filename
  * - The filter is done in client side, see model-upload-filter.js and black-list.js for details
  * 
+ * PathmindModelUploader works in two modes: Folder upload and zip file upload,
+ * In constructor, default mode is set, then a client-side check is performed for folder upload support by browser, 
+ * and finally <code>isFolderUploadMode</code> is set true if it's constructed in folder upload mode and browser supports folder upload.
+ * 
  * Additionally,
- * - webkitdirectory attribute might not work in all browsers (https://github.com/SkymindIO/pathmind-webapp/issues/628)
  * - currently custom libraries are identified by making a string comparison with the black-list, this method can be improved 
  * (https://github.com/SkymindIO/pathmind-webapp/issues/629) 
  */
@@ -41,10 +44,14 @@ public class PathmindModelUploader extends Upload {
 	
 	private List<Command> allFilesCompletedListeners = new ArrayList<>();
 	
+	private Boolean isFolderUploadSupported;
+	private Boolean isFolderUploadMode;
+	
 	public PathmindModelUploader(boolean isFolderUploadMode) {
 		super();
 		checkIfFolderUploadSupported(isFolderUploadSupported -> {
-			if (isFolderUploadMode && isFolderUploadSupported) {
+			this.isFolderUploadMode = isFolderUploadMode && isFolderUploadSupported;
+			if (this.isFolderUploadMode) {
 				setReceiver(new MultiFileMemoryBufferWithFileStructure());
 				setupFolderUpload();
 				addNoFilesToUploadListener(evt -> triggerAllFilesCompletedListeners());
@@ -66,8 +73,22 @@ public class PathmindModelUploader extends Upload {
 			}
 		});
 	}
-	
-	public void checkIfFolderUploadSupported(SerializableConsumer<Boolean> consumer) {
+	/**
+	 * Checks if folder upload supported by browser,
+	 * If the check has already been done, returns cached value
+	 * otherwise checks asynchronously
+	 */
+	public void isFolderUploadSupported(SerializableConsumer<Boolean> consumer) {
+		if (isFolderUploadSupported != null) {
+			consumer.accept(isFolderUploadSupported);
+		} else {
+			checkIfFolderUploadSupported(supported -> {
+				isFolderUploadSupported = supported;
+				consumer.accept(supported);
+			});
+		}
+	}
+	private void checkIfFolderUploadSupported(SerializableConsumer<Boolean> consumer) {
 		getElement().executeJs("return window.Pathmind.ModelUploader.isInputDirSupported()").then(Boolean.class, supported -> {
 			consumer.accept(supported);
 		});
@@ -83,9 +104,11 @@ public class PathmindModelUploader extends Upload {
 
 	private void uploadStarted(UploadStartEvent<Upload> evt) {
 		numOfFilesUploaded++;
-		String filePath = evt.getDetailFile().getString("filePath");
-		String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-		MultiFileMemoryBufferWithFileStructure.class.cast(getReceiver()).addFilePath(filePath, fileName);
+		if (isFolderUploadMode) {
+			String filePath = evt.getDetailFile().getString("filePath");
+			String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
+			MultiFileMemoryBufferWithFileStructure.class.cast(getReceiver()).addFilePath(filePath, fileName);
+		}
 	}
 
 	public void addAllFilesUploadedListener(Command command) {
