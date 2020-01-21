@@ -33,6 +33,7 @@ public class Routes {
     public static final String EXPERIMENTS_URL = "experiments";
     public static final String EXPERIMENT_URL = "experiment";
     public static final String NEW_EXPERIMENT = "newExperiment";
+    public static final String GUIDE_URL = "guide";
     public static final String UPLOAD_MODEL = "uploadModel";
     public static final String ERROR_URL = "error";
 
