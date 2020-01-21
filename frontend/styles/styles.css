@@ -45,6 +45,7 @@ html {
   --lumo-base-color: #ffffff;
   --lumo-primary-text-color: var(--pm-primary-color);
   --lumo-primary-color-50pct: rgba(79, 151, 170, 0.5);
+  --lumo-primary-color-25pct: rgba(79, 151, 170, 0.25);
   --lumo-primary-color-10pct: rgba(79, 151, 170, 0.1);
   --lumo-primary-color: var(--pm-primary-color);
   --lumo-border-radius: 6px;
