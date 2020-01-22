@@ -247,6 +247,10 @@ account-view {
 .navigate-icon {
   display: none;
 }
+.dashboard-placeholder {
+  margin-top: 90px;
+}
+
 .dashboard-line:hover > .navigate-icon {
   display: inline-flex;
 }

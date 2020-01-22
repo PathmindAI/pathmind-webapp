@@ -19,6 +19,7 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.dashboard.components.DashboardLine;
+import io.skymind.pathmind.ui.views.dashboard.components.EmptyDashboardPlaceholder;
 import io.skymind.pathmind.ui.views.dashboard.dataprovider.DashboardDataProvider;
 import io.skymind.pathmind.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
@@ -35,6 +36,8 @@ public class DashboardView extends PathMindDefaultView
 	private DashboardDataProvider dataProvider;
 	
 	private Grid<DashboardItem> dashboardGrid;
+	
+	private EmptyDashboardPlaceholder placeholder;
 
 	@Override
 	protected boolean isAccessAllowedForUser() {
@@ -48,6 +51,7 @@ public class DashboardView extends PathMindDefaultView
 	}
 
 	protected Component getMainContent(){
+		placeholder = new EmptyDashboardPlaceholder();
 		setupDashboardGrid();
 
 		// BUG -> I didn't have to really investigate but it looks like we may need
@@ -55,6 +59,7 @@ public class DashboardView extends PathMindDefaultView
 		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
 		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
+			placeholder,
 			dashboardGrid,
 			WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
 
@@ -98,6 +103,9 @@ public class DashboardView extends PathMindDefaultView
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
+		boolean emptyDashboard = dataProvider.isEmpty();
+		placeholder.setVisible(emptyDashboard);
+		dashboardGrid.setVisible(!emptyDashboard);
 		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
 			// dashboardGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting data provider
 			dashboardGrid.setDataProvider(dataProvider);
