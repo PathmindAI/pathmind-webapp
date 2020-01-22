@@ -48,14 +48,17 @@ public class GuideOverview extends PathMindDefaultView {
 		// Also for now this is all faked in memory only and will reset each time the server is reloaded. It is NOT threadsafe, etc. There is no database connection. It's just
 		// temporary stubs.
 
+		// Fake project
+		long projectId = -1;
+
 		// Option 1 ->
-		guideDAO.getGuideStep(SecurityUtils.getUserId());
-		guideDAO.updateGuideStep(SecurityUtils.getUserId(), GuideStep.DefineDoneCondition);
+		guideDAO.getGuideStep(projectId);
+		guideDAO.updateGuideStep(projectId, GuideStep.DefineDoneCondition);
 
 		// Option 2
-		GuideStep guideStep = guideDAO.getGuideStep(SecurityUtils.getUserId());
-		guideDAO.updateGuideStep(SecurityUtils.getUserId(), guideStep.nextStep());
-		guideDAO.updateGuideStep(SecurityUtils.getUserId(), guideStep.previousStep());
+		GuideStep guideStep = guideDAO.getGuideStep(projectId);
+		guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+		guideDAO.updateGuideStep(projectId, guideStep.previousStep());
 
 		return guideOverviewContent;
 	}

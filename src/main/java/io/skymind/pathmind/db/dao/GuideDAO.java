@@ -19,13 +19,13 @@ public class GuideDAO
 	}
 
 	// STEPH -> TODO -> Implement
-	public void updateGuideStep(long userId, GuideStep guideStep) {
-		memory.put(userId, guideStep);
+	public void updateGuideStep(long projectId, GuideStep guideStep) {
+		memory.put(projectId, guideStep);
 	}
 
 	// STEPH -> TODO -> Implement
-	public GuideStep getGuideStep(long userId) {
-		GuideStep guideStep = memory.get(userId);
+	public GuideStep getGuideStep(long projectId) {
+		GuideStep guideStep = memory.get(projectId);
 		// We have several options here:
 		// 		1. The guideStep is part of the user table in which case we can add a default value of GuideStep.Overview and enforce not null to the column.
 		// 		2. The guideStep is a separate table so that it can be expanded a lot. We then need to also insert a new default row entry each time a new account is created. Not null constraint it still in effect.
