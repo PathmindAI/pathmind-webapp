@@ -12,7 +12,9 @@ import java.util.Set;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DomEvent;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
@@ -58,6 +60,7 @@ public class PathmindModelUploader extends Upload {
 			} else {
 				setReceiver(new MemoryBuffer());
 			}
+			setUploadButton(createUploadButton());
 		});
 		addUploadStartListener(this::uploadStarted);
 		addUploadErrorListener(evt -> {
@@ -72,6 +75,11 @@ public class PathmindModelUploader extends Upload {
 				triggerAllFilesCompletedListeners();
 			}
 		});
+	}
+	private Button createUploadButton() {
+		Button uploadButton = new Button(VaadinIcon.UPLOAD.create());
+		uploadButton.setText(this.isFolderUploadMode ? "Select folder" : "Select zip file");
+		return uploadButton;
 	}
 	/**
 	 * Checks if folder upload supported by browser,
