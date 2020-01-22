@@ -29,7 +29,6 @@ do
         fi
         #Upload files
         aws s3 cp --recursive ./work/PPO ${s3_url}/output/
-        aws s3 cp ./work/trial_complete ${s3_url}/output/trial_complete
         aws s3 cp ./work/trial_error ${s3_url}/output/trial_error
         aws s3 cp ./work/trial_list ${s3_url}/output/trial_list
         sleep $sleep_time
@@ -44,13 +43,6 @@ then
 else
 	status=5
 fi
-
-aws s3 cp --recursive ./work/PPO ${s3_url}/output/
-aws s3 cp ./work/trial_complete ${s3_url}/output/trial_complete
-aws s3 cp ./work/trial_error ${s3_url}/output/trial_error
-aws s3 cp ./work/trial_list ${s3_url}/output/trial_list
-aws s3 cp process_output.log ${s3_url}/output/process_output.log
-aws s3 cp errors.log ${s3_url}/output/errors.log
 
 #Generate final files
 cd work
@@ -73,6 +65,14 @@ for DIR in `find . -iname model -type d`; do
 	cd $OLDPWD
 done
 
+#Upload the final files only after policy and checkpoint are uploaded
+aws s3 cp --recursive ./work/PPO ${s3_url}/output/
+aws s3 cp ./work/trial_complete ${s3_url}/output/trial_complete
+aws s3 cp ./work/trial_error ${s3_url}/output/trial_error
+aws s3 cp ./work/trial_list ${s3_url}/output/trial_list
+aws s3 cp process_output.log ${s3_url}/output/process_output.log
+aws s3 cp errors.log ${s3_url}/output/errors.log
+
 #Set the status in trainer_job
 psql "$DB_URL_CLI" << EOF
 update public.trainer_job 
@@ -94,3 +94,9 @@ aws sqs send-message \
         --message-group-id training
 
 kill -9 $pid_tail
+
+#Sleep until is destroyed
+while true
+do
+	sleep 60
+done

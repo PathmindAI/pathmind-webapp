@@ -64,11 +64,11 @@ def process_message(message):
     """
     if not message:
         return
-    body=json.loads(message['Messages'][0]['Body'])
+    body=json.loads(message['Body'])
     s3bucket=body['S3Bucket']
     s3path=body['S3Path']
     job_id=s3path
-    ReceiptHandle=message['Messages'][0]['ReceiptHandle']
+    ReceiptHandle=message['ReceiptHandle']
 
     #jobs is done so destroy the spot instance and the pod
     if 'destroy' in body:
@@ -178,8 +178,6 @@ def process_message(message):
     try:
         app_logger.info('Creating ig {job_id}'.format(job_id=job_id))
         sh.kops('create','-f',JOB_IG_FILE)
-        app_logger.info('Updating cluster')
-        sh.kops('update','cluster',NAME,'--yes')
         app_logger.info('Creating deployment {job_id}'.format(job_id=job_id))
         sh.kubectl('apply','-f',JOB_DEPLOYMENT_FILE)
     except Exception as e:
@@ -212,7 +210,6 @@ def check_ig_status():
                     psql_cursor.execute(sql_script)
                     rows = psql_cursor.fetchall()
                     s3bucket=rows[0][0]
-                    print(s3bucket)
                 except Exception as e:
                     app_logger.error(traceback.format_exc())
                     app_logger.error(sql_string.replace('\n',' '))
@@ -247,12 +244,15 @@ def main():
         resp = sqs.receive_message(
             QueueUrl=SQS_URL,
             AttributeNames=['All'],
-            MaxNumberOfMessages=1,
+            MaxNumberOfMessages=10,
             VisibilityTimeout=60,
             WaitTimeSeconds=20
         )
         if ('Messages' in resp):
-            process_message(resp)
+            for message in resp['Messages']:
+                process_message(message)
+            app_logger.info('Updating cluster')
+            sh.kops('update','cluster',NAME,'--yes')
 
 
 if __name__ == "__main__":

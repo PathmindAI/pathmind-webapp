@@ -8,8 +8,8 @@ ZONES=`grep node_zones terraform.tfvars | awk -F'=' '{print $2}' | sed "s/ //g" 
 export KOPS_STATE_STORE="s3://${BUCKET_NAME}/k8s.${NAME}"
 REGION=`aws configure list | grep region | awk '{print $2}'`
 NODE_COUNT=2
-NODE_SIZE="t2.large"
-MASTER_SIZE="t2.medium"
+NODE_SIZE="t2.2xlarge"
+MASTER_SIZE="t2.2xlarge"
 
 #If bucket does not exist create it
 if ! aws s3api head-bucket --bucket ${BUCKET_NAME} 2>/dev/null; then
