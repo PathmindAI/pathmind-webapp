@@ -30,7 +30,7 @@ public class DashboardLine extends HorizontalLayout {
 	public DashboardLine(DashboardItem item) {
 		this.dashboardItem = item;
 		setClassName("dashboard-line");
-		breadcrumb = new Breadcrumbs(item.getProject(), item.getModel(), item.getExperiment());
+		breadcrumb = new Breadcrumbs(item.getProject(), item.getModel(), item.getExperiment(), false);
 		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
 			timestamp = new Span(DateAndTimeUtils.formatDateAndTimeShortFormatter(item.getLatestUpdateTime(), timeZoneId));
 		});
