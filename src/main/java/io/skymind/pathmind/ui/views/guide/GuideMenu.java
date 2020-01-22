@@ -14,28 +14,23 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
-import io.skymind.pathmind.security.CurrentUser;
-
-@Tag("guide-overview-content")
-@JsModule("./src/guide/guide-overview-content.js")
+@Tag("guide-menu")
+@JsModule("./src/guide/guide-menu.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class GuideOverviewContent extends PolymerTemplate<GuideOverviewContent.Model> {
+public class GuideMenu extends PolymerTemplate<GuideMenu.Model> {
 
-	@Id("skipToUploadModelBtn")
-	private Button skipToUploadModelBtn;
+    @Id("skipToUploadModelBtn")
+    private Button skipToUploadModelBtn;
 
-	@Id("nextBtn")
-	private Button nextBtn;
+    @Autowired
+    public GuideMenu() {
+    }
 
-	@Autowired
-	public GuideOverviewContent(CurrentUser currentUser) {
-	}
+    @PostConstruct
+    private void init() {
+    }
 
-	@PostConstruct
-	private void init() {
-	}
-
-	public interface Model extends TemplateModel {
-	}
+    public interface Model extends TemplateModel {
+    }
 }
