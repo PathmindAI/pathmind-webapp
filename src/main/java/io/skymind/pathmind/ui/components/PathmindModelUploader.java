@@ -78,7 +78,7 @@ public class PathmindModelUploader extends Upload {
 	}
 	private Button createUploadButton() {
 		Button uploadButton = new Button(VaadinIcon.UPLOAD.create());
-		uploadButton.setText(this.isFolderUploadMode ? "Select folder" : "Select zip file");
+		uploadButton.setText(this.isFolderUploadMode ? "Select folder to upload..." : "Select zip file...");
 		return uploadButton;
 	}
 	/**
