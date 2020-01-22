@@ -9,7 +9,6 @@ public class UploadModeSwitcherButton extends Button {
 	public UploadModeSwitcherButton(boolean isFolderUploadMode, Command action) {
 		setText(isFolderUploadMode ? "Upload as zip file" : "Upload as folder");
 		addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-		getStyle().set("align-self", "flex-end");
 		addClickListener(evt -> action.execute());
 	}
 	

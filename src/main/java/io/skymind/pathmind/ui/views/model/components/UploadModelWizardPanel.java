@@ -68,8 +68,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 				getInstructionsDiv(isFolderUploadMode),
 				uploadModelPanel,
 				fileCheckPanel,
-				uploadModeSwitcher
-				);
+				WrapperUtils.wrapWidthFullCenterHorizontal(uploadModeSwitcher));
 
 		fileCheckPanel.setVisible(false);
 	}
