@@ -12,12 +12,15 @@ class GuideOverviewContent extends PolymerElement {
         }
         h1 {
           line-height: 1.3em;
-          margin-top: 0;
+          margin: 0;
         }
         p {
           width: 100%;
           line-height: 1.3em;
           margin: 0 0 1em;
+        }
+        p:first-of-type {
+          margin-top: 1em;
         }
         p:last-of-type {
           margin-bottom: 0;
@@ -28,14 +31,14 @@ class GuideOverviewContent extends PolymerElement {
           margin-top: 0;
         }
         vaadin-button {
-          margin: 0 auto 40px;
+          margin: 0 auto var(--lumo-space-xl);
         }
-        vaadin-button:nth-of-type(1) {
+        vaadin-button:first-of-type {
           margin-top: 80px;
         }
       </style>
       <div class="content">
-        <h1>{{title}}</h1>
+        <h1>Guide to preparing your simulation for Pathmind</h1>
         <p>
           Dictumst vestibulum rhoncus est pellentesque elit ullamcorper.
           Ullamcorper dignissim cras tincidunt lobortis feugiat vivamus at.
