@@ -1,5 +1,8 @@
 package io.skymind.pathmind.ui.views.experiment;
 
+import java.util.Comparator;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +24,8 @@ import com.vaadin.flow.router.WildcardParameter;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
@@ -31,9 +34,9 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
+import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -42,7 +45,6 @@ import io.skymind.pathmind.ui.views.experiment.components.PolicyChartPanel;
 import io.skymind.pathmind.ui.views.experiment.components.PolicyHighlightPanel;
 import io.skymind.pathmind.ui.views.experiment.components.PolicyStatusDetailsPanel;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
-import io.skymind.pathmind.ui.views.experiment.components.TrainingsListPanel;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
 
 @CssImport("./styles/styles.css")
@@ -66,7 +68,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private PolicyStatusDetailsPanel policyStatusDetailsPanel;
 	private RewardFunctionEditor rewardFunctionEditor;
 	private PolicyChartPanel policyChartPanel;
-	private TrainingsListPanel trainingsListPanel;
 
 	@Autowired
 	private ExperimentDAO experimentDAO;
@@ -113,40 +114,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private Component getLeftPanel() {
-		trainingsListPanel = new TrainingsListPanel();
-
-		trainingsListPanel.addSelectionListener(selectedPolicy -> {
-			policy = selectedPolicy;
-			policyHighlightPanel.update(selectedPolicy);
-			policyStatusDetailsPanel.update(selectedPolicy);
-			policyChartPanel.init(selectedPolicy);
-			policyChartPanel.highlightPolicy(selectedPolicy);
-
-
-			// to avoid multiple download policy file from rescale server,
-			// we put the "saving" for temporary
-			// policy dao will check if there's real policy file exist or not
-			exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
-
-			RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
-			boolean canStartFurtherRuns = PolicyUtils.getRunStatus(selectedPolicy) != RunStatus.Error;
-			if (selectedRunType == RunType.DiscoveryRun) {
-				runFullTraining.setVisible(true);
-				runFullTraining.setEnabled(canStartFurtherRuns);
-			} else if (selectedRunType == RunType.FullRun) {
-				runFullTraining.setVisible(false);
-			}
+		policyChartPanel = new PolicyChartPanel();
+		policyChartPanel.addSeriesClickListener(policyId -> {
+			policy = experiment.getPolicies().stream().filter(p -> Long.toString(policy.getId()).equals(policyId)).findFirst().get();
+			processSelectedPolicy(policy);
 		});
 
-		policyChartPanel = new PolicyChartPanel();
-		policyChartPanel.addSeriesClickListener(policyId -> trainingsListPanel.selectPolicyWithId(policyId));
-
-		SplitLayout leftSplitPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
-				policyChartPanel,
-				trainingsListPanel);
-		// TODO -> Charts do not reflow automatically: https://vaadin.com/forum/thread/17878341/resizable-charts (https://github.com/vaadin/vaadin-charts/issues/457)
-		leftSplitPanel.addSplitterDragendListener(evt -> getUI().ifPresent(ui -> ui.getPage().executeJs("Array.from(window.document.getElementsByTagName('vaadin-chart')).forEach( el => el.__reflow());")));
-		return leftSplitPanel;
+		return policyChartPanel;
 	}
 
 	private VerticalLayout getRightPanel() {
@@ -176,9 +150,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		return WrapperUtils.wrapSizeFullVertical(
 				WrapperUtils.wrapWidthFullCenterHorizontal(runFullTraining),
 				policyHighlightPanel,
+				buttons,
 				policyStatusDetailsPanel,
-				rewardFunctionEditor,
-				buttons);
+				rewardFunctionEditor);
 	}
 
 	private Breadcrumbs createBreadcrumbs() {        
@@ -218,6 +192,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		if (experiment == null)
 			throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
 		experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
+		policy = selectBestPolicy(experiment.getPolicies());
 	}
 
 	@Override
@@ -225,6 +200,47 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		screenTitlePanel.setSubtitle(projectName);
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		policyChartPanel.init(experiment);
-		trainingsListPanel.init(experiment, policyId);
+		processSelectedPolicy(policy);
 	}
+	
+	private Policy selectBestPolicy(List<Policy> policies) {
+		boolean hasFullRun = policies.stream().anyMatch(p -> p.getRun().getRunTypeEnum() == RunType.FullRun);
+		if (hasFullRun) {
+			return selectHighestPerformingPolicy(policies, RunType.FullRun);
+		} else {
+			return selectHighestPerformingPolicy(policies, RunType.DiscoveryRun);
+		}
+		
+	}
+
+	private Policy selectHighestPerformingPolicy(List<Policy> policies, RunType runType) {
+		return policies.stream()
+				.filter(p -> p.getRun().getRunTypeEnum() == runType)
+				.max(Comparator.comparing(p -> PolicyUtils.getLastScore(p), Comparator.nullsLast(Comparator.naturalOrder()))).get();
+	}
+	
+	private void processSelectedPolicy(Policy selectedPolicy) {
+		policyHighlightPanel.update(selectedPolicy);
+		policyStatusDetailsPanel.update(selectedPolicy);
+		policyChartPanel.init(selectedPolicy);
+		policyChartPanel.highlightPolicy(selectedPolicy);
+
+
+		// to avoid multiple download policy file from rescale server,
+		// we put the "saving" for temporary
+		// policy dao will check if there's real policy file exist or not
+		exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
+
+		RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
+		boolean canStartFurtherRuns = PolicyUtils.getRunStatus(selectedPolicy) != RunStatus.Error;
+		if (selectedRunType == RunType.DiscoveryRun) {
+			runFullTraining.setVisible(true);
+			runFullTraining.setEnabled(canStartFurtherRuns);
+		} else if (selectedRunType == RunType.FullRun) {
+			runFullTraining.setVisible(false);
+		}
+		
+	}
+	
+	
 }
