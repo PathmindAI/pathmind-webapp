@@ -14,13 +14,25 @@ html {
   /* pathmind color palette */
   --pm-orange-color: #ed7820;
   --pm-gray-color-light: #d0d0d0;
+  --pm-blue-color-darkest: #1a2949;
+  --pm-blue-color-darkest-50pct: rgba(26, 41, 73, 0.5);
+  --pm-blue-color-darkest-25pct: rgba(26, 41, 73, 0.25);
+  --pm-blue-color: #1900ff;
+
+  /* pathmind typography */
+  --pm-line-height-l: 1.5em;
+  --pm-line-height-m: 1.3em;
+  --pm-line-height-s: 1.15em;
 
   /* pathmind-theme */
   --lumo-font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --lumo-font-size-xxl: 1.875rem;
   --lumo-font-size-xl: 1.5rem;
+  --lumo-font-size-l: 1.25rem;
   --lumo-font-size-m: 1rem;
   --lumo-font-size-s: 0.875rem;
   --lumo-font-size-xs: 0.75rem;
+  --lumo-size-xxl: 4rem;
   --lumo-size-xl: 3rem;
   --lumo-size-l: 2.5rem;
   --lumo-size-m: 2rem;
@@ -49,6 +61,10 @@ html {
   --lumo-primary-color-10pct: rgba(79, 151, 170, 0.1);
   --lumo-primary-color: var(--pm-primary-color);
   --lumo-border-radius: 6px;
+}
+
+img {
+  display: block;
 }
 
 #nav-main-links,
@@ -91,7 +107,10 @@ html {
 }
 
 .action-menu {
+  position: sticky;
+  top: 0;
   background-color: var(--pm-primary-color);
+  z-index: 1;
 }
 
 .light-text-label {
@@ -131,7 +150,7 @@ html {
 
 .default-view {
   background: var(--pm-app-bg-color);
-  height: 100%;
+  height: auto;
 }
 
 .view-section {
@@ -234,4 +253,21 @@ account-view {
 }
 .tag:empty {
   display: none;
+}
+
+/* Typography Styles */
+h1 {
+  font-size: var(--lumo-font-size-xxl);
+}
+
+h2 {
+  font-size: var(--lumo-font-size-xl);
+}
+
+h3 {
+  font-size: var(--lumo-font-size-l);
+}
+
+h4 {
+  font-size: var(--lumo-font-size-m);
 }
