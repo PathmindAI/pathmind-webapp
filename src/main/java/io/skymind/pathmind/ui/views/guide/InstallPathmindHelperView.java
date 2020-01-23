@@ -16,11 +16,13 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 @Route(value = Routes.GUIDE_INSTALL_URL, layout = MainLayout.class)
 public class InstallPathmindHelperView extends PathMindDefaultView {
 
-	 private final GuideMenu guideMenu;
+     private final GuideMenu guideMenu;
+     private final InstallPathmindHelperContent pageContent;
 
     @Autowired
-    public InstallPathmindHelperView(GuideMenu guideMenu) {
-		this.guideMenu = guideMenu;
+    public InstallPathmindHelperView(GuideMenu guideMenu, InstallPathmindHelperContent pageContent) {
+        this.guideMenu = guideMenu;
+        this.pageContent = pageContent;
     }
 
     @Override
@@ -38,9 +40,9 @@ public class InstallPathmindHelperView extends PathMindDefaultView {
         Div testDiv = new Div();
         testDiv.setText("dummy content page side");
         HorizontalLayout gridWrapper = WrapperUtils.wrapWidthFullBetweenHorizontal(
-			guideMenu, testDiv
+			guideMenu, pageContent
         );
-
+        gridWrapper.getStyle().set("background-color", "white");
         return gridWrapper;
     }
 }

@@ -74,7 +74,11 @@
 :host([theme~="secondary"]:hover) {
   color: white;
   background-color: var(--lumo-primary-color-25pct);
-  border: none;
+  border-color: var(--lumo-primary-color-25pct);
+}
+
+:host([focus-ring][theme~="tertiary"]) {
+  box-shadow: none;
 }
 
 /* This is to override all Vaadin-Button on the webapp */
