@@ -17,10 +17,10 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 public class InstallPathmindHelperView extends PathMindDefaultView {
 
      private final GuideMenu guideMenu;
-     private final InstallPathmindHelperContent pageContent;
+     private final InstallPathmindHelperViewContent pageContent;
 
     @Autowired
-    public InstallPathmindHelperView(GuideMenu guideMenu, InstallPathmindHelperContent pageContent) {
+    public InstallPathmindHelperView(GuideMenu guideMenu, InstallPathmindHelperViewContent pageContent) {
         this.guideMenu = guideMenu;
         this.pageContent = pageContent;
     }
@@ -38,7 +38,6 @@ public class InstallPathmindHelperView extends PathMindDefaultView {
     @Override
     protected Component getMainContent() {
         Div testDiv = new Div();
-        testDiv.setText("dummy content page side");
         HorizontalLayout gridWrapper = WrapperUtils.wrapWidthFullBetweenHorizontal(
 			guideMenu, pageContent
         );

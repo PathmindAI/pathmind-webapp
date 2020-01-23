@@ -38,6 +38,7 @@ public class Routes {
 
     public static final String GUIDE_URL = "guide";
     public static final String GUIDE_INSTALL_URL = "guide/install";
+    public static final String GUIDE_DONE_URL = "guide/done-condition";
 
     public static final String CONSOLE_URL = "console";
     public static final String INVALID_DATA_URL = "invalidData";

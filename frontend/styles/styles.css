@@ -32,12 +32,12 @@ html {
   --lumo-font-size-m: 1rem;
   --lumo-font-size-s: 0.875rem;
   --lumo-font-size-xs: 0.75rem;
-  --lumo-size-xxl: 4rem;
   --lumo-size-xl: 3rem;
   --lumo-size-l: 2.5rem;
   --lumo-size-m: 2rem;
   --lumo-size-s: 1.75rem;
   --lumo-size-xs: 1.5rem;
+  --lumo-space-xxl: 4rem;
   --lumo-space-xl: 2.5rem;
   --lumo-space-l: 1.75rem;
   --lumo-space-m: 1.125rem;
@@ -151,6 +151,7 @@ img {
 .default-view {
   background: var(--pm-app-bg-color);
   height: auto;
+  min-height: 100%;
 }
 
 .view-section {

@@ -16,11 +16,11 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.security.CurrentUser;
 
-@Tag("install-pathmind-helper-content")
-@JsModule("./src/guide/install-pathmind-helper-content.js")
+@Tag("install-pathmind-helper-view-content")
+@JsModule("./src/guide/install-pathmind-helper-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class InstallPathmindHelperContent extends PolymerTemplate<InstallPathmindHelperContent.Model> {
+public class InstallPathmindHelperViewContent extends PolymerTemplate<InstallPathmindHelperViewContent.Model> {
 
     @Id("skipToUploadModelBtn")
     private Button skipToUploadModelBtn;
@@ -29,7 +29,7 @@ public class InstallPathmindHelperContent extends PolymerTemplate<InstallPathmin
     private Button nextBtn;
 
     @Autowired
-    public InstallPathmindHelperContent(CurrentUser currentUser) {
+    public InstallPathmindHelperViewContent(CurrentUser currentUser) {
     }
 
     @PostConstruct
