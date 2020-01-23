@@ -1,7 +1,7 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "@vaadin/vaadin-button/src/vaadin-button.js";
 
-class InstallPathmindHelperContent extends PolymerElement {
+class InstallPathmindHelperViewContent extends PolymerElement {
   static get template() {
     return html`
       <style include="shared-styles pathmind-dialog-view guide-view"></style>
@@ -162,7 +162,7 @@ class InstallPathmindHelperContent extends PolymerElement {
   }
 
   static get is() {
-    return "install-pathmind-helper-content";
+    return "install-pathmind-helper-view-content";
   }
 
   static get properties() {
@@ -197,6 +197,6 @@ class InstallPathmindHelperContent extends PolymerElement {
 }
 
 customElements.define(
-  InstallPathmindHelperContent.is,
-  InstallPathmindHelperContent
+  InstallPathmindHelperViewContent.is,
+  InstallPathmindHelperViewContent
 );
