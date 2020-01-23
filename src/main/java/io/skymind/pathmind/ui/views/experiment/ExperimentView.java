@@ -129,7 +129,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		rewardFunctionEditor.setSizeFull();
 
 		policyHighlightPanel = new PolicyHighlightPanel();
-		policyStatusDetailsPanel = new PolicyStatusDetailsPanel();
+		policyStatusDetailsPanel = new PolicyStatusDetailsPanel(policyDAO);
 
 		runFullTraining = new Button("Start Full Run", new Image("frontend/images/start.svg", "run"), click -> {
 			final Experiment experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());

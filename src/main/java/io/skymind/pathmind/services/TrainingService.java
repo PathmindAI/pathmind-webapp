@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static io.skymind.pathmind.services.training.constant.RunConstants.DISCOVERY_RUN_BATCH_SIZES;
+
 @Service
 @Slf4j
 public class TrainingService
@@ -64,30 +66,15 @@ public class TrainingService
     }
 
     public void startDiscoveryRun(Experiment exp){
-        startDiscoveryRunJob1(exp);
-        startDiscoveryRunJob2(exp);
-    }
-
-    public void startDiscoveryRunJob1(Experiment exp) {
-        startRun(RunType.DiscoveryRun,
-                exp,
-                100,
-                Arrays.asList(1e-3, 1e-5), // Learning rate
-                Arrays.asList(0.9, 0.99), // gamma
-                Arrays.asList(64), // batch size
-                30 * MINUTE
-        );
-    }
-
-    public void startDiscoveryRunJob2(Experiment exp) {
-        startRun(RunType.DiscoveryRun,
-                exp,
-                100,
-                Arrays.asList(1e-3, 1e-5), // Learning rate
-                Arrays.asList(0.9, 0.99), // gamma
-                Arrays.asList(128), // batch size
-                30 * MINUTE
-        );
+        DISCOVERY_RUN_BATCH_SIZES.forEach(
+                batch -> startRun(RunType.DiscoveryRun,
+                        exp,
+                        100,
+                        Arrays.asList(1e-3, 1e-5), // Learning rate
+                        Arrays.asList(0.9, 0.99), // gamma
+                        Arrays.asList(batch), // batch size
+                        30 * MINUTE
+                ));
     }
 
     public void startFullRun(Experiment exp, Policy policy){
