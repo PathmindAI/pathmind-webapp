@@ -13,11 +13,11 @@ resource "null_resource" "validate_k8s" {
 #Create k8s bastions
 resource "null_resource" "k8s_bastion" {
   provisioner "local-exec" {
-    command = "sleep 30;./create_bastion.sh '${var.cluster_name}' '${var.kops_bucket}'"
+    command = "./create_bastion.sh '${var.cluster_name}' '${var.kops_bucket}'"
   }
   provisioner "local-exec" {
     when    = "destroy"
-    command = "sleep 30;export KOPS_STATE_STORE='s3://${var.kops_bucket}/k8s.${var.cluster_name}'; kops delete instancegroup bastions --yes"
+    command = "export KOPS_STATE_STORE='s3://${var.kops_bucket}/k8s.${var.cluster_name}'; kops delete instancegroup bastions --yes"
   }
   depends_on = ["null_resource.validate_k8s"]
 }
@@ -33,21 +33,33 @@ resource "null_resource" "k8s-rbac" {
 #Install the alb ingress controller in Kubernetes
 resource "null_resource" "init_ingress_nginx" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../k8s/init_ingress_nginx.yaml"
+    command = "kubectl apply -f ../k8s/ingress-nginx/mandatory.yaml"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete -f ../k8s/ingress-nginx/mandatory.yaml"
   }
   depends_on = ["null_resource.k8s-rbac"]
 }
 
 resource "null_resource" "service_ingress_nginx" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../k8s/service_ingress_nginx.yaml"
+    command = "kubectl apply -f ../k8s/ingress-nginx/service.yaml"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete -f ../k8s/ingress-nginx/service.yaml"
   }
   depends_on = ["null_resource.init_ingress_nginx"]
 }
 
 resource "null_resource" "configmap_ingress_nginx" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../k8s/configmap_ingress_nginx.yaml"
+    command = "kubectl apply -f ../k8s/ingress-nginx/patch-configmap.yaml"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete -f ../k8s/ingress-nginx/patch-configmap.yaml"
   }
   depends_on = ["null_resource.service_ingress_nginx"]
 }
@@ -172,52 +184,6 @@ resource "null_resource" "trainer" {
   depends_on = ["null_resource.pathmind-db","null_resource.db_url_cli_secret"]
 }
 
-
-#install kubedb
-resource "null_resource" "kubedb" {
-  provisioner "local-exec" {
-    command = "sleep 30;helm install kubedb ../helm/kubedb"
-  }
-  provisioner "local-exec" {
-    when = "destroy"
-    command = "helm delete kubedb"
-  }
-  depends_on = ["null_resource.k8s-rbac"]
-}
-
-resource "null_resource" "kubedb-catalog" {
-  provisioner "local-exec" {
-    command = "sleep 120;helm install kubedb-catalog ../helm/kubedb-catalog"
-  }
-  provisioner "local-exec" {
-    when = "destroy"
-    command = "helm delete kubedb-catalog"
-  }
-  depends_on = ["null_resource.kubedb"]
-}
-
-resource "null_resource" "es-auth" {
-  provisioner "local-exec" {
-    command = "kubectl create secret generic es-auth --from-literal=ADMIN_USERNAME=admin --from-literal=ADMIN_PASSWORD=admin@secret --from-file=../k8s/efk/sg_action_groups.yml --from-file=../k8s/efk/sg_config.yml --from-file=../k8s/efk/sg_internal_users.yml --from-file=../k8s/efk/sg_roles_mapping.yml --from-file=../k8s/efk/sg_roles.yml"
-  }
-  provisioner "local-exec" {
-    when    = "destroy"
-    command = "kubectl delete secret es-auth"
-  }
-  depends_on = ["null_resource.kubedb-catalog"]
-}
-
-resource "null_resource" "es-custom-config" {
-  provisioner "local-exec" {
-    command = "kubectl create configmap es-custom-config --from-file=../k8s/efk/common-config.yml"
-  }
-  provisioner "local-exec" {
-    when    = "destroy"
-    command = "kubectl delete configmap es-custom-config"
-  }
-  depends_on = ["null_resource.es-auth"]
-}
-
 #pgadmin
 resource "null_resource" "pgadmin" {
   provisioner "local-exec" {
@@ -230,83 +196,59 @@ resource "null_resource" "pgadmin" {
   depends_on = ["aws_db_instance.rds"]
 }
 
-#elasticserach
-resource "null_resource" "es" {
+#EFK
+resource "null_resource" "efk" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../k8s/efk/elasticsearch.yaml"
+    command = "kubectl apply -f ../k8s/efk/"
   }
   provisioner "local-exec" {
     when    = "destroy"
-    command = "kubectl delete es es-kibana"
+    command = "kubectl delete -f ../k8s/efk/"
   }
-  depends_on = ["null_resource.es-custom-config"]
-}
-
-
-resource "null_resource" "kibana_configmap" {
-  provisioner "local-exec" {
-    command = "kubectl create configmap kibana-config --from-file=../k8s/efk/kibana.yml"
-  }
-  provisioner "local-exec" {
-    when    = "destroy"
-    command = "kubectl delete configmap kibana-config"
-  }
-  depends_on = ["null_resource.es-custom-config"]
-}
-
-
-resource "null_resource" "kibana" {
-  provisioner "local-exec" {
-    command = "kubectl apply -f ../k8s/efk/kibana_deployment.yml;kubectl apply -f ../k8s/efk/kibana_service.yml"
-  }
-  provisioner "local-exec" {
-    when    = "destroy"
-    command = "kubectl delete svc kibana;kubectl delete deployment kibana"
-  }
-  depends_on = ["null_resource.kibana_configmap"]
-}
-
-#fluentd
-resource "null_resource" "fluentd" {
-  provisioner "local-exec" {
-    command = "kubectl apply -f ../k8s/efk/fluentd.yml"
-  }
-#  provisioner "local-exec" {
-#    when    = "destroy"
-#    command = "kubectl delete svc kibana;kubectl delete deployment kibana"
-#  }
-  depends_on = ["null_resource.kibana"]
+  depends_on = ["null_resource.k8s-rbac"]
 }
 
 #Install Canary
 resource "null_resource" "canary" {
   provisioner "local-exec" {
-    command = "sleep 30;kubectl apply -f ../k8s/canary/"
+    command = "kubectl apply -f ../k8s/canary/"
   }
   provisioner "local-exec" {
     when = "destroy"
-    command = "kubectl delete deploy canary;kubectl delete svc canary; kubectl delete configmap nginxcan-config; kubectl delete configmap nginxcan-mainconfig"
+    command = "kubectl delete -f ../k8s/canary/"
   }
-  depends_on = ["null_resource.jenkins","null_resource.prometheus","null_resource.pathmind","null_resource.kibana","null_resource.pathmind-slot"]
+  depends_on = ["null_resource.jenkins","null_resource.prometheus","null_resource.pathmind","null_resource.efk","null_resource.pathmind-slot"]
 }
 
 #install ingress
 resource "null_resource" "ingress" {
   provisioner "local-exec" {
-    command = "sleep 30;helm install ingress ../helm/ingress"
+    command = "helm install ingress ../helm/ingress -f ../helm/ingress/values_${var.environment}"
   }
   provisioner "local-exec" {
     when = "destroy"
     command = "helm delete ingress"
   }
-  depends_on = ["null_resource.canary"]
+  depends_on = ["null_resource.cert_manager"]
 }
 
 #Install pathmind db
 resource "null_resource" "pathmind-db" {
   provisioner "local-exec" {
-    command = "sleep 30;./install_db.sh ${var.environment}-database ${var.db_s3_bucket} ${var.db_s3_file} '${var.database_password}' '${var.awsaccesskey}' '${var.awssecretaccesskey}'"
+    command = "./install_db.sh ${var.environment}-database ${var.db_s3_bucket} ${var.db_s3_file} '${var.database_password}' '${var.awsaccesskey}' '${var.awssecretaccesskey}'"
   }
   depends_on = ["aws_db_instance.rds","null_resource.k8s_bastion"]
+}
+
+#cert manager
+resource "null_resource" "cert_manager" {
+  provisioner "local-exec" {
+    command = "kubectl apply -f ../k8s/tls/cert-manager.yaml"
+  }
+  provisioner "local-exec" {
+    when = "destroy"
+    command = "kubectl delete -f ../k8s/tls/cert-manager.yaml"
+  }
+  depends_on = ["null_resource.canary"]
 }
 

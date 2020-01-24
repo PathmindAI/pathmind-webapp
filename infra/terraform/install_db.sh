@@ -17,7 +17,7 @@ tmp_dir="/tmp/"
 
 #Get RDS endpoint
 endpoint=`aws rds describe-db-instances --db-instance-identifier ${db_identifier} --query "DBInstances[*].Endpoint.Address" | jq -r '.[0]'`
-dburl="host=$endpoint port=5432 dbname=pathminddb user=pathmind password=${dbpassword}"
+dburl="--host=$endpoint --port=5432 --dbname=pathminddb --user=pathmind"
 
 ssh admin@`aws elb --output=table describe-load-balancers|grep DNSName.\*bastion|awk '{print $4}'` sudo apt-get update
 ssh admin@`aws elb --output=table describe-load-balancers|grep DNSName.\*bastion|awk '{print $4}'` sudo apt-get install postgresql -y
@@ -25,4 +25,4 @@ ssh admin@`aws elb --output=table describe-load-balancers|grep DNSName.\*bastion
 ssh admin@`aws elb --output=table describe-load-balancers|grep DNSName.\*bastion|awk '{print $4}'` aws s3 cp s3://${s3_bucket}/${s3_file} $tmp_dir
 ssh admin@`aws elb --output=table describe-load-balancers|grep DNSName.\*bastion|awk '{print $4}'` gunzip -f ${tmp_dir}/${s3_file}
 s3_file=`echo ${s3_file} | sed 's/.gz$//g'`
-ssh admin@`aws elb --output=table describe-load-balancers|grep DNSName.\*bastion|awk '{print $4}'` "psql '${dburl}' < ${tmp_dir}/${s3_file}"
+ssh admin@`aws elb --output=table describe-load-balancers|grep DNSName.\*bastion|awk '{print $4}'` "export PGPASSWORD='${dbpassword}'; pg_restore ${dburl} ${tmp_dir}/${s3_file}"

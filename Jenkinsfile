@@ -31,6 +31,7 @@ def publishDockerImage(image_name) {
     This is the main pipeline section with the stages of the CI/CD
  */
 pipeline {
+    triggers { pollSCM('* * * * *') }
 
     options {
         // Build auto timeout
@@ -90,7 +91,7 @@ pipeline {
             }
         }
 
-        ////////// Step 2 //////////
+/*        ////////// Step 2 //////////
         stage('Build Docker Images') {
 		parallel {
 			stage('Build pathmind image') {
@@ -123,7 +124,7 @@ pipeline {
 		}
             }
         }
-/*
+
         // Waif for user manual approval, or proceed automatically if DEPLOY_TO_PROD is true
         stage('Go for Production?') {
             when {

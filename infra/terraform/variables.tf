@@ -1,6 +1,8 @@
 variable "region" { default = "us-east-1"}
 variable "awsaccesskey" {}
 variable "awssecretaccesskey" {}
+variable "domain_name" {}
+variable "subdomain" {}
 variable "DB_URL" {}
 variable "DB_URL_CLI" {}
 variable "SEGMENT_KEY" {}

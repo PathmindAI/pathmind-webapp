@@ -4,39 +4,49 @@
 
 #replicaCount: 2
 
-image:
-  repository: 949221880207.dkr.ecr.us-east-1.amazonaws.com/top-web
-  tag: stable
-  pullPolicy: Always
+#image:
+#  repository: 949221880207.dkr.ecr.us-east-1.amazonaws.com/top-web
+#  tag: stable
+#  pullPolicy: Always
 
 service:
   type: NodePort
   port: 80
 
+certificate: letsencrypt-prod
+
 ingress:
   enabled: true
   annotations: 
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/affinity: cookie
     nginx.ingress.kubernetes.io/affinity-mode: persistent
     nginx.ingress.kubernetes.io/session-cookie-name: route
   hosts:
-    - host: app.danieljj.com
+    - host: app.devpathmind.com
       paths: [/:80:canary]
-    - host: ma.danieljj.com
-      paths: [/:8080:pathmind-ma]
-    - host: jenkins.danieljj.com
+    #model analyzer
+#    - host: ma.devpathmind.com
+#      paths: [/:8080:pathmind-ma]
+    - host: jenkins.devpathmind.com
       paths: [/:8080:jenkins]
-    - host: grafana.danieljj.com
+    - host: grafana.devpathmind.com
       paths: [/:80:prometheus-grafana]
-    - host: logging.danieljj.com
-      paths: [/:5601:kibana]
-    - host: pgadmin.danieljj.com
+    - host: kibana.devpathmind.com
+      paths: [/:5601:kibana-kb-http]
+    - host: pgadmin.devpathmind.com
       paths: [/:80:pgadmin]
 
-  tls: []
-    #- secretName: chart-example-tls
-    #  hosts:
-    #    - chart-example.local
+  tls: 
+    - secretName: letsencrypt-prod
+      hosts:
+        - app.devpathmind.com
+        - pgadmin.devpathmind.com
+        - grafana.devpathmind.com
+#        - ma.devpathmind.com
+        - kibana.devpathmind.com
+        - jenkins.devpathmind.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

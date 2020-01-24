@@ -61,18 +61,25 @@ spec:
       - name: fluentd
         image: fluent/fluentd-kubernetes-daemonset:v1.4.2-debian-elasticsearch-1.1
         env:
+          - name:  FLUENT_ELASTICSEARCH_SSL_VERSION
+            value: "TLSv1_2"
+          - name:  FLUENT_ELASTICSEARCH_SSL_VERIFY
+            value: "false"
           - name:  FLUENT_ELASTICSEARCH_HOST
-            value: "es-kibana.default.svc"
+            value: "es-es-http.default.svc"
           - name:  FLUENT_ELASTICSEARCH_PORT
             value: "9200"
           - name: FLUENT_ELASTICSEARCH_SCHEME
-            value: "http"
+            value: "https"
           - name: FLUENTD_SYSTEMD_CONF
             value: disable
           - name: FLUENT_ELASTICSEARCH_USER
-            value: "kibanauser"
+            value: "elastic"
           - name: FLUENT_ELASTICSEARCH_PASSWORD
-            value: "kibana@secret"
+            valueFrom:
+              secretKeyRef:
+                name: es-es-elastic-user
+                key: elastic
         resources:
           limits:
             memory: 512Mi

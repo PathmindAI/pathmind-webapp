@@ -32,5 +32,18 @@ kops create cluster \
 --target=terraform --out=modules/kubernetes \
 ${NAME}
 
+rn dns.tf >/dev/null 2>&1
+
 terraform init
+terraform apply --target=null_resource.inress --auto-approve
+
+sleep 20
+
+zone_id=`./get_elb.sh ingress default | grep zone_id | cut -f2 -d':' | sed "s/ //g"`
+elb_name=`./get_elb.sh ingress default | grep elb_name | cut -f2 -d':' | sed "s/ //g"`
+
+cp dns.template dns.tf
+sed -i "s/{{ZONE_ID}}/$zone_id/g" dns.tf
+sed -i "s/{{ELB_NAME}}/$elb_name/g" dns.tf
+
 terraform apply --auto-approve

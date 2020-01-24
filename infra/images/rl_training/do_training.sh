@@ -29,6 +29,7 @@ do
         fi
         #Upload files
         aws s3 cp --recursive ./work/PPO ${s3_url}/output/
+        aws s3 cp ./work/trial_complete ${s3_url}/output/trial_complete
         aws s3 cp ./work/trial_error ${s3_url}/output/trial_error
         aws s3 cp ./work/trial_list ${s3_url}/output/trial_list
         sleep $sleep_time
