@@ -6,6 +6,7 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
@@ -19,11 +20,11 @@ import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.JSONB;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -104,7 +105,8 @@ public class TrainingService
         return generateTempPolicy(spec, run, null);
     }
 
-    private Policy generateTempPolicy(JobSpec spec, Run run, JSONB progress) {
+    // We want to create a copy of List<RewardScore> so that the references are unique and one doesn't affect the other.
+    private Policy generateTempPolicy(JobSpec spec, Run run, List<RewardScore> scores) {
         // this is for ui filling gap until ui get a training progress from backend(rescale)
         Policy tempPolicy = new Policy();
 
@@ -117,9 +119,8 @@ public class TrainingService
         tempPolicy.setName(PolicyUtils.parsePolicyName(tempPolicy.getExternalId()));
         tempPolicy.setNotes(PolicyUtils.generateDefaultNotes(tempPolicy));
 
-        if (progress != null) {
-            tempPolicy.setProgress(progress.toString());
-        }
+        if(scores != null)
+            tempPolicy.setScores(scores);
 
         return tempPolicy;
     }
@@ -178,9 +179,12 @@ public class TrainingService
                 maxTimeInSec
         );
 
-        JSONB progress = null;
+        List<RewardScore> rewardScores = null;
         if (basePolicy != null) {
-            progress = policyDAO.getProgress(basePolicy.getId());
+            // We want to create a copy of List<RewardScore> so that the references are unique and one doesn't affect the other.
+            rewardScores = basePolicy.getScores().stream()
+                    .map(score -> new RewardScore(score.getMax(), score.getMin(), score.getMean(), score.getIteration()))
+                    .collect(Collectors.toList());
 
             String checkpointFileId = executionProviderMetaDataDAO.getCheckPointFileKey(basePolicy.getExternalId());
             if (checkpointFileId == null) {
@@ -198,6 +202,6 @@ public class TrainingService
         runDAO.markAsStarting(run.getId());
         log.info("Started " + runType + " training job with id {}", executionId);
 
-        policyDAO.insertPolicy(generateTempPolicy(spec, run, progress));
+        policyDAO.insertPolicy(generateTempPolicy(spec, run, rewardScores));
     }
 }

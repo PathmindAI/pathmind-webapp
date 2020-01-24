@@ -17,6 +17,10 @@ public class Breadcrumbs extends HorizontalLayout
 {
 	private static final String BREADCRUMB_CLASSNAME = "breadcrumb";
 
+	public Breadcrumbs() {
+		this(null, null, null);
+	}
+
 	public Breadcrumbs(Project project) {
 		this(project, null, null);
 	}
@@ -29,26 +33,17 @@ public class Breadcrumbs extends HorizontalLayout
 		RouterLink projectsPageLink = createBreadcrumb("Projects", ProjectsView.class, null);
 		add(projectsPageLink);
 
-		Span arrow1 = new Span(">");
-		add(arrow1);
-
-		RouterLink projectPageLink = createBreadcrumb(project.getName(), ModelsView.class, project.getId());
-		add(projectPageLink);
-
-		if (model != null) {
-			Span arrow2 = new Span(">");
-			add(arrow2);
-
-			RouterLink modelPageLink = createBreadcrumb("Model #" + model.getName(), ExperimentsView.class, model.getId());
-			add(modelPageLink);
+		if (project != null) {
+			add(createSeparator());	
+			add(createBreadcrumb(project.getName(), ModelsView.class, project.getId()));
 		}
-
+		if (model != null) {
+			add(createSeparator());
+			add(createBreadcrumb("Model #" + model.getName(), ExperimentsView.class, model.getId()));
+		}
 		if (experiment != null) {
-			Span arrow3 = new Span(">");
-			add(arrow3);
-
-			RouterLink experimentPageLink = createBreadcrumbExperiment("Experiment #" + experiment.getName(), ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
-			add(experimentPageLink);
+			add(createSeparator());
+			add(createBreadcrumbExperiment("Experiment #" + experiment.getName(), ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment)));
 		}
 
 		setSpacing(false);
@@ -65,5 +60,9 @@ public class Breadcrumbs extends HorizontalLayout
 		RouterLink breadcrumb = new RouterLink(name, navigationTarget, pageParameter);
 		breadcrumb.addClassName(BREADCRUMB_CLASSNAME);
 		return breadcrumb;
+	}
+
+	private Span createSeparator() {
+		return new Span(">");
 	}
 }
