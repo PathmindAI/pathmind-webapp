@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -34,7 +34,6 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -45,6 +44,7 @@ import io.skymind.pathmind.ui.views.experiment.components.PolicyChartPanel;
 import io.skymind.pathmind.ui.views.experiment.components.PolicyHighlightPanel;
 import io.skymind.pathmind.ui.views.experiment.components.PolicyStatusDetailsPanel;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
+import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
 
 @CssImport("./styles/styles.css")
@@ -116,7 +116,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private Component getLeftPanel() {
 		policyChartPanel = new PolicyChartPanel();
 		policyChartPanel.addSeriesClickListener(policyId -> {
-			policy = experiment.getPolicies().stream().filter(p -> Long.toString(policy.getId()).equals(policyId)).findFirst().get();
+			policy = experiment.getPolicies().stream().filter(p -> Long.toString(p.getId()).equals(policyId)).findFirst().get();
 			processSelectedPolicy(policy);
 		});
 
@@ -140,17 +140,21 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		runFullTraining.setVisible(false);
 		runFullTraining.addClassNames("large-image-btn", "run");
 
-		final HorizontalLayout buttons = WrapperUtils.wrapWidthFullCenterHorizontal(
-				new NewExperimentButton(experimentDAO, experiment.getModelId(), "TODO")
-		);
+		Button editRewardFunctionButton = new Button("Edit Reward Function");
+		editRewardFunctionButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		editRewardFunctionButton.addClassName("half-width");
+		editRewardFunctionButton.addClickListener(evt -> 
+			ExperimentViewNavigationUtils.createAndNavigateToNewExperiment(UI.getCurrent(), experimentDAO, experiment.getModelId(), experiment.getRewardFunction()));
+		
 		exportPolicyButton = new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()));
-		buttons.add(exportPolicyButton);
-		exportPolicyButton.setVisible(false);
+		exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		exportPolicyButton.addClassName("half-width");
+		exportPolicyButton.setEnabled(false);
 
 		return WrapperUtils.wrapSizeFullVertical(
 				WrapperUtils.wrapWidthFullCenterHorizontal(runFullTraining),
 				policyHighlightPanel,
-				buttons,
+				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton, editRewardFunctionButton),
 				policyStatusDetailsPanel,
 				rewardFunctionEditor);
 	}
@@ -229,10 +233,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		// to avoid multiple download policy file from rescale server,
 		// we put the "saving" for temporary
 		// policy dao will check if there's real policy file exist or not
-		exportPolicyButton.setVisible(policyDAO.hasPolicyFile(selectedPolicy.getId()));
+		exportPolicyButton.setEnabled(policyDAO.hasPolicyFile(selectedPolicy.getId()));
 
 		RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
-		boolean canStartFurtherRuns = PolicyUtils.getRunStatus(selectedPolicy) != RunStatus.Error;
+		boolean canStartFurtherRuns = PolicyUtils.getRunStatus(selectedPolicy) == RunStatus.Completed;
 		if (selectedRunType == RunType.DiscoveryRun) {
 			runFullTraining.setVisible(true);
 			runFullTraining.setEnabled(canStartFurtherRuns);

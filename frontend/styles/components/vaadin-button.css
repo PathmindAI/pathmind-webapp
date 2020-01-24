@@ -64,6 +64,11 @@
   opacity: 0;
 }
 
+:host(.half-width) {
+  min-width: unset;
+  width: 50%;
+}
+
 /* This is to override all Vaadin-Button on the webapp */
 :host {
   cursor: pointer;
