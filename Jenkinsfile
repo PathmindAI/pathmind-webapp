@@ -70,8 +70,9 @@ pipeline {
         ////////// Step 1 //////////
         stage('Git clone and setup') {
             when {
-                allOf {
+                anyOf {
                     environment name: 'GIT_BRANCH', value: 'aws-integration'
+                    environment name: 'GIT_BRANCH', value: 'test'
                 }
             }
             steps {
