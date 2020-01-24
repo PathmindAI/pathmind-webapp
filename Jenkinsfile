@@ -45,12 +45,12 @@ pipeline {
 	if(env.BRANCH_NAME == 'master'){
         	DOCKER_TAG = "prod"
 	}
-	if(env.BRANCH_NAME == 'dev'){
+	/*if(env.BRANCH_NAME == 'dev'){
         	DOCKER_TAG = "dev"
 	}
 	if(env.BRANCH_NAME == 'test'){
         	DOCKER_TAG = "test"
-	}
+	}*/
         DOCKER_REG = "839270835622.dkr.ecr.us-east-1.amazonaws.com"
 	DEPLOY_PROD = false
     }
