@@ -37,7 +37,6 @@ pipeline {
         // Build auto timeout
         timeout(time: 60, unit: 'MINUTES')
     }
-
     // Some global default variables
     environment {
         IMAGE_NAME = 'pathmind'
