@@ -81,6 +81,7 @@ pipeline {
 		                DOCKER_TAG = "test"
 		        }
 		}
+		echo DOCKER_TAG
                 echo "Check out code"
 		checkout scm
 
