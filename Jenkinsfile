@@ -19,7 +19,7 @@ def buildDockerImage(image_name, image_id) {
 /*
     Publish a docker image
 */
-def publishDockerImage(image_name) {
+def publishDockerImage(image_name,DOCKER_TAG) {
 	echo "Logging to aws ecr"
 	sh "aws ecr get-login --no-include-email --region us-east-1 | sh"
 	echo "Tagging and pushing the pathmind Docker Image"                
@@ -115,6 +115,7 @@ pipeline {
 		parallel {
 			stage('Build pathmind image') {
 				steps {
+					echo ${DOCKER_TAG}
 					buildDockerImage("${IMAGE_NAME}","${API_ID}")
 				}
 			}
@@ -134,7 +135,7 @@ pipeline {
 		parallel {
 			stage('Publish pathmind image') {
 				steps {
-					publishDockerImage("${IMAGE_NAME}")
+					publishDockerImage("${IMAGE_NAME}","${DOCKER_TAG}")
 				}
 			}
 		}
