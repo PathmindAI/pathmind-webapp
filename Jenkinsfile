@@ -204,6 +204,6 @@ pipeline {
 		//sh "python ${WORKSPACE}/src/jenkins/tests/web_prod.py"
             }
         } 
-   }
+   }*/
 }
 
