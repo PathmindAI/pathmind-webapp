@@ -81,7 +81,6 @@ pipeline {
 		                DOCKER_TAG = "test"
 		        }
 		}
-		echo DOCKER_TAG
                 echo "Check out code"
 		checkout scm
 
@@ -103,7 +102,7 @@ pipeline {
             }
         }
 
-/*        ////////// Step 2 //////////
+        ////////// Step 2 //////////
         stage('Build Docker Images') {
             when {
                 anyOf {
@@ -207,7 +206,7 @@ pipeline {
 		echo "Testing in Production"
 		//sh "python ${WORKSPACE}/src/jenkins/tests/web_prod.py"
             }
-        }  */
+        } 
    }
 }
 
