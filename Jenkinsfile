@@ -32,9 +32,12 @@ def publishDockerImage(image_name) {
  */
 pipeline {
     triggers { pollSCM('* * * * *') }
-if (env.BRANCH_NAME != 'test'){
-   currentBuild.result = 'SUCCESS'
-   return
+
+script {
+	if (env.BRANCH_NAME != 'test'){
+		currentBuild.result = 'SUCCESS'
+		return
+	}
 }
 
     options {
