@@ -7,7 +7,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -21,6 +23,9 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.WildcardParameter;
 
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
@@ -38,6 +43,7 @@ import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.PolicyChartPanel;
@@ -49,7 +55,7 @@ import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
-public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<String> {
+public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<String>, PolicyUpdateSubscriber {
 	private Button exportPolicyButton;
 
 	private static final int EXPERIMENT_ID_SEGMENT = 0;
@@ -86,6 +92,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	public ExperimentView() {
 		super();
 		addClassName("experiment-view");
+	}
+	
+	@Override
+	protected void onDetach(DetachEvent event) {
+		EventBus.unsubscribe(this);
+	}
+
+	@Override
+	protected void onAttach(AttachEvent event) {
+		EventBus.subscribe(this);
 	}
 
 	@Override
@@ -244,6 +260,38 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			runFullTraining.setVisible(false);
 		}
 		
+	}
+	private void addOrUpdatePolicy(Policy updatedPolicy) {
+		experiment.getPolicies().stream()
+        .filter(policy -> policy.getId() == updatedPolicy.getId())
+        .findAny()
+        .ifPresentOrElse(
+                policy -> {
+                    experiment.getPolicies().set(experiment.getPolicies().indexOf(policy), updatedPolicy);
+                },
+                () -> {
+                    experiment.getPolicies().add(updatedPolicy);
+                });
+	}
+
+	@Override
+	public void handleBusEvent(PolicyUpdateBusEvent event) {
+		// Update or insert the policy in experiment.getPolicies
+		addOrUpdatePolicy(event.getPolicy());
+		// Calculate the best policy again
+		Policy bestPolicy = selectBestPolicy(experiment.getPolicies());
+		
+		// Refresh other components, existing best policy is updated or we have a new best policy 
+		if (policy.equals(event.getPolicy()) || !policy.equals(bestPolicy)) {
+			policy = bestPolicy;
+			PushUtils.push(this, () -> processSelectedPolicy(bestPolicy));
+		}
+	}
+	
+
+	@Override
+	public boolean filterBusEvent(PolicyUpdateBusEvent event) {
+		return experiment.getId() == event.getPolicy().getExperiment().getId();
 	}
 	
 	
