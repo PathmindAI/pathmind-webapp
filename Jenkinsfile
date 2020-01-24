@@ -26,6 +26,7 @@ def publishDockerImage(image_name) {
 	sh "docker push ${DOCKER_REG}/${image_name}"
 }
 
+def DOCKER_TAG
 
 /*
     This is the main pipeline section with the stages of the CI/CD
@@ -41,17 +42,6 @@ pipeline {
     // Some global default variables
     environment {
         IMAGE_NAME = 'pathmind'
-        DOCKER_TAG = 'test'
-	echo env.BRANCH_NAME
-	/*if(env.BRANCH_NAME == 'master'){
-        	DOCKER_TAG = "prod"
-	}
-	if(env.BRANCH_NAME == 'dev'){
-        	DOCKER_TAG = "dev"
-	}
-	if(env.BRANCH_NAME == 'test'){
-        	DOCKER_TAG = "test"
-	}*/
         DOCKER_REG = "839270835622.dkr.ecr.us-east-1.amazonaws.com"
 	DEPLOY_PROD = false
     }
@@ -79,6 +69,18 @@ pipeline {
                 }
             }
             steps {
+		script {
+        		DOCKER_TAG = 'test'
+		        if(env.BRANCH_NAME == 'master'){
+		                DOCKER_TAG = "prod"
+		        }
+		        if(env.BRANCH_NAME == 'dev'){
+		                DOCKER_TAG = "dev"
+		        }
+		        if(env.BRANCH_NAME == 'test'){
+		                DOCKER_TAG = "test"
+		        }
+		}
                 echo "Check out code"
 		checkout scm
 
