@@ -115,7 +115,6 @@ pipeline {
 		parallel {
 			stage('Build pathmind image') {
 				steps {
-					echo ${DOCKER_TAG}
 					buildDockerImage("${IMAGE_NAME}","${API_ID}")
 				}
 			}
