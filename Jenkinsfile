@@ -33,13 +33,6 @@ def publishDockerImage(image_name) {
 pipeline {
     triggers { pollSCM('* * * * *') }
 
-script {
-	if (env.BRANCH_NAME != 'test'){
-		currentBuild.result = 'SUCCESS'
-		return
-	}
-}
-
     options {
         // Build auto timeout
         timeout(time: 60, unit: 'MINUTES')
@@ -73,6 +66,13 @@ script {
 
     // Pipeline stages
     stages {
+
+script {
+	if (env.BRANCH_NAME != 'test'){
+		currentBuild.result = 'SUCCESS'
+		return
+	}
+}
 
         ////////// Step 1 //////////
         stage('Git clone and setup') {
