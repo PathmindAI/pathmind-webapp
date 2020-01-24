@@ -42,6 +42,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'pathmind'
         DOCKER_TAG = 'test'
+	echo env.BRANCH_NAME
 	/*if(env.BRANCH_NAME == 'master'){
         	DOCKER_TAG = "prod"
 	}
@@ -71,7 +72,7 @@ pipeline {
         stage('Git clone and setup') {
             when {
                 anyOf {
-                    environment name: 'GIT_BRANCH', value: 'aws-integration1'
+                    environment name: 'GIT_BRANCH', value: 'aws-integration'
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
                     environment name: 'GIT_BRANCH', value: 'prod'
