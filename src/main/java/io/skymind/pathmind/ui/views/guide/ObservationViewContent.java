@@ -16,11 +16,11 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.security.CurrentUser;
 
-@Tag("install-pathmind-helper-view-content")
-@JsModule("./src/guide/install-pathmind-helper-view-content.js")
+@Tag("observation-view-content")
+@JsModule("./src/guide/observation-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class InstallPathmindHelperViewContent extends PolymerTemplate<InstallPathmindHelperViewContent.Model> {
+public class ObservationViewContent extends PolymerTemplate<ObservationViewContent.Model> {
 
     @Id("backBtn")
     private Button backBtn;
@@ -29,7 +29,7 @@ public class InstallPathmindHelperViewContent extends PolymerTemplate<InstallPat
     private Button nextBtn;
 
     @Autowired
-    public InstallPathmindHelperViewContent(CurrentUser currentUser) {
+    public ObservationViewContent(CurrentUser currentUser) {
     }
 
     @PostConstruct

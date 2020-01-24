@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
 import io.skymind.pathmind.security.Routes;
@@ -37,7 +36,6 @@ public class InstallPathmindHelperView extends PathMindDefaultView {
 
     @Override
     protected Component getMainContent() {
-        Div testDiv = new Div();
         HorizontalLayout gridWrapper = WrapperUtils.wrapWidthFullBetweenHorizontal(
 			guideMenu, pageContent
         );

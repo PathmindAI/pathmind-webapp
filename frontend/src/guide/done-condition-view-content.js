@@ -4,10 +4,9 @@ import "@vaadin/vaadin-button/src/vaadin-button.js";
 class DoneConditionViewContent extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles pathmind-dialog-view guide-view"></style>
+      <style include="pathmind-dialog-view guide-view"></style>
       <div class="content">
         <h1>Define "Done" Condition</h1>
-        <div class="spacing"></div>
         <p>
           <b>isDone</b> sets the length of your simulation. In reinforcement
           learning terminology, the length of your simulation is also known as
@@ -34,8 +33,8 @@ class DoneConditionViewContent extends PolymerElement {
         <vaadin-button id="nextBtn" theme="secondary">
           Install Pathmind Helper
         </vaadin-button>
-        <vaadin-button id="skipToUploadModelBtn" theme="tertiary">
-          Skip to Upload Model
+        <vaadin-button id="backBtn" theme="tertiary">
+          Back to Triggering Actions
         </vaadin-button>
       </div>
     `;

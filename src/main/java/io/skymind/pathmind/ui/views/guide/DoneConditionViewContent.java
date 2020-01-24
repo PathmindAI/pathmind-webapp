@@ -22,8 +22,8 @@ import io.skymind.pathmind.security.CurrentUser;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class DoneConditionViewContent extends PolymerTemplate<DoneConditionViewContent.Model> {
 
-    @Id("skipToUploadModelBtn")
-    private Button skipToUploadModelBtn;
+    @Id("backBtn")
+    private Button backBtn;
 
     @Id("nextBtn")
     private Button nextBtn;

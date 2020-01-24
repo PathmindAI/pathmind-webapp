@@ -39,7 +39,7 @@ class GuideMenu extends PolymerElement {
           height: 11px;
           top: 50%;
           left: -15px;
-          background-image: url("/frontend/icons/checkmark.svg");
+          background-image: url("/frontend/icons/checkmark_green.svg");
           background-size: cover;
           transform: translateY(-50%);
         }
@@ -71,8 +71,8 @@ class GuideMenu extends PolymerElement {
         value() {
           return [
             {
-              name: "Key Concept of Pathmind",
-              path: "guide/key-concept",
+              name: "Overview",
+              path: "guide",
               state: "completed"
             },
             {
@@ -82,27 +82,32 @@ class GuideMenu extends PolymerElement {
             },
             {
               name: "Build Observation Space",
-              path: "",
+              path: "guide/observation",
               state: "todo"
             },
             {
               name: "Build Action Space",
-              path: "",
+              path: "guide/action-space",
               state: "todo"
             },
             {
-              name: "Trigger Actions",
-              path: "",
+              name: "Triggering Actions",
+              path: "guide/trigger-actions",
               state: "todo"
             },
             {
               name: 'Define "Done" Condition',
-              path: "",
+              path: "guide/done-condition",
               state: "todo"
             },
             {
               name: "Define Reward Variables",
-              path: "",
+              path: "guide/reward",
+              state: "todo"
+            },
+            {
+              name: "Conclusion / Re-cap",
+              path: "guide/recap",
               state: "todo"
             }
           ];

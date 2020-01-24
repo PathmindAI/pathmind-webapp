@@ -4,7 +4,7 @@ import "@vaadin/vaadin-button/src/vaadin-button.js";
 class InstallPathmindHelperViewContent extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles pathmind-dialog-view guide-view"></style>
+      <style include="pathmind-dialog-view guide-view"></style>
       <div class="content">
         <div class="logo-wrapper">
           <img
@@ -13,7 +13,6 @@ class InstallPathmindHelperViewContent extends PolymerElement {
           />
         </div>
         <h1>Install Pathmind Helper</h1>
-        <div class="spacing"></div>
         <p>
           The Pathmind Helper is an
           <a href="[[arrayItem(links.*, 0, 'url')]]" target="_blank"
@@ -154,8 +153,8 @@ class InstallPathmindHelperViewContent extends PolymerElement {
         <vaadin-button id="nextBtn" theme="secondary">
           Install Pathmind Helper
         </vaadin-button>
-        <vaadin-button id="skipToUploadModelBtn" theme="tertiary">
-          Skip to Upload Model
+        <vaadin-button id="backBtn" theme="tertiary">
+          Back to Overview
         </vaadin-button>
       </div>
     `;

@@ -16,26 +16,26 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.security.CurrentUser;
 
-@Tag("install-pathmind-helper-view-content")
-@JsModule("./src/guide/install-pathmind-helper-view-content.js")
+@Tag("reward-view-content")
+@JsModule("./src/guide/reward-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class InstallPathmindHelperViewContent extends PolymerTemplate<InstallPathmindHelperViewContent.Model> {
+public class RewardViewContent extends PolymerTemplate<RewardViewContent.Model> {
 
-    @Id("backBtn")
-    private Button backBtn;
+	@Id("backBtn")
+	private Button backBtn;
 
-    @Id("nextBtn")
-    private Button nextBtn;
+	@Id("nextBtn")
+	private Button nextBtn;
 
-    @Autowired
-    public InstallPathmindHelperViewContent(CurrentUser currentUser) {
-    }
+	@Autowired
+	public RewardViewContent(CurrentUser currentUser) {
+	}
 
-    @PostConstruct
-    private void init() {
-    }
+	@PostConstruct
+	private void init() {
+	}
 
-    public interface Model extends TemplateModel {
-    }
+	public interface Model extends TemplateModel {
+	}
 }

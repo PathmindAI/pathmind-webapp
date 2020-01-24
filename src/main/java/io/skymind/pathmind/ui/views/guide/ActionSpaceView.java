@@ -12,14 +12,14 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 
-@Route(value = Routes.GUIDE_DONE_URL, layout = MainLayout.class)
-public class DoneConditionView extends PathMindDefaultView {
+@Route(value = Routes.GUIDE_ACTION_SPACE_URL, layout = MainLayout.class)
+public class ActionSpaceView extends PathMindDefaultView {
 
      private final GuideMenu guideMenu;
-     private final DoneConditionViewContent pageContent;
+     private final ActionSpaceViewContent pageContent;
 
     @Autowired
-    public DoneConditionView(GuideMenu guideMenu, DoneConditionViewContent pageContent) {
+    public ActionSpaceView(GuideMenu guideMenu, ActionSpaceViewContent pageContent) {
         this.guideMenu = guideMenu;
         this.pageContent = pageContent;
     }
@@ -31,7 +31,7 @@ public class DoneConditionView extends PathMindDefaultView {
 
     @Override
     protected Component getTitlePanel() {
-        return new ScreenTitlePanel("PATHMIND GUIDE", "Define \"Done\" Condition");
+        return new ScreenTitlePanel("PATHMIND GUIDE", "Build Action Space");
     }
 
     @Override

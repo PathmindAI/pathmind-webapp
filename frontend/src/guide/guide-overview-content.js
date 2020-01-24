@@ -4,39 +4,7 @@ import "@vaadin/vaadin-button/src/vaadin-button.js";
 class GuideOverviewContent extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles pathmind-dialog-view">
-        :host {
-          height: auto;
-          background-color: white;
-          flex-grow: 1;
-        }
-        h1 {
-          line-height: 1.3em;
-          margin: 0;
-        }
-        p {
-          width: 100%;
-          line-height: 1.3em;
-          margin: 0 0 1em;
-        }
-        p:first-of-type {
-          margin-top: 1em;
-        }
-        p:last-of-type {
-          margin-bottom: 0;
-        }
-        .content {
-          max-width: 700px;
-          padding: 60px 0 0 0;
-          margin-top: 0;
-        }
-        vaadin-button {
-          margin: 0 auto var(--lumo-space-xl);
-        }
-        vaadin-button:first-of-type {
-          margin-top: 80px;
-        }
-      </style>
+      <style include="pathmind-dialog-view guide-view"></style>
       <div class="content">
         <h1>Guide to preparing your simulation for Pathmind</h1>
         <p>
