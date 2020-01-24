@@ -67,15 +67,13 @@ pipeline {
     // Pipeline stages
     stages {
 
-script {
-	if (env.BRANCH_NAME != 'test'){
-		currentBuild.result = 'SUCCESS'
-		return
-	}
-}
-
         ////////// Step 1 //////////
         stage('Git clone and setup') {
+            when {
+                allOf {
+                    environment name: 'GIT_BRANCH', value: 'test'
+                }
+            }
             steps {
                 echo "Check out code"
 		checkout scm
