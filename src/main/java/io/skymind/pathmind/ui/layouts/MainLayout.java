@@ -44,7 +44,11 @@ public class MainLayout extends AppLayout implements PageConfigurator
 	public MainLayout(CurrentUser user)
 	{
 		setId("pathmind-app-layout");
-		addToNavbar(new SectionsHeaderPanel(), new AccountHeaderPanel(user.getUser()));
+		boolean hasLoginUser = user != null && user.getUser() != null;
+		addToNavbar(new SectionsHeaderPanel(hasLoginUser));
+		if (hasLoginUser) {
+			addToNavbar(new AccountHeaderPanel(user.getUser()));
+		}
 
 		// Added a message just in case there's ever a failure.
 		setContent(new Span("Error. Please contact Skymind for assistance"));
