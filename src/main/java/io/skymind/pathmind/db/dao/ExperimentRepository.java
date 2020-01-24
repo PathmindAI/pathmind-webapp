@@ -182,8 +182,11 @@ class ExperimentRepository
 		final Field<LocalDateTime> itemLastActivityDate = DSL.greatest(EXPERIMENT.LAST_ACTIVITY_DATE, MODEL.LAST_ACTIVITY_DATE,
 				PROJECT.LAST_ACTIVITY_DATE);
 
-		final Result<?> result = ctx.select(EXPERIMENT.asterisk(), MODEL.asterisk(), PROJECT.asterisk(),
-				latestRun.asterisk(), itemLastActivityDate.as("ITEM_LAST_ACTIVITY_DATE"),
+		final Result<?> result = ctx.select(EXPERIMENT.asterisk(),
+				MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.LAST_ACTIVITY_DATE, MODEL.DATE_CREATED, MODEL.ARCHIVED,
+				PROJECT.asterisk(),
+				latestRun.asterisk(),
+				itemLastActivityDate.as("ITEM_LAST_ACTIVITY_DATE"),
 				policyForLatestRun.asterisk())
 				.from(EXPERIMENT)
 					.rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
