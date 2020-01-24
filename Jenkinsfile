@@ -71,7 +71,7 @@ pipeline {
         stage('Git clone and setup') {
             when {
                 anyOf {
-                    environment name: 'GIT_BRANCH', value: 'aws-integration'
+                    environment name: 'GIT_BRANCH', value: 'aws-integration1'
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
                     environment name: 'GIT_BRANCH', value: 'prod'
@@ -99,7 +99,7 @@ pipeline {
             }
         }
 
-        ////////// Step 2 //////////
+/*        ////////// Step 2 //////////
         stage('Build Docker Images') {
             when {
                 anyOf {
