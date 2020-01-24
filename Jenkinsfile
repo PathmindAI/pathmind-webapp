@@ -42,7 +42,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'pathmind'
         DOCKER_TAG = 'test'
-	/*if(env.BRANCH_NAME == 'master'){
+	if(env.BRANCH_NAME == 'master'){
         	DOCKER_TAG = "prod"
 	}
 	if(env.BRANCH_NAME == 'dev'){
@@ -50,7 +50,7 @@ pipeline {
 	}
 	if(env.BRANCH_NAME == 'test'){
         	DOCKER_TAG = "test"
-	}*/
+	}
         DOCKER_REG = "839270835622.dkr.ecr.us-east-1.amazonaws.com"
 	DEPLOY_PROD = false
     }
@@ -72,7 +72,9 @@ pipeline {
             when {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'aws-integration'
+                    environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
             steps {
@@ -97,8 +99,16 @@ pipeline {
             }
         }
 
-/*        ////////// Step 2 //////////
+        ////////// Step 2 //////////
         stage('Build Docker Images') {
+            when {
+                anyOf {
+                    environment name: 'GIT_BRANCH', value: 'aws-integration'
+                    environment name: 'GIT_BRANCH', value: 'dev'
+                    environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'prod'
+                }
+            }
 		parallel {
 			stage('Build pathmind image') {
 				steps {
@@ -110,6 +120,14 @@ pipeline {
 
 	////////// Step 3 //////////
         stage('Publish Docker Images') {
+            when {
+                anyOf {
+                    environment name: 'GIT_BRANCH', value: 'aws-integration'
+                    environment name: 'GIT_BRANCH', value: 'dev'
+                    environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'prod'
+                }
+            }
 		parallel {
 			stage('Publish pathmind image') {
 				steps {
@@ -121,12 +139,17 @@ pipeline {
 
 	////////// Step 4 //////////
 	stage('Deploying helm chart') {
+            when {
+                anyOf {
+                    environment name: 'GIT_BRANCH', value: 'aws-integration'
+                    environment name: 'GIT_BRANCH', value: 'dev'
+                    environment name: 'GIT_BRANCH', value: 'test'
+                }
+            }
             steps {
 		script {
-			//if (${DOCKER_TAG} == 'dev' || ${DOCKER_TAG} == 'test')  {
 				echo "Updating helm chart"
 				sh "helm upgrade --install pathmind ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}.yaml"
-			//}
 		}
             }
         }
@@ -164,7 +187,8 @@ pipeline {
 		script {
                 	DEPLOY_PROD = true
 			echo "Updating helm charts"
-			//sh "helm upgrade --install pathmind ${WORKSPACE}/helm/pathmind -f ${WORKSPACE}/helm/pathmind/values_${DOCKER_TAG}.yaml"
+			echo "Updating helm chart"
+			sh "helm upgrade --install pathmind ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}.yaml"
 			sh "sleep 30"
 		}
             }
@@ -179,7 +203,7 @@ pipeline {
 		echo "Testing in Production"
 		//sh "python ${WORKSPACE}/src/jenkins/tests/web_prod.py"
             }
-        } */
+        } 
    }
 }
 
