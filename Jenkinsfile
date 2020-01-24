@@ -1,3 +1,4 @@
+def DOCKER_TAG
 /*
     pathmind-webapp pipeline
     The pipeline is made up of following steps
@@ -21,12 +22,11 @@ def buildDockerImage(image_name, image_id) {
 def publishDockerImage(image_name) {
 	echo "Logging to aws ecr"
 	sh "aws ecr get-login --no-include-email --region us-east-1 | sh"
-	echo "Tagging and pushing the Web Docker Image"                
+	echo "Tagging and pushing the pathmind Docker Image"                
 	sh "docker tag ${image_name} ${DOCKER_REG}/${image_name}:${DOCKER_TAG}"
 	sh "docker push ${DOCKER_REG}/${image_name}"
 }
 
-def DOCKER_TAG
 
 /*
     This is the main pipeline section with the stages of the CI/CD
