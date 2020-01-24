@@ -151,7 +151,7 @@ class InstallPathmindHelperViewContent extends PolymerElement {
           >
         </p>
         <vaadin-button id="nextBtn" theme="secondary">
-          Install Pathmind Helper
+          Pathmind Helper Installed
         </vaadin-button>
         <vaadin-button id="backBtn" theme="tertiary">
           Back to Overview

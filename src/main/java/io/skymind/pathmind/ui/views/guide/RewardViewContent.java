@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -34,7 +35,13 @@ public class RewardViewContent extends PolymerTemplate<RewardViewContent.Model> 
 
 	@PostConstruct
 	private void init() {
+		initBtns();
 	}
+
+	private void initBtns() {
+		backBtn.addClickListener(e -> UI.getCurrent().navigate(DoneConditionView.class));
+		nextBtn.addClickListener(e -> UI.getCurrent().navigate(RecapView.class));
+    }
 
 	public interface Model extends TemplateModel {
 	}

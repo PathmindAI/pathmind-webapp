@@ -51,7 +51,9 @@ class GuideMenu extends PolymerElement {
       <div class="content">
         <dom-repeat items="[[checklist]]">
           <template>
-            <a class$="{{item.state}}" href$="{{item.path}}">{{item.name}}</a>
+            <a router-link class$="{{item.state}}" href$="{{item.path}}"
+              >{{item.name}}</a
+            >
           </template>
         </dom-repeat>
         <vaadin-button id="skipToUploadModelBtn" theme="tertiary-inline">

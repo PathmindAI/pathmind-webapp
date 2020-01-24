@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -32,10 +33,16 @@ public class InstallPathmindHelperViewContent extends PolymerTemplate<InstallPat
     public InstallPathmindHelperViewContent(CurrentUser currentUser) {
     }
 
-    @PostConstruct
-    private void init() {
+	@PostConstruct
+	private void init() {
+		initBtns();
+	}
+
+	private void initBtns() {
+		backBtn.addClickListener(e -> UI.getCurrent().navigate(GuideOverview.class));
+		nextBtn.addClickListener(e -> UI.getCurrent().navigate(ObservationView.class));
     }
 
-    public interface Model extends TemplateModel {
-    }
+	public interface Model extends TemplateModel {
+	}
 }

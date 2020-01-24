@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -15,6 +16,7 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.security.CurrentUser;
+import io.skymind.pathmind.ui.views.model.UploadModelView;
 
 @Tag("recap-view-content")
 @JsModule("./src/guide/recap-view-content.js")
@@ -34,6 +36,15 @@ public class RecapViewContent extends PolymerTemplate<RecapViewContent.Model> {
 
 	@PostConstruct
 	private void init() {
+		initBtns();
+	}
+
+	private void initBtns() {
+		// Fake project
+		long projectId = 3;
+
+		backBtn.addClickListener(e -> UI.getCurrent().navigate(RewardView.class));
+		nextBtn.addClickListener(e -> UI.getCurrent().navigate(UploadModelView.class, projectId));
 	}
 
 	public interface Model extends TemplateModel {

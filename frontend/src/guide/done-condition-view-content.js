@@ -31,7 +31,7 @@ class DoneConditionViewContent extends PolymerElement {
           your episode length.
         </p>
         <vaadin-button id="nextBtn" theme="secondary">
-          Install Pathmind Helper
+          “Done” Condition Defined
         </vaadin-button>
         <vaadin-button id="backBtn" theme="tertiary">
           Back to Triggering Actions
