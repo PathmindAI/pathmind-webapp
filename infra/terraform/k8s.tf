@@ -125,7 +125,7 @@ resource "null_resource" "segment_key_secret" {
 #install jenkins
 resource "null_resource" "jenkins" {
   provisioner "local-exec" {
-    command = "helm install jenkins ../helm/jenkins"
+    command = "helm install jenkins ../helm/jenkins -f ../helm/jenkins/values_${var.environment}.yaml"
   }
   provisioner "local-exec" {
     when = "destroy"

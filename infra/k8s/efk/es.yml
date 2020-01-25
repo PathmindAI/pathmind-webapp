@@ -6,9 +6,19 @@ spec:
   version: 7.5.2
   nodeSets:
   - name: default
-    count: 1
+    count: 3
     config:
       node.master: true
       node.data: true
       node.ingest: true
       node.store.allow_mmap: false
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: gp2

@@ -91,13 +91,13 @@ pipeline {
                 sh "helm version"
 
 		//clean docker
-		sh "docker system prune -a -f"
+		//sh "docker system prune -a -f"
 
                 // Define a unique name for the tests container and helm release
                 script {
                     branch = GIT_BRANCH.replaceAll('/', '-').replaceAll('\\*', '-')
-                    API_ID = "${IMAGE_NAME}-${DOCKER_TAG}-${branch}"
-                    echo "Global pathmind Id set to ${API_ID}"
+                    PATHMIND_ID = "${IMAGE_NAME}-${DOCKER_TAG}-${branch}"
+                    echo "Global pathmind Id set to ${PATHMIND_ID}"
                 }
             }
         }
@@ -115,7 +115,7 @@ pipeline {
 		parallel {
 			stage('Build pathmind image') {
 				steps {
-					buildDockerImage("${IMAGE_NAME}","${API_ID}")
+					buildDockerImage("${IMAGE_NAME}","${PATHMIND_ID}")
 				}
 			}
 		}

@@ -18,6 +18,10 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+env:
+  S3BUCKET: test-training-static-files.pathmind.com
+
+
 service:
   type: NodePort
   port: 8080

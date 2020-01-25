@@ -37,6 +37,8 @@ spec:
               value: password
             - name: DOCKER_HOST
               value: tcp://localhost:2375
+            - name: S3BUCKET
+              value: {{ .Values.env.S3BUCKET }}
             - name: AWS_DEFAULT_REGION
               value: "us-east-1"
             - name: AWS_ACCESS_KEY_ID
