@@ -19,6 +19,7 @@ import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.services.analytics.SegmentTrackerService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
@@ -34,14 +35,16 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
     private final PolicyDAO policyDAO;
     private final UserDAO userDAO;
     private EmailNotificationService emailNotificationService;
+    private SegmentTrackerService segmentTrackerService;
 
-    public RescaleExecutionProgressUpdater(RescaleExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, PolicyDAO policyDAO, UserDAO userDAO, EmailNotificationService emailNotificationService){
+    public RescaleExecutionProgressUpdater(RescaleExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, UserDAO userDAO, EmailNotificationService emailNotificationService, SegmentTrackerService segmentTrackerService){
         this.provider = provider;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.runDAO = runDAO;
         this.policyDAO = policyDAO;
         this.userDAO = userDAO;
         this.emailNotificationService = emailNotificationService;
+        this.segmentTrackerService = segmentTrackerService;
     }
 
     @Override
@@ -99,6 +102,9 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
 					PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
 					emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);
 					runDAO.markAsNotificationSent(run.getId());
+
+					// Also track in segment that the training is completed
+					segmentTrackerService.trainingCompleted(user, run.getExperiment().getId(), run.getRunTypeEnum(), jobStatus);
 				}
 			}
 		}
