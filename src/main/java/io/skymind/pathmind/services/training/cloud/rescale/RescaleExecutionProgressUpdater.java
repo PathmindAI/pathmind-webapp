@@ -37,7 +37,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
     private EmailNotificationService emailNotificationService;
     private SegmentTrackerService segmentTrackerService;
 
-    public RescaleExecutionProgressUpdater(RescaleExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, UserDAO userDAO, EmailNotificationService emailNotificationService, SegmentTrackerService segmentTrackerService){
+    public RescaleExecutionProgressUpdater(RescaleExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, PolicyDAO policyDAO, UserDAO userDAO, EmailNotificationService emailNotificationService, SegmentTrackerService segmentTrackerService){
         this.provider = provider;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.runDAO = runDAO;

@@ -696,7 +696,7 @@
     </changeSet>
 
     <!-- 446 - Separate out bytea columns in database to separate tables (Policy and Model) -->
-    <changeSet id="20200120-01" author="steph@followsteph.com">
+    <changeSet id="20200127-01" author="steph@followsteph.com">
         <createTable tableName="POLICY_FILE">
             <column name="POLICY_ID" type="BIGINT">
                 <constraints nullable="false" foreignKeyName="PM_FK_POLICY_FILE_POLICY" references="POLICY(ID)"/>
