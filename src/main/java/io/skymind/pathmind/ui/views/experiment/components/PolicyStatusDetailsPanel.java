@@ -34,8 +34,7 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 	private ElapsedTimer elapsedTimeLabel = new ElapsedTimer();
 	private ProgressBar progressBar = new ProgressBar(0, 100);
 	private Label progressValueLabel = new Label();
-	VerticalLayout progressLayout = new VerticalLayout(progressBar, progressValueLabel);
-	private Label progressLabel = getElementLabel("Progress");
+	private VerticalLayout progressRow = new VerticalLayout(progressBar, progressValueLabel);
 
 	// TODO (KW): 25.01.2020 remove unused fields
 	private Policy policy;
@@ -44,67 +43,47 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 	private PolicyDAO policyDAO;
 
 	public PolicyStatusDetailsPanel(PolicyDAO policyDAO) {
-		Label[] labels = Arrays.asList(
-				getElementLabel("Status"),
-				getElementLabel(""),
-				getElementLabel("Run Type"),
-				getElementLabel("Elapsed"),
-				getElementLabelWithoutColon(""),
-				progressLabel)
-				.stream().toArray(Label[]::new);
+		VerticalLayout wrapper = new VerticalLayout();
+		var statusRow = createHorizontalLayout("Status", statusLabel);
+		var runProgressRow = createHorizontalLayout("", runProgressLabel);
+		var runTypeRow = createHorizontalLayout("Run Type", runTypeLabel);
+		var elapsedTimeRow = createHorizontalLayout("Elapsed", elapsedTimeLabel);
 
-		removeTopMargins(labels);
-		removeTopMargins(statusLabel, runProgressLabel, runTypeLabel, elapsedTimeLabel, progressValueLabel);
-		progressBar.getStyle().set("margin-top", "12px");
+		styleProgressLayout();
 
-
-		VerticalLayout leftVerticalLayout = new VerticalLayout(labels);
-		leftVerticalLayout.setHorizontalComponentAlignment(Alignment.END, labels);
-		leftVerticalLayout.setWidthFull();
-		leftVerticalLayout.setPadding(false);
-
-		progressLayout.setHorizontalComponentAlignment(Alignment.END, labels);
-		progressLayout.setWidthFull();
-		progressLayout.setPadding(false);
-
-		VerticalLayout rightVerticalLayout = new VerticalLayout(
-				statusLabel,
-				runProgressLabel,
-				runTypeLabel,
-				elapsedTimeLabel,
-				progressLayout);
-
-
-		rightVerticalLayout.setDefaultHorizontalComponentAlignment(Alignment.START);
-		rightVerticalLayout.setPadding(false);
-
-		HorizontalLayout wrapper = new HorizontalLayout(
-				leftVerticalLayout,
-				rightVerticalLayout);
+		wrapper.add(statusRow, progressRow, runProgressRow, runTypeRow, elapsedTimeRow);
 		wrapper.getStyle().set("padding-top", "10px");
 		wrapper.setWidthFull();
 
 		add(wrapper);
+
 		this.policyDAO = policyDAO;
+	}
+
+	private void styleProgressLayout() {
+		progressBar.getStyle().set("margin", "0px").set("max-width", "200px");
+		progressRow.getStyle().set("margin-top" ,"24px").set("margin-left", "110px");
+		progressRow.setPadding(false);
+	}
+
+	private HorizontalLayout createHorizontalLayout(String labelTitle, Label valueLabel) {
+		final var elementLabel = getElementLabel(labelTitle);
+		final var horizontalLayout = new HorizontalLayout(elementLabel, valueLabel);
+		horizontalLayout.getStyle().set("margin-top" ,"0px");
+		valueLabel.getStyle().set("margin-top", "0px");
+		horizontalLayout.setPadding(false);
+		return horizontalLayout;
 	}
 
 	// TODO -> CSS -> Move style to CSS
 	private Label getElementLabel(String label) {
-		Label fieldLabel = new Label(label + " : ");
-		fieldLabel.getStyle().set("font-weight", "bold");
+		Label fieldLabel = new Label(label + ":");
+		fieldLabel.getStyle()
+				.set("font-weight", "bold")
+				.set("margin-top", "0px")
+				.set("min-width", "90px")
+				.set("text-align", "right");
 		return fieldLabel;
-	}
-
-	// TODO (KW): 22.01.2020 refactor
-	private Label getElementLabelWithoutColon(String label) {
-		Label fieldLabel = new Label(label);
-		fieldLabel.getStyle().set("font-weight", "bold");
-		return fieldLabel;
-	}
-
-	private void removeTopMargins(Label... labels) {
-		Arrays.stream(labels).forEach(label ->
-				label.getStyle().set("margin-top", "0px"));
 	}
 
 //	public void update(Policy policy)
@@ -135,12 +114,10 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(getTrainingCompletedTime(experiment), userTimeZone));
 		});
 		if(max == Running) {
-			progressLabel.setVisible(true);
-			progressLayout.setVisible(true);
+			progressRow.setVisible(true);
 			updateProgressBar(experiment);
 		} else {
-			progressLabel.setVisible(false);
-			progressLayout.setVisible(false);
+			progressRow.setVisible(false);
 		}
 	}
 
