@@ -104,10 +104,10 @@ pipeline {
         stage('Build Docker Images') {
             when {
                 anyOf {
-                    environment name: 'GIT_BRANCH', value: 'aws-integration-'
-                    environment name: 'GIT_BRANCH', value: 'dev-'
-                    environment name: 'GIT_BRANCH', value: 'test-'
-                    environment name: 'GIT_BRANCH', value: 'prod-'
+                    environment name: 'GIT_BRANCH', value: 'aws-integration'
+                    environment name: 'GIT_BRANCH', value: 'dev'
+                    environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
 		parallel {
@@ -122,10 +122,10 @@ pipeline {
         stage('Publish Docker Images') {
             when {
                 anyOf {
-                    environment name: 'GIT_BRANCH', value: 'aws-integration-'
-                    environment name: 'GIT_BRANCH', value: 'dev-'
-                    environment name: 'GIT_BRANCH', value: 'test-'
-                    environment name: 'GIT_BRANCH', value: 'prod-'
+                    environment name: 'GIT_BRANCH', value: 'aws-integration'
+                    environment name: 'GIT_BRANCH', value: 'dev'
+                    environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
 		parallel {
@@ -140,9 +140,9 @@ pipeline {
 	stage('Deploying helm chart') {
             when {
                 anyOf {
-                    environment name: 'GIT_BRANCH', value: 'aws-integration-'
-                    environment name: 'GIT_BRANCH', value: 'dev-'
-                    environment name: 'GIT_BRANCH', value: 'test-'
+                    environment name: 'GIT_BRANCH', value: 'aws-integration'
+                    environment name: 'GIT_BRANCH', value: 'dev'
+                    environment name: 'GIT_BRANCH', value: 'test'
                 }
             }
             steps {
@@ -153,7 +153,7 @@ pipeline {
             }
         }
 
-	stage('Testing') {
+/*	stage('Testing') {
             when {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'aws-integration'
@@ -177,7 +177,7 @@ pipeline {
 			}
 		}
             }
-        }
+        }*/
 
         // Waif for user manual approval, or proceed automatically if DEPLOY_TO_PROD is true
         stage('Go for Production?') {
