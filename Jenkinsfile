@@ -58,7 +58,6 @@ pipeline {
     // Pipeline stages
     stages {
 
-        ////////// Step 1 //////////
         stage('Git clone and setup') {
             when {
                 anyOf {
@@ -102,14 +101,13 @@ pipeline {
             }
         }
 
-        ////////// Step 2 //////////
         stage('Build Docker Images') {
             when {
                 anyOf {
-                    environment name: 'GIT_BRANCH', value: 'aws-integration'
-                    environment name: 'GIT_BRANCH', value: 'dev'
-                    environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'prod'
+                    environment name: 'GIT_BRANCH', value: 'aws-integration-'
+                    environment name: 'GIT_BRANCH', value: 'dev-'
+                    environment name: 'GIT_BRANCH', value: 'test-'
+                    environment name: 'GIT_BRANCH', value: 'prod-'
                 }
             }
 		parallel {
@@ -121,14 +119,13 @@ pipeline {
 		}
         }
 
-	////////// Step 3 //////////
         stage('Publish Docker Images') {
             when {
                 anyOf {
-                    environment name: 'GIT_BRANCH', value: 'aws-integration'
-                    environment name: 'GIT_BRANCH', value: 'dev'
-                    environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'prod'
+                    environment name: 'GIT_BRANCH', value: 'aws-integration-'
+                    environment name: 'GIT_BRANCH', value: 'dev-'
+                    environment name: 'GIT_BRANCH', value: 'test-'
+                    environment name: 'GIT_BRANCH', value: 'prod-'
                 }
             }
 		parallel {
@@ -140,8 +137,23 @@ pipeline {
 		}
         } 
 
-	////////// Step 4 //////////
 	stage('Deploying helm chart') {
+            when {
+                anyOf {
+                    environment name: 'GIT_BRANCH', value: 'aws-integration-'
+                    environment name: 'GIT_BRANCH', value: 'dev-'
+                    environment name: 'GIT_BRANCH', value: 'test-'
+                }
+            }
+            steps {
+		script {
+				echo "Updating helm chart"
+				sh "helm upgrade --install pathmind ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}.yaml"
+		}
+            }
+        }
+
+	stage('Testing') {
             when {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'aws-integration'
@@ -151,8 +163,18 @@ pipeline {
             }
             steps {
 		script {
-				echo "Updating helm chart"
-				sh "helm upgrade --install pathmind ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}.yaml"
+			try {
+				echo "Running tests"
+				sh "cd pathmind-bdd-tests; mvn clean verify -Denvironment=pathmind-dev"
+			} catch (err) {
+			} finally {
+				publishHTML (target: [
+				reportDir: 'pathmind-bdd-tests/target/site/serenity',
+				reportFiles: 'index.html',
+				reportName: "Tests"
+				])
+
+			}
 		}
             }
         }

@@ -66,6 +66,8 @@ for DIR in `find . -iname model -type d`; do
 	cd $OLDPWD
 done
 
+cd ..
+
 #Upload the final files only after policy and checkpoint are uploaded
 aws s3 cp --recursive ./work/PPO ${s3_url}/output/
 aws s3 cp ./work/trial_complete ${s3_url}/output/trial_complete
