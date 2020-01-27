@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
@@ -23,7 +24,11 @@ public class ExperimentGrid extends Grid<Experiment>
 {
 	public ExperimentGrid()
 	{
-		Grid.Column<Experiment> nameColumn = addColumn(Experiment::getName)
+		Grid.Column<Experiment> nameColumn = addColumn(
+				TemplateRenderer.<Experiment> of("[[item.name]] <span class='tag'>[[item.draft]]</span>")
+					.withProperty("name", Experiment::getName)
+					.withProperty("draft", experiment -> experiment.getRuns().isEmpty() ? "Draft" : ""))
+				.setComparator(Comparator.comparing(Experiment::getName))
 				.setHeader("Experiment")
 				.setAutoWidth(true)
 				.setResizable(true)
@@ -31,17 +36,6 @@ public class ExperimentGrid extends Grid<Experiment>
 		Grid.Column<Experiment> lastActivityColumn = addColumn(new ZonedDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Experiment::getLastActivityDate))
 				.setHeader("Last Activity")
-				.setAutoWidth(true)
-				.setResizable(true)
-				.setSortable(true);
-		addColumn(experiment -> {
-			Optional<Run> run = experiment.getRuns().stream()
-					.filter(r -> r.getRunTypeEnum().equals(RunType.TestRun))
-					.findAny();
-
-			return run.isPresent() ? run.get().getStatusEnum() : "Draft";
-		})
-				.setHeader("Test Run")
 				.setAutoWidth(true)
 				.setResizable(true)
 				.setSortable(true);

@@ -3,6 +3,7 @@ package io.skymind.pathmind.db.dao;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,11 +55,8 @@ public class ExecutionProviderMetaDataDAO
     }
 
     public Map<Long, String> getRescaleRunJobIds(List<Long> runIds) {
-        List<String> ids = runIds.stream()
-                .map(String::valueOf)
-                .collect(Collectors.toList());
 
-        return get(IdType.Run, ids).entrySet().stream()
+        return get(IdType.Run, runIds).entrySet().stream()
                 .map(e -> Map.entry(Long.valueOf(e.getKey()), e.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
@@ -97,7 +95,13 @@ public class ExecutionProviderMetaDataDAO
         return ExecutionProviderMetaDataRepository.get(ctx, type.getId(), key);
     }
 
-    private Map<String, String> get(IdType type, List<String> keys) {
+    private Map<String, String> get(IdType type, Collection<?> keys) {
+        if (type.equals(IdType.CheckPointFile)) {
+            keys = keys.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.toList());
+        }
+
         return ExecutionProviderMetaDataRepository.get(ctx, type.getId(), keys);
     }
 

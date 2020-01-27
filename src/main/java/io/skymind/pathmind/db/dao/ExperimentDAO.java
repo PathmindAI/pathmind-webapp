@@ -5,6 +5,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ExperimentDAO
@@ -15,8 +16,9 @@ public class ExperimentDAO
 		this.ctx = ctx;
 	}
 
-	public Experiment getExperiment(long experimentId) {
-		return ExperimentRepository.getExperiment(ctx, experimentId);
+	public Optional<Experiment> getExperiment(long experimentId) {
+		var experiment = ExperimentRepository.getExperiment(ctx, experimentId);
+		return Optional.ofNullable(experiment);
 	}
 
 	public long setupNewExperiment(Experiment experiment) {

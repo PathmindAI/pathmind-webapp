@@ -1,5 +1,10 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.function.Consumer;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
@@ -12,6 +17,7 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
@@ -24,11 +30,6 @@ import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 @SpringComponent
 @UIScope
@@ -62,7 +63,7 @@ public class TrainingsListPanel extends VerticalLayout
                 .setResizable(true)
                 .setSortable(true);
 
-        Grid.Column<Policy> startedColumn = grid.addColumn(new ZonedDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+        grid.addColumn(new ZonedDateTimeRenderer<>(Policy::getStartedAt, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
                 .setComparator(Comparator.comparing(Policy::getStartedAt, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .setHeader("Started")
                 .setAutoWidth(true)
@@ -84,7 +85,7 @@ public class TrainingsListPanel extends VerticalLayout
                 .setResizable(true)
                 .setSortable(true);
 
-        grid.addColumn(policy -> PolicyUtils.getParsedPolicyName(policy))
+        grid.addColumn(Policy::getName)
                 .setHeader("Policy")
                 .setAutoWidth(true)
                 .setResizable(true)
@@ -96,13 +97,13 @@ public class TrainingsListPanel extends VerticalLayout
                 .setResizable(true)
                 .setSortable(true);
 
-        grid.addColumn(policy -> policy.getAlgorithmEnum())
+        grid.addColumn(Policy::getAlgorithmEnum)
                 .setHeader("Algorithm")
                 .setAutoWidth(true)
                 .setResizable(true)
                 .setSortable(true);
 
-        grid.addColumn(policy -> PolicyUtils.getFormatHyperParameters(policy))
+        grid.addColumn(Policy::getNotes)
                 .setHeader("Notes")
                 .setAutoWidth(true)
                 .setResizable(true)
@@ -155,6 +156,9 @@ public class TrainingsListPanel extends VerticalLayout
         experiment.getPolicies().stream()
                 .filter(policy -> policy.getId() == updatedPolicy.getId())
                 .forEach(policy -> {
+                    // TODO -> REFACTOR -> Do all the values need to be reset?
+                    policy.setName(updatedPolicy.getName());
+                    policy.setNotes(updatedPolicy.getNotes());
                     policy.setExternalId(updatedPolicy.getExternalId());
                     policy.setScores(updatedPolicy.getScores());
                     policy.setRun(updatedPolicy.getRun());
@@ -169,16 +173,16 @@ public class TrainingsListPanel extends VerticalLayout
         DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
             // grid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
             grid.setDataProvider(new ListDataProvider<>(experiment.getPolicies()));
+            if (!experiment.getPolicies().isEmpty() && defaultSelectedPolicyId < 0) {
+            	grid.select(experiment.getPolicies().get(0));
+            } else {
+            	experiment.getPolicies().stream()
+            	.filter(policy -> policy.getId() == defaultSelectedPolicyId)
+            	.findAny()
+            	.ifPresent(policy -> grid.select(policy));
+            }
         });
 
-        if (!experiment.getPolicies().isEmpty() && defaultSelectedPolicyId < 0) {
-            grid.select(experiment.getPolicies().get(0));
-        } else {
-            experiment.getPolicies().stream()
-                    .filter(policy -> policy.getId() == defaultSelectedPolicyId)
-                    .findAny()
-                    .ifPresent(policy -> grid.select(policy));
-        }
     }
 
     @Override

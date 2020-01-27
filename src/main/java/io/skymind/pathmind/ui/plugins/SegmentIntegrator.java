@@ -14,14 +14,18 @@ import elemental.json.Json;
 import elemental.json.JsonObject;
 import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.SecurityUtils;
+import lombok.extern.slf4j.Slf4j;
 
+/**
+ * SegmentIntegrator component is client side counter part of <code>SegmentTrackerService</code>
+ * This component runs on user browser, and tracks user event using Segment JS API 
+ */
 @SpringComponent
 @UIScope
 @Tag("segment-integrator")
 @JsModule("./src/plugins/segment-integrator.js")
-public class SegmentIntegrator
-		extends
-			PolymerTemplate<SegmentIntegrator.Model> {
+@Slf4j
+public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> {
 
 	private String sourceKey;
 	private boolean enabled;
@@ -39,8 +43,10 @@ public class SegmentIntegrator
 	private static final String EVENT_SAVE_DRAFT = "Save Draft";
 	private static final String EVENT_CHANGE_PW = "Change Password";
 	private static final String EVENT_EDIT_INFO = "Edit Info";
+	private static final String EVENT_ACCOUNT_UPGRADE = "Account Upgrade";
+	private static final String EVENT_CANCEL_SUBSCRIPTION = "Cancel Subscription";
 
-	public SegmentIntegrator(@Value("${skymind.segment.key}") String key,
+	public SegmentIntegrator(@Value("${skymind.segment.website.source.key}") String key,
 			@Value("${skymind.segment.enabled}") Boolean enabled) {
 		this.sourceKey = key;
 		this.enabled = enabled;
@@ -96,6 +102,14 @@ public class SegmentIntegrator
 		track(EVENT_EDIT_INFO);
 	}
 
+	public void accountUpgraded() {
+		track(EVENT_ACCOUNT_UPGRADE);
+	}
+	
+	public void subscriptionCancelled() {
+		track(EVENT_CANCEL_SUBSCRIPTION);
+	}
+
 	private void track(String event) {
 		track(event, Json.createObject());
 	}
@@ -103,11 +117,15 @@ public class SegmentIntegrator
 	private void track(String event, JsonObject props) {
 		if (enabled) {
 			getElement().callJsFunction("track", event, props);
+		} else {
+			log.info("Segment integration is disabled, not sending " + event + " track event");
 		}
 	}
 	private void page() {
 		if (enabled) {
 			getElement().callJsFunction("page");
+		} else {
+			log.info("Segment integration is disabled, not sending page visit");
 		}
 	}
 
@@ -120,6 +138,8 @@ public class SegmentIntegrator
 				getModel().setUser(new SegmentUser(user));
 			}
 			page();
+		} else {
+			log.info("Segment integration is disabled, not sending page visit");
 		}
 	}
 

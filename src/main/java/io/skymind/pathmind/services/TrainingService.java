@@ -6,6 +6,8 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.policy.RewardScore;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
@@ -18,23 +20,26 @@ import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.JSONB;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class TrainingService {
+public class TrainingService
+{
+    private static final int MINUTE = 60;
+
+    private static final String PATHMIND_ENVIRONMENT = "PathmindEnvironment";
+
     private final ExecutionProvider executionProvider;
     private final RunDAO runDAO;
     private final ModelDAO modelDAO;
     private final PolicyDAO policyDAO;
     private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private ExecutionEnvironment executionEnvironment;
-
-    private static final int MINUTE = 60;
 
     public TrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
         this.executionProvider = executionProvider;
@@ -89,60 +94,51 @@ public class TrainingService {
         startRun(RunType.FullRun,
                 exp,
                 500,
-                Arrays.asList(policy.getHyperParameters().getLearningRate()),
-                Arrays.asList(policy.getHyperParameters().getGamma()),
-                Arrays.asList(policy.getHyperParameters().getBatchSize()),
+                Arrays.asList(policy.getLearningRate()),
+                Arrays.asList(policy.getGamma()),
+                Arrays.asList(policy.getBatchSize()),
                 -1, // no limit
-                policy          // base policy
-        );
-
+                policy);          // base policy
     }
 
     private Policy generateTempPolicy(JobSpec spec, Run run) {
         return generateTempPolicy(spec, run, null);
     }
 
-    private Policy generateTempPolicy(JobSpec spec, Run run, JSONB progress) {
+    // We want to create a copy of List<RewardScore> so that the references are unique and one doesn't affect the other.
+    private Policy generateTempPolicy(JobSpec spec, Run run, List<RewardScore> scores) {
         // this is for ui filling gap until ui get a training progress from backend(rescale)
         Policy tempPolicy = new Policy();
 
-        String name = getTempPolicyName(Algorithm.PPO.toString(),
-                "PathmindEnvironment",
-                spec.getLearningRates(),
-                spec.getGammas(),
-                spec.getBatchSizes(),
-                run.getRunType());
-
         tempPolicy.setAlgorithmEnum(Algorithm.PPO);
-        tempPolicy.setName(name);
-        tempPolicy.setExternalId(name);
         tempPolicy.setRunId(run.getId());
+        tempPolicy.setLearningRate(spec.getLearningRates().get(0));
+        tempPolicy.setGamma(spec.getGammas().get(0));
+        tempPolicy.setBatchSize(spec.getBatchSizes().get(0));
+        tempPolicy.setExternalId(getTempPolicyName(tempPolicy, run.getRunType()));
+        tempPolicy.setName(PolicyUtils.parsePolicyName(tempPolicy.getExternalId()));
+        tempPolicy.setNotes(PolicyUtils.generateDefaultNotes(tempPolicy));
 
-        if (progress != null) {
-            tempPolicy.setProgress(progress.toString());
-        }
+        if(scores != null)
+            tempPolicy.setScores(scores);
 
         return tempPolicy;
     }
 
-    // STEPH -> REFACTOR -> This should be in the DAO layer and not the service layer as this is information on how data is stored
-    // within the database. However for now I'm just quickly putting it here so that we can process the PR asap.
-    private String getTempPolicyName(String algorithm, String environment, List<Double> lrs, List<Double> gammas, List<Integer> batchSize, int runType) {
+    private String getTempPolicyName(Policy policy, int runType) {
         String hyperparameters = String.join(
                 ",",
-                "gamma=" + gammas.get(0),
-                "lr=" + lrs.get(0),
-                "sgd_minibatch_size=" + batchSize.get(0)
-        );
+                "gamma=" + policy.getGamma(),
+                "lr=" + policy.getLearningRate(),
+                "sgd_minibatch_size=" + policy.getBatchSize());
 
         String name = String.join(
                 "_",
-                algorithm,
-                environment,
+                policy.getAlgorithm(),
+                PATHMIND_ENVIRONMENT,
                 "0",
                 hyperparameters,
-                runType + RunUtils.TEMPORARY_POSTFIX
-        );
+                runType + RunUtils.TEMPORARY_POSTFIX);
 
         return name;
     }
@@ -183,9 +179,12 @@ public class TrainingService {
                 maxTimeInSec
         );
 
-        JSONB progress = null;
+        List<RewardScore> rewardScores = null;
         if (basePolicy != null) {
-            progress = policyDAO.getProgress(basePolicy.getId());
+            // We want to create a copy of List<RewardScore> so that the references are unique and one doesn't affect the other.
+            rewardScores = basePolicy.getScores().stream()
+                    .map(score -> new RewardScore(score.getMax(), score.getMin(), score.getMean(), score.getIteration()))
+                    .collect(Collectors.toList());
 
             String checkpointFileId = executionProviderMetaDataDAO.getCheckPointFileKey(basePolicy.getExternalId());
             if (checkpointFileId == null) {
@@ -203,6 +202,6 @@ public class TrainingService {
         runDAO.markAsStarting(run.getId());
         log.info("Started " + runType + " training job with id {}", executionId);
 
-        policyDAO.insertPolicy(generateTempPolicy(spec, run, progress));
+        policyDAO.insertPolicy(generateTempPolicy(spec, run, rewardScores));
     }
 }

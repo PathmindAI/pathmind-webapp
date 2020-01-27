@@ -39,6 +39,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         KNOWN_ERROR_MSGS.add("Fatal Python error: Segmentation fault");
         KNOWN_ERROR_MSGS.add("Worker crashed during call to train()");
         KNOWN_ERROR_MSGS.add("java.lang.ArrayIndexOutOfBoundsException");
+        KNOWN_ERROR_MSGS.add("NotADirectoryError: ");
     }
 
     public RescaleExecutionProvider(RescaleRestApiClient client) {
@@ -71,6 +72,8 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
         // Check errors
         checkErrors(instructions);
+
+        instructions.add("echo Done  ;\n");
 
         // Start actual execution of the job
         return startTrainingRun(job, instructions, files);

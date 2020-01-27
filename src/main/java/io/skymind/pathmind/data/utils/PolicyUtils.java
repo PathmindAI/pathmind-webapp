@@ -1,18 +1,12 @@
 package io.skymind.pathmind.data.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.data.policy.HyperParameters;
-import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-import io.skymind.pathmind.utils.ObjectMapperHolder;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,10 +17,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PolicyUtils
 {
+    public static final String LEARNING_RATE = "lr";
+    public static final String GAMMA = "gamma";
+    public static final String BATCH_SIZE = "sgd_minibatch_size";
+
     private static final String lrPatternStr = "lr=.*,";
     private static final Pattern lrPattern = Pattern.compile(lrPatternStr);
-
-    private static final ObjectMapper OBJECT_MAPPER = ObjectMapperHolder.getJsonMapper();
 
     private PolicyUtils() {
     }
@@ -74,10 +70,6 @@ public class PolicyUtils
         return policy.getScores().get(policy.getScores().size() - 1).getMean();
     }
 
-    public static String getParsedPolicyName(Policy policy) {
-        return policy.getParsedName();
-    }
-
     public static final String getElapsedTime(Policy policy) {
         return DateAndTimeUtils.formatDurationTime(RunUtils.getElapsedTime(policy.getRun()));
     }
@@ -91,41 +83,16 @@ public class PolicyUtils
         }
     }
 
-    public static void processProgressJson(Policy policy, String progressString)
-    {
-        if(StringUtils.isEmpty(progressString))
-            return;
-
-        try {
-            // STEPH -> Is this needed any more other than the setScores? Don't we already have all of this in the database? Once
-            // the scores are in the database all this parsing can also be deleted.
-            final Policy jsonPolicy = OBJECT_MAPPER.readValue(progressString, Policy.class);
-            policy.setScores(jsonPolicy.getScores());
-            policy.setStartedAt(jsonPolicy.getStartedAt());
-            policy.setStoppedAt(jsonPolicy.getStoppedAt());
-            policy.setAlgorithm(jsonPolicy.getAlgorithm());
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    // STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
-    // the HyperParameters are moved into the database we can delete this code.
-    public static HyperParameters getHyperParametersFromName(Policy policy) {
-        return ProgressInterpreter.interpretKey(policy.getName()).getHyperParameters();
-    }
-
     public static List<Number> getMeanScores(Policy policy) {
         return policy.getScores().stream()
             .map(rewardScore -> rewardScore.getMean())
             .collect(Collectors.toList());
     }
 
-    public static String getFormatHyperParameters(Policy policy) {
-        return  HyperParameters.BATCH_SIZE + "=" + policy.getHyperParameters().getBatchSize() + ", " +
-                HyperParameters.LEARNING_RATE + "=" + policy.getHyperParameters().getLearningRate() + ", " +
-                HyperParameters.GAMMA + "=" + policy.getHyperParameters().getGamma();
+    public static String generateDefaultNotes(Policy policy) {
+        return  BATCH_SIZE + "=" + policy.getBatchSize() + ", " +
+                LEARNING_RATE + "=" + policy.getLearningRate() + ", " +
+                GAMMA + "=" + policy.getGamma();
     }
 
     // original name ex: PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_2019-10-11_21-16-2858waz_89
@@ -152,15 +119,13 @@ public class PolicyUtils
 
     public static void loadPolicyDataModel(Policy policy, long policyId, Run run) {
         policy.setId(policyId);
-        policy.setName(policy.getExternalId());
         policy.setRun(run);
         policy.setExperiment(run.getExperiment());
         policy.setModel(run.getModel());
         policy.setProject(run.getProject());
-        // For performance reasons.
-        policy.setParsedName(parsePolicyName(policy.getName()));
-        // STEPH -> This is very expensive for what it does but before it was masked under a different stack of code. Once
-        // the HyperParameters are moved into the database we can delete this code.
-        policy.setHyperParameters(getHyperParametersFromName(policy));
+    }
+
+    public static List<Long> convertToPolicyIds(List<Policy> policies) {
+        return policies.stream().map(policy -> policy.getId()).collect(Collectors.toList());
     }
 }

@@ -1,9 +1,6 @@
 package io.skymind.pathmind.data;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.skymind.pathmind.constants.Algorithm;
-import io.skymind.pathmind.data.policy.HyperParameters;
 import io.skymind.pathmind.data.policy.RewardScore;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,42 +10,31 @@ import java.util.List;
 
 public class Policy extends Data
 {
-	@JsonIgnore
 	private long runId;
-	@JsonProperty("id")
 	private String externalId;
-	@JsonIgnore
-	private String progress;
-	@JsonIgnore
 	private byte[] file;
-	@JsonIgnore
 	private byte[] snapshot;
 
     private LocalDateTime startedAt;
     private LocalDateTime stoppedAt;
 
-    private HyperParameters hyperParameters = new HyperParameters();
+	private double learningRate;
+	private double gamma;
+	private int batchSize;
+
+	private String notes;
 
     // For now this is hardcoded: https://github.com/SkymindIO/pathmind-webapp/issues/101
     private Algorithm algorithm = Algorithm.PPO;
 
     // REFACTOR -> Same as Progress which is not saved to the database and is parsed back and forth...
-    @JsonProperty("rewardProgression")
     private List<RewardScore> scores;
 
     // Helper GUI attributes not stored in the database
-	@JsonIgnore
 	private Project project;
-	@JsonIgnore
 	private Model model;
-	@JsonIgnore
 	private Experiment experiment;
-	@JsonIgnore
 	private Run run;
-
-	// Helper for now for performance reasons.
-	@JsonIgnore
-	private String parsedName;
 
 	public long getRunId() {
 		return runId;
@@ -64,14 +50,6 @@ public class Policy extends Data
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
-	}
-
-	public String getProgress() {
-		return progress;
-	}
-
-	public void setProgress(String progress) {
-		this.progress = progress;
 	}
 
 	public byte[] getFile() {
@@ -122,7 +100,6 @@ public class Policy extends Data
 		this.run = run;
 	}
 
-	@JsonIgnore
 	public Algorithm getAlgorithmEnum() {
 		return algorithm;
 	}
@@ -156,22 +133,12 @@ public class Policy extends Data
 		this.stoppedAt = stoppedAt;
 	}
 
-	public String getParsedName() {
-		return parsedName;
-	}
-
-	public void setParsedName(String parsedName) {
-		this.parsedName = parsedName;
-	}
-
-	// STEPH -> Clean this up when we add notes to the database.
-	@JsonIgnore
 	public String getNotes() {
-		throw new RuntimeException("Should not be used");
+		return notes;
 	}
 
 	public void setNotes(String notes) {
-		// The notes are currently just the hyperParameters
+		this.notes = notes;
 	}
 
 	public List<RewardScore> getScores() {
@@ -182,11 +149,27 @@ public class Policy extends Data
 		this.scores = scores;
 	}
 
-    public HyperParameters getHyperParameters() {
-        return hyperParameters;
-    }
+	public double getLearningRate() {
+		return learningRate;
+	}
 
-    public void setHyperParameters(HyperParameters hyperParameters) {
-        this.hyperParameters = hyperParameters;
-    }
+	public void setLearningRate(double learningRate) {
+		this.learningRate = learningRate;
+	}
+
+	public double getGamma() {
+		return gamma;
+	}
+
+	public void setGamma(double gamma) {
+		this.gamma = gamma;
+	}
+
+	public int getBatchSize() {
+		return batchSize;
+	}
+
+	public void setBatchSize(int batchSize) {
+		this.batchSize = batchSize;
+	}
 }

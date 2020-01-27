@@ -2,7 +2,6 @@ package io.skymind.pathmind.ui.views.experiment;
 
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,12 +36,18 @@ import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.PathmindTextArea;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
+import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.ui.utils.*;
+import io.skymind.pathmind.ui.utils.FormUtils;
+import io.skymind.pathmind.ui.utils.GuiUtils;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
+import io.skymind.pathmind.ui.utils.PushUtils;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
+import lombok.extern.slf4j.Slf4j;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
@@ -89,11 +94,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected Component getMainContent() {
         binder = new Binder<>(Experiment.class);
-
-        return WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                getLeftPanel(),
-                getRightPanel(),
-                DEFAULT_SPLIT_PANE_RATIO);
+        return WrapperUtils.wrapWidthFullVertical(
+                createBreadcrumbs(),
+                WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                        getLeftPanel(),
+                        getRightPanel(),
+                        DEFAULT_SPLIT_PANE_RATIO)
+                );
     }
 
     private Component getLeftPanel() {
@@ -160,29 +167,27 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private Component getTopButtonPanel() {
-        final Button startRunButton = new Button("Start Test Run", new Image("frontend/images/start.svg", "run"),
+        final Button startRunButton = new Button("Start Discovery Run", new Image("frontend/images/start.svg", "run"),
                 click -> handleStartRunButtonClicked());
         startRunButton.addClassNames("large-image-btn","run");
         return WrapperUtils.wrapWidthFullCenterVertical(startRunButton);
     }
 
     private void handleStartRunButtonClicked() {
-        ExceptionWrapperUtils.handleButtonClicked(() ->
-        {
-            if (!FormUtils.isValidForm(binder, experiment))
-                return;
+        if (!FormUtils.isValidForm(binder, experiment)) {
+        	return;
+        }
 
-            experimentDAO.updateRewardFunction(experiment);
-            segmentIntegrator.rewardFuntionCreated();
-            
-            trainingService.startTestRun(experiment);
-            segmentIntegrator.testRunStarted();
+        experimentDAO.updateRewardFunction(experiment);
+        segmentIntegrator.rewardFuntionCreated();
+        
+        trainingService.startDiscoveryRun(experiment);
+        segmentIntegrator.discoveryRunStarted();
 
-            ConfirmDialog confirmDialog = new RunConfirmDialog();
-            confirmDialog.open();
+        ConfirmDialog confirmDialog = new RunConfirmDialog();
+        confirmDialog.open();
 
-            UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
-        });
+        UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
     }
 
     private Component getTopStatusPanel() {
@@ -208,15 +213,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleSaveDraftClicked() {
-        ExceptionWrapperUtils.handleButtonClicked(() ->
-        {
-            if (!FormUtils.isValidForm(binder, experiment))
-                return;
+        if (!FormUtils.isValidForm(binder, experiment)) {
+        	return;
+        }
 
-            experimentDAO.updateRewardFunction(experiment);
-            segmentIntegrator.draftSaved();
-            NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
-        });
+        experimentDAO.updateRewardFunction(experiment);
+        segmentIntegrator.draftSaved();
+        NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
+    }
+
+    private Breadcrumbs createBreadcrumbs() {        
+        return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
     }
 
 	@Override
@@ -231,11 +238,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     protected void initLoadData() throws InvalidDataException {
-        experiment = experimentDAO.getExperiment(experimentId);
+        experiment = experimentDAO.getExperiment(experimentId)
+                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		if(MockDefaultValues.isDebugAccelerate() && StringUtils.isEmpty(experiment.getRewardFunction()))
 			experiment.setRewardFunction(MockDefaultValues.NEW_EXPERIMENT_REWARD_FUNCTION);
-        if (experiment == null)
-            throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
     }
 
     @Override

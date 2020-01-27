@@ -1,7 +1,8 @@
 package io.skymind.pathmind.security;
 
-import io.skymind.pathmind.data.PathmindUser;
-import io.skymind.pathmind.db.dao.UserDAO;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -23,8 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
-import java.util.HashMap;
-import java.util.Map;
+import io.skymind.pathmind.data.PathmindUser;
+import io.skymind.pathmind.db.dao.UserDAO;
 
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -128,6 +129,7 @@ public class SecurityConfiguration {
                     .antMatchers("/" + Routes.SIGN_UP_URL).permitAll()
                     .antMatchers("/" + Routes.RESET_PASSWORD_URL + Routes.WITH_PARAMETER).permitAll()
                     .antMatchers("/" + Routes.EMAIL_VERIFICATION_URL + Routes.WITH_PARAMETER).permitAll()
+                    .antMatchers("/" + Routes.VERIFICATION_EMAIL_SENT_URL).permitAll()
 
                     // Allow all flow internal requests.
                     .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
@@ -172,11 +174,6 @@ public class SecurityConfiguration {
 
                     // the robots exclusion standard
                     "/robots.txt",
-
-                    // web application manifest
-                    "/manifest.webmanifest",
-                    "/sw.js",
-                    "/offline-page.html",
 
                     // icons and images
                     "/icons/**",

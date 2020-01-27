@@ -2,7 +2,7 @@ package io.skymind.pathmind.db.dao;
 
 import org.jooq.DSLContext;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,7 +32,7 @@ class ExecutionProviderMetaDataRepository
         return optional.isPresent() ? optional.get() : null;
     }
 
-    protected static Map<String, String> get(DSLContext ctx, int type, List<String> keys)
+    protected static Map<String, String> get(DSLContext ctx, int type, Collection<?> keys)
     {
         return ctx.select(EXECUTION_PROVIDER_META_DATA.KEY, EXECUTION_PROVIDER_META_DATA.VALUE)
                 .from(EXECUTION_PROVIDER_META_DATA)
