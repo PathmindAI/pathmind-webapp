@@ -34,6 +34,8 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 	private ElapsedTimer elapsedTimeLabel = new ElapsedTimer();
 	private ProgressBar progressBar = new ProgressBar(0, 100);
 	private Label progressValueLabel = new Label();
+	VerticalLayout progressLayout = new VerticalLayout(progressBar, progressValueLabel);
+	private Label progressLabel = getElementLabel("Progress");
 
 	// TODO (KW): 25.01.2020 remove unused fields
 	private Policy policy;
@@ -48,7 +50,7 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 				getElementLabel("Run Type"),
 				getElementLabel("Elapsed"),
 				getElementLabelWithoutColon(""),
-				getElementLabel("Progress"))
+				progressLabel)
 				.stream().toArray(Label[]::new);
 
 		removeTopMargins(labels);
@@ -61,13 +63,17 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 		leftVerticalLayout.setWidthFull();
 		leftVerticalLayout.setPadding(false);
 
+		progressLayout.setHorizontalComponentAlignment(Alignment.END, labels);
+		progressLayout.setWidthFull();
+		progressLayout.setPadding(false);
+
 		VerticalLayout rightVerticalLayout = new VerticalLayout(
 				statusLabel,
 				runProgressLabel,
 				runTypeLabel,
 				elapsedTimeLabel,
-				progressBar,
-				progressValueLabel);
+				progressLayout);
+
 
 		rightVerticalLayout.setDefaultHorizontalComponentAlignment(Alignment.START);
 		rightVerticalLayout.setPadding(false);
@@ -128,7 +134,14 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 //			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(PolicyUtils.getRunCompletedTime(policy), userTimeZone));
 			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(getTrainingCompletedTime(experiment), userTimeZone));
 		});
-		updateProgressBar(experiment);
+		if(max == Running) {
+			progressLabel.setVisible(true);
+			progressLayout.setVisible(true);
+			updateProgressBar(experiment);
+		} else {
+			progressLabel.setVisible(false);
+			progressLayout.setVisible(false);
+		}
 	}
 
 	// TODO (KW): 23.01.2020 refactor
