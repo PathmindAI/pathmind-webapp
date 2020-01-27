@@ -215,6 +215,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		screenTitlePanel.setSubtitle(projectName);
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		policyChartPanel.init(experiment);
+		policyStatusDetailsPanel.update(experiment);
 		processSelectedPolicy(policy);
 	}
 	
