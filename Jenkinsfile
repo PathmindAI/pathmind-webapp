@@ -173,7 +173,6 @@ pipeline {
 				reportFiles: 'index.html',
 				reportName: "Tests"
 				])
-
 			}
 		}
             }
