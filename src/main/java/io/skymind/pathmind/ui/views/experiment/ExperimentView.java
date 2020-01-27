@@ -131,11 +131,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private Component getLeftPanel() {
 		policyChartPanel = new PolicyChartPanel();
-		policyChartPanel.addSeriesClickListener(policyId -> {
-			policy = experiment.getPolicies().stream().filter(p -> Long.toString(p.getId()).equals(policyId)).findFirst().get();
-			processSelectedPolicy(policy);
-		});
-
 		return policyChartPanel;
 	}
 
@@ -258,9 +253,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		} else if (selectedRunType == RunType.FullRun) {
 			runFullTraining.setVisible(false);
 		}
-
-		// TODO (KW): 27.01.2020 test it
-		policyStatusDetailsPanel.update(experiment);
 	}
 	private void addOrUpdatePolicy(Policy updatedPolicy) {
 		experiment.getPolicies().stream()
@@ -287,6 +279,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			policy = bestPolicy;
 			PushUtils.push(this, () -> processSelectedPolicy(bestPolicy));
 		}
+		PushUtils.push(this, () -> policyStatusDetailsPanel.update(experiment));
 	}
 	
 
