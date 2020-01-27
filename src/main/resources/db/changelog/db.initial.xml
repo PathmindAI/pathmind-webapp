@@ -695,4 +695,8 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20200127-01" author="steph@followsteph.com">
+        <dropColumn tableName="POLICY" columnName="PROGRESS"/>
+    </changeSet>
+
 </databaseChangeLog>
