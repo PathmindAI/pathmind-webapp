@@ -108,7 +108,7 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 //		statusLabel.setText(PolicyUtils.getRunStatus(policy).toString());
 		statusLabel.setText(max.toString());
 		runTypeLabel.setText(runType.toString());
-		updateElapsedTimer(experiment);
+		updateElapsedTimer(experiment, max);
 		DateAndTimeUtils.withUserTimeZoneId(userTimeZone -> {
 //			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(PolicyUtils.getRunCompletedTime(policy), userTimeZone));
 			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(getTrainingCompletedTime(experiment), userTimeZone));
@@ -175,15 +175,9 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 //		return getPolicy().getId() == event.getPolicy().getId();
 //	}
 
-	private void updateElapsedTimer(Experiment experiment) {
-		final var runStatus =// PolicyUtils.getRunStatus(policy);
-				experiment.getPolicies().stream()
-						.map(Policy::getRun)
-						.map(Run::getStatusEnum)
-						.max(Comparator.comparingInt(RunStatus::getValue))
-						.orElse(NotStarted);
+	private void updateElapsedTimer(Experiment experiment, RunStatus trainingStatus) {
 		getTrainingStartedDate(experiment).ifPresent(time ->
-				elapsedTimeLabel.updateTimer(Duration.between(time, LocalDateTime.now()).toSeconds(), isRunning(runStatus)));
+				elapsedTimeLabel.updateTimer(Duration.between(time, LocalDateTime.now()).toSeconds(), isRunning(trainingStatus)));
 	}
 
 	// TODO (KW): 25.01.2020 move to ExperimentUtils
