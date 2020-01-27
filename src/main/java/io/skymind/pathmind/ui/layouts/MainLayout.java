@@ -21,6 +21,7 @@ import io.skymind.pathmind.ui.utils.VaadinUtils;
 @CssImport(value = "./styles/components/vaadin-text-field.css", themeFor = "vaadin-text-field")
 @CssImport(value = "./styles/components/vaadin-button.css", themeFor = "vaadin-button")
 @CssImport(value = "./styles/components/vaadin-menu-bar.css", themeFor = "vaadin-menu-bar")
+@CssImport(value = "./styles/components/vaadin-context-menu-list-box.css", themeFor = "vaadin-context-menu-list-box")
 @CssImport(value = "./styles/components/vaadin-grid.css", themeFor = "vaadin-grid")
 @CssImport(value = "./styles/components/vaadin-split-layout.css", themeFor = "vaadin-split-layout")
 @CssImport(value = "./styles/components/vaadin-chart.css", themeFor = "vaadin-chart", include = "vaadin-chart-default-theme")
@@ -43,7 +44,11 @@ public class MainLayout extends AppLayout implements PageConfigurator
 	public MainLayout(CurrentUser user)
 	{
 		setId("pathmind-app-layout");
-		addToNavbar(new SectionsHeaderPanel(), new AccountHeaderPanel(user.getUser()));
+		boolean hasLoginUser = user != null && user.getUser() != null;
+		addToNavbar(new SectionsHeaderPanel(hasLoginUser));
+		if (hasLoginUser) {
+			addToNavbar(new AccountHeaderPanel(user.getUser()));
+		}
 
 		// Added a message just in case there's ever a failure.
 		setContent(new Span("Error. Please contact Skymind for assistance"));

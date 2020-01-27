@@ -10,6 +10,7 @@ import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
 import io.skymind.pathmind.data.db.tables.Policy;
 import io.skymind.pathmind.data.db.tables.Project;
+import io.skymind.pathmind.data.db.tables.RewardScore;
 import io.skymind.pathmind.data.db.tables.Run;
 import io.skymind.pathmind.data.db.tables.TrainerJob;
 
@@ -58,6 +59,11 @@ public class Tables {
      * The table <code>public.project</code>.
      */
     public static final Project PROJECT = Project.PROJECT;
+
+    /**
+     * The table <code>public.reward_score</code>.
+     */
+    public static final RewardScore REWARD_SCORE = RewardScore.REWARD_SCORE;
 
     /**
      * The table <code>public.run</code>.

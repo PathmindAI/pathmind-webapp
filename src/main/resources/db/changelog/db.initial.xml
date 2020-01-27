@@ -624,8 +624,8 @@
         </addColumn>
         <sql>
             UPDATE POLICY SET name=SPLIT_PART(external_id, '_', 3);
-            <!--        The following line fails in liquibase but works in postgres directly. Therefore this code has been implemented in the Java changeset code -->
-            <!--        UPDATE POLICY SET NOTES=concat('sgd_minibatch_size=', batch_size, ', lr=', learning_rate, ', gamma=', gamma);-->
+<!--        The following line fails in liquibase but works in postgres directly. Therefore this code has been implemented in the Java changeset code -->
+<!--        UPDATE POLICY SET NOTES=concat('sgd_minibatch_size=', batch_size, ', lr=', learning_rate, ', gamma=', gamma);-->
         </sql>
         <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191229_01"/>
         <rollback>
@@ -666,6 +666,32 @@
             <addColumn tableName="PATHMIND_USER">
                 <column name="NAME" type="VARCHAR(255)"/>
             </addColumn>
+        </rollback>
+    </changeSet>
+
+    <!-- #388 - Policy scores should be stored in their own table rather than in a json column -->
+    <changeSet id="20200110-01" author="steph@followsteph.com">
+        <createTable tableName="REWARD_SCORE">
+            <column name="POLICY_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_REWARD_SCORE_POLICY" references="POLICY(ID)"/>
+            </column>
+            <!-- We have to allow NULL to be able to represent NaN as JOOQ uses BigDecimal which does not accept NaN as a value -->
+            <column name="MIN" type="DECIMAL(27,17)"/>
+            <column name="MEAN" type="DECIMAL(27,17)"/>
+            <column name="MAX" type="DECIMAL(27,17)"/>
+            <column name="ITERATION" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="REWARD_SCORE" indexName="REWARD_SCORE_POLICY_ID_INDEX">
+            <column name="POLICY_ID"/>
+        </createIndex>
+        <!-- The POLICY.PROGRESS column will be removed as a new changeset in a follow-up PR as a safety precaution. -->
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200110_01"/>
+        <rollback>
+            <!-- We cannot rollback the progress column once it's deleted. -->
+            <dropIndex tableName="REWARD_SCORE" indexName="REWARD_SCORE_POLICY_ID_INDEX"/>
+            <dropTable tableName="REWARD_SCORE"/>
         </rollback>
     </changeSet>
 
@@ -710,11 +736,11 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="20191212-1" author="daniel@pathmind.com">
+    <changeSet id="20200114-1" author="daniel@pathmind.com">
         <modifyDataType tableName="TRAINER_JOB" columnName="RECEIPTHANDLE" newDataType="VARCHAR(1000)"></modifyDataType>
     </changeSet>
 
-    <changeSet id="20191219-2" author="daniel.jaramillo@toptal.com">
+    <changeSet id="20200119-1" author="daniel.jaramillo@toptal.com">
         <addColumn tableName="TRAINER_JOB">
             <column name="UPDATE_DATE" type="DATETIME" defaultValueComputed="NOW()">
                 <constraints nullable="true"/>

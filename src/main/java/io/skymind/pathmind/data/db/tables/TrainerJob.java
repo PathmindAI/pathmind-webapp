@@ -20,7 +20,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row12;
+import org.jooq.Row13;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrainerJob extends TableImpl<TrainerJobRecord> {
 
-    private static final long serialVersionUID = -566452021;
+    private static final long serialVersionUID = 1642084909;
 
     /**
      * The reference instance of <code>public.trainer_job</code>
@@ -80,7 +80,7 @@ public class TrainerJob extends TableImpl<TrainerJobRecord> {
     /**
      * The column <code>public.trainer_job.receipthandle</code>.
      */
-    public final TableField<TrainerJobRecord, String> RECEIPTHANDLE = createField(DSL.name("receipthandle"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<TrainerJobRecord, String> RECEIPTHANDLE = createField(DSL.name("receipthandle"), org.jooq.impl.SQLDataType.VARCHAR(1000).nullable(false), this, "");
 
     /**
      * The column <code>public.trainer_job.ec2_instance_type</code>.
@@ -116,6 +116,11 @@ public class TrainerJob extends TableImpl<TrainerJobRecord> {
      * The column <code>public.trainer_job.description</code>.
      */
     public final TableField<TrainerJobRecord, String> DESCRIPTION = createField(DSL.name("description"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+
+    /**
+     * The column <code>public.trainer_job.update_date</code>.
+     */
+    public final TableField<TrainerJobRecord, LocalDateTime> UPDATE_DATE = createField(DSL.name("update_date"), org.jooq.impl.SQLDataType.LOCALDATETIME.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
 
     /**
      * Create a <code>public.trainer_job</code> table reference
@@ -197,11 +202,11 @@ public class TrainerJob extends TableImpl<TrainerJobRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row12 type methods
+    // Row13 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, LocalDateTime, Integer, String> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row13<String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, LocalDateTime, Integer, String, LocalDateTime> fieldsRow() {
+        return (Row13) super.fieldsRow();
     }
 }

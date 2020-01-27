@@ -1,14 +1,10 @@
 package io.skymind.pathmind.data;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.Objects;
 
 public abstract class Data
 {
-	@JsonIgnore
 	private long id = -1;
-	@JsonIgnore
 	private String name;
 
 	public long getId() {

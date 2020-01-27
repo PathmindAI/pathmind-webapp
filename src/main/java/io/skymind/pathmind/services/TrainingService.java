@@ -6,6 +6,7 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
@@ -20,6 +21,7 @@ import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.JSONB;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
@@ -101,7 +103,8 @@ public abstract class TrainingService {
         return generateTempPolicy(spec, run, null);
     }
 
-    protected Policy generateTempPolicy(JobSpec spec, Run run, JSONB progress) {
+    // We want to create a copy of List<RewardScore> so that the references are unique and one doesn't affect the other.
+    protected Policy generateTempPolicy(JobSpec spec, Run run, List<RewardScore> scores) {
         // this is for ui filling gap until ui get a training progress from backend(rescale)
         Policy tempPolicy = new Policy();
 
@@ -114,9 +117,8 @@ public abstract class TrainingService {
         tempPolicy.setName(PolicyUtils.parsePolicyName(tempPolicy.getExternalId()));
         tempPolicy.setNotes(PolicyUtils.generateDefaultNotes(tempPolicy));
 
-        if (progress != null) {
-            tempPolicy.setProgress(progress.toString());
-        }
+        if(scores != null)
+            tempPolicy.setScores(scores);
 
         return tempPolicy;
     }
