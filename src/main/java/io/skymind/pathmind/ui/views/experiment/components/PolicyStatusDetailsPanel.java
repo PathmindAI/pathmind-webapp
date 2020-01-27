@@ -21,8 +21,7 @@ import io.skymind.pathmind.services.training.constant.RunConstants;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.stereotype.Component;
 
-import static io.skymind.pathmind.constants.RunStatus.NotStarted;
-import static io.skymind.pathmind.constants.RunStatus.isRunning;
+import static io.skymind.pathmind.constants.RunStatus.*;
 import static io.skymind.pathmind.constants.RunType.FullRun;
 import static io.skymind.pathmind.services.training.constant.RunConstants.*;
 
@@ -117,7 +116,7 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 
 	public void update(Experiment experiment) {
 		// TODO (KW): 25.01.2020 refactor
-		final var max = experiment.getPolicies().stream().map(Policy::getRun).map(Run::getStatusEnum).max(Comparator.comparingInt(RunStatus::getValue)).orElse(NotStarted);
+		final var max = experiment.getPolicies().stream().map(Policy::getRun).map(Run::getStatusEnum).min(Comparator.comparingInt(RunStatus::getValue)).orElse(NotStarted);
 		final var runType = experiment.getPolicies().stream().map(Policy::getRun).map(Run::getRunTypeEnum).max(Comparator.comparingInt(RunType::getValue)).orElse(FullRun);
 
 
@@ -147,6 +146,7 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 		if (progress > 0) {
 			final var earliestPolicyStartedDate = policiesForExperiment.stream()
 					.map(Policy::getStartedAt)
+					.filter(Objects::nonNull)
 					.min(LocalDateTime::compareTo)
 					.orElse(LocalDateTime.now());
 			var difference = Duration.between(earliestPolicyStartedDate, LocalDateTime.now());
@@ -154,7 +154,7 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 		}
 		if (progress <= 100) {
 			final String formattedEstimatedTime = DateAndTimeUtils.formatDurationTime((long) estimatedTime);
-			final String progressValue = String.format("%.0f %% (estimated time: %s)", progress, formattedEstimatedTime);
+			final String progressValue = String.format("%.0f %% (ETA: %s)", progress, formattedEstimatedTime);
 			progressValueLabel.setText(progressValue);
 			progressBar.setValue(progress);
 		}
