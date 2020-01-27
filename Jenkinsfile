@@ -165,7 +165,7 @@ pipeline {
 		script {
 			try {
 				echo "Running tests"
-				sh "cd pathmind-bdd-tests; mvn clean verify -Denvironment=pathmind-dev"
+				sh "cd bdd-tests; mvn clean verify -Denvironment=pathmind-dev"
 			} catch (err) {
 			} finally {
 				publishHTML (target: [
