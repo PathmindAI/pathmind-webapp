@@ -241,7 +241,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	
 	private void processSelectedPolicy(Policy selectedPolicy) {
 		policyHighlightPanel.update(selectedPolicy);
-		policyStatusDetailsPanel.update(selectedPolicy);
 		policyChartPanel.init(selectedPolicy);
 		policyChartPanel.highlightPolicy(selectedPolicy);
 
@@ -259,7 +258,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		} else if (selectedRunType == RunType.FullRun) {
 			runFullTraining.setVisible(false);
 		}
-		
+
+		// TODO (KW): 27.01.2020 test it
+		policyStatusDetailsPanel.update(experiment);
 	}
 	private void addOrUpdatePolicy(Policy updatedPolicy) {
 		experiment.getPolicies().stream()

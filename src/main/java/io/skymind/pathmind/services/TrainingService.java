@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.services.training.constant.RunConstants.DISCOVERY_RUN_BATCH_SIZES;
+import static io.skymind.pathmind.services.training.constant.RunConstants.HYPERPARAMETERS;
 
 @Service
 @Slf4j
@@ -66,15 +66,17 @@ public class TrainingService
     }
 
     public void startDiscoveryRun(Experiment exp){
-        DISCOVERY_RUN_BATCH_SIZES.forEach(
-                batch -> startRun(RunType.DiscoveryRun,
-                        exp,
-                        100,
-                        Arrays.asList(1e-3, 1e-5), // Learning rate
-                        Arrays.asList(0.9, 0.99), // gamma
-                        Arrays.asList(batch), // batch size
-                        30 * MINUTE
-                ));
+        // TODO (KW): 25.01.2020 create constants for keys
+        HYPERPARAMETERS.get("DISCOVERY_RUN_BATCH_SIZES")
+                .forEach(
+                        batch -> startRun(RunType.DiscoveryRun,
+                                exp,
+                                100,
+                                Arrays.asList(1e-3, 1e-5), // Learning rate
+                                Arrays.asList(0.9, 0.99), // gamma
+                                Arrays.asList((Integer) batch), // batch size
+                                30 * MINUTE
+                        ));
     }
 
     public void startFullRun(Experiment exp, Policy policy){

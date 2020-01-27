@@ -2,36 +2,33 @@ package io.skymind.pathmind.ui.views.experiment.components;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.progressbar.ProgressBar;
-import io.skymind.pathmind.data.utils.RunUtils;
+import io.skymind.pathmind.constants.RunType;
+import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import io.skymind.pathmind.bus.EventBus;
-import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.services.training.constant.RunConstants;
-import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.stereotype.Component;
 
+import static io.skymind.pathmind.constants.RunStatus.NotStarted;
 import static io.skymind.pathmind.constants.RunStatus.isRunning;
+import static io.skymind.pathmind.constants.RunType.FullRun;
 import static io.skymind.pathmind.services.training.constant.RunConstants.*;
 
 @Component
-public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUpdateSubscriber
-{
+// TODO (KW): 25.01.2020 rename class and fields
+public class PolicyStatusDetailsPanel extends VerticalLayout /*implements PolicyUpdateSubscriber*/ {
 	private Label statusLabel = new Label(RunStatus.NotStarted.toString());
 	private Label runProgressLabel = new Label();
 	private Label runTypeLabel = new Label();
@@ -39,12 +36,13 @@ public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUp
 	private ProgressBar progressBar = new ProgressBar(0, 100);
 	private Label progressValueLabel = new Label();
 
+	// TODO (KW): 25.01.2020 remove unused fields
 	private Policy policy;
 
+	// TODO (KW): 27.01.2020 remove if not used
 	private PolicyDAO policyDAO;
 
-	public PolicyStatusDetailsPanel(PolicyDAO policyDAO)
-	{
+	public PolicyStatusDetailsPanel(PolicyDAO policyDAO) {
 		Label[] labels = Arrays.asList(
 				getElementLabel("Status"),
 				getElementLabel(""),
@@ -104,22 +102,41 @@ public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUp
 				label.getStyle().set("margin-top", "0px"));
 	}
 
-	public void update(Policy policy)
-	{
-		this.policy = policy;
+//	public void update(Policy policy)
+//	{
+//		this.policy = policy;
+//
+//		statusLabel.setText(PolicyUtils.getRunStatus(policy).toString());
+//		runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());
+//		updateElapsedTimer(policy);
+//		DateAndTimeUtils.withUserTimeZoneId(userTimeZone -> {
+//			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(PolicyUtils.getRunCompletedTime(policy), userTimeZone));
+//		});
+//		updateProgressBar(policy.getExperiment().getId());
+//	}
 
-		statusLabel.setText(PolicyUtils.getRunStatus(policy).toString());
-		runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());
-		updateElapsedTimer(policy);
+	public void update(Experiment experiment) {
+		// TODO (KW): 25.01.2020 refactor
+		final var max = experiment.getPolicies().stream().map(Policy::getRun).map(Run::getStatusEnum).max(Comparator.comparingInt(RunStatus::getValue)).orElse(NotStarted);
+		final var runType = experiment.getPolicies().stream().map(Policy::getRun).map(Run::getRunTypeEnum).max(Comparator.comparingInt(RunType::getValue)).orElse(FullRun);
+
+
+//		statusLabel.setText(PolicyUtils.getRunStatus(policy).toString());
+		statusLabel.setText(max.toString());
+		runTypeLabel.setText(runType.toString());
+		updateElapsedTimer(experiment);
 		DateAndTimeUtils.withUserTimeZoneId(userTimeZone -> {
-			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(PolicyUtils.getRunCompletedTime(policy), userTimeZone));
+//			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(PolicyUtils.getRunCompletedTime(policy), userTimeZone));
+			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(getTrainingCompletedTime(experiment), userTimeZone));
 		});
-		updateProgressBar(policy.getExperiment().getId());
+		updateProgressBar(experiment);
 	}
 
 	// TODO (KW): 23.01.2020 refactor
-	private void updateProgressBar(long expId) {
-		final var policiesForExperiment = policyDAO.getPoliciesForExperiment(expId);
+	private void updateProgressBar(Experiment experiment) {
+//		final var policiesForExperiment = policyDAO.getPoliciesForExperiment(expId);
+		final var policiesForExperiment = experiment.getPolicies();
+		// TODO (KW): 25.01.2020 add full run scenario
 		final var totalIterations = (double) DISCOVERY_RUN_ITERATIONS * RunConstants.getNumberOfDiscoveryRuns();
 		final Integer iterationsProcessed = policiesForExperiment.stream()
 				.map(Policy::getScores)
@@ -147,30 +164,61 @@ public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUp
 		return policy;
 	}
 
-	@Override
-	protected void onDetach(DetachEvent event) {
-		EventBus.unsubscribe(this);
+//	@Override
+//	protected void onDetach(DetachEvent event) {
+//		EventBus.unsubscribe(this);
+//	}
+//
+//	@Override
+//	protected void onAttach(AttachEvent event) {
+//		EventBus.subscribe(this);
+//	}
+//
+//	@Override
+//	public void handleBusEvent(PolicyUpdateBusEvent event) {
+////		this.policy = event.getPolicy();
+////		PushUtils.push(this, () -> update(event.getPolicy()));
+//	}
+//
+//	@Override
+//	public boolean filterBusEvent(PolicyUpdateBusEvent event) {
+//		return getPolicy().getId() == event.getPolicy().getId();
+//	}
+
+	private void updateElapsedTimer(Experiment experiment) {
+		final var runStatus =// PolicyUtils.getRunStatus(policy);
+				experiment.getPolicies().stream()
+						.map(Policy::getRun)
+						.map(Run::getStatusEnum)
+						.max(Comparator.comparingInt(RunStatus::getValue))
+						.orElse(NotStarted);
+		getTrainingStartedDate(experiment).ifPresent(time ->
+				elapsedTimeLabel.updateTimer(Duration.between(time, LocalDateTime.now()).toSeconds(), isRunning(runStatus)));
 	}
 
-	@Override
-	protected void onAttach(AttachEvent event) {
-		EventBus.subscribe(this);
+	// TODO (KW): 25.01.2020 move to ExperimentUtils
+	private Optional<LocalDateTime> getTrainingStartedDate(Experiment experiment) {
+		return experiment.getPolicies().stream()
+				.map(Policy::getStartedAt)
+				.filter(Objects::nonNull)
+				.min(LocalDateTime::compareTo);
 	}
 
-	@Override
-	public void handleBusEvent(PolicyUpdateBusEvent event) {
-		this.policy = event.getPolicy();
-		PushUtils.push(this, () -> update(event.getPolicy()));
+	private LocalDateTime getTrainingCompletedTime(Experiment experiment) {
+		var stoppedTimes = experiment.getPolicies().stream()
+				.map(Policy::getStoppedAt)
+				.collect(Collectors.toList());
+
+		if (isAnyPolicyNotFinished(stoppedTimes)) {
+			return null;
+		}
+
+		return stoppedTimes.stream()
+				.max(LocalDateTime::compareTo)
+				.orElse(LocalDateTime.now());
 	}
 
-	@Override
-	public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-		return getPolicy().getId() == event.getPolicy().getId();
-	}
-
-	private void updateElapsedTimer(Policy policy) {
-		final var runStatus = PolicyUtils.getRunStatus(policy);
-		final var elapsedTime = RunUtils.getElapsedTime(policy.getRun());
-		elapsedTimeLabel.updateTimer(elapsedTime, isRunning(runStatus));
+	private boolean isAnyPolicyNotFinished(List<LocalDateTime> stoppedTimes) {
+		return stoppedTimes.stream().anyMatch(Objects::isNull);
 	}
 }
