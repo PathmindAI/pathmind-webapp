@@ -13,6 +13,7 @@ COPY security.groovy /usr/share/jenkins/ref/init.groovy.d/
 #Install python packages
 RUN apt update && \
 	apt-get install maven -y && \
+	apt-get install chromedriver -y && \
 	apt install python-pip -y && \
 	pip install awscli
 
