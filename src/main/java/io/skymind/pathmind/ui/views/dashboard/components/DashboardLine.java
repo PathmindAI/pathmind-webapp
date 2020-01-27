@@ -7,6 +7,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.function.SerializableConsumer;
 
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.Stage;
@@ -27,7 +28,7 @@ public class DashboardLine extends HorizontalLayout {
 	private Stage currentStage;
 	private DashboardItem dashboardItem;
 	
-	public DashboardLine(DashboardItem item) {
+	public DashboardLine(DashboardItem item, SerializableConsumer<DashboardItem> clickHandler) {
 		this.dashboardItem = item;
 		setClassName("dashboard-line");
 		breadcrumb = new Breadcrumbs(item.getProject(), item.getModel(), item.getExperiment(), false);
@@ -42,6 +43,8 @@ public class DashboardLine extends HorizontalLayout {
 		Span navigateIcon = new Span(VaadinIcon.CHEVRON_RIGHT.create());
 		navigateIcon.setClassName("navigate-icon");
 		add(wrapper, navigateIcon);
+		
+		addClickListener(evt -> clickHandler.accept(item));
 	}
 
 	private HorizontalLayout createStages() {

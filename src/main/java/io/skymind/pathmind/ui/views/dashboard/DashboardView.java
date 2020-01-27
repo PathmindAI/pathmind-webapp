@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -71,9 +72,9 @@ public class DashboardView extends PathMindDefaultView
 		dashboardGrid = new Grid<>();
 		dashboardGrid.addClassName("dashboard");
 		dashboardGrid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
-		dashboardGrid.addComponentColumn(item -> new DashboardLine(item));
+		dashboardGrid.addComponentColumn(item -> new DashboardLine(item, itm -> navigateFromDashboard(itm)));
+		dashboardGrid.setSelectionMode(SelectionMode.NONE);
 		dashboardGrid.setPageSize(10);
-		dashboardGrid.addItemClickListener(event -> navigateFromDashboard(event.getItem()));
 	}
 
 	private void navigateFromDashboard(DashboardItem item) {
