@@ -3,6 +3,7 @@ package io.skymind.pathmind.db.dao;
 import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 
@@ -17,6 +18,7 @@ import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
 import static io.skymind.pathmind.data.db.tables.Run.RUN;
 import static org.jooq.impl.DSL.count;
 
+@Slf4j
 class ExperimentRepository
 {
 	protected static Experiment getExperiment(DSLContext ctx, long experimentId) {
@@ -29,6 +31,10 @@ class ExperimentRepository
 				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
 				.where(EXPERIMENT.ID.eq(experimentId))
 				.fetchOne();
+
+		if(record == null) {
+			return null;
+		}
 
 		Experiment experiment = record.into(EXPERIMENT).into(Experiment.class);
 		addParentDataModelObjects(record, experiment);
