@@ -1,8 +1,5 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
-import static io.skymind.pathmind.constants.RunStatus.Running;
-import static io.skymind.pathmind.constants.RunStatus.isRunning;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -21,10 +18,11 @@ import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
+import static io.skymind.pathmind.constants.RunStatus.*;
+
 @Component
 public class TrainingStatusDetailsPanel extends VerticalLayout {
 	private Label statusLabel = new Label(RunStatus.NotStarted.toString());
-	private Label runProgressLabel = new Label();
 	private Label runTypeLabel = new Label();
 	private Label progressValueLabel = new Label();
 	private ElapsedTimer elapsedTimeLabel = new ElapsedTimer();
@@ -32,12 +30,11 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 	private VerticalLayout progressRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(progressBar, progressValueLabel);
 
 	public TrainingStatusDetailsPanel() {
-		
+
 		FormLayout formLayout = new FormLayout();
 		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("1px", 1, FormLayout.ResponsiveStep.LabelsPosition.ASIDE));
 		VerticalLayout statusRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(statusLabel, progressRow);
 		formLayout.addFormItem(statusRow, "Status :").setClassName("training-status");
-		formLayout.addFormItem(runProgressLabel, "").setClassName("training-status");
 		formLayout.addFormItem(runTypeLabel, "Run Type :").setClassName("training-status");
 		formLayout.addFormItem(elapsedTimeLabel, "Elapsed :").setClassName("training-status");
 		formLayout.setSizeFull();
@@ -52,20 +49,25 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 		runTypeLabel.setText(runType.toString());
 
 		updateElapsedTimer(experiment, trainingStatus);
-		DateAndTimeUtils.withUserTimeZoneId(userTimeZone -> {
-			final var trainingCompletedTime = ExperimentUtils.getTrainingCompletedTime(experiment);
-			final var formattedTrainingCompletedTime = DateAndTimeUtils.formatDateAndTimeShortFormatter(trainingCompletedTime, userTimeZone);
-			runProgressLabel.setText(formattedTrainingCompletedTime);
-		});
 		updateProgressRow(experiment, trainingStatus, runType);
 	}
 
 	private void updateProgressRow(Experiment experiment, RunStatus trainingStatus, RunType runType) {
 		if(trainingStatus == Running) {
-			progressRow.setVisible(true);
+			progressBar.setVisible(true);
+			progressValueLabel.setVisible(true);
 			updateProgressBar(experiment, runType);
+		} else if (trainingStatus == Completed) {
+			DateAndTimeUtils.withUserTimeZoneId(userTimeZone -> {
+				final var trainingCompletedTime = ExperimentUtils.getTrainingCompletedTime(experiment);
+				final var formattedTrainingCompletedTime = DateAndTimeUtils.formatDateAndTimeShortFormatter(trainingCompletedTime, userTimeZone);
+				progressValueLabel.setText(formattedTrainingCompletedTime);
+			});
+			progressValueLabel.setVisible(true);
+			progressBar.setVisible(false);
 		} else {
-			progressRow.setVisible(false);
+			progressBar.setVisible(false);
+			progressValueLabel.setVisible(false);
 		}
 	}
 
@@ -77,7 +79,7 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 		final var progress = (iterationsProcessed / totalIterations) * 100;
 		if (progress > 0 && progress <= 100) {
 			final var estimatedTime = ExperimentUtils.getEstimatedTrainingTime(experiment, progress);
-			final var formattedEstimatedTime = DateAndTimeUtils.formatDurationTime((long) estimatedTime);
+			final var formattedEstimatedTime = DateAndTimeUtils.getOnlyTheHighestDateLevel((long) estimatedTime);
 			final var progressValue = formatProgressLabel(progress, formattedEstimatedTime);
 			progressValueLabel.setText(progressValue);
 			progressBar.setValue(progress);

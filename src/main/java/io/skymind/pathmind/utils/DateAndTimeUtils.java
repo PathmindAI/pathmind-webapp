@@ -49,6 +49,23 @@ public class DateAndTimeUtils
 				(seconds > 0 ? (seconds + " sec") : "");
 	}
 
+	public static String getOnlyTheHighestDateLevel(long totalSeconds)
+	{
+		if(totalSeconds == 0)
+			return "0 sec";
+
+		long hours = totalSeconds / 3600;
+		long minutes = (totalSeconds % 3600) / 60;
+		long seconds = totalSeconds % 60;
+
+		if(hours > 0)
+			return hours + " hr";
+		else if (minutes > 0)
+			return minutes + " min";
+		else
+			return seconds + " sec";
+	}
+
 	public static NumberFormat getElapsedTimeNumberFormat() {
 		return new NumberFormat() {
 			@Override
