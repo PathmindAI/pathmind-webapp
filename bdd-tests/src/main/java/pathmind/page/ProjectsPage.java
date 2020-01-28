@@ -72,6 +72,10 @@ public class ProjectsPage extends PageObject {
     private WebElement pageLabel;
     @FindBy(xpath = "//juicy-ace-editor")
     private WebElement juicyAceEditorShadow;
+    @FindBy(xpath = "//vaadin-text-area")
+    private WebElement getObservationsShadow;
+    @FindBy(xpath = "//a[@class='breadcrumb']")
+    private List<WebElement> breadcrumb;
 
     private By byInput = By.cssSelector("input");
 
@@ -106,12 +110,12 @@ public class ProjectsPage extends PageObject {
     }
 
     public void uploadModelFile(String model) {
-        getDriver().findElement(By.xpath("//vaadin-button[text()='Upload as zip file']")).click();
+//        getDriver().findElement(By.xpath("//vaadin-button[text()='Upload as zip file']")).click();
 
         WebElement e = utils.expandRootElement(uploadShadow);
         WebElement projectNameInputField = e.findElement(byInput);
         File file = new File("models/" + model);
-        System.out.println("ABSOLUTE PATH: "+file.getAbsolutePath());
+//        System.out.println("ABSOLUTE PATH: "+file.getAbsolutePath());
         projectNameInputField.sendKeys(file.getAbsolutePath());
     }
 
@@ -414,6 +418,13 @@ public class ProjectsPage extends PageObject {
     public void checkExperimentsPageElements() {
         assertThat(getDriver().findElement(By.xpath("//vaadin-button[@class='action-button'][1]")).getAttribute("title"), is("Archive"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-button[@class='action-button'][2]")).getAttribute("title"), is("Show reward function"));
+        List<String> strings = new ArrayList<>();
+        for(WebElement e : breadcrumb){
+            strings.add(e.getText());
+        }
+        assertThat(strings, hasItem("Projects"));
+        assertThat(strings, hasItem("AutotestProject" + Serenity.sessionVariableCalled("randomNumber")));
+        assertThat(strings, hasItem("Model #1"));
     }
 
     public void clickProjectsBreadcrumbBtn(String breadcrumb) {
@@ -423,5 +434,13 @@ public class ProjectsPage extends PageObject {
     public void checkThatExperimentsPageOpened() {
         assertThat(getDriver().getCurrentUrl(), containsString("experiments"));
         assertThat(getDriver().getTitle(), is("Pathmind | Experiments"));
+    }
+
+    public void checkExperimentModelStatusIsStarting(String status) {
+        List<String> strings = new ArrayList<>();
+        for(WebElement e : projectsNames){
+            strings.add(e.getText());
+        }
+        assertThat(strings, hasItem(status));
     }
 }

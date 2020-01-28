@@ -129,7 +129,7 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.inputNameOfTheNewProject("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
         projectsPageSteps.clickProjectNameCreateBtn();
         projectsPageSteps.clickUploadModelBtn();
-        projectsPageSteps.uploadModelFile("\\CoffeeShopExportedModel.zip");
+        projectsPageSteps.uploadModelFile("\\CoffeeShopExportedModel");
         projectsPageSteps.inputModelDetails("5", "4", "CoffeeShopExportedModelGetObservation.txt");
         projectsPageSteps.checkThatProjectPageOpened("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
         projectsPageSteps.inputRewardFunction("reward -= after[1] - before[1];");
@@ -270,5 +270,10 @@ public class ProjectsPageStepDefinitions {
     @Then("^Check that experiments page opened$")
     public void checkThatExperimentsPageOpened() {
         projectsPageSteps.checkThatExperimentsPageOpened();
+    }
+
+    @Then("^Check experiment model status is (.*)$")
+    public void checkExperimentModelStatusIsStarting(String status) {
+        projectsPageSteps.checkExperimentModelStatusIsStarting(status);
     }
 }

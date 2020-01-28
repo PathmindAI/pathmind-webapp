@@ -202,4 +202,8 @@ public class ProjectsPageSteps {
     public void checkThatExperimentsPageOpened() {
         projectsPage.checkThatExperimentsPageOpened();
     }
+    @Step
+    public void checkExperimentModelStatusIsStarting(String status) {
+        projectsPage.checkExperimentModelStatusIsStarting(status);
+    }
 }

@@ -120,3 +120,14 @@ Feature: Experiments page
     When Click back button
     Then Click 1 experiment show reward function btn
     Then Check reward function is reward -= after[3] - before[3];
+
+  Scenario: Check discovery run status
+    Given Login to the pathmind
+    When Create new CoffeeShop project
+    Then Click project start discovery run button
+    Then Click Okay in the "Starting the training..." popup
+    When Open projects page
+    When Input project name to the search field AutotestProject
+    When Open project AutotestProject on projects page
+    Then Click the model name 1
+    Then Check experiment model status is Starting

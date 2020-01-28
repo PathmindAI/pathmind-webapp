@@ -1,5 +1,5 @@
 Feature: Projects page
-  @debug
+
   Scenario Outline: Create new project and check search btn
     Given Login to the pathmind
     When Open projects page
