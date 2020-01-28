@@ -244,13 +244,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		// to avoid multiple download policy file from rescale server,
 		// we put the "saving" for temporary
 		// policy dao will check if there's real policy file exist or not
-		exportPolicyButton.setEnabled(policyDAO.hasPolicyFile(selectedPolicy.getId()));
+		boolean isTrainingFinished = ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed;
+		if (isTrainingFinished) {
+			exportPolicyButton.setEnabled(policyDAO.hasPolicyFile(selectedPolicy.getId()));
+		}
 
 		RunType selectedRunType = selectedPolicy.getRun().getRunTypeEnum();
-		boolean canStartFurtherRuns = PolicyUtils.getRunStatus(selectedPolicy) == RunStatus.Completed;
 		if (selectedRunType == RunType.DiscoveryRun) {
 			runFullTraining.setVisible(true);
-			runFullTraining.setEnabled(canStartFurtherRuns);
+			runFullTraining.setEnabled(isTrainingFinished);
 		} else if (selectedRunType == RunType.FullRun) {
 			runFullTraining.setVisible(false);
 		}
