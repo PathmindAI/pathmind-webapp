@@ -53,11 +53,16 @@ spec:
                   key: DB_URL
             - name: INTERCOM_APP_ID 
               value: "{{ .Values.env.INTERCOM_APP_ID }}"
-            - name: SEGMENT_KEY
+            - name: SEGMENT_WEBSITE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: segmentkey
-                  key: SEGMENT_KEY
+                  name: segmentwebsitekey
+                  key: SEGMENT_WEBSITE_KEY
+            - name: SEGMENT_SERVER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: segmentserversitekey
+                  key: SEGMENT_SERVER_KEY
             - name: WEBSITE_HTTPLOGGING_RETENTION_DAYS
               value: "{{ .Values.env.WEBSITE_HTTPLOGGING_RETENTION_DAYS }}"
             - name: PATHMIND_LOG_FILE_PATH

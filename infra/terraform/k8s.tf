@@ -110,13 +110,24 @@ resource "null_resource" "db_url_cli_secret" {
 }
 
 
-resource "null_resource" "segment_key_secret" {
+resource "null_resource" "segment_website_key_secret" {
   provisioner "local-exec" {
-    command = "kubectl create secret generic segmentkey --from-literal SEGMENT_KEY=${var.SEGMENT_KEY}"
+    command = "kubectl create secret generic segmentwebsitekey --from-literal SEGMENT_WEBSITE_KEY=${var.SEGMENT_WEBSITE_KEY}"
   }
   provisioner "local-exec" {
     when    = "destroy"
-    command = "kubectl delete secret segmentkey"
+    command = "kubectl delete secret segmentwebsitekey"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}
+
+resource "null_resource" "segment_server_key_secret" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic segmentserversitekey --from-literal SEGMENT_SERVER_KEY=${var.SEGMENT_SERVER_KEY}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret segmentwebsitekey"
   }
   depends_on = ["null_resource.configmap_ingress_nginx"]
 }
@@ -156,7 +167,8 @@ resource "null_resource" "pathmind" {
     when = "destroy"
     command = "helm delete pathmind"
   }
-  depends_on = ["null_resource.awsaccesskey","null_resource.awssecretaccesskey","null_resource.db_url_secret","null_resource.segment_key_secret","null_resource.trainer"]
+  depends_on =
+["null_resource.awsaccesskey","null_resource.awssecretaccesskey","null_resource.db_url_secret","null_resource.segment_server_key_secret","null_resource.segment_website_key_secret","null_resource.trainer"]
 }
 
 #install pathmind-slot
@@ -168,7 +180,8 @@ resource "null_resource" "pathmind-slot" {
     when = "destroy"
     command = "helm delete pathmind-slot"
   }
-  depends_on = ["null_resource.awsaccesskey","null_resource.awssecretaccesskey","null_resource.db_url_secret","null_resource.segment_key_secret","null_resource.trainer"]
+  depends_on =
+["null_resource.awsaccesskey","null_resource.awssecretaccesskey","null_resource.db_url_secret","null_resource.segment_server_key_secret","null_resource.segment_website_key_secret","null_resource.trainer"]
 }
 
 

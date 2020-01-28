@@ -5,7 +5,8 @@ variable "domain_name" {}
 variable "subdomain" {}
 variable "DB_URL" {}
 variable "DB_URL_CLI" {}
-variable "SEGMENT_KEY" {}
+variable "SEGMENT_WEBSITE_KEY" {}
+variable "SEGMENT_SERVER_KEY" {}
 variable "environment" { }
 variable "db_allocated_storage" { }
 
