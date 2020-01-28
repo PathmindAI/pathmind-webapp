@@ -137,9 +137,9 @@ class ExperimentRepository
 	 * Generated query in plain SQL would look like:
 	 * <pre>
 	 *     {@code}
-	 * SELECT e.*,
-	 *        m.*,
-	 *        p.*,
+	 * SELECT e.id, e.name,
+	 *        m.id, m.name,
+	 *        p.id, p.name,
 	 *        greatest(e.last_activity_date, m.last_activity_date, p.last_activity_date) AS ITEM_LAST_ACTIVITY_DATE,
 	 *        latest_run.*
 	 * FROM experiment e
@@ -147,7 +147,7 @@ class ExperimentRepository
 	 * RIGHT JOIN project p ON p.id = m.project_id
 	 * LEFT JOIN pathmind_user u ON u.id = p.pathmind_user_id
 	 * LEFT JOIN
-	 *   (SELECT DISTINCT ON (experiment_id) *
+	 *   (SELECT DISTINCT ON (experiment_id) id, experiment_id, name, run_type, started_at, stopped_at, status
 	 *    FROM run
 	 *    WHERE started_at IS NOT NULL
 	 *    ORDER BY experiment_id,
@@ -172,7 +172,7 @@ class ExperimentRepository
 	 * @return List of dashboard items
 	 */
 	static List<DashboardItem> getDashboardItemsForUser(DSLContext ctx, long userId, int offset, int limit) {
-		final var latestRun = ctx.select(RUN.asterisk())
+		final var latestRun = ctx.select(RUN.ID, RUN.EXPERIMENT_ID, RUN.NAME, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT, RUN.STATUS)
 				.distinctOn(RUN.EXPERIMENT_ID)
 				.from(RUN)
 				.where(RUN.STARTED_AT.isNotNull())
@@ -188,9 +188,9 @@ class ExperimentRepository
 		final Field<LocalDateTime> itemLastActivityDate = DSL.greatest(EXPERIMENT.LAST_ACTIVITY_DATE, MODEL.LAST_ACTIVITY_DATE,
 				PROJECT.LAST_ACTIVITY_DATE);
 
-		final Result<?> result = ctx.select(EXPERIMENT.asterisk(),
-				MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.LAST_ACTIVITY_DATE, MODEL.DATE_CREATED, MODEL.ARCHIVED,
-				PROJECT.asterisk(),
+		final Result<?> result = ctx.select(EXPERIMENT.ID, EXPERIMENT.NAME,
+				MODEL.ID, MODEL.NAME,
+				PROJECT.ID, PROJECT.NAME,
 				latestRun.asterisk(),
 				itemLastActivityDate.as("ITEM_LAST_ACTIVITY_DATE"),
 				policyForLatestRun.asterisk())
@@ -219,7 +219,7 @@ class ExperimentRepository
 	 * Helper method to map received database row to {@link DashboardItem} object.<br/>
 	 * It sets {@link DashboardItem#setPolicyExported(boolean)} to true if any run with an exported policy was found.
 	 */
-	private static DashboardItem mapRecordToDashboardItem(Record record, Table<Record> lastRun, Table<Record1<Long>> policyForLastRun) {
+	private static DashboardItem mapRecordToDashboardItem(Record record, Table<Record7<Long, Long, String, Integer, LocalDateTime, LocalDateTime, Integer>> lastRun, Table<Record1<Long>> policyForLastRun) {
 		var experiment = record.into(EXPERIMENT).into(Experiment.class);
 		var model = record.into(MODEL).into(Model.class);
 		var project = record.into(PROJECT).into(Project.class);
