@@ -19,7 +19,6 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 import static io.skymind.pathmind.constants.RunStatus.*;
-import static io.skymind.pathmind.data.utils.ExperimentUtils.getTrainingElapsedTime;
 
 @Component
 public class TrainingStatusDetailsPanel extends VerticalLayout {
@@ -28,10 +27,9 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 	private Label progressValueLabel = new Label();
 	private ElapsedTimer elapsedTimeLabel = new ElapsedTimer();
 	private ProgressBar progressBar = new ProgressBar(0, 100);
-	private VerticalLayout progressRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(progressBar, progressValueLabel);
 
 	public TrainingStatusDetailsPanel() {
-
+		VerticalLayout progressRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(progressBar, progressValueLabel);
 		FormLayout formLayout = new FormLayout();
 		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("1px", 1, FormLayout.ResponsiveStep.LabelsPosition.ASIDE));
 		VerticalLayout statusRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(statusLabel, progressRow);
@@ -72,10 +70,9 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 		}
 	}
 
-	// TODO (KW): 25.01.2020 add full run scenario
 	private void updateProgressBar(Experiment experiment, RunType runType) {
 		final var totalIterations = (double) RunUtils.getNumberOfTrainingIterationsForRunType(runType);
-		final Integer iterationsProcessed = ExperimentUtils.getNumberOfProcessedIterations(experiment);
+		final Integer iterationsProcessed = ExperimentUtils.getNumberOfProcessedIterations(experiment, runType);
 
 		final var progress = (iterationsProcessed / totalIterations) * 100;
 		if (progress > 0 && progress <= 100) {

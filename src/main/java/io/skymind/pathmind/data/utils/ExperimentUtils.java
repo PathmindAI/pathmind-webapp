@@ -71,15 +71,6 @@ public class ExperimentUtils
 				.orElse(LocalDateTime.now());
 	}
 
-	public static long getTrainingElapsedTime(Experiment experiment, RunType runType) {
-		return experiment.getPolicies().stream()
-				.map(Policy::getRun)
-				.filter(run -> run.getRunTypeEnum() == runType)
-				.map(RunUtils::getElapsedTime)
-				.min(Long::compareTo)
-				.orElse(0L);
-	}
-
 	public static LocalDateTime getTrainingCompletedTime(Experiment experiment) {
 		final var stoppedTimes = experiment.getPolicies().stream()
 				.map(Policy::getStoppedAt)
@@ -94,8 +85,9 @@ public class ExperimentUtils
 				.orElse(LocalDateTime.now());
 	}
 
-	public static Integer getNumberOfProcessedIterations(Experiment experiment){
+	public static Integer getNumberOfProcessedIterations(Experiment experiment, RunType runType){
 		return experiment.getPolicies().stream()
+				.filter(policy -> policy.getRun().getRunTypeEnum() == runType)
 				.map(Policy::getScores)
 				.map(List::size)
 				.reduce(0, Integer::sum);
