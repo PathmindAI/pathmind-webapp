@@ -29,7 +29,8 @@ public class WebDriverManagerSource implements DriverSource {
                     options.addArguments("--headless");
                 }
                 options.addArguments("--remote-debugging-port=9222");
-                _driver = new ChromeDriver(options);
+                options.addArguments("--no-sandbox");
+                _driver = new ChromeDriver( options);
                 break;
             case FIREFOX:
                 WebDriverManager.firefoxdriver().setup();
