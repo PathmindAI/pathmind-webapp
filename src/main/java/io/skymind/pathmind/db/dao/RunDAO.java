@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -113,9 +114,15 @@ public class RunDAO
     private void updateFirstPolicy(Run run, List<Policy> policies, DSLContext transactionCtx) {
         // IMPORTANT -> Keep the policies.size() check  first because if it fails then we can avoid the database call.
         if (policies.size() > 0 && PolicyRepository.isTemporaryPolicy(ctx, run.getId(), RunUtils.TEMPORARY_POSTFIX)) {
-            Policy policy = policies.get(0);
-            //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
-            PolicyRepository.updatePolicyExternalId(transactionCtx, run.getId(), policy.getExternalId(), PolicyUtils.generatePolicyTempName(policy.getExternalId(), run.getRunType()));
+            Optional<Policy> optionalPolicy = policies.stream()
+                    .filter(p -> p.getExternalId().contains("PathmindEnvironment_0"))
+                    .findFirst();
+
+            if (optionalPolicy.isPresent()) {
+                //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
+                Policy policy = optionalPolicy.get();
+                PolicyRepository.updatePolicyExternalId(transactionCtx, run.getId(), policy.getExternalId(), PolicyUtils.generatePolicyTempName(policy.getExternalId(), run.getRunType()));
+            }
         }
     }
 
