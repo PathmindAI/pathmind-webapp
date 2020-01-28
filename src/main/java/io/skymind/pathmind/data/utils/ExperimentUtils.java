@@ -49,8 +49,7 @@ public class ExperimentUtils
 
 	public static RunStatus getTrainingStatus(Experiment experiment) {
 		return experiment.getPolicies().stream()
-				.map(Policy::getRun)
-				.map(Run::getStatusEnum)
+				.map(PolicyUtils::getRunStatus)
 				.min(Comparator.comparingInt(RunStatus::getValue))
 				.orElse(NotStarted);
 	}
