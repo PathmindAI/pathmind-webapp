@@ -1,31 +1,25 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
+import static io.skymind.pathmind.constants.RunStatus.Running;
+import static io.skymind.pathmind.constants.RunStatus.isRunning;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
-import com.vaadin.flow.component.progressbar.ProgressBar;
-import io.skymind.pathmind.constants.RunType;
-import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.data.utils.ExperimentUtils;
-import io.skymind.pathmind.data.utils.RunUtils;
-import io.skymind.pathmind.db.dao.PolicyDAO;
-
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
-import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.services.training.constant.RunConstants;
-import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.stereotype.Component;
 
-import static io.skymind.pathmind.constants.RunStatus.*;
-import static io.skymind.pathmind.constants.RunType.FullRun;
-import static io.skymind.pathmind.services.training.constant.RunConstants.*;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.progressbar.ProgressBar;
+
+import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.constants.RunType;
+import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.utils.ExperimentUtils;
+import io.skymind.pathmind.data.utils.RunUtils;
+import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 @Component
 public class TrainingStatusDetailsPanel extends VerticalLayout {
@@ -35,48 +29,19 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 	private Label progressValueLabel = new Label();
 	private ElapsedTimer elapsedTimeLabel = new ElapsedTimer();
 	private ProgressBar progressBar = new ProgressBar(0, 100);
-	private VerticalLayout progressRow = new VerticalLayout(progressBar, progressValueLabel);
+	private VerticalLayout progressRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(progressBar, progressValueLabel);
 
 	public TrainingStatusDetailsPanel() {
-		VerticalLayout wrapper = new VerticalLayout();
-		var statusRow = createHorizontalLayout("Status", statusLabel);
-		var runProgressRow = createHorizontalLayout("", runProgressLabel);
-		var runTypeRow = createHorizontalLayout("Run Type", runTypeLabel);
-		var elapsedTimeRow = createHorizontalLayout("Elapsed", elapsedTimeLabel);
-
-		styleProgressLayout();
-
-		wrapper.add(statusRow, progressRow, runProgressRow, runTypeRow, elapsedTimeRow);
-		wrapper.getStyle().set("padding-top", "10px");
-		wrapper.setWidthFull();
-
-		add(wrapper);
-	}
-
-	private void styleProgressLayout() {
-		progressBar.getStyle().set("margin", "0px").set("max-width", "200px");
-		progressValueLabel.getStyle().set("margin-top", "6px");
-		progressRow.getStyle().set("margin-top" ,"24px").set("margin-left", "110px");
-		progressRow.setPadding(false);
-	}
-
-	private HorizontalLayout createHorizontalLayout(String labelTitle, Label valueLabel) {
-		final var elementLabel = getElementLabel(labelTitle);
-		final var horizontalLayout = new HorizontalLayout(elementLabel, valueLabel);
-		horizontalLayout.getStyle().set("margin-top" ,"0px");
-		valueLabel.getStyle().set("margin-top", "0px");
-		horizontalLayout.setPadding(false);
-		return horizontalLayout;
-	}
-
-	private Label getElementLabel(String label) {
-		Label fieldLabel = new Label(label + ":");
-		fieldLabel.getStyle()
-				.set("font-weight", "bold")
-				.set("margin-top", "0px")
-				.set("min-width", "90px")
-				.set("text-align", "right");
-		return fieldLabel;
+		
+		FormLayout formLayout = new FormLayout();
+		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("1px", 1, FormLayout.ResponsiveStep.LabelsPosition.ASIDE));
+		VerticalLayout statusRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(statusLabel, progressRow);
+		formLayout.addFormItem(statusRow, "Status :").setClassName("training-status");
+		formLayout.addFormItem(runProgressLabel, "").setClassName("training-status");
+		formLayout.addFormItem(runTypeLabel, "Run Type :").setClassName("training-status");
+		formLayout.addFormItem(elapsedTimeLabel, "Elapsed :").setClassName("training-status");
+		formLayout.setSizeFull();
+		add(formLayout);
 	}
 
 	public void updateTrainingDetailsPanel(Experiment experiment) {
