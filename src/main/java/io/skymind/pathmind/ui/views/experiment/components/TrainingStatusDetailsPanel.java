@@ -9,6 +9,8 @@ import com.vaadin.flow.component.progressbar.ProgressBar;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.utils.ExperimentUtils;
+import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 
 import com.vaadin.flow.component.html.Label;
@@ -26,7 +28,6 @@ import static io.skymind.pathmind.constants.RunType.FullRun;
 import static io.skymind.pathmind.services.training.constant.RunConstants.*;
 
 @Component
-// TODO (KW): 25.01.2020 rename class and fields
 public class TrainingStatusDetailsPanel extends VerticalLayout {
 	private Label statusLabel = new Label(RunStatus.NotStarted.toString());
 	private Label runProgressLabel = new Label();
@@ -54,6 +55,7 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 
 	private void styleProgressLayout() {
 		progressBar.getStyle().set("margin", "0px").set("max-width", "200px");
+		progressValueLabel.getStyle().set("margin-top", "6px");
 		progressRow.getStyle().set("margin-top" ,"24px").set("margin-left", "110px");
 		progressRow.setPadding(false);
 	}
@@ -67,7 +69,6 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 		return horizontalLayout;
 	}
 
-	// TODO -> CSS -> Move style to CSS
 	private Label getElementLabel(String label) {
 		Label fieldLabel = new Label(label + ":");
 		fieldLabel.getStyle()
@@ -78,82 +79,56 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 		return fieldLabel;
 	}
 
-	public void update(Experiment experiment) {
-		// TODO (KW): 25.01.2020 refactor
-		final var max = experiment.getPolicies().stream().map(Policy::getRun).map(Run::getStatusEnum).min(Comparator.comparingInt(RunStatus::getValue)).orElse(NotStarted);
-		final var runType = experiment.getPolicies().stream().map(Policy::getRun).map(Run::getRunTypeEnum).max(Comparator.comparingInt(RunType::getValue)).orElse(FullRun);
+	public void updateTrainingDetailsPanel(Experiment experiment) {
+		final var trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
+		statusLabel.setText(trainingStatus.toString());
 
-
-		statusLabel.setText(max.toString());
+		final var runType = ExperimentUtils.getTrainingType(experiment);
 		runTypeLabel.setText(runType.toString());
-		updateElapsedTimer(experiment, max);
+
+		updateElapsedTimer(experiment, trainingStatus);
 		DateAndTimeUtils.withUserTimeZoneId(userTimeZone -> {
-			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(getTrainingCompletedTime(experiment), userTimeZone));
+			final var trainingCompletedTime = ExperimentUtils.getTrainingCompletedTime(experiment);
+			final var formattedTrainingCompletedTime = DateAndTimeUtils.formatDateAndTimeShortFormatter(trainingCompletedTime, userTimeZone);
+			runProgressLabel.setText(formattedTrainingCompletedTime);
 		});
-		if(max == Running) {
+		updateProgressRow(experiment, trainingStatus, runType);
+	}
+
+	private void updateProgressRow(Experiment experiment, RunStatus trainingStatus, RunType runType) {
+		if(trainingStatus == Running) {
 			progressRow.setVisible(true);
-			updateProgressBar(experiment);
+			updateProgressBar(experiment, runType);
 		} else {
 			progressRow.setVisible(false);
 		}
 	}
 
-	// TODO (KW): 23.01.2020 refactor
-	private void updateProgressBar(Experiment experiment) {
-		final var policiesForExperiment = experiment.getPolicies();
-		// TODO (KW): 25.01.2020 add full run scenario
-		final var totalIterations = (double) DISCOVERY_RUN_ITERATIONS * RunConstants.getNumberOfDiscoveryRuns();
-		final Integer iterationsProcessed = policiesForExperiment.stream()
-				.map(Policy::getScores)
-				.map(List::size)
-				.reduce(0, Integer::sum);
+	// TODO (KW): 25.01.2020 add full run scenario
+	private void updateProgressBar(Experiment experiment, RunType runType) {
+		final var totalIterations = (double) RunUtils.getNumberOfTrainingIterationsForRunType(runType);
+		final Integer iterationsProcessed = ExperimentUtils.getNumberOfProcessedIterations(experiment);
+
 		final var progress = (iterationsProcessed / totalIterations) * 100;
-		double estimatedTime = 0;
-		if (progress > 0) {
-			final var earliestPolicyStartedDate = policiesForExperiment.stream()
-					.map(Policy::getStartedAt)
-					.filter(Objects::nonNull)
-					.min(LocalDateTime::compareTo)
-					.orElse(LocalDateTime.now());
-			var difference = Duration.between(earliestPolicyStartedDate, LocalDateTime.now());
-			estimatedTime = difference.toSeconds() * (100 - progress) / progress;
-		}
-		if (progress <= 100) {
-			final String formattedEstimatedTime = DateAndTimeUtils.formatDurationTime((long) estimatedTime);
-			final String progressValue = String.format("%.0f %% (ETA: %s)", progress, formattedEstimatedTime);
+		if (progress > 0 && progress <= 100) {
+			final var estimatedTime = ExperimentUtils.getEstimatedTrainingTime(experiment, progress);
+			final var formattedEstimatedTime = DateAndTimeUtils.formatDurationTime((long) estimatedTime);
+			final var progressValue = formatProgressLabel(progress, formattedEstimatedTime);
 			progressValueLabel.setText(progressValue);
 			progressBar.setValue(progress);
 		}
 	}
 
-	private void updateElapsedTimer(Experiment experiment, RunStatus trainingStatus) {
-		getTrainingStartedDate(experiment).ifPresent(time ->
-				elapsedTimeLabel.updateTimer(Duration.between(time, LocalDateTime.now()).toSeconds(), isRunning(trainingStatus)));
+	// TODO (KW): 28.01.2020 javadoc
+	private String formatProgressLabel(double progress, String formattedEstimatedTime) {
+		return String.format("%.0f %% (ETA: %s)", progress, formattedEstimatedTime);
 	}
 
-	// TODO (KW): 25.01.2020 move to ExperimentUtils
-	private Optional<LocalDateTime> getTrainingStartedDate(Experiment experiment) {
-		return experiment.getPolicies().stream()
-				.map(Policy::getStartedAt)
-				.filter(Objects::nonNull)
-				.min(LocalDateTime::compareTo);
-	}
-
-	private LocalDateTime getTrainingCompletedTime(Experiment experiment) {
-		var stoppedTimes = experiment.getPolicies().stream()
-				.map(Policy::getStoppedAt)
-				.collect(Collectors.toList());
-
-		if (isAnyPolicyNotFinished(stoppedTimes)) {
-			return null;
-		}
-
-		return stoppedTimes.stream()
-				.max(LocalDateTime::compareTo)
-				.orElse(LocalDateTime.now());
-	}
-
-	private boolean isAnyPolicyNotFinished(List<LocalDateTime> stoppedTimes) {
-		return stoppedTimes.stream().anyMatch(Objects::isNull);
+	private void updateElapsedTimer(Experiment experiment,  RunStatus trainingStatus) {
+		ExperimentUtils.getTrainingStartedDate(experiment).ifPresent(time -> {
+			// TODO (KW): 28.01.2020 fix - it should take stopped_at if training is over
+			final var timeElapsed = Duration.between(time, LocalDateTime.now()).toSeconds();
+			elapsedTimeLabel.updateTimer(timeElapsed, isRunning(trainingStatus));
+		});
 	}
 }

@@ -26,7 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.services.training.constant.RunConstants.HYPERPARAMETERS;
+import static io.skymind.pathmind.services.training.constant.RunConstants.DISCOVERY_RUN_BATCH_SIZES;
+import static io.skymind.pathmind.services.training.constant.RunConstants.RUN_HYPERPARAMETERS;
 
 @Service
 @Slf4j
@@ -66,8 +67,7 @@ public class TrainingService
     }
 
     public void startDiscoveryRun(Experiment exp){
-        // TODO (KW): 25.01.2020 create constants for keys
-        HYPERPARAMETERS.get("DISCOVERY_RUN_BATCH_SIZES")
+        RUN_HYPERPARAMETERS.get(DISCOVERY_RUN_BATCH_SIZES)
                 .forEach(
                         batch -> startRun(RunType.DiscoveryRun,
                                 exp,

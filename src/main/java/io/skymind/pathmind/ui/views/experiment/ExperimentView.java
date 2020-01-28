@@ -215,7 +215,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		screenTitlePanel.setSubtitle(projectName);
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		policyChartPanel.init(experiment);
-		trainingStatusDetailsPanel.update(experiment);
+		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 		processSelectedPolicy(policy);
 	}
 	
@@ -280,7 +280,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			policy = bestPolicy;
 			PushUtils.push(this, () -> processSelectedPolicy(bestPolicy));
 		}
-		PushUtils.push(this, () -> trainingStatusDetailsPanel.update(experiment));
+		PushUtils.push(this, () -> trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment));
 	}
 	
 
