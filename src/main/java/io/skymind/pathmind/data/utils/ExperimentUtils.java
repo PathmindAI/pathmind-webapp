@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.constants.RunStatus.NotStarted;
@@ -62,11 +61,23 @@ public class ExperimentUtils
 				.orElse(FullRun);
 	}
 
-	public static Optional<LocalDateTime> getTrainingStartedDate(Experiment experiment) {
+	public static LocalDateTime getTrainingStartedDate(Experiment experiment, RunType runType) {
 		return experiment.getPolicies().stream()
-				.map(Policy::getStartedAt)
+				.map(Policy::getRun)
+				.filter(run -> run.getRunTypeEnum() == runType)
+				.map(Run::getStartedAt)
 				.filter(Objects::nonNull)
-				.min(LocalDateTime::compareTo);
+				.min(LocalDateTime::compareTo)
+				.orElse(LocalDateTime.now());
+	}
+
+	public static long getTrainingElapsedTime(Experiment experiment, RunType runType) {
+		return experiment.getPolicies().stream()
+				.map(Policy::getRun)
+				.filter(run -> run.getRunTypeEnum() == runType)
+				.map(RunUtils::getElapsedTime)
+				.min(Long::compareTo)
+				.orElse(0L);
 	}
 
 	public static LocalDateTime getTrainingCompletedTime(Experiment experiment) {
@@ -90,21 +101,21 @@ public class ExperimentUtils
 				.reduce(0, Integer::sum);
 	}
 
-	public static double getEstimatedTrainingTime(Experiment experiment, double progress){
-		final var earliestPolicyStartedDate = ExperimentUtils.getEarliestPolicyStartedDate(experiment);
+	public static double getEstimatedTrainingTime(Experiment experiment, double progress, RunType runType){
+		final var earliestPolicyStartedDate = ExperimentUtils.getTrainingStartedDate(experiment, runType);
 		final var difference = Duration.between(earliestPolicyStartedDate, LocalDateTime.now());
 		return difference.toSeconds() * (100 - progress) / progress;
 	}
 
-	private static LocalDateTime getEarliestPolicyStartedDate(Experiment experiment){
-		return experiment.getPolicies().stream()
-				.map(Policy::getStartedAt)
-				.filter(Objects::nonNull)
-				.min(LocalDateTime::compareTo)
-				.orElse(LocalDateTime.now());
-	}
-
 	private static boolean isAnyPolicyNotFinished(List<LocalDateTime> stoppedTimes) {
 		return stoppedTimes.stream().anyMatch(Objects::isNull);
+	}
+
+	public static LocalDateTime getTrainingStoppedDate(Experiment experiment) {
+		return experiment.getPolicies().stream()
+				.map(Policy::getStoppedAt)
+				.filter(Objects::nonNull)
+				.max(LocalDateTime::compareTo)
+				.orElse(LocalDateTime.now());
 	}
 }

@@ -19,6 +19,7 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 import static io.skymind.pathmind.constants.RunStatus.*;
+import static io.skymind.pathmind.data.utils.ExperimentUtils.getTrainingElapsedTime;
 
 @Component
 public class TrainingStatusDetailsPanel extends VerticalLayout {
@@ -48,7 +49,7 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 		final var runType = ExperimentUtils.getTrainingType(experiment);
 		runTypeLabel.setText(runType.toString());
 
-		updateElapsedTimer(experiment, trainingStatus);
+		updateElapsedTimer(experiment, trainingStatus, runType);
 		updateProgressRow(experiment, trainingStatus, runType);
 	}
 
@@ -78,7 +79,7 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 
 		final var progress = (iterationsProcessed / totalIterations) * 100;
 		if (progress > 0 && progress <= 100) {
-			final var estimatedTime = ExperimentUtils.getEstimatedTrainingTime(experiment, progress);
+			final var estimatedTime = ExperimentUtils.getEstimatedTrainingTime(experiment, progress, runType);
 			final var formattedEstimatedTime = DateAndTimeUtils.getOnlyTheHighestDateLevel((long) estimatedTime);
 			final var progressValue = formatProgressLabel(progress, formattedEstimatedTime);
 			progressValueLabel.setText(progressValue);
@@ -91,11 +92,11 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 		return String.format("%.0f %% (ETA: %s)", progress, formattedEstimatedTime);
 	}
 
-	private void updateElapsedTimer(Experiment experiment,  RunStatus trainingStatus) {
-		ExperimentUtils.getTrainingStartedDate(experiment).ifPresent(time -> {
-			// TODO (KW): 28.01.2020 fix - it should take stopped_at if training is over
-			final var timeElapsed = Duration.between(time, LocalDateTime.now()).toSeconds();
-			elapsedTimeLabel.updateTimer(timeElapsed, isRunning(trainingStatus));
-		});
+	private void updateElapsedTimer(Experiment experiment, RunStatus trainingStatus, RunType runType) {
+		final var isTrainingRunning = isRunning(trainingStatus);
+		final var startTime = ExperimentUtils.getTrainingStartedDate(experiment, runType);
+		final var endTime = isTrainingRunning ? LocalDateTime.now() : ExperimentUtils.getTrainingStoppedDate(experiment);
+		final var timeElapsed = Duration.between(startTime, endTime).toSeconds();
+		elapsedTimeLabel.updateTimer(timeElapsed, isTrainingRunning);
 	}
 }
