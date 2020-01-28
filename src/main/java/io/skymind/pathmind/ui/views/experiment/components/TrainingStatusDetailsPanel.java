@@ -27,22 +27,16 @@ import static io.skymind.pathmind.services.training.constant.RunConstants.*;
 
 @Component
 // TODO (KW): 25.01.2020 rename class and fields
-public class PolicyStatusDetailsPanel extends VerticalLayout /*implements PolicyUpdateSubscriber*/ {
+public class TrainingStatusDetailsPanel extends VerticalLayout {
 	private Label statusLabel = new Label(RunStatus.NotStarted.toString());
 	private Label runProgressLabel = new Label();
 	private Label runTypeLabel = new Label();
+	private Label progressValueLabel = new Label();
 	private ElapsedTimer elapsedTimeLabel = new ElapsedTimer();
 	private ProgressBar progressBar = new ProgressBar(0, 100);
-	private Label progressValueLabel = new Label();
 	private VerticalLayout progressRow = new VerticalLayout(progressBar, progressValueLabel);
 
-	// TODO (KW): 25.01.2020 remove unused fields
-	private Policy policy;
-
-	// TODO (KW): 27.01.2020 remove if not used
-	private PolicyDAO policyDAO;
-
-	public PolicyStatusDetailsPanel(PolicyDAO policyDAO) {
+	public TrainingStatusDetailsPanel() {
 		VerticalLayout wrapper = new VerticalLayout();
 		var statusRow = createHorizontalLayout("Status", statusLabel);
 		var runProgressRow = createHorizontalLayout("", runProgressLabel);
@@ -56,8 +50,6 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 		wrapper.setWidthFull();
 
 		add(wrapper);
-
-		this.policyDAO = policyDAO;
 	}
 
 	private void styleProgressLayout() {
@@ -86,31 +78,16 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 		return fieldLabel;
 	}
 
-//	public void update(Policy policy)
-//	{
-//		this.policy = policy;
-//
-//		statusLabel.setText(PolicyUtils.getRunStatus(policy).toString());
-//		runTypeLabel.setText(policy.getRun().getRunTypeEnum().toString());
-//		updateElapsedTimer(policy);
-//		DateAndTimeUtils.withUserTimeZoneId(userTimeZone -> {
-//			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(PolicyUtils.getRunCompletedTime(policy), userTimeZone));
-//		});
-//		updateProgressBar(policy.getExperiment().getId());
-//	}
-
 	public void update(Experiment experiment) {
 		// TODO (KW): 25.01.2020 refactor
 		final var max = experiment.getPolicies().stream().map(Policy::getRun).map(Run::getStatusEnum).min(Comparator.comparingInt(RunStatus::getValue)).orElse(NotStarted);
 		final var runType = experiment.getPolicies().stream().map(Policy::getRun).map(Run::getRunTypeEnum).max(Comparator.comparingInt(RunType::getValue)).orElse(FullRun);
 
 
-//		statusLabel.setText(PolicyUtils.getRunStatus(policy).toString());
 		statusLabel.setText(max.toString());
 		runTypeLabel.setText(runType.toString());
 		updateElapsedTimer(experiment, max);
 		DateAndTimeUtils.withUserTimeZoneId(userTimeZone -> {
-//			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(PolicyUtils.getRunCompletedTime(policy), userTimeZone));
 			runProgressLabel.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(getTrainingCompletedTime(experiment), userTimeZone));
 		});
 		if(max == Running) {
@@ -123,7 +100,6 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 
 	// TODO (KW): 23.01.2020 refactor
 	private void updateProgressBar(Experiment experiment) {
-//		final var policiesForExperiment = policyDAO.getPoliciesForExperiment(expId);
 		final var policiesForExperiment = experiment.getPolicies();
 		// TODO (KW): 25.01.2020 add full run scenario
 		final var totalIterations = (double) DISCOVERY_RUN_ITERATIONS * RunConstants.getNumberOfDiscoveryRuns();
@@ -149,31 +125,6 @@ public class PolicyStatusDetailsPanel extends VerticalLayout /*implements Policy
 			progressBar.setValue(progress);
 		}
 	}
-
-	private Policy getPolicy() {
-		return policy;
-	}
-
-//	@Override
-//	protected void onDetach(DetachEvent event) {
-//		EventBus.unsubscribe(this);
-//	}
-//
-//	@Override
-//	protected void onAttach(AttachEvent event) {
-//		EventBus.subscribe(this);
-//	}
-//
-//	@Override
-//	public void handleBusEvent(PolicyUpdateBusEvent event) {
-////		this.policy = event.getPolicy();
-////		PushUtils.push(this, () -> update(event.getPolicy()));
-//	}
-//
-//	@Override
-//	public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-//		return getPolicy().getId() == event.getPolicy().getId();
-//	}
 
 	private void updateElapsedTimer(Experiment experiment, RunStatus trainingStatus) {
 		getTrainingStartedDate(experiment).ifPresent(time ->
