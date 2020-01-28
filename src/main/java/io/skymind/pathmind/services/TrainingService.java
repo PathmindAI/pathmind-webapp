@@ -3,12 +3,10 @@ package io.skymind.pathmind.services;
 import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
-import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
@@ -20,8 +18,6 @@ import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.JSONB;
-import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,8 +25,6 @@ import java.util.List;
 @Slf4j
 public abstract class TrainingService {
     private static final int MINUTE = 60;
-
-    private static final String PATHMIND_ENVIRONMENT = "PathmindEnvironment";
 
     protected final ExecutionProvider executionProvider;
     protected final RunDAO runDAO;
@@ -113,7 +107,7 @@ public abstract class TrainingService {
         tempPolicy.setLearningRate(spec.getLearningRates().get(0));
         tempPolicy.setGamma(spec.getGammas().get(0));
         tempPolicy.setBatchSize(spec.getBatchSizes().get(0));
-        tempPolicy.setExternalId(getTempPolicyName(tempPolicy, run.getRunType()));
+        tempPolicy.setExternalId(PolicyUtils.generatePolicyTempName(tempPolicy, run.getRunType()));
         tempPolicy.setName(PolicyUtils.parsePolicyName(tempPolicy.getExternalId()));
         tempPolicy.setNotes(PolicyUtils.generateDefaultNotes(tempPolicy));
 
@@ -121,24 +115,6 @@ public abstract class TrainingService {
             tempPolicy.setScores(scores);
 
         return tempPolicy;
-    }
-
-    private String getTempPolicyName(Policy policy, int runType) {
-        String hyperparameters = String.join(
-                ",",
-                "gamma=" + policy.getGamma(),
-                "lr=" + policy.getLearningRate(),
-                "sgd_minibatch_size=" + policy.getBatchSize());
-
-        String name = String.join(
-                "_",
-                policy.getAlgorithm(),
-                PATHMIND_ENVIRONMENT,
-                "0",
-                hyperparameters,
-                runType + RunUtils.TEMPORARY_POSTFIX);
-
-        return name;
     }
 
     private void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec) {
