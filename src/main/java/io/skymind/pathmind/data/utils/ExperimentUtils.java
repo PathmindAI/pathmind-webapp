@@ -53,6 +53,10 @@ public class ExperimentUtils
 				.orElse(NotStarted);
 	}
 
+	/**
+	 * Returns a most significant training type for a given experiment. <br/>
+	 * E.g if experiment contains test, discovery and full runs it will return {@link RunType#FullRun}
+	 */
 	public static RunType getTrainingType(Experiment experiment) {
 		return experiment.getPolicies().stream()
 				.map(Policy::getRun)
@@ -60,6 +64,7 @@ public class ExperimentUtils
 				.max(Comparator.comparingInt(RunType::getValue))
 				.orElse(FullRun);
 	}
+
 
 	public static LocalDateTime getTrainingStartedDate(Experiment experiment, RunType runType) {
 		return experiment.getPolicies().stream()
@@ -71,6 +76,10 @@ public class ExperimentUtils
 				.orElse(LocalDateTime.now());
 	}
 
+	/**
+	 * Searches the most recent stopped_at date of all policies in given experiment.
+	 * Returns null if any policy has not finished yet.
+	 */
 	public static LocalDateTime getTrainingCompletedTime(Experiment experiment) {
 		final var stoppedTimes = experiment.getPolicies().stream()
 				.map(Policy::getStoppedAt)
@@ -85,6 +94,10 @@ public class ExperimentUtils
 				.orElse(LocalDateTime.now());
 	}
 
+	/**
+	 * Calculates a total number of processed iterations for policies that were initialized with given type.
+	 * It sums up a size of reward list for each policy.
+	 */
 	public static Integer getNumberOfProcessedIterations(Experiment experiment, RunType runType){
 		return experiment.getPolicies().stream()
 				.filter(policy -> policy.getRun().getRunTypeEnum() == runType)
@@ -101,13 +114,5 @@ public class ExperimentUtils
 
 	private static boolean isAnyPolicyNotFinished(List<LocalDateTime> stoppedTimes) {
 		return stoppedTimes.stream().anyMatch(Objects::isNull);
-	}
-
-	public static LocalDateTime getTrainingStoppedDate(Experiment experiment) {
-		return experiment.getPolicies().stream()
-				.map(Policy::getStoppedAt)
-				.filter(Objects::nonNull)
-				.max(LocalDateTime::compareTo)
-				.orElse(LocalDateTime.now());
 	}
 }

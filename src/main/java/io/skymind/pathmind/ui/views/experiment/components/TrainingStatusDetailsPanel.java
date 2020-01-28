@@ -24,6 +24,10 @@ import static io.skymind.pathmind.constants.RunStatus.*;
 public class TrainingStatusDetailsPanel extends VerticalLayout {
 	private Label statusLabel = new Label(RunStatus.NotStarted.toString());
 	private Label runTypeLabel = new Label();
+	/**
+	 * Label for training progress status.
+	 * If training is still in progress it shows it's % progress. If training is finished it shows its completed date.
+	 */
 	private Label progressValueLabel = new Label();
 	private ElapsedTimer elapsedTimeLabel = new ElapsedTimer();
 	private ProgressBar progressBar = new ProgressBar(0, 100);
@@ -84,15 +88,22 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 		}
 	}
 
-	// TODO (KW): 28.01.2020 javadoc
+	/**
+	 * Formats in progress training status.<br/>
+	 * Example output: <code>44 % (ETA: 54 min)</code>
+	 */
 	private String formatProgressLabel(double progress, String formattedEstimatedTime) {
 		return String.format("%.0f %% (ETA: %s)", progress, formattedEstimatedTime);
 	}
 
+	/**
+	 * Calculates a elapsed time and updates a timer. Elapsed time is a difference between training start date and it's
+	 * completed date (or current date in case the training is still in progress).
+	 */
 	private void updateElapsedTimer(Experiment experiment, RunStatus trainingStatus, RunType runType) {
 		final var isTrainingRunning = isRunning(trainingStatus);
 		final var startTime = ExperimentUtils.getTrainingStartedDate(experiment, runType);
-		final var endTime = isTrainingRunning ? LocalDateTime.now() : ExperimentUtils.getTrainingStoppedDate(experiment);
+		final var endTime = isTrainingRunning ? LocalDateTime.now() : ExperimentUtils.getTrainingCompletedTime(experiment);
 		final var timeElapsed = Duration.between(startTime, endTime).toSeconds();
 		elapsedTimeLabel.updateTimer(timeElapsed, isTrainingRunning);
 	}
