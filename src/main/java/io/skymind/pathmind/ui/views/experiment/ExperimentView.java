@@ -269,6 +269,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void processRunUpdate(Run run) {
 		updatedRunForPolicies(run);
 		updateButtonEnablement();
+		PushUtils.push(getUI(), () -> trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment));
 	}
 	
 	private void updateButtonEnablement() {
