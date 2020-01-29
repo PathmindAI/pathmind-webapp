@@ -75,12 +75,22 @@ def process_message(message):
         app_logger.info('Destroying s3://{s3bucket}/{s3path}'\
                 .format(s3bucket=s3bucket,
                         s3path=s3path))
-        #sql_script="""
-        #        update public.trainer_job set status=5,ec2_end_date=NOW()
-        #        where job_id='{job_id}'
-        #""".format(job_id=job_id)
-        #execute_psql(sql_script)
+        sql_script="""
+                update public.trainer_job
+                set status=6,
+                ec2_end_date=NOW(),
+                update_date=NOW()
+                where job_id='{job_id}'
+        """.format(job_id=job_id)
+        execute_psql(sql_script)
         try:
+            app_logger.info('Uploading killed file for {job_id}'\
+                .format(job_id=job_id))
+            open('killed', 'w').close()
+            s3 = boto3.client('s3')
+            s3.upload_file('killed', \
+                s3bucket, \
+                s3path+'/output/killed')
             app_logger.info('Deleting deployment {job_id}'.format(job_id=job_id))
             sh.kubectl('delete','deployment',job_id)
             app_logger.info('Deleting ig {job_id}'.format(job_id=job_id))
