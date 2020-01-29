@@ -30,7 +30,7 @@ import java.util.*;
  * otherwise the CODE CHANGES WILL NOT BE REFLECTED IN THE LIQUIBASE TARGETS in any automatic way!!
  */
 @Slf4j
-public class UpdatePolicy_ChangeSet_20191229_01 implements CustomSqlChange, CustomSqlRollback
+public class UpdatePolicy_ChangeSet_20200128_05 implements CustomSqlChange, CustomSqlRollback
 {
     @Override
     public SqlStatement[] generateStatements(Database database) throws CustomChangeException

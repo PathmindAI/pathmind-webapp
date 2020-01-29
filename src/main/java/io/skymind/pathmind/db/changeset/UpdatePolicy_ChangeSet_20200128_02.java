@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * otherwise the CODE CHANGES WILL NOT BE REFLECTED IN THE LIQUIBASE TARGETS in any automatic way!!
  */
 @Slf4j
-public class UpdatePolicy_ChangeSet_20200110_01 implements CustomSqlChange, CustomSqlRollback
+public class UpdatePolicy_ChangeSet_20200128_02 implements CustomSqlChange, CustomSqlRollback
 {
     @Override
     public SqlStatement[] generateStatements(Database database) throws CustomChangeException
@@ -45,29 +45,29 @@ public class UpdatePolicy_ChangeSet_20200110_01 implements CustomSqlChange, Cust
         // IMPORTANT -> Do NOT close the connection as it's used by liquibase for the rest of the changesets.
         Connection connection = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
         List<Changeset20200110Policy> policies = getPoliciesFromDatabase(connection);
-        // I'm NOT using parallel streams since it's only done once and it's much easier to track any issues if it's done in order.
         ObjectMapper OBJECT_MAPPER = ObjectMapperHolder.getJsonMapper();
-        return policies.stream()
+        policies.parallelStream()
                 .filter(policy -> StringUtils.isNotEmpty(policy.getProgress()))
                 .map(policy -> {
                         try {
                             Changeset20200110Policy jsonPolicy = OBJECT_MAPPER.readValue(policy.getProgress(), Changeset20200110Policy.class);
-                            return jsonPolicy.getRewardProgression().stream().map(rewardScore ->
-                                    new RawSqlStatement("INSERT INTO REWARD_SCORE (POLICY_ID, MIN, MEAN, MAX, ITERATION) VALUES " +
-                                            "(" + policy.getId() + ", " +
-                                            getDoubleValue(rewardScore.getMin()) + ", " +
-                                            getDoubleValue(rewardScore.getMean()) + ", " +
-                                            getDoubleValue(rewardScore.getMax()) + ", " +
-                                            rewardScore.getIteration() + ")"))
-                                    .collect(Collectors.toList());
+                            String values = jsonPolicy.getRewardProgression().stream()
+                                    .map(rewardScore ->
+                                            policy.getId() + ", " +
+                                                    getDoubleValue(rewardScore.getMin()) + ", " +
+                                                    getDoubleValue(rewardScore.getMean()) + ", " +
+                                                    getDoubleValue(rewardScore.getMax()) + ", " +
+                                                    rewardScore.getIteration())
+                                    .collect(Collectors.joining(",", "(", ")"));
+                            return new RawSqlStatement("INSERT INTO REWARD_SCORE (POLICY_ID, MIN, MEAN, MAX, ITERATION) VALUES " + values);
                         } catch (IOException e) {
                             log.error(e.getMessage(), e);
                             // Throwing a RuntimeException to stop all the database processing because if there is an exception then we have a bigger issue.
                             throw new RuntimeException(e.getMessage(), e);
                         }
-        // we need to collect first because each map is a List<RawSqlStatement> that then needs to be combined through addAll.
-        }).collect(ArrayList::new, List::addAll, List::addAll)
-                .toArray(SqlStatement[]::new);
+                        // we need to collect first because each map is a List<RawSqlStatement> that then needs to be combined through addAll.
+                }).toArray(SqlStatement[]::new);
+        return new SqlStatement[]{new RawSqlStatement("")};
     }
 
     private String getDoubleValue(double value) {
