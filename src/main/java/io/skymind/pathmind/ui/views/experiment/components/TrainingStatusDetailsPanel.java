@@ -1,9 +1,11 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
+import static io.skymind.pathmind.constants.RunStatus.Completed;
+import static io.skymind.pathmind.constants.RunStatus.Running;
+import static io.skymind.pathmind.constants.RunStatus.isRunning;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
-
-import org.springframework.stereotype.Component;
 
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Label;
@@ -18,9 +20,6 @@ import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
-import static io.skymind.pathmind.constants.RunStatus.*;
-
-@Component
 public class TrainingStatusDetailsPanel extends VerticalLayout {
 	private Label statusLabel = new Label(RunStatus.NotStarted.toString());
 	private Label runTypeLabel = new Label();
