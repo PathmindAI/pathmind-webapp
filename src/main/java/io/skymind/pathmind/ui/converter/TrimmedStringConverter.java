@@ -12,7 +12,7 @@ public class TrimmedStringConverter implements Converter<String, String>{
 	@Override
 	public Result<String> convertToModel(String value, ValueContext context) {
 		if (value.isEmpty()) {
-			return Result.ok(null);
+			return Result.ok("");
 		} else {
 			return Result.ok(value.trim());
 		}
