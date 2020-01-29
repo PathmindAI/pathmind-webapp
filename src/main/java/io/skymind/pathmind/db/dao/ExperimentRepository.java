@@ -205,6 +205,7 @@ class ExperimentRepository
 				.where(PATHMIND_USER.ID.eq(userId))
 					.and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
 					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
+					.and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
 				.orderBy(itemLastActivityDate.desc(), EXPERIMENT.ID.desc())
 				.offset(offset)
 				.limit(limit)
@@ -254,6 +255,7 @@ class ExperimentRepository
 				.where(PATHMIND_USER.ID.eq(userId))
 					.and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
 					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
+					.and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
 				.fetchOne(count());
 	}
 }
