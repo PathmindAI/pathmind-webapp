@@ -2,7 +2,9 @@ package io.skymind.pathmind.ui.views.dashboard;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -10,10 +12,15 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.Stage;
 import io.skymind.pathmind.data.DashboardItem;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
+import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -31,7 +38,7 @@ import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 
 @Route(value= Routes.DASHBOARD_URL, layout = MainLayout.class)
-public class DashboardView extends PathMindDefaultView
+public class DashboardView extends PathMindDefaultView implements RunUpdateSubscriber
 {
 	@Autowired
 	private DashboardDataProvider dataProvider;
@@ -111,5 +118,28 @@ public class DashboardView extends PathMindDefaultView
 			// dashboardGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting data provider
 			dashboardGrid.setDataProvider(dataProvider);
 		});
+	}
+	
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		EventBus.subscribe(this);
+	}
+	
+	@Override
+	protected void onDetach(DetachEvent detachEvent) {
+		EventBus.unsubscribe(this);
+	}
+	
+	@Override
+	public void handleBusEvent(RunUpdateBusEvent event) {
+		//TODO: Query DashboardItem
+		// DashboardItem item = query single item item 
+		// dataProvider.refreshItem(item);
+	}
+	
+	@Override
+	public boolean filterBusEvent(RunUpdateBusEvent event) {
+		// Only interested in completed runs 
+		return event.getRun().getStatusEnum() == RunStatus.Completed && event.getRun().getProject().getPathmindUserId() == SecurityUtils.getUserId();
 	}
 }
