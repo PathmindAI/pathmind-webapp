@@ -39,7 +39,7 @@ class GuideMenu extends PolymerElement {
           height: 11px;
           top: 50%;
           left: -15px;
-          background-image: url("/frontend/icons/checkmark_green.svg");
+          background-image: url("/frontend/icons/checkmark_grey.svg");
           background-size: cover;
           transform: translateY(-50%);
         }
@@ -51,9 +51,9 @@ class GuideMenu extends PolymerElement {
       <div class="content">
         <dom-repeat items="[[checklist]]">
           <template>
-            <a router-link class$="{{item.state}}" href$="{{item.path}}"
-              >{{item.name}}</a
-            >
+            <a router-link class$="[[item.state]]" href$="[[item.path]]">
+              [[item.name]]
+            </a>
           </template>
         </dom-repeat>
         <vaadin-button id="skipToUploadModelBtn" theme="tertiary-inline">
@@ -69,50 +69,9 @@ class GuideMenu extends PolymerElement {
 
   static get properties() {
     return {
-      checklist: {
+      location: {
         value() {
-          return [
-            {
-              name: "Overview",
-              path: "guide",
-              state: "completed"
-            },
-            {
-              name: "Install Pathmind Helper",
-              path: "guide/install",
-              state: "current"
-            },
-            {
-              name: "Build Observation Space",
-              path: "guide/observation",
-              state: "todo"
-            },
-            {
-              name: "Build Action Space",
-              path: "guide/action-space",
-              state: "todo"
-            },
-            {
-              name: "Triggering Actions",
-              path: "guide/trigger-actions",
-              state: "todo"
-            },
-            {
-              name: 'Define "Done" Condition',
-              path: "guide/done-condition",
-              state: "todo"
-            },
-            {
-              name: "Define Reward Variables",
-              path: "guide/reward",
-              state: "todo"
-            },
-            {
-              name: "Conclusion / Re-cap",
-              path: "guide/recap",
-              state: "todo"
-            }
-          ];
+          return window.location.pathname.substr(1);
         }
       }
     };

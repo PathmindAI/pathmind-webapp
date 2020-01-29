@@ -49,7 +49,7 @@ class GuideOverviewContent extends PolymerElement {
             "Install Pathmind Helper",
             "Build Observation Space",
             "Build Action Space",
-            "Trigger Actions",
+            "Triggering Actions",
             'Define "Done" Condition',
             "Define Reward Variables"
           ];
