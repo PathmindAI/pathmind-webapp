@@ -76,6 +76,15 @@ public class ExperimentUtils
 				.orElse(LocalDateTime.now());
 	}
 
+	public static LocalDateTime getTrainingOldestPolicyStartedDate(Experiment experiment, RunType runType) {
+		return experiment.getPolicies().stream()
+				.filter(policy -> policy.getRun().getRunTypeEnum() == runType)
+				.map(Policy::getStartedAt)
+				.filter(Objects::nonNull)
+				.min(LocalDateTime::compareTo)
+				.orElse(LocalDateTime.now());
+	}
+
 	/**
 	 * Searches the most recent stopped_at date of all policies in given experiment.
 	 * Returns null if any policy has not finished yet.
@@ -107,7 +116,7 @@ public class ExperimentUtils
 	}
 
 	public static double getEstimatedTrainingTime(Experiment experiment, double progress, RunType runType){
-		final var earliestPolicyStartedDate = ExperimentUtils.getTrainingStartedDate(experiment, runType);
+		final var earliestPolicyStartedDate = ExperimentUtils.getTrainingOldestPolicyStartedDate(experiment, runType);
 		final var difference = Duration.between(earliestPolicyStartedDate, LocalDateTime.now());
 		return difference.toSeconds() * (100 - progress) / progress;
 	}
