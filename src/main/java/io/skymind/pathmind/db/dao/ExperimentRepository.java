@@ -253,7 +253,7 @@ class ExperimentRepository
 					.leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
 				.where(PATHMIND_USER.ID.eq(userId))
 					.and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
-					.and(PROJECT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
+					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
 				.fetchOne(count());
 	}
 }
