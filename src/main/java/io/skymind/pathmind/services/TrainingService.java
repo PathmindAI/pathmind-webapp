@@ -25,6 +25,7 @@ import java.util.List;
 @Slf4j
 public abstract class TrainingService {
     private static final int MINUTE = 60;
+    private static final int HOUR = 60 * 60;
 
     protected final ExecutionProvider executionProvider;
     protected final RunDAO runDAO;
@@ -89,7 +90,7 @@ public abstract class TrainingService {
                 Arrays.asList(policy.getLearningRate()),
                 Arrays.asList(policy.getGamma()),
                 Arrays.asList(policy.getBatchSize()),
-                -1, // no limit
+                24 * HOUR, // 24 hr
                 policy);          // base policy
     }
 
