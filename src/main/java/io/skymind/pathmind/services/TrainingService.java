@@ -16,6 +16,7 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
+import io.skymind.pathmind.services.training.constant.RunConstants;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
@@ -26,8 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.services.training.constant.RunConstants.DISCOVERY_RUN_BATCH_SIZES;
-import static io.skymind.pathmind.services.training.constant.RunConstants.RUN_HYPERPARAMETERS;
+import static io.skymind.pathmind.services.training.constant.RunConstants.*;
 
 @Service
 @Slf4j
@@ -67,13 +67,13 @@ public class TrainingService
     }
 
     public void startDiscoveryRun(Experiment exp){
-        RUN_HYPERPARAMETERS.get(DISCOVERY_RUN_BATCH_SIZES)
+        TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_BATCH_SIZES)
                 .forEach(
                         batch -> startRun(RunType.DiscoveryRun,
                                 exp,
-                                100,
-                                Arrays.asList(1e-3, 1e-5), // Learning rate
-                                Arrays.asList(0.9, 0.99), // gamma
+                                RunConstants.DISCOVERY_RUN_ITERATIONS,
+                                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_LEARNING_RATES), // Learning rate
+                                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_GAMMAS), // gamma
                                 Arrays.asList((Integer) batch), // batch size
                                 30 * MINUTE
                         ));
@@ -82,7 +82,7 @@ public class TrainingService
     public void startFullRun(Experiment exp, Policy policy){
         startRun(RunType.FullRun,
                 exp,
-                500,
+                RunConstants.FULL_RUN_ITERATIONS,
                 Arrays.asList(policy.getLearningRate()),
                 Arrays.asList(policy.getGamma()),
                 Arrays.asList(policy.getBatchSize()),

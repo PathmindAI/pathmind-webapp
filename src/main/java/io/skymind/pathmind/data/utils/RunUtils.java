@@ -35,7 +35,7 @@ public class RunUtils
 	}
 
 	private static int getNumberOfDiscoveryRuns() {
-		return RUN_HYPERPARAMETERS.values().stream()
+		return TRAINING_HYPERPARAMETERS.values().stream()
 				.mapToInt(List::size)
 				.reduce(Math::multiplyExact)
 				.orElse(0);
