@@ -30,7 +30,7 @@ public class DashboardItemService {
 				.offset(offset)
 				.queryType(FETCH_MULTIPLE_BY_USER)
 				.build();
-		return experimentDAO.getDashboardItemsForUser(dashboardQueryParams);
+		return experimentDAO.getDashboardItems(dashboardQueryParams);
 	}
 
 	public Optional<DashboardItem> getSingleDashboardItem(long experimentId) {
@@ -40,7 +40,7 @@ public class DashboardItemService {
 				.offset(0)
 				.queryType(FETCH_SINGLE_BY_EXPERIMENT)
 				.build();
-		return experimentDAO.getDashboardItemsForUser(dashboardQueryParams).stream().findAny();
+		return experimentDAO.getDashboardItems(dashboardQueryParams).stream().findAny();
 	}
 
 	public int countTotalDashboardItemsForUser(long userId) {

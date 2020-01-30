@@ -49,8 +49,8 @@ public class ExperimentDAO
 	}
 
 	@MonitorExecutionTime
-	public List<DashboardItem> getDashboardItemsForUser(DashboardQueryParams dashboardQueryParams) {
-		return ExperimentRepository.getDashboardItemsForUser(ctx, dashboardQueryParams);
+	public List<DashboardItem> getDashboardItems(DashboardQueryParams dashboardQueryParams) {
+		return ExperimentRepository.getDashboardItems(ctx, dashboardQueryParams);
 	}
 
 	@MonitorExecutionTime

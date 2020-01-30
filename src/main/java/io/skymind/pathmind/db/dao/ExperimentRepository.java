@@ -173,7 +173,7 @@ class ExperimentRepository
 	 * @param limit  how many items should be returned
 	 * @return List of dashboard items
 	 */
-	static List<DashboardItem> getDashboardItemsForUser(DSLContext ctx, DashboardQueryParams dashboardQueryParams) {
+	static List<DashboardItem> getDashboardItems(DSLContext ctx, DashboardQueryParams dashboardQueryParams) {
 		final var latestRun = ctx.select(RUN.ID, RUN.EXPERIMENT_ID, RUN.NAME, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT, RUN.STATUS)
 				.distinctOn(RUN.EXPERIMENT_ID)
 				.from(RUN)
