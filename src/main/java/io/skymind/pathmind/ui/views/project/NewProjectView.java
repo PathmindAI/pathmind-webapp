@@ -15,7 +15,7 @@ import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.FormUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.model.ModelsView;
+import io.skymind.pathmind.ui.views.guide.GuideOverview;
 import io.skymind.pathmind.ui.views.project.components.panels.CreateANewProjectPanel;
 import io.skymind.pathmind.ui.views.project.components.panels.NewProjectLogoWizardPanel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +68,7 @@ public class NewProjectView extends PathMindDefaultView
 
 		final long projectId = projectDAO.createNewProject(project);
 		segmentIntegrator.projectCreated();
-		UI.getCurrent().navigate(ModelsView.class, projectId);
+		UI.getCurrent().navigate(GuideOverview.class); // may need to pass in projectId
 	}
 
 	/**

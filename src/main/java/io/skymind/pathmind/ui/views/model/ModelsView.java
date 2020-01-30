@@ -11,7 +11,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -36,6 +35,7 @@ import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
+import io.skymind.pathmind.ui.views.guide.GuideOverview;
 import io.skymind.pathmind.ui.views.model.filter.ModelFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
@@ -56,7 +56,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
-	private Div instructionsDiv;
 	private ScreenTitlePanel titlePanel;
 	private SearchBox<Model> searchBox;
 
@@ -69,7 +68,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	{
 		setupGrid();
 		setupArchivesTabPanel();
-		setupInstructionsDiv();
 		searchBox = getSearchBox();
 		
 		addClassName("models-view");
@@ -83,33 +81,11 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 			new ViewSection(
 				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
 				archivesTabPanel,
-				modelGrid,
-				instructionsDiv
+				modelGrid
 			),
 			WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
 		);
 		return gridWrapper;
-	}
-	
-	private void setupInstructionsDiv() {
-		instructionsDiv = new Div();
-		instructionsDiv.setWidthFull();
-		instructionsDiv.getElement().setProperty("innerHTML",
-				"<p>To prepare your AnyLogic model for reinforcement learning, install the Pathmind Helper</p>" +
-				"<p><strong>The basics:</strong></p>" +
-				"<ol>" +
-					"<li>The Pathmind Helper is an AnyLogic palette item that you add to your simulation. You can <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">download it here</a>.</li>" +
-					"<li>Add Pathmind Helper as a library in AnyLogic.</li>" +
-					"<li>Add a Pathmind Helper to your model.</li>" +
-					"<li>Fill in these functions:</li>" +
-						"<ul>" +
-							"<li>Observation for rewards</li>" +
-							"<li>Observation for training</li>"+
-							"<li>doAction</li>" +
-						"</ul>" +
-				"</ol>" +
-				"<p>When you're ready, upload your model in the next step.</p>" +
-				"<p><a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper\" target=\"_blank\">For more details, see our documentation</a></p>");
 	}
 
 	private void setupArchivesTabPanel() {
@@ -180,16 +156,15 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 			// modelGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			modelGrid.setItems(models);
 		});
-		arrangeGridAndInstructionsVisibility(!models.isEmpty());
+		if (models.isEmpty()) {
+			event.forwardTo(GuideOverview.class);
+			// not sure if this is the best way. probably need to pass projectId to GuideOverview?
+			// need to confirm this (when there is no model, automatically redirect the user to Guide)
+			// is the desired user flow. And how are we going to know which project they were on other
+			// than passing projectId around?
+		}
 		archivesTabPanel.initData();
 		titlePanel.setSubtitle(projectName);
-	}
-	
-	private void arrangeGridAndInstructionsVisibility(boolean hasModels) {
-		instructionsDiv.setVisible(!hasModels);
-		modelGrid.setVisible(hasModels);
-		archivesTabPanel.setVisible(hasModels);
-		searchBox.setVisible(hasModels);
 	}
 
 	@Override

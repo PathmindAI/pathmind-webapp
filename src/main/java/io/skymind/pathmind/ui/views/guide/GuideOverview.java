@@ -19,7 +19,7 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 
 @Route(value = Routes.GUIDE_URL, layout = MainLayout.class)
 public class GuideOverview extends PathMindDefaultView {
-
+	// may need to take projectId as parameter?
 	@Autowired
 	private GuideDAO guideDAO;
 
@@ -34,7 +34,7 @@ public class GuideOverview extends PathMindDefaultView {
 
 	@Override
 	protected boolean isAccessAllowedForUser() {
-		return true;
+		return true; // need to check for project
 	}
 
 	@Override

@@ -9,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
+import io.skymind.pathmind.ui.views.model.UploadModelView;
+
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.Id;
@@ -54,7 +57,17 @@ public class GuideMenu extends PolymerTemplate<GuideMenu.Model> {
         checklist.add(recap);
 
         setChecklist(checklist);
+
+        initBtn();
     }
+
+    private void initBtn() {
+		// Fake project
+		long projectId = 3;
+
+		skipToUploadModelBtn.addClickListener(e -> UI.getCurrent().navigate(UploadModelView.class, projectId));
+	}
+
     public void setChecklist(List<ChecklistItem> checklist) {
         getModel().setChecklist(checklist);
     }
