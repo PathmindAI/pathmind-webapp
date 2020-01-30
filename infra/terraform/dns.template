@@ -12,7 +12,7 @@ data "aws_route53_zone" "zone" {
 
 resource "aws_route53_record" "app_alias" {
   zone_id    = "${data.aws_route53_zone.zone.id}"
-  name       = "app.${var.subdomain}${var.domain_name}"
+  name       = "${var.appdomain}${var.domain_name}"
   type       = "A"
 
   alias {

@@ -3,6 +3,7 @@ variable "awsaccesskey" {}
 variable "awssecretaccesskey" {}
 variable "domain_name" {}
 variable "subdomain" {}
+variable "appdomain" {}
 variable "DB_URL" {}
 variable "DB_URL_CLI" {}
 variable "SEGMENT_WEBSITE_KEY" {}
@@ -22,4 +23,7 @@ variable "db_s3_bucket" { }
 variable "db_s3_file" { }
 variable "master_zones" {  }
 variable "node_zones" {  }
+variable "node_count" {  }
+variable "node_size" {  }
+variable "master_size" {  }
 
