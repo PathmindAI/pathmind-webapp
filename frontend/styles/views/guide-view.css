@@ -42,7 +42,7 @@ p {
   margin-bottom: 0;
 }
 a {
-  color: var(--pm-blue-color);
+  color: var(--lumo-primary-color);
   text-decoration: none;
 }
 a:hover {
