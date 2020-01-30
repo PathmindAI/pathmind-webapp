@@ -133,37 +133,36 @@ class ExperimentRepository
 	 * <a href="https://www.postgresql.org/docs/10/sql-select.html#SQL-DISTINCT">DISTINCT ON</a> clause.<br/>
 	 * Subquery named <code>POLICY_FOR_LATEST_RUN</code>  checks if there is any exported policy for latest_runs
 	 * returned by a subquery above.<br />
-	 * <p>
 	 * Generated query in plain SQL would look like:
 	 * <pre>
-	 *     {@code}
-	 * SELECT e.id, e.name,
-	 *        m.id, m.name,
-	 *        p.id, p.name,
-	 *        greatest(e.last_activity_date, m.last_activity_date, p.last_activity_date) AS ITEM_LAST_ACTIVITY_DATE,
-	 *        latest_run.*
-	 * FROM experiment e
-	 * RIGHT JOIN model m ON m.id = e.model_id
-	 * RIGHT JOIN project p ON p.id = m.project_id
-	 * LEFT JOIN pathmind_user u ON u.id = p.pathmind_user_id
-	 * LEFT JOIN
-	 *   (SELECT DISTINCT ON (experiment_id) id, experiment_id, name, run_type, started_at, stopped_at, status
-	 *    FROM run
-	 *    WHERE started_at IS NOT NULL
-	 *    ORDER BY experiment_id,
-	 *             started_at DESC) latest_run ON latest_run.experiment_id = e.id
-	 * LEFT JOIN
-	 *   (SELECT run_id
-	 *    FROM policy
-	 *    WHERE policy.exported_at IS NOT NULL
-	 *    GROUP BY policy.run_id) po ON po.run_id = latest_run.id
-	 * WHERE p.pathmind_user_id = $pathmind_user_id
-	 *   AND (e.archived = FALSE OR e.archived IS NULL)
-	 *   AND (p.archived = FALSE OR p.archived IS NULL)
-	 * ORDER BY ITEM_LAST_ACTIVITY_DATE DESC,
-	 *          e.id DESC
-	 * LIMIT $limit
-	 * OFFSET $offset
+	 	SELECT e.id, e.name,
+	 	       m.id, m.name,
+	 	       p.id, p.name,
+	 	       greatest(e.last_activity_date, m.last_activity_date, p.last_activity_date) AS ITEM_LAST_ACTIVITY_DATE,
+	 	       latest_run.*
+	 	FROM experiment e
+	 	RIGHT JOIN model m ON m.id = e.model_id
+	 	RIGHT JOIN project p ON p.id = m.project_id
+	 	LEFT JOIN pathmind_user u ON u.id = p.pathmind_user_id
+	 	LEFT JOIN
+	 	  (SELECT DISTINCT ON (experiment_id) id, experiment_id, name, run_type, started_at, stopped_at, status
+	 	   FROM run
+	 	   WHERE started_at IS NOT NULL
+	 	   ORDER BY experiment_id,
+	 	            started_at DESC) latest_run ON latest_run.experiment_id = e.id
+	 	LEFT JOIN
+	 	  (SELECT run_id
+	 	   FROM policy
+	 	   WHERE policy.exported_at IS NOT NULL
+	 	   GROUP BY policy.run_id) po ON po.run_id = latest_run.id
+	 	WHERE p.pathmind_user_id = $pathmind_user_id
+	 	  AND (e.archived = FALSE OR e.archived IS NULL)
+	 	  AND (m.archived = FALSE OR m.archived IS NULL)
+	 	  AND (p.archived = FALSE OR p.archived IS NULL)
+	 	ORDER BY ITEM_LAST_ACTIVITY_DATE DESC,
+	 	         e.id DESC
+	 	LIMIT $limit
+	 	OFFSET $offset
 	 * </pre>
 	 *
 	 * @param userId pathmind user ID
@@ -245,6 +244,21 @@ class ExperimentRepository
 
 	/**
 	 * Counts and returns total number of given user's dashboard items
+	 * Generated query in plain SQL would look like:
+	 * <pre>
+		 SELECT COUNT(*)
+		 FROM experiment e
+		 RIGHT JOIN model m ON m.id = e.model_id
+		 RIGHT JOIN project p ON p.id = m.project_id
+		 LEFT JOIN pathmind_user u ON u.id = p.pathmind_user_id
+		 WHERE p.pathmind_user_id = $pathmind_user_id
+		 	AND (e.archived = FALSE
+		 		OR e.archived IS NULL)
+		 	AND (m.archived = FALSE
+		 		OR m.archived IS NULL)
+		 	AND (p.archived = FALSE
+		 		OR p.archived IS NULL)
+	 * </pre>
 	 */
 	static int countDashboardItemsForUser(DSLContext ctx, long userId) {
 		return ctx.selectCount()
