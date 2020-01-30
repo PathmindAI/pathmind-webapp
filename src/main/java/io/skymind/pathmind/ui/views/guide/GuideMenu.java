@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
-import io.skymind.pathmind.ui.views.model.UploadModelView;
-
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -21,6 +19,10 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.Include;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
+import io.skymind.pathmind.constants.GuideStep;
+import io.skymind.pathmind.db.dao.GuideDAO;
+import io.skymind.pathmind.ui.views.model.UploadModelView;
+
 @Tag("guide-menu")
 @JsModule("./src/guide/guide-menu.js")
 @SpringComponent
@@ -29,22 +31,27 @@ public class GuideMenu extends PolymerTemplate<GuideMenu.Model> {
 
     @Id("skipToUploadModelBtn")
     private Button skipToUploadModelBtn;
+    
+	@Autowired
+	private GuideDAO guideDAO;
 
     @Autowired
     public GuideMenu() {
     }
 
+    private long projectId;
+
     @PostConstruct
     private void init() {
         // the state is either "completed" or empty
-        ChecklistItem overview = new ChecklistItem("Overview", "guide", "completed", "overview");
-        ChecklistItem install = new ChecklistItem("Install Pathmind Helper", "guide/install", "completed", "install");
-        ChecklistItem observation = new ChecklistItem("Build Observation Space", "guide/observation", "completed", "observation");
-        ChecklistItem actionSpace = new ChecklistItem("Build Action Space", "guide/action-space", "", "action-space");
-        ChecklistItem triggerActions = new ChecklistItem("Triggering Actions", "guide/trigger-actions", "", "trigger-actions");
-        ChecklistItem done = new ChecklistItem("Define \"Done\" Condition", "guide/done-condition", "", "done-condition");
-        ChecklistItem reward = new ChecklistItem("Define Reward Variables", "guide/reward", "", "reward");
-        ChecklistItem recap = new ChecklistItem("Conclusion / Re-cap", "guide/recap", "", "recap");
+        ChecklistItem overview = new ChecklistItem("Overview", "guide", stepIsCompleted("Overview"));
+        ChecklistItem install = new ChecklistItem("Install Pathmind Helper", "guide/install", stepIsCompleted("Install Pathmind Helper"));
+        ChecklistItem observation = new ChecklistItem("Build Observation Space", "guide/observation", stepIsCompleted("Build Observation Space"));
+        ChecklistItem actionSpace = new ChecklistItem("Build Action Space", "guide/action-space", stepIsCompleted("Build Action Space"));
+        ChecklistItem triggerActions = new ChecklistItem("Triggering Actions", "guide/trigger-actions", stepIsCompleted("Triggering Actions"));
+        ChecklistItem done = new ChecklistItem("Define \"Done\" Condition", "guide/done-condition", stepIsCompleted("Define \"Done\" Condition"));
+        ChecklistItem reward = new ChecklistItem("Define Reward Variables", "guide/reward", stepIsCompleted("Define Reward Variables"));
+        ChecklistItem recap = new ChecklistItem("Conclusion / Re-cap", "guide/recap", stepIsCompleted("Conclusion / Re-cap"));
 
         List<ChecklistItem> checklist = new ArrayList<ChecklistItem>();
         checklist.add(overview);
@@ -63,10 +70,20 @@ public class GuideMenu extends PolymerTemplate<GuideMenu.Model> {
 
     private void initBtn() {
 		// Fake project
-		long projectId = 3;
+		projectId = 3;
 
 		skipToUploadModelBtn.addClickListener(e -> UI.getCurrent().navigate(UploadModelView.class, projectId));
-	}
+    }
+    
+    private String stepIsCompleted(String stepName) {
+		GuideStep guideStep = guideDAO.getGuideStep(projectId);
+
+        if (stepName == guideStep.toString()) {
+            return "completed";
+        } else {
+            return "";
+        }
+    }
 
     public void setChecklist(List<ChecklistItem> checklist) {
         getModel().setChecklist(checklist);
@@ -77,7 +94,7 @@ public class GuideMenu extends PolymerTemplate<GuideMenu.Model> {
     }
 
     public interface Model extends TemplateModel {
-        @Include({ "name", "path", "state", "htmlId" })
+        @Include({ "name", "path", "state" })
         void setChecklist(List<ChecklistItem> checklist);
 
         List<ChecklistItem> getChecklist();

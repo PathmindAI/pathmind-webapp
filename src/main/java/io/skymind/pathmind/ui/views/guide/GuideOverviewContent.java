@@ -15,6 +15,8 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
+import io.skymind.pathmind.constants.GuideStep;
+import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.ui.views.model.UploadModelView;
 
@@ -31,6 +33,9 @@ public class GuideOverviewContent extends PolymerTemplate<GuideOverviewContent.M
 	private Button skipToUploadModelBtn;
 
 	@Autowired
+	private GuideDAO guideDAO;
+
+	@Autowired
 	public GuideOverviewContent(CurrentUser currentUser) {
 	}
 
@@ -42,8 +47,13 @@ public class GuideOverviewContent extends PolymerTemplate<GuideOverviewContent.M
 	private void initBtns() {
 		// Fake project
 		long projectId = 3;
-
-		nextBtn.addClickListener(e -> UI.getCurrent().navigate(InstallPathmindHelperView.class));
+		
+		GuideStep guideStep = guideDAO.getGuideStep(projectId);
+		
+		nextBtn.addClickListener(e -> {
+			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+			UI.getCurrent().navigate(InstallPathmindHelperView.class);
+		});
 		skipToUploadModelBtn.addClickListener(e -> UI.getCurrent().navigate(UploadModelView.class, projectId));
 	}
 

@@ -15,6 +15,8 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
+import io.skymind.pathmind.constants.GuideStep;
+import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.security.CurrentUser;
 
 @Tag("trigger-actions-view-content")
@@ -29,6 +31,9 @@ public class TriggerActionsViewContent extends PolymerTemplate<TriggerActionsVie
     @Id("nextBtn")
     private Button nextBtn;
 
+	@Autowired
+    private GuideDAO guideDAO;
+    
     @Autowired
     public TriggerActionsViewContent(CurrentUser currentUser) {
     }
@@ -39,8 +44,20 @@ public class TriggerActionsViewContent extends PolymerTemplate<TriggerActionsVie
 	}
 
 	private void initBtns() {
-		backBtn.addClickListener(e -> UI.getCurrent().navigate(ActionSpaceView.class));
-		nextBtn.addClickListener(e -> UI.getCurrent().navigate(DoneConditionView.class));
+		// Fake project
+		long projectId = 3;
+
+        GuideStep guideStep = guideDAO.getGuideStep(projectId);
+        
+		backBtn.addClickListener(e -> {
+			guideDAO.updateGuideStep(projectId, guideStep.previousStep());
+            UI.getCurrent().navigate(ActionSpaceView.class);
+        });
+
+        nextBtn.addClickListener(e -> {
+            guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+            UI.getCurrent().navigate(DoneConditionView.class);
+        });
     }
 
     public interface Model extends TemplateModel {

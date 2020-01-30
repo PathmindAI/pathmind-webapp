@@ -15,6 +15,8 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
+import io.skymind.pathmind.constants.GuideStep;
+import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.ui.views.model.UploadModelView;
 
@@ -31,6 +33,9 @@ public class RecapViewContent extends PolymerTemplate<RecapViewContent.Model> {
 	private Button nextBtn;
 
 	@Autowired
+	private GuideDAO guideDAO;
+
+	@Autowired
 	public RecapViewContent(CurrentUser currentUser) {
 	}
 
@@ -43,8 +48,16 @@ public class RecapViewContent extends PolymerTemplate<RecapViewContent.Model> {
 		// Fake project
 		long projectId = 3;
 
-		backBtn.addClickListener(e -> UI.getCurrent().navigate(RewardView.class));
-		nextBtn.addClickListener(e -> UI.getCurrent().navigate(UploadModelView.class, projectId));
+		GuideStep guideStep = guideDAO.getGuideStep(projectId);
+
+		backBtn.addClickListener(e -> {
+			guideDAO.updateGuideStep(projectId, guideStep.previousStep());
+			UI.getCurrent().navigate(RewardView.class);
+		});
+		nextBtn.addClickListener(e -> {
+			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+			UI.getCurrent().navigate(UploadModelView.class, projectId);
+		});
 	}
 
 	public interface Model extends TemplateModel {
