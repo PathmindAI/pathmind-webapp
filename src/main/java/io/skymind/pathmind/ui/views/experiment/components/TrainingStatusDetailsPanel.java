@@ -102,8 +102,17 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 	private void updateElapsedTimer(Experiment experiment, RunStatus trainingStatus, RunType runType) {
 		final var isTrainingRunning = isRunning(trainingStatus);
 		final var startTime = ExperimentUtils.getTrainingStartedDate(experiment, runType);
-		final var endTime = isTrainingRunning ? LocalDateTime.now() : ExperimentUtils.getTrainingCompletedTime(experiment);
+		final var endTime = calculateEndTimeForElapsedTime(experiment, isTrainingRunning);
 		final var timeElapsed = Duration.between(startTime, endTime).toSeconds();
 		elapsedTimeLabel.updateTimer(timeElapsed, isTrainingRunning);
+	}
+
+	private LocalDateTime calculateEndTimeForElapsedTime(Experiment experiment, boolean isTrainingRunning) {
+		if (isTrainingRunning) {
+			return LocalDateTime.now();
+		} else {
+			var trainingCompletedTime = ExperimentUtils.getTrainingCompletedTime(experiment);
+			return trainingCompletedTime == null ? LocalDateTime.now() : trainingCompletedTime;
+		}
 	}
 }
