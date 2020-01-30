@@ -49,7 +49,9 @@ public class ExperimentUtils
 	}
 
 	public static RunStatus getTrainingStatus(Experiment experiment) {
+		RunType runType = getTrainingType(experiment);
 		RunStatus status = experiment.getPolicies().stream()
+				.filter(p -> p.getRun().getRunTypeEnum() == runType)
 				.map(PolicyUtils::getRunStatus)
 				.min(Comparator.comparingInt(RunStatus::getValue))
 				.orElse(NotStarted);
@@ -58,6 +60,7 @@ public class ExperimentUtils
 		// So checking that to make sure
 		if (status == NotStarted || status == Starting) {
 			if (experiment.getPolicies().stream()
+					.filter(p -> p.getRun().getRunTypeEnum() == runType)
 					.map(PolicyUtils::getRunStatus)
 					.map(RunStatus::getValue)
 					.anyMatch(statusVal -> statusVal > Starting.getValue())) {

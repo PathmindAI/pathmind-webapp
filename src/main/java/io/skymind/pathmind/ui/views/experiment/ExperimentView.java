@@ -231,13 +231,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 	
 	private Policy selectBestPolicy(List<Policy> policies) {
-		boolean hasFullRun = policies.stream().anyMatch(p -> p.getRun().getRunTypeEnum() == RunType.FullRun);
-		if (hasFullRun) {
-			return selectHighestPerformingPolicy(policies, RunType.FullRun);
-		} else {
-			return selectHighestPerformingPolicy(policies, RunType.DiscoveryRun);
-		}
-		
+		RunType runType = ExperimentUtils.getTrainingType(experiment);
+		return selectHighestPerformingPolicy(policies, runType);
 	}
 
 	private Policy selectHighestPerformingPolicy(List<Policy> policies, RunType runType) {
