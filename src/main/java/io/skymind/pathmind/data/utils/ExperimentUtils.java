@@ -1,10 +1,9 @@
 package io.skymind.pathmind.data.utils;
 
-import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.constants.RunType;
-import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.Run;
+import static io.skymind.pathmind.constants.RunStatus.NotStarted;
+import static io.skymind.pathmind.constants.RunStatus.Running;
+import static io.skymind.pathmind.constants.RunStatus.Starting;
+import static io.skymind.pathmind.constants.RunType.FullRun;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -13,8 +12,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.constants.RunStatus.NotStarted;
-import static io.skymind.pathmind.constants.RunType.FullRun;
+import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.constants.RunType;
+import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Run;
 
 public class ExperimentUtils
 {
@@ -47,10 +49,22 @@ public class ExperimentUtils
 	}
 
 	public static RunStatus getTrainingStatus(Experiment experiment) {
-		return experiment.getPolicies().stream()
+		RunStatus status = experiment.getPolicies().stream()
 				.map(PolicyUtils::getRunStatus)
 				.min(Comparator.comparingInt(RunStatus::getValue))
 				.orElse(NotStarted);
+		
+		// In Running status, there can be some runs completed while others are yet to be started
+		// So checking that to make sure
+		if (status == NotStarted || status == Starting) {
+			if (experiment.getPolicies().stream()
+					.map(PolicyUtils::getRunStatus)
+					.map(RunStatus::getValue)
+					.anyMatch(statusVal -> statusVal > Starting.getValue())) {
+				status = Running;
+			}
+		}
+		return status;
 	}
 
 	/**
