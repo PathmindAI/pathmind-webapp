@@ -3,6 +3,7 @@ package io.skymind.pathmind.db.dao;
 import io.skymind.pathmind.data.*;
 import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
+import io.skymind.pathmind.db.utils.DashboardQueryParams;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.*;
 import org.jooq.impl.DSL;
@@ -16,6 +17,7 @@ import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.data.db.tables.Model.MODEL;
 import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
 import static io.skymind.pathmind.data.db.tables.Run.RUN;
+import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_MULTIPLE_BY_USER;
 import static org.jooq.impl.DSL.count;
 
 @Slf4j
@@ -171,7 +173,7 @@ class ExperimentRepository
 	 * @param limit  how many items should be returned
 	 * @return List of dashboard items
 	 */
-	static List<DashboardItem> getDashboardItemsForUser(DSLContext ctx, long userId, int offset, int limit) {
+	static List<DashboardItem> getDashboardItemsForUser(DSLContext ctx, DashboardQueryParams dashboardQueryParams) {
 		final var latestRun = ctx.select(RUN.ID, RUN.EXPERIMENT_ID, RUN.NAME, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT, RUN.STATUS)
 				.distinctOn(RUN.EXPERIMENT_ID)
 				.from(RUN)
@@ -202,17 +204,25 @@ class ExperimentRepository
 					.leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
 					.leftJoin(policyForLatestRun).on(policyForLatestRun.field("run_id", POLICY.RUN_ID.getDataType()).eq(latestRun.field(
 						"id", RUN.ID.getDataType())))
-				.where(PATHMIND_USER.ID.eq(userId))
-					.and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
+				.where(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
 					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
+					.and(findByUserOrExperimentCondition(dashboardQueryParams))
 				.orderBy(itemLastActivityDate.desc(), EXPERIMENT.ID.desc())
-				.offset(offset)
-				.limit(limit)
+				.offset(dashboardQueryParams.getOffset())
+				.limit(dashboardQueryParams.getLimit())
 				.fetch();
 
 		return result.stream()
 				.map(record -> mapRecordToDashboardItem(record, latestRun, policyForLatestRun))
 				.collect(Collectors.toList());
+	}
+
+	private static Condition findByUserOrExperimentCondition(DashboardQueryParams dashboardQueryParams) {
+		if(dashboardQueryParams.getQueryType() == FETCH_MULTIPLE_BY_USER) {
+			return PATHMIND_USER.ID.eq(dashboardQueryParams.getUserId());
+		} else {
+			return EXPERIMENT.ID.eq(dashboardQueryParams.getExperimentId());
+		}
 	}
 
 	/**

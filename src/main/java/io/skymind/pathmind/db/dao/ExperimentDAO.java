@@ -3,6 +3,7 @@ package io.skymind.pathmind.db.dao;
 import io.skymind.pathmind.aspects.MonitorExecutionTime;
 import io.skymind.pathmind.data.DashboardItem;
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.db.utils.DashboardQueryParams;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -48,8 +49,8 @@ public class ExperimentDAO
 	}
 
 	@MonitorExecutionTime
-	public List<DashboardItem> getDashboardItemsForUser(long userId, int offset, int limit) {
-		return ExperimentRepository.getDashboardItemsForUser(ctx, userId, offset, limit);
+	public List<DashboardItem> getDashboardItemsForUser(DashboardQueryParams dashboardQueryParams) {
+		return ExperimentRepository.getDashboardItemsForUser(ctx, dashboardQueryParams);
 	}
 
 	@MonitorExecutionTime
