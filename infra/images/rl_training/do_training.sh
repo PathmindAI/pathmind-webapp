@@ -93,7 +93,7 @@ EOF
 #Send sqs notification to destroy
 aws sqs send-message \
         --queue-url ${SQS_URL} \
-        --message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"1"}' \
+        --message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
         --message-group-id training
 
 kill -9 $pid_tail

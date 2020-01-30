@@ -1,6 +1,12 @@
 #!/usr/bin/bash
 set -e
 
+if [ -d modules ]
+then
+	echo "modules folder exists use terraform destroy and remove the folder"
+	exit -1
+fi
+
 export NAME=`grep cluster_name terraform.tfvars | awk -F'=' '{print $2}' | sed "s/ //g" | sed 's/"//g'`
 BUCKET_NAME=`grep kops_bucket terraform.tfvars | awk -F'=' '{print $2}' | sed "s/ //g" | sed 's/"//g'`
 MASTER_ZONES=`grep master_zones terraform.tfvars | awk -F'=' '{print $2}' | sed "s/ //g" | sed 's/"//g'`
