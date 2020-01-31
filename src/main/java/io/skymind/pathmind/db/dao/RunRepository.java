@@ -22,6 +22,8 @@ import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.data.db.tables.records.RunRecord;
+import org.jooq.Record1;
+import org.jooq.Result;
 
 class RunRepository
 {

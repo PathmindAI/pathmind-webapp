@@ -74,4 +74,7 @@ public class PolicyDAO
         return PolicyRepository.getSnapshotFile(ctx, policyId);
     }
 
+    public void updateExportedDate(long policyId) {
+        PolicyRepository.updateExportedDate(ctx, policyId);
+    }
 }
