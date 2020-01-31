@@ -12,44 +12,14 @@ class TriggerActionsViewContent extends PolymerElement {
           trigger. The event trigger tells Pathmind when to compute the next
           action.
         </p>
+        <p>
+          <a href$="[[readMoreLink]]" target="_blank"
+            >Learn more about Triggering Actions</a
+          >
+        </p>
         <div class="screenshot-wrapper">
           <img src="frontend/images/guide/PathmindHelperTriggerAction3.png" />
         </div>
-        <p>
-          The event trigger can be configured within the Pathmind Helper
-          properties.
-        </p>
-        <p>
-          <b>Use Pathmind Event Trigger </b>- Enable or disable with the check
-          box.
-        </p>
-        <p>
-          <b>Recurrence</b> - The frequency at which the event condition will be
-          checked. One time per second is the default.
-        </p>
-        <p>
-          <b>Event Condition</b> - Must return <code>true</code> or
-          <code>false</code>.
-        </p>
-        <h3>Option 1 - Trigger Actions Cyclically</h3>
-        <div class="screenshot-wrapper">
-          <img src="frontend/images/guide/triggerNextActionTrue.png" />
-        </div>
-        <p>
-          Let's say that the event condition is set to <code>true</code> as
-          shown in the screenshot above. This means that an agent will try to
-          perform an action every second.
-        </p>
-        <h3>Option 2 - Trigger Actions Conditionally</h3>
-        <div class="screenshot-wrapper">
-          <img src="frontend/images/guide/PathmindHelperTriggerAction.png" />
-        </div>
-        <p>
-          You can also trigger an action based on a condition (<code>true</code>
-          or <code>false</code>). The recurrence time determines how often this
-          condition is checked. An action is triggered when the criteria that
-          you define here are met.
-        </p>
         <vaadin-button id="nextBtn" theme="secondary">
           Completed triggerNextAction
         </vaadin-button>
@@ -65,7 +35,13 @@ class TriggerActionsViewContent extends PolymerElement {
   }
 
   static get properties() {
-    return {};
+    return {
+      readMoreLink: {
+        value() {
+          return "https://help.pathmind.com/en/articles/3634254-4-triggering-actions";
+        }
+      }
+    };
   }
 }
 

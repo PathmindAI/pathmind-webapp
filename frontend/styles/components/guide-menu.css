@@ -18,7 +18,8 @@
 .guide-menu a:last-of-type {
   margin-bottom: 0;
 }
-.guide-menu a:hover {
+.guide-menu a:hover,
+.guide-menu a[highlight]:hover {
   color: var(--pm-blue-color-darkest-50pct);
 }
 .guide-menu a:not(.skipLink)::before {

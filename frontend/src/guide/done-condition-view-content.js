@@ -8,28 +8,21 @@ class DoneConditionViewContent extends PolymerElement {
       <div class="content">
         <h1>Define "Done" Condition</h1>
         <p>
-          <b>isDone</b> sets the length of your simulation. In reinforcement
-          learning terminology, the length of your simulation is also known as
-          an "episode".
+          You need to define the length of your simulation’s run and when it
+          finishes. That length is known as an episode. Some episodes are
+          defined in terms of time spent (e.g. end the episode after a “day”),
+          while others end when the simulation meets a certain condition. In the
+          Pathmind Helper in AnyLogic, <b>isDone</b> sets the length of your
+          simulation.
+        </p>
+        <p>
+          <a href$="[[readMoreLink]]" target="_blank"
+            >Learn more about defining "Done" Condition</a
+          >
         </p>
         <div class="screenshot-wrapper">
           <img src="frontend/images/guide/PathmindHelperDone.png" />
         </div>
-        <p>
-          Some episodes are defined in terms of time spent (e.g. end the episode
-          after a "day"), while others end when the simulation meets a certain
-          condition (e.g. the character in a video game dies).
-        </p>
-        <p>
-          Shorter episodes tend to be better as they provide faster feedback,
-          which helps the reinforcement learning algorithm learn. We recommend
-          limiting episodes to less than 100,000 steps if possible. That said,
-          some use cases require more than 100,000 steps per episode.
-        </p>
-        <p>
-          Follow <a href="javascript:void(0);">these instructions</a> to audit
-          your episode length.
-        </p>
         <vaadin-button id="nextBtn" theme="secondary">
           “Done” Condition Defined
         </vaadin-button>
@@ -45,7 +38,13 @@ class DoneConditionViewContent extends PolymerElement {
   }
 
   static get properties() {
-    return {};
+    return {
+      readMoreLink: {
+        value() {
+          return "https://help.pathmind.com/en/articles/3644763-5-define-done-condition";
+        }
+      }
+    };
   }
 }
 

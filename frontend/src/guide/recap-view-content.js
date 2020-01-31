@@ -4,24 +4,15 @@ import "@vaadin/vaadin-button/src/vaadin-button.js";
 class RecapViewContent extends PolymerElement {
   static get template() {
     return html`
-      <style include="pathmind-dialog-view guide-view">
-        p {
-          font-size: var(--lumo-font-size-xl);
-        }
-      </style>
+      <style include="pathmind-dialog-view guide-view"></style>
       <div class="content">
         <h1>Conclusion / Recap</h1>
         <p>
-          We’ve covered the Pathmind Key Concept and definitions dictumst
-          vestibulum rhoncus est pellentesque elit ullamcorper. Ullamcorper
-          dignissim cras tincidunt lobortis feugiat vivamus at. Est ante in nibh
-          mauris cursus mattis molestie a iaculis. Faucibus scelerisque eleifend
-          donec pretium vulputate sapien nec sagittis aliquam. Ultricies leo
-          integer malesuada nunc vel risus. Massa tincidunt dui ut ornare lectus
-          sit. Vulputate sapien nec sagittis aliquam malesuada bibendum arcu
-          vitae. Faucibus scelerisque eleifend donec pretium vulputate. Platea
-          dictumst vestibulum rhoncus est pellentesque elit ullamcorper
-          dignissim cras.
+          Once you have completed the steps above, you are ready to upload and
+          train your model with reinforcement learning. You will probably want
+          to experiment with different reward variables, reward shapes, and
+          observations. Pathmind allows you to track and compare those
+          experiments.
         </p>
         <vaadin-button id="nextBtn" theme="secondary">
           Let’s upload a model!
