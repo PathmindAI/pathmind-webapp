@@ -15,6 +15,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.db.dao.GuideDAO;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.views.model.UploadModelView;
 
 @Tag("recap-view-content")
@@ -33,7 +34,11 @@ public class RecapViewContent extends PolymerTemplate<RecapViewContent.Model> {
 	private GuideDAO guideDAO;
 
 	@Autowired
-	public RecapViewContent() {
+	private SegmentIntegrator segmentIntegrator;
+	
+	@Autowired
+	public RecapViewContent(SegmentIntegrator segmentIntegrator) {
+		this.segmentIntegrator = segmentIntegrator;
 	}
 
 	protected void initBtns(GuideStep guideStep, long projectId) {
@@ -43,6 +48,7 @@ public class RecapViewContent extends PolymerTemplate<RecapViewContent.Model> {
 		});
 		nextBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+			segmentIntegrator.completedGuideRecap();
 			UI.getCurrent().navigate(UploadModelView.class, projectId);
 		});
 	}

@@ -1,7 +1,5 @@
 package io.skymind.pathmind.ui.views.guide;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -17,6 +15,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.db.dao.GuideDAO;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.views.model.UploadModelView;
 
 @Tag("guide-overview-content")
@@ -33,20 +32,19 @@ public class GuideOverviewContent extends PolymerTemplate<GuideOverviewContent.M
 
 	@Autowired
 	private GuideDAO guideDAO;
+	
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
 	@Autowired
-	public GuideOverviewContent() {
-		// BLOCKER: cannot pass the projectId in
-	}
-
-	@PostConstruct
-	private void init() {
-		// initBtns();
+	public GuideOverviewContent(SegmentIntegrator segmentIntegrator) {
+		this.segmentIntegrator = segmentIntegrator;
 	}
 
 	protected void initBtns(GuideStep guideStep, long projectId) {
 		nextBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+			segmentIntegrator.completedGuideOverview();
 			UI.getCurrent().navigate(InstallPathmindHelperView.class, projectId);
 		});
 		skipToUploadModelBtn.addClickListener(e -> UI.getCurrent().navigate(UploadModelView.class, projectId));

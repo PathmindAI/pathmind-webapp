@@ -15,6 +15,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.db.dao.GuideDAO;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 
 @Tag("done-condition-view-content")
 @JsModule("./src/guide/done-condition-view-content.js")
@@ -31,9 +32,13 @@ public class DoneConditionViewContent extends PolymerTemplate<DoneConditionViewC
 	@Autowired
     private GuideDAO guideDAO;
 
+	@Autowired
+    private SegmentIntegrator segmentIntegrator;
+
     @Autowired
-    public DoneConditionViewContent() {
-    }
+    public DoneConditionViewContent(SegmentIntegrator segmentIntegrator) {
+		this.segmentIntegrator = segmentIntegrator;
+	}
 
 	protected void initBtns(GuideStep guideStep, long projectId) {
         backBtn.addClickListener(e -> {
@@ -43,6 +48,7 @@ public class DoneConditionViewContent extends PolymerTemplate<DoneConditionViewC
 
 		nextBtn.addClickListener(e -> {
             guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+			segmentIntegrator.completedGuideDone();
             UI.getCurrent().navigate(RewardView.class, projectId);
         });
     }

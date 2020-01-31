@@ -18,7 +18,7 @@
 .guide-menu a:last-of-type {
   margin-bottom: 0;
 }
-.guide-menu a:hover,
+.guide-menu a:not(.disabled):hover,
 .guide-menu a[highlight]:hover {
   color: var(--pm-blue-color-darkest-50pct);
 }
@@ -47,13 +47,17 @@
   background-size: cover;
   transform: translateY(-60%);
 }
-.guide-menu a:not(.skipLink):not([highlight])::before,
-.guide-menu a:not(.skipLink):not([highlight])::after {
+.guide-menu a:not(.disabled):not(.skipLink):not([highlight])::before,
+.guide-menu a:not(.disabled):not(.skipLink):not([highlight])::after {
   opacity: 0.25;
 }
-.guide-menu a:hover::before,
-.guide-menu a:hover::after {
+.guide-menu a:not(.disabled):hover::before,
+.guide-menu a:not(.disabled):hover::after {
   opacity: 0.5;
+}
+.guide-menu a.disabled {
+  pointer-events: none;
+  cursor: default;
 }
 .guide-menu .skipLink {
   color: var(--pm-blue-color-darkest);

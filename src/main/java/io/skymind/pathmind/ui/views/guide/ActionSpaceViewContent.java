@@ -15,6 +15,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.db.dao.GuideDAO;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 
 @Tag("action-space-view-content")
 @JsModule("./src/guide/action-space-view-content.js")
@@ -31,9 +32,13 @@ public class ActionSpaceViewContent extends PolymerTemplate<ActionSpaceViewConte
 	@Autowired
     private GuideDAO guideDAO;
 
+	@Autowired	
+	private SegmentIntegrator segmentIntegrator;
+
     @Autowired
-    public ActionSpaceViewContent() {
-    }
+    public ActionSpaceViewContent(SegmentIntegrator segmentIntegrator) {
+		this.segmentIntegrator = segmentIntegrator;
+	}
 
 	protected void initBtns(GuideStep guideStep, long projectId) {        
 		backBtn.addClickListener(e -> {
@@ -43,6 +48,7 @@ public class ActionSpaceViewContent extends PolymerTemplate<ActionSpaceViewConte
 
 		nextBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+			segmentIntegrator.completedGuideActionSpace();
             UI.getCurrent().navigate(TriggerActionsView.class, projectId);
         });
     }

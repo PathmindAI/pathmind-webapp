@@ -15,6 +15,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.db.dao.GuideDAO;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 
 @Tag("trigger-actions-view-content")
 @JsModule("./src/guide/trigger-actions-view-content.js")
@@ -30,9 +31,13 @@ public class TriggerActionsViewContent extends PolymerTemplate<TriggerActionsVie
 
 	@Autowired
     private GuideDAO guideDAO;
+	
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
      
     @Autowired
-    public TriggerActionsViewContent() {
+    public TriggerActionsViewContent(SegmentIntegrator segmentIntegrator) {
+        this.segmentIntegrator = segmentIntegrator;
     }
 
 	protected void initBtns(GuideStep guideStep, long projectId) {
@@ -43,6 +48,7 @@ public class TriggerActionsViewContent extends PolymerTemplate<TriggerActionsVie
 
         nextBtn.addClickListener(e -> {
             guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+			segmentIntegrator.completedGuideTriggerActions();
             UI.getCurrent().navigate(DoneConditionView.class, projectId);
         });
     }

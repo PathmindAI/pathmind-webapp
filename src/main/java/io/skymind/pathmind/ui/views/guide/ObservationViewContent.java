@@ -15,6 +15,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.db.dao.GuideDAO;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 
 @Tag("observation-view-content")
 @JsModule("./src/guide/observation-view-content.js")
@@ -30,9 +31,13 @@ public class ObservationViewContent extends PolymerTemplate<ObservationViewConte
 
 	@Autowired
 	private GuideDAO guideDAO;
+	
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
     @Autowired
-    public ObservationViewContent() {
+    public ObservationViewContent(SegmentIntegrator segmentIntegrator) {
+		this.segmentIntegrator = segmentIntegrator;
     }
 
 	protected void initBtns(GuideStep guideStep, long projectId) {
@@ -43,6 +48,7 @@ public class ObservationViewContent extends PolymerTemplate<ObservationViewConte
 
 		nextBtn.addClickListener(e -> {
             guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+			segmentIntegrator.completedGuideObservation();
             UI.getCurrent().navigate(ActionSpaceView.class, projectId);
         });
     }

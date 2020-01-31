@@ -15,6 +15,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.db.dao.GuideDAO;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 
 @Tag("install-pathmind-helper-view-content")
 @JsModule("./src/guide/install-pathmind-helper-view-content.js")
@@ -30,10 +31,14 @@ public class InstallPathmindHelperViewContent extends PolymerTemplate<InstallPat
 
 	@Autowired
 	private GuideDAO guideDAO;
+	
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
     @Autowired
-    public InstallPathmindHelperViewContent() {
-    }
+    public InstallPathmindHelperViewContent(SegmentIntegrator segmentIntegrator) {
+		this.segmentIntegrator = segmentIntegrator;
+	}
 
 	protected void initBtns(GuideStep guideStep, long projectId) {
 		backBtn.addClickListener(e -> {
@@ -43,6 +48,7 @@ public class InstallPathmindHelperViewContent extends PolymerTemplate<InstallPat
 
 		nextBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+			segmentIntegrator.completedGuideInstall();
 			UI.getCurrent().navigate(ObservationView.class, projectId);
 		});
     }
