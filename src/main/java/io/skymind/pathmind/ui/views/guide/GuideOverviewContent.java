@@ -35,8 +35,11 @@ public class GuideOverviewContent extends PolymerTemplate<GuideOverviewContent.M
 	@Autowired
 	private GuideDAO guideDAO;
 
+	private long projectId;
+
 	@Autowired
-	public GuideOverviewContent(CurrentUser currentUser) {
+	public GuideOverviewContent() {
+		// BLOCKER: cannot pass the projectId in
 	}
 
 	@PostConstruct
@@ -44,15 +47,12 @@ public class GuideOverviewContent extends PolymerTemplate<GuideOverviewContent.M
 		initBtns();
 	}
 
-	private void initBtns() {
-		// Fake project
-		long projectId = 3;
-		
+	private void initBtns() {		
 		GuideStep guideStep = guideDAO.getGuideStep(projectId);
 		
 		nextBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-			UI.getCurrent().navigate(InstallPathmindHelperView.class);
+			UI.getCurrent().navigate(InstallPathmindHelperView.class, projectId);
 		});
 		skipToUploadModelBtn.addClickListener(e -> UI.getCurrent().navigate(UploadModelView.class, projectId));
 	}

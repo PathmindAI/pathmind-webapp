@@ -34,8 +34,11 @@ public class ObservationViewContent extends PolymerTemplate<ObservationViewConte
 	@Autowired
 	private GuideDAO guideDAO;
 
+	private long projectId;
+
     @Autowired
     public ObservationViewContent(CurrentUser currentUser) {
+		// BLOCKER: cannot pass the projectId in
     }
 
     @PostConstruct
@@ -44,19 +47,16 @@ public class ObservationViewContent extends PolymerTemplate<ObservationViewConte
 	}
 
 	private void initBtns() {
-		// Fake project
-		long projectId = 3;
-
 		GuideStep guideStep = guideDAO.getGuideStep(projectId);
         
         backBtn.addClickListener(e -> {
             guideDAO.updateGuideStep(projectId, guideStep.previousStep());
-            UI.getCurrent().navigate(InstallPathmindHelperView.class);
+            UI.getCurrent().navigate(InstallPathmindHelperView.class, projectId);
         });
 
 		nextBtn.addClickListener(e -> {
             guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-            UI.getCurrent().navigate(ActionSpaceView.class);
+            UI.getCurrent().navigate(ActionSpaceView.class, projectId);
         });
     }
 

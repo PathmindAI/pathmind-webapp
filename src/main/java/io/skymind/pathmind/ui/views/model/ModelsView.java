@@ -158,10 +158,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		});
 		if (models.isEmpty()) {
 			event.forwardTo(GuideOverview.class);
-			// not sure if this is the best way. probably need to pass projectId to GuideOverview?
-			// need to confirm this (when there is no model, automatically redirect the user to Guide)
-			// is the desired user flow. And how are we going to know which project they were on other
-			// than passing projectId around?
+			// BLOCKER: cannot pass the projectId in
 		}
 		archivesTabPanel.initData();
 		titlePanel.setSubtitle(projectName);

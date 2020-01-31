@@ -33,9 +33,12 @@ public class TriggerActionsViewContent extends PolymerTemplate<TriggerActionsVie
 
 	@Autowired
     private GuideDAO guideDAO;
-    
+
+    private long projectId;
+     
     @Autowired
-    public TriggerActionsViewContent(CurrentUser currentUser) {
+    public TriggerActionsViewContent() {
+		// BLOCKER: cannot pass the projectId in
     }
 
     @PostConstruct
@@ -44,19 +47,16 @@ public class TriggerActionsViewContent extends PolymerTemplate<TriggerActionsVie
 	}
 
 	private void initBtns() {
-		// Fake project
-		long projectId = 3;
-
         GuideStep guideStep = guideDAO.getGuideStep(projectId);
         
 		backBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.previousStep());
-            UI.getCurrent().navigate(ActionSpaceView.class);
+            UI.getCurrent().navigate(ActionSpaceView.class, projectId);
         });
 
         nextBtn.addClickListener(e -> {
             guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-            UI.getCurrent().navigate(DoneConditionView.class);
+            UI.getCurrent().navigate(DoneConditionView.class, projectId);
         });
     }
 

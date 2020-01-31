@@ -34,8 +34,11 @@ public class InstallPathmindHelperViewContent extends PolymerTemplate<InstallPat
 	@Autowired
 	private GuideDAO guideDAO;
 
+	private long projectId;
+
     @Autowired
     public InstallPathmindHelperViewContent(CurrentUser currentUser) {
+		// BLOCKER: cannot pass the projectId in
     }
 
 	@PostConstruct
@@ -44,19 +47,16 @@ public class InstallPathmindHelperViewContent extends PolymerTemplate<InstallPat
 	}
 
 	private void initBtns() {
-		// Fake project
-		long projectId = 3;
-
 		GuideStep guideStep = guideDAO.getGuideStep(projectId);
 
 		backBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.previousStep());
-			UI.getCurrent().navigate(GuideOverview.class);
+			UI.getCurrent().navigate(GuideOverview.class, projectId);
 		});
 
 		nextBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-			UI.getCurrent().navigate(ObservationView.class);
+			UI.getCurrent().navigate(ObservationView.class, projectId);
 		});
     }
 

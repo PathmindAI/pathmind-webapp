@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 
 import io.skymind.pathmind.constants.GuideStep;
@@ -18,13 +20,13 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 
 @Route(value = Routes.GUIDE_URL, layout = MainLayout.class)
-public class GuideOverview extends PathMindDefaultView {
-	// may need to take projectId as parameter?
-
+public class GuideOverview extends PathMindDefaultView implements HasUrlParameter<Long> {
 	@Autowired
 	private GuideDAO guideDAO;
 
 	private final GuideOverviewContent pageContent;
+
+	private long projectId;
 
 	@Autowired
 	public GuideOverview(GuideOverviewContent pageContent) {
@@ -33,7 +35,7 @@ public class GuideOverview extends PathMindDefaultView {
 
 	@Override
 	protected boolean isAccessAllowedForUser() {
-		return true; // need to check for project
+		return true;
 	}
 
 	@Override
@@ -43,15 +45,18 @@ public class GuideOverview extends PathMindDefaultView {
 
 	@Override
 	protected Component getMainContent() {
-		// Fake project
-        long projectId = 3;
         GuideStep guideStep = guideDAO.getGuideStep(projectId);
 
 		HorizontalLayout gridWrapper = WrapperUtils.wrapWidthFullBetweenHorizontal(
-			new GuideMenu(guideStep), pageContent
+			new GuideMenu(guideStep, projectId), pageContent
         );
 		gridWrapper.getStyle().set("background-color", "white");
 		gridWrapper.getStyle().set("flex-grow", "1");
         return gridWrapper;
+	}
+
+	@Override
+	public void setParameter(BeforeEvent event, Long projectId) {
+		this.projectId = projectId;
 	}
 }

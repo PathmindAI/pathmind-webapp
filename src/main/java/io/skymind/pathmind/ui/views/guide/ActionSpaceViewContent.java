@@ -32,10 +32,13 @@ public class ActionSpaceViewContent extends PolymerTemplate<ActionSpaceViewConte
     private Button nextBtn;
 
 	@Autowired
-	private GuideDAO guideDAO;
+    private GuideDAO guideDAO;
+    
+	private long projectId;
 
     @Autowired
-    public ActionSpaceViewContent(CurrentUser currentUser) {
+    public ActionSpaceViewContent() {
+		// BLOCKER: cannot pass the projectId in
     }
 
     @PostConstruct
@@ -44,20 +47,16 @@ public class ActionSpaceViewContent extends PolymerTemplate<ActionSpaceViewConte
 	}
 
 	private void initBtns() {
-		// Fake project
-		long projectId = 3;
-
         GuideStep guideStep = guideDAO.getGuideStep(projectId);
         
 		backBtn.addClickListener(e -> {
             guideDAO.updateGuideStep(projectId, guideStep.previousStep());
-            UI.getCurrent().navigate(ObservationView.class);
+            UI.getCurrent().navigate(ObservationView.class, projectId);
         });
 
 		nextBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-			System.out.println("Fionna testing actionspace content: " + guideDAO.getGuideStep(projectId));
-            UI.getCurrent().navigate(TriggerActionsView.class);
+            UI.getCurrent().navigate(TriggerActionsView.class, projectId);
         });
     }
 

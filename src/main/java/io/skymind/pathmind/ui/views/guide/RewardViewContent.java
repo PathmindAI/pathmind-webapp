@@ -34,8 +34,11 @@ public class RewardViewContent extends PolymerTemplate<RewardViewContent.Model> 
 	@Autowired
 	private GuideDAO guideDAO;
 
+	private long projectId;
+	
 	@Autowired
-	public RewardViewContent(CurrentUser currentUser) {
+	public RewardViewContent() {
+		// BLOCKER: cannot pass the projectId in
 	}
 
 	@PostConstruct
@@ -44,19 +47,16 @@ public class RewardViewContent extends PolymerTemplate<RewardViewContent.Model> 
 	}
 
 	private void initBtns() {
-		// Fake project
-		long projectId = 3;
-
 		GuideStep guideStep = guideDAO.getGuideStep(projectId);
 
 		backBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.previousStep());
-			UI.getCurrent().navigate(DoneConditionView.class);
+			UI.getCurrent().navigate(DoneConditionView.class, projectId);
 		});
 
 		nextBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-			UI.getCurrent().navigate(RecapView.class);
+			UI.getCurrent().navigate(RecapView.class, projectId);
 		});
     }
 

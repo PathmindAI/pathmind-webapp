@@ -15,10 +15,11 @@ public class GuideMenu extends VerticalLayout {
     
 	private GuideStep guideStep;
     
-    public GuideMenu(GuideStep guideStep) {
+    public GuideMenu(GuideStep guideStep, long projectId) {
 		super();
         addClassName("guide-menu");
 
+        this.projectId = projectId;
         this.guideStep = guideStep;
         
         add(createChecklistItem("Overview", GuideOverview.class, 0));
@@ -34,7 +35,7 @@ public class GuideMenu extends VerticalLayout {
     }
 
     private Component createChecklistItem(String itemName, Class navigationTarget, long itemIndex) {
-        RouterLink checklistItem = new RouterLink(itemName, navigationTarget);
+        RouterLink checklistItem = new RouterLink(itemName, navigationTarget, projectId);
 
         if (itemIndex <= guideStep.getId()) {
             checklistItem.addClassName("completed");

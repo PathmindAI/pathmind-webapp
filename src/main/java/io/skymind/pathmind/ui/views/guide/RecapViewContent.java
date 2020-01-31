@@ -35,8 +35,11 @@ public class RecapViewContent extends PolymerTemplate<RecapViewContent.Model> {
 	@Autowired
 	private GuideDAO guideDAO;
 
+	private long projectId;
+
 	@Autowired
-	public RecapViewContent(CurrentUser currentUser) {
+	public RecapViewContent() {
+		// BLOCKER: cannot pass the projectId in
 	}
 
 	@PostConstruct
@@ -45,14 +48,11 @@ public class RecapViewContent extends PolymerTemplate<RecapViewContent.Model> {
 	}
 
 	private void initBtns() {
-		// Fake project
-		long projectId = 3;
-
 		GuideStep guideStep = guideDAO.getGuideStep(projectId);
 
 		backBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.previousStep());
-			UI.getCurrent().navigate(RewardView.class);
+			UI.getCurrent().navigate(RewardView.class, projectId);
 		});
 		nextBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.nextStep());

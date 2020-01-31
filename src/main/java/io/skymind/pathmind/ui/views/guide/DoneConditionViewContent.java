@@ -33,9 +33,12 @@ public class DoneConditionViewContent extends PolymerTemplate<DoneConditionViewC
 
 	@Autowired
     private GuideDAO guideDAO;
-    
+
+    private long projectId;
+
     @Autowired
-    public DoneConditionViewContent(CurrentUser currentUser) {
+    public DoneConditionViewContent() {
+		// BLOCKER: cannot pass the projectId in
     }
 
     @PostConstruct
@@ -44,19 +47,16 @@ public class DoneConditionViewContent extends PolymerTemplate<DoneConditionViewC
 	}
 
 	private void initBtns() {
-		// Fake project
-		long projectId = 3;
-
         GuideStep guideStep = guideDAO.getGuideStep(projectId);
         
         backBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.previousStep());
-            UI.getCurrent().navigate(TriggerActionsView.class);
+            UI.getCurrent().navigate(TriggerActionsView.class, projectId);
         });
 
 		nextBtn.addClickListener(e -> {
             guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-            UI.getCurrent().navigate(RewardView.class);
+            UI.getCurrent().navigate(RewardView.class, projectId);
         });
     }
 

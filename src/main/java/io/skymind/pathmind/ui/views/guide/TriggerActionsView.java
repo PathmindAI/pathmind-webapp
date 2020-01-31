@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 
 import io.skymind.pathmind.constants.GuideStep;
@@ -15,40 +17,43 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 
 @Route(value = Routes.GUIDE_TRIGGER_ACTIONS_URL, layout = MainLayout.class)
-public class TriggerActionsView extends PathMindDefaultView {
-	// may need to take projectId as parameter?
-
+public class TriggerActionsView extends PathMindDefaultView implements HasUrlParameter<Long> {
 	@Autowired
 	private GuideDAO guideDAO;
 
-     private final TriggerActionsViewContent pageContent;
+	private final TriggerActionsViewContent pageContent;
 
-    @Autowired
-    public TriggerActionsView(TriggerActionsViewContent pageContent) {
-        this.pageContent = pageContent;
-    }
+	private long projectId;
 
-    @Override
-    protected boolean isAccessAllowedForUser() {
-        return true;
-    }
+	@Autowired
+	public TriggerActionsView(TriggerActionsViewContent pageContent) {
+		this.pageContent = pageContent;
+	}
 
-    @Override
-    protected Component getTitlePanel() {
-        return new ScreenTitlePanel("PATHMIND GUIDE", "Triggering Actions");
-    }
+	@Override
+	protected boolean isAccessAllowedForUser() {
+		return true;
+	}
 
-    @Override
-    protected Component getMainContent() {
-		// Fake project
-        long projectId = 3;
-        GuideStep guideStep = guideDAO.getGuideStep(projectId);
-        
-        HorizontalLayout gridWrapper = WrapperUtils.wrapWidthFullBetweenHorizontal(
-			new GuideMenu(guideStep), pageContent
-        );
-        gridWrapper.getStyle().set("background-color", "white");
+	@Override
+	protected Component getTitlePanel() {
+		return new ScreenTitlePanel("PATHMIND GUIDE", "Triggering Actions");
+	}
+
+	@Override
+	protected Component getMainContent() {
+		GuideStep guideStep = guideDAO.getGuideStep(projectId);
+		
+		HorizontalLayout gridWrapper = WrapperUtils.wrapWidthFullBetweenHorizontal(
+			new GuideMenu(guideStep, projectId), pageContent
+		);
+		gridWrapper.getStyle().set("background-color", "white");
 		gridWrapper.getStyle().set("flex-grow", "1");
-        return gridWrapper;
-    }
+		return gridWrapper;
+	}
+
+	@Override
+	public void setParameter(BeforeEvent event, Long projectId) {
+		this.projectId = projectId;
+	}
 }

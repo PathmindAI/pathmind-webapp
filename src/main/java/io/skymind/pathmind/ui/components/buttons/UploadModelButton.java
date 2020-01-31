@@ -12,7 +12,7 @@ public class UploadModelButton extends Button {
 
 	public UploadModelButton(long projectId) {
 		super("Upload Model", new Icon(VaadinIcon.ARROW_UP),
-				click -> UI.getCurrent().navigate(GuideOverview.class)); // may need to pass the projectId
+				click -> UI.getCurrent().navigate(GuideOverview.class, projectId));
 		addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 	}
 }
