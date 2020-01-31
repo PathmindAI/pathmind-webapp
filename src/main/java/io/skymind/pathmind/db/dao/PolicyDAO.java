@@ -81,4 +81,7 @@ public class PolicyDAO
     public void saveCheckpointFile(long runId, String externalId, byte[] checkpointFile) {
         PolicyRepository.saveCheckpointFile(ctx, runId, externalId, checkpointFile);
     }
+    public void updateExportedDate(long policyId) {
+        PolicyRepository.updateExportedDate(ctx, policyId);
+    }
 }

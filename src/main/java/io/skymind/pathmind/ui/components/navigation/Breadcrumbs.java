@@ -1,17 +1,17 @@
 package io.skymind.pathmind.ui.components.navigation;
 
-import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.router.RouterLink;
 
-import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.ui.views.project.ProjectsView;
-import io.skymind.pathmind.ui.views.model.ModelsView;
-import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
+import io.skymind.pathmind.data.Model;
+import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
+import io.skymind.pathmind.ui.views.model.ModelsView;
+import io.skymind.pathmind.ui.views.project.ProjectsView;
 
 public class Breadcrumbs extends HorizontalLayout
 {
@@ -30,11 +30,19 @@ public class Breadcrumbs extends HorizontalLayout
 	}
 
 	public Breadcrumbs(Project project, Model model, Experiment experiment) {
-		RouterLink projectsPageLink = createBreadcrumb("Projects", ProjectsView.class, null);
-		add(projectsPageLink);
+		this(project, model, experiment, true);
+	}
+	
+	public Breadcrumbs(Project project, Model model, Experiment experiment, boolean hasRootItem) {
+		if (hasRootItem) {
+			RouterLink projectsPageLink = createBreadcrumb("Projects", ProjectsView.class, null);
+			add(projectsPageLink);
+		}
 
 		if (project != null) {
-			add(createSeparator());	
+			if (hasRootItem) {
+				add(createSeparator());	
+			}
 			add(createBreadcrumb(project.getName(), ModelsView.class, project.getId()));
 		}
 		if (model != null) {

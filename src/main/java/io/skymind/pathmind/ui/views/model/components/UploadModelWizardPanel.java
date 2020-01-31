@@ -8,6 +8,8 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.progressbar.ProgressBarVariant;
+import com.vaadin.flow.component.upload.Receiver;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.dom.DomEventListener;
@@ -38,6 +40,9 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private Command fileCheckerCommand;
 
 	private Text errorText;
+	private UploadModeSwitcherButton uploadModeSwitcher;
+	
+	private boolean isFolderUploadMode = true;
 
 	public UploadModelWizardPanel(Model model)
 	{
@@ -46,21 +51,41 @@ public class UploadModelWizardPanel extends VerticalLayout
 		projectNameLabel = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
 		projectNameLabel.getStyle().set("margin-top", "0px");
 		
-		setupUploadPanel();
-		setupFileCheckPanel();
-
-		add(LabelFactory.createLabel("Project", CssMindPathStyles.SECTION_TITLE_LABEL),
-				projectNameLabel,
-				GuiUtils.getFullWidthHr(),
-				getInstructionsDiv(),
-				uploadModelPanel,
-				fileCheckPanel);
-
-		fileCheckPanel.setVisible(false);
+		setupLayout();
 
 		setClassName("view-section"); // adds the white 'panel' style with rounded corners
 
 		setWidthFull();
+	}
+	
+	private void setupLayout() {
+		setupUploadPanel(isFolderUploadMode);
+		setupFileCheckPanel();
+		setupUploadModeSwitchButton();
+		add(LabelFactory.createLabel("Project", CssMindPathStyles.SECTION_TITLE_LABEL),
+				projectNameLabel,
+				GuiUtils.getFullWidthHr(),
+				getInstructionsDiv(isFolderUploadMode),
+				uploadModelPanel,
+				fileCheckPanel,
+				WrapperUtils.wrapWidthFullCenterHorizontal(uploadModeSwitcher));
+
+		fileCheckPanel.setVisible(false);
+	}
+
+	private void setupUploadModeSwitchButton() {
+		uploadModeSwitcher = new UploadModeSwitcherButton(isFolderUploadMode, () -> switchUploadMode());
+		upload.isFolderUploadSupported(isFolderUploadSupported -> {
+			uploadModeSwitcher.setVisible(isFolderUploadSupported);
+		});
+	}
+	
+
+	private void switchUploadMode() {
+		isFolderUploadMode = !isFolderUploadMode;
+		
+		removeAll();
+		setupLayout();
 	}
 
 	private void setupFileCheckPanel() {
@@ -71,25 +96,33 @@ public class UploadModelWizardPanel extends VerticalLayout
 				errorText);
 	}
 
-	private void setupUploadPanel()
+	private void setupUploadPanel(boolean isFolderUploadMode)
 	{
-		upload = new PathmindModelUploader();
+		upload = new PathmindModelUploader(isFolderUploadMode);
 
 		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/123
 //		upload.setMaxFileSize(PathmindConstants.MAX_UPLOAD_FILE_SIZE);
 //		upload.setAcceptedFileTypes("application/zip");
 //		upload.addFailedListener(event -> log.error("ERROR " + event.getReason().getMessage(), e.getReason().getMessage()));
 
-		addUploadSucceedListener((MultiFileMemoryBuffer)upload.getReceiver());
+		addUploadSucceedListener();
 		addUploadRemoveFileListener();
 
 		uploadModelPanel = WrapperUtils.wrapWidthFullCenterVertical(upload);
 	}
 
-	private void addUploadSucceedListener(MultiFileMemoryBuffer buffer) {
+	private void addUploadSucceedListener() {
 		upload.addAllFilesUploadedListener(() -> {
 			try {
-				model.setFile(UploadUtils.createZipFileFromBuffer(buffer));
+				Receiver receiver = upload.getReceiver();
+				// In folder upload mode, receiver is MultiFileMemoryBuffer, so a zip file should be created
+				if (MultiFileMemoryBuffer.class.isInstance(receiver)) {
+					MultiFileMemoryBuffer buffer = MultiFileMemoryBuffer.class.cast(receiver);
+					model.setFile(UploadUtils.createZipFileFromBuffer(buffer));
+				} else {
+					MemoryBuffer buffer = MemoryBuffer.class.cast(receiver);
+					model.setFile(buffer.getInputStream().readAllBytes());
+				}
 				fileCheckerCommand.execute();
 				log.info("Upload completed");
 			} catch (IOException e) {
@@ -113,11 +146,22 @@ public class UploadModelWizardPanel extends VerticalLayout
 	public void addFileUploadCompletedListener(Command command) {
 		fileCheckerCommand = command;
 	}
-
-	// TODO -> CSS -> Move CSS to styles.css
-	private Div getInstructionsDiv() {
+	
+	private Div getInstructionsDiv(boolean isFolderUploadMode) {
 		Div div = new Div();
 		div.setWidthFull();
+		upload.isFolderUploadSupported(isFolderUploadSupported -> {
+			if (isFolderUploadMode && isFolderUploadSupported) {
+				setInstructionsForFolderUploadDiv(div);
+			} else {
+				setInstructionsForZipUploadDiv(div);
+			}
+		});
+		return div;
+	}
+
+	// TODO -> CSS -> Move CSS to styles.css
+	private void setInstructionsForFolderUploadDiv(Div div) {
 		div.getElement().setProperty("innerHTML",
 				"<ol>" +
 					"<li>Make sure you have <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">Pathmind Helper</a> installed in your model.</li>" +
@@ -125,7 +169,22 @@ public class UploadModelWizardPanel extends VerticalLayout
 					"<li>Click Upload files button.</li>" +
 					"<li>Select the exported folder.</li>" +
 				"</ol>");
-		return div;
+	}
+	
+	private void setInstructionsForZipUploadDiv(Div div) {
+		div.getElement().setProperty("innerHTML",
+				"<ol>" +
+					"<li>Make sure you have <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">Pathmind Helper</a> installed in your model.</li>" +
+					"<li><a href=\"https://help.anylogic.com/topic/com.anylogic.help/html/standalone/Export_Java_Application.html\" target=\"_blank\">Export your model as a standalone Java application.</a></li>" +
+					"<li>Open the exported folder.</li>" +
+					"<li>Create a zip file that contains:</li>" +
+						"<ul>" +
+							"<li>model.jar</li>" +
+							"<li>the \"database\" folder if needed</li>" +
+							"<li>custom libraries from the \"lib\" folder if needed. (This is uncommon)</li>" +
+						"</ul>" +
+					"<li>Upload the new zip file below." +
+				"</ol>");
 	}
 
 	public void setProjectName(String name) {
