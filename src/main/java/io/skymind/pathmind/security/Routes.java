@@ -36,7 +36,7 @@ public class Routes {
     public static final String UPLOAD_MODEL = "uploadModel";
     public static final String ERROR_URL = "error";
 
-    public static final String GUIDE_URL = "guide";
+    public static final String GUIDE_URL = "guide/overview";
     public static final String GUIDE_INSTALL_URL = "guide/install";
     public static final String GUIDE_OBSERVATION_URL = "guide/observation";
     public static final String GUIDE_ACTION_SPACE_URL = "guide/action-space";

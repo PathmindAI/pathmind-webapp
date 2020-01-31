@@ -9,6 +9,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.Route;
 
+import io.skymind.pathmind.constants.GuideStep;
+import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -19,12 +21,13 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 public class GuideOverview extends PathMindDefaultView {
 	// may need to take projectId as parameter?
 
-	private final GuideMenu guideMenu;
+	@Autowired
+	private GuideDAO guideDAO;
+
 	private final GuideOverviewContent pageContent;
 
 	@Autowired
-	public GuideOverview(GuideMenu guideMenu, GuideOverviewContent pageContent) {
-		this.guideMenu = guideMenu;
+	public GuideOverview(GuideOverviewContent pageContent) {
 		this.pageContent = pageContent;
 	}
 
@@ -40,8 +43,12 @@ public class GuideOverview extends PathMindDefaultView {
 
 	@Override
 	protected Component getMainContent() {
-        HorizontalLayout gridWrapper = WrapperUtils.wrapWidthFullBetweenHorizontal(
-			guideMenu, pageContent
+		// Fake project
+        long projectId = 3;
+        GuideStep guideStep = guideDAO.getGuideStep(projectId);
+
+		HorizontalLayout gridWrapper = WrapperUtils.wrapWidthFullBetweenHorizontal(
+			new GuideMenu(guideStep), pageContent
         );
 		gridWrapper.getStyle().set("background-color", "white");
 		gridWrapper.getStyle().set("flex-grow", "1");
