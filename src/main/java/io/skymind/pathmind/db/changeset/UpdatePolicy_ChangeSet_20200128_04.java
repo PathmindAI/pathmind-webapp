@@ -33,7 +33,7 @@ import java.util.Map;
  * otherwise the CODE CHANGES WILL NOT BE REFLECTED IN THE LIQUIBASE TARGETS in any automatic way!!
  */
 @Slf4j
-public class UpdatePolicy_ChangeSet_20191220_01 implements CustomSqlChange, CustomSqlRollback
+public class UpdatePolicy_ChangeSet_20200128_04 implements CustomSqlChange, CustomSqlRollback
 {
     // IMPORTANT -> These are copied from their various sources in case they change over time so that the database changeset is NOT affected.
     private static final int TRIAL_ID_LEN = 8;
@@ -49,8 +49,7 @@ public class UpdatePolicy_ChangeSet_20191220_01 implements CustomSqlChange, Cust
         // IMPORTANT -> Do NOT close the connection as it's used by liquibase for the rest of the changesets.
         Connection connection = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
         Map<Long, String> policies = getPoliciesFromDatabase(connection);
-        // I'm NOT using parallel streams since it's only done once and it's much easier to track any issues if it's done in order.
-        return policies.keySet().stream().map(policyId -> {
+        return policies.keySet().parallelStream().map(policyId -> {
             ChangeSetHyperParameter hyperParameter = interpretKey(policies.get(policyId));
             return new RawSqlStatement(
                     "UPDATE POLICY SET " +

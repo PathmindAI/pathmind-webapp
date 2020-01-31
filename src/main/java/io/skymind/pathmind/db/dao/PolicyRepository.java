@@ -18,7 +18,7 @@ class PolicyRepository
 
 	protected static List<Policy> getActivePoliciesForUser(DSLContext ctx, long userId) {
         Result<?> result = ctx
-                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM)
+                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM)
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
                 .select(EXPERIMENT.ID, EXPERIMENT.NAME)
                 .select(MODEL.ID, MODEL.NAME)
@@ -44,7 +44,7 @@ class PolicyRepository
 
 	protected static Policy getPolicy(DSLContext ctx, long policyId) {
         Record record = ctx
-				.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
+				.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
                 .select(EXPERIMENT.ID, EXPERIMENT.NAME)
                 .select(MODEL.ID, MODEL.NAME)
@@ -78,19 +78,19 @@ class PolicyRepository
 
 	protected static boolean hasPolicyFile(DSLContext ctx, long policyId) {
 		return ctx.select(DSL.one())
-				.from(POLICY)
-				.where(POLICY.ID.eq(policyId)
-						.and(POLICY.FILE.isNotNull())
-						.and(POLICY.FILE.notEqual(SAVING.getBytes())))
+				.from(POLICY_FILE)
+				.where(POLICY_FILE.POLICY_ID.eq(policyId)
+						.and(POLICY_FILE.FILE.isNotNull())
+						.and(POLICY_FILE.FILE.notEqual(SAVING.getBytes())))
 				.fetchOptional().isPresent();
 	}
 
 	protected static byte[] getPolicyFile(DSLContext ctx, long policyId) {
-		return ctx.select(POLICY.FILE)
-				.from(POLICY)
-				.where(POLICY.ID.eq(policyId)
-						.and(POLICY.FILE.isNotNull()))
-				.fetchOne(POLICY.FILE);
+		return ctx.select(POLICY_FILE.FILE)
+				.from(POLICY_FILE)
+				.where(POLICY_FILE.POLICY_ID.eq(policyId)
+						.and(POLICY_FILE.FILE.isNotNull()))
+				.fetchOne(POLICY_FILE.FILE);
 	}
 
 	protected static long insertPolicy(DSLContext ctx, Policy policy) {
@@ -160,10 +160,28 @@ class PolicyRepository
 	}
 
 	protected static byte[] getSnapshotFile(DSLContext ctx, long policyId) {
-		return ctx.select(POLICY.SNAPSHOT)
+		return ctx.select(POLICY_SNAPSHOT.SNAPSHOT)
+				.from(POLICY_SNAPSHOT)
+				.where(POLICY_SNAPSHOT.POLICY_ID.eq(policyId))
+				.fetchOne(POLICY_SNAPSHOT.SNAPSHOT);
+	}
+
+	protected static void savePolicyFile(DSLContext ctx, long runId, String externalId, byte[] policyFile) {
+		ctx.update(POLICY_FILE)
+				.set(POLICY_FILE.FILE, policyFile)
 				.from(POLICY)
-				.where(POLICY.ID.eq(policyId))
-				.fetchOne(POLICY.SNAPSHOT);
+				.where(POLICY.ID.eq(POLICY_FILE.POLICY_ID))
+				.and(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.eq(externalId)))
+				.execute();
+	}
+
+	protected static void saveCheckpointFile(DSLContext ctx, long runId, String externalId, byte[] checkpointFile) {
+		ctx.update(POLICY_SNAPSHOT)
+				.set(POLICY_SNAPSHOT.SNAPSHOT, checkpointFile)
+				.from(POLICY)
+				.where(POLICY.ID.eq(POLICY_SNAPSHOT.POLICY_ID))
+				.and(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.eq(externalId)))
+				.execute();
 	}
 
 	public static List<Policy> getExportedPoliciesByRunId(DSLContext ctx, long runId) {
