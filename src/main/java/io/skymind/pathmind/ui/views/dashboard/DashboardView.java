@@ -24,6 +24,7 @@ import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.dashboard.components.DashboardLine;
@@ -46,6 +47,8 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 	private Grid<DashboardItem> dashboardGrid;
 	
 	private EmptyDashboardPlaceholder placeholder;
+	
+	private long loggedUserId;
 
 	@Override
 	protected boolean isAccessAllowedForUser() {
@@ -106,7 +109,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
 	@Override
 	protected void initLoadData() throws InvalidDataException {
-		// Do nothing, data is loaded by Dashboard Data Provider
+		loggedUserId = SecurityUtils.getUserId();
 	}
 
 	@Override
@@ -132,14 +135,12 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 	
 	@Override
 	public void handleBusEvent(RunUpdateBusEvent event) {
-		//TODO: Query DashboardItem
-		// DashboardItem item = query single item item 
-		// dataProvider.refreshItem(item);
+		PushUtils.push(this, () -> dataProvider.refreshItemByExperiment(event.getRun().getExperimentId()));
 	}
 	
 	@Override
 	public boolean filterBusEvent(RunUpdateBusEvent event) {
 		// Only interested in completed runs 
-		return event.getRun().getStatusEnum() == RunStatus.Completed && event.getRun().getProject().getPathmindUserId() == SecurityUtils.getUserId();
+		return event.getRun().getStatusEnum() == RunStatus.Completed && event.getRun().getProject().getPathmindUserId() == loggedUserId;
 	}
 }
