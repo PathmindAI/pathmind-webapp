@@ -1,17 +1,16 @@
 #!/usr/bin/bash
-set -e
 
 if [ "$1" == "" ]
 then
-        echo "Usage deploy.sh <environment>"
-        echo "Example deploy.sh test"
+        echo "Usage destroy.sh <environment>"
+        echo "Example destroy.sh test"
         exit 2
 fi
 
 env=$1
-secrets="secret_${1}.tfvars"
-vars="terraform_${2}.tfvars"
-backend="backend_${2}.tf"
+secrets="secret_${env}.tfvars"
+vars="terraform_${env}.tfvars"
+backend="backend_${env}.tf_"
 
 if [ ! -f $secrets ]
 then
@@ -31,7 +30,12 @@ then
         exit 2
 fi
 
-cp $backend backend.tf
+cp ${backend} backend.tf
+
+#remove old files
+rm -rf .terraform 2> /dev/null
+rm -rf modules 2> /dev/null
+rm dns.tf >/dev/null 2>&1
 
 export NAME=`grep cluster_name ${vars} | awk -F'=' '{print $2}' | sed "s/ //g" | sed 's/"//g'`
 BUCKET_NAME=`grep kops_bucket ${vars} | awk -F'=' '{print $2}' | sed "s/ //g" | sed 's/"//g'`
@@ -48,8 +52,7 @@ if ! aws s3api head-bucket --bucket ${BUCKET_NAME} 2>/dev/null; then
 	aws s3api create-bucket --bucket ${BUCKET_NAME} --region ${REGION}
 fi
 
-#remove old module
-rm -rf modules 2> /dev/null
+kops delete cluster $NAME --yes
 
 #Create cluster
 kops create cluster \
@@ -64,13 +67,6 @@ kops create cluster \
 --target=terraform --out=modules/kubernetes \
 ${NAME}
 
-rm dns.tf >/dev/null 2>&1
-
-terraform init
-terraform apply --target=null_resource.ingress --auto-approve
-
-sleep 20
-
 zone_id=`./get_elb.sh ingress default | grep zone_id | cut -f2 -d':' | sed "s/ //g"`
 elb_name=`./get_elb.sh ingress default | grep elb_name | cut -f2 -d':' | sed "s/ //g"`
 
@@ -78,4 +74,9 @@ cp dns.template dns.tf
 sed -i "s/{{ZONE_ID}}/$zone_id/g" dns.tf
 sed -i "s/{{ELB_NAME}}/$elb_name/g" dns.tf
 
-terraform apply --auto-approve
+terraform init
+terraform destroy --auto-approve \
+-var-file=${vars} \
+-var-file=${secrets}
+
+kops delete cluster $NAME --yes

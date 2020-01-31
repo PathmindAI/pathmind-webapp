@@ -13,9 +13,3 @@ output "db_username" {
   description = "username"
   value       = "${aws_db_instance.rds.username}"
 }
-
-### ELB """
-output "elb_name" {
-  description = "ingress elb name"
-  value       = "${data.external.elb.result}"
-}

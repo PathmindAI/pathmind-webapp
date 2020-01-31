@@ -1,37 +1,10 @@
 #!/usr/bin/bash
-set -e
+#remove old files
+rm dns.tf >/dev/null 2>&1
 
-if [ "$1" == "" ]
-then
-        echo "Usage destroy.sh <environment>"
-        echo "Example destroy.sh test"
-        exit 2
-fi
+vars="terraform.tfvars"
+secret="secret.tfvars"
 
-env=$1
-secrets="secret_${1}.tfvars"
-vars="terraform_${2}.tfvars"
-backend="backend_${2}.tf"
-
-if [ ! -f $secrets ]
-then
-	echo "file $secrets does not exist"
-        exit 2
-fi
-
-if [ ! -f $vars ]
-then
-	echo "file $vars does not exist"
-        exit 2
-fi
-
-if [ ! -f $backend ]
-then
-	echo "file $backend does not exist"
-        exit 2
-fi
-
-cp $backend backend.tf
 
 export NAME=`grep cluster_name ${vars} | awk -F'=' '{print $2}' | sed "s/ //g" | sed 's/"//g'`
 BUCKET_NAME=`grep kops_bucket ${vars} | awk -F'=' '{print $2}' | sed "s/ //g" | sed 's/"//g'`
@@ -42,14 +15,12 @@ REGION=`aws configure list | grep region | awk '{print $2}'`
 NODE_COUNT=`grep node_count ${vars} | awk -F'=' '{print $2}' | sed "s/ //g" | sed 's/"//g'`
 NODE_SIZE=`grep node_size ${vars} | awk -F'=' '{print $2}' | sed "s/ //g" | sed 's/"//g'`
 MASTER_SIZE=`grep master_size ${vars} | awk -F'=' '{print $2}' | sed "s/ //g" | sed 's/"//g'`
+CIDR_BLOCK=`grep cidr_block ${vars} | awk -F'=' '{print $2}' | sed "s/ //g" | sed 's/"//g'`
 
 #If bucket does not exist create it
 if ! aws s3api head-bucket --bucket ${BUCKET_NAME} 2>/dev/null; then
 	aws s3api create-bucket --bucket ${BUCKET_NAME} --region ${REGION}
 fi
-
-#remove old module
-rm -rf modules 2> /dev/null
 
 #Create cluster
 kops create cluster \
@@ -62,15 +33,23 @@ kops create cluster \
 --node-size=${NODE_SIZE} \
 --master-size=${MASTER_SIZE} \
 --target=terraform --out=modules/kubernetes \
+--network-cidr=${CIDR_BLOCK} \
 ${NAME}
 
-rm dns.tf >/dev/null 2>&1
+terraform init 
+terraform apply \
+-var-file=${vars} \
+-var-file=${secret}
 
-zone_id=`./get_elb.sh ingress default | grep zone_id | cut -f2 -d':' | sed "s/ //g"`
-elb_name=`./get_elb.sh ingress default | grep elb_name | cut -f2 -d':' | sed "s/ //g"`
+sleep 20
+
+zone_id=`../scripts/get_elb.sh ingress default | grep zone_id | cut -f2 -d':' | sed "s/ //g"`
+elb_name=`../scripts/get_elb.sh ingress default | grep elb_name | cut -f2 -d':' | sed "s/ //g"`
 
 cp dns.template dns.tf
 sed -i "s/{{ZONE_ID}}/$zone_id/g" dns.tf
 sed -i "s/{{ELB_NAME}}/$elb_name/g" dns.tf
 
-terraform destroy --auto-approve
+terraform apply \
+-var-file=${vars} \
+-var-file=${secret}

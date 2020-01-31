@@ -1,9 +1,3 @@
-#production dns aliases
-data "external" "elb" {
-  program    = ["bash", "./get_elb.sh", "ingress", "default"]
-  depends_on = ["null_resource.ingress"]
-}
-
 #Route 53 zone
 data "aws_route53_zone" "zone" {
   name         = "${var.domain_name}."
@@ -12,15 +6,14 @@ data "aws_route53_zone" "zone" {
 
 resource "aws_route53_record" "app_alias" {
   zone_id    = "${data.aws_route53_zone.zone.id}"
-  name       = "app.${var.subdomain}${var.domain_name}"
+  name       = "${var.appdomain}${var.domain_name}"
   type       = "A"
 
   alias {
-    name                   = "a35c9b46f08e046a58ca4ffed5d1fcaa-1941907064.us-east-1.elb.amazonaws.com",
+    name                   = "af6393ed7791e4f95905a6325c284360-1266555724.us-east-1.elb.amazonaws.com",
     zone_id                = "Z35SXDOTRQ7X7K"
     evaluate_target_health = true
   }
-  depends_on = ["data.external.elb"]
 }
 
 resource "aws_route53_record" "grafana_alias" {
@@ -29,11 +22,10 @@ resource "aws_route53_record" "grafana_alias" {
   type       = "A"
 
   alias {
-    name                   = "a35c9b46f08e046a58ca4ffed5d1fcaa-1941907064.us-east-1.elb.amazonaws.com",
+    name                   = "af6393ed7791e4f95905a6325c284360-1266555724.us-east-1.elb.amazonaws.com",
     zone_id                = "Z35SXDOTRQ7X7K"
     evaluate_target_health = true
   }
-  depends_on = ["data.external.elb"]
 }
 
 resource "aws_route53_record" "kibana_alias" {
@@ -42,11 +34,10 @@ resource "aws_route53_record" "kibana_alias" {
   type       = "A"
 
   alias {
-    name                   = "a35c9b46f08e046a58ca4ffed5d1fcaa-1941907064.us-east-1.elb.amazonaws.com",
+    name                   = "af6393ed7791e4f95905a6325c284360-1266555724.us-east-1.elb.amazonaws.com",
     zone_id                = "Z35SXDOTRQ7X7K"
     evaluate_target_health = true
   }
-  depends_on = ["data.external.elb"]
 }
 
 resource "aws_route53_record" "pgadmin_alias" {
@@ -55,11 +46,10 @@ resource "aws_route53_record" "pgadmin_alias" {
   type       = "A"
 
   alias {
-    name                   = "a35c9b46f08e046a58ca4ffed5d1fcaa-1941907064.us-east-1.elb.amazonaws.com",
+    name                   = "af6393ed7791e4f95905a6325c284360-1266555724.us-east-1.elb.amazonaws.com",
     zone_id                = "Z35SXDOTRQ7X7K"
     evaluate_target_health = true
   }
-  depends_on = ["data.external.elb"]
 }
 
 resource "aws_route53_record" "jenkins_alias" {
@@ -68,11 +58,10 @@ resource "aws_route53_record" "jenkins_alias" {
   type       = "A"
 
   alias {
-    name                   = "a35c9b46f08e046a58ca4ffed5d1fcaa-1941907064.us-east-1.elb.amazonaws.com",
+    name                   = "af6393ed7791e4f95905a6325c284360-1266555724.us-east-1.elb.amazonaws.com",
     zone_id                = "Z35SXDOTRQ7X7K"
     evaluate_target_health = true
   }
-  depends_on = ["data.external.elb"]
 }
 
 resource "aws_route53_record" "model_analyzer_alias" {
@@ -81,10 +70,9 @@ resource "aws_route53_record" "model_analyzer_alias" {
   type       = "A"
 
   alias {
-    name                   = "a35c9b46f08e046a58ca4ffed5d1fcaa-1941907064.us-east-1.elb.amazonaws.com",
+    name                   = "af6393ed7791e4f95905a6325c284360-1266555724.us-east-1.elb.amazonaws.com",
     zone_id                = "Z35SXDOTRQ7X7K"
     evaluate_target_health = true
   }
-  depends_on = ["data.external.elb"]
 }
 

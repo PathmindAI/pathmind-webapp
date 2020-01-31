@@ -1,7 +1,7 @@
 #Validate k8s cluster
 resource "null_resource" "validate_k8s" {
   provisioner "local-exec" {
-    command = "./validate_cluster.sh '${var.cluster_name}' '${var.kops_bucket}'"
+    command = "../scripts/validate_cluster.sh '${var.cluster_name}' '${var.kops_bucket}'"
   }
   provisioner "local-exec" {
     when    = "destroy"
@@ -13,7 +13,7 @@ resource "null_resource" "validate_k8s" {
 #Create k8s bastions
 resource "null_resource" "k8s_bastion" {
   provisioner "local-exec" {
-    command = "./create_bastion.sh '${var.cluster_name}' '${var.kops_bucket}'"
+    command = "../scripts/create_bastion.sh '${var.cluster_name}' '${var.kops_bucket}'"
   }
   provisioner "local-exec" {
     when    = "destroy"
@@ -25,7 +25,7 @@ resource "null_resource" "k8s_bastion" {
 #Give permissions in Kubernetes
 resource "null_resource" "k8s-rbac" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../k8s/rbac-role.yaml"
+    command = "kubectl apply -f ../../k8s/rbac-role.yaml"
   }
   depends_on = ["null_resource.validate_k8s"]
 }
@@ -33,33 +33,33 @@ resource "null_resource" "k8s-rbac" {
 #Install the alb ingress controller in Kubernetes
 resource "null_resource" "init_ingress_nginx" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../k8s/ingress-nginx/mandatory.yaml"
+    command = "kubectl apply -f ../../k8s/ingress-nginx/mandatory.yaml"
   }
   provisioner "local-exec" {
     when    = "destroy"
-    command = "kubectl delete -f ../k8s/ingress-nginx/mandatory.yaml"
+    command = "kubectl delete -f ../../k8s/ingress-nginx/mandatory.yaml"
   }
   depends_on = ["null_resource.k8s-rbac"]
 }
 
 resource "null_resource" "service_ingress_nginx" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../k8s/ingress-nginx/service.yaml"
+    command = "kubectl apply -f ../../k8s/ingress-nginx/service.yaml"
   }
   provisioner "local-exec" {
     when    = "destroy"
-    command = "kubectl delete -f ../k8s/ingress-nginx/service.yaml"
+    command = "kubectl delete -f ../../k8s/ingress-nginx/service.yaml"
   }
   depends_on = ["null_resource.init_ingress_nginx"]
 }
 
 resource "null_resource" "configmap_ingress_nginx" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../k8s/ingress-nginx/patch-configmap.yaml"
+    command = "kubectl apply -f ../../k8s/ingress-nginx/patch-configmap.yaml"
   }
   provisioner "local-exec" {
     when    = "destroy"
-    command = "kubectl delete -f ../k8s/ingress-nginx/patch-configmap.yaml"
+    command = "kubectl delete -f ../../k8s/ingress-nginx/patch-configmap.yaml"
   }
   depends_on = ["null_resource.service_ingress_nginx"]
 }
@@ -136,7 +136,7 @@ resource "null_resource" "segment_server_key_secret" {
 #install jenkins
 resource "null_resource" "jenkins" {
   provisioner "local-exec" {
-    command = "helm install jenkins ../helm/jenkins -f ../helm/jenkins/values_${var.environment}.yaml"
+    command = "helm install jenkins ../../helm/jenkins -f ../../helm/jenkins/values_${var.environment}.yaml"
   }
   provisioner "local-exec" {
     when = "destroy"
@@ -149,7 +149,7 @@ resource "null_resource" "jenkins" {
 #install prometheus
 resource "null_resource" "prometheus" {
   provisioner "local-exec" {
-    command = "helm install prometheus ../helm/prometheus-operator"
+    command = "helm install prometheus ../../helm/prometheus-operator"
   }
   provisioner "local-exec" {
     when = "destroy"
@@ -161,7 +161,7 @@ resource "null_resource" "prometheus" {
 #install pathmind
 resource "null_resource" "pathmind" {
   provisioner "local-exec" {
-    command = "helm install pathmind ../helm/pathmind -f ../helm/pathmind/values_${var.environment}.yaml"
+    command = "helm install pathmind ../../helm/pathmind -f ../../helm/pathmind/values_${var.environment}.yaml"
   }
   provisioner "local-exec" {
     when = "destroy"
@@ -174,7 +174,7 @@ resource "null_resource" "pathmind" {
 #install pathmind-slot
 resource "null_resource" "pathmind-slot" {
   provisioner "local-exec" {
-    command = "helm install pathmind-slot ../helm/pathmind -f ../helm/pathmind/values_${var.environment}_slot.yaml"
+    command = "helm install pathmind-slot ../../helm/pathmind -f ../../helm/pathmind/values_${var.environment}_slot.yaml"
   }
   provisioner "local-exec" {
     when = "destroy"
@@ -188,7 +188,7 @@ resource "null_resource" "pathmind-slot" {
 #install trainer
 resource "null_resource" "trainer" {
   provisioner "local-exec" {
-    command = "helm install trainer ../helm/trainer -f ../helm/trainer/values_${var.environment}.yaml"
+    command = "helm install trainer ../../helm/trainer -f ../../helm/trainer/values_${var.environment}.yaml"
   }
   provisioner "local-exec" {
     when = "destroy"
@@ -200,23 +200,23 @@ resource "null_resource" "trainer" {
 #pgadmin
 resource "null_resource" "pgadmin" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../k8s/pgadmin.yaml"
+    command = "kubectl apply -f ../../k8s/pgadmin.yaml"
   }
   provisioner "local-exec" {
     when    = "destroy"
     command = "kubectl delete deployment pgadmin; kubectl delete svc pgadmin"
   }
-  depends_on = ["aws_db_instance.rds"]
+  depends_on = ["aws_db_instance.rds", "null_resource.validate_k8s"]
 }
 
 #EFK
 resource "null_resource" "efk" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../k8s/efk/"
+    command = "kubectl apply -f ../../k8s/efk/"
   }
   provisioner "local-exec" {
     when    = "destroy"
-    command = "kubectl delete -f ../k8s/efk/"
+    command = "kubectl delete -f ../../k8s/efk/"
   }
   depends_on = ["null_resource.k8s-rbac"]
 }
@@ -224,11 +224,11 @@ resource "null_resource" "efk" {
 #Install Canary
 resource "null_resource" "canary" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../k8s/canary/"
+    command = "kubectl apply -f ../../k8s/canary/"
   }
   provisioner "local-exec" {
     when = "destroy"
-    command = "kubectl delete -f ../k8s/canary/"
+    command = "kubectl delete -f ../../k8s/canary/"
   }
   depends_on = ["null_resource.jenkins","null_resource.prometheus","null_resource.pathmind","null_resource.efk","null_resource.pathmind-slot"]
 }
@@ -236,7 +236,7 @@ resource "null_resource" "canary" {
 #install ingress
 resource "null_resource" "ingress" {
   provisioner "local-exec" {
-    command = "helm install ingress ../helm/ingress -f ../helm/ingress/values_${var.environment}"
+    command = "helm install ingress ../../helm/ingress -f ../../helm/ingress/values_${var.environment}.yaml"
   }
   provisioner "local-exec" {
     when = "destroy"
@@ -248,7 +248,7 @@ resource "null_resource" "ingress" {
 #Install pathmind db
 resource "null_resource" "pathmind-db" {
   provisioner "local-exec" {
-    command = "./install_db.sh ${var.environment}-database ${var.db_s3_bucket} ${var.db_s3_file} '${var.database_password}' '${var.awsaccesskey}' '${var.awssecretaccesskey}'"
+    command = "../scripts/install_db.sh ${var.environment}-database ${var.db_s3_bucket} ${var.db_s3_file} '${var.database_password}' '${var.awsaccesskey}' '${var.awssecretaccesskey}' '${var.cluster_name}'"
   }
   depends_on = ["aws_db_instance.rds","null_resource.k8s_bastion"]
 }
@@ -256,11 +256,11 @@ resource "null_resource" "pathmind-db" {
 #cert manager
 resource "null_resource" "cert_manager" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../k8s/tls/cert-manager.yaml"
+    command = "kubectl apply -f ../../k8s/tls/cert-manager.yaml"
   }
   provisioner "local-exec" {
     when = "destroy"
-    command = "kubectl delete -f ../k8s/tls/cert-manager.yaml"
+    command = "kubectl delete -f ../../k8s/tls/cert-manager.yaml"
   }
   depends_on = ["null_resource.canary"]
 }

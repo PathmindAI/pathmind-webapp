@@ -1,9 +1,3 @@
-#production dns aliases
-data "external" "elb" {
-  program    = ["bash", "./get_elb.sh", "ingress", "default"]
-  depends_on = ["null_resource.ingress"]
-}
-
 #Route 53 zone
 data "aws_route53_zone" "zone" {
   name         = "${var.domain_name}."
@@ -20,7 +14,6 @@ resource "aws_route53_record" "app_alias" {
     zone_id                = {{ZONE_ID}}
     evaluate_target_health = true
   }
-  depends_on = ["data.external.elb"]
 }
 
 resource "aws_route53_record" "grafana_alias" {
@@ -33,7 +26,6 @@ resource "aws_route53_record" "grafana_alias" {
     zone_id                = {{ZONE_ID}}
     evaluate_target_health = true
   }
-  depends_on = ["data.external.elb"]
 }
 
 resource "aws_route53_record" "kibana_alias" {
@@ -46,7 +38,6 @@ resource "aws_route53_record" "kibana_alias" {
     zone_id                = {{ZONE_ID}}
     evaluate_target_health = true
   }
-  depends_on = ["data.external.elb"]
 }
 
 resource "aws_route53_record" "pgadmin_alias" {
@@ -59,7 +50,6 @@ resource "aws_route53_record" "pgadmin_alias" {
     zone_id                = {{ZONE_ID}}
     evaluate_target_health = true
   }
-  depends_on = ["data.external.elb"]
 }
 
 resource "aws_route53_record" "jenkins_alias" {
@@ -72,7 +62,6 @@ resource "aws_route53_record" "jenkins_alias" {
     zone_id                = {{ZONE_ID}}
     evaluate_target_health = true
   }
-  depends_on = ["data.external.elb"]
 }
 
 resource "aws_route53_record" "model_analyzer_alias" {
@@ -85,6 +74,5 @@ resource "aws_route53_record" "model_analyzer_alias" {
     zone_id                = {{ZONE_ID}}
     evaluate_target_health = true
   }
-  depends_on = ["data.external.elb"]
 }
 
