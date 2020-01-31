@@ -1,7 +1,7 @@
 region="us-east-1"
 domain_name="devpathmind.com"
-appdomain="test"
-subdomain="test"
+appdomain="test."
+subdomain="test."
 environment="test"
 db_allocated_storage=100
 db_instance_class="db.t2.micro"
