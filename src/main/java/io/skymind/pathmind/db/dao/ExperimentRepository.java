@@ -1,24 +1,38 @@
 package io.skymind.pathmind.db.dao;
 
-import io.skymind.pathmind.data.*;
-import io.skymind.pathmind.data.db.Tables;
-import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
-import io.skymind.pathmind.db.utils.DashboardQueryParams;
-import lombok.extern.slf4j.Slf4j;
-import org.jooq.*;
-import org.jooq.impl.DSL;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static io.skymind.pathmind.data.db.Tables.*;
+import static io.skymind.pathmind.data.db.Tables.PATHMIND_USER;
+import static io.skymind.pathmind.data.db.Tables.POLICY;
 import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.data.db.tables.Model.MODEL;
 import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
 import static io.skymind.pathmind.data.db.tables.Run.RUN;
 import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_MULTIPLE_BY_USER;
 import static org.jooq.impl.DSL.count;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.Record;
+import org.jooq.Record1;
+import org.jooq.Record7;
+import org.jooq.Result;
+import org.jooq.Table;
+import org.jooq.impl.DSL;
+
+import io.skymind.pathmind.data.DashboardItem;
+import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Model;
+import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.db.Tables;
+import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
+import io.skymind.pathmind.db.utils.DashboardQueryParams;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 class ExperimentRepository
@@ -135,37 +149,36 @@ class ExperimentRepository
 	 * <a href="https://www.postgresql.org/docs/10/sql-select.html#SQL-DISTINCT">DISTINCT ON</a> clause.<br/>
 	 * Subquery named <code>POLICY_FOR_LATEST_RUN</code>  checks if there is any exported policy for latest_runs
 	 * returned by a subquery above.<br />
-	 * <p>
 	 * Generated query in plain SQL would look like:
 	 * <pre>
-	 *     {@code}
-	 * SELECT e.id, e.name,
-	 *        m.id, m.name,
-	 *        p.id, p.name,
-	 *        greatest(e.last_activity_date, m.last_activity_date, p.last_activity_date) AS ITEM_LAST_ACTIVITY_DATE,
-	 *        latest_run.*
-	 * FROM experiment e
-	 * RIGHT JOIN model m ON m.id = e.model_id
-	 * RIGHT JOIN project p ON p.id = m.project_id
-	 * LEFT JOIN pathmind_user u ON u.id = p.pathmind_user_id
-	 * LEFT JOIN
-	 *   (SELECT DISTINCT ON (experiment_id) id, experiment_id, name, run_type, started_at, stopped_at, status
-	 *    FROM run
-	 *    WHERE started_at IS NOT NULL
-	 *    ORDER BY experiment_id,
-	 *             started_at DESC) latest_run ON latest_run.experiment_id = e.id
-	 * LEFT JOIN
-	 *   (SELECT run_id
-	 *    FROM policy
-	 *    WHERE policy.exported_at IS NOT NULL
-	 *    GROUP BY policy.run_id) po ON po.run_id = latest_run.id
-	 * WHERE p.pathmind_user_id = $pathmind_user_id
-	 *   AND (e.archived = FALSE OR e.archived IS NULL)
-	 *   AND (p.archived = FALSE OR p.archived IS NULL)
-	 * ORDER BY ITEM_LAST_ACTIVITY_DATE DESC,
-	 *          e.id DESC
-	 * LIMIT $limit
-	 * OFFSET $offset
+	 	SELECT e.id, e.name,
+	 	       m.id, m.name,
+	 	       p.id, p.name,
+	 	       greatest(e.last_activity_date, m.last_activity_date, p.last_activity_date) AS ITEM_LAST_ACTIVITY_DATE,
+	 	       latest_run.*
+	 	FROM experiment e
+	 	RIGHT JOIN model m ON m.id = e.model_id
+	 	RIGHT JOIN project p ON p.id = m.project_id
+	 	LEFT JOIN pathmind_user u ON u.id = p.pathmind_user_id
+	 	LEFT JOIN
+	 	  (SELECT DISTINCT ON (experiment_id) id, experiment_id, name, run_type, started_at, stopped_at, status
+	 	   FROM run
+	 	   WHERE started_at IS NOT NULL
+	 	   ORDER BY experiment_id,
+	 	            started_at DESC) latest_run ON latest_run.experiment_id = e.id
+	 	LEFT JOIN
+	 	  (SELECT run_id
+	 	   FROM policy
+	 	   WHERE policy.exported_at IS NOT NULL
+	 	   GROUP BY policy.run_id) po ON po.run_id = latest_run.id
+	 	WHERE p.pathmind_user_id = $pathmind_user_id
+	 	  AND (e.archived = FALSE OR e.archived IS NULL)
+	 	  AND (m.archived = FALSE OR m.archived IS NULL)
+	 	  AND (p.archived = FALSE OR p.archived IS NULL)
+	 	ORDER BY ITEM_LAST_ACTIVITY_DATE DESC,
+	 	         e.id DESC
+	 	LIMIT $limit
+	 	OFFSET $offset
 	 * </pre>
 	 *
 	 * @param userId pathmind user ID
@@ -207,6 +220,7 @@ class ExperimentRepository
 				.where(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
 					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
 					.and(findByUserOrExperimentCondition(dashboardQueryParams))
+					.and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
 				.orderBy(itemLastActivityDate.desc(), EXPERIMENT.ID.desc())
 				.offset(dashboardQueryParams.getOffset())
 				.limit(dashboardQueryParams.getLimit())
@@ -254,6 +268,21 @@ class ExperimentRepository
 
 	/**
 	 * Counts and returns total number of given user's dashboard items
+	 * Generated query in plain SQL would look like:
+	 * <pre>
+		 SELECT COUNT(*)
+		 FROM experiment e
+		 RIGHT JOIN model m ON m.id = e.model_id
+		 RIGHT JOIN project p ON p.id = m.project_id
+		 LEFT JOIN pathmind_user u ON u.id = p.pathmind_user_id
+		 WHERE p.pathmind_user_id = $pathmind_user_id
+		 	AND (e.archived = FALSE
+		 		OR e.archived IS NULL)
+		 	AND (m.archived = FALSE
+		 		OR m.archived IS NULL)
+		 	AND (p.archived = FALSE
+		 		OR p.archived IS NULL)
+	 * </pre>
 	 */
 	static int countDashboardItemsForUser(DSLContext ctx, long userId) {
 		return ctx.selectCount()
@@ -263,7 +292,8 @@ class ExperimentRepository
 					.leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
 				.where(PATHMIND_USER.ID.eq(userId))
 					.and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
-					.and(PROJECT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
+					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
+					.and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
 				.fetchOne(count());
 	}
 }
