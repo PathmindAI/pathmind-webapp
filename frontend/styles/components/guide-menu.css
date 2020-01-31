@@ -12,7 +12,6 @@
   position: relative;
   color: var(--pm-blue-color-darkest-25pct);
   line-height: 1.3em;
-  margin: 0 0 1em;
   text-decoration: none;
 }
 .guide-menu a:last-of-type {
