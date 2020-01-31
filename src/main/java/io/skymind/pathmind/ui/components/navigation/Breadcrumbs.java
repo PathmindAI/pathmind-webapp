@@ -62,7 +62,9 @@ public class Breadcrumbs extends HorizontalLayout
 	}
 
 	private Span createSeparator() {
-		return new Span(">");
+		Span separator = new Span(">");
+		separator.addClassName("breadcrumb-separator");
+		return separator;
 	}
 	
 	private class BreadcrumbItem<T, C extends Component & HasUrlParameter<T>> {
