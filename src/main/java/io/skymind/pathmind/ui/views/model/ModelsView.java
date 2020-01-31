@@ -35,7 +35,6 @@ import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
-import io.skymind.pathmind.ui.views.guide.GuideOverview;
 import io.skymind.pathmind.ui.views.model.filter.ModelFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
@@ -157,8 +156,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 			modelGrid.setItems(models);
 		});
 		if (models.isEmpty()) {
-			event.forwardTo(GuideOverview.class);
-			// BLOCKER: cannot pass the projectId in
+			event.forwardTo("guide/overview", projectId);
 		}
 		archivesTabPanel.initData();
 		titlePanel.setSubtitle(projectName);

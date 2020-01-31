@@ -2,11 +2,13 @@ package io.skymind.pathmind.ui.views.guide;
 
 import io.skymind.pathmind.bus.events.UserUpdateBusEvent;
 import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
@@ -27,6 +29,8 @@ public class GuideOverview extends PathMindDefaultView implements HasUrlParamete
 	private final GuideOverviewContent pageContent;
 
 	private long projectId;
+
+	private GuideStep guideStep;
 
 	@Autowired
 	public GuideOverview(GuideOverviewContent pageContent) {
@@ -53,6 +57,16 @@ public class GuideOverview extends PathMindDefaultView implements HasUrlParamete
 		gridWrapper.getStyle().set("background-color", "white");
 		gridWrapper.getStyle().set("flex-grow", "1");
         return gridWrapper;
+	}
+
+	@Override
+	protected void initLoadData() throws InvalidDataException {
+		guideStep = guideDAO.getGuideStep(projectId);
+	}
+
+	@Override
+	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
+		pageContent.initBtns(guideStep, projectId);
 	}
 
 	@Override

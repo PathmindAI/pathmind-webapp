@@ -1,7 +1,5 @@
 package io.skymind.pathmind.ui.views.guide;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -17,7 +15,6 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.db.dao.GuideDAO;
-import io.skymind.pathmind.security.CurrentUser;
 
 @Tag("reward-view-content")
 @JsModule("./src/guide/reward-view-content.js")
@@ -36,12 +33,6 @@ public class RewardViewContent extends PolymerTemplate<RewardViewContent.Model> 
 
 	@Autowired
 	public RewardViewContent() {
-		// BLOCKER: cannot pass the projectId in
-	}
-
-	@PostConstruct
-	private void init() {
-//		initBtns();
 	}
 
 	protected void initBtns(GuideStep guideStep, long projectId) {

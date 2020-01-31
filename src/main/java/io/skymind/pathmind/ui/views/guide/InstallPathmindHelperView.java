@@ -4,12 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 
 import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.db.dao.GuideDAO;
+import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -25,6 +27,8 @@ public class InstallPathmindHelperView extends PathMindDefaultView implements Ha
 	private final InstallPathmindHelperViewContent pageContent;
 	
 	private long projectId;
+
+	private GuideStep guideStep;
 
 	@Autowired
 	public InstallPathmindHelperView(InstallPathmindHelperViewContent pageContent) {
@@ -51,6 +55,16 @@ public class InstallPathmindHelperView extends PathMindDefaultView implements Ha
 		gridWrapper.getStyle().set("background-color", "white");
 		gridWrapper.getStyle().set("flex-grow", "1");
 		return gridWrapper;
+	}
+
+	@Override
+	protected void initLoadData() throws InvalidDataException {
+		guideStep = guideDAO.getGuideStep(projectId);
+	}
+
+	@Override
+	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
+		pageContent.initBtns(guideStep, projectId);
 	}
 
 	@Override

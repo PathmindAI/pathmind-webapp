@@ -17,7 +17,6 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.db.dao.GuideDAO;
-import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.ui.views.model.UploadModelView;
 
 @Tag("guide-overview-content")
@@ -35,8 +34,6 @@ public class GuideOverviewContent extends PolymerTemplate<GuideOverviewContent.M
 	@Autowired
 	private GuideDAO guideDAO;
 
-	private long projectId;
-
 	@Autowired
 	public GuideOverviewContent() {
 		// BLOCKER: cannot pass the projectId in
@@ -44,12 +41,10 @@ public class GuideOverviewContent extends PolymerTemplate<GuideOverviewContent.M
 
 	@PostConstruct
 	private void init() {
-		initBtns();
+		// initBtns();
 	}
 
-	private void initBtns() {		
-		GuideStep guideStep = guideDAO.getGuideStep(projectId);
-		
+	protected void initBtns(GuideStep guideStep, long projectId) {
 		nextBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
 			UI.getCurrent().navigate(InstallPathmindHelperView.class, projectId);

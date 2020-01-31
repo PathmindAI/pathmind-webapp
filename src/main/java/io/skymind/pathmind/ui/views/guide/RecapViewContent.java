@@ -1,7 +1,5 @@
 package io.skymind.pathmind.ui.views.guide;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -17,7 +15,6 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.db.dao.GuideDAO;
-import io.skymind.pathmind.security.CurrentUser;
 import io.skymind.pathmind.ui.views.model.UploadModelView;
 
 @Tag("recap-view-content")
@@ -35,21 +32,11 @@ public class RecapViewContent extends PolymerTemplate<RecapViewContent.Model> {
 	@Autowired
 	private GuideDAO guideDAO;
 
-	private long projectId;
-
 	@Autowired
 	public RecapViewContent() {
-		// BLOCKER: cannot pass the projectId in
 	}
 
-	@PostConstruct
-	private void init() {
-		initBtns();
-	}
-
-	private void initBtns() {
-		GuideStep guideStep = guideDAO.getGuideStep(projectId);
-
+	protected void initBtns(GuideStep guideStep, long projectId) {
 		backBtn.addClickListener(e -> {
 			guideDAO.updateGuideStep(projectId, guideStep.previousStep());
 			UI.getCurrent().navigate(RewardView.class, projectId);
