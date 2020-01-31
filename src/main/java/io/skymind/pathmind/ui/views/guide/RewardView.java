@@ -1,5 +1,7 @@
 package io.skymind.pathmind.ui.views.guide;
 
+import com.vaadin.flow.router.BeforeEnterEvent;
+import io.skymind.pathmind.exception.InvalidDataException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -25,6 +27,8 @@ public class RewardView extends PathMindDefaultView implements HasUrlParameter<L
 
 	private long projectId;
 
+	private GuideStep guideStep;
+
 	@Autowired
 	public RewardView(RewardViewContent pageContent) {
 		this.pageContent = pageContent;
@@ -42,14 +46,22 @@ public class RewardView extends PathMindDefaultView implements HasUrlParameter<L
 
 	@Override
 	protected Component getMainContent() {
-        GuideStep guideStep = guideDAO.getGuideStep(projectId);
-		
 		HorizontalLayout gridWrapper = WrapperUtils.wrapWidthFullBetweenHorizontal(
 			new GuideMenu(guideStep, projectId), pageContent
 		);
 		gridWrapper.getStyle().set("background-color", "white");
 		gridWrapper.getStyle().set("flex-grow", "1");
 		return gridWrapper;
+	}
+
+	@Override
+	protected void initLoadData() throws InvalidDataException {
+		guideStep = guideDAO.getGuideStep(projectId);
+	}
+
+	@Override
+	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
+		pageContent.initBtns(guideStep, projectId);
 	}
 
 	@Override
