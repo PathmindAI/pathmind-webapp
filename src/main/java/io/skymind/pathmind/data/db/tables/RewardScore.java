@@ -5,6 +5,7 @@ package io.skymind.pathmind.data.db.tables;
 
 
 import io.skymind.pathmind.data.db.Indexes;
+import io.skymind.pathmind.data.db.Keys;
 import io.skymind.pathmind.data.db.Public;
 import io.skymind.pathmind.data.db.tables.records.RewardScoreRecord;
 
@@ -40,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RewardScore extends TableImpl<RewardScoreRecord> {
 
-    private static final long serialVersionUID = -1865980957;
+    private static final long serialVersionUID = 24614705;
 
     /**
      * The reference instance of <code>public.reward_score</code>
@@ -121,6 +122,15 @@ public class RewardScore extends TableImpl<RewardScoreRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.REWARD_SCORE_POLICY_ID_INDEX);
+    }
+
+    @Override
+    public List<ForeignKey<RewardScoreRecord, ?>> getReferences() {
+        return Arrays.<ForeignKey<RewardScoreRecord, ?>>asList(Keys.REWARD_SCORE__PM_FK_REWARD_SCORE_POLICY);
+    }
+
+    public Policy policy() {
+        return new Policy(this, Keys.REWARD_SCORE__PM_FK_REWARD_SCORE_POLICY);
     }
 
     @Override

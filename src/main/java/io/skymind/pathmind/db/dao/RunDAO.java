@@ -71,14 +71,6 @@ public class RunDAO
         return RunRepository.getExecutingRuns(ctx);
     }
 
-    public void savePolicyFile(long runId, String externalId, byte[] policyFile) {
-        RunRepository.savePolicyFile(ctx, runId, externalId, policyFile);
-    }
-
-    public void saveCheckpointFile(long runId, String externalId, byte[] checkpointFile) {
-        RunRepository.saveCheckpointFile(ctx, runId, externalId, checkpointFile);
-    }
-
     public Map<Long, List<String>> getStoppedPolicyNamesForRuns(List<Long> runIds) {
         return RunRepository.getStoppedPolicyNamesForRuns(ctx, runIds);
     }
