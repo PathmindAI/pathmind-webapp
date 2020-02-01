@@ -234,3 +234,40 @@ account-view {
 .tag:empty {
   display: none;
 }
+
+.dashboard-line {
+  background: white;
+  border-radius: var(--lumo-border-radius);
+  box-sizing: border-box;
+  overflow: hidden;
+  box-shadow: 0 3px 5px var(--lumo-shade-10pct);
+  padding: var(--lumo-space-l) var(--lumo-space-m);
+  align-items: center;
+}
+.navigate-icon {
+  display: none;
+}
+.dashboard-placeholder {
+  margin-top: 90px;
+}
+
+.dashboard-line:hover > .navigate-icon {
+  display: inline-flex;
+}
+
+.stages-container {
+  align-items: baseline;
+}
+.stages-container > span {
+  text-align: center;
+}
+.stages-container > span > iron-icon {
+  width: 16px;
+  margin-right: 4px;
+}
+.stage-active {
+  color: var(--lumo-primary-text-color);
+}
+.stage-next {
+  color: var(--lumo-secondary-text-color);
+}

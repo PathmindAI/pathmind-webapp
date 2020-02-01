@@ -74,4 +74,14 @@ public class PolicyDAO
         return PolicyRepository.getSnapshotFile(ctx, policyId);
     }
 
+    public void savePolicyFile(long runId, String externalId, byte[] policyFile) {
+        PolicyRepository.savePolicyFile(ctx, runId, externalId, policyFile);
+    }
+
+    public void saveCheckpointFile(long runId, String externalId, byte[] checkpointFile) {
+        PolicyRepository.saveCheckpointFile(ctx, runId, externalId, checkpointFile);
+    }
+    public void updateExportedDate(long policyId) {
+        PolicyRepository.updateExportedDate(ctx, policyId);
+    }
 }
