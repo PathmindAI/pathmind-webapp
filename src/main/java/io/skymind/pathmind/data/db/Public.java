@@ -6,6 +6,7 @@ package io.skymind.pathmind.data.db;
 
 import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.Experiment;
+import io.skymind.pathmind.data.db.tables.Guide;
 import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.ModelFile;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
@@ -40,7 +41,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 586697735;
+    private static final long serialVersionUID = -829118265;
 
     /**
      * The reference instance of <code>public</code>
@@ -56,6 +57,11 @@ public class Public extends SchemaImpl {
      * The table <code>public.experiment</code>.
      */
     public final Experiment EXPERIMENT = io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
+
+    /**
+     * The table <code>public.guide</code>.
+     */
+    public final Guide GUIDE = io.skymind.pathmind.data.db.tables.Guide.GUIDE;
 
     /**
      * The table <code>public.model</code>.
@@ -126,6 +132,7 @@ public class Public extends SchemaImpl {
         return Arrays.<Table<?>>asList(
             ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA,
             Experiment.EXPERIMENT,
+            Guide.GUIDE,
             Model.MODEL,
             ModelFile.MODEL_FILE,
             PathmindUser.PATHMIND_USER,

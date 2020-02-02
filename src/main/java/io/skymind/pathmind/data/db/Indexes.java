@@ -6,6 +6,7 @@ package io.skymind.pathmind.data.db;
 
 import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.Experiment;
+import io.skymind.pathmind.data.db.tables.Guide;
 import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.ModelFile;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
@@ -43,6 +44,7 @@ public class Indexes {
     public static final Index EXECUTION_PROVIDER_META_DATA_PKEY = Indexes0.EXECUTION_PROVIDER_META_DATA_PKEY;
     public static final Index UNIQUE_PROVIDER_CLASS_TYPE_KEY = Indexes0.UNIQUE_PROVIDER_CLASS_TYPE_KEY;
     public static final Index EXPERIMENT_PKEY = Indexes0.EXPERIMENT_PKEY;
+    public static final Index GUIDE_PROJECT_FK_INDEX = Indexes0.GUIDE_PROJECT_FK_INDEX;
     public static final Index MODEL_PKEY = Indexes0.MODEL_PKEY;
     public static final Index MODEL_FILE_MODEL_ID_INDEX = Indexes0.MODEL_FILE_MODEL_ID_INDEX;
     public static final Index PATHMIND_USER_EMAIL_KEY = Indexes0.PATHMIND_USER_EMAIL_KEY;
@@ -64,6 +66,7 @@ public class Indexes {
         public static Index EXECUTION_PROVIDER_META_DATA_PKEY = Internal.createIndex("execution_provider_meta_data_pkey", ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, new OrderField[] { ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.ID }, true);
         public static Index UNIQUE_PROVIDER_CLASS_TYPE_KEY = Internal.createIndex("unique_provider_class_type_key", ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, new OrderField[] { ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.PROVIDER_CLASS, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.TYPE, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.KEY }, true);
         public static Index EXPERIMENT_PKEY = Internal.createIndex("experiment_pkey", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.ID }, true);
+        public static Index GUIDE_PROJECT_FK_INDEX = Internal.createIndex("guide_project_fk_index", Guide.GUIDE, new OrderField[] { Guide.GUIDE.PROJECT_ID }, false);
         public static Index MODEL_PKEY = Internal.createIndex("model_pkey", Model.MODEL, new OrderField[] { Model.MODEL.ID }, true);
         public static Index MODEL_FILE_MODEL_ID_INDEX = Internal.createIndex("model_file_model_id_index", ModelFile.MODEL_FILE, new OrderField[] { ModelFile.MODEL_FILE.MODEL_ID }, false);
         public static Index PATHMIND_USER_EMAIL_KEY = Internal.createIndex("pathmind_user_email_key", PathmindUser.PATHMIND_USER, new OrderField[] { PathmindUser.PATHMIND_USER.EMAIL }, true);
