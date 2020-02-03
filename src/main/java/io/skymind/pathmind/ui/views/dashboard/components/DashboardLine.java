@@ -72,10 +72,15 @@ public class DashboardLine extends HorizontalLayout {
 				ElapsedTimer elapsedTimer = new ElapsedTimer();
 				updateElapsedTimer(elapsedTimer, dashboardItem.getLatestRun());
 				item = new Span(VaadinIcon.HOURGLASS.create(), new Text(stage.toString()), elapsedTimer);
-			} else {
-				item = new Span(stage.toString());
+				item.setClassName("stage-active");
+			} else if (isTrainingFailed(stage)) {
+				item = new Span(VaadinIcon.CLOSE.create(), new Text(stage.toString()));
+				item.setClassName("stage-failed");
 			}
-			item.setClassName("stage-active");
+			else {
+				item = new Span(stage.toString());
+				item.setClassName("stage-active");
+			}
 		} else {
 			item = new Span(stage.toString());
 			item.setClassName("stage-next");
@@ -88,6 +93,13 @@ public class DashboardLine extends HorizontalLayout {
 			return false;
 		}
 		return RunStatus.isRunning(dashboardItem.getLatestRun().getStatusEnum());
+	}
+
+	private boolean isTrainingFailed(Stage stage) {
+		if (stage != Stage.DiscoveryRunTraining && stage != Stage.FullRunTraining) {
+			return false;
+		}
+		return dashboardItem.getLatestRun().getStatusEnum() == RunStatus.Error;
 	}
 
 	private Span createSeparator() {
