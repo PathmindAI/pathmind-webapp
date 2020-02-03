@@ -140,7 +140,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 	
 	@Override
 	public boolean filterBusEvent(RunUpdateBusEvent event) {
-		// Only interested in completed runs 
-		return event.getRun().getStatusEnum() == RunStatus.Completed && event.getRun().getProject().getPathmindUserId() == loggedUserId;
+		// Do not do anything if run is in progress 
+		return !RunStatus.isRunning(event.getRun().getStatusEnum()) && event.getRun().getProject().getPathmindUserId() == loggedUserId;
 	}
 }
