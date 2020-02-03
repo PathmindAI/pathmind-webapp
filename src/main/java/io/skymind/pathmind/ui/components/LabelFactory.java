@@ -1,14 +1,14 @@
 package io.skymind.pathmind.ui.components;
 
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 
 public class LabelFactory
 {
 	// Helper method to save extra code.
-	public static Label createLabel(String text, String classname)
+	public static Span createLabel(String text, String classname)
 	{
-		Label label = new Label(text);
-		label.setClassName(classname);
-		return label;
+		Span span = new Span(text);
+		span.setClassName(classname);
+		return span;
 	}
 }

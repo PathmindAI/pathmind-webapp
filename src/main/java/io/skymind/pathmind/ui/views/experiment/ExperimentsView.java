@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -27,9 +27,9 @@ import io.skymind.pathmind.ui.components.PathmindTextArea;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
-import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.buttons.ShowRewardFunctionButton;
+import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
@@ -60,7 +60,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	private ExperimentGrid experimentGrid;
 	private PathmindTextArea getObservationTextArea;
 	private RewardFunctionEditor rewardFunctionEditor;
-	private Label rewardFunctionTitle;
+	private Span rewardFunctionTitle;
 	private ScreenTitlePanel titlePanel;
 
 	public ExperimentsView() {
@@ -90,7 +90,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	}
 
 	private void setupRewardFunctionEditor() {
-		rewardFunctionTitle = new Label("Reward Functions");
+		rewardFunctionTitle = new Span("Reward Functions");
 		rewardFunctionTitle.addClassNames("readonly-label");
 		rewardFunctionEditor = new RewardFunctionEditor();
 		rewardFunctionEditor.setReadonly(true);

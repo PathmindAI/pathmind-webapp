@@ -1,14 +1,15 @@
 package io.skymind.pathmind.ui.components;
 
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.springframework.stereotype.Component;
+
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 @Component
 public class ScreenTitlePanel extends HorizontalLayout
 {
-	private Label subtitleLabel = new Label();
-	private Label titleLabel = new Label();
+	private Span subtitleLabel = new Span();
+	private Span titleLabel = new Span();
 
 	public ScreenTitlePanel() {
 		this("");

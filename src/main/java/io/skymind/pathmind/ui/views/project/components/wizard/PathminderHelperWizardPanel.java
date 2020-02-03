@@ -5,17 +5,18 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 
 // TODO -> CSS -> Move all style to CSS.
 public class PathminderHelperWizardPanel extends VerticalLayout
 {
-	private Label projectNameLabel = new Label();
+	private Span projectNameLabel = new Span();
 	private Button nextStepButton = new Button("Next", new Icon(VaadinIcon.CHEVRON_RIGHT));
 
 	public PathminderHelperWizardPanel()

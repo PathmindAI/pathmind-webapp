@@ -4,7 +4,7 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -39,7 +39,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		add(WrapperUtils.wrapWidthFullHorizontal(
 				new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE),
 				GuiUtils.getLabel("Your model was successfully uploaded!", "16px", "bold")),
-				new Label("Let's add a few details."),
+				new Span("Let's add a few details."),
 				GuiUtils.getFullWidthHr(),
 				formPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
@@ -90,7 +90,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private Component getObservationForRewardFunctionPanel() {
 		VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
-				new Label("Copy your Observation for Reward function in here for easy reference."),
+				new Span("Copy your Observation for Reward function in here for easy reference."),
 				GuiUtils.getBoldLabel("getObservation for Reward Function"),
 				getObservationForRewardFunctionTextArea);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
@@ -100,7 +100,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 	private VerticalLayout getNumberOfObservationsPanel() {
 		VerticalLayout wrapper = new VerticalLayout(
 				GuiUtils.getBoldLabel("Number of Observations for Training"),
-				new Label("Enter the number of observations present in the 'observation of training' array"),
+				new Span("Enter the number of observations present in the 'observation of training' array"),
 				numberOfObservationsNumberField);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
@@ -109,7 +109,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 	private VerticalLayout getNumberOfPossibleActionsPanel() {
 		VerticalLayout wrapper = new VerticalLayout(
 				GuiUtils.getBoldLabel("Number of Possible Actions"),
-				new Label("This is the number of possible actions in doAction()"),
+				new Span("This is the number of possible actions in doAction()"),
 				numberOfPossibleActionsNumberField);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;

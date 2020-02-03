@@ -4,8 +4,10 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+
 import io.skymind.pathmind.ui.components.SearchBox;
 
 public class GuiUtils
@@ -32,21 +34,21 @@ public class GuiUtils
 	}
 
 	// TODO -> CSS -> Transition to CSS
-	public static Label getSubtitleLabel(String text) {
-		Label label = new Label(text);
+	public static Span getSubtitleLabel(String text) {
+		Span label = new Span(text);
 		label.getStyle().set("font-size", "12px");
 		return label;
 	}
 
-	public static Label getBoldLabel(String text) {
-		Label label = new Label(text);
+	public static Span getBoldLabel(String text) {
+		Span label = new Span(text);
 		label.getStyle().set("font-weight", "bold");
 		return label;
 	}
 
 	// TODO -> CSS -> Should point to a css style rather than style properties
-	public static Label getLabel(String text, String fontSize, String fontWeight) {
-		Label label = new Label(text);
+	public static Span getLabel(String text, String fontSize, String fontWeight) {
+		Span label = new Span(text);
 		label.getStyle().set("font-size", fontSize);
 		label.getStyle().set("font-weight", fontWeight);
 		return label;

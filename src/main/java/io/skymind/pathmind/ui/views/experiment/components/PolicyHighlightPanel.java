@@ -3,8 +3,9 @@ package io.skymind.pathmind.ui.views.experiment.components;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
@@ -14,9 +15,9 @@ import io.skymind.pathmind.ui.utils.PushUtils;
 
 public class PolicyHighlightPanel extends VerticalLayout implements PolicyUpdateSubscriber
 {
-	private Label policyLabel = new Label();
-	private Label scoreLabel = new Label();
-	private Label algorithmLabel = new Label();
+	private Span policyLabel = new Span();
+	private Span scoreLabel = new Span();
+	private Span algorithmLabel = new Span();
 
 	private Policy policy;
 

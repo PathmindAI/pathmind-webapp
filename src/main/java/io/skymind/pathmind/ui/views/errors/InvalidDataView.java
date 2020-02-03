@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.ErrorParameter;
 import com.vaadin.flow.router.HasErrorParameter;
@@ -41,7 +41,7 @@ public class InvalidDataView extends PathMindDefaultView implements HasErrorPara
 	@Override
 	protected Component getMainContent() {
 		return WrapperUtils.wrapWidthFullCenterHorizontal(
-				new Label(String.format("This link is invalid. Please contact Pathmind if you believe this is an error (#%s).", errorId)));
+				new Span(String.format("This link is invalid. Please contact Pathmind if you believe this is an error (#%s).", errorId)));
 	}
 
 	@Override

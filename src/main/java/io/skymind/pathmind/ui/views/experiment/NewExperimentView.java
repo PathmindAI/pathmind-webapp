@@ -13,6 +13,7 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -60,9 +61,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private ScreenTitlePanel screenTitlePanel;
 
-    private Label modelRevisionLabel;
-    private Label experimentLabel;
-    private Label projectLabel;
+    private Span modelRevisionLabel;
+    private Span experimentLabel;
+    private Span projectLabel;
 
     private PathmindTextArea errorsTextArea;
     private PathmindTextArea getObservationTextArea;
@@ -191,9 +192,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private Component getTopStatusPanel() {
-        modelRevisionLabel = new Label();
-        experimentLabel = new Label();
-        projectLabel = new Label();
+        modelRevisionLabel = new Span();
+        experimentLabel = new Span();
+        projectLabel = new Span();
 
         FormLayout formLayout = GuiUtils.getTitleBarFullWidth(3);
 
