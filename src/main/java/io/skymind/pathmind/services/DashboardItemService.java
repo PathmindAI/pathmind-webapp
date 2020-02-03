@@ -1,16 +1,17 @@
 package io.skymind.pathmind.services;
 
-import io.skymind.pathmind.data.DashboardItem;
-import io.skymind.pathmind.db.utils.DashboardQueryParams;
-import io.skymind.pathmind.db.dao.ExperimentDAO;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_MULTIPLE_BY_USER;
+import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_SINGLE_BY_EXPERIMENT;
 
 import java.util.List;
 import java.util.Optional;
 
-import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_MULTIPLE_BY_USER;
-import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_SINGLE_BY_EXPERIMENT;
+import org.springframework.stereotype.Service;
+
+import io.skymind.pathmind.data.DashboardItem;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.utils.DashboardQueryParams;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

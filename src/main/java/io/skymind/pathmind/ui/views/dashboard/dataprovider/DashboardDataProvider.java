@@ -38,5 +38,4 @@ public class DashboardDataProvider extends AbstractBackEndDataProvider<Dashboard
 		service.getSingleDashboardItem(experimentId)
 			.ifPresent(item -> refreshItem(item));
 	}
-
 }
