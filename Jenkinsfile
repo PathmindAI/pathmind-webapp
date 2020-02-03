@@ -63,12 +63,12 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev-aws'
                     environment name: 'GIT_BRANCH', value: 'test-aws'
-                    environment name: 'GIT_BRANCH', value: 'prod'
+                    environment name: 'GIT_BRANCH', value: 'master-aws'
                 }
             }
             steps {
 		script {
-		        if(env.BRANCH_NAME == 'master'){
+		        if(env.BRANCH_NAME == 'master-aws'){
 		                DOCKER_TAG = "prod"
 		        }
 		        if(env.BRANCH_NAME == 'dev-aws'){
@@ -104,7 +104,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev-aws'
                     environment name: 'GIT_BRANCH', value: 'test-aws'
-                    environment name: 'GIT_BRANCH', value: 'prod'
+                    environment name: 'GIT_BRANCH', value: 'master_aws'
                 }
             }
 		parallel {
@@ -121,7 +121,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev-aws'
                     environment name: 'GIT_BRANCH', value: 'test-aws'
-                    environment name: 'GIT_BRANCH', value: 'prod'
+                    environment name: 'GIT_BRANCH', value: 'master-aws'
                 }
             }
 		parallel {

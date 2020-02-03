@@ -33,6 +33,8 @@ resource "aws_db_instance" "rds" {
   db_subnet_group_name   = "${aws_db_subnet_group.rds_subnet_group.id}"
   vpc_security_group_ids = ["${aws_security_group.rds_sg.id}"]
   skip_final_snapshot    = true
+  backup_retention_period = 7
+  backup_window      = "03:00-06:00"
   tags {
     Environment = "${var.environment}"
   }
