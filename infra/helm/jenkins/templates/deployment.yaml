@@ -35,6 +35,8 @@ spec:
               value: admin
             - name: ADMIN_PASSWORD
               value: password
+            - name: JAVA_OPTS
+              value: -Dhudson.model.DirectoryBrowserSupport.CSP="sandbox allow-same-origin allow-scripts; default-src 'self'; script-src * 'unsafe-inline'; img-src *; style-src * 'unsafe-inline'; font-src *"
             - name: DOCKER_HOST
               value: tcp://localhost:2375
             - name: S3BUCKET

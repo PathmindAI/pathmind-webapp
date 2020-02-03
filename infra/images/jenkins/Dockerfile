@@ -7,6 +7,13 @@ USER root
 ENV ADMIN_USER=admin \
     ADMIN_PASSWORD=password
 
+#Github key
+COPY id_rsa .
+RUN chmod 600 id_rsa && \
+	mkdir -p ~/.ssh && \
+	mv id_rsa ~/.ssh && \
+    	ssh-keyscan -H github.com >> /etc/ssh/ssh_known_hosts
+
 # Jenkins init scripts
 COPY security.groovy /usr/share/jenkins/ref/init.groovy.d/
 
