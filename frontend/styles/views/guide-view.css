@@ -1,5 +1,6 @@
 :host {
   height: auto;
+  color: var(--pm-gray-color-darkest);
   background-color: white;
   flex-grow: 1;
 }

@@ -1,9 +1,9 @@
 .guide-menu {
   align-self: flex-start;
   flex: 0 0 auto;
-  position: sticky;
+  position: fixed;
   width: auto !important;
-  top: 31px;
+  top: auto;
   padding: var(--lumo-space-xl);
   padding-left: var(--lumo-space-xxl);
 }
@@ -28,7 +28,7 @@
   height: 18px;
   top: 50%;
   left: -30px;
-  border: 1px solid var(--pm-gray-color);
+  border: 1px solid var(--pm-blue-color-darkest-25pct);
   transform: translateY(-50%);
 }
 .guide-menu a[highlight] {
@@ -45,14 +45,6 @@
   background-image: url("/frontend/icons/checkmark_grey.svg");
   background-size: cover;
   transform: translateY(-60%);
-}
-.guide-menu a:not(.disabled):not(.skipLink):not([highlight])::before,
-.guide-menu a:not(.disabled):not(.skipLink):not([highlight])::after {
-  opacity: 0.25;
-}
-.guide-menu a:not(.disabled):hover::before,
-.guide-menu a:not(.disabled):hover::after {
-  opacity: 0.5;
 }
 .guide-menu a.disabled {
   pointer-events: none;

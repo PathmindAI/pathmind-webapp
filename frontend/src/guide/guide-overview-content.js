@@ -4,30 +4,86 @@ import "@vaadin/vaadin-button/src/vaadin-button.js";
 class GuideOverviewContent extends PolymerElement {
   static get template() {
     return html`
-      <style include="pathmind-dialog-view guide-view"></style>
+      <style include="shared-styles pathmind-dialog-view guide-view">
+        .key-concept-box {
+          padding: var(--lumo-space-xl);
+          border: 1px solid var(--pm-gray-color-darker);
+          border-radius: 6px;
+        }
+        .key-concept-box p {
+          line-height: var(--pm-line-height-xl);
+          margin-bottom: 0;
+        }
+        .step {
+          opacity: 0.25;
+          cursor: pointer;
+        }
+        .step.current {
+          opacity: 1;
+        }
+        .step span {
+          font-style: italic;
+          font-weight: bold;
+        }
+        .color-steps {
+          color: var(--pm-gray-color-dark);
+        }
+        .color-state {
+          color: var(--pm-blue-color);
+        }
+        .color-trigger {
+          color: var(--pm-primary-color);
+        }
+        .color-observation {
+          color: var(--pm-green-color);
+        }
+        .color-reward {
+          color: var(--pm-orange-color);
+        }
+      </style>
       <div class="content">
-        <h1>Guide to preparing your simulation for Pathmind</h1>
+        <h1>Preparing your simulation for Pathmind</h1>
         <p>
-          Dictumst vestibulum rhoncus est pellentesque elit ullamcorper.
-          Ullamcorper dignissim cras tincidunt lobortis feugiat vivamus at.
-          Lacus laoreet non curabitur gravida. Nibh sed pulvinar proin gravida.
-          Eget gravida cum sociis natoque penatibus et.
+          This checklist helps you confirm that your simulation models are ready
+          for reinforcement learning, by providing structured reminders of the
+          main steps in that preparation process. At each step, we link to more
+          detailed instructions.
         </p>
-        <dom-repeat items="[[checklist]]">
-          <template>
-            <p class="checklist-item"><strong>{{item}}</strong></p>
-          </template>
-        </dom-repeat>
-        <p>
-          Tortor id aliquet lectus proin nibh nisl condimentum. Ut pharetra sit
-          amet aliquam id diam maecenas ultricies mi. Faucibus scelerisque
-          eleifend donec pretium vulputate sapien nec sagittis aliquam.
-          Ultricies leo integer malesuada nunc vel risus. Massa tincidunt dui ut
-          ornare lectus sit. Vulputate sapien nec sagittis aliquam malesuada
-          bibendum arcu vitae.
-        </p>
+        <h4>Key Concept:</h4>
+        <div class="key-concept-box">
+          <div class="diagram"></div>
+          <p on-click="stepOnClick">
+            <span class="step current"
+              >Your simulation model has a start and a finish. In between, there
+              are <span class="color-steps">steps</span>. At the beginning of
+              each step, there is a
+              <span class="color-state">state</span>.</span
+            >
+            <span class="step"
+              >When you want to start a step, you want to take an action, so you
+              have to <span class="color-trigger">trigger</span> the action.
+              Triggering an action is either based on time or when something is
+              done.</span
+            >
+            <span class="step"
+              >Before the action is taken, you’d take an
+              <span class="color-observation">observation</span> to decide what
+              action to take.</span
+            >
+            <span class="step"
+              >Once an observation is taken, an
+              <span class="color-action">action</span> follows.</span
+            >
+            <span class="step"
+              >When the action is completed, a
+              <span class="color-reward">reward</span> is given. A reward is a
+              score indicating how well the action worked toward your
+              goal.</span
+            >
+          </p>
+        </div>
         <vaadin-button id="nextBtn" theme="secondary">
-          Install Pathmind Helper
+          I've read the overview
         </vaadin-button>
         <vaadin-button id="skipToUploadModelBtn" theme="tertiary">
           Skip to Upload Model
@@ -41,21 +97,22 @@ class GuideOverviewContent extends PolymerElement {
   }
 
   static get properties() {
-    return {
-      checklist: {
-        value() {
-          return [
-            "Key Concept of Pathmind",
-            "Install Pathmind Helper",
-            "Build Observation Space",
-            "Build Action Space",
-            "Triggering Actions",
-            'Define "Done" Condition',
-            "Define Reward Variables"
-          ];
-        }
+    return {};
+  }
+
+  stepOnClick(event) {
+    const targetStep =
+      event.target.classList.toString().indexOf("color") > -1
+        ? event.target.parentNode
+        : event.target;
+    const currentStep = targetStep.parentNode.querySelector(".step.current");
+
+    if (targetStep.tagName.toLowerCase() !== "p") {
+      if (currentStep) {
+        currentStep.classList.remove("current");
       }
-    };
+      targetStep.classList.add("current");
+    }
   }
 }
 

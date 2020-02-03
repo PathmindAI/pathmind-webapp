@@ -12,14 +12,20 @@ html {
 
   /* pathmind color palette */
   --pm-orange-color: #ed7820;
+  --pm-gray-color-darkest: #404040;
+  --pm-gray-color-darker: #707070;
+  --pm-gray-color-dark: #888888;
   --pm-gray-color: #b3b6c2;
   --pm-gray-color-light: #d0d0d0;
   --pm-blue-color-darkest: #1a2949;
   --pm-blue-color-darkest-50pct: rgba(26, 41, 73, 0.5);
   --pm-blue-color-darkest-25pct: rgba(26, 41, 73, 0.25);
   --pm-blue-color: #1900ff;
+  --pm-brown-color: #821b1a;
+  --pm-green-color: #1ccc28;
 
   /* pathmind typography */
+  --pm-line-height-xl: 2em;
   --pm-line-height-l: 1.5em;
   --pm-line-height-m: 1.3em;
   --pm-line-height-s: 1.15em;
