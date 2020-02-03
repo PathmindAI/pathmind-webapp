@@ -104,7 +104,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev-aws'
                     environment name: 'GIT_BRANCH', value: 'test-aws'
-                    environment name: 'GIT_BRANCH', value: 'master_aws'
+                    environment name: 'GIT_BRANCH', value: 'master-aws'
                 }
             }
 		parallel {
@@ -205,7 +205,6 @@ pipeline {
             steps {
 		script {
                 	DEPLOY_PROD = true
-			echo "Updating helm charts"
 			echo "Updating helm chart"
 			sh "helm upgrade --install pathmind ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}.yaml"
 			sh "sleep 30"
@@ -219,8 +218,20 @@ pipeline {
                 expression { DEPLOY_PROD == true }
             }
             steps {
-		echo "Testing in Production"
-		//sh "python ${WORKSPACE}/src/jenkins/tests/web_prod.py"
+		script {
+			try {
+				echo "Running tests"
+				sh "cd bdd-tests; mvn clean verify -Dheadless=true -Denvironment=pathmind-dev"
+			} catch (err) {
+			} finally {
+				publishHTML (target: [
+				reportDir: 'bdd-tests/target/site/serenity',
+				reportFiles: 'index.html',
+				reportName: "Tests"
+				])
+
+			}
+		}
             }
         } 
    }
