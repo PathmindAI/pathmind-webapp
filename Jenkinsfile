@@ -152,7 +152,6 @@ pipeline {
             when {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev-aws'
-                    #environment name: 'GIT_BRANCH', value: 'test-aws'
                 }
             }
             steps {
