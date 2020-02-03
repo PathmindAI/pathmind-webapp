@@ -17,12 +17,10 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Index;
-import org.jooq.JSONB;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row14;
+import org.jooq.Row12;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -44,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = 1310510437;
+    private static final long serialVersionUID = 1949291673;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -62,7 +60,7 @@ public class Policy extends TableImpl<PolicyRecord> {
     /**
      * The column <code>public.policy.id</code>.
      */
-    public final TableField<PolicyRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('policy_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
+    public final TableField<PolicyRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.policy.run_id</code>.
@@ -80,16 +78,6 @@ public class Policy extends TableImpl<PolicyRecord> {
     public final TableField<PolicyRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
-     * The column <code>public.policy.progress</code>.
-     */
-    public final TableField<PolicyRecord, JSONB> PROGRESS = createField(DSL.name("progress"), org.jooq.impl.SQLDataType.JSONB, this, "");
-
-    /**
-     * The column <code>public.policy.file</code>.
-     */
-    public final TableField<PolicyRecord, byte[]> FILE = createField(DSL.name("file"), org.jooq.impl.SQLDataType.BLOB, this, "");
-
-    /**
      * The column <code>public.policy.started_at</code>.
      */
     public final TableField<PolicyRecord, LocalDateTime> STARTED_AT = createField(DSL.name("started_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
@@ -103,11 +91,6 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.algorithm</code>.
      */
     public final TableField<PolicyRecord, String> ALGORITHM = createField(DSL.name("algorithm"), org.jooq.impl.SQLDataType.VARCHAR(3), this, "");
-
-    /**
-     * The column <code>public.policy.snapshot</code>.
-     */
-    public final TableField<PolicyRecord, byte[]> SNAPSHOT = createField(DSL.name("snapshot"), org.jooq.impl.SQLDataType.BLOB, this, "");
 
     /**
      * The column <code>public.policy.learning_rate</code>.
@@ -128,6 +111,11 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.notes</code>.
      */
     public final TableField<PolicyRecord, String> NOTES = createField(DSL.name("notes"), org.jooq.impl.SQLDataType.VARCHAR, this, "");
+
+    /**
+     * The column <code>public.policy.exported_at</code>.
+     */
+    public final TableField<PolicyRecord, LocalDateTime> EXPORTED_AT = createField(DSL.name("exported_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
 
     /**
      * Create a <code>public.policy</code> table reference
@@ -170,11 +158,6 @@ public class Policy extends TableImpl<PolicyRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.POLICY_PKEY, Indexes.POLICY_RUN_ID_EXTERNAL_ID_KEY);
-    }
-
-    @Override
-    public Identity<PolicyRecord, Long> getIdentity() {
-        return Keys.IDENTITY_POLICY;
     }
 
     @Override
@@ -223,11 +206,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row14 type methods
+    // Row12 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<Long, Long, String, String, JSONB, byte[], LocalDateTime, LocalDateTime, String, byte[], Double, Double, Integer, String> fieldsRow() {
-        return (Row14) super.fieldsRow();
+    public Row12<Long, Long, String, String, LocalDateTime, LocalDateTime, String, Double, Double, Integer, String, LocalDateTime> fieldsRow() {
+        return (Row12) super.fieldsRow();
     }
 }

@@ -57,28 +57,12 @@ public abstract class TrainingService {
     }
 
     public void startDiscoveryRun(Experiment exp){
-        startDiscoveryRunJob1(exp);
-        startDiscoveryRunJob2(exp);
-    }
-
-    public void startDiscoveryRunJob1(Experiment exp) {
         startRun(RunType.DiscoveryRun,
                 exp,
                 100,
-                Arrays.asList(1e-3, 1e-5), // Learning rate
+                Arrays.asList(1e-3, 1e-4, 1e-5), // Learning rate
                 Arrays.asList(0.9, 0.99), // gamma
-                Arrays.asList(64), // batch size
-                30 * MINUTE
-        );
-    }
-
-    public void startDiscoveryRunJob2(Experiment exp) {
-        startRun(RunType.DiscoveryRun,
-                exp,
-                100,
-                Arrays.asList(1e-3, 1e-5), // Learning rate
-                Arrays.asList(0.9, 0.99), // gamma
-                Arrays.asList(128), // batch size
+                Arrays.asList(64, 128), // batch size
                 30 * MINUTE
         );
     }

@@ -37,6 +37,11 @@ window.Pathmind = {
           );
         }
       };
+    },
+    isInputDirSupported: function() {
+      var tmpInput = document.createElement("input");
+      if ("webkitdirectory" in tmpInput) return true;
+      return false;
     }
   }
 };

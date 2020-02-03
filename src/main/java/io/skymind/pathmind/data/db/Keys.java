@@ -7,17 +7,23 @@ package io.skymind.pathmind.data.db;
 import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.Experiment;
 import io.skymind.pathmind.data.db.tables.Model;
+import io.skymind.pathmind.data.db.tables.ModelFile;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
 import io.skymind.pathmind.data.db.tables.Policy;
+import io.skymind.pathmind.data.db.tables.PolicyFile;
+import io.skymind.pathmind.data.db.tables.PolicySnapshot;
 import io.skymind.pathmind.data.db.tables.Project;
 import io.skymind.pathmind.data.db.tables.RewardScore;
 import io.skymind.pathmind.data.db.tables.Run;
 import io.skymind.pathmind.data.db.tables.TrainerJob;
 import io.skymind.pathmind.data.db.tables.records.ExecutionProviderMetaDataRecord;
 import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
+import io.skymind.pathmind.data.db.tables.records.ModelFileRecord;
 import io.skymind.pathmind.data.db.tables.records.ModelRecord;
 import io.skymind.pathmind.data.db.tables.records.PathmindUserRecord;
+import io.skymind.pathmind.data.db.tables.records.PolicyFileRecord;
 import io.skymind.pathmind.data.db.tables.records.PolicyRecord;
+import io.skymind.pathmind.data.db.tables.records.PolicySnapshotRecord;
 import io.skymind.pathmind.data.db.tables.records.ProjectRecord;
 import io.skymind.pathmind.data.db.tables.records.RewardScoreRecord;
 import io.skymind.pathmind.data.db.tables.records.RunRecord;
@@ -80,7 +86,10 @@ public class Keys {
 
     public static final ForeignKey<ExperimentRecord, ModelRecord> EXPERIMENT__PM_FK_EXPERIMENT_MODEL = ForeignKeys0.EXPERIMENT__PM_FK_EXPERIMENT_MODEL;
     public static final ForeignKey<ModelRecord, ProjectRecord> MODEL__PM_FK_MODEL_PROJECT = ForeignKeys0.MODEL__PM_FK_MODEL_PROJECT;
+    public static final ForeignKey<ModelFileRecord, ModelRecord> MODEL_FILE__PM_FK_MODEL_FILE_MODEL = ForeignKeys0.MODEL_FILE__PM_FK_MODEL_FILE_MODEL;
     public static final ForeignKey<PolicyRecord, RunRecord> POLICY__PM_FK_POLICY_RUN = ForeignKeys0.POLICY__PM_FK_POLICY_RUN;
+    public static final ForeignKey<PolicyFileRecord, PolicyRecord> POLICY_FILE__PM_FK_POLICY_FILE_POLICY = ForeignKeys0.POLICY_FILE__PM_FK_POLICY_FILE_POLICY;
+    public static final ForeignKey<PolicySnapshotRecord, PolicyRecord> POLICY_SNAPSHOT__PM_FK_POLICY_SNAPSHOT_POLICY = ForeignKeys0.POLICY_SNAPSHOT__PM_FK_POLICY_SNAPSHOT_POLICY;
     public static final ForeignKey<ProjectRecord, PathmindUserRecord> PROJECT__PM_FK_PROJECT_PATHMIND_USER = ForeignKeys0.PROJECT__PM_FK_PROJECT_PATHMIND_USER;
     public static final ForeignKey<RewardScoreRecord, PolicyRecord> REWARD_SCORE__PM_FK_REWARD_SCORE_POLICY = ForeignKeys0.REWARD_SCORE__PM_FK_REWARD_SCORE_POLICY;
     public static final ForeignKey<RunRecord, ExperimentRecord> RUN__PM_FK_RUN_EXPERIMENT = ForeignKeys0.RUN__PM_FK_RUN_EXPERIMENT;
@@ -117,7 +126,10 @@ public class Keys {
     private static class ForeignKeys0 {
         public static final ForeignKey<ExperimentRecord, ModelRecord> EXPERIMENT__PM_FK_EXPERIMENT_MODEL = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.MODEL_PKEY, Experiment.EXPERIMENT, "experiment__pm_fk_experiment_model", Experiment.EXPERIMENT.MODEL_ID);
         public static final ForeignKey<ModelRecord, ProjectRecord> MODEL__PM_FK_MODEL_PROJECT = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.PROJECT_PKEY, Model.MODEL, "model__pm_fk_model_project", Model.MODEL.PROJECT_ID);
+        public static final ForeignKey<ModelFileRecord, ModelRecord> MODEL_FILE__PM_FK_MODEL_FILE_MODEL = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.MODEL_PKEY, ModelFile.MODEL_FILE, "model_file__pm_fk_model_file_model", ModelFile.MODEL_FILE.MODEL_ID);
         public static final ForeignKey<PolicyRecord, RunRecord> POLICY__PM_FK_POLICY_RUN = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.RUN_PKEY, Policy.POLICY, "policy__pm_fk_policy_run", Policy.POLICY.RUN_ID);
+        public static final ForeignKey<PolicyFileRecord, PolicyRecord> POLICY_FILE__PM_FK_POLICY_FILE_POLICY = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.POLICY_PKEY, PolicyFile.POLICY_FILE, "policy_file__pm_fk_policy_file_policy", PolicyFile.POLICY_FILE.POLICY_ID);
+        public static final ForeignKey<PolicySnapshotRecord, PolicyRecord> POLICY_SNAPSHOT__PM_FK_POLICY_SNAPSHOT_POLICY = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.POLICY_PKEY, PolicySnapshot.POLICY_SNAPSHOT, "policy_snapshot__pm_fk_policy_snapshot_policy", PolicySnapshot.POLICY_SNAPSHOT.POLICY_ID);
         public static final ForeignKey<ProjectRecord, PathmindUserRecord> PROJECT__PM_FK_PROJECT_PATHMIND_USER = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.PATHMIND_USER_PKEY, Project.PROJECT, "project__pm_fk_project_pathmind_user", Project.PROJECT.PATHMIND_USER_ID);
         public static final ForeignKey<RewardScoreRecord, PolicyRecord> REWARD_SCORE__PM_FK_REWARD_SCORE_POLICY = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.POLICY_PKEY, RewardScore.REWARD_SCORE, "reward_score__pm_fk_reward_score_policy", RewardScore.REWARD_SCORE.POLICY_ID);
         public static final ForeignKey<RunRecord, ExperimentRecord> RUN__PM_FK_RUN_EXPERIMENT = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.EXPERIMENT_PKEY, Run.RUN, "run__pm_fk_run_experiment", Run.RUN.EXPERIMENT_ID);

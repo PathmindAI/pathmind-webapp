@@ -17,11 +17,10 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row10;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = -971232809;
+    private static final long serialVersionUID = -2005194598;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -61,7 +60,7 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.id</code>.
      */
-    public final TableField<ModelRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('model_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
+    public final TableField<ModelRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.model.project_id</code>.
@@ -97,11 +96,6 @@ public class Model extends TableImpl<ModelRecord> {
      * The column <code>public.model.get_observation_for_reward_function</code>.
      */
     public final TableField<ModelRecord, String> GET_OBSERVATION_FOR_REWARD_FUNCTION = createField(DSL.name("get_observation_for_reward_function"), org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
-
-    /**
-     * The column <code>public.model.file</code>.
-     */
-    public final TableField<ModelRecord, byte[]> FILE = createField(DSL.name("file"), org.jooq.impl.SQLDataType.BLOB, this, "");
 
     /**
      * The column <code>public.model.archived</code>.
@@ -152,11 +146,6 @@ public class Model extends TableImpl<ModelRecord> {
     }
 
     @Override
-    public Identity<ModelRecord, Long> getIdentity() {
-        return Keys.IDENTITY_MODEL;
-    }
-
-    @Override
     public UniqueKey<ModelRecord> getPrimaryKey() {
         return Keys.MODEL_PKEY;
     }
@@ -202,11 +191,11 @@ public class Model extends TableImpl<ModelRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row10 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Integer, String, byte[], Boolean> fieldsRow() {
-        return (Row10) super.fieldsRow();
+    public Row9<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Integer, String, Boolean> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }
