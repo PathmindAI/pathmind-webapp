@@ -158,8 +158,8 @@ pipeline {
 		script {
 			try {
 				echo "Running tests"
-				sh "git clone git@github.com:SkymindIO/pathmind-bdd-tests.git -o bdd-tests"
-				sh "cd bdd-tests; mvn clean verify -Dheadless=true -Denvironment=pathmind-dev"
+				sh "git clone git@github.com:SkymindIO/pathmind-bdd-tests.git"
+				sh "cd pathmind-bdd-tests; mvn clean verify -Dheadless=true -Denvironment=pathmind-dev"
 			} catch (err) {
 			} finally {
 				publishHTML (target: [
