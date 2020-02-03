@@ -6,14 +6,21 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.guide.template.DefaultGuideView;
+import io.skymind.pathmind.ui.views.guide.template.DefaultPageContent;
 
 @Route(value = Routes.GUIDE_OBSERVATION_URL, layout = MainLayout.class)
 public class ObservationView extends DefaultGuideView {
-	
-	private final static ObservationViewContent pageContent = new ObservationViewContent();
 
-	public ObservationView() {
-		super(pageContent);
+	private GuideOverviewContent pageContent;
+
+	public ObservationView(GuideOverviewContent pageContent) {
+		super();
+		this.pageContent = pageContent;
+	}
+
+	@Override
+	protected DefaultPageContent initPageContent() {
+		return pageContent;
 	}
 
 	@Override

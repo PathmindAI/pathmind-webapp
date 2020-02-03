@@ -757,8 +757,27 @@
         </rollback>
     </changeSet>
 
+    <!-- #770 Create indexes on foreign keys as they are often used in joins/where -->
+    <changeSet id="20200202-01" author="steph@followsteph.com">
+        <createIndex tableName="PROJECT" indexName="PROJECT_PATHMIND_USER_FK_INDEX">
+            <column name="PATHMIND_USER_ID"/>
+        </createIndex>
+        <createIndex tableName="MODEL" indexName="MODEL_PROJECT_FK_INDEX">
+            <column name="PROJECT_ID"/>
+        </createIndex>
+        <createIndex tableName="EXPERIMENT" indexName="EXPERIMENT_MODEL_FK_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+        <createIndex tableName="RUN" indexName="RUN_EXPERIMENT_FK_INDEX">
+            <column name="EXPERIMENT_ID"/>
+        </createIndex>
+        <createIndex tableName="POLICY" indexName="POLICY_RUN_FK_INDEX">
+            <column name="RUN_ID"/>
+        </createIndex>
+    </changeSet>
+
     <!-- #702 Create UI for guided walkthrough of setting up simulation helper with Pathmind functions -->
-    <changeSet id="20200201-01" author="steph@followsteph.com">
+    <changeSet id="20200203-01" author="steph@followsteph.com">
         <createTable tableName="GUIDE">
             <column name="PROJECT_ID" type="BIGINT">
                 <constraints nullable="false" foreignKeyName="PM_FK_MODEL_PROJECT" references="PROJECT(ID)"/>

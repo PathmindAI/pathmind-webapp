@@ -6,14 +6,21 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.guide.template.DefaultGuideView;
+import io.skymind.pathmind.ui.views.guide.template.DefaultPageContent;
 
 @Route(value = Routes.GUIDE_REWARD_URL, layout = MainLayout.class)
 public class RewardView extends DefaultGuideView {
-	
-	private final static RewardViewContent pageContent = new RewardViewContent();
 
-	public RewardView() {
-		super(pageContent);
+	private GuideOverviewContent pageContent;
+
+	public RewardView(GuideOverviewContent pageContent) {
+		super();
+		this.pageContent = pageContent;
+	}
+
+	@Override
+	protected DefaultPageContent initPageContent() {
+		return pageContent;
 	}
 
 	@Override

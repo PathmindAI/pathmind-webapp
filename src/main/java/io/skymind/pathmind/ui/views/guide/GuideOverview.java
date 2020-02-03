@@ -6,14 +6,21 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.guide.template.DefaultGuideView;
+import io.skymind.pathmind.ui.views.guide.template.DefaultPageContent;
 
 @Route(value = Routes.GUIDE_URL, layout = MainLayout.class)
 public class GuideOverview extends DefaultGuideView {
 	
-	private final static GuideOverviewContent pageContent = new GuideOverviewContent();
+	private GuideOverviewContent pageContent;
 
-	public GuideOverview() {
-		super(pageContent);
+	public GuideOverview(GuideOverviewContent pageContent) {
+		super();
+		this.pageContent = pageContent;
+	}
+
+	@Override
+	protected DefaultPageContent initPageContent() {
+		return pageContent;
 	}
 
 	@Override

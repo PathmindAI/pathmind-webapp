@@ -6,16 +6,23 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.guide.template.DefaultGuideView;
+import io.skymind.pathmind.ui.views.guide.template.DefaultPageContent;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = Routes.GUIDE_TRIGGER_ACTIONS_URL, layout = MainLayout.class)
 public class TriggerActionsView extends DefaultGuideView {
 
-	private final static TriggerActionsViewContent pageContent = new TriggerActionsViewContent();
+	private GuideOverviewContent pageContent;
 
 	@Autowired
-	public TriggerActionsView() {
-		super(pageContent);
+	public TriggerActionsView(GuideOverviewContent pageContent) {
+		super();
+		this.pageContent = pageContent;
+	}
+
+	@Override
+	protected DefaultPageContent initPageContent() {
+		return pageContent;
 	}
 
 	@Override

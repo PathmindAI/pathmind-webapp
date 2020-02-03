@@ -6,14 +6,21 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.guide.template.DefaultGuideView;
+import io.skymind.pathmind.ui.views.guide.template.DefaultPageContent;
 
 @Route(value = Routes.GUIDE_RECAP_URL, layout = MainLayout.class)
 public class RecapView extends DefaultGuideView {
 
-	private final static RecapViewContent pageContent = new RecapViewContent();
+	private GuideOverviewContent pageContent;
 
-	public RecapView() {
-		super(pageContent);
+	public RecapView(GuideOverviewContent pageContent) {
+		super();
+		this.pageContent = pageContent;
+	}
+
+	@Override
+	protected DefaultPageContent initPageContent() {
+		return pageContent;
 	}
 
 	@Override

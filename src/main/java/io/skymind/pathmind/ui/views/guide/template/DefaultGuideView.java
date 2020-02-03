@@ -20,7 +20,10 @@ import io.skymind.pathmind.ui.views.guide.GuideMenu;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = Routes.GUIDE_URL, layout = MainLayout.class)
-public class DefaultGuideView extends PathMindDefaultView implements HasUrlParameter<Long> {
+public abstract class DefaultGuideView extends PathMindDefaultView implements HasUrlParameter<Long> {
+
+	protected abstract DefaultPageContent initPageContent();
+
 	@Autowired
 	private GuideDAO guideDAO;
 	
@@ -33,8 +36,8 @@ public class DefaultGuideView extends PathMindDefaultView implements HasUrlParam
 
 	protected GuideStep guideStep;
 
-	public DefaultGuideView(DefaultPageContent pageContent) {
-		this.pageContent = pageContent;
+	public DefaultGuideView() {
+		super();
 	}
 
 	@Override
@@ -49,6 +52,9 @@ public class DefaultGuideView extends PathMindDefaultView implements HasUrlParam
 
 	@Override
 	protected Component getMainContent() {
+		DefaultPageContent pageContent = initPageContent();
+		pageContent.initBtns(guideDAO, guideStep, projectId, segmentIntegrator);
+
 		HorizontalLayout gridWrapper = WrapperUtils.wrapWidthFullBetweenHorizontal(
 			new GuideMenu(guideStep, projectId), pageContent
         );
@@ -57,14 +63,10 @@ public class DefaultGuideView extends PathMindDefaultView implements HasUrlParam
         return gridWrapper;
 	}
 
+
 	@Override
 	protected void initLoadData() throws InvalidDataException {
 		guideStep = guideDAO.getGuideStep(projectId);
-	}
-
-	@Override
-	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
-		pageContent.initBtns(guideDAO, guideStep, projectId, segmentIntegrator);
 	}
 
 	@Override

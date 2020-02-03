@@ -6,14 +6,21 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.views.guide.template.DefaultGuideView;
+import io.skymind.pathmind.ui.views.guide.template.DefaultPageContent;
 
 @Route(value = Routes.GUIDE_DONE_URL, layout = MainLayout.class)
 public class DoneConditionView extends DefaultGuideView {
 
-	private final static DoneConditionViewContent pageContent = new DoneConditionViewContent();
+	private GuideOverviewContent pageContent;
 
-	public DoneConditionView() {
-		super(pageContent);
+	public DoneConditionView(GuideOverviewContent pageContent) {
+		super();
+		this.pageContent = pageContent;
+	}
+
+	@Override
+	protected DefaultPageContent initPageContent() {
+		return pageContent;
 	}
 
 	@Override
