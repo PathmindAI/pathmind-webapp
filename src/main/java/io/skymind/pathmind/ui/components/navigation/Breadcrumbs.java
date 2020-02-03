@@ -33,11 +33,17 @@ public class Breadcrumbs extends HorizontalLayout
 	public Breadcrumbs(Project project, Model model) {
 		this(project, model, null);
 	}
+	public Breadcrumbs(Project project, Model model, Experiment experiment) {
+		this(project, model, experiment, true);
+	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public Breadcrumbs(Project project, Model model, Experiment experiment) {
+	public Breadcrumbs(Project project, Model model, Experiment experiment, boolean hasRootItem) {
 		List<BreadcrumbItem> items = new ArrayList<>();
-		items.add(new BreadcrumbItem("Projects", ProjectsView.class, null));
+
+		if(hasRootItem) {
+			items.add(new BreadcrumbItem("Projects", ProjectsView.class, null));
+		}
 
 		if (project != null) {
 			items.add(new BreadcrumbItem(project.getName(), ModelsView.class, project.getId()));
