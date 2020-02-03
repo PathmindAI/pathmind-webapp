@@ -757,4 +757,22 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20200202-01" author="steph@followsteph.com">
+        <createIndex tableName="PROJECT" indexName="PROJECT_PATHMIND_USER_FK_INDEX">
+            <column name="PATHMIND_USER_ID"/>
+        </createIndex>
+        <createIndex tableName="MODEL" indexName="MODEL_PROJECT_FK_INDEX">
+            <column name="PROJECT_ID"/>
+        </createIndex>
+        <createIndex tableName="EXPERIMENT" indexName="EXPERIMENT_MODEL_FK_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+        <createIndex tableName="RUN" indexName="RUN_EXPERIMENT_FK_INDEX">
+            <column name="EXPERIMENT_ID"/>
+        </createIndex>
+        <createIndex tableName="POLICY" indexName="POLICY_RUN_FK_INDEX">
+            <column name="RUN_ID"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
