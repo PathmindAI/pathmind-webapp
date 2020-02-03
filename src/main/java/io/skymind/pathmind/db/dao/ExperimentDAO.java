@@ -1,5 +1,7 @@
 package io.skymind.pathmind.db.dao;
 
+import io.skymind.pathmind.aspects.MonitorExecutionTime;
+import io.skymind.pathmind.data.DashboardItem;
 import io.skymind.pathmind.data.Experiment;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
@@ -43,5 +45,15 @@ public class ExperimentDAO
 
 	public void archive(long experimentId, boolean isArchive) {
 		ExperimentRepository.archive(ctx, experimentId, isArchive);
+	}
+
+	@MonitorExecutionTime
+	public List<DashboardItem> getDashboardItemsForUser(long userId, int offset, int limit) {
+		return ExperimentRepository.getDashboardItemsForUser(ctx, userId, offset, limit);
+	}
+
+	@MonitorExecutionTime
+	public int countDashboardItemsForUser(long userId) {
+		return ExperimentRepository.countDashboardItemsForUser(ctx, userId);
 	}
 }

@@ -8,11 +8,12 @@ import io.skymind.pathmind.constants.RunType;
 public class Run extends Data
 {
 	private int runType;
+	private long experimentId;
+	private int status;
 	private LocalDateTime startedAt;
 	private LocalDateTime stoppedAt;
 	private LocalDateTime notificationSentAt;
-	private long experimentId;
-	private int status;
+	private LocalDateTime exportedAt;
 
 	// Helper attributes
 	private Experiment experiment;
@@ -114,5 +115,13 @@ public class Run extends Data
 
 	public void setNotificationSentAt(LocalDateTime notificationSentAt) {
 		this.notificationSentAt = notificationSentAt;
+	}
+
+	public LocalDateTime getExportedAt() {
+		return exportedAt;
+	}
+
+	public void setExportedAt(LocalDateTime exportedAt) {
+		this.exportedAt = exportedAt;
 	}
 }
