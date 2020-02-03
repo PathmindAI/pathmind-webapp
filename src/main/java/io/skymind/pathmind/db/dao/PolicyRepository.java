@@ -1,28 +1,16 @@
 package io.skymind.pathmind.db.dao;
 
-import static io.skymind.pathmind.data.db.Tables.EXPERIMENT;
-import static io.skymind.pathmind.data.db.Tables.MODEL;
-import static io.skymind.pathmind.data.db.Tables.PATHMIND_USER;
-import static io.skymind.pathmind.data.db.Tables.POLICY;
-import static io.skymind.pathmind.data.db.Tables.POLICY_FILE;
-import static io.skymind.pathmind.data.db.Tables.POLICY_SNAPSHOT;
-import static io.skymind.pathmind.data.db.Tables.PROJECT;
-import static io.skymind.pathmind.data.db.Tables.RUN;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import io.skymind.pathmind.data.*;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
-import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Model;
-import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.data.Run;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static io.skymind.pathmind.data.db.Tables.*;
 
 class PolicyRepository
 {

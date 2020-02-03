@@ -4,6 +4,8 @@
 package io.skymind.pathmind.data.db.tables.records;
 
 
+import io.skymind.pathmind.data.db.tables.Policy;
+
 import java.time.LocalDateTime;
 
 import javax.annotation.processing.Generated;
@@ -13,8 +15,6 @@ import org.jooq.Record1;
 import org.jooq.Record12;
 import org.jooq.Row12;
 import org.jooq.impl.UpdatableRecordImpl;
-
-import io.skymind.pathmind.data.db.tables.Policy;
 
 
 /**

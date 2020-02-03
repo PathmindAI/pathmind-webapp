@@ -1,18 +1,17 @@
 package io.skymind.pathmind.db.dao;
 
-import java.util.List;
-import java.util.Map;
-
-import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
+import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class PolicyDAO
@@ -82,7 +81,6 @@ public class PolicyDAO
     public void saveCheckpointFile(long runId, String externalId, byte[] checkpointFile) {
         PolicyRepository.saveCheckpointFile(ctx, runId, externalId, checkpointFile);
     }
-    
     public void updateExportedDate(long policyId) {
         PolicyRepository.updateExportedDate(ctx, policyId);
     }

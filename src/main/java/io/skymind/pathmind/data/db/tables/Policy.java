@@ -4,6 +4,11 @@
 package io.skymind.pathmind.data.db.tables;
 
 
+import io.skymind.pathmind.data.db.Indexes;
+import io.skymind.pathmind.data.db.Keys;
+import io.skymind.pathmind.data.db.Public;
+import io.skymind.pathmind.data.db.tables.records.PolicyRecord;
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -22,11 +27,6 @@ import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
-
-import io.skymind.pathmind.data.db.Indexes;
-import io.skymind.pathmind.data.db.Keys;
-import io.skymind.pathmind.data.db.Public;
-import io.skymind.pathmind.data.db.tables.records.PolicyRecord;
 
 
 /**
