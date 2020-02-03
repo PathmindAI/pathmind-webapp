@@ -117,6 +117,11 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 .filter(it -> !it.endsWith(".json"))
                 .collect(Collectors.toList());
 
+        boolean killed = getFile(jobHandle, TrainingFile.KILLED).isPresent();
+        if (killed) {
+            return RunStatus.Killed;
+         }
+
         List<String> knownErrsCheck = getTrialStatus(jobHandle, TrainingFile.KNOWN_ERROR);
 
         // todo need to change to use database once Daniel create proper database(TRAINER_JOB)
