@@ -8,12 +8,12 @@
   border-top-color: var(--pm-gray-color-light);
 }
 
-#items [part~="row"]:last-child [part~="cell"] {
+:host(:not(.dashboard)) #items [part~="row"]:last-child [part~="cell"] {
   border-bottom: var(--_lumo-grid-border-width) solid
     var(--_lumo-grid-border-color);
 }
 
-#items [part~="row"]:hover [part~="body-cell"] {
+:host(:not(.dashboard)) #items [part~="row"]:hover [part~="body-cell"] {
   background: var(--lumo-shade-10pct);
 }
 
@@ -31,4 +31,21 @@ vaadin-grid-cell-content vaadin-grid-sorter[direction] {
 
 [part~="cell"] ::slotted(vaadin-grid-cell-content) {
   cursor: pointer;
+}
+
+:host(.dashboard) {
+  background: transparent;
+  max-width: 960px;
+  margin: auto;
+}
+
+:host(.dashboard) [part~="cell"]:not(:empty):not([details-cell]) {
+  padding: 0;
+}
+
+:host(.dashboard) [part~="row"][selected] [part~="cell"] {
+  background: transparent !important;
+}
+:host(.dashboard) [part~="body-cell"] {
+  background: transparent;
 }

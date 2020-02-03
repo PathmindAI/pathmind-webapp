@@ -25,7 +25,7 @@ public final class RunConstants {
 	 * Map contains all hyperparameters for discovery runs
 	 */
 	public static final Map<String, List<? extends Number>> TRAINING_HYPERPARAMETERS = Map.of(
-			DISCOVERY_RUN_LEARNING_RATES, Arrays.asList(1e-3, 1e-5),
+			DISCOVERY_RUN_LEARNING_RATES, Arrays.asList(1e-3, 1e-4, 1e-5),
 			DISCOVERY_RUN_GAMMAS, Arrays.asList(0.9, 0.99),
 			DISCOVERY_RUN_BATCH_SIZES, Arrays.asList(64, 128)
 	);

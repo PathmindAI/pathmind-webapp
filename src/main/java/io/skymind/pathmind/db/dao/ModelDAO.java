@@ -43,6 +43,7 @@ public class ModelDAO
 			LocalDateTime dateCreated = LocalDateTime.now();
 			String modelName = Integer.toString(ModelRepository.getModelCount(transactionCtx, projectId) + 1);
 			long modelId = ModelRepository.insertModel(transactionCtx, model, modelName, dateCreated, projectId);
+			ModelRepository.insertModelFile(transactionCtx, modelId, model.getFile());
 			return ExperimentRepository.insertExperiment(transactionCtx, modelId, dateCreated);
 		});
 	}

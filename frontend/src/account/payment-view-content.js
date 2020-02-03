@@ -160,7 +160,7 @@ class PaymentViewContent extends PolymerElement {
               <div id="card-element"></div>
           </vaadin-horizontal-layout>
           <vaadin-horizontal-layout id="errorCont">
-            <div class="error-message">{{message}}</div>
+            <div class="error-message">{{errorMessage}}</div>
           </vaadin-horizontal-layout>
         </vaadin-vertical-layout>
         <vaadin-vertical-layout id="buttonsCont">
@@ -184,15 +184,6 @@ class PaymentViewContent extends PolymerElement {
       </vaadin-vertical-layout>
       <a class="support" href="{{contactLink}}">Contact Support</a>
     </div>
-    
-    
-    <vaadin-notification 
-        duration="4000" 
-        opened="[[paymentError]]" 
-    > 
-        <template>There has been an error processing the payment</template> 
-    </vaadin-notification> 
-    
 `;
   }
 
@@ -209,7 +200,7 @@ class PaymentViewContent extends PolymerElement {
   static get properties() {
     return {
       stripe: Object,
-      message: Object,
+      errorMessage: Object,
       isStripeComplete: {
         type: Boolean,
         value: false
@@ -262,7 +253,7 @@ class PaymentViewContent extends PolymerElement {
     // If there's an error coming from Stripe set it visible
     this.cardElement.addEventListener(
       "change",
-      ({ error }) => (this.message = error ? error.message : "")
+      ({ error }) => (this.errorMessage = error ? error.message : "")
     );
   }
 
@@ -287,9 +278,9 @@ class PaymentViewContent extends PolymerElement {
             }
           }
         })
-        .then(function(result) {
+        .then(result => {
           if (result.error) {
-            this.paymentError = result.error.message;
+            this.errorMessage = result.error.message;
           } else {
             paymentView.setPaymentMethod(result.paymentMethod);
           }
