@@ -1,6 +1,0 @@
-new double[] {
-  kitchenCleanliness,
-  payBill.out.count(),
-  custFailExit.countPeds(),
-  serviceTime_min.mean()
-}

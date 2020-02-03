@@ -63,12 +63,12 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev-aws'
                     environment name: 'GIT_BRANCH', value: 'test-aws'
-                    environment name: 'GIT_BRANCH', value: 'prod'
+                    environment name: 'GIT_BRANCH', value: 'master-aws'
                 }
             }
             steps {
 		script {
-		        if(env.BRANCH_NAME == 'master'){
+		        if(env.BRANCH_NAME == 'master-aws'){
 		                DOCKER_TAG = "prod"
 		        }
 		        if(env.BRANCH_NAME == 'dev-aws'){
@@ -104,7 +104,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev-aws'
                     environment name: 'GIT_BRANCH', value: 'test-aws'
-                    environment name: 'GIT_BRANCH', value: 'prod'
+                    environment name: 'GIT_BRANCH', value: 'master-aws'
                 }
             }
 		parallel {
@@ -121,7 +121,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev-aws'
                     environment name: 'GIT_BRANCH', value: 'test-aws'
-                    environment name: 'GIT_BRANCH', value: 'prod'
+                    environment name: 'GIT_BRANCH', value: 'master-aws'
                 }
             }
 		parallel {
@@ -152,13 +152,14 @@ pipeline {
             when {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev-aws'
-                    environment name: 'GIT_BRANCH', value: 'test-aws'
+                    #environment name: 'GIT_BRANCH', value: 'test-aws'
                 }
             }
             steps {
 		script {
 			try {
 				echo "Running tests"
+				sh "git clone git@github.com:SkymindIO/pathmind-bdd-tests.git -o bdd-tests"
 				sh "cd bdd-tests; mvn clean verify -Dheadless=true -Denvironment=pathmind-dev"
 			} catch (err) {
 			} finally {
@@ -177,7 +178,7 @@ pipeline {
         stage('Go for Production?') {
             when {
                 allOf {
-                    environment name: 'GIT_BRANCH', value: 'master'
+                    environment name: 'GIT_BRANCH', value: 'master-aws'
                     environment name: 'DEPLOY_TO_PROD', value: 'false'
                 }
             }
@@ -205,24 +206,11 @@ pipeline {
             steps {
 		script {
                 	DEPLOY_PROD = true
-			echo "Updating helm charts"
 			echo "Updating helm chart"
 			sh "helm upgrade --install pathmind ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}.yaml"
-			sh "sleep 30"
 		}
             }
         }
-
-	////////// Step 7 //////////
-	stage('Testing in Production') {
-            when {
-                expression { DEPLOY_PROD == true }
-            }
-            steps {
-		echo "Testing in Production"
-		//sh "python ${WORKSPACE}/src/jenkins/tests/web_prod.py"
-            }
-        } 
    }
 }
 

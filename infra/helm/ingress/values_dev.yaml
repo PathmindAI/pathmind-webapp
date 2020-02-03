@@ -13,40 +13,40 @@ service:
   type: NodePort
   port: 80
 
-certificate: letsencrypt-prod
+certificate: letsencrypt-dev
 
 ingress:
   enabled: true
   annotations: 
     kubernetes.io/ingress.class: "nginx"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    cert-manager.io/cluster-issuer: "letsencrypt-dev"
     nginx.ingress.kubernetes.io/affinity: cookie
     nginx.ingress.kubernetes.io/affinity-mode: persistent
     nginx.ingress.kubernetes.io/session-cookie-name: route
   hosts:
-    - host: app.devpathmind.com
+    - host: dev.devpathmind.com
       paths: [/:80:canary]
     #model analyzer
-    - host: ma.devpathmind.com
+    - host: ma.dev.devpathmind.com
       paths: [/:8080:pathmind-ma]
-    - host: jenkins.devpathmind.com
+    - host: jenkins.dev.devpathmind.com
       paths: [/:8080:jenkins]
-    - host: grafana.devpathmind.com
+    - host: grafana.dev.devpathmind.com
       paths: [/:80:prometheus-grafana]
-    - host: kibana.devpathmind.com
+    - host: kibana.dev.devpathmind.com
       paths: [/:5601:kibana-kb-http]
-    - host: pgadmin.devpathmind.com
+    - host: pgadmin.dev.devpathmind.com
       paths: [/:80:pgadmin]
 
   tls: 
-    - secretName: letsencrypt-prod
+    - secretName: letsencrypt-dev
       hosts:
-        - app.devpathmind.com
-        - pgadmin.devpathmind.com
-        - grafana.devpathmind.com
-        - ma.devpathmind.com
-        - kibana.devpathmind.com
-        - jenkins.devpathmind.com
+        - dev.devpathmind.com
+        - pgadmin.dev.devpathmind.com
+        - grafana.dev.devpathmind.com
+        - ma.dev.devpathmind.com
+        - kibana.dev.devpathmind.com
+        - jenkins.dev.devpathmind.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
