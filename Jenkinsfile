@@ -177,7 +177,7 @@ pipeline {
         stage('Go for Production?') {
             when {
                 allOf {
-                    environment name: 'GIT_BRANCH', value: 'master'
+                    environment name: 'GIT_BRANCH', value: 'master-aws'
                     environment name: 'DEPLOY_TO_PROD', value: 'false'
                 }
             }
@@ -207,7 +207,6 @@ pipeline {
                 	DEPLOY_PROD = true
 			echo "Updating helm chart"
 			sh "helm upgrade --install pathmind ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}.yaml"
-			sh "sleep 30"
 		}
             }
         }
