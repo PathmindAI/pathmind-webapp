@@ -11,9 +11,9 @@ import io.skymind.pathmind.ui.views.guide.template.DefaultPageContent;
 @Route(value = Routes.GUIDE_DONE_URL, layout = MainLayout.class)
 public class DoneConditionView extends DefaultGuideView {
 
-	private GuideOverviewContent pageContent;
+	private DoneConditionViewContent pageContent;
 
-	public DoneConditionView(GuideOverviewContent pageContent) {
+	public DoneConditionView(DoneConditionViewContent pageContent) {
 		super();
 		this.pageContent = pageContent;
 	}

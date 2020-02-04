@@ -11,9 +11,9 @@ import io.skymind.pathmind.ui.views.guide.template.DefaultPageContent;
 @Route(value = Routes.GUIDE_REWARD_URL, layout = MainLayout.class)
 public class RewardView extends DefaultGuideView {
 
-	private GuideOverviewContent pageContent;
+	private RewardViewContent pageContent;
 
-	public RewardView(GuideOverviewContent pageContent) {
+	public RewardView(RewardViewContent pageContent) {
 		super();
 		this.pageContent = pageContent;
 	}

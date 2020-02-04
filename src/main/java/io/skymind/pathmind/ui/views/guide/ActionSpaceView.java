@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Route(value = Routes.GUIDE_ACTION_SPACE_URL, layout = MainLayout.class)
 public class ActionSpaceView extends DefaultGuideView {
 
-	private GuideOverviewContent pageContent;
+	private ActionSpaceViewContent pageContent;
 
 	@Autowired
-	public ActionSpaceView(GuideOverviewContent pageContent) {
+	public ActionSpaceView(ActionSpaceViewContent pageContent) {
 		super();
 		this.pageContent = pageContent;
 	}

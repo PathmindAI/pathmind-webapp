@@ -11,9 +11,9 @@ import io.skymind.pathmind.ui.views.guide.template.DefaultPageContent;
 @Route(value = Routes.GUIDE_OBSERVATION_URL, layout = MainLayout.class)
 public class ObservationView extends DefaultGuideView {
 
-	private GuideOverviewContent pageContent;
+	private ObservationViewContent pageContent;
 
-	public ObservationView(GuideOverviewContent pageContent) {
+	public ObservationView(ObservationViewContent pageContent) {
 		super();
 		this.pageContent = pageContent;
 	}

@@ -30,8 +30,6 @@ public abstract class DefaultGuideView extends PathMindDefaultView implements Ha
 	@Autowired
 	protected SegmentIntegrator segmentIntegrator;
 
-	private DefaultPageContent pageContent;
-
 	protected long projectId;
 
 	protected GuideStep guideStep;

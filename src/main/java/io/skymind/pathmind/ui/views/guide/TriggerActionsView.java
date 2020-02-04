@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Route(value = Routes.GUIDE_TRIGGER_ACTIONS_URL, layout = MainLayout.class)
 public class TriggerActionsView extends DefaultGuideView {
 
-	private GuideOverviewContent pageContent;
+	private TriggerActionsViewContent pageContent;
 
 	@Autowired
-	public TriggerActionsView(GuideOverviewContent pageContent) {
+	public TriggerActionsView(TriggerActionsViewContent pageContent) {
 		super();
 		this.pageContent = pageContent;
 	}

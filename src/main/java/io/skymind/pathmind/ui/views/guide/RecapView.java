@@ -11,9 +11,9 @@ import io.skymind.pathmind.ui.views.guide.template.DefaultPageContent;
 @Route(value = Routes.GUIDE_RECAP_URL, layout = MainLayout.class)
 public class RecapView extends DefaultGuideView {
 
-	private GuideOverviewContent pageContent;
+	private RecapViewContent pageContent;
 
-	public RecapView(GuideOverviewContent pageContent) {
+	public RecapView(RecapViewContent pageContent) {
 		super();
 		this.pageContent = pageContent;
 	}
