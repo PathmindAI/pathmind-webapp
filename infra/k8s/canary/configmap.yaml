@@ -1,0 +1,136 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginxcan-config
+data:
+  default.conf: |
+    # SERVICE DEFINITION
+    # ##################
+ 
+      server {
+ 
+        # Enable logging if needed
+        # error_log    /var/log/nginx/default.error.log debug;
+ 
+        # Set DNS resolver for K8s cluster (change if needed)
+        resolver kube-dns.kube-system.svc.cluster.local;
+ 
+        # The IP that you forwarded in your router (nginx proxy)
+        listen  80 default_server;
+ 
+        # Make site accessible from http://localhost/
+        server_name _;
+ 
+ 
+        # Location to work with (aka path asked to server)
+       location / {
+ 
+            # set the base service url and svc names
+            # Base url (e.g. ".canary.svc.cluster.local") is composed by namespace (canary) and cluster svc address. You later must prepend svc name.
+            set $base_url "";
+            set_by_lua $base_url 'return os.getenv("BASE_SVC_URL")';
+            set $canary_svc_name "";
+            set_by_lua $canary_svc_name 'return os.getenv("CANARY_SVC_NAME")';
+            set $stable_svc_name "";
+            set_by_lua $stable_svc_name 'return os.getenv("STABLE_SVC_NAME")';
+            set $cookie_max_age "";
+            set_by_lua $cookie_max_age 'return os.getenv("COOKIE_MAX_AGE")';
+            set $upstream_srv "";
+ 
+           # I think I saw a kitten, said the canary
+           # This block will rewerite upstream_srv var to stable or canary on the following rules:
+             # if cookie is set honor it and set what is set in it
+             # if no cookie then randomize access according to the weight that has been set
+           # Cookies is set with a max-age of 2 days (172800 seconds)
+           rewrite_by_lua_block {
+             local weight = tonumber(os.getenv("CANARY_WEIGHT"))
+             local upstream_srv = ngx.var.stable_svc_name .. ngx.var.base_url
+             local environ = ""
+             if(weight > 0)
+             then
+               if(ngx.var["cookie_Can"])
+               then
+                 environ = ngx.var["cookie_Can"]
+               else
+                 local myrand = math.random()
+                 if(myrand <= weight)
+                 then
+                   environ = "canary"
+                 else
+                   environ = "stable"
+                 end
+               end
+ 
+               if(environ == "canary")
+               then
+                 upstream_srv = ngx.var.canary_svc_name .. ngx.var.base_url
+               else
+                 upstream_srv = ngx.var.stable_svc_name .. ngx.var.base_url
+               end
+             else
+               upstream_srv = ngx.var.stable_svc_name .. ngx.var.base_url
+               environ = "stable"
+             end
+ 
+             ngx.var.upstream_srv = upstream_srv
+             ngx.header['Set-Cookie'] = "Can=" .. environ .. ";Path=/;Max-Age=" .. ngx.var.cookie_max_age
+           }
+ 
+           # July! Do the thing!
+           proxy_pass_header Authorization;
+           proxy_pass http://$upstream_srv;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_http_version 1.1;
+           proxy_set_header Connection "";
+           proxy_buffering off;
+           client_max_body_size 0;
+           proxy_read_timeout 36000s;
+           proxy_redirect off;
+ 
+       }
+      }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginxcan-mainconfig
+data:
+  nginx.conf: |
+    user  nginx;
+    worker_processes  1;
+ 
+    error_log  /var/log/nginx/error.log warn;
+    pid        /var/run/nginx.pid;
+ 
+    env BASE_SVC_URL;
+    env CANARY_SVC_NAME;
+    env STABLE_SVC_NAME;
+    env CANARY_WEIGHT;
+    env COOKIE_MAX_AGE;
+ 
+    events {
+        worker_connections  1024;
+    }
+ 
+ 
+    http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+ 
+        log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                          '$status $body_bytes_sent "$http_referer" '
+                          '"$http_user_agent" "$http_x_forwarded_for"';
+ 
+        access_log  /var/log/nginx/access.log  main;
+ 
+        sendfile        on;
+        #tcp_nopush     on;
+ 
+        keepalive_timeout  65;
+ 
+        #gzip  on;
+ 
+        include /etc/nginx/conf.d/*.conf;
+    }

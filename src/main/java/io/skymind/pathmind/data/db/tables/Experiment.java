@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = -45756214;
+    private static final long serialVersionUID = -1476372726;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -132,7 +132,7 @@ public class Experiment extends TableImpl<ExperimentRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.EXPERIMENT_PKEY);
+        return Arrays.<Index>asList(Indexes.EXPERIMENT_MODEL_FK_INDEX, Indexes.EXPERIMENT_PKEY);
     }
 
     @Override
