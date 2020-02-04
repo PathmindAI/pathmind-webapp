@@ -52,10 +52,11 @@
   pointer-events: none;
   cursor: default;
 }
-.guide-menu .skipLink {
+.guide-menu vaadin-button {
+  color: var(--pm-blue-color-darkest);
   font-size: var(--lumo-font-size-s);
   margin-top: var(--lumo-space-xxl);
 }
-.guide-menu .skipLink:hover {
+.guide-menu vaadin-button:hover {
   opacity: 0.5;
 }

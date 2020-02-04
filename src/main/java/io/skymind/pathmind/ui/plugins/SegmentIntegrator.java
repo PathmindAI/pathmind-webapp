@@ -53,6 +53,7 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	private static final String EVENT_COMPLETED_GUIDE_DONE = "Completed Guide Define Done Condition";
 	private static final String EVENT_COMPLETED_GUIDE_REWARD = "Completed Guide Define Reward Variables";
 	private static final String EVENT_COMPLETED_GUIDE_RECAP = "Completed Guide Conclusion / Recap";
+	private static final String EVENT_SKIP_TO_UPLOAD_MODEL = "Skipped Guide to Upload Model";
 
 	public SegmentIntegrator(@Value("${skymind.segment.website.source.key}") String key,
 			@Value("${skymind.segment.enabled}") Boolean enabled) {
@@ -148,6 +149,10 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 
 	public void completedGuideRecap() {
 		track(EVENT_COMPLETED_GUIDE_RECAP);
+	}
+
+	public void skippedGuideToUploadModel() {
+		track(EVENT_SKIP_TO_UPLOAD_MODEL);
 	}
 
 	private void track(String event) {

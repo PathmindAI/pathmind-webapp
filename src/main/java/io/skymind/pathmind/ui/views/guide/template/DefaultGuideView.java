@@ -2,7 +2,6 @@ package io.skymind.pathmind.ui.views.guide.template;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
@@ -54,7 +53,7 @@ public abstract class DefaultGuideView extends PathMindDefaultView implements Ha
 		pageContent.initBtns(guideDAO, guideStep, projectId, segmentIntegrator);
 
 		HorizontalLayout gridWrapper = WrapperUtils.wrapWidthFullBetweenHorizontal(
-			new GuideMenu(guideStep, projectId), pageContent
+			new GuideMenu(guideStep, projectId, segmentIntegrator), pageContent
         );
 		gridWrapper.getStyle().set("background-color", "white");
 		gridWrapper.getStyle().set("flex-grow", "1");
