@@ -39,8 +39,10 @@ public class RecapViewContent extends DefaultPageContent<RecapViewContent.Model>
 			UI.getCurrent().navigate(RewardView.class, projectId);
 		});
 		nextBtn.addClickListener(e -> {
-			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-			segmentIntegrator.completedGuideRecap();
+			if (guideStep.getId() == 7) {
+				guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+				segmentIntegrator.completedGuideRecap();
+			}
 			UI.getCurrent().navigate(UploadModelView.class, projectId);
 		});
 	}

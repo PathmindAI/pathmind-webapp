@@ -40,8 +40,10 @@ public class InstallPathmindHelperViewContent extends DefaultPageContent<Install
 		});
 
 		nextBtn.addClickListener(e -> {
-			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-			segmentIntegrator.completedGuideInstall();
+			if (guideStep.getId() == 1) {
+				guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+				segmentIntegrator.completedGuideInstall();
+			}
 			UI.getCurrent().navigate(ObservationView.class, projectId);
 		});
     }

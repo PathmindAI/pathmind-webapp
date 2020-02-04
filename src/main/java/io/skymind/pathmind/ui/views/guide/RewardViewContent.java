@@ -38,8 +38,10 @@ public class RewardViewContent extends DefaultPageContent<RewardViewContent.Mode
 		});
 
 		nextBtn.addClickListener(e -> {
-			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-			segmentIntegrator.completedGuideReward();
+			if (guideStep.getId() == 6) {
+				guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+				segmentIntegrator.completedGuideReward();
+			}
 			UI.getCurrent().navigate(RecapView.class, projectId);
 		});
     }

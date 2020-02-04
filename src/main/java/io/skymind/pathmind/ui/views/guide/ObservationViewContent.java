@@ -38,8 +38,10 @@ public class ObservationViewContent extends DefaultPageContent<ObservationViewCo
         });
 
 		nextBtn.addClickListener(e -> {
-            guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-			segmentIntegrator.completedGuideObservation();
+            if (guideStep.getId() == 2) {
+                guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+                segmentIntegrator.completedGuideObservation();
+            }
             UI.getCurrent().navigate(ActionSpaceView.class, projectId);
         });
     }

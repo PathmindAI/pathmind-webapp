@@ -39,8 +39,10 @@ public class ActionSpaceViewContent extends DefaultPageContent<ActionSpaceViewCo
         });
 
 		nextBtn.addClickListener(e -> {
-			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-			segmentIntegrator.completedGuideActionSpace();
+            if (guideStep.getId() == 3) {
+                guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+                segmentIntegrator.completedGuideActionSpace();
+            }
             UI.getCurrent().navigate(TriggerActionsView.class, projectId);
         });
     }

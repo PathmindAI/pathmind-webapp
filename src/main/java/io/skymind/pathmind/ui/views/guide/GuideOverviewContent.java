@@ -34,8 +34,10 @@ public class GuideOverviewContent extends DefaultPageContent<GuideOverviewConten
 	@Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {
 		nextBtn.addClickListener(e -> {
-			guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-			segmentIntegrator.completedGuideOverview();
+			if (guideStep.getId() == 0) {
+				guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+				segmentIntegrator.completedGuideOverview();
+			}
 			UI.getCurrent().navigate(InstallPathmindHelperView.class, projectId);
 		});
 		skipToUploadModelBtn.addClickListener(e -> UI.getCurrent().navigate(UploadModelView.class, projectId));

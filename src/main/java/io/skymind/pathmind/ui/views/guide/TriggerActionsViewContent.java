@@ -39,8 +39,10 @@ public class TriggerActionsViewContent extends DefaultPageContent<TriggerActions
         });
 
         nextBtn.addClickListener(e -> {
-            guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-			segmentIntegrator.completedGuideTriggerActions();
+            if (guideStep.getId() == 4) {
+                guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+                segmentIntegrator.completedGuideTriggerActions();
+            }
             UI.getCurrent().navigate(DoneConditionView.class, projectId);
         });
     }

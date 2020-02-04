@@ -38,8 +38,10 @@ public class DoneConditionViewContent extends DefaultPageContent<DoneConditionVi
         });
 
 		nextBtn.addClickListener(e -> {
-            guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-			segmentIntegrator.completedGuideDone();
+            if (guideStep.getId() == 5) {
+                guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+                segmentIntegrator.completedGuideDone();
+            }
             UI.getCurrent().navigate(RewardView.class, projectId);
         });
     }
