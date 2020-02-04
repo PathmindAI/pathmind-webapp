@@ -26,8 +26,7 @@ import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import lombok.extern.slf4j.Slf4j;
 
-// TODO -> MERGE -> Why is this not a service?
-//@Service
+@Service
 @Slf4j
 public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater {
     private final RescaleExecutionProvider provider;
@@ -54,7 +53,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
         // Getting all these values beforehand in single database calls rather than in loops of database calls.
         final List<Long> runIds = runDAO.getExecutingRuns();
         final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(runIds);
-        final Map<Long, String> rescaleJobIds = executionProviderMetaDataDAO.getProviderRunJobIds(runIds);
+        final Map<Long, String> rescaleJobIds = executionProviderMetaDataDAO.getRescaleRunJobIds(runIds);
         final List<Run> runsWithRescaleJobs = getRunsWithRescaleJobs(runIds, rescaleJobIds);
 
         // STEPH -> REFACTOR -> This is NOT transactional. That being said the only thing that may need to be is savePolicyFilesForCompletedRuns()

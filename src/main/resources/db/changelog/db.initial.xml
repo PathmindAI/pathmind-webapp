@@ -526,7 +526,7 @@
         </addColumn>
         <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191022_2"/>
     </changeSet>
-
+  
     <!-- #370 Since all the existing users are hardcoded in the DB, let's mark their accounts as validated. -->
     <changeSet id="20191030" author="vesa@vaadin.com">
         <update tableName="PATHMIND_USER">
@@ -646,11 +646,6 @@
     <!-- IMPORTANT -> This is part of a later PR but it had to be inserted before as the larger database set caused
          massive performance issues. -->
     <changeSet id="20200128_02" author="steph@followsteph.com">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="REWARD_SCORE"/>
-            </not>
-        </preConditions>
         <createTable tableName="REWARD_SCORE">
             <column name="POLICY_ID" type="BIGINT">
                 <constraints nullable="false" foreignKeyName="PM_FK_REWARD_SCORE_POLICY" references="POLICY(ID)"/>
@@ -778,59 +773,6 @@
         <createIndex tableName="POLICY" indexName="POLICY_RUN_FK_INDEX">
             <column name="RUN_ID"/>
         </createIndex>
-    </changeSet>
-
-    <changeSet id="20200202-02" author="daniel@pathmind.com">
-        <createTable tableName="TRAINER_JOB">
-            <column name="JOB_ID" type="VARCHAR(255)">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="SQS_URL" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="S3PATH" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="S3BUCKET" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="RECEIPTHANDLE" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="EC2_INSTANCE_TYPE" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="EC2_MAX_PRICE" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="CREATE_DATE" type="DATETIME" defaultValueComputed="NOW()">
-                <constraints nullable="false"/>
-            </column>
-            <column name="EC2_CREATE_DATE" type="DATETIME">
-                <constraints nullable="true"/>
-            </column>
-            <column name="EC2_END_DATE" type="DATETIME">
-                <constraints nullable="true"/>
-            </column>
-            <column name="STATUS" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="DESCRIPTION" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="20200202-03" author="daniel@pathmind.com">
-        <modifyDataType tableName="TRAINER_JOB" columnName="RECEIPTHANDLE" newDataType="VARCHAR(1000)"></modifyDataType>
-    </changeSet>
-
-    <changeSet id="20200202-04" author="daniel.jaramillo@toptal.com">
-        <addColumn tableName="TRAINER_JOB">
-            <column name="UPDATE_DATE" type="DATETIME" defaultValueComputed="NOW()">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
     </changeSet>
 
 </databaseChangeLog>

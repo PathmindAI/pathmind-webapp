@@ -106,7 +106,7 @@ public class RescaleRestApiClient {
     }
 
     public String tailConsole(String jobId, String run){
-        return new String(tail(jobId, run, TrainingFile.SCRIPT_LOG));
+        return new String(tail(jobId, run, TrainingFile.RESCALE_LOG));
     }
 
     public byte[] tail(String jobId, String run, String filename){
@@ -125,7 +125,7 @@ public class RescaleRestApiClient {
     }
 
     public String consoleOutput(String jobId, String run){
-        return new String(outputFile(jobId, run, TrainingFile.SCRIPT_LOG));
+        return new String(outputFile(jobId, run, TrainingFile.RESCALE_LOG));
     }
 
     /**

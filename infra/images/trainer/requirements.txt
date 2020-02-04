@@ -1,4 +1,0 @@
-awscli==1.16.314
-boto3==1.10.50
-sh==1.12.14
-psycopg2-binary==2.8.4

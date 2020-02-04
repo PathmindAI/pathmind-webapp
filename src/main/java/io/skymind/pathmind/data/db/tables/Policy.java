@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = 1496140284;
+    private static final long serialVersionUID = 1949291673;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -157,7 +157,7 @@ public class Policy extends TableImpl<PolicyRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.POLICY_PKEY, Indexes.POLICY_RUN_FK_INDEX, Indexes.POLICY_RUN_ID_EXTERNAL_ID_KEY);
+        return Arrays.<Index>asList(Indexes.POLICY_PKEY, Indexes.POLICY_RUN_ID_EXTERNAL_ID_KEY);
     }
 
     @Override

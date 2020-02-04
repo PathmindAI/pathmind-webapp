@@ -1,6 +1,5 @@
 package io.skymind.pathmind.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -29,7 +28,6 @@ public class ObjectMapperHolder {
         ObjectMapper om = new ObjectMapper();
         om.registerModule(new JavaTimeModule());
         om.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        om.configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
 
         return om;
     }

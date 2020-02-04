@@ -1,2 +1,0 @@
-secret*.tfvars filter=git-crypt diff=git-crypt
-id_rsa filter=git-crypt diff=git-crypt

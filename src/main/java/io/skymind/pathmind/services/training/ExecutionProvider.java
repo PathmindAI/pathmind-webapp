@@ -1,7 +1,6 @@
 package io.skymind.pathmind.services.training;
 
 import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 
 import javax.validation.constraints.NotNull;
@@ -23,15 +22,6 @@ public interface ExecutionProvider {
      * @return The model file id
      */
     String uploadModel(byte[] modelFile);
-
-    /**
-     * Uploads the model file.
-     *
-     * @param runId The Run ID
-     * @param modelFile The modelFile
-     * @return The model file id
-     */
-    String uploadModel(long runId, byte[] modelFile);
 
     /**
      * Stops the execution of the training  job identified by the given job handle.
@@ -110,11 +100,4 @@ public interface ExecutionProvider {
      * @return Console Output
      */
     String console(String jobHandle);
-
-    /**
-     * get current Execution Provider class enum
-     *
-     * @return
-     */
-    ExecutionProviderMetaDataDAO.ExecutionProviderClass executionProviderClass();
 }
