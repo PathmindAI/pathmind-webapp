@@ -20,7 +20,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row10;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = -502720799;
+    private static final long serialVersionUID = 1452018448;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -98,11 +98,6 @@ public class Model extends TableImpl<ModelRecord> {
     public final TableField<ModelRecord, String> GET_OBSERVATION_FOR_REWARD_FUNCTION = createField(DSL.name("get_observation_for_reward_function"), org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
-     * The column <code>public.model.file</code>.
-     */
-    public final TableField<ModelRecord, byte[]> FILE = createField(DSL.name("file"), org.jooq.impl.SQLDataType.BLOB, this, "");
-
-    /**
      * The column <code>public.model.archived</code>.
      */
     public final TableField<ModelRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
@@ -147,7 +142,7 @@ public class Model extends TableImpl<ModelRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.MODEL_PKEY);
+        return Arrays.<Index>asList(Indexes.MODEL_PKEY, Indexes.MODEL_PROJECT_FK_INDEX);
     }
 
     @Override
@@ -196,11 +191,11 @@ public class Model extends TableImpl<ModelRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row10 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Integer, String, byte[], Boolean> fieldsRow() {
-        return (Row10) super.fieldsRow();
+    public Row9<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Integer, String, Boolean> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }

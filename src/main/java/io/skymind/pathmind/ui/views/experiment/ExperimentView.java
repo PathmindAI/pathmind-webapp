@@ -21,8 +21,8 @@ import com.vaadin.flow.router.WildcardParameter;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
@@ -31,9 +31,9 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
+import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -169,7 +169,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		runFullTraining.addClassNames("large-image-btn", "run");
 
 		final HorizontalLayout buttons = WrapperUtils.wrapWidthFullCenterHorizontal(
-				new NewExperimentButton(experimentDAO, experiment.getModelId(), "TODO")
+				new NewExperimentButton(experimentDAO, experiment.getModelId())
 		);
 		exportPolicyButton = new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()));
 		buttons.add(exportPolicyButton);

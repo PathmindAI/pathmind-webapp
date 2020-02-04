@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import org.springframework.stereotype.Service;
 
 import io.skymind.pathmind.constants.RunStatus;
@@ -25,21 +26,23 @@ import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import lombok.extern.slf4j.Slf4j;
 
-@Service
+// TODO -> MERGE -> Why is this not a service?
+//@Service
 @Slf4j
 public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater {
     private final RescaleExecutionProvider provider;
     private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RunDAO runDAO;
+    private final PolicyDAO policyDAO;
     private final UserDAO userDAO;
     private EmailNotificationService emailNotificationService;
     private SegmentTrackerService segmentTrackerService;
 
-    public RescaleExecutionProgressUpdater(RescaleExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, UserDAO userDAO, 
-    		EmailNotificationService emailNotificationService, SegmentTrackerService segmentTrackerService){
+    public RescaleExecutionProgressUpdater(RescaleExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, PolicyDAO policyDAO, UserDAO userDAO, EmailNotificationService emailNotificationService, SegmentTrackerService segmentTrackerService){
         this.provider = provider;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.runDAO = runDAO;
+        this.policyDAO = policyDAO;
         this.userDAO = userDAO;
         this.emailNotificationService = emailNotificationService;
         this.segmentTrackerService = segmentTrackerService;
@@ -51,7 +54,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
         // Getting all these values beforehand in single database calls rather than in loops of database calls.
         final List<Long> runIds = runDAO.getExecutingRuns();
         final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(runIds);
-        final Map<Long, String> rescaleJobIds = executionProviderMetaDataDAO.getRescaleRunJobIds(runIds);
+        final Map<Long, String> rescaleJobIds = executionProviderMetaDataDAO.getProviderRunJobIds(runIds);
         final List<Run> runsWithRescaleJobs = getRunsWithRescaleJobs(runIds, rescaleJobIds);
 
         // STEPH -> REFACTOR -> This is NOT transactional. That being said the only thing that may need to be is savePolicyFilesForCompletedRuns()
@@ -100,8 +103,8 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
 					PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
 					emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);
 					runDAO.markAsNotificationSent(run.getId());
-					
-					// Also track in segment that the training is completed 
+
+					// Also track in segment that the training is completed
 					segmentTrackerService.trainingCompleted(user, run.getExperiment().getId(), run.getRunTypeEnum(), jobStatus);
 				}
 			}
@@ -127,13 +130,13 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
             stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).stream().forEach(finishPolicyName -> {
                 // todo make saving to enum or static final variable (currently defined in PolicyDAO).
                 final byte[] policyFile = provider.policy(rescaleJobId, finishPolicyName);
-                runDAO.savePolicyFile(runId, finishPolicyName, policyFile);
+                policyDAO.savePolicyFile(runId, finishPolicyName, policyFile);
 
                 // save the last checkpoint
                 Map.Entry<String, byte[]> entry = provider.snapshot(rescaleJobId, finishPolicyName);
                 if (entry != null) {
                     final byte[] checkPointFile = entry.getValue();
-                    runDAO.saveCheckpointFile(runId, finishPolicyName, checkPointFile);
+                    policyDAO.saveCheckpointFile(runId, finishPolicyName, checkPointFile);
                 }
 
                 // save meta data for checkpoint

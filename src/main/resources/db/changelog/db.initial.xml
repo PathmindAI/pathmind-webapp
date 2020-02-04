@@ -526,7 +526,7 @@
         </addColumn>
         <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191022_2"/>
     </changeSet>
-  
+
     <!-- #370 Since all the existing users are hardcoded in the DB, let's mark their accounts as validated. -->
     <changeSet id="20191030" author="vesa@vaadin.com">
         <update tableName="PATHMIND_USER">
@@ -601,76 +601,56 @@
         <modifyDataType tableName="EXECUTION_PROVIDER_META_DATA" columnName="KEY" newDataType="NVARCHAR"></modifyDataType>
     </changeSet>
 
-    <!-- #472 - Add hyperparameters as their own database columns as part of reducing our reliance on storing data in json -->
-    <changeSet id="20191220-01" author="steph@followsteph.com">
-        <addColumn tableName="POLICY">
-            <column name="LEARNING_RATE" type="DOUBLE" defaultValue="0">
-                <constraints nullable="false"/>
+    <!-- #446 - Separate out bytea columns in database to separate tables (Policy and Model) -->
+    <!-- IMPORTANT -> This is part of a later PR but it had to be inserted before as the larger database set caused
+         massive performance issues. -->
+    <changeSet id="20200128_01" author="steph@followsteph.com">
+        <createTable tableName="POLICY_FILE">
+            <column name="POLICY_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_POLICY_FILE_POLICY" references="POLICY(ID)"/>
             </column>
-            <column name="GAMMA" type="DOUBLE" defaultValue="0">
-                <constraints nullable="false"/>
+            <column name="FILE" type="bytea"/>
+        </createTable>
+        <createTable tableName="POLICY_SNAPSHOT">
+            <column name="POLICY_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_POLICY_SNAPSHOT_POLICY" references="POLICY(ID)"/>
             </column>
-            <column name="BATCH_SIZE" type="INT" defaultValue="0">
-                <constraints nullable="false"/>
+            <column name="SNAPSHOT" type="bytea"/>
+        </createTable>
+        <createTable tableName="MODEL_FILE">
+            <column name="MODEL_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_MODEL_FILE_MODEL" references="MODEL(ID)"/>
             </column>
-        </addColumn>
-        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191220_01"/>
-    </changeSet>
-
-    <!-- #387 - Policy.notes and Policy.name should be in the database -->
-    <changeSet id="20191229-01" author="steph@followsteph.com">
-        <addColumn tableName="POLICY">
-            <column name="NOTES" type="VARCHAR"/>
-        </addColumn>
+            <column name="FILE" type="bytea"/>
+        </createTable>
         <sql>
-            UPDATE POLICY SET name=SPLIT_PART(external_id, '_', 3);
-<!--        The following line fails in liquibase but works in postgres directly. Therefore this code has been implemented in the Java changeset code -->
-<!--        UPDATE POLICY SET NOTES=concat('sgd_minibatch_size=', batch_size, ', lr=', learning_rate, ', gamma=', gamma);-->
+            INSERT INTO POLICY_FILE (POLICY_ID, FILE) SELECT ID, FILE FROM POLICY;
+            INSERT INTO POLICY_SNAPSHOT (POLICY_ID, SNAPSHOT) SELECT ID, SNAPSHOT FROM POLICY;
+            INSERT INTO MODEL_FILE (MODEL_ID, FILE) SELECT ID, FILE FROM MODEL;
         </sql>
-        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191229_01"/>
-        <rollback>
-            <dropColumn tableName="POLICY" columnName="NOTES"/>
-            <sql>UPDATE POLICY SET name=external_Id</sql>
-        </rollback>
-    </changeSet>
-    
-    <!-- #501 - Add DB constraint for unique project name -->
-    <changeSet id="20200102-01" author="onur@vaadin.com">
-        <comment>If there are duplicated project names, update them before adding db constraint</comment>
-        <sql>
-            UPDATE PROJECT SET NAME = NAME || '-' || ID where (PATHMIND_USER_ID, NAME) IN (SELECT PATHMIND_USER_ID, NAME FROM PROJECT GROUP BY PATHMIND_USER_ID, NAME HAVING COUNT(NAME) > 1);
-        </sql>
-        <addUniqueConstraint tableName="PROJECT" constraintName="UNIQUE_PROJECT_NAME_PATHMIND_USER_ID" columnNames="PATHMIND_USER_ID, NAME" />
-    </changeSet>
-    
-    <changeSet id="20200103-01" author="onur@vaadin.com">
-        <addColumn tableName="RUN">
-         	<column name="NOTIFICATION_SENT_AT" type="DATETIME"/>
-        </addColumn>
-    </changeSet>
-
-    <!-- #681 and #682 - Need to name the StartedAt and StoppedAt columns with an underscore -->
-    <changeSet id="20200109-01" author="steph@followsteph.com">
-        <renameColumn tableName="POLICY" oldColumnName="STARTEDAT" newColumnName="STARTED_AT"/>
-        <renameColumn tableName="POLICY" oldColumnName="STOPPEDAT" newColumnName="STOPPED_AT"/>
-        <rollback>
-            <renameColumn tableName="POLICY" oldColumnName="STARTED_AT" newColumnName="STARTEDAT"/>
-            <renameColumn tableName="POLICY" oldColumnName="STOPPED_AT" newColumnName="STOPPEDAT"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet id="20200109-02" author="krystian.walaszczyk@ext.vaadin.com">
-        <comment>Delete PATHMIND_USER.NAME column</comment>
-        <dropColumn tableName="PATHMIND_USER" columnName="NAME"/>
-        <rollback>
-            <addColumn tableName="PATHMIND_USER">
-                <column name="NAME" type="VARCHAR(255)"/>
-            </addColumn>
-        </rollback>
+        <createIndex tableName="POLICY_SNAPSHOT" indexName="POLICY_SNAPSHOT_POLICY_ID_INDEX">
+            <column name="POLICY_ID"/>
+        </createIndex>
+        <createIndex tableName="POLICY_FILE" indexName="POLICY_FILE_POLICY_ID_INDEX">
+            <column name="POLICY_ID"/>
+        </createIndex>
+        <createIndex tableName="MODEL_FILE" indexName="MODEL_FILE_MODEL_ID_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+        <dropColumn tableName="POLICY" columnName="FILE"/>
+        <dropColumn tableName="POLICY" columnName="SNAPSHOT"/>
+        <dropColumn tableName="MODEL" columnName="FILE"/>
     </changeSet>
 
     <!-- #388 - Policy scores should be stored in their own table rather than in a json column -->
-    <changeSet id="20200110-01" author="steph@followsteph.com">
+    <!-- IMPORTANT -> This is part of a later PR but it had to be inserted before as the larger database set caused
+         massive performance issues. -->
+    <changeSet id="20200128_02" author="steph@followsteph.com">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="REWARD_SCORE"/>
+            </not>
+        </preConditions>
         <createTable tableName="REWARD_SCORE">
             <column name="POLICY_ID" type="BIGINT">
                 <constraints nullable="false" foreignKeyName="PM_FK_REWARD_SCORE_POLICY" references="POLICY(ID)"/>
@@ -683,16 +663,174 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <!-- The POLICY.PROGRESS column will be removed as a new changeset in a follow-up PR as a safety precaution. -->
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200128_02"/>
+        <!-- Must be done after to improve the performance due to the size of the dataset -->
         <createIndex tableName="REWARD_SCORE" indexName="REWARD_SCORE_POLICY_ID_INDEX">
             <column name="POLICY_ID"/>
         </createIndex>
-        <!-- The POLICY.PROGRESS column will be removed as a new changeset in a follow-up PR as a safety precaution. -->
-        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200110_01"/>
+        <dropColumn tableName="POLICY" columnName="PROGRESS"/>
         <rollback>
             <!-- We cannot rollback the progress column once it's deleted. -->
             <dropIndex tableName="REWARD_SCORE" indexName="REWARD_SCORE_POLICY_ID_INDEX"/>
             <dropTable tableName="REWARD_SCORE"/>
         </rollback>
+    </changeSet>
+
+    <!-- IMPORTANT -> Needed to reclaim the space to prevent performance issues from upcoming changesets. Not this is NOT transactional. -->
+    <changeSet id="20200128-03" author="steph@followsteph.com" runInTransaction="false">
+        <sql>
+            VACUUM FULL;
+        </sql>
+    </changeSet>
+
+    <!-- #472 - Add hyperparameters as their own database columns as part of reducing our reliance on storing data in json -->
+    <changeSet id="20200128_04" author="steph@followsteph.com">
+        <addColumn tableName="POLICY">
+            <column name="LEARNING_RATE" type="DOUBLE" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="GAMMA" type="DOUBLE" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BATCH_SIZE" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200128_04"/>
+    </changeSet>
+
+    <!-- #387 - Policy.notes and Policy.name should be in the database -->
+    <changeSet id="20200128_05" author="steph@followsteph.com">
+        <addColumn tableName="POLICY">
+            <column name="NOTES" type="VARCHAR"/>
+        </addColumn>
+        <sql>
+            UPDATE POLICY SET name=SPLIT_PART(external_id, '_', 3);
+<!--        The following line fails in liquibase but works in postgres directly. Therefore this code has been implemented in the Java changeset code -->
+<!--        UPDATE POLICY SET NOTES=concat('sgd_minibatch_size=', batch_size, ', lr=', learning_rate, ', gamma=', gamma);-->
+        </sql>
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200128_05"/>
+        <rollback>
+            <dropColumn tableName="POLICY" columnName="NOTES"/>
+            <sql>UPDATE POLICY SET name=external_Id</sql>
+        </rollback>
+    </changeSet>
+
+    <!-- #501 - Add DB constraint for unique project name -->
+    <changeSet id="20200128_06" author="onur@vaadin.com">
+        <comment>If there are duplicated project names, update them before adding db constraint</comment>
+        <sql>
+            UPDATE PROJECT SET NAME = NAME || '-' || ID where (PATHMIND_USER_ID, NAME) IN (SELECT PATHMIND_USER_ID, NAME FROM PROJECT GROUP BY PATHMIND_USER_ID, NAME HAVING COUNT(NAME) > 1);
+        </sql>
+        <addUniqueConstraint tableName="PROJECT" constraintName="UNIQUE_PROJECT_NAME_PATHMIND_USER_ID" columnNames="PATHMIND_USER_ID, NAME" />
+    </changeSet>
+
+    <changeSet id="20200128_07" author="onur@vaadin.com">
+        <addColumn tableName="RUN">
+         	<column name="NOTIFICATION_SENT_AT" type="DATETIME"/>
+        </addColumn>
+    </changeSet>
+
+    <!-- #681 and #682 - Need to name the StartedAt and StoppedAt columns with an underscore -->
+    <changeSet id="20200128_08" author="steph@followsteph.com">
+        <renameColumn tableName="POLICY" oldColumnName="STARTEDAT" newColumnName="STARTED_AT"/>
+        <renameColumn tableName="POLICY" oldColumnName="STOPPEDAT" newColumnName="STOPPED_AT"/>
+        <rollback>
+            <renameColumn tableName="POLICY" oldColumnName="STARTED_AT" newColumnName="STARTEDAT"/>
+            <renameColumn tableName="POLICY" oldColumnName="STOPPED_AT" newColumnName="STOPPEDAT"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200128_09" author="krystian.walaszczyk@ext.vaadin.com">
+        <comment>Delete PATHMIND_USER.NAME column</comment>
+        <dropColumn tableName="PATHMIND_USER" columnName="NAME"/>
+        <rollback>
+            <addColumn tableName="PATHMIND_USER">
+                <column name="NAME" type="VARCHAR(255)"/>
+            </addColumn>
+        </rollback>
+    </changeSet>
+
+    <!--#641 Add EXPORTED_AT column to track if policy was exported-->
+    <changeSet id="20200129-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <addColumn tableName="POLICY">
+            <column name="EXPORTED_AT" type="DATETIME"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="POLICY" columnName="EXPORTED_AT"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200202-01" author="steph@followsteph.com">
+        <createIndex tableName="PROJECT" indexName="PROJECT_PATHMIND_USER_FK_INDEX">
+            <column name="PATHMIND_USER_ID"/>
+        </createIndex>
+        <createIndex tableName="MODEL" indexName="MODEL_PROJECT_FK_INDEX">
+            <column name="PROJECT_ID"/>
+        </createIndex>
+        <createIndex tableName="EXPERIMENT" indexName="EXPERIMENT_MODEL_FK_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+        <createIndex tableName="RUN" indexName="RUN_EXPERIMENT_FK_INDEX">
+            <column name="EXPERIMENT_ID"/>
+        </createIndex>
+        <createIndex tableName="POLICY" indexName="POLICY_RUN_FK_INDEX">
+            <column name="RUN_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="20200202-02" author="daniel@pathmind.com">
+        <createTable tableName="TRAINER_JOB">
+            <column name="JOB_ID" type="VARCHAR(255)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="SQS_URL" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="S3PATH" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="S3BUCKET" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RECEIPTHANDLE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EC2_INSTANCE_TYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EC2_MAX_PRICE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATE_DATE" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EC2_CREATE_DATE" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>
+            <column name="EC2_END_DATE" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>
+            <column name="STATUS" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20200202-03" author="daniel@pathmind.com">
+        <modifyDataType tableName="TRAINER_JOB" columnName="RECEIPTHANDLE" newDataType="VARCHAR(1000)"></modifyDataType>
+    </changeSet>
+
+    <changeSet id="20200202-04" author="daniel.jaramillo@toptal.com">
+        <addColumn tableName="TRAINER_JOB">
+            <column name="UPDATE_DATE" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog>
