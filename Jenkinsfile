@@ -47,7 +47,7 @@ pipeline {
     }
 
     parameters {
-        string (name: 'GIT_BRANCH', defaultValue: 'test-aws', description: 'Git branch to build')
+        string (name: 'GIT_BRANCH', defaultValue: 'test', description: 'Git branch to build')
         booleanParam (name: 'DEPLOY_TO_PROD', defaultValue: false, description: 'If build and tests are good, proceed and deploy to production without manual approval')
 
     }
@@ -61,20 +61,20 @@ pipeline {
         stage('Git clone and setup') {
             when {
                 anyOf {
-                    environment name: 'GIT_BRANCH', value: 'dev-aws'
-                    environment name: 'GIT_BRANCH', value: 'test-aws'
-                    environment name: 'GIT_BRANCH', value: 'master-aws'
+                    environment name: 'GIT_BRANCH', value: 'dev'
+                    environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'master'
                 }
             }
             steps {
 		script {
-		        if(env.BRANCH_NAME == 'master-aws'){
+		        if(env.BRANCH_NAME == 'master'){
 		                DOCKER_TAG = "prod"
 		        }
-		        if(env.BRANCH_NAME == 'dev-aws'){
+		        if(env.BRANCH_NAME == 'dev'){
 		                DOCKER_TAG = "dev"
 		        }
-		        if(env.BRANCH_NAME == 'test-aws'){
+		        if(env.BRANCH_NAME == 'test'){
 		                DOCKER_TAG = "test"
 		        }
 		}
@@ -102,9 +102,9 @@ pipeline {
         stage('Build Docker Images') {
             when {
                 anyOf {
-                    environment name: 'GIT_BRANCH', value: 'dev-aws'
-                    environment name: 'GIT_BRANCH', value: 'test-aws'
-                    environment name: 'GIT_BRANCH', value: 'master-aws'
+                    environment name: 'GIT_BRANCH', value: 'dev'
+                    environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'master'
                 }
             }
 		parallel {
@@ -119,9 +119,9 @@ pipeline {
         stage('Publish Docker Images') {
             when {
                 anyOf {
-                    environment name: 'GIT_BRANCH', value: 'dev-aws'
-                    environment name: 'GIT_BRANCH', value: 'test-aws'
-                    environment name: 'GIT_BRANCH', value: 'master-aws'
+                    environment name: 'GIT_BRANCH', value: 'dev'
+                    environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'master'
                 }
             }
 		parallel {
@@ -136,8 +136,8 @@ pipeline {
 	stage('Deploying helm chart') {
             when {
                 anyOf {
-                    environment name: 'GIT_BRANCH', value: 'dev-aws'
-                    environment name: 'GIT_BRANCH', value: 'test-aws'
+                    environment name: 'GIT_BRANCH', value: 'dev'
+                    environment name: 'GIT_BRANCH', value: 'test'
                 }
             }
             steps {
@@ -151,7 +151,7 @@ pipeline {
 	stage('Testing') {
             when {
                 anyOf {
-                    environment name: 'GIT_BRANCH', value: 'dev-aws'
+                    environment name: 'GIT_BRANCH', value: 'dev'
                 }
             }
             steps {
@@ -178,7 +178,7 @@ pipeline {
         stage('Go for Production?') {
             when {
                 allOf {
-                    environment name: 'GIT_BRANCH', value: 'master-aws'
+                    environment name: 'GIT_BRANCH', value: 'master'
                     environment name: 'DEPLOY_TO_PROD', value: 'false'
                 }
             }
