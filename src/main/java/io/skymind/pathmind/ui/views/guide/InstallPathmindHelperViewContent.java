@@ -1,6 +1,5 @@
 package io.skymind.pathmind.ui.views.guide;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
@@ -35,7 +34,7 @@ public class InstallPathmindHelperViewContent extends DefaultPageContent<Install
 	@Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {
 		backBtn.addClickListener(e -> {
-			guideDAO.updateGuideStep(projectId, guideStep.previousStep());
+			guideDAO.updateGuideStep(projectId, GuideStep.Overview);
 			UI.getCurrent().navigate(GuideOverview.class, projectId);
 		});
 

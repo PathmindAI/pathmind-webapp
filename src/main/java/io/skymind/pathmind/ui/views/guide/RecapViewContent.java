@@ -35,7 +35,7 @@ public class RecapViewContent extends DefaultPageContent<RecapViewContent.Model>
 	@Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {
 		backBtn.addClickListener(e -> {
-			guideDAO.updateGuideStep(projectId, guideStep.previousStep());
+			guideDAO.updateGuideStep(projectId, GuideStep.DefineRewardVariable);
 			UI.getCurrent().navigate(RewardView.class, projectId);
 		});
 		nextBtn.addClickListener(e -> {

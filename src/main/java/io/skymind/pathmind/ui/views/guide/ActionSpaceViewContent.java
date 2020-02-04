@@ -34,7 +34,7 @@ public class ActionSpaceViewContent extends DefaultPageContent<ActionSpaceViewCo
     @Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {        
 		backBtn.addClickListener(e -> {
-            guideDAO.updateGuideStep(projectId, guideStep.previousStep());
+            guideDAO.updateGuideStep(projectId, GuideStep.BuildObservationSpace);
             UI.getCurrent().navigate(ObservationView.class, projectId);
         });
 

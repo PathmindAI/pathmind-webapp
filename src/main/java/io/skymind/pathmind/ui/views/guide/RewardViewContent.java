@@ -33,7 +33,7 @@ public class RewardViewContent extends DefaultPageContent<RewardViewContent.Mode
 	@Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {
 		backBtn.addClickListener(e -> {
-			guideDAO.updateGuideStep(projectId, guideStep.previousStep());
+			guideDAO.updateGuideStep(projectId, GuideStep.DefineDoneCondition);
 			UI.getCurrent().navigate(DoneConditionView.class, projectId);
 		});
 
