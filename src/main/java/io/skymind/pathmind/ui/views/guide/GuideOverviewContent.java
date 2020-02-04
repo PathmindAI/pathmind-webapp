@@ -40,7 +40,10 @@ public class GuideOverviewContent extends DefaultPageContent<GuideOverviewConten
 			}
 			UI.getCurrent().navigate(InstallPathmindHelperView.class, projectId);
 		});
-		skipToUploadModelBtn.addClickListener(e -> UI.getCurrent().navigate(UploadModelView.class, projectId));
+		skipToUploadModelBtn.addClickListener(e -> {
+			segmentIntegrator.skippedGuideToUploadModel();
+			UI.getCurrent().navigate(UploadModelView.class, projectId);
+		});
 	}
 
 	public interface Model extends TemplateModel {
