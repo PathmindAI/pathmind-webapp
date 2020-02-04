@@ -164,7 +164,7 @@ pipeline {
 			} catch (err) {
 			} finally {
 				publishHTML (target: [
-				reportDir: 'bdd-tests/target/site/serenity',
+				reportDir: 'pathmind-bdd-tests/target/site/serenity',
 				reportFiles: 'index.html',
 				reportName: "Tests"
 				])
