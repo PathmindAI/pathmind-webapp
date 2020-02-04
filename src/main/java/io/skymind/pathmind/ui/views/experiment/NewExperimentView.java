@@ -12,7 +12,6 @@ import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -131,7 +130,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
                 WrapperUtils.wrapSizeFullVertical(
-                        new Label("Write your reward function:"),
+                        new Span("Write your reward function:"),
                         rewardFunctionEditor),
                 WrapperUtils.wrapSizeFullVertical(errorsTextArea),
                 70);
