@@ -31,8 +31,10 @@
   border: 1px solid var(--pm-blue-color-darkest-25pct);
   transform: translateY(-50%);
 }
-.guide-menu a[highlight] {
+.guide-menu a:not(.disabled) {
   color: var(--pm-blue-color-darkest);
+}
+.guide-menu a[highlight] {
   font-weight: 700;
 }
 .guide-menu .completed::after {
@@ -51,7 +53,6 @@
   cursor: default;
 }
 .guide-menu .skipLink {
-  color: var(--pm-blue-color-darkest);
   font-size: var(--lumo-font-size-s);
   margin-top: var(--lumo-space-xxl);
 }
