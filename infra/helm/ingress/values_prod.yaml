@@ -24,6 +24,8 @@ ingress:
     nginx.ingress.kubernetes.io/affinity-mode: persistent
     nginx.ingress.kubernetes.io/session-cookie-name: route
   hosts:
+    - host: app.pathmind.com
+      paths: [/:80:canary]
     - host: devpathmind.com
       paths: [/:80:canary]
     #model analyzer
@@ -41,6 +43,7 @@ ingress:
   tls: 
     - secretName: letsencrypt-prod
       hosts:
+        - app.pathmind.com
         - devpathmind.com
         - pgadmin.devpathmind.com
         - grafana.devpathmind.com
