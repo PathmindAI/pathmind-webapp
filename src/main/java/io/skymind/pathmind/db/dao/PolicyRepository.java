@@ -167,20 +167,16 @@ class PolicyRepository
 	}
 
 	protected static void savePolicyFile(DSLContext ctx, long runId, String externalId, byte[] policyFile) {
-		ctx.update(POLICY_FILE)
+		ctx.insertInto(POLICY_FILE)
+				.set(POLICY_FILE.POLICY_ID, ctx.select(POLICY.ID).from(POLICY).where(POLICY.EXTERNAL_ID.eq(externalId).and(POLICY.RUN_ID.eq(runId))))
 				.set(POLICY_FILE.FILE, policyFile)
-				.from(POLICY)
-				.where(POLICY.ID.eq(POLICY_FILE.POLICY_ID))
-				.and(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.eq(externalId)))
 				.execute();
 	}
 
 	protected static void saveCheckpointFile(DSLContext ctx, long runId, String externalId, byte[] checkpointFile) {
-		ctx.update(POLICY_SNAPSHOT)
+		ctx.insertInto(POLICY_SNAPSHOT)
+				.set(POLICY_SNAPSHOT.POLICY_ID, ctx.select(POLICY.ID).from(POLICY).where(POLICY.EXTERNAL_ID.eq(externalId).and(POLICY.RUN_ID.eq(runId))))
 				.set(POLICY_SNAPSHOT.SNAPSHOT, checkpointFile)
-				.from(POLICY)
-				.where(POLICY.ID.eq(POLICY_SNAPSHOT.POLICY_ID))
-				.and(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.eq(externalId)))
 				.execute();
 	}
 
