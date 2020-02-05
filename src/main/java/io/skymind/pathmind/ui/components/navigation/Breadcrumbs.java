@@ -1,7 +1,12 @@
 package io.skymind.pathmind.ui.components.navigation;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.RouterLink;
 
 import io.skymind.pathmind.data.Experiment;
@@ -28,49 +33,79 @@ public class Breadcrumbs extends HorizontalLayout
 	public Breadcrumbs(Project project, Model model) {
 		this(project, model, null);
 	}
-
 	public Breadcrumbs(Project project, Model model, Experiment experiment) {
 		this(project, model, experiment, true);
 	}
-	
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public Breadcrumbs(Project project, Model model, Experiment experiment, boolean hasRootItem) {
-		if (hasRootItem) {
-			RouterLink projectsPageLink = createBreadcrumb("Projects", ProjectsView.class, null);
-			add(projectsPageLink);
+		List<BreadcrumbItem> items = new ArrayList<>();
+
+		if(hasRootItem) {
+			items.add(new BreadcrumbItem("Projects", ProjectsView.class, null));
 		}
 
 		if (project != null) {
-			if (hasRootItem) {
-				add(createSeparator());	
-			}
-			add(createBreadcrumb(project.getName(), ModelsView.class, project.getId()));
+			items.add(new BreadcrumbItem(project.getName(), ModelsView.class, project.getId()));
 		}
 		if (model != null) {
-			add(createSeparator());
-			add(createBreadcrumb("Model #" + model.getName(), ExperimentsView.class, model.getId()));
+			items.add(new BreadcrumbItem("Model #" + model.getName(), ExperimentsView.class, model.getId()));
 		}
 		if (experiment != null) {
-			add(createSeparator());
-			add(createBreadcrumbExperiment("Experiment #" + experiment.getName(), ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment)));
+			items.add(new BreadcrumbItem("Experiment #" + experiment.getName(), ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment)));
 		}
+		
+		items.get(items.size() - 1).asCurrentStep();
+		items.forEach(item -> {
+			if (getComponentCount() > 0) {
+				add(createSeparator());
+			}
+			add(item.createComponent());
+		});
 
 		setSpacing(false);
 		setAlignItems(Alignment.START);
 	}
 
-	private RouterLink createBreadcrumb(String name, Class navigationTarget, Long pageParameter) {
-		RouterLink breadcrumb = new RouterLink(name, navigationTarget, pageParameter);
-		breadcrumb.addClassName(BREADCRUMB_CLASSNAME);
-		return breadcrumb;
-	}
-
-	private RouterLink createBreadcrumbExperiment(String name, Class navigationTarget, String pageParameter) {
-		RouterLink breadcrumb = new RouterLink(name, navigationTarget, pageParameter);
-		breadcrumb.addClassName(BREADCRUMB_CLASSNAME);
-		return breadcrumb;
-	}
-
 	private Span createSeparator() {
-		return new Span(">");
+		Span separator = new Span(">");
+		separator.addClassName("breadcrumb-separator");
+		return separator;
+	}
+	
+	private class BreadcrumbItem<T, C extends Component & HasUrlParameter<T>> {
+		private String name;
+		private Class<C> navigationTarget;
+		private T parameter;
+		private boolean isCurrentStep = false;
+		
+		public BreadcrumbItem(String name, Class<C> navigationTarget, T parameter) {
+			this.name = name;
+			this.navigationTarget = navigationTarget;
+			this.parameter = parameter;
+		}
+		
+		private void asCurrentStep() {
+			isCurrentStep = true;
+		}
+		
+		private Component createComponent() {
+			if (isCurrentStep) {
+				return createLabel();
+			} else {
+				return createLink();
+			}
+		}
+		
+		private RouterLink createLink() {
+			RouterLink routerLink = new RouterLink(name, navigationTarget, parameter);
+			routerLink.addClassName(BREADCRUMB_CLASSNAME);
+			return routerLink;
+		}
+		private Span createLabel() {
+			Span label = new Span(name);
+			label.addClassName(BREADCRUMB_CLASSNAME);
+			return label;		
+		}
 	}
 }

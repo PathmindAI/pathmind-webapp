@@ -10,6 +10,8 @@
 
 .breadcrumb ~ span {
   color: var(--pm-tertiary-text-color);
-  margin: 0 var(--lumo-space-xs);
   cursor: default;
+}
+.breadcrumb ~ .breadcrumb-separator {
+  margin: 0 var(--lumo-space-xs);
 }
