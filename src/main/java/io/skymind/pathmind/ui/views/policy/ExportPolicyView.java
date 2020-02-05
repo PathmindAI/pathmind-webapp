@@ -72,7 +72,10 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 		exportButton = new Button("Export");
 		exportButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportButton.setWidth("200px");
-		exportButton.addClickListener(evt -> segmentIntegrator.policyExported());
+		exportButton.addClickListener(evt -> {
+			policyDAO.updateExportedDate(policyId);
+			segmentIntegrator.policyExported();
+		});
 
 		exportLink = new Anchor();
 		exportLink.add(exportButton);

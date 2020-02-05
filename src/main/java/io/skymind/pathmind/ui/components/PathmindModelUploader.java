@@ -12,9 +12,13 @@ import java.util.Set;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DomEvent;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
+import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.server.Command;
 
 import elemental.json.Json;
@@ -24,12 +28,12 @@ import elemental.json.Json;
  * - <code>webkitdirectory</code> and <code>mozdirectory</code> attributes are added to input element
  * - Added <code>addAllFilesUploadedListener</code> method, that is triggered after all files are uploaded
  * - Added MultiFileMemoryBufferWithFileStructure as default receiver, which works with file path, instead of filename
- * - The filter is done in client side, see model-upload-filter.js and black-list.js for details
+ * - The filter is done in client side, see model-upload-filter.js for details
  * 
- * Additionally,
- * - webkitdirectory attribute might not work in all browsers (https://github.com/SkymindIO/pathmind-webapp/issues/628)
- * - currently custom libraries are identified by making a string comparison with the black-list, this method can be improved 
- * (https://github.com/SkymindIO/pathmind-webapp/issues/629) 
+ * PathmindModelUploader works in two modes: Folder upload and zip file upload,
+ * In constructor, default mode is set, then a client-side check is performed for folder upload support by browser, 
+ * and finally <code>isFolderUploadMode</code> is set true if it's constructed in folder upload mode and browser supports folder upload.
+ *  
  */
 
 @JavaScript("/src/upload/model-upload-filter.js")
@@ -39,13 +43,23 @@ public class PathmindModelUploader extends Upload {
 	
 	private List<Command> allFilesCompletedListeners = new ArrayList<>();
 	
+	private Boolean isFolderUploadSupported;
+	private Boolean isFolderUploadMode;
 	
-	public PathmindModelUploader() {
+	public PathmindModelUploader(boolean isFolderUploadMode) {
 		super();
-		setReceiver(new MultiFileMemoryBufferWithFileStructure());
-		setupFolderUpload();
+		checkIfFolderUploadSupported(isFolderUploadSupported -> {
+			this.isFolderUploadMode = isFolderUploadMode && isFolderUploadSupported;
+			if (this.isFolderUploadMode) {
+				setReceiver(new MultiFileMemoryBufferWithFileStructure());
+				setupFolderUpload();
+				addNoFilesToUploadListener(evt -> triggerAllFilesCompletedListeners());
+			} else {
+				setReceiver(new MemoryBuffer());
+			}
+			setUploadButton(createUploadButton());
+		});
 		addUploadStartListener(this::uploadStarted);
-		addNoFilesToUploadListener(evt -> triggerAllFilesCompletedListeners());
 		addUploadErrorListener(evt -> {
 			numOfFilesUploaded--;
 			if (numOfFilesUploaded == 0) {
@@ -59,6 +73,31 @@ public class PathmindModelUploader extends Upload {
 			}
 		});
 	}
+	private Button createUploadButton() {
+		Button uploadButton = new Button(VaadinIcon.UPLOAD.create());
+		uploadButton.setText(this.isFolderUploadMode ? "Select folder to upload..." : "Select zip file...");
+		return uploadButton;
+	}
+	/**
+	 * Checks if folder upload supported by browser,
+	 * If the check has already been done, returns cached value
+	 * otherwise checks asynchronously
+	 */
+	public void isFolderUploadSupported(SerializableConsumer<Boolean> consumer) {
+		if (isFolderUploadSupported != null) {
+			consumer.accept(isFolderUploadSupported);
+		} else {
+			checkIfFolderUploadSupported(supported -> {
+				isFolderUploadSupported = supported;
+				consumer.accept(supported);
+			});
+		}
+	}
+	private void checkIfFolderUploadSupported(SerializableConsumer<Boolean> consumer) {
+		getElement().executeJs("return window.Pathmind.ModelUploader.isInputDirSupported()").then(Boolean.class, supported -> {
+			consumer.accept(supported);
+		});
+	}
 	
 	/**
 	 * If all files are filtered out, still trigger zip file creation,
@@ -70,9 +109,11 @@ public class PathmindModelUploader extends Upload {
 
 	private void uploadStarted(UploadStartEvent<Upload> evt) {
 		numOfFilesUploaded++;
-		String filePath = evt.getDetailFile().getString("filePath");
-		String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-		MultiFileMemoryBufferWithFileStructure.class.cast(getReceiver()).addFilePath(filePath, fileName);
+		if (isFolderUploadMode) {
+			String filePath = evt.getDetailFile().getString("filePath");
+			String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
+			MultiFileMemoryBufferWithFileStructure.class.cast(getReceiver()).addFilePath(filePath, fileName);
+		}
 	}
 
 	public void addAllFilesUploadedListener(Command command) {

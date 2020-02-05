@@ -1,5 +1,3 @@
-import { BLACK_LIST } from "./black-list.js";
-
 function filter(files) {
   Array.prototype.forEach.call(
     files,
@@ -16,8 +14,6 @@ function matchesFilter(filePath) {
     return true;
   } else if (filePath.match("^database//*")) {
     return true;
-  } else if (filePath.match("^lib//*")) {
-    return !BLACK_LIST.includes(filePath);
   }
   return false;
 }
@@ -37,6 +33,11 @@ window.Pathmind = {
           );
         }
       };
+    },
+    isInputDirSupported: function() {
+      var tmpInput = document.createElement("input");
+      if ("webkitdirectory" in tmpInput) return true;
+      return false;
     }
   }
 };

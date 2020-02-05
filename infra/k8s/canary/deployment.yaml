@@ -1,0 +1,44 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: canary
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: canary
+    spec:
+      containers:
+      # - image:
+      - image: firesh/nginx-lua:alpine
+        imagePullPolicy: IfNotPresent
+        name: canary
+        command: ["nginx"]
+        args: ["-c","/etc/nginx/customconfig/nginx.conf", "-g", "daemon off;"]
+        env:
+        - name: BASE_SVC_URL
+          value: ".default.svc.cluster.local"
+        - name: STABLE_SVC_NAME
+          value: pathmind
+        - name: CANARY_SVC_NAME
+          value: pathmind-slot
+        - name: CANARY_WEIGHT
+          value: "0"
+        - name: COOKIE_MAX_AGE
+          value: "172800"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginxcan-configs
+          mountPath: /etc/nginx/conf.d
+        - name: nginxcan-mainconfig
+          mountPath: /etc/nginx/customconfig
+      # Load the configuration files for nginx
+      volumes:
+        - name: nginxcan-configs
+          configMap:
+            name: nginxcan-config
+        - name: nginxcan-mainconfig
+          configMap:
+            name: nginxcan-mainconfig

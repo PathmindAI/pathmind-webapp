@@ -7,5 +7,7 @@ public abstract class TrainingFile {
     public static final String TEMPORARY_POLICY = "TEMPORARY_POLICY";
     public static final String KNOWN_ERROR = "errors.log";
 
-    public static final String RESCALE_LOG = "process_output.log";
+    public static final String SCRIPT_LOG = "process_output.log";
+
+    public static final String KILLED = "killed";
 }

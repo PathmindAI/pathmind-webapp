@@ -7,11 +7,15 @@ package io.skymind.pathmind.data.db;
 import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.Experiment;
 import io.skymind.pathmind.data.db.tables.Model;
+import io.skymind.pathmind.data.db.tables.ModelFile;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
 import io.skymind.pathmind.data.db.tables.Policy;
+import io.skymind.pathmind.data.db.tables.PolicyFile;
+import io.skymind.pathmind.data.db.tables.PolicySnapshot;
 import io.skymind.pathmind.data.db.tables.Project;
 import io.skymind.pathmind.data.db.tables.RewardScore;
 import io.skymind.pathmind.data.db.tables.Run;
+import io.skymind.pathmind.data.db.tables.TrainerJob;
 
 import javax.annotation.processing.Generated;
 
@@ -45,6 +49,11 @@ public class Tables {
     public static final Model MODEL = Model.MODEL;
 
     /**
+     * The table <code>public.model_file</code>.
+     */
+    public static final ModelFile MODEL_FILE = ModelFile.MODEL_FILE;
+
+    /**
      * The table <code>public.pathmind_user</code>.
      */
     public static final PathmindUser PATHMIND_USER = PathmindUser.PATHMIND_USER;
@@ -53,6 +62,16 @@ public class Tables {
      * The table <code>public.policy</code>.
      */
     public static final Policy POLICY = Policy.POLICY;
+
+    /**
+     * The table <code>public.policy_file</code>.
+     */
+    public static final PolicyFile POLICY_FILE = PolicyFile.POLICY_FILE;
+
+    /**
+     * The table <code>public.policy_snapshot</code>.
+     */
+    public static final PolicySnapshot POLICY_SNAPSHOT = PolicySnapshot.POLICY_SNAPSHOT;
 
     /**
      * The table <code>public.project</code>.
@@ -68,4 +87,9 @@ public class Tables {
      * The table <code>public.run</code>.
      */
     public static final Run RUN = Run.RUN;
+
+    /**
+     * The table <code>public.trainer_job</code>.
+     */
+    public static final TrainerJob TRAINER_JOB = TrainerJob.TRAINER_JOB;
 }
