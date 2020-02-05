@@ -134,7 +134,7 @@ public class RunDAO
             // TODO (KW): 05.02.2020 gets only first error, refactor if multiple errors scenario is possible
             final Optional<TrainingError> error = trainingErrorDAO.getErrorByDescription(jobStatus.getDescription().get(0));
             error.ifPresent(
-                    e -> run.setErrorId(e.getId())
+                    e -> run.setTrainingErrorId(e.getId())
             );
         }
         // STEPH -> REFACTOR -> QUESTION -> Isn't this just a duplicate of setStoppedAtForFinishedPolicies()

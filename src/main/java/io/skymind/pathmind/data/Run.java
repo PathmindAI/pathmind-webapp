@@ -14,7 +14,7 @@ public class Run extends Data
 	private LocalDateTime stoppedAt;
 	private LocalDateTime notificationSentAt;
 	private LocalDateTime exportedAt;
-	private long errorId;
+	private long trainingErrorId;
 
 	// Helper attributes
 	private Experiment experiment;
@@ -126,11 +126,11 @@ public class Run extends Data
 		this.exportedAt = exportedAt;
 	}
 
-	public long getErrorId() {
-		return errorId;
+	public long getTrainingErrorId() {
+		return trainingErrorId;
 	}
 
-	public void setErrorId(long errorId) {
-		this.errorId = errorId;
+	public void setTrainingErrorId(long trainingErrorId) {
+		this.trainingErrorId = trainingErrorId;
 	}
 }
