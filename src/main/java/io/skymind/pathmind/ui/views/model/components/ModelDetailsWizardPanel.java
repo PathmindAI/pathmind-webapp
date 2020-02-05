@@ -1,10 +1,11 @@
 package io.skymind.pathmind.ui.views.model.components;
 
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.BOLD_LABEL;
+
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -13,6 +14,7 @@ import com.vaadin.flow.data.binder.Binder;
 
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.ui.binders.ModelBinders;
+import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.components.PathmindTextArea;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.VaadinUtils;
@@ -38,8 +40,8 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 		add(WrapperUtils.wrapWidthFullHorizontal(
 				new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE),
-				GuiUtils.getLabel("Your model was successfully uploaded!", "16px", "bold")),
-				new Span("Let's add a few details."),
+				LabelFactory.createLabel("Your model was successfully uploaded!", BOLD_LABEL)),
+				LabelFactory.createLabel("Let's add a few details."),
 				GuiUtils.getFullWidthHr(),
 				formPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
@@ -90,8 +92,8 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private Component getObservationForRewardFunctionPanel() {
 		VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
-				new Span("Copy your Observation for Reward function in here for easy reference."),
-				GuiUtils.getBoldLabel("getObservation for Reward Function"),
+				LabelFactory.createLabel("Copy your Observation for Reward function in here for easy reference."),
+				LabelFactory.createLabel("getObservation for Reward Function", BOLD_LABEL),
 				getObservationForRewardFunctionTextArea);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
@@ -99,8 +101,8 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private VerticalLayout getNumberOfObservationsPanel() {
 		VerticalLayout wrapper = new VerticalLayout(
-				GuiUtils.getBoldLabel("Number of Observations for Training"),
-				new Span("Enter the number of observations present in the 'observation of training' array"),
+				LabelFactory.createLabel("Number of Observations for Training", BOLD_LABEL),
+				LabelFactory.createLabel("Enter the number of observations present in the 'observation of training' array"),
 				numberOfObservationsNumberField);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
@@ -108,8 +110,8 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private VerticalLayout getNumberOfPossibleActionsPanel() {
 		VerticalLayout wrapper = new VerticalLayout(
-				GuiUtils.getBoldLabel("Number of Possible Actions"),
-				new Span("This is the number of possible actions in doAction()"),
+				LabelFactory.createLabel("Number of Possible Actions", BOLD_LABEL),
+				LabelFactory.createLabel("This is the number of possible actions in doAction()"),
 				numberOfPossibleActionsNumberField);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;

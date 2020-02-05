@@ -1,5 +1,7 @@
 package io.skymind.pathmind.ui.views.login;
 
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.WELCOME_TEXT;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,7 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
+import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -74,8 +77,7 @@ public class LoginView extends HorizontalLayout
 					 @Value("${pathmind.terms-of-use.url}") String termsOfUseUrl)
 	{
 		addClassName("login-panel-cont");
-		Span welcome = new Span("Welcome to");
-		welcome.setClassName("welcome-text");
+		Span welcome = LabelFactory.createLabel("Welcome to", WELCOME_TEXT);
 		Image img = new Image("frontend/images/pathmind-logo.png", "Pathmind logo");
 		img.setClassName("logo");
 		img.setWidth("200px");

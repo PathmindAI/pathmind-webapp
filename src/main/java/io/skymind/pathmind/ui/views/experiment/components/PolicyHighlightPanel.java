@@ -11,13 +11,14 @@ import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
+import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.utils.PushUtils;
 
 public class PolicyHighlightPanel extends VerticalLayout implements PolicyUpdateSubscriber
 {
-	private Span policyLabel = new Span();
-	private Span scoreLabel = new Span();
-	private Span algorithmLabel = new Span();
+	private Span policyLabel = LabelFactory.createLabel("");
+	private Span scoreLabel = LabelFactory.createLabel("");
+	private Span algorithmLabel = LabelFactory.createLabel("");
 
 	private Policy policy;
 

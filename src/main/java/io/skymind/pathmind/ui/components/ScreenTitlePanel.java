@@ -8,8 +8,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 @Component
 public class ScreenTitlePanel extends HorizontalLayout
 {
-	private Span subtitleLabel = new Span();
-	private Span titleLabel = new Span();
+	private Span subtitleLabel;
+	private Span titleLabel;
 
 	public ScreenTitlePanel() {
 		this("");
@@ -26,12 +26,10 @@ public class ScreenTitlePanel extends HorizontalLayout
 		setJustifyContentMode(JustifyContentMode.CENTER);
 		addClassName("action-menu");
 
-		titleLabel.setText(title);
-		titleLabel.addClassName("section-label-title");
+		titleLabel = LabelFactory.createLabel(title, "section-label-title");
 		add(titleLabel);
 
-		subtitleLabel.setText(subtitle);
-		subtitleLabel.addClassName("section-label-subtitle");
+		subtitleLabel = LabelFactory.createLabel(subtitle, "section-label-subtitle");
 		add(subtitleLabel);
 	}
 

@@ -1,10 +1,9 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
 import static io.skymind.pathmind.constants.RunStatus.isRunning;
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.BOLD_LABEL;
 
 import java.util.Arrays;
-
-import org.springframework.stereotype.Component;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
@@ -21,15 +20,15 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.ui.components.ElapsedTimer;
+import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
-@Component
 public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUpdateSubscriber
 {
-	private Span statusLabel = new Span(RunStatus.NotStarted.toString());
-	private Span runProgressLabel = new Span();
-	private Span runTypeLabel = new Span();
+	private Span statusLabel = LabelFactory.createLabel(RunStatus.NotStarted.toString());
+	private Span runProgressLabel = LabelFactory.createLabel("");
+	private Span runTypeLabel = LabelFactory.createLabel("");
 	private ElapsedTimer elapsedTimeLabel = new ElapsedTimer();
 
 	private Policy policy;
@@ -68,11 +67,8 @@ public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUp
 		add(wrapper);
 	}
 
-	// TODO -> CSS -> Move style to CSS
 	private Span getElementLabel(String label) {
-		Span fieldLabel = new Span(label + " : ");
-		fieldLabel.getStyle().set("font-weight", "bold");
-		return fieldLabel;
+		return LabelFactory.createLabel(label + " : ",BOLD_LABEL);
 	}
 
 	private void removeTopMargins(HasStyle... labels) {

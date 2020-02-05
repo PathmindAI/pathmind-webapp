@@ -1,5 +1,8 @@
 package io.skymind.pathmind.ui.views.model.components;
 
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.NO_TOP_MARGIN_LABEL;
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.SECTION_SUBTITLE_LABEL;
+
 import java.io.IOException;
 
 import com.vaadin.flow.component.Text;
@@ -48,8 +51,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	{
 		this.model = model;
 
-		projectNameLabel = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
-		projectNameLabel.getStyle().set("margin-top", "0px");
+		projectNameLabel = LabelFactory.createLabel("", SECTION_SUBTITLE_LABEL, NO_TOP_MARGIN_LABEL);
 		
 		setupLayout();
 
@@ -92,7 +94,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 		errorText = new Text("");
 		fileCheckPanel = WrapperUtils.wrapWidthFullCenterVertical(
 				fileCheckProgressBar,
-				WrapperUtils.wrapWidthFullCenterHorizontal(new Span("Checking your model...")),
+				WrapperUtils.wrapWidthFullCenterHorizontal(LabelFactory.createLabel("Checking your model...")),
 				errorText);
 	}
 

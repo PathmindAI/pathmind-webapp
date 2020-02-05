@@ -33,6 +33,7 @@ import io.skymind.pathmind.mock.MockDefaultValues;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
+import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.components.PathmindTextArea;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
@@ -130,7 +131,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
                 WrapperUtils.wrapSizeFullVertical(
-                        new Span("Write your reward function:"),
+                		LabelFactory.createLabel("Write your reward function:"),
                         rewardFunctionEditor),
                 WrapperUtils.wrapSizeFullVertical(errorsTextArea),
                 70);
@@ -191,9 +192,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private Component getTopStatusPanel() {
-        modelRevisionLabel = new Span();
-        experimentLabel = new Span();
-        projectLabel = new Span();
+        modelRevisionLabel = LabelFactory.createLabel("");
+        experimentLabel = LabelFactory.createLabel("");
+        projectLabel = LabelFactory.createLabel("");
 
         FormLayout formLayout = GuiUtils.getTitleBarFullWidth(3);
 

@@ -1,5 +1,7 @@
 package io.skymind.pathmind.ui.views.experiment;
 
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.READONLY_LABEL;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
+import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.components.PathmindTextArea;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
@@ -90,8 +93,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	}
 
 	private void setupRewardFunctionEditor() {
-		rewardFunctionTitle = new Span("Reward Functions");
-		rewardFunctionTitle.addClassNames("readonly-label");
+		rewardFunctionTitle = LabelFactory.createLabel("Reward Functions", READONLY_LABEL);
 		rewardFunctionEditor = new RewardFunctionEditor();
 		rewardFunctionEditor.setReadonly(true);
 		rewardFunctionEditor.setSizeFull();

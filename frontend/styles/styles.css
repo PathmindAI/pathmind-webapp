@@ -109,6 +109,12 @@ html {
 .form-label {
   border: 1px solid black;
 }
+.bold-label {
+  font-weight: bold;
+}
+.no-top-margin-label {
+  font-weight: bold;
+}
 
 .section-title-label {
   font-size: 22px;
