@@ -833,4 +833,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="20200202-05" author="steph@followsteph.com">
+        <addUniqueConstraint tableName="POLICY_FILE" columnNames="POLICY_ID" constraintName="POLICY_FILE_UNIQUE_POLICY_ID"/>
+        <addUniqueConstraint tableName="POLICY_SNAPSHOT" columnNames="POLICY_ID" constraintName="POLICY_SNAPSHOT_UNIQUE_POLICY_ID"/>
+        <rollback>
+            <dropUniqueConstraint tableName="POLICY_FILE" uniqueColumns="POLICY_ID" constraintName="POLICY_FILE_UNIQUE_POLICY_ID"/>
+            <dropUniqueConstraint tableName="POLICY_SNAPSHOT" uniqueColumns="POLICY_ID" constraintName="POLICY_SNAPSHOT_UNIQUE_POLICY_ID"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

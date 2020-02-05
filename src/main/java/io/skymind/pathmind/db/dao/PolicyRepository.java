@@ -170,6 +170,7 @@ class PolicyRepository
 		ctx.insertInto(POLICY_FILE)
 				.set(POLICY_FILE.POLICY_ID, ctx.select(POLICY.ID).from(POLICY).where(POLICY.EXTERNAL_ID.eq(externalId).and(POLICY.RUN_ID.eq(runId))))
 				.set(POLICY_FILE.FILE, policyFile)
+				.onConflictDoNothing()
 				.execute();
 	}
 
@@ -177,6 +178,7 @@ class PolicyRepository
 		ctx.insertInto(POLICY_SNAPSHOT)
 				.set(POLICY_SNAPSHOT.POLICY_ID, ctx.select(POLICY.ID).from(POLICY).where(POLICY.EXTERNAL_ID.eq(externalId).and(POLICY.RUN_ID.eq(runId))))
 				.set(POLICY_SNAPSHOT.SNAPSHOT, checkpointFile)
+				.onConflictDoNothing()
 				.execute();
 	}
 
