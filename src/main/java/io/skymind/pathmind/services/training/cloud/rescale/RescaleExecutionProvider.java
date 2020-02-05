@@ -358,7 +358,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         files.add(new FileReference(modelId, false));
         instructions.addAll(Arrays.asList(
                 "cd work",
-                "unzip ../model.zip",
+                "unzip -o ../model.zip",
                 "rm ../model.zip"
         ));
     }
@@ -374,7 +374,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "export JDK_HOME=$JAVA_HOME",
                         "export JRE_HOME=$JAVA_HOME/jre",
                         "export PATH=$JAVA_HOME/bin:$PATH",
-                        "export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH",
+                        "export LD_LIBRARY_PATH=`pwd`/conda/lib:$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH",
 
                         // Setup Anaconda
                         "mkdir conda",
