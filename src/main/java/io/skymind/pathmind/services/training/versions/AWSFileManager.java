@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services.training.versions;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -34,11 +35,13 @@ public class AWSFileManager {
         ));
         vTable.put(RLLib.VERSION_0_7_0, Arrays.asList(
                 "rllibpack.tar.gz",                 // conda TF 1.13.1, RAY 0.7.6
-                "nativerl-1.0.0-SNAPSHOT-bin.zip", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-11-27 DH version
+//                "nativerl-1.0.0-SNAPSHOT-bin.zip", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-11-27 DH version
+                "multiagent/nativerl-1.0.0-SNAPSHOT-bin.zip", // nativerl-1.0.0-SNAPSHOT-bin.zip, multi-agent #728
                 "OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz"  // OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz
         ));
         vTable.put(PathmindHelper.VERSION_0_0_24, Arrays.asList(
-                "PathmindPolicy.jar" // PathmindPolicy.jar, 2019-08-28
+//                "PathmindPolicy.jar" // PathmindPolicy.jar, 2019-08-28
+                "multiagent/PathmindPolicy.jar" // PathmindPolicy.jar, multi-agent #728
         ));
 
         versions.put("PROD", vTable);
@@ -52,10 +55,10 @@ public class AWSFileManager {
     }
 
     private String buildS3CopyCmd(String bucket, String filePath, String fileName) {
-        return S3_COPY + bucket + "/" + filePath + " " + fileName;
+        return S3_COPY + bucket + "/" + filePath + " " + new File(fileName).getName();
     }
 
     public String buildCheckpointCopyCmd(String checkpointPath, String fileName) {
-        return S3_COPY + DYNAMIC_BUCKET + "/" + checkpointPath + " " + fileName;
+        return S3_COPY + DYNAMIC_BUCKET + "/" + checkpointPath + " " + new File(fileName).getName();
     }
 }
