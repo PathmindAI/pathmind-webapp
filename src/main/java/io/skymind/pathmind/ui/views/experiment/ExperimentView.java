@@ -38,6 +38,7 @@ import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
@@ -86,6 +87,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private ExperimentDAO experimentDAO;
 	@Autowired
 	private PolicyDAO policyDAO;
+	@Autowired
+	private TrainingErrorDAO trainingErrorDAO;
 	@Autowired
 	private TrainingService trainingService;
 	@Autowired
@@ -247,6 +250,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policyChartPanel.init(selectedPolicy);
 		policyChartPanel.highlightPolicy(selectedPolicy);
 		updateButtonEnablement();
+		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Error) {
+			trainingErrorDAO.getErrorById(selectedPolicy.getRun().getTrainingErrorId())
+				.ifPresent(error -> policyHighlightPanel.setErrorDescription(error.getAdvice()));
+		}
 	}
 	
 	private void addOrUpdatePolicy(Policy updatedPolicy) {

@@ -234,6 +234,10 @@ account-view {
 .tag:empty {
   display: none;
 }
+.error-label {
+  background: var(--lumo-error-color-10pct);
+  color: var(--lumo-error-color);
+}
 
 .dashboard-line {
   background: white;
