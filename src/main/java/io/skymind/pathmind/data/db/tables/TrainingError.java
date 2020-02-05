@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrainingError extends TableImpl<TrainingErrorRecord> {
 
-    private static final long serialVersionUID = 1337064397;
+    private static final long serialVersionUID = 664465572;
 
     /**
      * The reference instance of <code>public.training_error</code>
@@ -62,19 +62,19 @@ public class TrainingError extends TableImpl<TrainingErrorRecord> {
     public final TableField<TrainingErrorRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
+     * The column <code>public.training_error.keyword</code>.
+     */
+    public final TableField<TrainingErrorRecord, String> KEYWORD = createField(DSL.name("keyword"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
+
+    /**
      * The column <code>public.training_error.description</code>.
      */
-    public final TableField<TrainingErrorRecord, String> DESCRIPTION = createField(DSL.name("description"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
+    public final TableField<TrainingErrorRecord, String> DESCRIPTION = createField(DSL.name("description"), org.jooq.impl.SQLDataType.VARCHAR, this, "");
 
     /**
-     * The column <code>public.training_error.advice</code>.
+     * The column <code>public.training_error.restartable</code>.
      */
-    public final TableField<TrainingErrorRecord, String> ADVICE = createField(DSL.name("advice"), org.jooq.impl.SQLDataType.VARCHAR, this, "");
-
-    /**
-     * The column <code>public.training_error.repeatable</code>.
-     */
-    public final TableField<TrainingErrorRecord, Boolean> REPEATABLE = createField(DSL.name("repeatable"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+    public final TableField<TrainingErrorRecord, Boolean> RESTARTABLE = createField(DSL.name("restartable"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * Create a <code>public.training_error</code> table reference

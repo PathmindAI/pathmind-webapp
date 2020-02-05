@@ -252,7 +252,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		updateButtonEnablement();
 		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Error) {
 			trainingErrorDAO.getErrorById(selectedPolicy.getRun().getTrainingErrorId())
-				.ifPresent(error -> policyHighlightPanel.setErrorDescription(error.getAdvice()));
+				.ifPresent(error -> policyHighlightPanel.setErrorDescription(error.getDescription()));
 		}
 	}
 	

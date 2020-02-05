@@ -847,45 +847,45 @@
             <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="DESCRIPTION" type="VARCHAR">
+            <column name="KEYWORD" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
-            <column name="ADVICE" type="VARCHAR" />
-            <column name="REPEATABLE" type="BOOLEAN" defaultValueBoolean="false">
+            <column name="DESCRIPTION" type="VARCHAR" />
+            <column name="RESTARTABLE" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
         </createTable>
         <insert tableName="TRAINING_ERROR">
             <column name="id" value="0"/>
-            <column name="DESCRIPTION" value="Not an error"/>
+            <column name="KEYWORD" value="Not an error"/>
         </insert>
         <insert tableName="TRAINING_ERROR">
-            <column name="DESCRIPTION" value="python3: can't open file 'rllibtrain.py'"/>
-            <column name="REPEATABLE" value="true"/>
+            <column name="KEYWORD" value="python3: can't open file 'rllibtrain.py'"/>
+            <column name="RESTARTABLE" value="true"/>
         </insert>
         <insert tableName="TRAINING_ERROR">
-            <column name="DESCRIPTION" value="SyntaxError: invalid syntax"/>
-            <column name="ADVICE" value="Please fix the reward function."/>
+            <column name="KEYWORD" value="SyntaxError: invalid syntax"/>
+            <column name="DESCRIPTION" value="Please fix the reward function."/>
         </insert>
         <insert tableName="TRAINING_ERROR">
-            <column name="DESCRIPTION" value="Fatal Python error: Segmentation fault"/>
-            <column name="ADVICE" value="Please restart your training."/>
+            <column name="KEYWORD" value="Fatal Python error: Segmentation fault"/>
+            <column name="DESCRIPTION" value="Please restart your training."/>
         </insert>
         <insert tableName="TRAINING_ERROR">
-            <column name="DESCRIPTION" value="Worker crashed during call to train()"/>
-            <column name="REPEATABLE" value="true"/>
+            <column name="KEYWORD" value="Worker crashed during call to train()"/>
+            <column name="RESTARTABLE" value="true"/>
         </insert>
         <insert tableName="TRAINING_ERROR">
-            <column name="DESCRIPTION" value="java.lang.ArrayIndexOutOfBoundsException"/>
-            <column name="ADVICE" value="Please try again."/>
+            <column name="KEYWORD" value="java.lang.ArrayIndexOutOfBoundsException"/>
+            <column name="DESCRIPTION" value="Please try again."/>
         </insert>
         <insert tableName="TRAINING_ERROR">
-            <column name="DESCRIPTION" value="NotADirectoryError: "/>
-            <column name="REPEATABLE" value="true"/>
+            <column name="KEYWORD" value="NotADirectoryError: "/>
+            <column name="RESTARTABLE" value="true"/>
         </insert>
         <insert tableName="TRAINING_ERROR">
-            <column name="DESCRIPTION" value="unknown error"/>
-            <column name="ADVICE" value="Unrecognized error. Please contact Pathmind team."/>
+            <column name="KEYWORD" value="unknown error"/>
+            <column name="DESCRIPTION" value="Unrecognized error. Please contact Pathmind team."/>
         </insert>
         <rollback>
             <dropTable tableName="TRAINING_ERROR"/>

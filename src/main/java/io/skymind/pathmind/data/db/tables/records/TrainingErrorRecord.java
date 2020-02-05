@@ -28,7 +28,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrainingErrorRecord extends UpdatableRecordImpl<TrainingErrorRecord> implements Record4<Long, String, String, Boolean> {
 
-    private static final long serialVersionUID = -1274908351;
+    private static final long serialVersionUID = -687606685;
 
     /**
      * Setter for <code>public.training_error.id</code>.
@@ -45,44 +45,44 @@ public class TrainingErrorRecord extends UpdatableRecordImpl<TrainingErrorRecord
     }
 
     /**
+     * Setter for <code>public.training_error.keyword</code>.
+     */
+    public void setKeyword(String value) {
+        set(1, value);
+    }
+
+    /**
+     * Getter for <code>public.training_error.keyword</code>.
+     */
+    public String getKeyword() {
+        return (String) get(1);
+    }
+
+    /**
      * Setter for <code>public.training_error.description</code>.
      */
     public void setDescription(String value) {
-        set(1, value);
+        set(2, value);
     }
 
     /**
      * Getter for <code>public.training_error.description</code>.
      */
     public String getDescription() {
-        return (String) get(1);
-    }
-
-    /**
-     * Setter for <code>public.training_error.advice</code>.
-     */
-    public void setAdvice(String value) {
-        set(2, value);
-    }
-
-    /**
-     * Getter for <code>public.training_error.advice</code>.
-     */
-    public String getAdvice() {
         return (String) get(2);
     }
 
     /**
-     * Setter for <code>public.training_error.repeatable</code>.
+     * Setter for <code>public.training_error.restartable</code>.
      */
-    public void setRepeatable(Boolean value) {
+    public void setRestartable(Boolean value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>public.training_error.repeatable</code>.
+     * Getter for <code>public.training_error.restartable</code>.
      */
-    public Boolean getRepeatable() {
+    public Boolean getRestartable() {
         return (Boolean) get(3);
     }
 
@@ -116,17 +116,17 @@ public class TrainingErrorRecord extends UpdatableRecordImpl<TrainingErrorRecord
 
     @Override
     public Field<String> field2() {
-        return TrainingError.TRAINING_ERROR.DESCRIPTION;
+        return TrainingError.TRAINING_ERROR.KEYWORD;
     }
 
     @Override
     public Field<String> field3() {
-        return TrainingError.TRAINING_ERROR.ADVICE;
+        return TrainingError.TRAINING_ERROR.DESCRIPTION;
     }
 
     @Override
     public Field<Boolean> field4() {
-        return TrainingError.TRAINING_ERROR.REPEATABLE;
+        return TrainingError.TRAINING_ERROR.RESTARTABLE;
     }
 
     @Override
@@ -136,17 +136,17 @@ public class TrainingErrorRecord extends UpdatableRecordImpl<TrainingErrorRecord
 
     @Override
     public String component2() {
-        return getDescription();
+        return getKeyword();
     }
 
     @Override
     public String component3() {
-        return getAdvice();
+        return getDescription();
     }
 
     @Override
     public Boolean component4() {
-        return getRepeatable();
+        return getRestartable();
     }
 
     @Override
@@ -156,17 +156,17 @@ public class TrainingErrorRecord extends UpdatableRecordImpl<TrainingErrorRecord
 
     @Override
     public String value2() {
-        return getDescription();
+        return getKeyword();
     }
 
     @Override
     public String value3() {
-        return getAdvice();
+        return getDescription();
     }
 
     @Override
     public Boolean value4() {
-        return getRepeatable();
+        return getRestartable();
     }
 
     @Override
@@ -177,19 +177,19 @@ public class TrainingErrorRecord extends UpdatableRecordImpl<TrainingErrorRecord
 
     @Override
     public TrainingErrorRecord value2(String value) {
-        setDescription(value);
+        setKeyword(value);
         return this;
     }
 
     @Override
     public TrainingErrorRecord value3(String value) {
-        setAdvice(value);
+        setDescription(value);
         return this;
     }
 
     @Override
     public TrainingErrorRecord value4(Boolean value) {
-        setRepeatable(value);
+        setRestartable(value);
         return this;
     }
 
@@ -216,12 +216,12 @@ public class TrainingErrorRecord extends UpdatableRecordImpl<TrainingErrorRecord
     /**
      * Create a detached, initialised TrainingErrorRecord
      */
-    public TrainingErrorRecord(Long id, String description, String advice, Boolean repeatable) {
+    public TrainingErrorRecord(Long id, String keyword, String description, Boolean restartable) {
         super(TrainingError.TRAINING_ERROR);
 
         set(0, id);
-        set(1, description);
-        set(2, advice);
-        set(3, repeatable);
+        set(1, keyword);
+        set(2, description);
+        set(3, restartable);
     }
 }

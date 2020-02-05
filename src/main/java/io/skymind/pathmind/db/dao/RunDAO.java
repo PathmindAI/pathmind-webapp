@@ -132,7 +132,7 @@ public class RunDAO
         run.setStatusEnum(status);
         if(status == RunStatus.Error) {
             // TODO (KW): 05.02.2020 gets only first error, refactor if multiple errors scenario is possible
-            final Optional<TrainingError> error = trainingErrorDAO.getErrorByDescription(jobStatus.getDescription().get(0));
+            final Optional<TrainingError> error = trainingErrorDAO.getErrorByKeyword(jobStatus.getDescription().get(0));
             error.ifPresent(
                     e -> run.setTrainingErrorId(e.getId())
             );

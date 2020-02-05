@@ -3,9 +3,9 @@ package io.skymind.pathmind.data;
 
 public class TrainingError {
 	private long id;
+	private String keyword;
 	private String description;
-	private String advice;
-	private boolean repeatable;
+	private boolean restartable;
 
 	public long getId() {
 		return id;
@@ -15,27 +15,27 @@ public class TrainingError {
 		this.id = id;
 	}
 
+	public String getKeyword() {
+		return keyword;
+	}
+
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
+
+	public boolean isRestartable() {
+		return restartable;
+	}
+
+	public void setRestartable(boolean restartable) {
+		this.restartable = restartable;
+	}
+
 	public String getDescription() {
 		return description;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public boolean isRepeatable() {
-		return repeatable;
-	}
-
-	public void setRepeatable(boolean repeatable) {
-		this.repeatable = repeatable;
-	}
-
-	public String getAdvice() {
-		return advice;
-	}
-
-	public void setAdvice(String advice) {
-		this.advice = advice;
 	}
 }

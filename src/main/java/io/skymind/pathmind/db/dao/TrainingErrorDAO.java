@@ -6,21 +6,19 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-import static io.skymind.pathmind.data.db.tables.TrainingError.TRAINING_ERROR;
-
 @Repository
 public class TrainingErrorDAO {
-	private static final String UNKNOWN_ERROR_MESSAGE = "unknown error";
+	private static final String UNKNOWN_ERROR_KEYWORD = "unknown error";
 	private final DSLContext ctx;
 
 	public TrainingErrorDAO(DSLContext ctx) {
 		this.ctx = ctx;
 	}
 
-	public Optional<TrainingError> getErrorByDescription(String description) {
-		var error = TrainingErrorRepository.getErrorByDescription(ctx, description);
+	public Optional<TrainingError> getErrorByKeyword(String keyword) {
+		var error = TrainingErrorRepository.getErrorByKeyword(ctx, keyword);
 		if(error == null) {
-			error = TrainingErrorRepository.getErrorByDescription(ctx, UNKNOWN_ERROR_MESSAGE);
+			error = TrainingErrorRepository.getErrorByKeyword(ctx, UNKNOWN_ERROR_KEYWORD);
 		}
 		return Optional.ofNullable(error);
 	}
