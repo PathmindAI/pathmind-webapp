@@ -125,6 +125,7 @@ class RunRepository
         ctx.update(Tables.RUN)
                 .set(Tables.RUN.STATUS, run.getStatus())
                 .set(Tables.RUN.STOPPED_AT, run.getStoppedAt())
+				.set(Tables.RUN.TRAINING_ERROR_ID, run.getErrorId())
                 .where(Tables.RUN.ID.eq(run.getId()))
                 .execute();
     }

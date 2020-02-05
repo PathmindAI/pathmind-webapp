@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
+import io.skymind.pathmind.constants.ProviderJobStatus;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
@@ -9,7 +10,6 @@ import io.skymind.pathmind.services.training.cloud.rescale.api.RescaleRestApiCli
 import io.skymind.pathmind.services.training.cloud.rescale.api.dto.FileReference;
 import io.skymind.pathmind.services.training.cloud.rescale.api.dto.Job;
 import io.skymind.pathmind.services.training.cloud.rescale.api.dto.JobAnalysis;
-import io.skymind.pathmind.services.training.cloud.rescale.api.dto.JobStatus;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
+// TODO (KW): 05.02.2020 refactor if this class is still needed
 //@Service
 @Slf4j
 public class RescaleExecutionProvider implements ExecutionProvider {
@@ -85,48 +87,49 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public RunStatus status(String jobHandle) {
-        final List<JobStatus> statuses = client.jobStatusHistory(jobHandle).getResults();
+    public io.skymind.pathmind.constants.ProviderJobStatus status(String jobHandle) {
+//        final List<ProviderJobStatus> statuses = client.jobStatusHistory(jobHandle).getResults();
+//
+//        if (statuses.size() > 0) {
+//            if (statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))) {
+//                final ProviderJobStatus status = statuses.stream().filter(it -> it.getStatus().equals("Completed")).findFirst().get();
+//
+//                List<String> errs = client.outputFiles(jobHandle, DEFAULT_RUN_ID).getResults()
+//                        .parallelStream()
+//                        .filter(f -> f.getPath().endsWith(TrainingFile.RAY_TRIAL_ERROR) && f.getDecryptedSize() > 0)
+//                        .map(f -> new String(client.fileContents(f.getId())))
+//                        .collect(Collectors.toList());
+//
+//                // since we added error check logic to the script,
+//                // errors.log will have the same number of line with the number of KNOWN_ERROR_MSGS
+//                // if the line number is greater than the size of KNOWN_ERROR_MSGS, it has an error
+//                String errorLogFileContents = new String(client.outputFile(jobHandle, DEFAULT_RUN_ID, TrainingFile.KNOWN_ERROR));
+//                if (errorLogFileContents != null && !errorLogFileContents.isEmpty()
+//                        && errorLogFileContents.split("\n").length > KNOWN_ERROR_MSGS.size()) {
+//                    errs.add("error!");
+//                }
+//
+//                if (status.getStatusReason().equals("Completed successfully") && errs.size() == 0) {
+//                    return RunStatus.Completed;
+//                } else {
+//                    if (errs.size() > 0) {
+//                        log.info(jobHandle + " will be considered as an error");
+//                    }
+//                    return RunStatus.Error;
+//                }
+//            } else if (statuses.stream().anyMatch(it -> it.getStatus().equals("Executing"))) {
+//                return RunStatus.Running;
+//            }
+//        }
 
-        if (statuses.size() > 0) {
-            if (statuses.stream().anyMatch(it -> it.getStatus().equals("Completed"))) {
-                final JobStatus status = statuses.stream().filter(it -> it.getStatus().equals("Completed")).findFirst().get();
-
-                List<String> errs = client.outputFiles(jobHandle, DEFAULT_RUN_ID).getResults()
-                        .parallelStream()
-                        .filter(f -> f.getPath().endsWith(TrainingFile.RAY_TRIAL_ERROR) && f.getDecryptedSize() > 0)
-                        .map(f -> new String(client.fileContents(f.getId())))
-                        .collect(Collectors.toList());
-
-                // since we added error check logic to the script,
-                // errors.log will have the same number of line with the number of KNOWN_ERROR_MSGS
-                // if the line number is greater than the size of KNOWN_ERROR_MSGS, it has an error
-                String errorLogFileContents = new String(client.outputFile(jobHandle, DEFAULT_RUN_ID, TrainingFile.KNOWN_ERROR));
-                if (errorLogFileContents != null && !errorLogFileContents.isEmpty()
-                        && errorLogFileContents.split("\n").length > KNOWN_ERROR_MSGS.size()) {
-                    errs.add("error!");
-                }
-
-                if (status.getStatusReason().equals("Completed successfully") && errs.size() == 0) {
-                    return RunStatus.Completed;
-                } else {
-                    if (errs.size() > 0) {
-                        log.info(jobHandle + " will be considered as an error");
-                    }
-                    return RunStatus.Error;
-                }
-            } else if (statuses.stream().anyMatch(it -> it.getStatus().equals("Executing"))) {
-                return RunStatus.Running;
-            }
-        }
-
-        return RunStatus.Starting;
+        return new ProviderJobStatus(RunStatus.Starting);
     }
 
     @Override
     public Map<String, String> progress(String jobHandle) {
-        final RunStatus runStatus = status(jobHandle);
-        return progress(jobHandle, runStatus);
+//        final RunStatus runStatus = status(jobHandle);
+//        return progress(jobHandle, runStatus);
+        return null;
     }
 
     @Override
@@ -184,13 +187,13 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     @Override
     public String console(String jobHandle) {
-        final RunStatus runStatus = status(jobHandle);
-
-        if (runStatus.equals(RunStatus.Completed)) {
-            return client.consoleOutput(jobHandle, DEFAULT_RUN_ID);
-        } else if (runStatus.equals(RunStatus.Running)) {
-            return client.tailConsole(jobHandle, DEFAULT_RUN_ID);
-        }
+//        final RunStatus runStatus = status(jobHandle);
+//
+//        if (runStatus.equals(RunStatus.Completed)) {
+//            return client.consoleOutput(jobHandle, DEFAULT_RUN_ID);
+//        } else if (runStatus.equals(RunStatus.Running)) {
+//            return client.tailConsole(jobHandle, DEFAULT_RUN_ID);
+//        }
 
         return null;
     }

@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
+import io.skymind.pathmind.constants.ProviderJobStatus;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.PathmindUser;
@@ -53,13 +54,13 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         runsWithAwsJobs.parallelStream().forEach(run -> {
             try {
                 String jobHandle = awsJobIds.get(run.getId());
-                RunStatus runStatus = provider.status(jobHandle);
+                ProviderJobStatus providerJobStatus = provider.status(jobHandle);
 
                 final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(), jobHandle);
 
                 setStoppedAtForFinishedPolicies(policies, jobHandle);
 
-                runDAO.updateRun(run, runStatus, policies);
+                runDAO.updateRun(run, providerJobStatus, policies);
 
                 // STEPH -> REFACTOR -> QUESTION -> Does this need to be transactional with runDAO.updateRun and put
                 // into updateRun()? For now I left it here, it's no worse than what's in production today. I mainly kept it out
@@ -68,9 +69,9 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                 // service component so that if there is a policyFile (byte[]) then it's done before the updateRun()
                 // method is called and we can just do a simple isPolicyFile != null check as to whether or not to
                 // also update it in the database.
-                savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), jobHandle, runStatus);
+                savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), jobHandle, providerJobStatus.getRunStatus());
 
-                sendNotificationMail(runStatus, run);
+                sendNotificationMail(providerJobStatus.getRunStatus(), run);
             } catch (Exception e) {
                 log.error("Error for run: " + run.getId() + " : " + e.getMessage(), e);
                 emailNotificationService.sendEmailExceptionNotification("Error for run: " + run.getId() + " : " + e.getMessage(), e);

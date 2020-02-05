@@ -16,6 +16,7 @@ import io.skymind.pathmind.data.db.tables.Project;
 import io.skymind.pathmind.data.db.tables.RewardScore;
 import io.skymind.pathmind.data.db.tables.Run;
 import io.skymind.pathmind.data.db.tables.TrainerJob;
+import io.skymind.pathmind.data.db.tables.TrainingError;
 
 import javax.annotation.processing.Generated;
 
@@ -54,7 +55,9 @@ public class Indexes {
     public static final Index POLICY_RUN_FK_INDEX = Indexes0.POLICY_RUN_FK_INDEX;
     public static final Index POLICY_RUN_ID_EXTERNAL_ID_KEY = Indexes0.POLICY_RUN_ID_EXTERNAL_ID_KEY;
     public static final Index POLICY_FILE_POLICY_ID_INDEX = Indexes0.POLICY_FILE_POLICY_ID_INDEX;
+    public static final Index POLICY_FILE_UNIQUE_POLICY_ID = Indexes0.POLICY_FILE_UNIQUE_POLICY_ID;
     public static final Index POLICY_SNAPSHOT_POLICY_ID_INDEX = Indexes0.POLICY_SNAPSHOT_POLICY_ID_INDEX;
+    public static final Index POLICY_SNAPSHOT_UNIQUE_POLICY_ID = Indexes0.POLICY_SNAPSHOT_UNIQUE_POLICY_ID;
     public static final Index PROJECT_PATHMIND_USER_FK_INDEX = Indexes0.PROJECT_PATHMIND_USER_FK_INDEX;
     public static final Index PROJECT_PKEY = Indexes0.PROJECT_PKEY;
     public static final Index UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = Indexes0.UNIQUE_PROJECT_NAME_PATHMIND_USER_ID;
@@ -62,6 +65,7 @@ public class Indexes {
     public static final Index RUN_EXPERIMENT_FK_INDEX = Indexes0.RUN_EXPERIMENT_FK_INDEX;
     public static final Index RUN_PKEY = Indexes0.RUN_PKEY;
     public static final Index TRAINER_JOB_PKEY = Indexes0.TRAINER_JOB_PKEY;
+    public static final Index TRAINING_ERROR_PKEY = Indexes0.TRAINING_ERROR_PKEY;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
@@ -81,7 +85,9 @@ public class Indexes {
         public static Index POLICY_RUN_FK_INDEX = Internal.createIndex("policy_run_fk_index", Policy.POLICY, new OrderField[] { Policy.POLICY.RUN_ID }, false);
         public static Index POLICY_RUN_ID_EXTERNAL_ID_KEY = Internal.createIndex("policy_run_id_external_id_key", Policy.POLICY, new OrderField[] { Policy.POLICY.RUN_ID, Policy.POLICY.EXTERNAL_ID }, true);
         public static Index POLICY_FILE_POLICY_ID_INDEX = Internal.createIndex("policy_file_policy_id_index", PolicyFile.POLICY_FILE, new OrderField[] { PolicyFile.POLICY_FILE.POLICY_ID }, false);
+        public static Index POLICY_FILE_UNIQUE_POLICY_ID = Internal.createIndex("policy_file_unique_policy_id", PolicyFile.POLICY_FILE, new OrderField[] { PolicyFile.POLICY_FILE.POLICY_ID }, true);
         public static Index POLICY_SNAPSHOT_POLICY_ID_INDEX = Internal.createIndex("policy_snapshot_policy_id_index", PolicySnapshot.POLICY_SNAPSHOT, new OrderField[] { PolicySnapshot.POLICY_SNAPSHOT.POLICY_ID }, false);
+        public static Index POLICY_SNAPSHOT_UNIQUE_POLICY_ID = Internal.createIndex("policy_snapshot_unique_policy_id", PolicySnapshot.POLICY_SNAPSHOT, new OrderField[] { PolicySnapshot.POLICY_SNAPSHOT.POLICY_ID }, true);
         public static Index PROJECT_PATHMIND_USER_FK_INDEX = Internal.createIndex("project_pathmind_user_fk_index", Project.PROJECT, new OrderField[] { Project.PROJECT.PATHMIND_USER_ID }, false);
         public static Index PROJECT_PKEY = Internal.createIndex("project_pkey", Project.PROJECT, new OrderField[] { Project.PROJECT.ID }, true);
         public static Index UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = Internal.createIndex("unique_project_name_pathmind_user_id", Project.PROJECT, new OrderField[] { Project.PROJECT.PATHMIND_USER_ID, Project.PROJECT.NAME }, true);
@@ -89,5 +95,6 @@ public class Indexes {
         public static Index RUN_EXPERIMENT_FK_INDEX = Internal.createIndex("run_experiment_fk_index", Run.RUN, new OrderField[] { Run.RUN.EXPERIMENT_ID }, false);
         public static Index RUN_PKEY = Internal.createIndex("run_pkey", Run.RUN, new OrderField[] { Run.RUN.ID }, true);
         public static Index TRAINER_JOB_PKEY = Internal.createIndex("trainer_job_pkey", TrainerJob.TRAINER_JOB, new OrderField[] { TrainerJob.TRAINER_JOB.JOB_ID }, true);
+        public static Index TRAINING_ERROR_PKEY = Internal.createIndex("training_error_pkey", TrainingError.TRAINING_ERROR, new OrderField[] { TrainingError.TRAINING_ERROR.ID }, true);
     }
 }

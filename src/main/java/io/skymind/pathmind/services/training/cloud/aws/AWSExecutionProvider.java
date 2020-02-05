@@ -1,6 +1,7 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.constants.ProviderJobStatus;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
@@ -26,6 +27,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static io.skymind.pathmind.constants.RunStatus.*;
 
 @Service
 @Slf4j
@@ -110,7 +114,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public RunStatus status(String jobHandle) {
+    public ProviderJobStatus status(String jobHandle) {
         List<String> errors = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_ERROR);
         List<String> completes = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_COMPLETE);
         List<String> trials = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_LIST).stream()
@@ -119,7 +123,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
         boolean killed = getFile(jobHandle, TrainingFile.KILLED).isPresent();
         if (killed) {
-            return RunStatus.Killed;
+            return new ProviderJobStatus(Killed);
          }
 
         List<String> knownErrsCheck = getTrialStatus(jobHandle, TrainingFile.KNOWN_ERROR);
@@ -129,17 +133,23 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
         if (experimentState != null) {
             if (errors.size() > 0 || knownErrsCheck.size() > 0) {
-                return RunStatus.Error;
+                final var allErrorsList = Stream.concat(errors.stream(), knownErrsCheck.stream())
+                        .collect(Collectors.toList());
+                var oneLineErrors = allErrorsList.stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(" ; "));
+                log.error("{} error(s) detected for the AWS jobHandle {}: {}", allErrorsList.size(), jobHandle, oneLineErrors);
+                return new ProviderJobStatus(Error, allErrorsList);
             }
 
             if (completes.size() > 0 && completes.size() == trials.size()) {
-                return RunStatus.Completed;
+                return new ProviderJobStatus(Completed);
             }
 
-            return RunStatus.Running;
+            return new ProviderJobStatus(Running);
         }
 
-        return RunStatus.Starting;
+        return new ProviderJobStatus(Starting);
     }
 
     @Override

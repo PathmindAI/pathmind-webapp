@@ -850,19 +850,26 @@
             <column name="DESCRIPTION" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
+            <column name="ADVICE" type="VARCHAR" />
             <column name="REPEATABLE" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <insert tableName="TRAINING_ERROR">
+            <column name="id" value="0"/>
+            <column name="DESCRIPTION" value="Not an error"/>
+        </insert>
         <insert tableName="TRAINING_ERROR">
             <column name="DESCRIPTION" value="python3: can't open file 'rllibtrain.py'"/>
             <column name="REPEATABLE" value="true"/>
         </insert>
         <insert tableName="TRAINING_ERROR">
             <column name="DESCRIPTION" value="SyntaxError: invalid syntax"/>
+            <column name="ADVICE" value="Please fix the reward function."/>
         </insert>
         <insert tableName="TRAINING_ERROR">
             <column name="DESCRIPTION" value="Fatal Python error: Segmentation fault"/>
+            <column name="ADVICE" value="Please restart your training."/>
         </insert>
         <insert tableName="TRAINING_ERROR">
             <column name="DESCRIPTION" value="Worker crashed during call to train()"/>
@@ -870,14 +877,27 @@
         </insert>
         <insert tableName="TRAINING_ERROR">
             <column name="DESCRIPTION" value="java.lang.ArrayIndexOutOfBoundsException"/>
+            <column name="ADVICE" value="Please try again."/>
         </insert>
         <insert tableName="TRAINING_ERROR">
             <column name="DESCRIPTION" value="NotADirectoryError: "/>
             <column name="REPEATABLE" value="true"/>
         </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="DESCRIPTION" value="unknown error"/>
+            <column name="ADVICE" value="Unrecognized error. Please contact Pathmind team."/>
+        </insert>
         <rollback>
             <dropTable tableName="TRAINING_ERROR"/>
         </rollback>
+    </changeSet>
+
+    <changeSet id="20200205-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <addColumn tableName="RUN">
+            <column name="TRAINING_ERROR_ID" type="BIGINT">
+                <constraints nullable="true" foreignKeyName="PM_FK_TRAINING_ERROR" references="TRAINING_ERROR(ID)"/>
+            </column>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog>
