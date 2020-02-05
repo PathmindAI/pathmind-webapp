@@ -117,6 +117,26 @@ public class PolicyUtils
         return policyTempName;
     }
 
+    // generate policy temporary name since we don't know the exact policy ext id
+    // when we start a new job
+    public static String generatePolicyTempName(Policy policy, int runType) {
+        String hyperparameters = String.join(
+                ",",
+                "gamma=" + policy.getGamma(),
+                "lr=" + policy.getLearningRate(),
+                "sgd_minibatch_size=" + policy.getBatchSize());
+
+        String name = String.join(
+                "_",
+                policy.getAlgorithm(),
+                "PathmindEnvironment",
+                "0",
+                hyperparameters,
+                runType + RunUtils.TEMPORARY_POSTFIX);
+
+        return name;
+    }
+
     public static void loadPolicyDataModel(Policy policy, long policyId, Run run) {
         policy.setId(policyId);
         policy.setRun(run);

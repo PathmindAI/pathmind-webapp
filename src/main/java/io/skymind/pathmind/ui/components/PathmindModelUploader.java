@@ -28,15 +28,12 @@ import elemental.json.Json;
  * - <code>webkitdirectory</code> and <code>mozdirectory</code> attributes are added to input element
  * - Added <code>addAllFilesUploadedListener</code> method, that is triggered after all files are uploaded
  * - Added MultiFileMemoryBufferWithFileStructure as default receiver, which works with file path, instead of filename
- * - The filter is done in client side, see model-upload-filter.js and black-list.js for details
+ * - The filter is done in client side, see model-upload-filter.js for details
  * 
  * PathmindModelUploader works in two modes: Folder upload and zip file upload,
  * In constructor, default mode is set, then a client-side check is performed for folder upload support by browser, 
  * and finally <code>isFolderUploadMode</code> is set true if it's constructed in folder upload mode and browser supports folder upload.
- * 
- * Additionally,
- * - currently custom libraries are identified by making a string comparison with the black-list, this method can be improved 
- * (https://github.com/SkymindIO/pathmind-webapp/issues/629) 
+ *  
  */
 
 @JavaScript("/src/upload/model-upload-filter.js")
