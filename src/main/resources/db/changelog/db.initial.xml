@@ -880,10 +880,6 @@
             <column name="DESCRIPTION" value="Please try again."/>
         </insert>
         <insert tableName="TRAINING_ERROR">
-            <column name="KEYWORD" value="NotADirectoryError: "/>
-            <column name="RESTARTABLE" value="true"/>
-        </insert>
-        <insert tableName="TRAINING_ERROR">
             <column name="KEYWORD" value="unknown error"/>
             <column name="DESCRIPTION" value="Unrecognized error. Please contact Pathmind team."/>
         </insert>
