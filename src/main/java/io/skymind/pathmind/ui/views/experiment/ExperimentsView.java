@@ -30,6 +30,7 @@ import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.buttons.ShowRewardFunctionButton;
+import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
@@ -84,7 +85,8 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 						WrapperUtils.wrapSizeFullVertical(
 								rewardFunctionTitle,
 								rewardFunctionEditor,
-								getObservationTextArea),
+								getObservationTextArea,
+								createViewNotesField()),
 						70),
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewExperimentButton(experimentDAO, modelId)));
 	}
@@ -126,8 +128,22 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	private void setupExperimentListPanel() {
 		experimentGrid = new ExperimentGrid();
+		experimentGrid.addComponentColumn(exp -> createColumnNotesField(exp)).setHeader("Notes").setSortable(false);
 		experimentGrid.addComponentColumn(exp -> createActionButtons(exp)).setHeader("Actions").setSortable(false);
 		experimentGrid.addItemClickListener(event -> handleExperimentClick(event.getItem()));
+	}
+
+	private HorizontalLayout createColumnNotesField(Experiment exp) {
+		NotesField notesField = new NotesField(true, "This is an inline field for the notes");
+		// notesField.addClickListener(evt -> showRewardFunction(exp));
+		return notesField;
+	}
+
+	private HorizontalLayout createViewNotesField() {
+		// get notes String from current model
+		NotesField notesField = new NotesField(false, "This is an inline field for the notes");
+		// notesField.addClickListener(evt -> showRewardFunction(exp));
+		return notesField;
 	}
 
 	private HorizontalLayout createActionButtons(Experiment exp) {
