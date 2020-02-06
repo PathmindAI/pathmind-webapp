@@ -131,9 +131,17 @@ class RunRepository
     
     protected static void markAsNotificationSent(DSLContext ctx, long runId){
     	ctx.update(Tables.RUN)
-    	.set(Tables.RUN.NOTIFICATION_SENT_AT, LocalDateTime.now())
-    	.where(Tables.RUN.ID.eq(runId)).execute();
+    		.set(Tables.RUN.NOTIFICATION_SENT_AT, LocalDateTime.now())
+    		.where(Tables.RUN.ID.eq(runId)).execute();
     }
+    
+    protected static void clearNotificationSentInfo(DSLContext ctx, long experimentId, int runType) {
+		ctx.update(Tables.RUN)
+			.set(Tables.RUN.NOTIFICATION_SENT_AT, (LocalDateTime) null)
+			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId)
+					.and(Tables.RUN.RUN_TYPE.eq(runType)))
+			.execute();
+	}
 
     protected static int getRunType(DSLContext ctx, long runId) {
         return ctx.select(Tables.RUN.RUN_TYPE)

@@ -111,6 +111,7 @@ public abstract class TrainingService {
     }
 
     private void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec) {
+    	runDAO.clearNotificationSentInfo(exp.getId(), runType.getValue());
         startRun(runType, exp, iterations, learningRates, gammas, batchSizes, maxTimeInSec, null);
     }
 

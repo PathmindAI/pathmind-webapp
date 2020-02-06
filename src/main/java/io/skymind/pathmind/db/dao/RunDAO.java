@@ -1,5 +1,18 @@
 package io.skymind.pathmind.db.dao;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
@@ -13,18 +26,6 @@ import io.skymind.pathmind.data.TrainingError;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
-import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 public class RunDAO
@@ -70,6 +71,14 @@ public class RunDAO
 
     public void markAsNotificationSent(long runId){
     	RunRepository.markAsNotificationSent(ctx, runId);
+    }
+    
+    /**
+     * This is used in case a run is restarted, so that Notification Sent value is cleared
+     * and a notification can be sent again after the training is completed
+     */
+    public void clearNotificationSentInfo(long experimentId, int runType) {
+    	RunRepository.clearNotificationSentInfo(ctx, experimentId, runType);
     }
 
     public List<Long> getExecutingRuns() {
