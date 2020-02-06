@@ -2,6 +2,7 @@ package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.data.TrainingError;
 import org.jooq.DSLContext;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -15,6 +16,7 @@ public class TrainingErrorDAO {
 		this.ctx = ctx;
 	}
 
+	@Cacheable("training_errors_by_keyword")
 	public Optional<TrainingError> getErrorByKeyword(String keyword) {
 		var error = TrainingErrorRepository.getErrorByKeyword(ctx, keyword);
 		if(error == null) {
