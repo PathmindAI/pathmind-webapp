@@ -259,7 +259,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				.filter(p -> p.getRun().getRunTypeEnum() == runType)
 				.filter(p -> PolicyUtils.getLastScore(p) != null)
 				.max(Comparator.comparing(p -> PolicyUtils.getLastScore(p)));
-		return highestPerformingPolicy.orElse(policies.get(0));
+		return highestPerformingPolicy.orElse(policies.get(policies.size()-1));
 	}
 	
 	private void processSelectedPolicy(Policy selectedPolicy) {
