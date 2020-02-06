@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Guide extends TableImpl<GuideRecord> {
 
-    private static final long serialVersionUID = -2008485042;
+    private static final long serialVersionUID = -1927101603;
 
     /**
      * The reference instance of <code>public.guide</code>
@@ -63,7 +63,7 @@ public class Guide extends TableImpl<GuideRecord> {
     /**
      * The column <code>public.guide.step</code>.
      */
-    public final TableField<GuideRecord, Integer> STEP = createField(DSL.name("step"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+    public final TableField<GuideRecord, Integer> STEP = createField(DSL.name("step"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>public.guide</code> table reference
@@ -110,15 +110,11 @@ public class Guide extends TableImpl<GuideRecord> {
 
     @Override
     public List<ForeignKey<GuideRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<GuideRecord, ?>>asList(Keys.GUIDE__PM_FK_MODEL_PROJECT, Keys.GUIDE__PM_FK_REWARD_SCORE_POLICY);
+        return Arrays.<ForeignKey<GuideRecord, ?>>asList(Keys.GUIDE__PM_FK_MODEL_PROJECT);
     }
 
     public Project project() {
         return new Project(this, Keys.GUIDE__PM_FK_MODEL_PROJECT);
-    }
-
-    public Policy policy() {
-        return new Policy(this, Keys.GUIDE__PM_FK_REWARD_SCORE_POLICY);
     }
 
     @Override
