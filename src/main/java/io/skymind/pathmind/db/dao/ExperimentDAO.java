@@ -11,6 +11,9 @@ import io.skymind.pathmind.data.DashboardItem;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.utils.DashboardQueryParams;
 
+import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_MULTIPLE_BY_USER;
+import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_SINGLE_BY_EXPERIMENT;
+
 @Repository
 public class ExperimentDAO
 {
@@ -50,9 +53,26 @@ public class ExperimentDAO
 	}
 
 	@MonitorExecutionTime
-	public List<DashboardItem> getDashboardItems(DashboardQueryParams dashboardQueryParams) {
- 		return ExperimentRepository.getDashboardItems(ctx, dashboardQueryParams);
- 	}
+	public List<DashboardItem> getDashboardItemsForUser(long userId, int offset, int limit) {
+		var dashboardQueryParams = DashboardQueryParams.builder()
+				.userId(userId)
+				.limit(limit)
+				.offset(offset)
+				.queryType(FETCH_MULTIPLE_BY_USER)
+				.build();
+		return ExperimentRepository.getDashboardItems(ctx, dashboardQueryParams);
+	}
+
+	@MonitorExecutionTime
+	public List<DashboardItem> getSingleDashboardItem(long experimentId) {
+		var dashboardQueryParams = DashboardQueryParams.builder()
+				.experimentId(experimentId)
+				.limit(1)
+				.offset(0)
+				.queryType(FETCH_SINGLE_BY_EXPERIMENT)
+				.build();
+		return ExperimentRepository.getDashboardItems(ctx, dashboardQueryParams);
+	}
 
 	@MonitorExecutionTime
 	public int countDashboardItemsForUser(long userId) {
