@@ -83,10 +83,10 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 						WrapperUtils.wrapSizeFullVertical(
 								experimentGrid),
 						WrapperUtils.wrapSizeFullVertical(
+								createViewNotesField(),
 								rewardFunctionTitle,
 								rewardFunctionEditor,
-								getObservationTextArea,
-								createViewNotesField()),
+								getObservationTextArea),
 						70),
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewExperimentButton(experimentDAO, modelId)));
 	}
@@ -134,15 +134,17 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	}
 
 	private HorizontalLayout createColumnNotesField(Experiment exp) {
-		NotesField notesField = new NotesField(true, "This is an inline field for the notes");
-		// notesField.addClickListener(evt -> showRewardFunction(exp));
+		// TODO: exp.getRewardFunction() has to be changed to a method to get the notes (String)
+		// It now acts as a dummy String
+		NotesField notesField = new NotesField(true, exp.getRewardFunction());
 		return notesField;
 	}
 
 	private HorizontalLayout createViewNotesField() {
-		// get notes String from current model
-		NotesField notesField = new NotesField(false, "This is an inline field for the notes");
-		// notesField.addClickListener(evt -> showRewardFunction(exp));
+		// TODO: currentModel.getGetObservationForRewardFunction() has to be changed 
+		// to a method to get the notes (String)
+		// It now acts as a dummy String
+		NotesField notesField = new NotesField(false, currentModel.getGetObservationForRewardFunction());
 		return notesField;
 	}
 
