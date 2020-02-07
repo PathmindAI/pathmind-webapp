@@ -95,6 +95,11 @@ img {
   height: 31px;
 }
 
+.navbar-logo img {
+  display: block;
+  width: 100%;
+}
+
 .section-label-title {
   font-size: 1.2rem;
   font-weight: bold;
