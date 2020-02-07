@@ -185,7 +185,7 @@ class ExperimentRepository
 				.asTable("POLICY_FOR_LATEST_RUN");
 
 		final Field<LocalDateTime> itemLastActivityDate = DSL.ifnull(DSL.field(EXPERIMENT.LAST_ACTIVITY_DATE),
-				DSL.greatest(EXPERIMENT.LAST_ACTIVITY_DATE, MODEL.LAST_ACTIVITY_DATE,PROJECT.LAST_ACTIVITY_DATE));
+				DSL.greatest(MODEL.LAST_ACTIVITY_DATE,PROJECT.LAST_ACTIVITY_DATE));
 
 		final Result<?> result = ctx.select(EXPERIMENT.ID, EXPERIMENT.NAME,
 				MODEL.ID, MODEL.NAME,
