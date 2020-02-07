@@ -123,15 +123,14 @@ public class AWSExecutionProvider implements ExecutionProvider {
          }
 
         List<String> knownErrsCheck = getTrialStatus(jobHandle, TrainingFile.KNOWN_ERROR);
+        if (errors.size() > 0 || knownErrsCheck.size() > 0) {
+            return RunStatus.Error;
+        }
 
         // todo need to change to use database once Daniel create proper database(TRAINER_JOB)
         ExperimentState experimentState = getExperimentState(jobHandle);
 
         if (experimentState != null) {
-            if (errors.size() > 0 || knownErrsCheck.size() > 0) {
-                return RunStatus.Error;
-            }
-
             if (completes.size() > 0 && completes.size() == trials.size()) {
                 return RunStatus.Completed;
             }
