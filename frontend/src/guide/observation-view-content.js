@@ -18,9 +18,7 @@ class ObservationViewContent extends PolymerElement {
           <li>See the number of people waiting at the door</li>
           <li>See how dirty the kitchen is</li>
         </ol>
-        <p>
-          Code example:
-        </p>
+        <h4>Code example</h4>
         <pre><code>Double obs [] = new Double[] {<br>  getOrder.size(), // number of people waiting at the door<br>  kitchenCleanliness // Kitchen cleanliness level<br>}</code></pre>
         <p>
           <a href$="[[helpArticleLink]]" target="_blank"

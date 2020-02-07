@@ -60,7 +60,6 @@ public abstract class DefaultGuideView extends PathMindDefaultView implements Ha
         return gridWrapper;
 	}
 
-
 	@Override
 	protected void initLoadData() throws InvalidDataException {
 		guideStep = guideDAO.getGuideStep(projectId);
