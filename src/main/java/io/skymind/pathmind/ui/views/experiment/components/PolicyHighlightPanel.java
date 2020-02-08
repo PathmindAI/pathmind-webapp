@@ -59,6 +59,6 @@ public class PolicyHighlightPanel extends VerticalLayout implements PolicyUpdate
 
 	@Override
 	public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-		return policy.getId() == event.getPolicy().getId();
+		return policy != null && policy.getId() == event.getPolicy().getId();
 	}
 }
