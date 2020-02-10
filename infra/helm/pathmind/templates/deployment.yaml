@@ -31,18 +31,18 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
-#          livenessProbe:
-#            httpGet:
-#              path: /
-#              port: 80
-#            initialDelaySeconds: 30
-#            periodSeconds: 5
-#          readinessProbe:
-#            httpGet:
-#              path: /
-#              port: 80
-#            initialDelaySeconds: 8
-#            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 5
           env:
             - name: APPLICATION_URL
               value: "{{ .Values.env.APPLICATION_URL }}"
