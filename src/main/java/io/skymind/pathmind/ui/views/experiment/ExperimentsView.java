@@ -78,9 +78,9 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 		return WrapperUtils.wrapSizeFullVertical(
 				WrapperUtils.wrapWidthFullBetweenHorizontal(createBreadcrumbs(), getSearchBox()),
-				archivesTabPanel,
 				WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-						WrapperUtils.wrapSizeFullVertical(
+					WrapperUtils.wrapSizeFullVertical(
+								archivesTabPanel,
 								experimentGrid),
 						WrapperUtils.wrapSizeFullVertical(
 								createViewNotesField(),

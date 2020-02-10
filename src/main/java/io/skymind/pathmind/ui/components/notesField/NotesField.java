@@ -1,10 +1,12 @@
 package io.skymind.pathmind.ui.components.notesField;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -52,7 +54,7 @@ public class NotesField extends HorizontalLayout {
 
 	private VerticalLayout blockEditableFieldWrapper() {
 		HorizontalLayout headerRow = new HorizontalLayout(
-			new H4("Notes Field"),
+			new Span("Notes Field"),
 			buttonsWrapper()
 		);
 		headerRow.setSpacing(false);
@@ -65,7 +67,7 @@ public class NotesField extends HorizontalLayout {
 			blockEditableField
 		);
 		blockEditableField.setVisible(isEditting);
-		editableFieldWrapper.addClassName("block");
+		editableFieldWrapper.addClassName("notes-block");
 		editableFieldWrapper.setSpacing(false);
 		editableFieldWrapper.setPadding(false);
 		return editableFieldWrapper;
@@ -82,15 +84,19 @@ public class NotesField extends HorizontalLayout {
 		return buttonsWrapper;
 	}
 
-	private Button createButton(String text, Boolean isEnabled) {
-		Button button = new Button(text);
+	private Button createButton(Component icon, String label, Boolean isEnabled) {
+		Button button = new Button(icon);
 		button.setEnabled(isEnabled);
+		button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+		button.getElement().setAttribute("title", label);
 		return button;
 	}
 
-	private void initButtons() {		
-		editButton = createButton("Edit", !isEditting);
-		saveButton = createButton("Save", isEditting);
+	private void initButtons() {
+		Span saveIcon = new Span("");
+		saveIcon.addClassName("save-icon");
+		editButton = createButton(VaadinIcon.EDIT.create(), "Edit", !isEditting);
+		saveButton = createButton(saveIcon, "Save", isEditting);
 
 		editButton.addClickListener(e -> {
 			setIsEditting();
