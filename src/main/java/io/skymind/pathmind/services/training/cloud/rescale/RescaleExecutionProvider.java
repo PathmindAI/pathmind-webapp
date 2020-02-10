@@ -185,13 +185,13 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     @Override
     public String console(String jobHandle) {
-//        final RunStatus runStatus = status(jobHandle);
-//
-//        if (runStatus.equals(RunStatus.Completed)) {
-//            return client.consoleOutput(jobHandle, DEFAULT_RUN_ID);
-//        } else if (runStatus.equals(RunStatus.Running)) {
-//            return client.tailConsole(jobHandle, DEFAULT_RUN_ID);
-//        }
+        final RunStatus runStatus = status(jobHandle).getRunStatus();
+
+        if (runStatus.equals(RunStatus.Completed)) {
+            return client.consoleOutput(jobHandle, DEFAULT_RUN_ID);
+        } else if (runStatus.equals(RunStatus.Running)) {
+            return client.tailConsole(jobHandle, DEFAULT_RUN_ID);
+        }
 
         return null;
     }
