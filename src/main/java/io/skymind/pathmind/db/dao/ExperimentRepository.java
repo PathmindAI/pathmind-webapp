@@ -194,17 +194,15 @@ class ExperimentRepository
 				itemLastActivityDate.as("ITEM_LAST_ACTIVITY_DATE"),
 				policyForLatestRun.asterisk())
 				.from(EXPERIMENT)
-					.rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+					.rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID)).and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
 					.leftJoin(latestRun).on(EXPERIMENT.ID.eq(latestRun.field("experiment_id",
 							RUN.EXPERIMENT_ID.getDataType())))
-					.rightJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+					.rightJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID)).and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
 					.leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
 					.leftJoin(policyForLatestRun).on(policyForLatestRun.field("run_id", POLICY.RUN_ID.getDataType()).eq(latestRun.field(
 						"id", RUN.ID.getDataType())))
 				.where(PATHMIND_USER.ID.eq(userId))
-					.and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
 					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
-					.and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
 				.orderBy(itemLastActivityDate.desc(), EXPERIMENT.ID.desc())
 				.offset(offset)
 				.limit(limit)
@@ -263,13 +261,11 @@ class ExperimentRepository
 	static int countDashboardItemsForUser(DSLContext ctx, long userId) {
 		return ctx.selectCount()
 				.from(EXPERIMENT)
-					.rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
-					.rightJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+					.rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID)).and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
+					.rightJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID)).and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
 					.leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
 				.where(PATHMIND_USER.ID.eq(userId))
-					.and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
 					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
-					.and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
 				.fetchOne(count());
 	}
 }
