@@ -1,17 +1,17 @@
 package io.skymind.pathmind.ui.components.archive;
 
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+
 import io.skymind.pathmind.data.ArchivableData;
 import io.skymind.pathmind.ui.components.PathmindButton;
-import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
-
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 /**
  * Button is used because if we directly use the Icon then when we click on the icon it also results in
@@ -49,10 +49,8 @@ public class ArchivesButton<T> extends PathmindButton
 	// Weird looking logic but it's so that we stay on the same page once you reverse the archive value. We also
 	// need to set the items here so that the item is removed from the table.
 	private void changeArchiveStatus(Grid<T> grid, ArchivableData data, Function<Boolean, List<T>> getFilteredData, BiConsumer<Long, Boolean> archiveDAO) {
-		ExceptionWrapperUtils.handleButtonClicked(() -> {
-			archiveDAO.accept(data.getId(), !data.isArchived());
-			data.setArchived(!data.isArchived());
-			grid.setItems(getFilteredData.apply(!data.isArchived()));
-		});
+		archiveDAO.accept(data.getId(), !data.isArchived());
+		data.setArchived(!data.isArchived());
+		grid.setItems(getFilteredData.apply(!data.isArchived()));
 	}
 }

@@ -1,6 +1,7 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
 import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
@@ -15,7 +16,6 @@ import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import io.skymind.pathmind.services.training.versions.RescaleFileManager;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.io.File;
@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
+//@Service
 @Slf4j
 public class RescaleExecutionProvider implements ExecutionProvider {
 
@@ -39,6 +39,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         KNOWN_ERROR_MSGS.add("Fatal Python error: Segmentation fault");
         KNOWN_ERROR_MSGS.add("Worker crashed during call to train()");
         KNOWN_ERROR_MSGS.add("java.lang.ArrayIndexOutOfBoundsException");
+        KNOWN_ERROR_MSGS.add("NotADirectoryError: ");
     }
 
     public RescaleExecutionProvider(RescaleRestApiClient client) {
@@ -71,6 +72,8 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
         // Check errors
         checkErrors(instructions);
+
+        instructions.add("echo Done  ;\n");
 
         // Start actual execution of the job
         return startTrainingRun(job, instructions, files);
@@ -192,6 +195,11 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         return null;
     }
 
+    @Override
+    public ExecutionProviderMetaDataDAO.ExecutionProviderClass executionProviderClass() {
+        return ExecutionProviderMetaDataDAO.ExecutionProviderClass.Rescale;
+    }
+
     /**
      * get the contents for the given files regardless of the status of job(running or complete)
      *
@@ -232,6 +240,11 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String uploadModel(long modelId, byte[] modelFile) {
+        throw new UnsupportedOperationException("Not currently supported");
     }
 
     @Override
@@ -431,7 +444,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     private void checkErrors(List<String> instructions) {
         instructions.addAll(KNOWN_ERROR_MSGS.stream()
-                .map(msg -> "grep -m 2 \"" + msg + "\" " + TrainingFile.RESCALE_LOG + " >> " + TrainingFile.KNOWN_ERROR)
+                .map(msg -> "grep -m 2 \"" + msg + "\" " + TrainingFile.SCRIPT_LOG + " >> " + TrainingFile.KNOWN_ERROR)
                 .collect(Collectors.toList()));
     }
 }

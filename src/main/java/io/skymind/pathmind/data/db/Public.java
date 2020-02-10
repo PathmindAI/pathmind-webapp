@@ -7,10 +7,15 @@ package io.skymind.pathmind.data.db;
 import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.Experiment;
 import io.skymind.pathmind.data.db.tables.Model;
+import io.skymind.pathmind.data.db.tables.ModelFile;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
 import io.skymind.pathmind.data.db.tables.Policy;
+import io.skymind.pathmind.data.db.tables.PolicyFile;
+import io.skymind.pathmind.data.db.tables.PolicySnapshot;
 import io.skymind.pathmind.data.db.tables.Project;
+import io.skymind.pathmind.data.db.tables.RewardScore;
 import io.skymind.pathmind.data.db.tables.Run;
+import io.skymind.pathmind.data.db.tables.TrainerJob;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +41,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -1455313339;
+    private static final long serialVersionUID = -1802267987;
 
     /**
      * The reference instance of <code>public</code>
@@ -59,6 +64,11 @@ public class Public extends SchemaImpl {
     public final Model MODEL = io.skymind.pathmind.data.db.tables.Model.MODEL;
 
     /**
+     * The table <code>public.model_file</code>.
+     */
+    public final ModelFile MODEL_FILE = io.skymind.pathmind.data.db.tables.ModelFile.MODEL_FILE;
+
+    /**
      * The table <code>public.pathmind_user</code>.
      */
     public final PathmindUser PATHMIND_USER = io.skymind.pathmind.data.db.tables.PathmindUser.PATHMIND_USER;
@@ -69,14 +79,34 @@ public class Public extends SchemaImpl {
     public final Policy POLICY = io.skymind.pathmind.data.db.tables.Policy.POLICY;
 
     /**
+     * The table <code>public.policy_file</code>.
+     */
+    public final PolicyFile POLICY_FILE = io.skymind.pathmind.data.db.tables.PolicyFile.POLICY_FILE;
+
+    /**
+     * The table <code>public.policy_snapshot</code>.
+     */
+    public final PolicySnapshot POLICY_SNAPSHOT = io.skymind.pathmind.data.db.tables.PolicySnapshot.POLICY_SNAPSHOT;
+
+    /**
      * The table <code>public.project</code>.
      */
     public final Project PROJECT = io.skymind.pathmind.data.db.tables.Project.PROJECT;
 
     /**
+     * The table <code>public.reward_score</code>.
+     */
+    public final RewardScore REWARD_SCORE = io.skymind.pathmind.data.db.tables.RewardScore.REWARD_SCORE;
+
+    /**
      * The table <code>public.run</code>.
      */
     public final Run RUN = io.skymind.pathmind.data.db.tables.Run.RUN;
+
+    /**
+     * The table <code>public.trainer_job</code>.
+     */
+    public final TrainerJob TRAINER_JOB = io.skymind.pathmind.data.db.tables.TrainerJob.TRAINER_JOB;
 
     /**
      * No further instances allowed
@@ -103,9 +133,14 @@ public class Public extends SchemaImpl {
             ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA,
             Experiment.EXPERIMENT,
             Model.MODEL,
+            ModelFile.MODEL_FILE,
             PathmindUser.PATHMIND_USER,
             Policy.POLICY,
+            PolicyFile.POLICY_FILE,
+            PolicySnapshot.POLICY_SNAPSHOT,
             Project.PROJECT,
-            Run.RUN);
+            RewardScore.REWARD_SCORE,
+            Run.RUN,
+            TrainerJob.TRAINER_JOB);
     }
 }

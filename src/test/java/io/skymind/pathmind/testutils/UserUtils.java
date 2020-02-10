@@ -14,7 +14,6 @@ public class UserUtils
 	public static PathmindUser getNewPathmindUser()
 	{
 		PathmindUser pathmindUser = new PathmindUser();
-		pathmindUser.setName("Name");
 		pathmindUser.setEmail(email1);
 		pathmindUser.setPassword("Password");
 		pathmindUser.setAccountType(1);
@@ -33,7 +32,6 @@ public class UserUtils
 
 	public static void changePathmindUser(PathmindUser pathmindUser)
 	{
-		pathmindUser.setName("Name2");
 		pathmindUser.setEmail(email2);
 		pathmindUser.setPassword("Password2");
 		pathmindUser.setAccountType(2);

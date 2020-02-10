@@ -12,7 +12,7 @@ import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -33,12 +33,13 @@ import io.skymind.pathmind.mock.MockDefaultValues;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
+import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.components.PathmindTextArea;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
+import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.ui.utils.ExceptionWrapperUtils;
 import io.skymind.pathmind.ui.utils.FormUtils;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
@@ -60,9 +61,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private ScreenTitlePanel screenTitlePanel;
 
-    private Label modelRevisionLabel;
-    private Label experimentLabel;
-    private Label projectLabel;
+    private Span modelRevisionLabel;
+    private Span experimentLabel;
+    private Span projectLabel;
 
     private PathmindTextArea errorsTextArea;
     private PathmindTextArea getObservationTextArea;
@@ -94,11 +95,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected Component getMainContent() {
         binder = new Binder<>(Experiment.class);
-
-        return WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                getLeftPanel(),
-                getRightPanel(),
-                DEFAULT_SPLIT_PANE_RATIO);
+        return WrapperUtils.wrapWidthFullVertical(
+                createBreadcrumbs(),
+                WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                        getLeftPanel(),
+                        getRightPanel(),
+                        DEFAULT_SPLIT_PANE_RATIO)
+                );
     }
 
     private Component getLeftPanel() {
@@ -128,7 +131,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
                 WrapperUtils.wrapSizeFullVertical(
-                        new Label("Write your reward function:"),
+                		LabelFactory.createLabel("Write your reward function:"),
                         rewardFunctionEditor),
                 WrapperUtils.wrapSizeFullVertical(errorsTextArea),
                 70);
@@ -172,28 +175,26 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleStartRunButtonClicked() {
-        ExceptionWrapperUtils.handleButtonClicked(() ->
-        {
-            if (!FormUtils.isValidForm(binder, experiment))
-                return;
+        if (!FormUtils.isValidForm(binder, experiment)) {
+        	return;
+        }
 
-            experimentDAO.updateRewardFunction(experiment);
-            segmentIntegrator.rewardFuntionCreated();
-            
-            trainingService.startDiscoveryRun(experiment);
-            segmentIntegrator.discoveryRunStarted();
+        experimentDAO.updateRewardFunction(experiment);
+        segmentIntegrator.rewardFuntionCreated();
+        
+        trainingService.startDiscoveryRun(experiment);
+        segmentIntegrator.discoveryRunStarted();
 
-            ConfirmDialog confirmDialog = new RunConfirmDialog();
-            confirmDialog.open();
+        ConfirmDialog confirmDialog = new RunConfirmDialog();
+        confirmDialog.open();
 
-            UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
-        });
+        UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
     }
 
     private Component getTopStatusPanel() {
-        modelRevisionLabel = new Label();
-        experimentLabel = new Label();
-        projectLabel = new Label();
+        modelRevisionLabel = LabelFactory.createLabel("");
+        experimentLabel = LabelFactory.createLabel("");
+        projectLabel = LabelFactory.createLabel("");
 
         FormLayout formLayout = GuiUtils.getTitleBarFullWidth(3);
 
@@ -213,15 +214,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleSaveDraftClicked() {
-        ExceptionWrapperUtils.handleButtonClicked(() ->
-        {
-            if (!FormUtils.isValidForm(binder, experiment))
-                return;
+        if (!FormUtils.isValidForm(binder, experiment)) {
+        	return;
+        }
 
-            experimentDAO.updateRewardFunction(experiment);
-            segmentIntegrator.draftSaved();
-            NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
-        });
+        experimentDAO.updateRewardFunction(experiment);
+        segmentIntegrator.draftSaved();
+        NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
+    }
+
+    private Breadcrumbs createBreadcrumbs() {        
+        return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
     }
 
 	@Override
@@ -236,11 +239,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     protected void initLoadData() throws InvalidDataException {
-        experiment = experimentDAO.getExperiment(experimentId);
+        experiment = experimentDAO.getExperiment(experimentId)
+                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		if(MockDefaultValues.isDebugAccelerate() && StringUtils.isEmpty(experiment.getRewardFunction()))
 			experiment.setRewardFunction(MockDefaultValues.NEW_EXPERIMENT_REWARD_FUNCTION);
-        if (experiment == null)
-            throw new InvalidDataException("Attempted to access Experiment: " + experimentId);
     }
 
     @Override

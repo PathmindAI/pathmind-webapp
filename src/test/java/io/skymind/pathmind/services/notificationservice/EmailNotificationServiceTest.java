@@ -26,7 +26,8 @@ public class EmailNotificationServiceTest extends PathmindApplicationTests
 		PathmindUser pathmindUser = new PathmindUser();
 		pathmindUser.setEmail(testEmail);
 		pathmindUser.setEmailVerificationToken(UUID.randomUUID());
-		pathmindUser.setName("Test User");
+		pathmindUser.setFirstname("Test");
+		pathmindUser.setLastname("User");
 		emailNotificationService.sendVerificationEmail(pathmindUser);
 	}
 
@@ -41,7 +42,8 @@ public class EmailNotificationServiceTest extends PathmindApplicationTests
 	{
 		PathmindUser pathmindUser = new PathmindUser();
 		pathmindUser.setEmail(testEmail);
-		pathmindUser.setName("Test User");
+		pathmindUser.setFirstname("Test");
+		pathmindUser.setLastname("User");
 		emailNotificationService.sendVerificationEmail(pathmindUser);
 		Assert.assertNotNull(pathmindUser.getEmailVerificationToken());
 	}
@@ -52,7 +54,8 @@ public class EmailNotificationServiceTest extends PathmindApplicationTests
 		PathmindUser pathmindUser = new PathmindUser();
 		pathmindUser.setEmail(testEmail);
 		pathmindUser.setEmailVerificationToken(UUID.randomUUID());
-		pathmindUser.setName("Test User");
+		pathmindUser.setFirstname("Test");
+		pathmindUser.setLastname("User");
 		emailNotificationService.sendResetPasswordEmail(pathmindUser);
 	}
 
@@ -61,7 +64,8 @@ public class EmailNotificationServiceTest extends PathmindApplicationTests
 	{
 		PathmindUser pathmindUser = new PathmindUser();
 		pathmindUser.setEmail(testEmail);
-		pathmindUser.setName("Test User");
+		pathmindUser.setFirstname("Test");
+		pathmindUser.setLastname("User");
 		emailNotificationService.sendResetPasswordEmail(pathmindUser);
 		Assert.assertNotNull(pathmindUser.getEmailVerificationToken());
 	}

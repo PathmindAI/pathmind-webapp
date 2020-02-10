@@ -1,13 +1,12 @@
 package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.data.*;
-import io.skymind.pathmind.data.utils.PolicyUtils;
 import org.jooq.DSLContext;
-import org.jooq.JSONB;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,7 +18,7 @@ class PolicyRepository
 
 	protected static List<Policy> getActivePoliciesForUser(DSLContext ctx, long userId) {
         Result<?> result = ctx
-                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM)
+                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM)
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
                 .select(EXPERIMENT.ID, EXPERIMENT.NAME)
                 .select(MODEL.ID, MODEL.NAME)
@@ -45,8 +44,7 @@ class PolicyRepository
 
 	protected static Policy getPolicy(DSLContext ctx, long policyId) {
         Record record = ctx
-				.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
-                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE)
+				.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
                 .select(EXPERIMENT.ID, EXPERIMENT.NAME)
                 .select(MODEL.ID, MODEL.NAME)
@@ -61,13 +59,7 @@ class PolicyRepository
 				.fetchOne();
 
 		Policy policy = record.into(POLICY).into(Policy.class);
-
-		// PERFORMANCE -> Until we remove the json progress string this is to help optimizing the memory usage.
-		PolicyUtils.processProgressJson(policy, policy.getProgress());
-		policy.setProgress(null);
-
 		addParentDataModelObjects(record, policy);
-
 		return policy;
     }
 
@@ -86,32 +78,32 @@ class PolicyRepository
 
 	protected static boolean hasPolicyFile(DSLContext ctx, long policyId) {
 		return ctx.select(DSL.one())
-				.from(POLICY)
-				.where(POLICY.ID.eq(policyId)
-						.and(POLICY.FILE.isNotNull())
-						.and(POLICY.FILE.notEqual(SAVING.getBytes())))
+				.from(POLICY_FILE)
+				.where(POLICY_FILE.POLICY_ID.eq(policyId)
+						.and(POLICY_FILE.FILE.isNotNull())
+						.and(POLICY_FILE.FILE.notEqual(SAVING.getBytes())))
 				.fetchOptional().isPresent();
 	}
 
 	protected static byte[] getPolicyFile(DSLContext ctx, long policyId) {
-		return ctx.select(POLICY.FILE)
-				.from(POLICY)
-				.where(POLICY.ID.eq(policyId)
-						.and(POLICY.FILE.isNotNull()))
-				.fetchOne(POLICY.FILE);
+		return ctx.select(POLICY_FILE.FILE)
+				.from(POLICY_FILE)
+				.where(POLICY_FILE.POLICY_ID.eq(policyId)
+						.and(POLICY_FILE.FILE.isNotNull()))
+				.fetchOne(POLICY_FILE.FILE);
 	}
 
 	protected static long insertPolicy(DSLContext ctx, Policy policy) {
 		return ctx.insertInto(POLICY)
-				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.PROGRESS, POLICY.NOTES)
-				.values(policy.getName(), policy.getRunId(), policy.getExternalId(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize(), JSONB.valueOf(policy.getProgress()), policy.getNotes())
+				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
+				.values(policy.getName(), policy.getRunId(), policy.getExternalId(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize(), policy.getNotes())
 				.returning(POLICY.ID)
 				.fetchOne()
 				.getValue(POLICY.ID);
 	}
 
 	protected static List<Policy> getPoliciesForExperiment(DSLContext ctx, long experimentId) {
-		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.PROGRESS, POLICY.RUN_ID, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
+		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.RUN_ID, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
 				.select(EXPERIMENT.asterisk())
 				.select(RUN.asterisk())
 				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.ARCHIVED)
@@ -124,24 +116,8 @@ class PolicyRepository
 				.where(RUN.EXPERIMENT_ID.eq(experimentId))
 				.orderBy(POLICY.ID)
 				.fetch(record -> {
-					final Policy policy = new Policy();
-					policy.setExternalId(record.get(POLICY.EXTERNAL_ID));
-					policy.setId(record.get(POLICY.ID));
-					policy.setName(record.get(POLICY.NAME));
-					policy.setRunId(record.get(POLICY.RUN_ID));
-					policy.setLearningRate(record.get(POLICY.LEARNING_RATE));
-					policy.setGamma(record.get(POLICY.GAMMA));
-					policy.setBatchSize(record.get(POLICY.BATCH_SIZE));
-					policy.setNotes(record.get(POLICY.NOTES));
-
-					// PERFORMANCE -> TODO -> Although we process everything we could also get the values from the database. However until scores is also stored in the database
-					// we might as well do it here.
-					PolicyUtils.processProgressJson(policy, record.get(POLICY.PROGRESS).toString());
-					policy.setProgress(null);
-
-//					.. here here here notes on ALL SQL calls.
+					Policy policy = record.into(POLICY).into(Policy.class);
 					addParentDataModelObjects(record, policy);
-
 					return policy;
 				});
 
@@ -156,13 +132,12 @@ class PolicyRepository
 	}
 
 	// STEPH -> Still passing progressJSon as a temporary solution until I have the time to completely replace it and put the data in the database.
-	protected static long updateOrInsertPolicy(DSLContext ctx, Policy policy, JSONB progressJson) {
+	protected static long updateOrInsertPolicy(DSLContext ctx, Policy policy) {
 		return ctx.insertInto(POLICY)
-				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.PROGRESS, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
-				.values(policy.getName(), policy.getRunId(), policy.getExternalId(), progressJson, policy.getStartedAt(), policy.getStoppedAt(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize(), policy.getNotes())
+				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
+				.values(policy.getName(), policy.getRunId(), policy.getExternalId(), policy.getStartedAt(), policy.getStoppedAt(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize(), policy.getNotes())
 				.onConflict(POLICY.RUN_ID, POLICY.EXTERNAL_ID)
 				.doUpdate()
-				.set(POLICY.PROGRESS, progressJson)
 				.set(POLICY.STARTED_AT, policy.getStartedAt())
 				.set(POLICY.STOPPED_AT, policy.getStoppedAt())
 				.returning(POLICY.ID)
@@ -184,18 +159,43 @@ class PolicyRepository
 				.execute();
 	}
 
-	protected static JSONB getProgress(DSLContext ctx, long policyId) {
-		return ctx.select(POLICY.PROGRESS)
-				.from(POLICY)
-				.where(POLICY.ID.eq(policyId))
-				.fetchOne()
-				.get(POLICY.PROGRESS);
+	protected static byte[] getSnapshotFile(DSLContext ctx, long policyId) {
+		return ctx.select(POLICY_SNAPSHOT.SNAPSHOT)
+				.from(POLICY_SNAPSHOT)
+				.where(POLICY_SNAPSHOT.POLICY_ID.eq(policyId))
+				.fetchOne(POLICY_SNAPSHOT.SNAPSHOT);
 	}
 
-	protected static byte[] getSnapshotFile(DSLContext ctx, long policyId) {
-		return ctx.select(POLICY.SNAPSHOT)
+	protected static void savePolicyFile(DSLContext ctx, long runId, String externalId, byte[] policyFile) {
+		ctx.insertInto(POLICY_FILE)
+				.set(POLICY_FILE.POLICY_ID, ctx.select(POLICY.ID).from(POLICY).where(POLICY.EXTERNAL_ID.eq(externalId).and(POLICY.RUN_ID.eq(runId))))
+				.set(POLICY_FILE.FILE, policyFile)
+				.onConflictDoNothing()
+				.execute();
+	}
+
+	protected static void saveCheckpointFile(DSLContext ctx, long runId, String externalId, byte[] checkpointFile) {
+		ctx.insertInto(POLICY_SNAPSHOT)
+				.set(POLICY_SNAPSHOT.POLICY_ID, ctx.select(POLICY.ID).from(POLICY).where(POLICY.EXTERNAL_ID.eq(externalId).and(POLICY.RUN_ID.eq(runId))))
+				.set(POLICY_SNAPSHOT.SNAPSHOT, checkpointFile)
+				.onConflictDoNothing()
+				.execute();
+	}
+
+	public static List<Policy> getExportedPoliciesByRunId(DSLContext ctx, long runId) {
+		return ctx.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT,
+				POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.EXPORTED_AT)
 				.from(POLICY)
+				.where(POLICY.RUN_ID.eq(runId))
+				.and(POLICY.EXPORTED_AT.isNotNull())
+				.fetch(record -> record.into(POLICY).into(Policy.class));
+	}
+
+	static void updateExportedDate(DSLContext ctx, long policyId) {
+		ctx.update(POLICY)
+				.set(POLICY.EXPORTED_AT, LocalDateTime.now())
 				.where(POLICY.ID.eq(policyId))
-				.fetchOne(POLICY.SNAPSHOT);
+				.execute();
+
 	}
 }

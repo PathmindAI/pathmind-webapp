@@ -1,33 +1,50 @@
 package io.skymind.pathmind.ui.views.login;
 
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.WELCOME_TEXT;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.OptionalParameter;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
+
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
+import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
-import java.util.List;
 
 @Route(Routes.LOGIN_URL)
 @Theme(Lumo.class)
@@ -60,15 +77,12 @@ public class LoginView extends HorizontalLayout
 					 @Value("${pathmind.terms-of-use.url}") String termsOfUseUrl)
 	{
 		addClassName("login-panel-cont");
-		Label welcome = new Label("Welcome to");
-		welcome.setClassName("welcome-text");
+		Span welcome = LabelFactory.createLabel("Welcome to", WELCOME_TEXT);
 		Image img = new Image("frontend/images/pathmind-logo.png", "Pathmind logo");
 		img.setClassName("logo");
 		img.setWidth("200px");
 
-		Div title = new Div();
-		title.add(new Label("Sign in to your new account!"));
-		title.setClassName("title");
+		H3 title = new H3("Sign In");
 
 		badCredentials.add(new Span("Incorrect username or password"));
 		badCredentials.setClassName("error-message");
@@ -79,8 +93,8 @@ public class LoginView extends HorizontalLayout
 		Div innerContent = new Div();
 		innerContent.setClassName("inner-content");
 		// Temporarily block new signups for public beta - issue https://github.com/SkymindIO/pathmind-webapp/issues/356
-		// innerContent.add(badCredentials, emailNotVerified, createLoginForm(), createSignUp());
-		innerContent.add(badCredentials, emailNotVerified, createLoginForm());
+		// innerContent.add(title, badCredentials, emailNotVerified, createLoginForm(), createSignUp());
+		innerContent.add(title, badCredentials, emailNotVerified, createLoginForm());
 
 		Div policy = new Div();
 		policy.addClassName("policy");
@@ -93,7 +107,7 @@ public class LoginView extends HorizontalLayout
 		Div loginPanel = new Div();
 		add(loginPanel);
 		loginPanel.setClassName("content");
-		loginPanel.add(welcome, img, title, innerContent, policy);
+		loginPanel.add(welcome, img, innerContent, policy);
 	}
 
 	private void updateEmailNotVerified() {
@@ -120,14 +134,12 @@ public class LoginView extends HorizontalLayout
 	}
 
 	private Component createSignUp() {
-		Label dontHaveAccount = new Label("Don't have an account?");
+		Span dontHaveAccount = new Span("Don't have an account?");
 		dontHaveAccount.getStyle().set("color", "var(--pm-secondary-text-color)");
-		Button start = new Button("Get started");
-		start.setThemeName("tertiary");
-		start.addClickListener(e -> UI.getCurrent().navigate(SignUpView.class));
+		RouterLink start = new RouterLink("Get started", SignUpView.class);
 
 		Div signUpCont = new Div();
-		signUpCont.getStyle().set("flex-shrink", "0");
+		signUpCont.addClassName("account-help-wrapper");
 		signUpCont.add(dontHaveAccount, start);
 
 		return signUpCont;

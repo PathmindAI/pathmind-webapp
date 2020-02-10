@@ -1,6 +1,6 @@
 package io.skymind.pathmind.db.dao;
 
-import static io.skymind.pathmind.data.db.Tables.POLICY;
+import static io.skymind.pathmind.data.db.Tables.*;
 import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.data.db.tables.Model.MODEL;
 import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
@@ -22,6 +22,8 @@ import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.data.db.tables.records.RunRecord;
+import org.jooq.Record1;
+import org.jooq.Result;
 
 class RunRepository
 {
@@ -95,26 +97,14 @@ class RunRepository
         return ctx.selectDistinct(Tables.RUN.ID)
                 .from(Tables.RUN)
                 .leftOuterJoin(POLICY)
-                .on(POLICY.RUN_ID.eq(Tables.RUN.ID))
+                    .on(POLICY.RUN_ID.eq(Tables.RUN.ID))
+                .leftOuterJoin(POLICY_FILE)
+                    .on(POLICY.ID.eq(POLICY_FILE.POLICY_ID))
                 .where(Tables.RUN.STATUS.eq(RunStatus.Starting.getValue())
                         .or(Tables.RUN.STATUS.eq(RunStatus.Running.getValue()))
                         .or(Tables.RUN.STATUS.eq(RunStatus.Completed.getValue()))
-                        .and(POLICY.FILE.isNull()))
+                        .and(POLICY_FILE.FILE.isNull()))
                 .fetch(Tables.RUN.ID);
-    }
-
-    protected static void savePolicyFile(DSLContext ctx, long runId, String externalId, byte[] policyFile) {
-        ctx.update(POLICY)
-                .set(POLICY.FILE, policyFile)
-                .where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.eq(externalId)))
-                .execute();
-    }
-
-    protected static void saveCheckpointFile(DSLContext ctx, long runId, String externalId, byte[] checkpointFile) {
-        ctx.update(POLICY)
-                .set(POLICY.SNAPSHOT, checkpointFile)
-                .where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.eq(externalId)))
-                .execute();
     }
 
     protected static Map<Long, List<String>> getStoppedPolicyNamesForRuns(DSLContext ctx, List<Long> runIds) {
