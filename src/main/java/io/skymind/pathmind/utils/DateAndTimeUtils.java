@@ -26,7 +26,7 @@ public class DateAndTimeUtils
 			return STANDARD_DATE_AND_TIME_SHORT_FOMATTER.format(localDateTime);
 		} else {
 			ZonedDateTime serverDateTime = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
-			ZonedDateTime userDateTime = serverDateTime.withZoneSameLocal(ZoneId.of(userZoneId));
+			ZonedDateTime userDateTime = serverDateTime.withZoneSameInstant(ZoneId.of(userZoneId));
 			return STANDARD_DATE_AND_TIME_SHORT_FOMATTER.format(userDateTime);
 		}
 	}
