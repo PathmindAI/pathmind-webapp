@@ -115,6 +115,11 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
             stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).stream().forEach(finishPolicyName -> {
                 // todo make saving to enum or static final variable (currently defined in PolicyDAO).
                 final byte[] policyFile = provider.policy(jobHandle, finishPolicyName);
+                if (policyFile == null) {
+                    log.warn("policy file for " + finishPolicyName + " is not ready");
+                    return;
+                }
+
                 policyDAO.savePolicyFile(runId, finishPolicyName, policyFile);
 
                 // save the last checkpoint

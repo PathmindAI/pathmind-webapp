@@ -113,7 +113,7 @@ public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUp
 
 	@Override
 	public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-		return getPolicy().getId() == event.getPolicy().getId();
+		return getPolicy() != null && getPolicy().getId() == event.getPolicy().getId();
 	}
 
 	private void updateElapsedTimer(Policy policy) {
