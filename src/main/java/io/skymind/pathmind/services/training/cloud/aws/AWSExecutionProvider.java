@@ -1,7 +1,7 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.skymind.pathmind.constants.ProviderJobStatus;
+import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;

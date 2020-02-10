@@ -1,6 +1,6 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
-import io.skymind.pathmind.constants.ProviderJobStatus;
+import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.PathmindUser;

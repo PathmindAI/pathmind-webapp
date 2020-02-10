@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.constants.ProviderJobStatus;
+import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;

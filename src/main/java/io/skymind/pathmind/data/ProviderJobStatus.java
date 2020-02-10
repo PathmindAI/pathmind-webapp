@@ -1,9 +1,10 @@
-package io.skymind.pathmind.constants;
+package io.skymind.pathmind.data;
+
+import io.skymind.pathmind.constants.RunStatus;
 
 import java.util.Collections;
 import java.util.List;
 
-// TODO (KW): 04.02.2020 move to another package
 public class ProviderJobStatus {
 	private RunStatus runStatus;
 	private List<String> description;
