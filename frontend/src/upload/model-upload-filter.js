@@ -1,3 +1,5 @@
+import { BLACK_LIST } from "./black-list.js";
+
 function filter(files) {
   Array.prototype.forEach.call(
     files,
@@ -10,6 +12,9 @@ function filter(files) {
 }
 
 function matchesFilter(filePath) {
+  if (BLACK_LIST.some(black_listed => filePath.match(black_listed))) {
+    return false;
+  }
   if (filePath.match("^model.jar")) {
     return true;
   } else if (filePath.match("^database//*")) {
