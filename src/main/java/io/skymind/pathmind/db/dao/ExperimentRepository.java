@@ -141,8 +141,8 @@ class ExperimentRepository
 	 	       greatest(e.last_activity_date, m.last_activity_date, p.last_activity_date) AS ITEM_LAST_ACTIVITY_DATE,
 	 	       latest_run.*
 	 	FROM experiment e
-	 	RIGHT JOIN model m ON m.id = e.model_id
-	 	RIGHT JOIN project p ON p.id = m.project_id
+	 	RIGHT JOIN model m ON m.id = e.model_id AND (e.archived = FALSE OR e.archived IS NULL)
+	 	RIGHT JOIN project p ON p.id = m.project_id AND (m.archived = FALSE OR m.archived IS NULL)
 	 	LEFT JOIN pathmind_user u ON u.id = p.pathmind_user_id
 	 	LEFT JOIN
 	 	  (SELECT DISTINCT ON (experiment_id) id, experiment_id, name, run_type, started_at, stopped_at, status
@@ -156,8 +156,6 @@ class ExperimentRepository
 	 	   WHERE policy.exported_at IS NOT NULL
 	 	   GROUP BY policy.run_id) po ON po.run_id = latest_run.id
 	 	WHERE p.pathmind_user_id = $pathmind_user_id
-	 	  AND (e.archived = FALSE OR e.archived IS NULL)
-	 	  AND (m.archived = FALSE OR m.archived IS NULL)
 	 	  AND (p.archived = FALSE OR p.archived IS NULL)
 	 	ORDER BY ITEM_LAST_ACTIVITY_DATE DESC,
 	 	         e.id DESC
@@ -246,16 +244,11 @@ class ExperimentRepository
 	 * <pre>
 		 SELECT COUNT(*)
 		 FROM experiment e
-		 RIGHT JOIN model m ON m.id = e.model_id
-		 RIGHT JOIN project p ON p.id = m.project_id
+		 RIGHT JOIN model m ON m.id = e.model_id AND (e.archived = FALSE OR e.archived IS NULL)
+		 RIGHT JOIN project p ON p.id = m.project_id AND (m.archived = FALSE OR m.archived IS NULL)
 		 LEFT JOIN pathmind_user u ON u.id = p.pathmind_user_id
 		 WHERE p.pathmind_user_id = $pathmind_user_id
-		 	AND (e.archived = FALSE
-		 		OR e.archived IS NULL)
-		 	AND (m.archived = FALSE
-		 		OR m.archived IS NULL)
-		 	AND (p.archived = FALSE
-		 		OR p.archived IS NULL)
+		 	AND (p.archived = FALSE OR p.archived IS NULL)
 	 * </pre>
 	 */
 	static int countDashboardItemsForUser(DSLContext ctx, long userId) {
