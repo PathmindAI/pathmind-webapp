@@ -12,6 +12,7 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -30,6 +31,7 @@ import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
@@ -80,12 +82,17 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		// Hence the workaround below:
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
 			createBreadcrumbs(),
-			new ViewSection(
-				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-				archivesTabPanel,
-				modelGrid,
-				instructionsDiv
-			),
+			WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+				WrapperUtils.wrapSizeFullVertical(
+					archivesTabPanel,
+					new ViewSection(
+						WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
+						modelGrid,
+						instructionsDiv
+					)
+				),
+				createViewNotesField(),
+			70),
 			WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
 		);
 		return gridWrapper;
@@ -142,6 +149,10 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 				.setHeader("Last Activity")
 				.setResizable(true)
 				.setSortable(true);
+		modelGrid.addComponentColumn(Model -> createColumnNotesField(Model))
+				.setHeader("Notes")
+				.setResizable(true)
+				.setSortable(false);
 
 		modelGrid.addItemClickListener(event -> getUI().ifPresent(ui -> UI.getCurrent().navigate(ExperimentsView.class, event.getItem().getId())));
 
@@ -155,6 +166,27 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 	private Breadcrumbs createBreadcrumbs() {
 		return new Breadcrumbs(projectDAO.getProject(projectId));
+	}
+
+	private HorizontalLayout createColumnNotesField(Model model) {
+		// TODO: model.getGetObservationForRewardFunction() has to be changed to a method to get the notes (String)
+		// It now acts as a dummy String
+		NotesField notesField = new NotesField(true, model.getGetObservationForRewardFunction());
+		return notesField;
+	}
+
+	private HorizontalLayout createViewNotesField() {
+		// TODO: projectDAO.getProject(projectId).getName() has to be changed 
+		// to a method to get the notes (String)
+		// It now acts as a dummy String
+		NotesField notesField = new NotesField(
+			false,
+			"Project Notes",
+			projectDAO.getProject(projectId).getName(),
+			updatedNotes -> System.out.println("callback: " + updatedNotes)
+			/* TODO: implement "Notes successfully saved." or "Notes not saved." in the callback */
+		);
+		return notesField;
 	}
 
 	@Override

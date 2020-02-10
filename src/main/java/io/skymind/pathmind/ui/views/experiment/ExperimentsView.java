@@ -144,7 +144,13 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		// TODO: currentModel.getGetObservationForRewardFunction() has to be changed 
 		// to a method to get the notes (String)
 		// It now acts as a dummy String
-		NotesField notesField = new NotesField(false, currentModel.getGetObservationForRewardFunction());
+		NotesField notesField = new NotesField(
+			false,
+			"Model Notes",
+			currentModel.getGetObservationForRewardFunction(),
+			updatedNotes -> System.out.println("callback: " + updatedNotes)
+			/* TODO: implement "Notes successfully saved." or "Notes not saved." in the callback */
+		);
 		return notesField;
 	}
 

@@ -1,5 +1,7 @@
 package io.skymind.pathmind.ui.components.notesField;
 
+import java.util.function.Consumer;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -14,19 +16,29 @@ import com.vaadin.flow.component.textfield.TextArea;
 @CssImport("./styles/components/notes-field.css")
 public class NotesField extends HorizontalLayout {
 
+	private String title;
 	private String notesText;
 	private Boolean isEditting = false;
 	private Button editButton;
 	private Button saveButton;
 	private Div blockViewOnlyField;
 	private TextArea blockEditableField;
+	private Consumer<String> saveCallBack;
 
 	public NotesField(Boolean isSingleLine, String text) {
+		this(isSingleLine, null, text, null);
+	}
+
+	public NotesField(Boolean isSingleLine, String title, String text, Consumer<String> saveCallbackFn) {
 		this.notesText = text;
+		this.title = title;
 		if (isSingleLine) {
 			add(inlineViewOnlyField());
 		} else {
 			add(blockEditableFieldWrapper());
+		}
+		if (saveCallbackFn != null) {
+			saveCallBack = saveCallbackFn;
 		}
 		setSpacing(false);
 		addClassName("notes-field-wrapper");
@@ -54,7 +66,7 @@ public class NotesField extends HorizontalLayout {
 
 	private VerticalLayout blockEditableFieldWrapper() {
 		HorizontalLayout headerRow = new HorizontalLayout(
-			new Span("Notes Field"),
+			new Span(title),
 			buttonsWrapper()
 		);
 		headerRow.setSpacing(false);
@@ -77,8 +89,8 @@ public class NotesField extends HorizontalLayout {
 		// TODO: set state of each button in click event listener
 		initButtons();
 		HorizontalLayout buttonsWrapper = new HorizontalLayout(
-			editButton,
-			saveButton
+			saveButton,
+			editButton
 		);
 		buttonsWrapper.setSpacing(false);
 		return buttonsWrapper;
@@ -95,8 +107,8 @@ public class NotesField extends HorizontalLayout {
 	private void initButtons() {
 		Span saveIcon = new Span("");
 		saveIcon.addClassName("save-icon");
-		editButton = createButton(VaadinIcon.EDIT.create(), "Edit", !isEditting);
-		saveButton = createButton(saveIcon, "Save", isEditting);
+		editButton = createButton(VaadinIcon.EDIT.create(), "Edit Notes", !isEditting);
+		saveButton = createButton(saveIcon, "Save Notes", isEditting);
 
 		editButton.addClickListener(e -> {
 			setIsEditting();
@@ -124,6 +136,9 @@ public class NotesField extends HorizontalLayout {
 	};
 
 	public void saveButtonOnClick() {
+		String updatedNotesText = blockEditableField.getValue();
+		blockViewOnlyField.setText(updatedNotesText);
 		System.out.println("Clicked Save Button");
+		saveCallBack.accept(updatedNotesText);
 	};
 }
