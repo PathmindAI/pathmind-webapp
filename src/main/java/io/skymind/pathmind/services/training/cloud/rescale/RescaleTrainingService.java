@@ -6,9 +6,9 @@ import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
-import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
@@ -17,19 +17,20 @@ import lombok.extern.slf4j.Slf4j;
 //@Service
 @Slf4j
 public class RescaleTrainingService extends TrainingService {
-    public RescaleTrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
-        super(false, executionProvider, runDAO, modelDAO, policyDAO, executionProviderMetaDataDAO);
+    public RescaleTrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelService modelService,
+                                  PolicyDAO policyDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
+        super(false, executionProvider, runDAO, modelService, policyDAO, executionProviderMetaDataDAO);
     }
 
     protected void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples, Policy basePolicy) {
         final Run run = runDAO.createRun(exp, runType);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
-        final Model model = modelDAO.getModel(exp.getModelId()).get();
+        final Model model = modelService.getModel(exp.getModelId()).get();
 
         // Get model file id, either uploading it if necessary, or just getting it from the metadata database table
         String modelFileId = executionProviderMetaDataDAO.getModelFileKey(exp.getModelId());
         if (modelFileId == null) {
-            modelFileId = executionProvider.uploadModel(modelDAO.getModelFile(model.getId()));
+            modelFileId = executionProvider.uploadModel(modelService.getModelFile(model.getId()));
             executionProviderMetaDataDAO.putModelFileKey(exp.getModelId(), modelFileId);
         }
 
