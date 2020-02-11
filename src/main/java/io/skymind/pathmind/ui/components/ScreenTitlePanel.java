@@ -1,14 +1,15 @@
 package io.skymind.pathmind.ui.components;
 
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.springframework.stereotype.Component;
+
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 @Component
 public class ScreenTitlePanel extends HorizontalLayout
 {
-	private Label subtitleLabel = new Label();
-	private Label titleLabel = new Label();
+	private Span subtitleLabel;
+	private Span titleLabel;
 
 	public ScreenTitlePanel() {
 		this("");
@@ -25,12 +26,10 @@ public class ScreenTitlePanel extends HorizontalLayout
 		setJustifyContentMode(JustifyContentMode.CENTER);
 		addClassName("action-menu");
 
-		titleLabel.setText(title);
-		titleLabel.addClassName("section-label-title");
+		titleLabel = LabelFactory.createLabel(title, "section-label-title");
 		add(titleLabel);
 
-		subtitleLabel.setText(subtitle);
-		subtitleLabel.addClassName("section-label-subtitle");
+		subtitleLabel = LabelFactory.createLabel(subtitle, "section-label-subtitle");
 		add(subtitleLabel);
 	}
 

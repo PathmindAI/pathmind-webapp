@@ -127,7 +127,7 @@ resource "null_resource" "segment_server_key_secret" {
   }
   provisioner "local-exec" {
     when    = "destroy"
-    command = "kubectl delete secret segmentwebsitekey"
+    command = "kubectl delete secret segmentserversitekey"
   }
   depends_on = ["null_resource.configmap_ingress_nginx"]
 }

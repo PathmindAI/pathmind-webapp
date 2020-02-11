@@ -9,7 +9,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializableConsumer;
 
-import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.Stage;
 import io.skymind.pathmind.data.DashboardItem;
 import io.skymind.pathmind.data.Run;
@@ -68,14 +67,18 @@ public class DashboardLine extends HorizontalLayout {
 			item = new Span(VaadinIcon.CHECK.create(), new Text(stage.toString()));
 			item.setClassName("stage-done");
 		} else if (stage.getValue() == currentStage.getValue()) {
-			if (isTrainingInProgress(stage)) {
+			if (DashboardUtils.isTrainingInProgress(stage, dashboardItem.getLatestRun())) {
 				ElapsedTimer elapsedTimer = new ElapsedTimer();
 				updateElapsedTimer(elapsedTimer, dashboardItem.getLatestRun());
 				item = new Span(VaadinIcon.HOURGLASS.create(), new Text(stage.toString()), elapsedTimer);
+				item.setClassName("stage-active");
+			} else if (DashboardUtils.isTrainingInFailed(stage, dashboardItem.getLatestRun())) {
+				item = new Span(VaadinIcon.CLOSE.create(), new Text(stage.toString()));
+				item.setClassName("stage-failed");
 			} else {
 				item = new Span(stage.toString());
+				item.setClassName("stage-active");
 			}
-			item.setClassName("stage-active");
 		} else {
 			item = new Span(stage.toString());
 			item.setClassName("stage-next");
@@ -83,13 +86,6 @@ public class DashboardLine extends HorizontalLayout {
 		return item;
 	}
 	
-	private boolean isTrainingInProgress(Stage stage) {
-		if (stage != Stage.DiscoveryRunTraining && stage != Stage.FullRunTraining) {
-			return false;
-		}
-		return RunStatus.isRunning(dashboardItem.getLatestRun().getStatusEnum());
-	}
-
 	private Span createSeparator() {
 		return new Span(">");
 	}

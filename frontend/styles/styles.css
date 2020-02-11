@@ -114,6 +114,12 @@ html {
 .form-label {
   border: 1px solid black;
 }
+.bold-label {
+  font-weight: bold;
+}
+.no-top-margin-label {
+  font-weight: bold;
+}
 
 .section-title-label {
   font-size: 22px;
@@ -276,6 +282,9 @@ account-view {
 }
 .stage-active {
   color: var(--lumo-primary-text-color);
+}
+.stage-failed {
+  color: var(--lumo-error-text-color);
 }
 .stage-next {
   color: var(--lumo-secondary-text-color);

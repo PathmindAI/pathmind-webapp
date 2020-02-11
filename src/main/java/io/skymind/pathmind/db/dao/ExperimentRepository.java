@@ -141,8 +141,8 @@ class ExperimentRepository
 	 	       greatest(e.last_activity_date, m.last_activity_date, p.last_activity_date) AS ITEM_LAST_ACTIVITY_DATE,
 	 	       latest_run.*
 	 	FROM experiment e
-	 	RIGHT JOIN model m ON m.id = e.model_id
-	 	RIGHT JOIN project p ON p.id = m.project_id
+	 	RIGHT JOIN model m ON m.id = e.model_id AND (e.archived = FALSE OR e.archived IS NULL)
+	 	RIGHT JOIN project p ON p.id = m.project_id AND (m.archived = FALSE OR m.archived IS NULL)
 	 	LEFT JOIN pathmind_user u ON u.id = p.pathmind_user_id
 	 	LEFT JOIN
 	 	  (SELECT DISTINCT ON (experiment_id) id, experiment_id, name, run_type, started_at, stopped_at, status
@@ -156,8 +156,6 @@ class ExperimentRepository
 	 	   WHERE policy.exported_at IS NOT NULL
 	 	   GROUP BY policy.run_id) po ON po.run_id = latest_run.id
 	 	WHERE p.pathmind_user_id = $pathmind_user_id
-	 	  AND (e.archived = FALSE OR e.archived IS NULL)
-	 	  AND (m.archived = FALSE OR m.archived IS NULL)
 	 	  AND (p.archived = FALSE OR p.archived IS NULL)
 	 	ORDER BY ITEM_LAST_ACTIVITY_DATE DESC,
 	 	         e.id DESC
@@ -194,17 +192,15 @@ class ExperimentRepository
 				itemLastActivityDate.as("ITEM_LAST_ACTIVITY_DATE"),
 				policyForLatestRun.asterisk())
 				.from(EXPERIMENT)
-					.rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+					.rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID)).and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
 					.leftJoin(latestRun).on(EXPERIMENT.ID.eq(latestRun.field("experiment_id",
 							RUN.EXPERIMENT_ID.getDataType())))
-					.rightJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+					.rightJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID)).and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
 					.leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
 					.leftJoin(policyForLatestRun).on(policyForLatestRun.field("run_id", POLICY.RUN_ID.getDataType()).eq(latestRun.field(
 						"id", RUN.ID.getDataType())))
 				.where(PATHMIND_USER.ID.eq(userId))
-					.and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
 					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
-					.and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
 				.orderBy(itemLastActivityDate.desc(), EXPERIMENT.ID.desc())
 				.offset(offset)
 				.limit(limit)
@@ -248,28 +244,21 @@ class ExperimentRepository
 	 * <pre>
 		 SELECT COUNT(*)
 		 FROM experiment e
-		 RIGHT JOIN model m ON m.id = e.model_id
-		 RIGHT JOIN project p ON p.id = m.project_id
+		 RIGHT JOIN model m ON m.id = e.model_id AND (e.archived = FALSE OR e.archived IS NULL)
+		 RIGHT JOIN project p ON p.id = m.project_id AND (m.archived = FALSE OR m.archived IS NULL)
 		 LEFT JOIN pathmind_user u ON u.id = p.pathmind_user_id
 		 WHERE p.pathmind_user_id = $pathmind_user_id
-		 	AND (e.archived = FALSE
-		 		OR e.archived IS NULL)
-		 	AND (m.archived = FALSE
-		 		OR m.archived IS NULL)
-		 	AND (p.archived = FALSE
-		 		OR p.archived IS NULL)
+		 	AND (p.archived = FALSE OR p.archived IS NULL)
 	 * </pre>
 	 */
 	static int countDashboardItemsForUser(DSLContext ctx, long userId) {
 		return ctx.selectCount()
 				.from(EXPERIMENT)
-					.rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
-					.rightJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+					.rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID)).and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
+					.rightJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID)).and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
 					.leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
 				.where(PATHMIND_USER.ID.eq(userId))
-					.and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
 					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
-					.and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
 				.fetchOne(count());
 	}
 }

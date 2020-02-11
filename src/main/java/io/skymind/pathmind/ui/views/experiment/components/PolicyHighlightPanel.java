@@ -1,7 +1,7 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.data.Policy;
@@ -10,10 +10,10 @@ import io.skymind.pathmind.ui.components.LabelFactory;
 
 public class PolicyHighlightPanel extends VerticalLayout
 {
-	private Label policyLabel = new Label();
-	private Label scoreLabel = new Label();
-	private Label algorithmLabel = new Label();
-	private Label errorDescriptionLabel = LabelFactory.createLabel("", "tag error-label");
+	private Span policyLabel = LabelFactory.createLabel("");
+	private Span scoreLabel = LabelFactory.createLabel("");
+	private Span algorithmLabel = LabelFactory.createLabel("");
+	private Span errorDescriptionLabel = LabelFactory.createLabel("", "tag error-label");
 
 	public PolicyHighlightPanel()
 	{
