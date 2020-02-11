@@ -204,7 +204,7 @@
                 <configuration>
                     <changeLogFile>src/main/resources/db/changelog/changelog-master.xml</changeLogFile>
                     <driver>org.postgresql.Driver</driver>
-                    <url>jdbc:postgresql://localhost/PATHMIND?user=postgres&amp;password=37iCIf83J0fTAOn2AUDQ</url>
+                    <url>${DB_URL}</url>
                 </configuration>
             </plugin>
             <plugin>
@@ -226,7 +226,7 @@
                 <configuration>
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
-                        <url>jdbc:postgresql://localhost/PATHMIND?user=postgres&amp;password=37iCIf83J0fTAOn2AUDQ</url>
+                        <url>${DB_URL}</url>
                     </jdbc>
                     <generator>
                         <generate>
