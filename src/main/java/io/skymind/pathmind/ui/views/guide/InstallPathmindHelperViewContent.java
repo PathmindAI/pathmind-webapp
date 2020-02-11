@@ -39,7 +39,7 @@ public class InstallPathmindHelperViewContent extends DefaultPageContent<Install
 		});
 
 		nextBtn.addClickListener(e -> {
-			if (guideStep.getId() == 1) {
+			if (guideStep == GuideStep.InstallPathmindHelper) {
 				guideDAO.updateGuideStep(projectId, guideStep.nextStep());
 				segmentIntegrator.completedGuideInstall();
 			}

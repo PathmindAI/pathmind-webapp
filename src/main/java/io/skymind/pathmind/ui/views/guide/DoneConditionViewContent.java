@@ -38,7 +38,7 @@ public class DoneConditionViewContent extends DefaultPageContent<DoneConditionVi
         });
 
 		nextBtn.addClickListener(e -> {
-            if (guideStep.getId() == 5) {
+            if (guideStep == GuideStep.DefineDoneCondition) {
                 guideDAO.updateGuideStep(projectId, guideStep.nextStep());
                 segmentIntegrator.completedGuideDone();
             }

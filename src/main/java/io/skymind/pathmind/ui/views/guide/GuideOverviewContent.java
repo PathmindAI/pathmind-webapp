@@ -34,7 +34,7 @@ public class GuideOverviewContent extends DefaultPageContent<GuideOverviewConten
 	@Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {
 		nextBtn.addClickListener(e -> {
-			if (guideStep.getId() == 0) {
+			if (guideStep == GuideStep.Overview) {
 				guideDAO.updateGuideStep(projectId, guideStep.nextStep());
 				segmentIntegrator.completedGuideOverview();
 			}

@@ -3,6 +3,7 @@ package io.skymind.pathmind.ui.views.model;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
@@ -150,7 +151,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private Button createBacktoGuideButton() {
 		Button backToGuideButton = new Button("Back to Pathmind Guide", click -> UI.getCurrent().navigate(GuideOverview.class, projectId));
-		backToGuideButton.addThemeName("tertiary");
+		backToGuideButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 		backToGuideButton.getStyle().set("margin-top", "var(--lumo-space-xxl)");
 		return backToGuideButton;
 	}

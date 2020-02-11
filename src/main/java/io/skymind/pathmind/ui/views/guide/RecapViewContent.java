@@ -39,7 +39,7 @@ public class RecapViewContent extends DefaultPageContent<RecapViewContent.Model>
 			UI.getCurrent().navigate(RewardView.class, projectId);
 		});
 		nextBtn.addClickListener(e -> {
-			if (guideStep.getId() == 7) {
+			if (guideStep == GuideStep.Recap) {
 				guideDAO.updateGuideStep(projectId, guideStep.nextStep());
 				segmentIntegrator.completedGuideRecap();
 			}

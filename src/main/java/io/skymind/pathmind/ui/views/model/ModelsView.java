@@ -156,7 +156,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 			modelGrid.setItems(models);
 		});
 		if (models.isEmpty()) {
-			event.forwardTo("guide/overview", projectId);
+			event.forwardTo(Routes.GUIDE_URL, projectId);
 		}
 		archivesTabPanel.initData();
 		titlePanel.setSubtitle(projectName);

@@ -38,7 +38,7 @@ public class RewardViewContent extends DefaultPageContent<RewardViewContent.Mode
 		});
 
 		nextBtn.addClickListener(e -> {
-			if (guideStep.getId() == 6) {
+			if (guideStep == GuideStep.DefineRewardVariable) {
 				guideDAO.updateGuideStep(projectId, guideStep.nextStep());
 				segmentIntegrator.completedGuideReward();
 			}

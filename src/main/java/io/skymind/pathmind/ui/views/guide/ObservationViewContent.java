@@ -38,7 +38,7 @@ public class ObservationViewContent extends DefaultPageContent<ObservationViewCo
         });
 
 		nextBtn.addClickListener(e -> {
-            if (guideStep.getId() == 2) {
+            if (guideStep == GuideStep.BuildObservationSpace) {
                 guideDAO.updateGuideStep(projectId, guideStep.nextStep());
                 segmentIntegrator.completedGuideObservation();
             }

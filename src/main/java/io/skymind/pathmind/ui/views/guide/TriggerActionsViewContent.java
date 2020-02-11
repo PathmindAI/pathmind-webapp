@@ -39,7 +39,7 @@ public class TriggerActionsViewContent extends DefaultPageContent<TriggerActions
         });
 
         nextBtn.addClickListener(e -> {
-            if (guideStep.getId() == 4) {
+            if (guideStep == GuideStep.TriggerAction) {
                 guideDAO.updateGuideStep(projectId, guideStep.nextStep());
                 segmentIntegrator.completedGuideTriggerActions();
             }

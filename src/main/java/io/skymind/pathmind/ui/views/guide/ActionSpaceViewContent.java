@@ -39,7 +39,7 @@ public class ActionSpaceViewContent extends DefaultPageContent<ActionSpaceViewCo
         });
 
 		nextBtn.addClickListener(e -> {
-            if (guideStep.getId() == 3) {
+            if (guideStep == GuideStep.BuildActionSpace) {
                 guideDAO.updateGuideStep(projectId, guideStep.nextStep());
                 segmentIntegrator.completedGuideActionSpace();
             }
