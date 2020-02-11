@@ -358,7 +358,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 		@Override
 		public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-			return experiment.getId() == event.getPolicy().getExperiment().getId();
+			return experiment != null && experiment.getId() == event.getPolicy().getExperiment().getId();
 		}
 
         @Override
@@ -371,7 +371,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     {
         @Override
         public boolean filterBusEvent(RunUpdateBusEvent event) {
-            return experiment.getId() == event.getRun().getExperiment().getId();
+            return experiment != null && experiment.getId() == event.getRun().getExperiment().getId();
         }
 
         @Override

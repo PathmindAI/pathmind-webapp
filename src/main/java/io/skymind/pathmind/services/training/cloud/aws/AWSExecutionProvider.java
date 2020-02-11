@@ -127,21 +127,20 @@ public class AWSExecutionProvider implements ExecutionProvider {
          }
 
         List<String> knownErrsCheck = getTrialStatus(jobHandle, TrainingFile.KNOWN_ERROR);
+        if (errors.size() > 0 || knownErrsCheck.size() > 0) {
+            final var allErrorsList = Stream.concat(knownErrsCheck.stream(), errors.stream())
+                    .collect(Collectors.toList());
+            var oneLineErrors = allErrorsList.stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining(" ; "));
+            log.error("{} error(s) detected for the AWS jobHandle {}: {}", allErrorsList.size(), jobHandle, oneLineErrors);
+            return new ProviderJobStatus(Error, allErrorsList);
+        }
 
         // todo need to change to use database once Daniel create proper database(TRAINER_JOB)
         ExperimentState experimentState = getExperimentState(jobHandle);
 
         if (experimentState != null) {
-            if (errors.size() > 0 || knownErrsCheck.size() > 0) {
-                final var allErrorsList = Stream.concat(knownErrsCheck.stream(), errors.stream())
-                        .collect(Collectors.toList());
-                var oneLineErrors = allErrorsList.stream()
-                        .map(Object::toString)
-                        .collect(Collectors.joining(" ; "));
-                log.error("{} error(s) detected for the AWS jobHandle {}: {}", allErrorsList.size(), jobHandle, oneLineErrors);
-                return new ProviderJobStatus(Error, allErrorsList);
-            }
-
             if (completes.size() > 0 && completes.size() == trials.size()) {
                 return new ProviderJobStatus(Completed);
             }

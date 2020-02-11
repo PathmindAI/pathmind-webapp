@@ -14,7 +14,7 @@ service:
   port: 80
 
 env:
-  APPLICATION_URL: http://app.devpathmind.com
+  APPLICATION_URL: http://test.devpathmind.com
   INTERCOM_APP_ID: q51xonft
   WEBSITE_HTTPLOGGING_RETENTION_DAYS: 7
   PATHMIND_LOG_FILE_PATH: /tmp/
