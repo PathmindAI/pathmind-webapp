@@ -79,6 +79,10 @@
 
 :host([focus-ring][theme~="tertiary"]) {
   box-shadow: none;
+
+:host(.half-width) {
+  min-width: unset;
+  width: 50%;
 }
 
 /* This is to override all Vaadin-Button on the webapp */
