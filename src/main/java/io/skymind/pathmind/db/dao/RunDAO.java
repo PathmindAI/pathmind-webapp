@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import io.skymind.pathmind.data.*;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
@@ -16,16 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
-import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import org.springframework.util.CollectionUtils;
+
+import static io.skymind.pathmind.db.dao.TrainingErrorDAO.UNKNOWN_ERROR_KEYWORD;
 
 @Repository
 public class RunDAO
@@ -150,11 +149,13 @@ public class RunDAO
     }
 
     private void setRunError(Run run, String errorMessage) {
-        final var errors = trainingErrorDAO.getAllTrainingErrors();
-        final var foundError = errors.stream()
-                .filter(error -> errorMessage.contains(error.getKeyword()))
-                .findAny();
+        final var allErrorsKeywords = trainingErrorDAO.getAllErrorsKeywords();
+        final var knownErrorMessage = allErrorsKeywords.stream()
+                .filter(errorMessage::contains)
+                .findAny()
+                .orElse(UNKNOWN_ERROR_KEYWORD);
 
+        final var foundError = trainingErrorDAO.getErrorByKeyword(knownErrorMessage);
         foundError.ifPresent(
                 e -> run.setTrainingErrorId(e.getId())
         );

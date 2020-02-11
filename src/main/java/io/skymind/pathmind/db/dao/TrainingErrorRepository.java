@@ -25,9 +25,9 @@ class TrainingErrorRepository {
 				.fetchOneInto(TrainingError.class);
 	}
 
-	static List<TrainingError> getAllTrainingErrors(DSLContext ctx) {
-		return ctx.select(TRAINING_ERROR.asterisk())
+	static List<String> getAllErrorsKeywords(DSLContext ctx) {
+		return ctx.select(TRAINING_ERROR.KEYWORD)
 				.from(TRAINING_ERROR)
-				.fetchInto(TrainingError.class);
+				.fetchInto(String.class);
 	}
 }
