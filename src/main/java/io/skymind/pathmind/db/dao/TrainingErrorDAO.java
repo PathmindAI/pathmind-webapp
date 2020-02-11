@@ -8,10 +8,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class TrainingErrorDAO {
 	static final String UNKNOWN_ERROR_KEYWORD = "unknown error";
+	static final String NOT_AN_ERROR = "Not an error";
 	private final DSLContext ctx;
 
 	public TrainingErrorDAO(DSLContext ctx) {
@@ -34,5 +36,12 @@ public class TrainingErrorDAO {
 	@Cacheable("all_training_errors_keywords")
 	public List<String> getAllErrorsKeywords() {
 		return TrainingErrorRepository.getAllErrorsKeywords(ctx);
+	}
+
+	public List<String> getAllKnownErrorsKeywords() {
+		final var excludeMessages = List.of(UNKNOWN_ERROR_KEYWORD, NOT_AN_ERROR);
+		return getAllErrorsKeywords().stream()
+				.filter(keyword -> !excludeMessages.contains(keyword))
+				.collect(Collectors.toList());
 	}
 }

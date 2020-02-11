@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
+import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
@@ -37,22 +38,14 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private final AWSApiClient client;
     private final ObjectMapper objectMapper;
     private final AWSFileManager fileManager;
-
-    private static final List<String> KNOWN_ERROR_MSGS = new ArrayList<>();
-
-    static {
-        KNOWN_ERROR_MSGS.add("python3: can\'t open file \'rllibtrain.py\'");
-        KNOWN_ERROR_MSGS.add("SyntaxError: invalid syntax");
-        KNOWN_ERROR_MSGS.add("Fatal Python error: Segmentation fault");
-        KNOWN_ERROR_MSGS.add("Worker crashed during call to train()");
-        KNOWN_ERROR_MSGS.add("java.lang.ArrayIndexOutOfBoundsException");
-    }
+    private final TrainingErrorDAO trainingErrorDAO;
 
     private static final String AWS_JOB_ID_PREFIX = "id";
 
-    public AWSExecutionProvider(AWSApiClient client, ObjectMapper objectMapper) {
+    public AWSExecutionProvider(AWSApiClient client, ObjectMapper objectMapper, TrainingErrorDAO trainingErrorDAO) {
         this.client = client;
         this.objectMapper = objectMapper;
+        this.trainingErrorDAO = trainingErrorDAO;
         this.fileManager = AWSFileManager.getInstance();
     }
 
@@ -419,7 +412,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private void checkErrors(List<String> instructions) {
         instructions.add("cd ..");
-        instructions.addAll(KNOWN_ERROR_MSGS.stream()
+        instructions.addAll(trainingErrorDAO.getAllKnownErrorsKeywords().stream()
                 .map(msg -> "grep -m 2 \"" + msg + "\" " + TrainingFile.SCRIPT_LOG + " >> " + TrainingFile.KNOWN_ERROR)
                 .collect(Collectors.toList()));
     }
