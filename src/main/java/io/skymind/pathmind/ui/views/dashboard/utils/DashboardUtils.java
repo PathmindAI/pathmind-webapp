@@ -40,4 +40,16 @@ public class DashboardUtils {
 				|| (run.getRunTypeEnum() == RunType.DiscoveryRun && run.getStatusEnum() == RunStatus.Completed);
 				
 	}
+	
+	public static boolean isTrainingStage(Stage stage) {
+		return stage == Stage.DiscoveryRunTraining || stage == Stage.FullRunTraining;
+	}
+	
+	public static boolean isTrainingInProgress(Stage stage, Run run) {
+		return isTrainingStage(stage) && RunStatus.isRunning(run.getStatusEnum());
+	}
+	
+	public static boolean isTrainingInFailed(Stage stage, Run run) {
+		return isTrainingStage(stage) && run.getStatusEnum() == RunStatus.Error;
+	}
 }
