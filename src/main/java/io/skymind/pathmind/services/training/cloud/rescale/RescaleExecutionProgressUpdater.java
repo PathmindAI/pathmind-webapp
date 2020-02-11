@@ -130,13 +130,13 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
             stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).stream().forEach(finishPolicyName -> {
                 // todo make saving to enum or static final variable (currently defined in PolicyDAO).
                 final byte[] policyFile = provider.policy(rescaleJobId, finishPolicyName);
-                policyDAO.savePolicyFile(runId, finishPolicyName, policyFile);
+                // NB: binary content is kept in S3. policyDAO.savePolicyFile(runId, finishPolicyName, policyFile);
 
                 // save the last checkpoint
                 Map.Entry<String, byte[]> entry = provider.snapshot(rescaleJobId, finishPolicyName);
                 if (entry != null) {
                     final byte[] checkPointFile = entry.getValue();
-                    policyDAO.saveCheckpointFile(runId, finishPolicyName, checkPointFile);
+                    // NB: binary content is kept in S3. policyDAO.saveCheckpointFile(runId, finishPolicyName, checkPointFile);
                 }
 
                 // save meta data for checkpoint

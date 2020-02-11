@@ -7,7 +7,11 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.policy.RewardScore;
-import io.skymind.pathmind.db.dao.*;
+import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.TrainingErrorDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
@@ -30,16 +34,18 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     private final AWSExecutionProvider provider;
     private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RunDAO runDAO;
-    private final PolicyDAO policyDAO;
+    private final PolicyFileService policyFileService;
     private final UserDAO userDAO;
     private final TrainingErrorDAO trainingErrorDAO;
     private EmailNotificationService emailNotificationService;
 
-    public AWSExecutionProgressUpdater(AWSExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, PolicyDAO policyDAO, UserDAO userDAO, EmailNotificationService emailNotificationService, TrainingErrorDAO trainingErrorDAO){
+    public AWSExecutionProgressUpdater(AWSExecutionProvider provider, PolicyFileService policyFileService, RunDAO runDAO,
+                                       UserDAO userDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO,
+                                       EmailNotificationService emailNotificationService, TrainingErrorDAO trainingErrorDAO) {
         this.provider = provider;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.runDAO = runDAO;
-        this.policyDAO = policyDAO;
+        this.policyFileService = policyFileService;
         this.userDAO = userDAO;
         this.trainingErrorDAO = trainingErrorDAO;
         this.emailNotificationService = emailNotificationService;
@@ -88,7 +94,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
      */
     private void sendNotificationMail(RunStatus jobStatus, Run run) {
         if (jobStatus == RunStatus.Completed || jobStatus == RunStatus.Error) {
-            if (run.getRunTypeEnum() == RunType.DiscoveryRun ||  run.getRunTypeEnum() == RunType.FullRun) {
+            if (run.getRunTypeEnum() == RunType.DiscoveryRun || run.getRunTypeEnum() == RunType.FullRun) {
 
                 // Do not send notification if there is another run with same run type still executing or the notification is already been sent
                 if (runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
@@ -109,13 +115,13 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     }
 
     private boolean isInAwsRunJobIds(Map<Long, String> awsJobIds, Long runId) {
-        if(awsJobIds.get(runId) == null)
+        if (awsJobIds.get(runId) == null)
             log.error("Run {} marked as executing but no aws run id found for it.", runId);
         return awsJobIds.get(runId) != null;
     }
 
     private void savePolicyFilesAndCleanupForCompletedRuns(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String jobHandle, RunStatus jobStatus) {
-        if(jobStatus == RunStatus.Completed) {
+        if (jobStatus == RunStatus.Completed) {
             stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).stream().forEach(finishPolicyName -> {
                 // todo make saving to enum or static final variable (currently defined in PolicyDAO).
                 final byte[] policyFile = provider.policy(jobHandle, finishPolicyName);
@@ -124,13 +130,13 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                     return;
                 }
 
-                policyDAO.savePolicyFile(runId, finishPolicyName, policyFile);
+                policyFileService.savePolicyFile(runId, finishPolicyName, policyFile);
 
                 // save the last checkpoint
                 Map.Entry<String, byte[]> entry = provider.snapshot(jobHandle, finishPolicyName);
                 if (entry != null) {
                     final byte[] checkPointFile = entry.getValue();
-                    policyDAO.saveCheckpointFile(runId, finishPolicyName, checkPointFile);
+                    policyFileService.saveCheckpointFile(runId, finishPolicyName, checkPointFile);
                     log.debug("checkpoint saved for " + finishPolicyName);
 
                     // save meta data for checkpoint
