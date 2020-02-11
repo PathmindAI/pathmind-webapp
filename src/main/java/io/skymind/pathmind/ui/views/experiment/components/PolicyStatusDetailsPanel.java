@@ -1,13 +1,14 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
-import java.util.Arrays;
+import static io.skymind.pathmind.constants.RunStatus.isRunning;
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.BOLD_LABEL;
 
-import io.skymind.pathmind.data.utils.RunUtils;
-import org.springframework.stereotype.Component;
+import java.util.Arrays;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
@@ -17,30 +18,29 @@ import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
+import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.ui.components.ElapsedTimer;
+import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
-import static io.skymind.pathmind.constants.RunStatus.isRunning;
-
-@Component
 public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUpdateSubscriber
 {
-	private Label statusLabel = new Label(RunStatus.NotStarted.toString());
-	private Label runProgressLabel = new Label();
-	private Label runTypeLabel = new Label();
+	private Span statusLabel = LabelFactory.createLabel(RunStatus.NotStarted.toString());
+	private Span runProgressLabel = LabelFactory.createLabel("");
+	private Span runTypeLabel = LabelFactory.createLabel("");
 	private ElapsedTimer elapsedTimeLabel = new ElapsedTimer();
 
 	private Policy policy;
 
 	public PolicyStatusDetailsPanel()
 	{
-		Label[] labels = Arrays.asList(
+		Span[] labels = Arrays.asList(
 				getElementLabel("Status"),
 				getElementLabel(""),
 				getElementLabel("Run Type"),
 				getElementLabel("Elapsed"))
-				.stream().toArray(Label[]::new);
+				.stream().toArray(Span[]::new);
 
 		removeTopMargins(labels);
 		removeTopMargins(statusLabel, runProgressLabel, runTypeLabel, elapsedTimeLabel);
@@ -67,14 +67,11 @@ public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUp
 		add(wrapper);
 	}
 
-	// TODO -> CSS -> Move style to CSS
-	private Label getElementLabel(String label) {
-		Label fieldLabel = new Label(label + " : ");
-		fieldLabel.getStyle().set("font-weight", "bold");
-		return fieldLabel;
+	private Span getElementLabel(String label) {
+		return LabelFactory.createLabel(label + " : ",BOLD_LABEL);
 	}
 
-	private void removeTopMargins(Label... labels) {
+	private void removeTopMargins(HasStyle... labels) {
 		Arrays.stream(labels).forEach(label ->
 				label.getStyle().set("margin-top", "0px"));
 	}
@@ -113,7 +110,7 @@ public class PolicyStatusDetailsPanel extends VerticalLayout implements PolicyUp
 
 	@Override
 	public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-		return getPolicy().getId() == event.getPolicy().getId();
+		return getPolicy() != null && getPolicy().getId() == event.getPolicy().getId();
 	}
 
 	private void updateElapsedTimer(Policy policy) {

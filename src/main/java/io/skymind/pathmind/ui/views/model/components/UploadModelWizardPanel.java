@@ -1,10 +1,13 @@
 package io.skymind.pathmind.ui.views.model.components;
 
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.NO_TOP_MARGIN_LABEL;
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.SECTION_SUBTITLE_LABEL;
+
 import java.io.IOException;
 
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.progressbar.ProgressBarVariant;
@@ -29,7 +32,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 {
 	private final Model model;
 
-	private Label projectNameLabel;
+	private Span projectNameLabel;
 
 	private VerticalLayout uploadModelPanel;
 	private PathmindModelUploader upload;
@@ -48,8 +51,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	{
 		this.model = model;
 
-		projectNameLabel = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
-		projectNameLabel.getStyle().set("margin-top", "0px");
+		projectNameLabel = LabelFactory.createLabel("", SECTION_SUBTITLE_LABEL, NO_TOP_MARGIN_LABEL);
 		
 		setupLayout();
 
@@ -92,7 +94,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 		errorText = new Text("");
 		fileCheckPanel = WrapperUtils.wrapWidthFullCenterVertical(
 				fileCheckProgressBar,
-				WrapperUtils.wrapWidthFullCenterHorizontal(new Label("Checking your model...")),
+				WrapperUtils.wrapWidthFullCenterHorizontal(LabelFactory.createLabel("Checking your model...")),
 				errorText);
 	}
 

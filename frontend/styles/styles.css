@@ -72,6 +72,11 @@ html {
   height: 31px;
 }
 
+.navbar-logo img {
+  display: block;
+  width: 100%;
+}
+
 .section-label-title {
   font-size: 1.2rem;
   font-weight: bold;
@@ -108,6 +113,12 @@ html {
 
 .form-label {
   border: 1px solid black;
+}
+.bold-label {
+  font-weight: bold;
+}
+.no-top-margin-label {
+  font-weight: bold;
 }
 
 .section-title-label {
@@ -267,6 +278,9 @@ account-view {
 }
 .stage-active {
   color: var(--lumo-primary-text-color);
+}
+.stage-failed {
+  color: var(--lumo-error-text-color);
 }
 .stage-next {
   color: var(--lumo-secondary-text-color);

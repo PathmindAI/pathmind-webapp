@@ -6,6 +6,7 @@ import io.skymind.pathmind.data.Experiment;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,5 +56,9 @@ public class ExperimentDAO
 	@MonitorExecutionTime
 	public int countDashboardItemsForUser(long userId) {
 		return ExperimentRepository.countDashboardItemsForUser(ctx, userId);
+	}
+
+	public long insertExperiment(long modelId, LocalDateTime createdDate) {
+		return ExperimentRepository.insertExperiment(ctx, modelId, createdDate);
 	}
 }

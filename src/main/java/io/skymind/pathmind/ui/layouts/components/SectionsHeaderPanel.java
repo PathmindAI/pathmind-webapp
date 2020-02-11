@@ -13,9 +13,7 @@ public class SectionsHeaderPanel extends HorizontalLayout
 	public SectionsHeaderPanel(boolean hasLoginUser)
 	{
 		HorizontalLayout sectionsHorizontalLayout = new HorizontalLayout();
-		final Image logo = new Image("frontend/images/pathmind-logo.png", "Skymind Logo");
-		logo.addClassName("navbar-logo");
-		sectionsHorizontalLayout.add(logo);
+		sectionsHorizontalLayout.add(linkedLogo());
 		if (hasLoginUser) {
 			sectionsHorizontalLayout.add(
 					new RouterLink("Dashboard", DashboardView.class),
@@ -25,6 +23,13 @@ public class SectionsHeaderPanel extends HorizontalLayout
 		add(sectionsHorizontalLayout);
 
 		sectionsHorizontalLayout.setId("nav-main-links");
+	}
+
+	private Anchor linkedLogo() {
+		Image logo = new Image("frontend/images/pathmind-logo.png", "Pathmind Logo");
+		Anchor anchor = new Anchor("/", logo);
+		anchor.addClassName("navbar-logo");
+		return anchor;
 	}
 
 	private Anchor getLearnAnchor() {
