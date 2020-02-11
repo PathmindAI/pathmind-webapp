@@ -18,6 +18,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -162,6 +163,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         return WrapperUtils.wrapSizeFullVertical(
                 getTopButtonPanel(),
                 getTopStatusPanel(),
+                createViewNotesField(),
                 getObservationTextArea,
                 tipsTextArea,
                 getActionButtons());
@@ -226,6 +228,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private Breadcrumbs createBreadcrumbs() {        
         return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
     }
+
+	private TextArea createViewNotesField() {
+		// TODO: save this into the notes column of the new experiment
+		TextArea notesField = new TextArea("Experiment Notes", "", "Add Notes");
+        notesField.setSizeFull();
+		return notesField;
+	}
 
 	@Override
 	protected boolean isAccessAllowedForUser() {

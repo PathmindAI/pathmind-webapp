@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -28,6 +29,7 @@ import io.skymind.pathmind.ui.components.buttons.ShowRewardFunctionButton;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
@@ -148,8 +150,11 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 			false,
 			"Model Notes",
 			currentModel.getGetObservationForRewardFunction(),
-			updatedNotes -> System.out.println("callback: " + updatedNotes)
-			/* TODO: implement "Notes successfully saved." or "Notes not saved." in the callback */
+			updatedNotes -> {
+				System.out.println("callback: " + updatedNotes);
+				NotificationUtils.showNotification("Notes successfully saved", NotificationVariant.LUMO_SUCCESS);
+				// NotificationUtils.showNotification("There was a problem saving the notes, please try again later", NotificationVariant.LUMO_ERROR);
+			}
 		);
 		return notesField;
 	}

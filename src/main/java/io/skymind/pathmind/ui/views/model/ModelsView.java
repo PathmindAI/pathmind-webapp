@@ -12,6 +12,7 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -35,6 +36,7 @@ import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
@@ -80,17 +82,19 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		// to do something special to get the full size content in the AppLayout component which
 		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
 		// Hence the workaround below:
+		VerticalLayout leftPanel = WrapperUtils.wrapSizeFullVertical(
+			archivesTabPanel,
+			new ViewSection(
+				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
+				modelGrid,
+				instructionsDiv
+			)
+		);
+		leftPanel.setPadding(false);
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
 			createBreadcrumbs(),
 			WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-				WrapperUtils.wrapSizeFullVertical(
-					archivesTabPanel,
-					new ViewSection(
-						WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-						modelGrid,
-						instructionsDiv
-					)
-				),
+				leftPanel,
 				createViewNotesField(),
 			70),
 			WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
@@ -183,8 +187,11 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 			false,
 			"Project Notes",
 			projectDAO.getProject(projectId).getName(),
-			updatedNotes -> System.out.println("callback: " + updatedNotes)
-			/* TODO: implement "Notes successfully saved." or "Notes not saved." in the callback */
+			updatedNotes -> {
+				System.out.println("callback: " + updatedNotes);
+				NotificationUtils.showNotification("Notes successfully saved", NotificationVariant.LUMO_SUCCESS);
+				// NotificationUtils.showNotification("There was a problem saving the notes, please try again later", NotificationVariant.LUMO_ERROR);
+			}
 		);
 		return notesField;
 	}

@@ -5,6 +5,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -20,6 +21,7 @@ import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -103,6 +105,11 @@ public class ProjectsView extends PathMindDefaultView
 				.setResizable(true)
 				.setSortable(true);
 
+		projectGrid.addComponentColumn(Project -> createColumnNotesField(Project))
+				.setHeader("Notes")
+				.setResizable(true)
+				.setSortable(false);
+
 		projectGrid.sort(Arrays.asList(new GridSortOrder<>(lastActivityColumn, SortDirection.DESCENDING)));
 
 		projectGrid.addItemClickListener(event -> {
@@ -116,6 +123,13 @@ public class ProjectsView extends PathMindDefaultView
 
 	private Breadcrumbs createBreadcrumbs() {        
 		return new Breadcrumbs(null, null, null);
+	}
+
+	private HorizontalLayout createColumnNotesField(Project project) {
+		// TODO: project.getName() has to be changed to a method to get the notes (String)
+		// It now acts as a dummy String
+		NotesField notesField = new NotesField(true, project.getName());
+		return notesField;
 	}
 
 	@Override

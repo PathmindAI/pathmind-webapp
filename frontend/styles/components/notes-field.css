@@ -82,9 +82,4 @@
 
 .notes-block vaadin-text-area {
   width: 100%;
-  line-height: 1.5em;
-  height: 8em;
-  background-color: white;
-  padding: 0;
-  border-radius: var(--lumo-border-radius);
 }

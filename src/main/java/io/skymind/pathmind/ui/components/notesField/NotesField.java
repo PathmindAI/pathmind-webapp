@@ -62,6 +62,7 @@ public class NotesField extends HorizontalLayout {
 
 	private void createBlockEditableField() {
 		blockEditableField = new TextArea("", notesText, "Add Notes");
+		blockEditableField.addThemeName("notes");
 	}
 
 	private VerticalLayout blockEditableFieldWrapper() {
@@ -89,31 +90,31 @@ public class NotesField extends HorizontalLayout {
 		// TODO: set state of each button in click event listener
 		initButtons();
 		HorizontalLayout buttonsWrapper = new HorizontalLayout(
-			saveButton,
-			editButton
+			editButton,
+			saveButton
 		);
 		buttonsWrapper.setSpacing(false);
 		return buttonsWrapper;
 	}
 
-	private Button createButton(Component icon, String label, Boolean isEnabled) {
-		Button button = new Button(icon);
+	private Button createButton(String label, Boolean isEnabled) {
+		Button button = new Button(label);
 		button.setEnabled(isEnabled);
 		button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-		button.getElement().setAttribute("title", label);
 		return button;
 	}
 
 	private void initButtons() {
 		Span saveIcon = new Span("");
 		saveIcon.addClassName("save-icon");
-		editButton = createButton(VaadinIcon.EDIT.create(), "Edit Notes", !isEditting);
-		saveButton = createButton(saveIcon, "Save Notes", isEditting);
+		editButton = createButton("Edit", !isEditting);
+		saveButton = createButton("Save", isEditting);
 
 		editButton.addClickListener(e -> {
 			setIsEditting();
 			editButton.setEnabled(!isEditting);
 			saveButton.setEnabled(isEditting);
+			blockEditableField.focus();
 			editButtonOnClick();
 		});
 

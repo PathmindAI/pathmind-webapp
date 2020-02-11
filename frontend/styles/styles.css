@@ -175,6 +175,7 @@ html {
   flex: 1;
   max-width: 1200px;
   align-self: center;
+  margin-top: var(--lumo-space-xs);
 }
 
 account-view {

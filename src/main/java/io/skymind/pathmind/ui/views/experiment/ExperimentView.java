@@ -9,6 +9,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
@@ -34,8 +35,10 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.PolicyChartPanel;
@@ -176,15 +179,33 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		exportPolicyButton.setVisible(false);
 
 		return WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullCenterHorizontal(runFullTraining),
+			WrapperUtils.wrapWidthFullCenterHorizontal(runFullTraining),
 				policyHighlightPanel,
 				policyStatusDetailsPanel,
 				rewardFunctionEditor,
+				createViewNotesField(),
 				buttons);
 	}
 
 	private Breadcrumbs createBreadcrumbs() {        
 		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
+	}
+
+	private HorizontalLayout createViewNotesField() {
+		// TODO: experiment.getRewardFunction() has to be changed 
+		// to a method to get the notes (String)
+		// It now acts as a dummy String
+		NotesField notesField = new NotesField(
+			false,
+			"Experiment Notes",
+			experiment.getRewardFunction(),
+			updatedNotes -> {
+				System.out.println("callback: " + updatedNotes);
+				NotificationUtils.showNotification("Notes successfully saved", NotificationVariant.LUMO_SUCCESS);
+				// NotificationUtils.showNotification("There was a problem saving the notes, please try again later", NotificationVariant.LUMO_ERROR);
+			}
+		);
+		return notesField;
 	}
 
 	/**
