@@ -8,7 +8,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 
@@ -18,17 +18,18 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.ui.components.ElapsedTimer;
+import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 public class TrainingStatusDetailsPanel extends VerticalLayout {
-	private Label statusLabel = new Label(RunStatus.NotStarted.toString());
-	private Label runTypeLabel = new Label();
+	private Span statusLabel = LabelFactory.createLabel(RunStatus.NotStarted.toString());
+	private Span runTypeLabel = LabelFactory.createLabel("");
 	/**
 	 * Label for training progress status.
 	 * If training is still in progress it shows it's % progress. If training is finished it shows its completed date.
 	 */
-	private Label progressValueLabel = new Label();
+	private Span progressValueLabel = LabelFactory.createLabel("");
 	private ElapsedTimer elapsedTimeLabel = new ElapsedTimer();
 	private ProgressBar progressBar = new ProgressBar(0, 100);
 
