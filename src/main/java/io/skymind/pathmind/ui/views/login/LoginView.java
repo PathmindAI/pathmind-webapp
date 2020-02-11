@@ -1,33 +1,50 @@
 package io.skymind.pathmind.ui.views.login;
 
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.WELCOME_TEXT;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.OptionalParameter;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
+
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
+import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.ui.views.project.NewProjectView;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
-import java.util.List;
 
 @Route(Routes.LOGIN_URL)
 @Theme(Lumo.class)
@@ -60,8 +77,7 @@ public class LoginView extends HorizontalLayout
 					 @Value("${pathmind.terms-of-use.url}") String termsOfUseUrl)
 	{
 		addClassName("login-panel-cont");
-		Label welcome = new Label("Welcome to");
-		welcome.setClassName("welcome-text");
+		Span welcome = LabelFactory.createLabel("Welcome to", WELCOME_TEXT);
 		Image img = new Image("frontend/images/pathmind-logo.png", "Pathmind logo");
 		img.setClassName("logo");
 		img.setWidth("200px");
