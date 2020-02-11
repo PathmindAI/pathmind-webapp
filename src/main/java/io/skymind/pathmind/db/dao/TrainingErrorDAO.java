@@ -5,6 +5,7 @@ import org.jooq.DSLContext;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,7 +17,6 @@ public class TrainingErrorDAO {
 		this.ctx = ctx;
 	}
 
-	@Cacheable("training_errors_by_keyword")
 	public Optional<TrainingError> getErrorByKeyword(String keyword) {
 		var error = TrainingErrorRepository.getErrorByKeyword(ctx, keyword);
 		if(error == null) {
@@ -27,5 +27,10 @@ public class TrainingErrorDAO {
 
 	public Optional<TrainingError> getErrorById(long errorId) {
 		return Optional.ofNullable(TrainingErrorRepository.getErrorById(ctx, errorId));
+	}
+
+	@Cacheable("all_training_errors")
+	public List<TrainingError> getAllTrainingErrors() {
+		return TrainingErrorRepository.getAllTrainingErrors(ctx);
 	}
 }

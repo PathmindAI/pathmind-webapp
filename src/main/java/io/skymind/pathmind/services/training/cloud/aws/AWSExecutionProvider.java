@@ -133,7 +133,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
         if (experimentState != null) {
             if (errors.size() > 0 || knownErrsCheck.size() > 0) {
-                final var allErrorsList = Stream.concat(errors.stream(), knownErrsCheck.stream())
+                final var allErrorsList = Stream.concat(knownErrsCheck.stream(), errors.stream())
                         .collect(Collectors.toList());
                 var oneLineErrors = allErrorsList.stream()
                         .map(Object::toString)

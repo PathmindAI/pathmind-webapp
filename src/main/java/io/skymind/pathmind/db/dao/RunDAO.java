@@ -22,10 +22,10 @@ import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.data.TrainingError;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
+import org.springframework.util.CollectionUtils;
 
 @Repository
 public class RunDAO
@@ -139,16 +139,25 @@ public class RunDAO
         final var status = jobStatus.getRunStatus();
         // IMPORTANT -> Needed for both the updateStatus and EventBus post.
         run.setStatusEnum(status);
-        if(status == RunStatus.Error) {
+        if(status == RunStatus.Error && !CollectionUtils.isEmpty(jobStatus.getDescription())) {
             // TODO (KW): 05.02.2020 gets only first error, refactor if multiple errors scenario is possible
-            final Optional<TrainingError> error = trainingErrorDAO.getErrorByKeyword(jobStatus.getDescription().get(0));
-            error.ifPresent(
-                    e -> run.setTrainingErrorId(e.getId())
-            );
+            final var error = jobStatus.getDescription().get(0);
+            setRunError(run, error);
         }
         // STEPH -> REFACTOR -> QUESTION -> Isn't this just a duplicate of setStoppedAtForFinishedPolicies()
         run.setStoppedAt(RunStatus.isRunning(status) ? null : LocalDateTime.now());
         RunRepository.updateStatus(transactionCtx, run);
+    }
+
+    private void setRunError(Run run, String errorMessage) {
+        final var errors = trainingErrorDAO.getAllTrainingErrors();
+        final var foundError = errors.stream()
+                .filter(error -> errorMessage.contains(error.getKeyword()))
+                .findAny();
+
+        foundError.ifPresent(
+                e -> run.setTrainingErrorId(e.getId())
+        );
     }
 
     private void updatePolicies(Run run, List<Policy> policies, DSLContext transactionCtx)
