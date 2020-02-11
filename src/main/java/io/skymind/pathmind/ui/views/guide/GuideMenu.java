@@ -46,9 +46,9 @@ public class GuideMenu extends VerticalLayout {
     private Component createChecklistItem(String itemName, Class navigationTarget, long itemIndex) {
         RouterLink checklistItem = new RouterLink(itemName, navigationTarget, projectId);
 
-        if (itemIndex < guideStep.getId()) {
+        if (itemIndex < guideStep.getValue()) {
             checklistItem.addClassName("completed");
-        } else if (itemIndex > guideStep.getId()) {
+        } else if (itemIndex > guideStep.getValue()) {
             checklistItem.addClassName("disabled");
         }
 
