@@ -1,4 +1,5 @@
 # KubeDB
+
 [KubeDB by AppsCode](https://github.com/kubedb/installer) - Making running production-grade databases easy on Kubernetes
 
 ## TL;DR;
@@ -18,6 +19,7 @@ This chart bootstraps a [KubeDB controller](https://github.com/kubedb/installer)
 - Kubernetes 1.9+
 
 ## Installing the Chart
+
 To install the chart with the release name `my-release`:
 
 ```console
@@ -47,7 +49,7 @@ The following table lists the configurable parameters of the KubeDB chart and th
 | `replicaCount`                          | Number of kubedb operator replicas to create (only 1 is supported)                                                                                                         | `1`                                                       |
 | `kubedb.registry`                       | Docker registry used to pull KubeDB operator image                                                                                                                         | `kubedb`                                                  |
 | `kubedb.repository`                     | KubeDB operator container image                                                                                                                                            | `operator`                                                |
-| `kubedb.tag`                            | KubeDB operator container image tag                                                                                                                                        | `v0.13.0-rc.0`                                                  |
+| `kubedb.tag`                            | KubeDB operator container image tag                                                                                                                                        | `v0.13.0-rc.0`                                            |
 | `cleaner.registry`                      | Docker registry used to pull Webhook cleaner image                                                                                                                         | `appscode`                                                |
 | `cleaner.repository`                    | Webhook cleaner container image                                                                                                                                            | `kubectl`                                                 |
 | `cleaner.tag`                           | Webhook cleaner container image tag                                                                                                                                        | `v1.12`                                                   |
@@ -96,6 +98,7 @@ $ helm install --name my-release --values values.yaml appscode/kubedb
 ```
 
 ## RBAC
+
 By default the chart will not install the recommended RBAC roles and rolebindings.
 
 You need to have the flag `--authorization-mode=RBAC` on the api server. See the following document for how to enable [RBAC](https://kubernetes.io/docs/admin/authorization/rbac/).
