@@ -14,7 +14,6 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ModelUtils;
-import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.PathmindUserDetails;
