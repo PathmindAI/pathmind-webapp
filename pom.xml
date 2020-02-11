@@ -17,7 +17,7 @@
     <properties>
         <java.version>11</java.version>
         <vaadin.version>14.1.3</vaadin.version>
-        <jooq.version>3.12.1</jooq.version>
+        <jooq.version>3.12.4</jooq.version>
     </properties>
 
     <repositories>
@@ -204,7 +204,7 @@
                 <configuration>
                     <changeLogFile>src/main/resources/db/changelog/changelog-master.xml</changeLogFile>
                     <driver>org.postgresql.Driver</driver>
-                    <url>${DB_URL}</url>
+                    <url>jdbc:postgresql://localhost/PATHMIND?user=postgres&amp;password=37iCIf83J0fTAOn2AUDQ</url>
                 </configuration>
             </plugin>
             <plugin>
@@ -226,7 +226,7 @@
                 <configuration>
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
-                        <url>${DB_URL}</url>
+                        <url>jdbc:postgresql://localhost/PATHMIND?user=postgres&amp;password=37iCIf83J0fTAOn2AUDQ</url>
                     </jdbc>
                     <generator>
                         <generate>

@@ -842,4 +842,21 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20200211-01" author="steph@followsteph.com">
+        <addColumn tableName="PROJECT">
+            <column name="USER_NOTES" type="VARCHAR"/>
+        </addColumn>
+        <addColumn tableName="MODEL">
+            <column name="USER_NOTES" type="VARCHAR"/>
+        </addColumn>
+        <addColumn tableName="EXPERIMENT">
+            <column name="USER_NOTES" type="VARCHAR"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="PROJECT" columnName="USER_NOTES"/>
+            <dropColumn tableName="MODEL" columnName="USER_NOTES"/>
+            <dropColumn tableName="EXPERIMENT" columnName="USER_NOTES"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
