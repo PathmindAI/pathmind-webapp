@@ -52,38 +52,47 @@ public abstract class TrainingService {
     }
 
     public void startTestRun(Experiment exp){
-        startRun(RunType.TestRun,
-                exp,
-                50,
-                Arrays.asList(1e-5),
-                Arrays.asList(0.99),
-                Arrays.asList(128),
-                15 * MINUTE
-        );
+//        startRun(RunType.TestRun,
+//                exp,
+//                50,
+//                Arrays.asList(1e-5),
+//                Arrays.asList(0.99),
+//                Arrays.asList(128),
+//                15 * MINUTE
+//        );
     }
 
     public void startDiscoveryRun(Experiment exp){
-        TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_BATCH_SIZES)
-                .forEach(
-                        batch -> startRun(RunType.DiscoveryRun,
-                                exp,
-                                RunConstants.DISCOVERY_RUN_ITERATIONS,
-                                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_LEARNING_RATES), // Learning rate
-                                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_GAMMAS), // gamma
-                                Arrays.asList((Integer) batch), // batch size
-                                30 * MINUTE
-                        ));
+//        TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_BATCH_SIZES)
+//                .forEach(
+//                        batch -> startRun(RunType.DiscoveryRun,
+//                                exp,
+//                                RunConstants.DISCOVERY_RUN_ITERATIONS,
+//                                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_LEARNING_RATES), // Learning rate
+//                                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_GAMMAS), // gamma
+//                                Arrays.asList((Integer) batch), // batch size
+//                                30 * MINUTE
+//                        ));
+        startRun(RunType.DiscoveryRun,
+                exp,
+                10,
+                Arrays.asList(1e-3, 1e-4, 1e-5), // Learning rate
+                Arrays.asList(0.9, 0.99), // gamma
+                Arrays.asList(64, 128), // batch size
+                5 * MINUTE,
+                2
+        );
     }
 
     public void startFullRun(Experiment exp, Policy policy){
-        startRun(RunType.FullRun,
-                exp,
-                RunConstants.FULL_RUN_ITERATIONS,
-                Arrays.asList(policy.getLearningRate()),
-                Arrays.asList(policy.getGamma()),
-                Arrays.asList(policy.getBatchSize()),
-                24 * HOUR, // 24 hr
-                policy);          // base policy
+//        startRun(RunType.FullRun,
+//                exp,
+//                RunConstants.FULL_RUN_ITERATIONS,
+//                Arrays.asList(policy.getLearningRate()),
+//                Arrays.asList(policy.getGamma()),
+//                Arrays.asList(policy.getBatchSize()),
+//                24 * HOUR, // 24 hr
+//                policy);          // base policy
     }
 
     private Policy generateTempPolicy(JobSpec spec, Run run) {
@@ -110,9 +119,9 @@ public abstract class TrainingService {
         return tempPolicy;
     }
 
-    private void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec) {
-        startRun(runType, exp, iterations, learningRates, gammas, batchSizes, maxTimeInSec, null);
+    private void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, int numSamples) {
+        startRun(runType, exp, iterations, learningRates, gammas, batchSizes, maxTimeInSec, numSamples, null);
     }
 
-    protected abstract void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, Policy basePolicy);
+    protected abstract void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, int numSampes, Policy basePolicy);
 }
