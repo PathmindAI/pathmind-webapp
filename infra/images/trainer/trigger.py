@@ -58,6 +58,29 @@ def load_deployment_template():
     with open(DEPLOYMENT_TEMPLATE,'r') as file:
         mem_deployment_template=file.read().split('\n')
 
+def send_mockup_data(s3bucket, s3path, cycle):
+    """
+    sends the mockup data to the s3 bucket every cycle
+    """
+    folder_list=set()
+    src_bucket=ENVIRONMENT+"-training-static-files.pathmind.com"
+    s3 = boto3.resource('s3')
+    my_bucket = s3.Bucket(src_bucket)
+    for my_bucket_object in my_bucket.objects.filter(Prefix='mockup/', Delimiter=''):
+        folder_list.add(int(my_bucket_object.key.split('/')[1]))
+    folder_list=sorted(folder_list)
+    for folder in folder_list:
+        app_logger.info('Sending mockup folder {folder} to {s3bucket}/{s3path}'\
+            .format(folder=folder,s3bucket=s3bucket,s3path=s3path))
+        for my_bucket_object in my_bucket.objects.filter(
+            Prefix='mockup/'+str(folder)+'/', Delimiter=''):
+
+            key=my_bucket_object.key
+            copy_source = { 'Bucket': src_bucket, 'Key': key }
+            target_key='/'.join(key.split('/')[2:])
+            s3.meta.client.copy(copy_source, s3bucket, s3path+'/'+target_key)
+        time.sleep(cycle)
+
 def process_message(message):
     """
     parses and creates the spot instance for the sqs message received
@@ -84,7 +107,7 @@ def process_message(message):
         """.format(job_id=job_id)
         execute_psql(sql_script)
         try:
-            if body['destroy'] == '1':
+            if int(body['destroy']) == 1:
                 app_logger.info('Uploading killed file for {job_id}'\
                     .format(job_id=job_id))
                 open('killed', 'w').close()
@@ -104,6 +127,25 @@ def process_message(message):
             QueueUrl=SQS_URL,
             ReceiptHandle=ReceiptHandle
         )
+        return True
+
+    if 'mockup' in body:
+        app_logger.info('Sending dummy data to s3://{s3bucket}/{s3path}'\
+                .format(s3bucket=s3bucket,
+                        s3path=s3path))
+        if 'cycle' in body:
+            cycle=int(body['cycle'])
+        else:
+            cycle=60
+        #Delete message
+        sqs = boto3.client('sqs')
+        response = sqs.delete_message(
+            QueueUrl=SQS_URL,
+            ReceiptHandle=ReceiptHandle
+        )
+        worker = Thread(target=send_mockup_data, args=(s3bucket,s3path,cycle,))
+        worker.setDaemon(True)
+        worker.start()
         return True
 
     #create node and deployment
