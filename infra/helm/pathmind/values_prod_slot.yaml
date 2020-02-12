@@ -22,6 +22,7 @@ env:
   ENVIRONMENT: prod
   SQS_URL: https://queue.amazonaws.com/839270835622/prod-training-queue.fifo
   S3_BUCKET: prod-training-dynamic-files.pathmind.com
+  MODEL_ANALYZER_URL: https://ma.devpathmind.com
 
 name: pathmind-slot  
 
