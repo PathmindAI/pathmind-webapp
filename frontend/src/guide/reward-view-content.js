@@ -11,7 +11,7 @@ class RewardViewContent extends PolymerElement {
           Reward variables are the building blocks for the reward function.
           Reward variables can embody important simulation metrics such as
           revenue and cost. These metrics are likely what you directly seek to
-          optimize.In the AnyLogic palette, create a new function and name it
+          optimize. In the AnyLogic palette, create a new function and name it
           rewardVariables. Inspect its properties. Set the return value to a
           two-dimensional array of doubles. Define your reward variables. Add
           rewardVariables to the Pathmind Helper.

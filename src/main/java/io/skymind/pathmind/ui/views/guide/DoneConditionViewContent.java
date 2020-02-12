@@ -33,7 +33,6 @@ public class DoneConditionViewContent extends DefaultPageContent<DoneConditionVi
     @Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {
         backBtn.addClickListener(e -> {
-            guideDAO.updateGuideStep(projectId, GuideStep.TriggerAction);
             UI.getCurrent().navigate(TriggerActionsView.class, projectId);
         });
 

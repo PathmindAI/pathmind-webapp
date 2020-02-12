@@ -34,7 +34,6 @@ public class TriggerActionsViewContent extends DefaultPageContent<TriggerActions
 	@Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {
 		backBtn.addClickListener(e -> {
-            guideDAO.updateGuideStep(projectId, GuideStep.BuildActionSpace);
             UI.getCurrent().navigate(ActionSpaceView.class, projectId);
         });
 

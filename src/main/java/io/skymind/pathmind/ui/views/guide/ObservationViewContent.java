@@ -33,7 +33,6 @@ public class ObservationViewContent extends DefaultPageContent<ObservationViewCo
     @Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {
         backBtn.addClickListener(e -> {
-            guideDAO.updateGuideStep(projectId, GuideStep.InstallPathmindHelper);
             UI.getCurrent().navigate(InstallPathmindHelperView.class, projectId);
         });
 

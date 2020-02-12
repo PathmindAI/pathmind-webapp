@@ -43,7 +43,7 @@ class ObservationViewContent extends PolymerElement {
     return {
       helpArticleLink: {
         value() {
-          return "https://app.intercom.io/a/apps/byklc7u3/articles/articles/3631436/show";
+          return "https://help.pathmind.com/en/articles/3631436-2-build-observation-space";
         }
       }
     };

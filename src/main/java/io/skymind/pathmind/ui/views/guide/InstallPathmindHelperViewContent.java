@@ -34,7 +34,6 @@ public class InstallPathmindHelperViewContent extends DefaultPageContent<Install
 	@Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {
 		backBtn.addClickListener(e -> {
-			guideDAO.updateGuideStep(projectId, GuideStep.Overview);
 			UI.getCurrent().navigate(GuideOverview.class, projectId);
 		});
 

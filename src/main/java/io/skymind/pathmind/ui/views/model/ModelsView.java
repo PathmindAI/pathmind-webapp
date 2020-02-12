@@ -18,7 +18,9 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 
+import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.data.Model;
+import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -48,6 +50,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	private ProjectDAO projectDAO;
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private GuideDAO guideDAO;
 
 	private long projectId;
 	private String projectName;
@@ -156,7 +160,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 			modelGrid.setItems(models);
 		});
 		if (models.isEmpty()) {
-			event.forwardTo(Routes.GUIDE_URL, projectId);
+			GuideStep guideStep = guideDAO.getGuideStep(projectId);
+			event.forwardTo(guideStep.getPath(), projectId);
 		}
 		archivesTabPanel.initData();
 		titlePanel.setSubtitle(projectName);
