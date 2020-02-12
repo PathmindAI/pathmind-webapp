@@ -1,0 +1,47 @@
+.label-box {
+  --pm-label-box-color: #1a2949;
+  border: 3px solid var(--pm-label-box-color);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow: hidden;
+  box-sizing: border-box;
+  min-width: 86px;
+  margin: 0.5rem !important;
+  height: 80px;
+  min-width: 150px;
+}
+
+.score {
+  --pm-label-box-color: #ed7820;
+}
+
+.algorithm {
+  --pm-label-box-color: var(--pm-primary-color);
+}
+
+.label-box #label {
+  color: white;
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  background: var(--pm-label-box-color);
+  line-height: 24px;
+  font-weight: bold;
+}
+
+.label-box > #content {
+  width: 100%;
+  padding: var(--lumo-space-s) var(--lumo-space-xs);
+  box-sizing: border-box;
+}
+
+.label-box > #content {
+  width: 100%;
+  overflow: hidden;
+  display: block;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--pm-label-box-color);
+}
