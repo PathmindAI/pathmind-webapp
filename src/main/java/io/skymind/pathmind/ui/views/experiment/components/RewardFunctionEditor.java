@@ -2,9 +2,6 @@ package io.skymind.pathmind.ui.views.experiment.components;
 
 
 
-import com.vaadin.flow.component.AbstractCompositeField;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.ui.components.juicy.mode.JuicyAceMode;
 import io.skymind.pathmind.ui.components.juicy.theme.JuicyAceTheme;
