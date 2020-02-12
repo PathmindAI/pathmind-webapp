@@ -42,5 +42,4 @@ public class PolicyHighlightPanel extends VerticalLayout
 		errorDescriptionLabel.setVisible(errorDescriptionText != null);
 		errorDescriptionLabel.setText(errorDescriptionText);
 	}
-
 }
