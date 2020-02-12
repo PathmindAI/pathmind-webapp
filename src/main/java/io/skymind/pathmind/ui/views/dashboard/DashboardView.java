@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.views.dashboard;
 
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -37,12 +38,17 @@ import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUti
 import io.skymind.pathmind.ui.views.model.UploadModelView;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
+import java.time.LocalDateTime;
+
 
 @Route(value= Routes.DASHBOARD_URL, layout = MainLayout.class)
 public class DashboardView extends PathMindDefaultView implements RunUpdateSubscriber
 {
 	@Autowired
 	private DashboardDataProvider dataProvider;
+
+	@Autowired
+	private ExperimentDAO experimentDAO;
 	
 	private Grid<DashboardItem> dashboardGrid;
 	
@@ -94,7 +100,9 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 				getUI().ifPresent(ui -> ui.navigate(UploadModelView.class, item.getProject().getId()));
 				break;
 			case WriteRewardFunction:
-				getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, item.getExperiment().getId()));
+				var experimentId = item.getExperiment() == null ?
+						experimentDAO.insertExperiment(item.getModel().getId(), LocalDateTime.now()) : item.getExperiment().getId();
+				getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
 				break;
 			default :
 				getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(item.getExperiment())));

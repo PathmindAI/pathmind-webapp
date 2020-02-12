@@ -1,5 +1,9 @@
 package io.skymind.pathmind.db.dao;
 
+import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_MULTIPLE_BY_USER;
+import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_SINGLE_BY_EXPERIMENT;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,9 +14,6 @@ import io.skymind.pathmind.aspects.MonitorExecutionTime;
 import io.skymind.pathmind.data.DashboardItem;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.utils.DashboardQueryParams;
-
-import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_MULTIPLE_BY_USER;
-import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_SINGLE_BY_EXPERIMENT;
 
 @Repository
 public class ExperimentDAO
@@ -77,5 +78,9 @@ public class ExperimentDAO
 	@MonitorExecutionTime
 	public int countDashboardItemsForUser(long userId) {
 		return ExperimentRepository.countDashboardItemsForUser(ctx, userId);
+	}
+
+	public long insertExperiment(long modelId, LocalDateTime createdDate) {
+		return ExperimentRepository.insertExperiment(ctx, modelId, createdDate);
 	}
 }
