@@ -96,18 +96,25 @@ public class LoginView extends HorizontalLayout
 		// innerContent.add(title, badCredentials, emailNotVerified, createLoginForm(), createSignUp());
 		innerContent.add(title, badCredentials, emailNotVerified, createLoginForm());
 
+		Anchor termsLink = new Anchor(termsOfUseUrl, "Terms of Use");
+		termsLink.setTarget("_blank");
+
+		Anchor privacyLink = new Anchor(privacyPolicyUrl, "Privacy Policy");
+		privacyLink.setTarget("_blank");
+
 		Div policy = new Div();
 		policy.addClassName("policy");
 		policy.add(new Span("By clicking Sign In, you agree to Pathmind's "),
-				new Anchor(termsOfUseUrl, "Terms of Use"),
+				termsLink,
 				new Span(" and "),
-				new Anchor(privacyPolicyUrl, "Privacy Policy"),
+				privacyLink,
 				new Span("."));
 
 		Div loginPanel = new Div();
 		add(loginPanel);
 		loginPanel.setClassName("content");
 		loginPanel.add(welcome, img, innerContent, policy);
+		setSpacing(false);
 	}
 
 	private void updateEmailNotVerified() {

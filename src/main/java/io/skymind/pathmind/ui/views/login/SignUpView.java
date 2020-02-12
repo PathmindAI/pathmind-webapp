@@ -11,6 +11,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
@@ -74,6 +75,9 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 
 	@Id("passwordPart")
 	private VerticalLayout passwordPart;
+
+	@Id("policyText")
+	private Div policyText;
 
 	@Autowired
 	private UserService userService;
@@ -144,9 +148,10 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	}
 
 	private void showPassword(boolean showPasswordPart) {
-		getModel().setTitle(showPasswordPart ? "Create a new password" : "Get Started!");
+		getModel().setTitle(showPasswordPart ? "Create a new password" : "Sign up for a 30-day Free Trial!");
 		emailPart.setVisible(!showPasswordPart);
 		passwordPart.setVisible(showPasswordPart);
+		policyText.setVisible(!showPasswordPart);
 	}
 
 	private void initBinder() {
