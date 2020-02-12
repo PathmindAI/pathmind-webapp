@@ -63,16 +63,14 @@ public abstract class TrainingService {
     }
 
     public void startDiscoveryRun(Experiment exp){
-        TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_BATCH_SIZES)
-                .forEach(
-                        batch -> startRun(RunType.DiscoveryRun,
-                                exp,
-                                RunConstants.DISCOVERY_RUN_ITERATIONS,
-                                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_LEARNING_RATES), // Learning rate
-                                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_GAMMAS), // gamma
-                                Arrays.asList((Integer) batch), // batch size
-                                30 * MINUTE
-                        ));
+        startRun(RunType.DiscoveryRun,
+                exp,
+                RunConstants.DISCOVERY_RUN_ITERATIONS,
+                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_LEARNING_RATES), // Learning rate
+                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_GAMMAS), // gamma
+                (List<Integer>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_BATCH_SIZES), // batch size
+                30 * MINUTE
+        );
     }
 
     public void startFullRun(Experiment exp, Policy policy){
