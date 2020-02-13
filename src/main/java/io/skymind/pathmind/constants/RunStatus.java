@@ -5,7 +5,7 @@ import java.util.Arrays;
 public enum RunStatus
 {
 	NotStarted(0, "Not Started"),
-	Starting(1, "Starting"),
+	Starting(1, "Starting Cluster"),
 	Running(2, "Running"),
 	Completed(3, "Completed"),
 	Error(4, "Error"),

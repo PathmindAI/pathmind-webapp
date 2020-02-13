@@ -171,6 +171,19 @@ resource "null_resource" "pathmind" {
 ["null_resource.awsaccesskey","null_resource.awssecretaccesskey","null_resource.db_url_secret","null_resource.segment_server_key_secret","null_resource.segment_website_key_secret","null_resource.trainer"]
 }
 
+#install pathmind-ma
+resource "null_resource" "pathmind_ma" {
+  provisioner "local-exec" {
+    command = "helm install pathmind-ma ../../helm/pathmind-ma -f ../../helm/pathmind-ma/values_${var.environment}.yaml"
+  }
+  provisioner "local-exec" {
+    when = "destroy"
+    command = "helm delete pathmind-ma"
+  }
+  depends_on =
+["null_resource.pathmind"]
+}
+
 #install pathmind-slot
 resource "null_resource" "pathmind-slot" {
   provisioner "local-exec" {
