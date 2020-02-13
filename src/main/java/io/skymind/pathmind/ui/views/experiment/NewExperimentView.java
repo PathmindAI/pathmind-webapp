@@ -35,7 +35,6 @@ import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.ui.utils.*;
 import io.skymind.pathmind.ui.utils.FormUtils;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;

@@ -1,13 +1,5 @@
 package io.skymind.pathmind.ui.views.experiment;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
@@ -21,12 +13,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.*;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.WildcardParameter;
-
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
@@ -55,15 +41,19 @@ import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.components.*;
 import io.skymind.pathmind.ui.views.experiment.components.PolicyChartPanel;
 import io.skymind.pathmind.ui.views.experiment.components.PolicyHighlightPanel;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.components.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)

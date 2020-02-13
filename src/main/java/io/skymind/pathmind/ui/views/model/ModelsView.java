@@ -13,11 +13,8 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.constants.GuideStep;
-
-import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
