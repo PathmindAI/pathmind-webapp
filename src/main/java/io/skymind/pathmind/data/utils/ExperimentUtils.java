@@ -125,6 +125,9 @@ public class ExperimentUtils
 	 * It sums up a size of reward list for each policy.
 	 */
 	public static Integer getNumberOfProcessedIterations(Experiment experiment, RunType runType){
+		if (experiment.getPolicies() == null) {
+			return 0;
+		}
 		return experiment.getPolicies().stream()
 				.filter(policy -> policy.getRun().getRunTypeEnum() == runType)
 				.map(Policy::getScores)
@@ -140,5 +143,12 @@ public class ExperimentUtils
 
 	private static boolean isAnyPolicyNotFinished(List<LocalDateTime> stoppedTimes) {
 		return stoppedTimes.stream().anyMatch(Objects::isNull);
+	}
+	
+	public static double calculateExperimentProgress(Experiment experiment, RunType runType) {
+		double totalIterations = (double) RunUtils.getNumberOfTrainingIterationsForRunType(runType);
+		Integer iterationsProcessed = getNumberOfProcessedIterations(experiment, runType);
+		double progress = (iterationsProcessed / totalIterations) * 100;
+		return Math.max(Math.min(100d, progress), 0);
 	}
 }

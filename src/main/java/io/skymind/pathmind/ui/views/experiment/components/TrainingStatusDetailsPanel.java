@@ -16,7 +16,6 @@ import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
-import io.skymind.pathmind.data.utils.RunUtils;
 import io.skymind.pathmind.ui.components.ElapsedTimer;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -76,10 +75,7 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 	}
 
 	private void updateProgressBar(Experiment experiment, RunType runType) {
-		final var totalIterations = (double) RunUtils.getNumberOfTrainingIterationsForRunType(runType);
-		final Integer iterationsProcessed = ExperimentUtils.getNumberOfProcessedIterations(experiment, runType);
-
-		final var progress = (iterationsProcessed / totalIterations) * 100;
+		final var progress = ExperimentUtils.calculateExperimentProgress(experiment, runType);
 		if (progress > 0 && progress <= 100) {
 			final var estimatedTime = ExperimentUtils.getEstimatedTrainingTime(experiment, progress, runType);
 			final var formattedEstimatedTime = DateAndTimeUtils.getOnlyTheHighestDateLevel((long) estimatedTime);
