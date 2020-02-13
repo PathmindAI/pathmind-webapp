@@ -142,7 +142,7 @@ public class LoginView extends HorizontalLayout
 
 	private Component createSignUp() {
 		Span dontHaveAccount = new Span("Don't have an account?");
-		dontHaveAccount.getStyle().set("color", "var(--pm-secondary-text-color)");
+		dontHaveAccount.getStyle().set("color", "var(--lumo-secondary-text-color)");
 		RouterLink start = new RouterLink("Get started", SignUpView.class);
 
 		Div signUpCont = new Div();

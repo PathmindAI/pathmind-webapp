@@ -8,10 +8,7 @@ import java.util.*;
 public class RewardValidationService {
 
     public static List<String> validateRewardFunction(String rewardFunction){
-        return Collections.emptyList();
-        //TODO: This fails on azure for some reason, missing JDK?
-
-        /*final String code = fillInTemplate(rewardFunction);
+        final String code = fillInTemplate(rewardFunction);
         final String[] lines = code.split("\n");
         int startReward = 0;
         int endReward = 0;
@@ -33,7 +30,7 @@ public class RewardValidationService {
             }
         }
 
-        return errors;*/
+        return errors;
     }
 
     private static String fillInTemplate(String rewardFunction){

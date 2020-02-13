@@ -54,7 +54,6 @@ import io.skymind.pathmind.ui.views.experiment.components.PolicyChartPanel;
 import io.skymind.pathmind.ui.views.experiment.components.PolicyHighlightPanel;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.components.TrainingStatusDetailsPanel;
-import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
 
 @CssImport("./styles/styles.css")
@@ -164,12 +163,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		runFullTraining.setVisible(false);
 		runFullTraining.addClassNames("large-image-btn", "run");
 
-		Button editRewardFunctionButton = new Button("Edit Reward Function");
-		editRewardFunctionButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		editRewardFunctionButton.addClassName("half-width");
-		editRewardFunctionButton.addClickListener(evt -> 
-			ExperimentViewNavigationUtils.createAndNavigateToNewExperiment(UI.getCurrent(), experimentDAO, experiment.getModelId(), experiment.getRewardFunction()));
-		
 		exportPolicyButton = new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()));
 		exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportPolicyButton.addClassName("half-width");
@@ -178,7 +171,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		return WrapperUtils.wrapSizeFullVertical(
 				WrapperUtils.wrapWidthFullCenterHorizontal(runFullTraining),
 				policyHighlightPanel,
-				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton, editRewardFunctionButton),
+				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton),
 				trainingStatusDetailsPanel,
 				rewardFunctionEditor);
 	}
