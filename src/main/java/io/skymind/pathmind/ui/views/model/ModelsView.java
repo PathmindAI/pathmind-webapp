@@ -5,7 +5,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -13,8 +12,10 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -51,13 +52,14 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	private ProjectDAO projectDAO;
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private GuideDAO guideDAO;
 
 	private long projectId;
 	private Project project;
 
 	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
-	private Div instructionsDiv;
 	private ScreenTitlePanel titlePanel;
 	private SearchBox<Model> searchBox;
 
@@ -70,7 +72,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	{
 		setupGrid();
 		setupArchivesTabPanel();
-		setupInstructionsDiv();
 		searchBox = getSearchBox();
 		
 		addClassName("models-view");
@@ -83,41 +84,19 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 			archivesTabPanel,
 			new ViewSection(
 				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-				modelGrid,
-				instructionsDiv
+				modelGrid
 			)
 		);
 		leftPanel.setPadding(false);
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-			createBreadcrumbs(),
-			WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-				leftPanel,
-				createViewNotesField(),
-			70),
-			WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
+				createBreadcrumbs(),
+				WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+						leftPanel,
+						createViewNotesField(),
+						70),
+				WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
 		);
 		return gridWrapper;
-	}
-	
-	private void setupInstructionsDiv() {
-		instructionsDiv = new Div();
-		instructionsDiv.setWidthFull();
-		instructionsDiv.getElement().setProperty("innerHTML",
-				"<p>To prepare your AnyLogic model for reinforcement learning, install the Pathmind Helper</p>" +
-				"<p><strong>The basics:</strong></p>" +
-				"<ol>" +
-					"<li>The Pathmind Helper is an AnyLogic palette item that you add to your simulation. You can <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">download it here</a>.</li>" +
-					"<li>Add Pathmind Helper as a library in AnyLogic.</li>" +
-					"<li>Add a Pathmind Helper to your model.</li>" +
-					"<li>Fill in these functions:</li>" +
-						"<ul>" +
-							"<li>Observation for rewards</li>" +
-							"<li>Observation for training</li>"+
-							"<li>doAction</li>" +
-						"</ul>" +
-				"</ol>" +
-				"<p>When you're ready, upload your model in the next step.</p>" +
-				"<p><a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper\" target=\"_blank\">For more details, see our documentation</a></p>");
 	}
 
 	private void setupArchivesTabPanel() {
@@ -205,16 +184,12 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 			// modelGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			modelGrid.setItems(project.getModels());
 		});
-		arrangeGridAndInstructionsVisibility(!(project.getModels() == null || project.getModels().isEmpty()));
+		if((project.getModels() == null || project.getModels().isEmpty())) {
+			GuideStep guideStep = guideDAO.getGuideStep(projectId);
+			event.forwardTo(guideStep.getPath(), projectId);
+		}
 		archivesTabPanel.initData();
 		titlePanel.setSubtitle(project.getName());
-	}
-	
-	private void arrangeGridAndInstructionsVisibility(boolean hasModels) {
-		instructionsDiv.setVisible(!hasModels);
-		modelGrid.setVisible(hasModels);
-		archivesTabPanel.setVisible(hasModels);
-		searchBox.setVisible(hasModels);
 	}
 
 	@Override

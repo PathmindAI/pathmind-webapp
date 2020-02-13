@@ -1,5 +1,13 @@
 package io.skymind.pathmind.services;
 
+import static io.skymind.pathmind.services.training.constant.RunConstants.DISCOVERY_RUN_BATCH_SIZES;
+import static io.skymind.pathmind.services.training.constant.RunConstants.DISCOVERY_RUN_GAMMAS;
+import static io.skymind.pathmind.services.training.constant.RunConstants.DISCOVERY_RUN_LEARNING_RATES;
+import static io.skymind.pathmind.services.training.constant.RunConstants.TRAINING_HYPERPARAMETERS;
+
+import java.util.Arrays;
+import java.util.List;
+
 import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
@@ -14,13 +22,11 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
+import io.skymind.pathmind.services.training.constant.RunConstants;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Slf4j
 public abstract class TrainingService {
@@ -59,10 +65,10 @@ public abstract class TrainingService {
     public void startDiscoveryRun(Experiment exp){
         startRun(RunType.DiscoveryRun,
                 exp,
-                100,
-                Arrays.asList(1e-3, 1e-4, 1e-5), // Learning rate
-                Arrays.asList(0.9, 0.99), // gamma
-                Arrays.asList(64, 128), // batch size
+                RunConstants.DISCOVERY_RUN_ITERATIONS,
+                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_LEARNING_RATES), // Learning rate
+                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_GAMMAS), // gamma
+                (List<Integer>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_BATCH_SIZES), // batch size
                 30 * MINUTE
         );
     }
@@ -70,7 +76,7 @@ public abstract class TrainingService {
     public void startFullRun(Experiment exp, Policy policy){
         startRun(RunType.FullRun,
                 exp,
-                500,
+                RunConstants.FULL_RUN_ITERATIONS,
                 Arrays.asList(policy.getLearningRate()),
                 Arrays.asList(policy.getGamma()),
                 Arrays.asList(policy.getBatchSize()),

@@ -1,0 +1,62 @@
+.guide-menu {
+  align-self: flex-start;
+  flex: 0 0 auto;
+  position: fixed;
+  width: auto !important;
+  top: auto;
+  padding: var(--lumo-space-xl);
+  padding-left: var(--lumo-space-xxl);
+}
+.guide-menu a {
+  display: block;
+  position: relative;
+  color: var(--pm-blue-color-darkest-25pct);
+  line-height: 1.3em;
+  text-decoration: none;
+}
+.guide-menu a:last-of-type {
+  margin-bottom: 0;
+}
+.guide-menu a:not(.disabled):hover,
+.guide-menu a[highlight]:hover {
+  color: var(--pm-blue-color-darkest-50pct);
+}
+.guide-menu a:not(.skipLink)::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  top: 50%;
+  left: -30px;
+  border: 1px solid var(--pm-blue-color-darkest-25pct);
+  transform: translateY(-50%);
+}
+.guide-menu a:not(.disabled) {
+  color: var(--pm-blue-color-darkest);
+}
+.guide-menu a[highlight] {
+  font-weight: 700;
+}
+.guide-menu .completed::after {
+  content: "";
+  position: absolute;
+  width: 23px;
+  height: 17px;
+  top: 50%;
+  left: -26px;
+  background-image: url("/frontend/icons/checkmark_grey.svg");
+  background-size: cover;
+  transform: translateY(-60%);
+}
+.guide-menu a.disabled {
+  pointer-events: none;
+  cursor: default;
+}
+.guide-menu vaadin-button {
+  color: var(--pm-blue-color-darkest);
+  font-size: var(--lumo-font-size-s);
+  margin-top: var(--lumo-space-xxl);
+}
+.guide-menu vaadin-button:hover {
+  opacity: 0.5;
+}
