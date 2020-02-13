@@ -186,7 +186,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private Component getTopButtonPanel() {
-        final Button startRunButton = new Button("Start Discovery Run", new Image("frontend/images/start.svg", "run"),
+        final Button startRunButton = new Button("Start Training", new Image("frontend/images/start.svg", "run"),
                 click -> handleStartRunButtonClicked());
         startRunButton.addClassNames("large-image-btn","run");
         return WrapperUtils.wrapWidthFullCenterVertical(startRunButton);
