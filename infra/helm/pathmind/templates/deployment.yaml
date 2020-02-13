@@ -69,6 +69,8 @@ spec:
               value: "{{ .Values.env.PATHMIND_LOG_FILE_PATH }}"
             - name: SCM_COMMAND_IDLE_TIMEOUT
               value: "{{ .Values.env.SCM_COMMAND_IDLE_TIMEOUT }}"
+            - name: MODEL_ANALYZER_URL
+              value: "{{ .Values.env.MODEL_ANALYZER_URL }}"
             - name: ENVIRONMENT
               value: "{{ .Values.env.ENVIRONMENT }}"
             - name: AWS_DEFAULT_REGION
