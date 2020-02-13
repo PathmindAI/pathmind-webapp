@@ -6,6 +6,7 @@ package io.skymind.pathmind.data.db;
 
 import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.Experiment;
+import io.skymind.pathmind.data.db.tables.Guide;
 import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.ModelFile;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
@@ -45,6 +46,7 @@ public class Indexes {
     public static final Index UNIQUE_PROVIDER_CLASS_TYPE_KEY = Indexes0.UNIQUE_PROVIDER_CLASS_TYPE_KEY;
     public static final Index EXPERIMENT_MODEL_FK_INDEX = Indexes0.EXPERIMENT_MODEL_FK_INDEX;
     public static final Index EXPERIMENT_PKEY = Indexes0.EXPERIMENT_PKEY;
+    public static final Index GUIDE_PROJECT_FK_INDEX = Indexes0.GUIDE_PROJECT_FK_INDEX;
     public static final Index MODEL_PKEY = Indexes0.MODEL_PKEY;
     public static final Index MODEL_PROJECT_FK_INDEX = Indexes0.MODEL_PROJECT_FK_INDEX;
     public static final Index MODEL_FILE_MODEL_ID_INDEX = Indexes0.MODEL_FILE_MODEL_ID_INDEX;
@@ -54,7 +56,9 @@ public class Indexes {
     public static final Index POLICY_RUN_FK_INDEX = Indexes0.POLICY_RUN_FK_INDEX;
     public static final Index POLICY_RUN_ID_EXTERNAL_ID_KEY = Indexes0.POLICY_RUN_ID_EXTERNAL_ID_KEY;
     public static final Index POLICY_FILE_POLICY_ID_INDEX = Indexes0.POLICY_FILE_POLICY_ID_INDEX;
+    public static final Index POLICY_FILE_UNIQUE_POLICY_ID = Indexes0.POLICY_FILE_UNIQUE_POLICY_ID;
     public static final Index POLICY_SNAPSHOT_POLICY_ID_INDEX = Indexes0.POLICY_SNAPSHOT_POLICY_ID_INDEX;
+    public static final Index POLICY_SNAPSHOT_UNIQUE_POLICY_ID = Indexes0.POLICY_SNAPSHOT_UNIQUE_POLICY_ID;
     public static final Index PROJECT_PATHMIND_USER_FK_INDEX = Indexes0.PROJECT_PATHMIND_USER_FK_INDEX;
     public static final Index PROJECT_PKEY = Indexes0.PROJECT_PKEY;
     public static final Index UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = Indexes0.UNIQUE_PROJECT_NAME_PATHMIND_USER_ID;
@@ -72,6 +76,7 @@ public class Indexes {
         public static Index UNIQUE_PROVIDER_CLASS_TYPE_KEY = Internal.createIndex("unique_provider_class_type_key", ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, new OrderField[] { ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.PROVIDER_CLASS, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.TYPE, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.KEY }, true);
         public static Index EXPERIMENT_MODEL_FK_INDEX = Internal.createIndex("experiment_model_fk_index", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.MODEL_ID }, false);
         public static Index EXPERIMENT_PKEY = Internal.createIndex("experiment_pkey", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.ID }, true);
+        public static Index GUIDE_PROJECT_FK_INDEX = Internal.createIndex("guide_project_fk_index", Guide.GUIDE, new OrderField[] { Guide.GUIDE.PROJECT_ID }, false);
         public static Index MODEL_PKEY = Internal.createIndex("model_pkey", Model.MODEL, new OrderField[] { Model.MODEL.ID }, true);
         public static Index MODEL_PROJECT_FK_INDEX = Internal.createIndex("model_project_fk_index", Model.MODEL, new OrderField[] { Model.MODEL.PROJECT_ID }, false);
         public static Index MODEL_FILE_MODEL_ID_INDEX = Internal.createIndex("model_file_model_id_index", ModelFile.MODEL_FILE, new OrderField[] { ModelFile.MODEL_FILE.MODEL_ID }, false);
@@ -81,7 +86,9 @@ public class Indexes {
         public static Index POLICY_RUN_FK_INDEX = Internal.createIndex("policy_run_fk_index", Policy.POLICY, new OrderField[] { Policy.POLICY.RUN_ID }, false);
         public static Index POLICY_RUN_ID_EXTERNAL_ID_KEY = Internal.createIndex("policy_run_id_external_id_key", Policy.POLICY, new OrderField[] { Policy.POLICY.RUN_ID, Policy.POLICY.EXTERNAL_ID }, true);
         public static Index POLICY_FILE_POLICY_ID_INDEX = Internal.createIndex("policy_file_policy_id_index", PolicyFile.POLICY_FILE, new OrderField[] { PolicyFile.POLICY_FILE.POLICY_ID }, false);
+        public static Index POLICY_FILE_UNIQUE_POLICY_ID = Internal.createIndex("policy_file_unique_policy_id", PolicyFile.POLICY_FILE, new OrderField[] { PolicyFile.POLICY_FILE.POLICY_ID }, true);
         public static Index POLICY_SNAPSHOT_POLICY_ID_INDEX = Internal.createIndex("policy_snapshot_policy_id_index", PolicySnapshot.POLICY_SNAPSHOT, new OrderField[] { PolicySnapshot.POLICY_SNAPSHOT.POLICY_ID }, false);
+        public static Index POLICY_SNAPSHOT_UNIQUE_POLICY_ID = Internal.createIndex("policy_snapshot_unique_policy_id", PolicySnapshot.POLICY_SNAPSHOT, new OrderField[] { PolicySnapshot.POLICY_SNAPSHOT.POLICY_ID }, true);
         public static Index PROJECT_PATHMIND_USER_FK_INDEX = Internal.createIndex("project_pathmind_user_fk_index", Project.PROJECT, new OrderField[] { Project.PROJECT.PATHMIND_USER_ID }, false);
         public static Index PROJECT_PKEY = Internal.createIndex("project_pkey", Project.PROJECT, new OrderField[] { Project.PROJECT.ID }, true);
         public static Index UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = Internal.createIndex("unique_project_name_pathmind_user_id", Project.PROJECT, new OrderField[] { Project.PROJECT.PATHMIND_USER_ID, Project.PROJECT.NAME }, true);
