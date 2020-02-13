@@ -1,10 +1,5 @@
 package io.skymind.pathmind.ui.views.experiment;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -25,7 +20,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -41,15 +35,15 @@ import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.ui.utils.FormUtils;
-import io.skymind.pathmind.ui.utils.GuiUtils;
-import io.skymind.pathmind.ui.utils.NotificationUtils;
-import io.skymind.pathmind.ui.utils.PushUtils;
-import io.skymind.pathmind.ui.utils.WrapperUtils;
+import io.skymind.pathmind.ui.utils.*;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
