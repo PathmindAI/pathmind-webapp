@@ -7,6 +7,7 @@ import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.CheckPoint;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.ExperimentState;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AWSFileManager;
@@ -111,29 +112,23 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public RunStatus status(String jobHandle) {
-        List<String> errors = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_ERROR);
-        List<String> completes = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_COMPLETE);
-        List<String> trials = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_LIST).stream()
-                .filter(it -> !it.endsWith(".json"))
-                .collect(Collectors.toList());
+        if (outputExist(jobHandle)){
+            boolean killed = getFile(jobHandle, TrainingFile.KILLED).isPresent();
+            if (killed) {
+                return RunStatus.Killed;
+            }
 
-        boolean killed = getFile(jobHandle, TrainingFile.KILLED).isPresent();
-        if (killed) {
-            return RunStatus.Killed;
-         }
+            ExperimentState experimentState = getExperimentState(jobHandle);
+            List<String> knownErrsCheck = getTrialStatus(jobHandle, TrainingFile.KNOWN_ERROR);
 
-        List<String> knownErrsCheck = getTrialStatus(jobHandle, TrainingFile.KNOWN_ERROR);
-        if (errors.size() > 0 || knownErrsCheck.size() > 0) {
-            return RunStatus.Error;
-        }
+            Map<String, Long> trialStatusCount = experimentState.getCheckpoints().stream()
+                    .collect(Collectors.groupingBy(CheckPoint::getStatus, Collectors.counting()));
 
-        // todo need to change to use database once Daniel create proper database(TRAINER_JOB)
-        ExperimentState experimentState = getExperimentState(jobHandle);
+            if (trialStatusCount.getOrDefault("ERROR", 0L) > 0 || knownErrsCheck.size() > 0) {
+                return RunStatus.Error;
+            }
 
-        if (experimentState != null) {
-            log.info("kepricondebug status1 : " + experimentState.getCheckpoints().size());
-            log.info("kepricondebug status2 : " + experimentState.getCheckpoints().stream().map(checkPoint -> checkPoint.getStatus()).collect(Collectors.toList()));
-            if (completes.size() > 0 && completes.size() == trials.size()) {
+            if (experimentState.getCheckpoints().size() ==  trialStatusCount.getOrDefault("TERMINATED", 0L)) {
                 return RunStatus.Completed;
             }
 
@@ -192,6 +187,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 .filter(it -> it.getKey().endsWith(fileName))
                 .findAny()
                 .map(it -> client.fileContents(it.getKey()));
+    }
+
+    public boolean outputExist(String jobHandle) {
+        return client.listObjects(jobHandle + "/output").getObjectSummaries().size() > 0 ? true : false;
     }
 
     public List<String> getTrialStatus(String jobHandle, String fileName) {
