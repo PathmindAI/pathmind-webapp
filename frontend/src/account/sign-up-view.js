@@ -49,11 +49,11 @@ class SignUpView extends PolymerElement {
           </vaadin-horizontal-layout>
           <vaadin-vertical-layout id="buttonsCont">
             <vaadin-button id="signUp" theme="primary">
-              Next
+              Sign up
             </vaadin-button>
           </vaadin-vertical-layout>
           <p class="form-hints">No credit card required</p>
-          <a router-link href="/sign-in">Sign in instead</a>
+          <a router-link href="/sign-in">Already have an account?</a>
         </vaadin-vertical-layout>
         <vaadin-vertical-layout
           style="width: 100%;"
