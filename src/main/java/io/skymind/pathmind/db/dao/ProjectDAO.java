@@ -1,5 +1,6 @@
 package io.skymind.pathmind.db.dao;
 
+import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.data.Project;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -30,7 +31,9 @@ public class ProjectDAO
 		{
 			DSLContext transactionCtx = DSL.using(configuration);
 			LocalDateTime dateCreated = LocalDateTime.now();
-			return ProjectRepository.insertProject(transactionCtx, project, dateCreated);
+			long projectId = ProjectRepository.insertProject(transactionCtx, project, dateCreated);
+			GuideRepository.insertGuideStep(transactionCtx, projectId, GuideStep.Overview);
+			return projectId;
 		});
 	}
 
