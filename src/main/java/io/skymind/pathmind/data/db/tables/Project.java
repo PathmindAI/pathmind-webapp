@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Project extends TableImpl<ProjectRecord> {
 
-    private static final long serialVersionUID = 984774824;
+    private static final long serialVersionUID = -1312463662;
 
     /**
      * The reference instance of <code>public.project</code>
@@ -90,7 +90,7 @@ public class Project extends TableImpl<ProjectRecord> {
     /**
      * The column <code>public.project.user_notes</code>.
      */
-    public final TableField<ProjectRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR, this, "");
+    public final TableField<ProjectRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * Create a <code>public.project</code> table reference

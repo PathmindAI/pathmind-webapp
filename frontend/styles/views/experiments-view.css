@@ -1,4 +1,7 @@
-.experiments-view vaadin-split-layout vaadin-grid {
+.default-view.experiments-view {
+  height: 100%;
+}
+.experiments-view vaadin-split-layout > vaadin-vertical-layout {
   width: 100%;
   background: white;
   border-radius: var(--lumo-border-radius);

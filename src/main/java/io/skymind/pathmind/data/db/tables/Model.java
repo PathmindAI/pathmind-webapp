@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = 540466337;
+    private static final long serialVersionUID = -2065016713;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -105,7 +105,7 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.user_notes</code>.
      */
-    public final TableField<ModelRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR, this, "");
+    public final TableField<ModelRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * Create a <code>public.model</code> table reference
