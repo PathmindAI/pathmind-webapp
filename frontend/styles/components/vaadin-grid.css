@@ -1,5 +1,5 @@
 #header [part~="cell"] {
-  color: var(--pm-secondary-text-color);
+  color: var(--pm-gray-color);
 }
 
 #items [part~="cell"] {

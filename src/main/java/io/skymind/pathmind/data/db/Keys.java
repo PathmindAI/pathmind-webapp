@@ -6,6 +6,7 @@ package io.skymind.pathmind.data.db;
 
 import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.Experiment;
+import io.skymind.pathmind.data.db.tables.Guide;
 import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.ModelFile;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
@@ -18,6 +19,7 @@ import io.skymind.pathmind.data.db.tables.Run;
 import io.skymind.pathmind.data.db.tables.TrainerJob;
 import io.skymind.pathmind.data.db.tables.records.ExecutionProviderMetaDataRecord;
 import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
+import io.skymind.pathmind.data.db.tables.records.GuideRecord;
 import io.skymind.pathmind.data.db.tables.records.ModelFileRecord;
 import io.skymind.pathmind.data.db.tables.records.ModelRecord;
 import io.skymind.pathmind.data.db.tables.records.PathmindUserRecord;
@@ -67,6 +69,8 @@ public class Keys {
     public static final UniqueKey<PathmindUserRecord> PATHMIND_USER_EMAIL_KEY = UniqueKeys0.PATHMIND_USER_EMAIL_KEY;
     public static final UniqueKey<PolicyRecord> POLICY_PKEY = UniqueKeys0.POLICY_PKEY;
     public static final UniqueKey<PolicyRecord> POLICY_RUN_ID_EXTERNAL_ID_KEY = UniqueKeys0.POLICY_RUN_ID_EXTERNAL_ID_KEY;
+    public static final UniqueKey<PolicyFileRecord> POLICY_FILE_UNIQUE_POLICY_ID = UniqueKeys0.POLICY_FILE_UNIQUE_POLICY_ID;
+    public static final UniqueKey<PolicySnapshotRecord> POLICY_SNAPSHOT_UNIQUE_POLICY_ID = UniqueKeys0.POLICY_SNAPSHOT_UNIQUE_POLICY_ID;
     public static final UniqueKey<ProjectRecord> PROJECT_PKEY = UniqueKeys0.PROJECT_PKEY;
     public static final UniqueKey<ProjectRecord> UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = UniqueKeys0.UNIQUE_PROJECT_NAME_PATHMIND_USER_ID;
     public static final UniqueKey<RunRecord> RUN_PKEY = UniqueKeys0.RUN_PKEY;
@@ -77,6 +81,7 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final ForeignKey<ExperimentRecord, ModelRecord> EXPERIMENT__PM_FK_EXPERIMENT_MODEL = ForeignKeys0.EXPERIMENT__PM_FK_EXPERIMENT_MODEL;
+    public static final ForeignKey<GuideRecord, ProjectRecord> GUIDE__PM_FK_MODEL_PROJECT = ForeignKeys0.GUIDE__PM_FK_MODEL_PROJECT;
     public static final ForeignKey<ModelRecord, ProjectRecord> MODEL__PM_FK_MODEL_PROJECT = ForeignKeys0.MODEL__PM_FK_MODEL_PROJECT;
     public static final ForeignKey<ModelFileRecord, ModelRecord> MODEL_FILE__PM_FK_MODEL_FILE_MODEL = ForeignKeys0.MODEL_FILE__PM_FK_MODEL_FILE_MODEL;
     public static final ForeignKey<PolicyRecord, RunRecord> POLICY__PM_FK_POLICY_RUN = ForeignKeys0.POLICY__PM_FK_POLICY_RUN;
@@ -99,6 +104,8 @@ public class Keys {
         public static final UniqueKey<PathmindUserRecord> PATHMIND_USER_EMAIL_KEY = Internal.createUniqueKey(PathmindUser.PATHMIND_USER, "pathmind_user_email_key", PathmindUser.PATHMIND_USER.EMAIL);
         public static final UniqueKey<PolicyRecord> POLICY_PKEY = Internal.createUniqueKey(Policy.POLICY, "policy_pkey", Policy.POLICY.ID);
         public static final UniqueKey<PolicyRecord> POLICY_RUN_ID_EXTERNAL_ID_KEY = Internal.createUniqueKey(Policy.POLICY, "policy_run_id_external_id_key", Policy.POLICY.RUN_ID, Policy.POLICY.EXTERNAL_ID);
+        public static final UniqueKey<PolicyFileRecord> POLICY_FILE_UNIQUE_POLICY_ID = Internal.createUniqueKey(PolicyFile.POLICY_FILE, "policy_file_unique_policy_id", PolicyFile.POLICY_FILE.POLICY_ID);
+        public static final UniqueKey<PolicySnapshotRecord> POLICY_SNAPSHOT_UNIQUE_POLICY_ID = Internal.createUniqueKey(PolicySnapshot.POLICY_SNAPSHOT, "policy_snapshot_unique_policy_id", PolicySnapshot.POLICY_SNAPSHOT.POLICY_ID);
         public static final UniqueKey<ProjectRecord> PROJECT_PKEY = Internal.createUniqueKey(Project.PROJECT, "project_pkey", Project.PROJECT.ID);
         public static final UniqueKey<ProjectRecord> UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = Internal.createUniqueKey(Project.PROJECT, "unique_project_name_pathmind_user_id", Project.PROJECT.PATHMIND_USER_ID, Project.PROJECT.NAME);
         public static final UniqueKey<RunRecord> RUN_PKEY = Internal.createUniqueKey(Run.RUN, "run_pkey", Run.RUN.ID);
@@ -107,6 +114,7 @@ public class Keys {
 
     private static class ForeignKeys0 {
         public static final ForeignKey<ExperimentRecord, ModelRecord> EXPERIMENT__PM_FK_EXPERIMENT_MODEL = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.MODEL_PKEY, Experiment.EXPERIMENT, "experiment__pm_fk_experiment_model", Experiment.EXPERIMENT.MODEL_ID);
+        public static final ForeignKey<GuideRecord, ProjectRecord> GUIDE__PM_FK_MODEL_PROJECT = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.PROJECT_PKEY, Guide.GUIDE, "guide__pm_fk_model_project", Guide.GUIDE.PROJECT_ID);
         public static final ForeignKey<ModelRecord, ProjectRecord> MODEL__PM_FK_MODEL_PROJECT = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.PROJECT_PKEY, Model.MODEL, "model__pm_fk_model_project", Model.MODEL.PROJECT_ID);
         public static final ForeignKey<ModelFileRecord, ModelRecord> MODEL_FILE__PM_FK_MODEL_FILE_MODEL = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.MODEL_PKEY, ModelFile.MODEL_FILE, "model_file__pm_fk_model_file_model", ModelFile.MODEL_FILE.MODEL_ID);
         public static final ForeignKey<PolicyRecord, RunRecord> POLICY__PM_FK_POLICY_RUN = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.RUN_PKEY, Policy.POLICY, "policy__pm_fk_policy_run", Policy.POLICY.RUN_ID);
