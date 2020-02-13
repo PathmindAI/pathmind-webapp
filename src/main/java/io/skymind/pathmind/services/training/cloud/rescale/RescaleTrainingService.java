@@ -82,6 +82,6 @@ public class RescaleTrainingService extends TrainingService {
         runDAO.markAsStarting(run.getId());
         log.info("Started " + runType + " training job with id {}", executionId);
 
-        policyDAO.insertPolicy(generateTempPolicy(spec, run, rewardScores));
+//        policyDAO.insertPolicy(generateTempPolicy(spec, run, rewardScores));
     }
 }

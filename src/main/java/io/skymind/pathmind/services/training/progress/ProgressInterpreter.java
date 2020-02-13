@@ -3,8 +3,6 @@ package io.skymind.pathmind.services.training.progress;
 import com.opencsv.CSVReader;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.policy.RewardScore;
-import io.skymind.pathmind.data.utils.PolicyUtils;
-import io.skymind.pathmind.data.utils.RunUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.StringReader;
@@ -36,16 +34,10 @@ public class ProgressInterpreter
         int keyLength = keyString.length();
         String dateTime = null;
 
-        if (keyString.endsWith(RunUtils.TEMPORARY_POSTFIX)) {
-            // looks something like this:
-            // PPO_PathmindEnvironment_0_gamma=0.99,lr=1.0E-5,sgd_minibatch_size=128_1TEMP
-            keyString = keyString.substring(0, keyLength - RunUtils.TEMPORARY_POSTFIX.length() - 2);
-        } else {
-            // looks something like this:
-            // PPO_PathmindEnvironment_0_clip_param=0.2,entropy_coeff=0.035,gamma=0.94978,kl_coeff=0.3,kl_target=0.03,lambda=0.96,lr=0.0016037,nu_2020-02-12_22-16-07ix9qrg3i
-            dateTime = keyString.substring(keyLength - TRIAL_ID_LEN - DATE_LEN, keyLength - TRIAL_ID_LEN);
-            keyString = keyString.substring(0, keyLength - TRIAL_ID_LEN - DATE_LEN - 1);
-        }
+        // looks something like this:
+        // PPO_PathmindEnvironment_0_clip_param=0.2,entropy_coeff=0.035,gamma=0.94978,kl_coeff=0.3,kl_target=0.03,lambda=0.96,lr=0.0016037,nu_2020-02-12_22-16-07ix9qrg3i
+        dateTime = keyString.substring(keyLength - TRIAL_ID_LEN - DATE_LEN, keyLength - TRIAL_ID_LEN);
+        keyString = keyString.substring(0, keyLength - TRIAL_ID_LEN - DATE_LEN - 1);
 
         // keyString now looks like :
         // PPO_PathmindEnvironment_0_clip_param=0.2,entropy_coeff=0.035,gamma=0.94978,kl_coeff=0.3,kl_target=0.03,lambda=0.96,lr=0.0016037,nu

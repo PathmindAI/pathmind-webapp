@@ -131,6 +131,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
         ExperimentState experimentState = getExperimentState(jobHandle);
 
         if (experimentState != null) {
+            log.info("kepricondebug status1 : " + experimentState.getCheckpoints().size());
+            log.info("kepricondebug status2 : " + experimentState.getCheckpoints().stream().map(checkPoint -> checkPoint.getStatus()).collect(Collectors.toList()));
             if (completes.size() > 0 && completes.size() == trials.size()) {
                 return RunStatus.Completed;
             }
