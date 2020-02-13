@@ -25,10 +25,23 @@
   margin-top: 0;
 }
 
+a {
+  color: var(--pm-text-color);
+  text-decoration: underline;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
 h3 {
   font-size: var(--lumo-font-size-xl);
   margin-top: 0;
   margin-bottom: var(--lumo-size-xl);
+}
+
+h3 + vaadin-password-field {
+  padding-top: 0;
 }
 
 #buttonsCont {
@@ -38,6 +51,10 @@ h3 {
 
 #buttonsCont vaadin-button:first-child {
   margin-top: 0;
+}
+
+#buttonsCont + p {
+  margin-bottom: var(--lumo-space-xl);
 }
 
 .notes {
@@ -101,4 +118,9 @@ h3 {
 
 .support {
   margin-top: var(--lumo-size-xl);
+  text-decoration: underline;
+}
+
+.support:hover {
+  text-decoration: none;
 }

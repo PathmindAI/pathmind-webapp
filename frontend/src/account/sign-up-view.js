@@ -49,22 +49,21 @@ class SignUpView extends PolymerElement {
           </vaadin-horizontal-layout>
           <vaadin-vertical-layout id="buttonsCont">
             <vaadin-button id="signUp" theme="primary">
-              Get Started!
-            </vaadin-button>
-            <vaadin-button id="cancelSignUpBtn" theme="tertiary">
-              Cancel
+              Next
             </vaadin-button>
           </vaadin-vertical-layout>
-          <p>No credit card required</p>
+          <p class="form-hints">No credit card required</p>
+          <a router-link href="/sign-in">Sign in instead</a>
         </vaadin-vertical-layout>
         <vaadin-vertical-layout
           style="width: 100%;"
           class="inner-content"
           id="passwordPart"
         >
+          <h3>{{title}}</h3>
           <vaadin-password-field
             id="newPassword"
-            label="New Password"
+            label="Password"
           ></vaadin-password-field>
           <vaadin-vertical-layout
             id="newPassNotes"
@@ -73,14 +72,14 @@ class SignUpView extends PolymerElement {
           ></vaadin-vertical-layout>
           <vaadin-password-field
             id="confirmNewPassword"
-            label="Confirm New Password"
+            label="Confirm Password"
           ></vaadin-password-field>
           <vaadin-vertical-layout id="buttonsCont">
             <vaadin-button id="signIn" theme="primary">
-              Sign In
+              Get Started!
             </vaadin-button>
             <vaadin-button id="cancelSignInBtn" theme="tertiary">
-              Cancel
+              Back
             </vaadin-button>
           </vaadin-vertical-layout>
         </vaadin-vertical-layout>

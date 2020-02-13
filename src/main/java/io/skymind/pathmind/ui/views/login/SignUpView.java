@@ -46,9 +46,6 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	@Id("email")
 	private TextField email;
 
-	@Id("cancelSignUpBtn")
-	private Button cancelSignUpBtn;
-
 	@Id("cancelSignInBtn")
 	private Button cancelSignInBtn;
 
@@ -114,7 +111,6 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 
 		showPassword(false);
 
-		cancelSignUpBtn.addClickListener(e -> UI.getCurrent().navigate(LoginView.class));
 		cancelSignInBtn.addClickListener(e -> showPassword(false));
 
 		forgotPasswordBtn.addClickListener(e ->UI.getCurrent().navigate(ResetPasswordView.class));
@@ -148,10 +144,10 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	}
 
 	private void showPassword(boolean showPasswordPart) {
-		getModel().setTitle(showPasswordPart ? "Create a new password" : "Sign up for a 30-day Free Trial!");
+		getModel().setTitle(showPasswordPart ? "Create Password" : "Sign up for a 30-day Free Trial!");
 		emailPart.setVisible(!showPasswordPart);
 		passwordPart.setVisible(showPasswordPart);
-		policyText.setVisible(!showPasswordPart);
+		policyText.setVisible(showPasswordPart);
 	}
 
 	private void initBinder() {
