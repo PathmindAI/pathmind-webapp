@@ -212,7 +212,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private Button getActionButton() {
         Button actionButton = new Button("Save Draft", new Icon(VaadinIcon.FILE),
                 click -> handleSaveDraftClicked());
-        actionButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        actionButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         return actionButton;
     }
 
