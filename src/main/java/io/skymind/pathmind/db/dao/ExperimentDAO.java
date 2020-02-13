@@ -61,4 +61,8 @@ public class ExperimentDAO
 	public long insertExperiment(long modelId, LocalDateTime createdDate) {
 		return ExperimentRepository.insertExperiment(ctx, modelId, createdDate);
 	}
+
+	public void updateUserNotes(long experimentId, String userNotes) {
+		ExperimentRepository.updateUserNotes(ctx, experimentId, userNotes);
+	}
 }

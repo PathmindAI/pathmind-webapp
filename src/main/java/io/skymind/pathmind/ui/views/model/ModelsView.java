@@ -1,18 +1,11 @@
 package io.skymind.pathmind.ui.views.model;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -20,8 +13,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-
 import io.skymind.pathmind.data.Model;
+import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -31,9 +24,9 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
+import io.skymind.pathmind.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.notesField.NotesField;
-import io.skymind.pathmind.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
@@ -42,6 +35,11 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
 import io.skymind.pathmind.ui.views.model.filter.ModelFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 @CssImport("./styles/styles.css")
 @Route(value= Routes.MODELS_URL, layout = MainLayout.class)
@@ -55,8 +53,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	private UserDAO userDAO;
 
 	private long projectId;
-	private String projectName;
-	private List<Model> models;
+	private Project project;
 
 	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
@@ -148,12 +145,12 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 				.setHeader("Date Created")
 				.setResizable(true)
 				.setSortable(true);
-		Grid.Column<Model> lastActivityColumn = modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+		modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setResizable(true)
 				.setSortable(true);
-		modelGrid.addComponentColumn(Model -> createColumnNotesField(Model))
+		modelGrid.addColumn(Model::getUserNotes)
 				.setHeader("Notes")
 				.setResizable(true)
 				.setSortable(false);
@@ -165,35 +162,23 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	}
 
 	public List<Model> getModels() {
-		return models;
+		return project.getModels();
 	}
 
 	private Breadcrumbs createBreadcrumbs() {
-		return new Breadcrumbs(projectDAO.getProject(projectId));
-	}
-
-	private HorizontalLayout createColumnNotesField(Model model) {
-		// TODO: model.getGetObservationForRewardFunction() has to be changed to a method to get the notes (String)
-		// It now acts as a dummy String
-		NotesField notesField = new NotesField(true, model.getGetObservationForRewardFunction());
-		return notesField;
+		return new Breadcrumbs(project);
 	}
 
 	private HorizontalLayout createViewNotesField() {
-		// TODO: projectDAO.getProject(projectId).getName() has to be changed 
-		// to a method to get the notes (String)
-		// It now acts as a dummy String
-		NotesField notesField = new NotesField(
+		return new NotesField(
 			false,
 			"Project Notes",
-			projectDAO.getProject(projectId).getName(),
+			project.getUserNotes(),
 			updatedNotes -> {
-				System.out.println("callback: " + updatedNotes);
-				NotificationUtils.showNotification("Notes successfully saved", NotificationVariant.LUMO_SUCCESS);
-				// NotificationUtils.showNotification("There was a problem saving the notes, please try again later", NotificationVariant.LUMO_ERROR);
+					projectDAO.updateUserNotes(projectId, updatedNotes);
+					NotificationUtils.showSuccess("Notes successfully saved");
 			}
 		);
-		return notesField;
 	}
 
 	@Override
@@ -209,19 +194,20 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 	@Override
 	protected void initLoadData() throws InvalidDataException {
-		models = modelDAO.getModelsForProject(projectId);
-		projectName = projectDAO.getProject(projectId).getName();
+		project = projectDAO.getProject(projectId)
+				.orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));
+		project.setModels(modelDAO.getModelsForProject(projectId));
 	}
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
 		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
 			// modelGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
-			modelGrid.setItems(models);
+			modelGrid.setItems(project.getModels());
 		});
-		arrangeGridAndInstructionsVisibility(!models.isEmpty());
+		arrangeGridAndInstructionsVisibility(!(project.getModels() == null || project.getModels().isEmpty()));
 		archivesTabPanel.initData();
-		titlePanel.setSubtitle(projectName);
+		titlePanel.setSubtitle(project.getName());
 	}
 	
 	private void arrangeGridAndInstructionsVisibility(boolean hasModels) {

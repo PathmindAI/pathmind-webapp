@@ -11,8 +11,8 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static io.skymind.pathmind.data.db.Tables.MODEL;
-import static io.skymind.pathmind.data.db.Tables.MODEL_FILE;
+import static io.skymind.pathmind.data.db.Tables.*;
+import static io.skymind.pathmind.data.db.Tables.PROJECT;
 
 class ModelRepository
 {
@@ -48,7 +48,7 @@ class ModelRepository
 	 * @return Model - beware, not all fields are initialized
 	 */
 	protected static Model getModel(DSLContext ctx, long modelId) {
-		return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION)
+		return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.USER_NOTES)
 				.from(MODEL)
 				.where(MODEL.ID.eq(modelId))
 				.fetchOneInto(Model.class);
@@ -74,5 +74,12 @@ class ModelRepository
 		mod.setModelId(modelId);
 		mod.setFile(file);
 		mod.insert();
+	}
+
+	protected static void updateUserNotes(DSLContext ctx, long modelId, String userNotes) {
+		ctx.update(MODEL)
+				.set(MODEL.USER_NOTES, userNotes)
+				.where(MODEL.ID.eq(modelId))
+				.execute();
 	}
 }

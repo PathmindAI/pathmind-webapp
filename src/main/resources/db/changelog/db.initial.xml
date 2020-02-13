@@ -844,13 +844,19 @@
 
     <changeSet id="20200211-01" author="steph@followsteph.com">
         <addColumn tableName="PROJECT">
-            <column name="USER_NOTES" type="VARCHAR"/>
+            <column name="USER_NOTES" type="VARCHAR" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
         </addColumn>
         <addColumn tableName="MODEL">
-            <column name="USER_NOTES" type="VARCHAR"/>
+            <column name="USER_NOTES" type="VARCHAR" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
         </addColumn>
         <addColumn tableName="EXPERIMENT">
-            <column name="USER_NOTES" type="VARCHAR"/>
+            <column name="USER_NOTES" type="VARCHAR" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
         </addColumn>
         <rollback>
             <dropColumn tableName="PROJECT" columnName="USER_NOTES"/>

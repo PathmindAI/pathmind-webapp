@@ -12,6 +12,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
+import org.apache.commons.lang3.StringUtils;
 
 @CssImport("./styles/components/notes-field.css")
 public class NotesField extends HorizontalLayout {
@@ -61,7 +62,7 @@ public class NotesField extends HorizontalLayout {
 	}
 
 	private void createBlockEditableField() {
-		blockEditableField = new TextArea("", notesText, "Add Notes");
+		blockEditableField = new TextArea("", StringUtils.defaultString(notesText), "Add Notes");
 		blockEditableField.addThemeName("notes");
 	}
 

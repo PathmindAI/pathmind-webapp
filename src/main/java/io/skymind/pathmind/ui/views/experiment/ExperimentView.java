@@ -1,9 +1,5 @@
 package io.skymind.pathmind.ui.views.experiment;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -13,12 +9,7 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.WildcardParameter;
-
+import com.vaadin.flow.router.*;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
@@ -41,12 +32,11 @@ import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.components.PolicyChartPanel;
-import io.skymind.pathmind.ui.views.experiment.components.PolicyHighlightPanel;
-import io.skymind.pathmind.ui.views.experiment.components.PolicyStatusDetailsPanel;
-import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
-import io.skymind.pathmind.ui.views.experiment.components.TrainingsListPanel;
+import io.skymind.pathmind.ui.views.experiment.components.*;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
@@ -192,20 +182,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private HorizontalLayout createViewNotesField() {
-		// TODO: experiment.getRewardFunction() has to be changed 
-		// to a method to get the notes (String)
-		// It now acts as a dummy String
-		NotesField notesField = new NotesField(
+		return new NotesField(
 			false,
 			"Experiment Notes",
-			experiment.getRewardFunction(),
+			experiment.getUserNotes(),
 			updatedNotes -> {
-				System.out.println("callback: " + updatedNotes);
+				experimentDAO.updateUserNotes(experimentId, updatedNotes);
 				NotificationUtils.showNotification("Notes successfully saved", NotificationVariant.LUMO_SUCCESS);
-				// NotificationUtils.showNotification("There was a problem saving the notes, please try again later", NotificationVariant.LUMO_ERROR);
 			}
 		);
-		return notesField;
 	}
 
 	/**

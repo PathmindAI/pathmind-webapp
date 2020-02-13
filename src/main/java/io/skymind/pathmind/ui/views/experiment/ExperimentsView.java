@@ -56,7 +56,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	private UserDAO userDAO;
 
 	private long modelId;
-	private Model currentModel;
+	private Model model;
 	private String projectName;
 	private List<Experiment> experiments;
 
@@ -106,7 +106,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	 * that there has to be at least one experiment to be able to get here.
 	 */
 	private Breadcrumbs createBreadcrumbs() {
-		return new Breadcrumbs(experiments.get(0).getProject(), currentModel);
+		return new Breadcrumbs(experiments.get(0).getProject(), model);
 	}
 
 	private void setupGetObservationTextArea() {
@@ -130,33 +130,20 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	private void setupExperimentListPanel() {
 		experimentGrid = new ExperimentGrid();
-		experimentGrid.addComponentColumn(exp -> createColumnNotesField(exp)).setHeader("Notes").setSortable(false);
 		experimentGrid.addComponentColumn(exp -> createActionButtons(exp)).setHeader("Actions").setSortable(false);
 		experimentGrid.addItemClickListener(event -> handleExperimentClick(event.getItem()));
 	}
 
-	private HorizontalLayout createColumnNotesField(Experiment exp) {
-		// TODO: exp.getRewardFunction() has to be changed to a method to get the notes (String)
-		// It now acts as a dummy String
-		NotesField notesField = new NotesField(true, exp.getRewardFunction());
-		return notesField;
-	}
-
 	private HorizontalLayout createViewNotesField() {
-		// TODO: currentModel.getGetObservationForRewardFunction() has to be changed
-		// to a method to get the notes (String)
-		// It now acts as a dummy String
-		NotesField notesField = new NotesField(
+		return new NotesField(
 			false,
 			"Model Notes",
-			currentModel.getGetObservationForRewardFunction(),
+			model.getUserNotes(),
 			updatedNotes -> {
-				System.out.println("callback: " + updatedNotes);
+				modelDAO.updateUserNotes(modelId, updatedNotes);
 				NotificationUtils.showNotification("Notes successfully saved", NotificationVariant.LUMO_SUCCESS);
-				// NotificationUtils.showNotification("There was a problem saving the notes, please try again later", NotificationVariant.LUMO_ERROR);
 			}
 		);
-		return notesField;
 	}
 
 	private HorizontalLayout createActionButtons(Experiment exp) {
@@ -203,6 +190,8 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	@Override
 	protected void initLoadData() throws InvalidDataException {
+		model = modelDAO.getModel(modelId)
+				.orElseThrow(() -> new InvalidDataException("Attempted to access Model: " + modelId));
 		experiments = experimentDAO.getExperimentsForModel(modelId);
 		if (experiments == null || experiments.isEmpty())
 			throw new InvalidDataException("Attempted to access Experiments for Model: " + modelId);
@@ -210,9 +199,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		// set runs to experiment
 		experiments.stream()
 				.forEach(e -> e.setRuns(runDAO.getRunsForExperiment(e.getId())));
-
-		// set current model
-		currentModel = modelDAO.getModel(modelId);
 	}
 
 	@Override
@@ -222,7 +208,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 			experimentGrid.setItems(experiments);
 		});
 		archivesTabPanel.initData();
-		getObservationTextArea.setValue(currentModel.getGetObservationForRewardFunction());
+		getObservationTextArea.setValue(model.getGetObservationForRewardFunction());
 		showRewardFunction(experiments.get(0));
 		titlePanel.setSubtitle(projectName);
 	}

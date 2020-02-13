@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.data.db.Tables.*;
+import static io.skymind.pathmind.data.db.Tables.PATHMIND_USER;
+import static io.skymind.pathmind.data.db.Tables.POLICY;
 import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.data.db.tables.Model.MODEL;
 import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
@@ -260,5 +261,12 @@ class ExperimentRepository
 				.where(PATHMIND_USER.ID.eq(userId))
 					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
 				.fetchOne(count());
+	}
+
+	protected static void updateUserNotes(DSLContext ctx, long experimentId, String userNotes) {
+		ctx.update(Tables.EXPERIMENT)
+				.set(Tables.EXPERIMENT.USER_NOTES, userNotes)
+				.where(Tables.EXPERIMENT.ID.eq(experimentId))
+				.execute();
 	}
 }

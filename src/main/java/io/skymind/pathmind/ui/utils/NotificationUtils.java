@@ -11,7 +11,14 @@ public class NotificationUtils {
         notification.addThemeVariants(variant);
         notification.open();
     }
-    
+
+    public static void showSuccess(String html) {
+        CloseableNotification notification = new CloseableNotification(html);
+        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        notification.setDuration(-1);
+        notification.open();
+    }
+
     public static void showError(String html) {
     	CloseableNotification notification = new CloseableNotification(html);
     	notification.addThemeVariants(NotificationVariant.LUMO_ERROR);

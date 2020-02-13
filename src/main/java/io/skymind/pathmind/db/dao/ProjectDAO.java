@@ -1,14 +1,14 @@
 package io.skymind.pathmind.db.dao;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
+import io.skymind.pathmind.data.Project;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.skymind.pathmind.data.Project;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ProjectDAO
@@ -38,8 +38,12 @@ public class ProjectDAO
 		ProjectRepository.archive(ctx, projectId, isArchive);
 	}
 
-	public Project getProject(long projectId) {
-		return ProjectRepository.getProject(ctx, projectId);
+	public Optional<Project> getProject(long projectId) {
+		return Optional.ofNullable(ProjectRepository.getProject(ctx, projectId));
+	}
+
+	public void updateUserNotes(long projectId, String userNotes) {
+		ProjectRepository.updateUserNotes(ctx, projectId, userNotes);
 	}
 
 	public List<Project> getProjectsForUser(long userId) {
