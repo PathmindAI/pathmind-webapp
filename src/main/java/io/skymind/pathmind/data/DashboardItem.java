@@ -1,9 +1,10 @@
 package io.skymind.pathmind.data;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-
-import java.time.LocalDateTime;
 
 /**
  * DTO for dashboard purposes
@@ -68,4 +69,19 @@ public class DashboardItem {
 	public void setPolicyExported(boolean policyExported) {
 		this.policyExported = policyExported;
 	}
+	
+	@Override
+ 	public boolean equals(Object o) {
+ 		if(this == o) return true;
+ 		if(o == null || getClass() != o.getClass()) return false;
+ 		DashboardItem item = (DashboardItem) o;
+ 		return Objects.equals(item.getProject(), getProject()) 
+ 				&& Objects.equals(item.getModel(), getModel())
+ 				&& Objects.equals(item.getExperiment(), getExperiment());
+ 	}
+
+ 	@Override
+ 	public int hashCode() {
+ 		return Objects.hash(getProject(), getModel(), getExperiment());
+ 	}
 }

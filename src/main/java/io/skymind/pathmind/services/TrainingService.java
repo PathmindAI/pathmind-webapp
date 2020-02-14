@@ -1,21 +1,32 @@
 package io.skymind.pathmind.services;
 
+import static io.skymind.pathmind.services.training.constant.RunConstants.DISCOVERY_RUN_BATCH_SIZES;
+import static io.skymind.pathmind.services.training.constant.RunConstants.DISCOVERY_RUN_GAMMAS;
+import static io.skymind.pathmind.services.training.constant.RunConstants.DISCOVERY_RUN_LEARNING_RATES;
+import static io.skymind.pathmind.services.training.constant.RunConstants.TRAINING_HYPERPARAMETERS;
+
+import java.util.Arrays;
+import java.util.List;
+
+import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.policy.RewardScore;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
+import io.skymind.pathmind.services.training.JobSpec;
+import io.skymind.pathmind.services.training.constant.RunConstants;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.services.training.versions.RLLib;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Slf4j
 public abstract class TrainingService {
@@ -41,37 +52,39 @@ public abstract class TrainingService {
     }
 
     public void startTestRun(Experiment exp){
-//        startRun(RunType.TestRun,
-//                exp,
-//                50,
-//                Arrays.asList(1e-5),
-//                Arrays.asList(0.99),
-//                Arrays.asList(128),
-//                15 * MINUTE
-//        );
+        startRun(RunType.TestRun,
+                exp,
+                50,
+                Arrays.asList(1e-5),
+                Arrays.asList(0.99),
+                Arrays.asList(128),
+                15 * MINUTE,
+                10
+        );
     }
 
     public void startDiscoveryRun(Experiment exp){
         startRun(RunType.DiscoveryRun,
                 exp,
-                20,
-                Arrays.asList(1e-3, 1e-4, 1e-5), // Learning rate
-                Arrays.asList(0.9, 0.99), // gamma
-                Arrays.asList(64, 128), // batch size
-                5 * MINUTE,
-                20
+                RunConstants.DISCOVERY_RUN_ITERATIONS,
+                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_LEARNING_RATES), // Learning rate
+                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_GAMMAS), // gamma
+                (List<Integer>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_BATCH_SIZES), // batch size
+                30 * MINUTE,
+                10
         );
     }
 
     public void startFullRun(Experiment exp, Policy policy){
-//        startRun(RunType.FullRun,
-//                exp,
-//                RunConstants.FULL_RUN_ITERATIONS,
-//                Arrays.asList(policy.getLearningRate()),
-//                Arrays.asList(policy.getGamma()),
-//                Arrays.asList(policy.getBatchSize()),
-//                24 * HOUR, // 24 hr
-//                policy);          // base policy
+        startRun(RunType.FullRun,
+                exp,
+                RunConstants.FULL_RUN_ITERATIONS,
+                Arrays.asList(policy.getLearningRate()),
+                Arrays.asList(policy.getGamma()),
+                Arrays.asList(policy.getBatchSize()),
+                24 * HOUR, // 24 hr
+                10,
+                policy);          // base policy
     }
 
     private void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, int numSamples) {

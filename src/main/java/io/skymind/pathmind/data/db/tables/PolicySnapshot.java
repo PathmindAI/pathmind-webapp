@@ -23,6 +23,7 @@ import org.jooq.Row2;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 
@@ -40,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PolicySnapshot extends TableImpl<PolicySnapshotRecord> {
 
-    private static final long serialVersionUID = -1833377514;
+    private static final long serialVersionUID = -1898510181;
 
     /**
      * The reference instance of <code>public.policy_snapshot</code>
@@ -105,7 +106,12 @@ public class PolicySnapshot extends TableImpl<PolicySnapshotRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.POLICY_SNAPSHOT_POLICY_ID_INDEX);
+        return Arrays.<Index>asList(Indexes.POLICY_SNAPSHOT_POLICY_ID_INDEX, Indexes.POLICY_SNAPSHOT_UNIQUE_POLICY_ID);
+    }
+
+    @Override
+    public List<UniqueKey<PolicySnapshotRecord>> getKeys() {
+        return Arrays.<UniqueKey<PolicySnapshotRecord>>asList(Keys.POLICY_SNAPSHOT_UNIQUE_POLICY_ID);
     }
 
     @Override

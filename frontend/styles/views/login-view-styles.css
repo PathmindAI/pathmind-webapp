@@ -16,15 +16,17 @@ landing-page {
 }
 
 .login-panel-cont .content {
-  width: 400px;
   padding: 0;
   margin: 50px auto 0;
 }
 
 .login-panel-cont .inner-content {
+  box-sizing: border-box;
+  width: 400px;
   font-size: var(--lumo-font-size-s);
   text-align: center;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  margin-top: 0;
 }
 
 .login-panel-cont h3 {
