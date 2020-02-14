@@ -40,8 +40,8 @@ public class ExperimentDAO
 		return ExperimentRepository.getExperimentsForModel(ctx, modelId);
 	}
 
-	public void updateRewardFunction(Experiment experiment) {
-		ExperimentRepository.updateRewardFunction(ctx, experiment);
+	public void updateExperiment(Experiment experiment) {
+		ExperimentRepository.updateExperiment(ctx, experiment);
 	}
 
 	public void archive(long experimentId, boolean isArchive) {

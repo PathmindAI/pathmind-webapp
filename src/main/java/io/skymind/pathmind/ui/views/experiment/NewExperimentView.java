@@ -63,6 +63,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private PathmindTextArea rewardVariablesTextArea;
     private PathmindTextArea tipsTextArea;
     private RewardFunctionEditor rewardFunctionEditor;
+    private TextArea notesFieldTextArea;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -178,9 +179,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 "reward -= after[2] - before[2];"
         );
 
+        notesFieldTextArea = new TextArea("Experiment Notes", "", "Add Notes");
+        notesFieldTextArea.setSizeFull();
+        binder.forField(notesFieldTextArea)
+                .bind(Experiment::getUserNotes, Experiment::setUserNotes);
+
         return WrapperUtils.wrapSizeFullVertical(
                 getTopButtonPanel(),
-                createViewNotesField(),
+                notesFieldTextArea,
                 rewardVariablesTextArea,
                 tipsTextArea);
     }
@@ -197,7 +203,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         	return;
         }
 
-        experimentDAO.updateRewardFunction(experiment);
+        experimentDAO.updateExperiment(experiment);
         segmentIntegrator.rewardFuntionCreated();
         
         trainingService.startDiscoveryRun(experiment);
@@ -221,7 +227,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         	return;
         }
 
-        experimentDAO.updateRewardFunction(experiment);
+        experimentDAO.updateExperiment(experiment);
         segmentIntegrator.draftSaved();
         NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
     }
@@ -229,13 +235,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private Breadcrumbs createBreadcrumbs() {        
         return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
     }
-
-	private TextArea createViewNotesField() {
-		// TODO: save this into the notes column of the new experiment
-		TextArea notesField = new TextArea("Experiment Notes", "", "Add Notes");
-        notesField.setSizeFull();
-		return notesField;
-	}
 
 	@Override
 	protected boolean isAccessAllowedForUser() {
