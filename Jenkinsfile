@@ -166,7 +166,10 @@ pipeline {
 				publishHTML (target: [
 				reportDir: 'pathmind-bdd-tests/target/site/serenity',
 				reportFiles: 'index.html',
-				reportName: "Tests_${env.BUILD_NUMBER}"
+				reportName: "Tests_${env.BUILD_NUMBER}",
+                                keepAll:     true,
+                                alwaysLinkToLastBuild: true,
+                                allowMissing: false
 				])
 
 			}
