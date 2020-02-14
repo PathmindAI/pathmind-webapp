@@ -126,7 +126,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             var oneLineErrors = allErrorsList.stream()
                     .map(Object::toString)
                     .collect(Collectors.joining(" ; "));
-            log.error("{} error(s) detected for the AWS jobHandle {}: {}", allErrorsList.size(), jobHandle, oneLineErrors);
+            log.warn("{} error(s) detected for the AWS jobHandle {}: {}", allErrorsList.size(), jobHandle, oneLineErrors);
             return new ProviderJobStatus(Error, allErrorsList);
         }
 

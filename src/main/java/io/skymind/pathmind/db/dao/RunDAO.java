@@ -153,7 +153,10 @@ public class RunDAO
         final var knownErrorMessage = allErrorsKeywords.stream()
                 .filter(errorMessage::contains)
                 .findAny()
-                .orElse(UNKNOWN_ERROR_KEYWORD);
+                .orElseGet(() -> {
+                    log.warn("Unrecognized error: {}", errorMessage);
+                    return UNKNOWN_ERROR_KEYWORD;
+                });
 
         final var foundError = trainingErrorDAO.getErrorByKeyword(knownErrorMessage);
         foundError.ifPresent(
