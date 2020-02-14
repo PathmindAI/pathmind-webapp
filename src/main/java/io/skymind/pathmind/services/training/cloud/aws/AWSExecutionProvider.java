@@ -121,8 +121,11 @@ public class AWSExecutionProvider implements ExecutionProvider {
             ExperimentState experimentState = getExperimentState(jobHandle);
             List<String> knownErrsCheck = getTrialStatus(jobHandle, TrainingFile.KNOWN_ERROR);
 
-            Map<String, Long> trialStatusCount = experimentState.getCheckpoints().stream()
-                    .collect(Collectors.groupingBy(CheckPoint::getStatus, Collectors.counting()));
+            Map<String, Long> trialStatusCount = Collections.emptyMap();
+            if (experimentState != null) {
+                trialStatusCount = experimentState.getCheckpoints().stream()
+                        .collect(Collectors.groupingBy(CheckPoint::getStatus, Collectors.counting()));
+            }
 
             if (trialStatusCount.getOrDefault("ERROR", 0L) > 0 || knownErrsCheck.size() > 0) {
                 return RunStatus.Error;
@@ -297,6 +300,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private void installHelper(PathmindHelper pathmindHelperVersion, List<String> instructions, List<String> files) {
         switch (pathmindHelperVersion) {
             case VERSION_0_0_24:
+            case VERSION_0_0_24_M:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));
