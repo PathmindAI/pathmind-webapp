@@ -41,6 +41,9 @@ public class AWSFileManager {
         vTable.put(PathmindHelper.VERSION_0_0_24, Arrays.asList(
                 "PathmindPolicy.jar" // PathmindPolicy.jar, 2019-08-28
         ));
+        vTable.put(PathmindHelper.VERSION_0_0_24_M, Arrays.asList(
+                "multiagent/PathmindPolicy.jar" // PathmindPolicy.jar, 2019-08-28
+        ));
 
         versions.put("PROD", vTable);
     }
