@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}-{{ .Values.namespace }}
+  namespace: default
+  labels:
+{{ include "postgres.labels" . | indent 4 }}
+spec:
+  type: ExternalName
+  externalName: {{ .Values.name }}.{{ .Values.namespace }}.svc.cluster.local
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ .Values.name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+

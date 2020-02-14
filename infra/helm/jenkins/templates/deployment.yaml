@@ -53,6 +53,16 @@ spec:
                 secretKeyRef:
                   name: awssecretaccesskey
                   key: AWS_SECRET_ACCESS_KEY
+            - name: SEGMENT_WEBSITE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: segmentwebsitekey
+                  key: SEGMENT_WEBSITE_KEY
+            - name: SEGMENT_SERVER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: segmentserversitekey
+                  key: SEGMENT_SERVER_KEY
           volumeMounts:
             - name: jenkins-storage
               mountPath: /var/jenkins_home
