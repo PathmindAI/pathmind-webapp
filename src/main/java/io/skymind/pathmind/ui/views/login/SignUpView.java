@@ -11,6 +11,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
@@ -45,9 +46,6 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	@Id("email")
 	private TextField email;
 
-	@Id("cancelSignUpBtn")
-	private Button cancelSignUpBtn;
-
 	@Id("cancelSignInBtn")
 	private Button cancelSignInBtn;
 
@@ -74,6 +72,9 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 
 	@Id("passwordPart")
 	private VerticalLayout passwordPart;
+
+	@Id("policyText")
+	private Div policyText;
 
 	@Autowired
 	private UserService userService;
@@ -110,7 +111,6 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 
 		showPassword(false);
 
-		cancelSignUpBtn.addClickListener(e -> UI.getCurrent().navigate(LoginView.class));
 		cancelSignInBtn.addClickListener(e -> showPassword(false));
 
 		forgotPasswordBtn.addClickListener(e ->UI.getCurrent().navigate(ResetPasswordView.class));
@@ -144,9 +144,10 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	}
 
 	private void showPassword(boolean showPasswordPart) {
-		getModel().setTitle(showPasswordPart ? "Create a new password" : "Get Started!");
+		getModel().setTitle(showPasswordPart ? "Create Password" : "Sign up for a 30-day Free Trial!");
 		emailPart.setVisible(!showPasswordPart);
 		passwordPart.setVisible(showPasswordPart);
+		policyText.setVisible(showPasswordPart);
 	}
 
 	private void initBinder() {
