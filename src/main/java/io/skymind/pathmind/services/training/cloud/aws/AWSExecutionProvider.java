@@ -353,11 +353,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("MAX_REWARD_MEAN", String.valueOf(Integer.MAX_VALUE)), // disabled for now
                 var("TEST_ITERATIONS", "0"), // disabled for now
 
-                // Not yet picked up by training script
-                var("LEARNING_RATES", job.getLearningRates().stream().map(Object::toString).collect(Collectors.joining(","))),
-                var("GAMMAS", job.getGammas().stream().map(Object::toString).collect(Collectors.joining(","))),
-                var("BATCH_SIZES", job.getBatchSizes().stream().map(Object::toString).collect(Collectors.joining(","))),
-
                 // Still has to be set, but doesn't actually do something, needs to be removed from train.sh
                 var("STEP_TIME", "1"),
                 var("STOP_TIME", "420"),

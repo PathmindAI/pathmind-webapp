@@ -55,9 +55,6 @@ public abstract class TrainingService {
         startRun(RunType.TestRun,
                 exp,
                 50,
-                Arrays.asList(1e-5),
-                Arrays.asList(0.99),
-                Arrays.asList(128),
                 15 * MINUTE,
                 10
         );
@@ -67,9 +64,6 @@ public abstract class TrainingService {
         startRun(RunType.DiscoveryRun,
                 exp,
                 RunConstants.DISCOVERY_RUN_ITERATIONS,
-                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_LEARNING_RATES), // Learning rate
-                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_GAMMAS), // gamma
-                (List<Integer>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_BATCH_SIZES), // batch size
                 30 * MINUTE,
                 10
         );
@@ -79,17 +73,14 @@ public abstract class TrainingService {
         startRun(RunType.FullRun,
                 exp,
                 RunConstants.FULL_RUN_ITERATIONS,
-                Arrays.asList(policy.getLearningRate()),
-                Arrays.asList(policy.getGamma()),
-                Arrays.asList(policy.getBatchSize()),
                 24 * HOUR, // 24 hr
                 10,
                 policy);          // base policy
     }
 
-    private void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, int numSamples) {
-        startRun(runType, exp, iterations, learningRates, gammas, batchSizes, maxTimeInSec, numSamples, null);
+    private void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples) {
+        startRun(runType, exp, iterations, maxTimeInSec, numSamples, null);
     }
 
-    protected abstract void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, int numSampes, Policy basePolicy);
+    protected abstract void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSampes, Policy basePolicy);
 }
