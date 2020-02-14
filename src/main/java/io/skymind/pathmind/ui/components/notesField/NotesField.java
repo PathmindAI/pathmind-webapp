@@ -88,7 +88,6 @@ public class NotesField extends HorizontalLayout {
 	}
 
 	private HorizontalLayout buttonsWrapper() {
-		// TODO: set state of each button in click event listener
 		initButtons();
 		HorizontalLayout buttonsWrapper = new HorizontalLayout(
 			editButton,
@@ -112,35 +111,29 @@ public class NotesField extends HorizontalLayout {
 		saveButton = createButton("Save", isEditting);
 
 		editButton.addClickListener(e -> {
-			setIsEditting();
+			toggleIsEditting();
 			editButton.setEnabled(!isEditting);
 			saveButton.setEnabled(isEditting);
 			blockEditableField.focus();
-			editButtonOnClick();
 		});
 
 		saveButton.addClickListener(e -> {
-			setIsEditting();
+			toggleIsEditting();
 			saveButton.setEnabled(isEditting);
 			editButton.setEnabled(!isEditting);
 			saveButtonOnClick();
 		});
 	}
  
-	private void setIsEditting() {
+	private void toggleIsEditting() {
 		isEditting = !isEditting;
 		blockViewOnlyField.setVisible(!isEditting);
 		blockEditableField.setVisible(isEditting);
 	}
 
-	public void editButtonOnClick() {
-		System.out.println("Clicked Edit Button");
-	};
-
 	public void saveButtonOnClick() {
 		String updatedNotesText = blockEditableField.getValue();
 		blockViewOnlyField.setText(updatedNotesText);
-		System.out.println("Clicked Save Button");
 		saveCallBack.accept(updatedNotesText);
 	};
 }
