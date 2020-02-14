@@ -26,7 +26,7 @@ public class RescaleTrainingService extends TrainingService {
         super(executionProvider, runDAO, modelDAO, policyDAO, executionProviderMetaDataDAO);
     }
 
-    protected void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples, Policy basePolicy) {
+    protected void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples, boolean multiAgent, Policy basePolicy) {
         final Run run = runDAO.createRun(exp, runType);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelDAO.getModel(exp.getModelId());
@@ -53,7 +53,8 @@ public class RescaleTrainingService extends TrainingService {
                 executionEnvironment,
                 runType,
                 maxTimeInSec,
-                numSamples
+                numSamples,
+                multiAgent
         );
 
         List<RewardScore> rewardScores = null;

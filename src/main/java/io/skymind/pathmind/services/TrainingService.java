@@ -40,6 +40,9 @@ public abstract class TrainingService {
     protected final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     protected ExecutionEnvironment executionEnvironment;
 
+    //todo: this should be removed after Alex implement https://github.com/SkymindIO/pathmind-webapp/issues/809
+    protected final boolean multiAgent = false;
+
     public TrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
         this.executionProvider = executionProvider;
         this.runDAO = runDAO;
@@ -56,7 +59,8 @@ public abstract class TrainingService {
                 exp,
                 50,
                 15 * MINUTE,
-                10
+                10,
+                multiAgent
         );
     }
 
@@ -65,7 +69,8 @@ public abstract class TrainingService {
                 exp,
                 RunConstants.DISCOVERY_RUN_ITERATIONS,
                 30 * MINUTE,
-                10
+                10,
+                multiAgent
         );
     }
 
@@ -75,12 +80,13 @@ public abstract class TrainingService {
                 RunConstants.FULL_RUN_ITERATIONS,
                 24 * HOUR, // 24 hr
                 10,
+                multiAgent,
                 policy);          // base policy
     }
 
-    private void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples) {
-        startRun(runType, exp, iterations, maxTimeInSec, numSamples, null);
+    private void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples, boolean multiAgent) {
+        startRun(runType, exp, iterations, maxTimeInSec, numSamples, multiAgent,null);
     }
 
-    protected abstract void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSampes, Policy basePolicy);
+    protected abstract void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSampes, boolean multiAgent, Policy basePolicy);
 }
