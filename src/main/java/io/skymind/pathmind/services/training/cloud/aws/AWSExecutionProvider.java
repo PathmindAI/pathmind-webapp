@@ -396,7 +396,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             String jobId = buildJobId(job.getRunId());
 
             client.fileUpload(jobId + "/script.sh", script);
-            return client.jobSubmit(jobId);
+            return client.jobSubmit(jobId, job.getType());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return null;

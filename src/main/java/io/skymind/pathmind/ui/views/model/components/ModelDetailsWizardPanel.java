@@ -6,6 +6,7 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -37,6 +38,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		setupForm();
 		setupGetObservationForRewardFunctionTextArea();
 		nextStepButton.setIconAfterText(true);
+		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
 		add(WrapperUtils.wrapWidthFullHorizontal(
 				new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE),
@@ -88,12 +90,13 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		formPanel.add(getNumberOfObservationsPanel(),
 				getNumberOfPossibleActionsPanel(),
 				getObservationForRewardFunctionPanel());
+		formPanel.setPadding(false);
 	}
 
 	private Component getObservationForRewardFunctionPanel() {
 		VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
-				LabelFactory.createLabel("Copy your Observation for Reward function in here for easy reference."),
-				LabelFactory.createLabel("getObservation for Reward Function", BOLD_LABEL),
+				LabelFactory.createLabel("Reward Variables", BOLD_LABEL),
+				LabelFactory.createLabel("Copy your reward variables here for easy reference."),
 				getObservationForRewardFunctionTextArea);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
@@ -101,8 +104,8 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private VerticalLayout getNumberOfObservationsPanel() {
 		VerticalLayout wrapper = new VerticalLayout(
-				LabelFactory.createLabel("Number of Observations for Training", BOLD_LABEL),
-				LabelFactory.createLabel("Enter the number of observations present in the 'observation of training' array"),
+				LabelFactory.createLabel("Number of Observations", BOLD_LABEL),
+				LabelFactory.createLabel("Enter the number of observations in your observations array."),
 				numberOfObservationsNumberField);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
@@ -110,8 +113,8 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private VerticalLayout getNumberOfPossibleActionsPanel() {
 		VerticalLayout wrapper = new VerticalLayout(
-				LabelFactory.createLabel("Number of Possible Actions", BOLD_LABEL),
-				LabelFactory.createLabel("This is the number of possible actions in doAction()"),
+				LabelFactory.createLabel("Number of Actions", BOLD_LABEL),
+				LabelFactory.createLabel("This is the total number of possible actions."),
 				numberOfPossibleActionsNumberField);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
