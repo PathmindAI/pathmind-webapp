@@ -187,20 +187,16 @@ img {
   align-self: center;
 }
 
-.projects-view .content {
+.projects-view .content,
+.models-view .content {
   flex: 1;
   max-width: 1200px;
   align-self: center;
 }
 
-.projects-view .view-section {
-  flex: 1;
-}
-
+.projects-view .view-section,
 .models-view .view-section {
   flex: 1;
-  max-width: 1200px;
-  align-self: center;
 }
 
 account-view {
