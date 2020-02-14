@@ -14,6 +14,18 @@ public class Job {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer destroy = null;
 
+    @JsonProperty("mockup")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String mockup;
+
+    @JsonProperty("mockup_type")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String mockupType;
+
+    @JsonProperty("cycle")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String mockupCycle;
+
     public Job(String s3Bucket, String s3Path) {
         this(s3Bucket, s3Path, false);
     }
@@ -23,4 +35,14 @@ public class Job {
         S3Path = s3Path;
         this.destroy = destroy ? 1 : null;
     }
+
+    public Job(String s3Bucket, String s3Path, int mockCycle, String mockType) {
+        this(s3Bucket, s3Path);
+        if (mockCycle > 0) {
+            mockup = "1";
+            this.mockupCycle = String.valueOf(mockCycle);
+            this.mockupType = mockType;
+        }
+    }
+
 }
