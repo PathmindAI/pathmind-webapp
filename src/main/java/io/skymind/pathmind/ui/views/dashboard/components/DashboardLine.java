@@ -5,12 +5,12 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.function.SerializableConsumer;
 
 import io.skymind.pathmind.constants.Stage;
 import io.skymind.pathmind.data.DashboardItem;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
+import io.skymind.pathmind.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
@@ -65,9 +65,9 @@ public class DashboardLine extends HorizontalLayout {
 			item.setClassName("stage-done");
 		} else if (stage.getValue() == currentStage.getValue()) {
 			if (DashboardUtils.isTrainingInProgress(stage, dashboardItem.getLatestRun())) {
-				ProgressBar progressBar = new ProgressBar(0, 100);
-				updateProgress(progressBar, dashboardItem);
-				item = new Span(VaadinIcon.HOURGLASS.create(), new Text(stage.getNameAfterDone() + INPROGRESS_INDICATOR), progressBar);
+				PathmindTrainingProgress trainingProgress = new PathmindTrainingProgress();
+				updateProgress(trainingProgress, dashboardItem);
+				item = new Span(new Text(stage.getNameAfterDone() + INPROGRESS_INDICATOR), trainingProgress);
 				item.setClassName("stage-active");
 			} else if (DashboardUtils.isTrainingInFailed(stage, dashboardItem.getLatestRun())) {
 				item = new Span(VaadinIcon.CLOSE.create(), new Text(stage.getNameAfterDone()));
@@ -87,8 +87,10 @@ public class DashboardLine extends HorizontalLayout {
 		return new Span(">");
 	}
 	
-	private void updateProgress(ProgressBar progressBar, DashboardItem item) {
-		progressBar.setValue(ExperimentUtils.calculateExperimentProgress(item.getExperiment(), item.getLatestRun().getRunTypeEnum()));
+	private void updateProgress(PathmindTrainingProgress trainingProgress, DashboardItem item) {
+		double progress = ExperimentUtils.calculateExperimentProgress(item.getExperiment(), item.getLatestRun().getRunTypeEnum());
+		final double estimatedTime = ExperimentUtils.getEstimatedTrainingTime(item.getExperiment(), progress, item.getLatestRun().getRunTypeEnum());
+		trainingProgress.setValue(progress, estimatedTime);
 	}
 	
 }
