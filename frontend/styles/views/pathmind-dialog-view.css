@@ -56,10 +56,9 @@
 }
 
 .support {
-  margin: auto;
   display: inline-block;
-  color: #696969;
-  padding-top: 10px;
+  color: var(--pm-tertiary-text-color);
+  margin: 10px auto 0;
 }
 
 vaadin-tabs,
