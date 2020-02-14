@@ -13,7 +13,7 @@ public class PolicyHighlightPanel extends VerticalLayout
 	private Span policyLabel = LabelFactory.createLabel("");
 	private Span scoreLabel = LabelFactory.createLabel("");
 	private Span algorithmLabel = LabelFactory.createLabel("");
-	private Span errorDescriptionLabel = LabelFactory.createLabel("", "tag error-label");
+	private Span errorDescriptionLabel = LabelFactory.createLabel("", "tag", "error-label");
 
 	public PolicyHighlightPanel()
 	{
