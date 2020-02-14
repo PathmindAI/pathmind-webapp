@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.views.dashboard.dataprovider;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 
 import io.skymind.pathmind.data.DashboardItem;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.DashboardItemService;
 
@@ -20,9 +22,18 @@ public class DashboardDataProvider extends AbstractBackEndDataProvider<Dashboard
 	@Autowired
 	private DashboardItemService service;
 	
+	@Autowired
+	private PolicyDAO policyDao;
+	
 	@Override
 	protected Stream<DashboardItem> fetchFromBackEnd(Query<DashboardItem, Void> query) {
-		return service.getDashboardItemsForUser(SecurityUtils.getUserId(), query.getOffset(), query.getLimit()).stream();
+		List<DashboardItem> items = service.getDashboardItemsForUser(SecurityUtils.getUserId(), query.getOffset(), query.getLimit());
+		//TODO: Onur: Move this to DashboardItemService
+		items.forEach(item -> {
+			if (item.getExperiment() != null)
+				item.getExperiment().setPolicies(policyDao.getPoliciesForExperiment(item.getExperiment().getId()));
+		});
+		return items.stream();
 	}
 
 	@Override
