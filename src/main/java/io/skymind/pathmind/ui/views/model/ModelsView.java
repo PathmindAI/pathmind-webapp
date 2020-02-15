@@ -84,20 +84,23 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 			archivesTabPanel,
 			new ViewSection(
 				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-				archivesTabPanel,
 				modelGrid
 			)
 		);
 		leftPanel.setPadding(false);
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-			createBreadcrumbs(),
 			WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 				leftPanel,
 				createViewNotesField(),
 			70),
 			WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
 		);
-		return gridWrapper;
+		gridWrapper.setPadding(false);
+		gridWrapper.setSpacing(false);
+		
+		return WrapperUtils.wrapSizeFullVertical(
+				createBreadcrumbs(),
+				gridWrapper);
 	}
 
 	private void setupArchivesTabPanel() {
