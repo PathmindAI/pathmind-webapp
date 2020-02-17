@@ -133,7 +133,10 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 				.setHeader("Last Activity")
 				.setResizable(true)
 				.setSortable(true);
-		modelGrid.addColumn(Model::getUserNotes)
+		modelGrid.addColumn(model -> {
+				String userNotes = model.getUserNotes();
+				return userNotes.isEmpty() ? "--" : userNotes;
+		})
 				.setHeader("Notes")
 				.setResizable(true)
 				.setSortable(false);
@@ -154,12 +157,11 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 	private HorizontalLayout createViewNotesField() {
 		return new NotesField(
-			false,
 			"Project Notes",
 			project.getUserNotes(),
 			updatedNotes -> {
 					projectDAO.updateUserNotes(projectId, updatedNotes);
-					NotificationUtils.showSuccess("Notes successfully saved");
+					NotificationUtils.showSuccess("Notes saved");
 			}
 		);
 	}

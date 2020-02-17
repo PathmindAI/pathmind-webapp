@@ -103,7 +103,10 @@ public class ProjectsView extends PathMindDefaultView
 				.setResizable(true)
 				.setSortable(true);
 
-		projectGrid.addColumn(Project::getUserNotes)
+		projectGrid.addColumn(project -> {
+				String userNotes = project.getUserNotes();
+				return userNotes.isEmpty() ? "--" : userNotes;
+		})
 				.setHeader("Notes")
 				.setResizable(true)
 				.setSortable(false);

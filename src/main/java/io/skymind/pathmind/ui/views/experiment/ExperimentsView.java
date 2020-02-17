@@ -136,12 +136,11 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	private HorizontalLayout createViewNotesField() {
 		return new NotesField(
-			false,
 			"Model Notes",
 			model.getUserNotes(),
 			updatedNotes -> {
 				modelDAO.updateUserNotes(modelId, updatedNotes);
-				NotificationUtils.showNotification("Notes successfully saved", NotificationVariant.LUMO_SUCCESS);
+				NotificationUtils.showNotification("Notes saved", NotificationVariant.LUMO_SUCCESS);
 			}
 		);
 	}

@@ -2,13 +2,10 @@ package io.skymind.pathmind.ui.components.notesField;
 
 import java.util.function.Consumer;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -20,24 +17,14 @@ public class NotesField extends HorizontalLayout {
 	private String title;
 	private String notesText;
 	private Boolean isEditting = false;
-	private Button editButton;
 	private Button saveButton;
-	private Div blockViewOnlyField;
 	private TextArea blockEditableField;
 	private Consumer<String> saveCallBack;
 
-	public NotesField(Boolean isSingleLine, String text) {
-		this(isSingleLine, null, text, null);
-	}
-
-	public NotesField(Boolean isSingleLine, String title, String text, Consumer<String> saveCallbackFn) {
+	public NotesField(String title, String text, Consumer<String> saveCallbackFn) {
 		this.notesText = text;
 		this.title = title;
-		if (isSingleLine) {
-			add(inlineViewOnlyField());
-		} else {
-			add(blockEditableFieldWrapper());
-		}
+		add(editableFieldWrapper());
 		if (saveCallbackFn != null) {
 			saveCallBack = saveCallbackFn;
 		}
@@ -45,42 +32,34 @@ public class NotesField extends HorizontalLayout {
 		addClassName("notes-field-wrapper");
 	}
 
-	private Span inlineViewOnlyField() {
-		if (notesText == null || notesText == "") {
-			notesText = "--";
-		}
-		Span inlineField = new Span(notesText);
-		inlineField.addClassName("inline");
-		return inlineField;
-	}
-
-	private void createBlockViewOnlyField() {
-		Div notesWrapper = new Div();
-		notesWrapper.addClassName("notes-block-view-only");
-		notesWrapper.setText(notesText);
-		blockViewOnlyField = notesWrapper;
-	}
-
-	private void createBlockEditableField() {
+	private void createEditableField() {
 		blockEditableField = new TextArea("", StringUtils.defaultString(notesText), "Add Notes");
 		blockEditableField.addThemeName("notes");
+		blockEditableField.addKeyUpListener(event -> {
+			if (isEditting == false) {
+				toggleIsEditting();
+				saveButton.setEnabled(isEditting);
+			}
+		});
+		blockEditableField.addValueChangeListener(event -> {
+			if (isEditting && event.getValue() != notesText) {
+				saveButton.click();
+			}
+		});
 	}
 
-	private VerticalLayout blockEditableFieldWrapper() {
+	private VerticalLayout editableFieldWrapper() {
 		HorizontalLayout headerRow = new HorizontalLayout(
 			new Span(title),
 			buttonsWrapper()
 		);
 		headerRow.setSpacing(false);
 		headerRow.addClassName("header");
-		createBlockViewOnlyField();
-		createBlockEditableField();
+		createEditableField();
 		VerticalLayout editableFieldWrapper = new VerticalLayout(
 			headerRow,
-			blockViewOnlyField,
 			blockEditableField
 		);
-		blockEditableField.setVisible(isEditting);
 		editableFieldWrapper.addClassName("notes-block");
 		editableFieldWrapper.setSpacing(false);
 		editableFieldWrapper.setPadding(false);
@@ -90,7 +69,6 @@ public class NotesField extends HorizontalLayout {
 	private HorizontalLayout buttonsWrapper() {
 		initButtons();
 		HorizontalLayout buttonsWrapper = new HorizontalLayout(
-			editButton,
 			saveButton
 		);
 		buttonsWrapper.setSpacing(false);
@@ -105,35 +83,20 @@ public class NotesField extends HorizontalLayout {
 	}
 
 	private void initButtons() {
-		Span saveIcon = new Span("");
-		saveIcon.addClassName("save-icon");
-		editButton = createButton("Edit", !isEditting);
 		saveButton = createButton("Save", isEditting);
-
-		editButton.addClickListener(e -> {
-			toggleIsEditting();
-			editButton.setEnabled(!isEditting);
-			saveButton.setEnabled(isEditting);
-			blockEditableField.focus();
-		});
-
 		saveButton.addClickListener(e -> {
 			toggleIsEditting();
 			saveButton.setEnabled(isEditting);
-			editButton.setEnabled(!isEditting);
 			saveButtonOnClick();
 		});
 	}
  
 	private void toggleIsEditting() {
 		isEditting = !isEditting;
-		blockViewOnlyField.setVisible(!isEditting);
-		blockEditableField.setVisible(isEditting);
 	}
 
 	public void saveButtonOnClick() {
-		String updatedNotesText = blockEditableField.getValue();
-		blockViewOnlyField.setText(updatedNotesText);
-		saveCallBack.accept(updatedNotesText);
+		notesText = blockEditableField.getValue();
+		saveCallBack.accept(notesText);
 	};
 }
