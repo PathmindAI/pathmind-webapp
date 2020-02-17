@@ -30,7 +30,9 @@ public class DashboardItemService {
 	}
 
 	public Optional<DashboardItem> getSingleDashboardItem(long experimentId) {
-		return experimentDAO.getSingleDashboardItem(experimentId).stream().findAny();
+		return experimentDAO.getSingleDashboardItem(experimentId).stream()
+				.peek(this::setPoliciesToDashboardItem)
+				.findAny();
 	}
 
 	public int countTotalDashboardItemsForUser(long userId) {
