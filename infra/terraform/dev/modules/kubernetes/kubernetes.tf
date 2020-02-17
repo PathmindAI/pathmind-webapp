@@ -6,20 +6,17 @@ locals = {
   masters_role_name                 = "${aws_iam_role.masters-dev-pathmind-k8s-local.name}"
   node_autoscaling_group_ids        = ["${aws_autoscaling_group.nodes-dev-pathmind-k8s-local.id}"]
   node_security_group_ids           = ["${aws_security_group.nodes-dev-pathmind-k8s-local.id}"]
-  node_subnet_ids                   = ["${aws_subnet.us-east-1a-dev-pathmind-k8s-local.id}", "${aws_subnet.us-east-1b-dev-pathmind-k8s-local.id}", "${aws_subnet.us-east-1c-dev-pathmind-k8s-local.id}"]
+  node_subnet_ids                   = ["${aws_subnet.us-east-1a-dev-pathmind-k8s-local.id}", "${aws_subnet.us-east-1b-dev-pathmind-k8s-local.id}"]
   nodes_role_arn                    = "${aws_iam_role.nodes-dev-pathmind-k8s-local.arn}"
   nodes_role_name                   = "${aws_iam_role.nodes-dev-pathmind-k8s-local.name}"
   region                            = "us-east-1"
   route_table_private-us-east-1a_id = "${aws_route_table.private-us-east-1a-dev-pathmind-k8s-local.id}"
   route_table_private-us-east-1b_id = "${aws_route_table.private-us-east-1b-dev-pathmind-k8s-local.id}"
-  route_table_private-us-east-1c_id = "${aws_route_table.private-us-east-1c-dev-pathmind-k8s-local.id}"
   route_table_public_id             = "${aws_route_table.dev-pathmind-k8s-local.id}"
   subnet_us-east-1a_id              = "${aws_subnet.us-east-1a-dev-pathmind-k8s-local.id}"
   subnet_us-east-1b_id              = "${aws_subnet.us-east-1b-dev-pathmind-k8s-local.id}"
-  subnet_us-east-1c_id              = "${aws_subnet.us-east-1c-dev-pathmind-k8s-local.id}"
   subnet_utility-us-east-1a_id      = "${aws_subnet.utility-us-east-1a-dev-pathmind-k8s-local.id}"
   subnet_utility-us-east-1b_id      = "${aws_subnet.utility-us-east-1b-dev-pathmind-k8s-local.id}"
-  subnet_utility-us-east-1c_id      = "${aws_subnet.utility-us-east-1c-dev-pathmind-k8s-local.id}"
   vpc_cidr_block                    = "${aws_vpc.dev-pathmind-k8s-local.cidr_block}"
   vpc_id                            = "${aws_vpc.dev-pathmind-k8s-local.id}"
 }
@@ -53,7 +50,7 @@ output "node_security_group_ids" {
 }
 
 output "node_subnet_ids" {
-  value = ["${aws_subnet.us-east-1a-dev-pathmind-k8s-local.id}", "${aws_subnet.us-east-1b-dev-pathmind-k8s-local.id}", "${aws_subnet.us-east-1c-dev-pathmind-k8s-local.id}"]
+  value = ["${aws_subnet.us-east-1a-dev-pathmind-k8s-local.id}", "${aws_subnet.us-east-1b-dev-pathmind-k8s-local.id}"]
 }
 
 output "nodes_role_arn" {
@@ -76,10 +73,6 @@ output "route_table_private-us-east-1b_id" {
   value = "${aws_route_table.private-us-east-1b-dev-pathmind-k8s-local.id}"
 }
 
-output "route_table_private-us-east-1c_id" {
-  value = "${aws_route_table.private-us-east-1c-dev-pathmind-k8s-local.id}"
-}
-
 output "route_table_public_id" {
   value = "${aws_route_table.dev-pathmind-k8s-local.id}"
 }
@@ -92,20 +85,12 @@ output "subnet_us-east-1b_id" {
   value = "${aws_subnet.us-east-1b-dev-pathmind-k8s-local.id}"
 }
 
-output "subnet_us-east-1c_id" {
-  value = "${aws_subnet.us-east-1c-dev-pathmind-k8s-local.id}"
-}
-
 output "subnet_utility-us-east-1a_id" {
   value = "${aws_subnet.utility-us-east-1a-dev-pathmind-k8s-local.id}"
 }
 
 output "subnet_utility-us-east-1b_id" {
   value = "${aws_subnet.utility-us-east-1b-dev-pathmind-k8s-local.id}"
-}
-
-output "subnet_utility-us-east-1c_id" {
-  value = "${aws_subnet.utility-us-east-1c-dev-pathmind-k8s-local.id}"
 }
 
 output "vpc_cidr_block" {
@@ -171,7 +156,7 @@ resource "aws_autoscaling_group" "nodes-dev-pathmind-k8s-local" {
   launch_configuration = "${aws_launch_configuration.nodes-dev-pathmind-k8s-local.id}"
   max_size             = 2
   min_size             = 2
-  vpc_zone_identifier  = ["${aws_subnet.us-east-1a-dev-pathmind-k8s-local.id}", "${aws_subnet.us-east-1b-dev-pathmind-k8s-local.id}", "${aws_subnet.us-east-1c-dev-pathmind-k8s-local.id}"]
+  vpc_zone_identifier  = ["${aws_subnet.us-east-1a-dev-pathmind-k8s-local.id}", "${aws_subnet.us-east-1b-dev-pathmind-k8s-local.id}"]
 
   tag = {
     key                 = "KubernetesCluster"
@@ -257,16 +242,6 @@ resource "aws_eip" "us-east-1b-dev-pathmind-k8s-local" {
   }
 }
 
-resource "aws_eip" "us-east-1c-dev-pathmind-k8s-local" {
-  vpc = true
-
-  tags = {
-    KubernetesCluster                              = "dev-pathmind.k8s.local"
-    Name                                           = "us-east-1c.dev-pathmind.k8s.local"
-    "kubernetes.io/cluster/dev-pathmind.k8s.local" = "owned"
-  }
-}
-
 resource "aws_elb" "api-dev-pathmind-k8s-local" {
   name = "api-dev-pathmind-k8s-loca-8fhh08"
 
@@ -278,7 +253,7 @@ resource "aws_elb" "api-dev-pathmind-k8s-local" {
   }
 
   security_groups = ["${aws_security_group.api-elb-dev-pathmind-k8s-local.id}"]
-  subnets         = ["${aws_subnet.utility-us-east-1a-dev-pathmind-k8s-local.id}", "${aws_subnet.utility-us-east-1b-dev-pathmind-k8s-local.id}", "${aws_subnet.utility-us-east-1c-dev-pathmind-k8s-local.id}"]
+  subnets         = ["${aws_subnet.utility-us-east-1a-dev-pathmind-k8s-local.id}", "${aws_subnet.utility-us-east-1b-dev-pathmind-k8s-local.id}"]
 
   health_check = {
     target              = "SSL:443"
@@ -347,7 +322,7 @@ resource "aws_key_pair" "kubernetes-dev-pathmind-k8s-local-1115e063337785552cbda
 
 resource "aws_launch_configuration" "master-us-east-1a-masters-dev-pathmind-k8s-local" {
   name_prefix                 = "master-us-east-1a.masters.dev-pathmind.k8s.local-"
-  image_id                    = "ami-06e67726ce5e65ca7"
+  image_id                    = "ami-09e9bba2f79d02fee"
   instance_type               = "t2.large"
   key_name                    = "${aws_key_pair.kubernetes-dev-pathmind-k8s-local-1115e063337785552cbdadc48b004066.id}"
   iam_instance_profile        = "${aws_iam_instance_profile.masters-dev-pathmind-k8s-local.id}"
@@ -370,8 +345,8 @@ resource "aws_launch_configuration" "master-us-east-1a-masters-dev-pathmind-k8s-
 
 resource "aws_launch_configuration" "nodes-dev-pathmind-k8s-local" {
   name_prefix                 = "nodes.dev-pathmind.k8s.local-"
-  image_id                    = "ami-06e67726ce5e65ca7"
-  instance_type               = "t2.2xlarge"
+  image_id                    = "ami-09e9bba2f79d02fee"
+  instance_type               = "t2.xlarge"
   key_name                    = "${aws_key_pair.kubernetes-dev-pathmind-k8s-local-1115e063337785552cbdadc48b004066.id}"
   iam_instance_profile        = "${aws_iam_instance_profile.nodes-dev-pathmind-k8s-local.id}"
   security_groups             = ["${aws_security_group.nodes-dev-pathmind-k8s-local.id}"]
@@ -413,17 +388,6 @@ resource "aws_nat_gateway" "us-east-1b-dev-pathmind-k8s-local" {
   }
 }
 
-resource "aws_nat_gateway" "us-east-1c-dev-pathmind-k8s-local" {
-  allocation_id = "${aws_eip.us-east-1c-dev-pathmind-k8s-local.id}"
-  subnet_id     = "${aws_subnet.utility-us-east-1c-dev-pathmind-k8s-local.id}"
-
-  tags = {
-    KubernetesCluster                              = "dev-pathmind.k8s.local"
-    Name                                           = "us-east-1c.dev-pathmind.k8s.local"
-    "kubernetes.io/cluster/dev-pathmind.k8s.local" = "owned"
-  }
-}
-
 resource "aws_route" "0-0-0-0--0" {
   route_table_id         = "${aws_route_table.dev-pathmind-k8s-local.id}"
   destination_cidr_block = "0.0.0.0/0"
@@ -440,12 +404,6 @@ resource "aws_route" "private-us-east-1b-0-0-0-0--0" {
   route_table_id         = "${aws_route_table.private-us-east-1b-dev-pathmind-k8s-local.id}"
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = "${aws_nat_gateway.us-east-1b-dev-pathmind-k8s-local.id}"
-}
-
-resource "aws_route" "private-us-east-1c-0-0-0-0--0" {
-  route_table_id         = "${aws_route_table.private-us-east-1c-dev-pathmind-k8s-local.id}"
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = "${aws_nat_gateway.us-east-1c-dev-pathmind-k8s-local.id}"
 }
 
 resource "aws_route_table" "dev-pathmind-k8s-local" {
@@ -481,17 +439,6 @@ resource "aws_route_table" "private-us-east-1b-dev-pathmind-k8s-local" {
   }
 }
 
-resource "aws_route_table" "private-us-east-1c-dev-pathmind-k8s-local" {
-  vpc_id = "${aws_vpc.dev-pathmind-k8s-local.id}"
-
-  tags = {
-    KubernetesCluster                              = "dev-pathmind.k8s.local"
-    Name                                           = "private-us-east-1c.dev-pathmind.k8s.local"
-    "kubernetes.io/cluster/dev-pathmind.k8s.local" = "owned"
-    "kubernetes.io/kops/role"                      = "private-us-east-1c"
-  }
-}
-
 resource "aws_route_table_association" "private-us-east-1a-dev-pathmind-k8s-local" {
   subnet_id      = "${aws_subnet.us-east-1a-dev-pathmind-k8s-local.id}"
   route_table_id = "${aws_route_table.private-us-east-1a-dev-pathmind-k8s-local.id}"
@@ -502,11 +449,6 @@ resource "aws_route_table_association" "private-us-east-1b-dev-pathmind-k8s-loca
   route_table_id = "${aws_route_table.private-us-east-1b-dev-pathmind-k8s-local.id}"
 }
 
-resource "aws_route_table_association" "private-us-east-1c-dev-pathmind-k8s-local" {
-  subnet_id      = "${aws_subnet.us-east-1c-dev-pathmind-k8s-local.id}"
-  route_table_id = "${aws_route_table.private-us-east-1c-dev-pathmind-k8s-local.id}"
-}
-
 resource "aws_route_table_association" "utility-us-east-1a-dev-pathmind-k8s-local" {
   subnet_id      = "${aws_subnet.utility-us-east-1a-dev-pathmind-k8s-local.id}"
   route_table_id = "${aws_route_table.dev-pathmind-k8s-local.id}"
@@ -514,11 +456,6 @@ resource "aws_route_table_association" "utility-us-east-1a-dev-pathmind-k8s-loca
 
 resource "aws_route_table_association" "utility-us-east-1b-dev-pathmind-k8s-local" {
   subnet_id      = "${aws_subnet.utility-us-east-1b-dev-pathmind-k8s-local.id}"
-  route_table_id = "${aws_route_table.dev-pathmind-k8s-local.id}"
-}
-
-resource "aws_route_table_association" "utility-us-east-1c-dev-pathmind-k8s-local" {
-  subnet_id      = "${aws_subnet.utility-us-east-1c-dev-pathmind-k8s-local.id}"
   route_table_id = "${aws_route_table.dev-pathmind-k8s-local.id}"
 }
 
@@ -721,20 +658,6 @@ resource "aws_subnet" "us-east-1b-dev-pathmind-k8s-local" {
   }
 }
 
-resource "aws_subnet" "us-east-1c-dev-pathmind-k8s-local" {
-  vpc_id            = "${aws_vpc.dev-pathmind-k8s-local.id}"
-  cidr_block        = "172.30.44.0/22"
-  availability_zone = "us-east-1c"
-
-  tags = {
-    KubernetesCluster                              = "dev-pathmind.k8s.local"
-    Name                                           = "us-east-1c.dev-pathmind.k8s.local"
-    SubnetType                                     = "Private"
-    "kubernetes.io/cluster/dev-pathmind.k8s.local" = "owned"
-    "kubernetes.io/role/internal-elb"              = "1"
-  }
-}
-
 resource "aws_subnet" "utility-us-east-1a-dev-pathmind-k8s-local" {
   vpc_id            = "${aws_vpc.dev-pathmind-k8s-local.id}"
   cidr_block        = "172.30.32.0/25"
@@ -757,20 +680,6 @@ resource "aws_subnet" "utility-us-east-1b-dev-pathmind-k8s-local" {
   tags = {
     KubernetesCluster                              = "dev-pathmind.k8s.local"
     Name                                           = "utility-us-east-1b.dev-pathmind.k8s.local"
-    SubnetType                                     = "Utility"
-    "kubernetes.io/cluster/dev-pathmind.k8s.local" = "owned"
-    "kubernetes.io/role/elb"                       = "1"
-  }
-}
-
-resource "aws_subnet" "utility-us-east-1c-dev-pathmind-k8s-local" {
-  vpc_id            = "${aws_vpc.dev-pathmind-k8s-local.id}"
-  cidr_block        = "172.30.33.0/25"
-  availability_zone = "us-east-1c"
-
-  tags = {
-    KubernetesCluster                              = "dev-pathmind.k8s.local"
-    Name                                           = "utility-us-east-1c.dev-pathmind.k8s.local"
     SubnetType                                     = "Utility"
     "kubernetes.io/cluster/dev-pathmind.k8s.local" = "owned"
     "kubernetes.io/role/elb"                       = "1"

@@ -26,10 +26,14 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-body-size: 500m
   hosts:
     - host: dev.devpathmind.com
-      paths: [/:80:canary]
+      paths: [/:80:pathmind-dev]
+    - host: test.devpathmind.com
+      paths: [/:80:pathmind-test]
     #model analyzer
     - host: ma.dev.devpathmind.com
-      paths: [/:8080:pathmind-ma]
+      paths: [/:8080:pathmind-ma-dev]
+    - host: ma.test.devpathmind.com
+      paths: [/:8080:pathmind-ma-test]
     - host: jenkins.dev.devpathmind.com
       paths: [/:8080:jenkins]
     - host: grafana.dev.devpathmind.com
@@ -43,9 +47,11 @@ ingress:
     - secretName: letsencrypt-dev
       hosts:
         - dev.devpathmind.com
+        - test.devpathmind.com
         - pgadmin.dev.devpathmind.com
         - grafana.dev.devpathmind.com
         - ma.dev.devpathmind.com
+        - ma.test.devpathmind.com
         - kibana.dev.devpathmind.com
         - jenkins.dev.devpathmind.com
 

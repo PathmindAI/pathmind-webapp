@@ -2,7 +2,7 @@
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name        = "${var.environment}-rds-subnet-group"
   description = "RDS subnet group"
-  subnet_ids  = ["${module.kubernetes.node_subnet_ids}"]
+  subnet_ids  = ["${var.node_subnet_ids}"]
   tags {
     Environment = "${var.environment}"
   }
@@ -10,7 +10,7 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
 
 /* Security Group for resources that want to access the Database */
 resource "aws_security_group" "db_access_sg" {
-  vpc_id      = "${module.kubernetes.vpc_id}"
+  vpc_id      = "${var.vpc_id}"
   name        = "${var.environment}-db-access-sg"
   description = "Allow access to RDS"
 
@@ -43,7 +43,7 @@ resource "aws_db_instance" "rds" {
 resource "aws_security_group" "rds_sg" {
   name = "${var.environment}-rds-sg"
   description = "${var.environment} Security Group"
-  vpc_id = "${module.kubernetes.vpc_id}"
+  vpc_id = "${var.vpc_id}"
   tags {
     Name = "${var.environment}-rds-sg"
     Environment =  "${var.environment}"

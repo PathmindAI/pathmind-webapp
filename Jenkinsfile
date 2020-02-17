@@ -143,7 +143,7 @@ pipeline {
             steps {
 		script {
 				echo "Updating helm chart"
-				sh "helm upgrade --install pathmind ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}.yaml"
+				sh "helm upgrade --install pathmind ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
 		}
             }
         }
