@@ -3,12 +3,14 @@
 }
 .experiments-view vaadin-split-layout > vaadin-vertical-layout {
   width: 100%;
-  background: white;
   border-radius: var(--lumo-border-radius);
   padding: var(--lumo-space-m);
   box-sizing: border-box;
-  margin-top: var(--lumo-space-xs);
   overflow: hidden;
+}
+
+.experiments-view vaadin-split-layout vaadin-grid {
+  margin-top: var(--lumo-space-xs);
 }
 
 .experiments-view vaadin-split-layout > vaadin-vertical-layout[slot="primary"] {
