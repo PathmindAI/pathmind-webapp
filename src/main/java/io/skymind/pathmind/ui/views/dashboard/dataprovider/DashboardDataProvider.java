@@ -22,17 +22,9 @@ public class DashboardDataProvider extends AbstractBackEndDataProvider<Dashboard
 	@Autowired
 	private DashboardItemService service;
 	
-	@Autowired
-	private PolicyDAO policyDao;
-	
 	@Override
 	protected Stream<DashboardItem> fetchFromBackEnd(Query<DashboardItem, Void> query) {
 		List<DashboardItem> items = service.getDashboardItemsForUser(SecurityUtils.getUserId(), query.getOffset(), query.getLimit());
-		//TODO: Onur: Move this to DashboardItemService
-		items.forEach(item -> {
-			if (item.getExperiment() != null)
-				item.getExperiment().setPolicies(policyDao.getPoliciesForExperiment(item.getExperiment().getId()));
-		});
 		return items.stream();
 	}
 
