@@ -199,6 +199,10 @@ img {
   margin-top: var(--lumo-space-xs);
 }
 
+.models-view vaadin-split-layout {
+  margin-bottom: var(--lumo-space-xl);
+}
+
 account-view {
   background: var(--pm-app-bg-color);
   height: 100%;
