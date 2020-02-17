@@ -1,5 +1,18 @@
 package io.skymind.pathmind.db.dao;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
@@ -11,18 +24,6 @@ import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
-import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 public class RunDAO
@@ -96,10 +97,9 @@ public class RunDAO
     private void fireEventBusUpdates(Run run, List<Policy> policies) {
         // An event for each policy since we only need to update some of the policies in a run.
         policies.stream().forEach(policy -> EventBus.post(new PolicyUpdateBusEvent(policy)));
-        // This is only needed because if the run is completed then with the current API there are no policies
-        // to update. By updating the run we can then let all the interested policies on screen know to update themselves.
-        if(policies.isEmpty())
-            EventBus.post(new RunUpdateBusEvent(run));
+        // Send run updated event, meaning that all policies under the run is updated.
+        // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
+        EventBus.post(new RunUpdateBusEvent(run));
     }
 
     // STEPH -> REFACTOR -> QUESTION -> Rename method with an explanation of what this does? It generates a temp policy name but why? And why get only index 0.
