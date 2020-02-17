@@ -44,5 +44,10 @@ public class DashboardDataProvider extends AbstractBackEndDataProvider<Dashboard
 	public boolean isEmpty() {
 		return service.countTotalDashboardItemsForUser(SecurityUtils.getUserId()) == 0;
 	}
+	
+	public void refreshItemByExperiment(long experimentId) {
+ 		service.getSingleDashboardItem(experimentId)
+ 			.ifPresent(item -> refreshItem(item));
+ 	}
 
 }
