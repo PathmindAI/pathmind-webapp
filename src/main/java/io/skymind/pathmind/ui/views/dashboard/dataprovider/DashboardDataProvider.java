@@ -1,6 +1,5 @@
 package io.skymind.pathmind.ui.views.dashboard.dataprovider;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 
 import io.skymind.pathmind.data.DashboardItem;
-import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.services.DashboardItemService;
 
@@ -24,8 +22,7 @@ public class DashboardDataProvider extends AbstractBackEndDataProvider<Dashboard
 	
 	@Override
 	protected Stream<DashboardItem> fetchFromBackEnd(Query<DashboardItem, Void> query) {
-		List<DashboardItem> items = service.getDashboardItemsForUser(SecurityUtils.getUserId(), query.getOffset(), query.getLimit());
-		return items.stream();
+		return service.getDashboardItemsForUser(SecurityUtils.getUserId(), query.getOffset(), query.getLimit()).stream();
 	}
 
 	@Override
