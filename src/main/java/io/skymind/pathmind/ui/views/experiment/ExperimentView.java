@@ -1,5 +1,6 @@
 package io.skymind.pathmind.ui.views.experiment;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -243,16 +244,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 	
 	private void addOrUpdatePolicy(Policy updatedPolicy) {
+		ArrayList<Policy> policiesToAdd = new ArrayList<>();
 		experiment.getPolicies().stream()
         .filter(policy -> policy.getId() == updatedPolicy.getId())
         .findAny()
         .ifPresentOrElse(
-                policy -> {
-                    experiment.getPolicies().set(experiment.getPolicies().indexOf(policy), updatedPolicy);
-                },
-                () -> {
-                    experiment.getPolicies().add(updatedPolicy);
-                });
+                policy -> experiment.getPolicies().set(experiment.getPolicies().indexOf(policy), updatedPolicy),
+                () -> policiesToAdd.add(updatedPolicy));
+		// This is needed to avoid ConcurrentModificationException when adding values in a stream and then filtering on them.
+		experiment.getPolicies().addAll(policiesToAdd);
 	}
 	
 	private void processRunUpdate(Run run) {
