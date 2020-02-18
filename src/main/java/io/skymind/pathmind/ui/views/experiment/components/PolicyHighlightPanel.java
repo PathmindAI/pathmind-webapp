@@ -17,26 +17,13 @@ public class PolicyHighlightPanel extends VerticalLayout
 	{
 		setWidthFull();
 		setPadding(false);
-//<<<<<<< HEAD
-//
-//
-//		FormLayout formLayout = new FormLayout();
-//		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("100px", 3, FormLayout.ResponsiveStep.LabelsPosition.TOP));
-//		formLayout.add(errorDescriptionLabel, 3);
-//		formLayout.addFormItem(policyLabel, "Policy").addClassNames("label-box","policy");
-//		formLayout.addFormItem(scoreLabel, "Score").addClassNames("label-box","score");
-//		formLayout.addFormItem(algorithmLabel, "Algorithm").addClassNames("label-box","algorithm");
-//
-//		add(formLayout);
-//=======
 		errorDescriptionLabel.setVisible(false);
 		setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
 		
 		scoreLabel = new PathmindLabelBox("Score");
 		scoreLabel.addClassName("score");
 
-		add(scoreLabel);
-//>>>>>>> dev
+		add(errorDescriptionLabel, scoreLabel);
 	}
 
 	public void update(Policy policy) {
