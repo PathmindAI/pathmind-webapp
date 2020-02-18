@@ -6,6 +6,7 @@ package io.skymind.pathmind.data.db;
 
 import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.Experiment;
+import io.skymind.pathmind.data.db.tables.Guide;
 import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.ModelFile;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
@@ -43,6 +44,11 @@ public class Tables {
      * The table <code>public.experiment</code>.
      */
     public static final Experiment EXPERIMENT = Experiment.EXPERIMENT;
+
+    /**
+     * The table <code>public.guide</code>.
+     */
+    public static final Guide GUIDE = Guide.GUIDE;
 
     /**
      * The table <code>public.model</code>.

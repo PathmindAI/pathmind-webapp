@@ -6,6 +6,7 @@ package io.skymind.pathmind.data.db;
 
 import io.skymind.pathmind.data.db.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.data.db.tables.Experiment;
+import io.skymind.pathmind.data.db.tables.Guide;
 import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.ModelFile;
 import io.skymind.pathmind.data.db.tables.PathmindUser;
@@ -19,6 +20,7 @@ import io.skymind.pathmind.data.db.tables.TrainerJob;
 import io.skymind.pathmind.data.db.tables.TrainingError;
 import io.skymind.pathmind.data.db.tables.records.ExecutionProviderMetaDataRecord;
 import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
+import io.skymind.pathmind.data.db.tables.records.GuideRecord;
 import io.skymind.pathmind.data.db.tables.records.ModelFileRecord;
 import io.skymind.pathmind.data.db.tables.records.ModelRecord;
 import io.skymind.pathmind.data.db.tables.records.PathmindUserRecord;
@@ -82,6 +84,7 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final ForeignKey<ExperimentRecord, ModelRecord> EXPERIMENT__PM_FK_EXPERIMENT_MODEL = ForeignKeys0.EXPERIMENT__PM_FK_EXPERIMENT_MODEL;
+    public static final ForeignKey<GuideRecord, ProjectRecord> GUIDE__PM_FK_MODEL_PROJECT = ForeignKeys0.GUIDE__PM_FK_MODEL_PROJECT;
     public static final ForeignKey<ModelRecord, ProjectRecord> MODEL__PM_FK_MODEL_PROJECT = ForeignKeys0.MODEL__PM_FK_MODEL_PROJECT;
     public static final ForeignKey<ModelFileRecord, ModelRecord> MODEL_FILE__PM_FK_MODEL_FILE_MODEL = ForeignKeys0.MODEL_FILE__PM_FK_MODEL_FILE_MODEL;
     public static final ForeignKey<PolicyRecord, RunRecord> POLICY__PM_FK_POLICY_RUN = ForeignKeys0.POLICY__PM_FK_POLICY_RUN;
@@ -116,6 +119,7 @@ public class Keys {
 
     private static class ForeignKeys0 {
         public static final ForeignKey<ExperimentRecord, ModelRecord> EXPERIMENT__PM_FK_EXPERIMENT_MODEL = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.MODEL_PKEY, Experiment.EXPERIMENT, "experiment__pm_fk_experiment_model", Experiment.EXPERIMENT.MODEL_ID);
+        public static final ForeignKey<GuideRecord, ProjectRecord> GUIDE__PM_FK_MODEL_PROJECT = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.PROJECT_PKEY, Guide.GUIDE, "guide__pm_fk_model_project", Guide.GUIDE.PROJECT_ID);
         public static final ForeignKey<ModelRecord, ProjectRecord> MODEL__PM_FK_MODEL_PROJECT = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.PROJECT_PKEY, Model.MODEL, "model__pm_fk_model_project", Model.MODEL.PROJECT_ID);
         public static final ForeignKey<ModelFileRecord, ModelRecord> MODEL_FILE__PM_FK_MODEL_FILE_MODEL = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.MODEL_PKEY, ModelFile.MODEL_FILE, "model_file__pm_fk_model_file_model", ModelFile.MODEL_FILE.MODEL_ID);
         public static final ForeignKey<PolicyRecord, RunRecord> POLICY__PM_FK_POLICY_RUN = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.RUN_PKEY, Policy.POLICY, "policy__pm_fk_policy_run", Policy.POLICY.RUN_ID);

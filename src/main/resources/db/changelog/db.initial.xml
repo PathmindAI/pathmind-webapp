@@ -752,7 +752,7 @@
         </rollback>
     </changeSet>
 
-    <!--#641 Add EXPORTED_AT column to track if policy was exported-->
+    <!-- #641 Add EXPORTED_AT column to track if policy was exported -->
     <changeSet id="20200129-01" author="krystian.walaszczyk@ext.vaadin.com">
         <addColumn tableName="POLICY">
             <column name="EXPORTED_AT" type="DATETIME"/>
@@ -762,6 +762,7 @@
         </rollback>
     </changeSet>
 
+    <!-- #770 Create indexes on foreign keys as they are often used in joins/where -->
     <changeSet id="20200202-01" author="steph@followsteph.com">
         <createIndex tableName="PROJECT" indexName="PROJECT_PATHMIND_USER_FK_INDEX">
             <column name="PATHMIND_USER_ID"/>
@@ -842,7 +843,24 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="20200204-01" author="krystian.walaszczyk@ext.vaadin.com">
+    <!-- #702 Create UI for guided walkthrough of setting up simulation helper with Pathmind functions -->
+    <changeSet id="20200205-01" author="steph@followsteph.com">
+        <createTable tableName="GUIDE">
+            <column name="PROJECT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_MODEL_PROJECT" references="PROJECT(ID)"/>
+            </column>
+            <column name="STEP" type="INT" defaultValue="0"/>
+        </createTable>
+        <createIndex tableName="GUIDE" indexName="GUIDE_PROJECT_FK_INDEX">
+            <column name="PROJECT_ID"/>
+        </createIndex>
+        <rollback>
+            <dropTable tableName="GUIDE"/>
+            <dropIndex tableName="GUIDE" indexName="GUIDE_PROJECT_FK_INDEX"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200218-01" author="krystian.walaszczyk@ext.vaadin.com">
         <createTable tableName="TRAINING_ERROR">
             <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -888,7 +906,7 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="20200205-01" author="krystian.walaszczyk@ext.vaadin.com">
+    <changeSet id="20200218-02" author="krystian.walaszczyk@ext.vaadin.com">
         <addColumn tableName="RUN">
             <column name="TRAINING_ERROR_ID" type="BIGINT">
                 <constraints nullable="true" foreignKeyName="PM_FK_TRAINING_ERROR" references="TRAINING_ERROR(ID)"/>

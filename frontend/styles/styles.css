@@ -2,7 +2,6 @@ html {
   /* pathmind-colors */
   --pm-primary-color: #4f97aa;
   --pm-text-color: #1a2949;
-  --pm-secondary-text-color: #b3b6c2;
   --pm-tertiary-text-color: #888888;
   --pm-app-bg-color: #f0f1f6;
   --pm-highlight-light: rgba(240, 241, 246, 0.25);
@@ -13,11 +12,29 @@ html {
 
   /* pathmind color palette */
   --pm-orange-color: #ed7820;
+  --pm-gray-color-darkest: #404040;
+  --pm-gray-color-darker: #707070;
+  --pm-gray-color-dark: #888888;
+  --pm-gray-color: #b3b6c2;
   --pm-gray-color-light: #d0d0d0;
+  --pm-blue-color-darkest: #1a2949;
+  --pm-blue-color-darkest-50pct: rgba(26, 41, 73, 0.5);
+  --pm-blue-color-darkest-25pct: rgba(26, 41, 73, 0.25);
+  --pm-blue-color: #1900ff;
+  --pm-brown-color: #821b1a;
+  --pm-green-color: #1ccc28;
+
+  /* pathmind typography */
+  --pm-line-height-xl: 2em;
+  --pm-line-height-l: 1.5em;
+  --pm-line-height-m: 1.3em;
+  --pm-line-height-s: 1.15em;
 
   /* pathmind-theme */
   --lumo-font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --lumo-font-size-xxl: 1.875rem;
   --lumo-font-size-xl: 1.5rem;
+  --lumo-font-size-l: 1.25rem;
   --lumo-font-size-m: 1rem;
   --lumo-font-size-s: 0.875rem;
   --lumo-font-size-xs: 0.75rem;
@@ -26,6 +43,7 @@ html {
   --lumo-size-m: 2rem;
   --lumo-size-s: 1.75rem;
   --lumo-size-xs: 1.5rem;
+  --lumo-space-xxl: 4rem;
   --lumo-space-xl: 2.5rem;
   --lumo-space-l: 1.75rem;
   --lumo-space-m: 1.125rem;
@@ -40,14 +58,19 @@ html {
   --lumo-error-color: #d80947;
   --lumo-header-text-color: #000000;
   --lumo-body-text-color: var(--pm-text-color);
-  --lumo-secondary-text-color: var(--pm-secondary-text-color);
+  --lumo-secondary-text-color: var(--pm-gray-color);
   --lumo-tertiary-text-color: #d7d7d7;
   --lumo-base-color: #ffffff;
   --lumo-primary-text-color: var(--pm-primary-color);
   --lumo-primary-color-50pct: rgba(79, 151, 170, 0.5);
+  --lumo-primary-color-25pct: rgba(79, 151, 170, 0.25);
   --lumo-primary-color-10pct: rgba(79, 151, 170, 0.1);
   --lumo-primary-color: var(--pm-primary-color);
   --lumo-border-radius: 6px;
+}
+
+img {
+  display: block;
 }
 
 #nav-main-links,
@@ -95,7 +118,10 @@ html {
 }
 
 .action-menu {
+  position: sticky;
+  top: 0;
   background-color: var(--pm-primary-color);
+  z-index: 1;
 }
 
 .light-text-label {
@@ -161,20 +187,16 @@ html {
   align-self: center;
 }
 
-.projects-view .content {
+.projects-view .content,
+.models-view .content {
   flex: 1;
   max-width: 1200px;
   align-self: center;
 }
 
-.projects-view .view-section {
-  flex: 1;
-}
-
+.projects-view .view-section,
 .models-view .view-section {
   flex: 1;
-  max-width: 1200px;
-  align-self: center;
 }
 
 account-view {
@@ -248,6 +270,23 @@ account-view {
 .error-label {
   background: var(--lumo-error-color-10pct);
   color: var(--lumo-error-color);
+}
+
+/* Typography Styles */
+h1 {
+  font-size: var(--lumo-font-size-xxl);
+}
+
+h2 {
+  font-size: var(--lumo-font-size-xl);
+}
+
+h3 {
+  font-size: var(--lumo-font-size-l);
+}
+
+h4 {
+  font-size: var(--lumo-font-size-m);
 }
 
 .dashboard-line {
