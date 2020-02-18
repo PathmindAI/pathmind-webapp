@@ -20,7 +20,7 @@
 
 .inner-content {
   align-items: center;
-  padding: 20px 60px;
+  padding: var(--lumo-space-l) var(--lumo-space-xl);
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
   margin-top: 0;
 }
