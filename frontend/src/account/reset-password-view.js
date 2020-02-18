@@ -30,11 +30,7 @@ class ResetPasswordView extends PolymerElement {
           src="frontend/images/pathmind-logo.png"
           alt="Pathmind logo"
         />
-        <vaadin-vertical-layout
-          id="prePart"
-          style="width: 100%;"
-          class="inner-content"
-        >
+        <vaadin-vertical-layout id="prePart" class="inner-content">
           <h3>Reset Password</h3>
           <p>
             Please enter the user email and reset link will be sent
@@ -57,11 +53,7 @@ class ResetPasswordView extends PolymerElement {
           </vaadin-vertical-layout>
         </vaadin-vertical-layout>
 
-        <vaadin-vertical-layout
-          style="width: 100%;"
-          class="inner-content"
-          id="postPart"
-        >
+        <vaadin-vertical-layout class="inner-content" id="postPart">
           <h3>Reset Password</h3>
           <p>Please enter your new password</p>
           <vaadin-password-field
