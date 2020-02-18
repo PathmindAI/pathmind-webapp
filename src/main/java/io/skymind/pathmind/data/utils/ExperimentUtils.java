@@ -50,9 +50,8 @@ public class ExperimentUtils
 
 	public static RunStatus getTrainingStatus(Experiment experiment) {
 		RunType runType = getTrainingType(experiment);
-		RunStatus status = experiment.getPolicies().stream()
-				.filter(p -> p.getRun().getRunTypeEnum() == runType)
-				.map(PolicyUtils::getRunStatus)
+		RunStatus status = experiment.getRuns().stream()
+				.map(Run::getStatusEnum)
 				.min(Comparator.comparingInt(RunStatus::getValue))
 				.orElse(NotStarted);
 		
@@ -75,8 +74,7 @@ public class ExperimentUtils
 	 * E.g if experiment contains test, discovery and full runs it will return {@link RunType#FullRun}
 	 */
 	public static RunType getTrainingType(Experiment experiment) {
-		return experiment.getPolicies().stream()
-				.map(Policy::getRun)
+		return experiment.getRuns().stream()
 				.map(Run::getRunTypeEnum)
 				.max(Comparator.comparingInt(RunType::getValue))
 				.orElse(FullRun);
@@ -84,8 +82,7 @@ public class ExperimentUtils
 
 
 	public static LocalDateTime getTrainingStartedDate(Experiment experiment, RunType runType) {
-		return experiment.getPolicies().stream()
-				.map(Policy::getRun)
+		return experiment.getRuns().stream()
 				.filter(run -> run.getRunTypeEnum() == runType)
 				.map(Run::getStartedAt)
 				.filter(Objects::nonNull)
@@ -93,25 +90,25 @@ public class ExperimentUtils
 				.orElse(LocalDateTime.now());
 	}
 
-	public static LocalDateTime getTrainingOldestPolicyStartedDate(Experiment experiment, RunType runType) {
-		return experiment.getPolicies().stream()
-				.filter(policy -> policy.getRun().getRunTypeEnum() == runType)
-				.map(Policy::getStartedAt)
+	public static LocalDateTime getTrainingEarliestRunStartedDate(Experiment experiment, RunType runType) {
+		return experiment.getRuns().stream()
+				.filter(run -> run.getRunTypeEnum() == runType)
+				.map(Run::getStartedAt)
 				.filter(Objects::nonNull)
 				.min(LocalDateTime::compareTo)
 				.orElse(LocalDateTime.now());
 	}
 
 	/**
-	 * Searches the most recent stopped_at date of all policies in given experiment.
+	 * Searches the most recent stopped_at date of all runs in given experiment.
 	 * Returns null if any policy has not finished yet.
 	 */
 	public static LocalDateTime getTrainingCompletedTime(Experiment experiment) {
-		final var stoppedTimes = experiment.getPolicies().stream()
-				.map(Policy::getStoppedAt)
+		final var stoppedTimes = experiment.getRuns().stream()
+				.map(Run::getStoppedAt)
 				.collect(Collectors.toList());
 
-		if (isAnyPolicyNotFinished(stoppedTimes)) {
+		if (isAnyNotFinished(stoppedTimes)) {
 			return null;
 		}
 
@@ -133,12 +130,12 @@ public class ExperimentUtils
 	}
 
 	public static double getEstimatedTrainingTime(Experiment experiment, double progress, RunType runType){
-		final var earliestPolicyStartedDate = ExperimentUtils.getTrainingOldestPolicyStartedDate(experiment, runType);
-		final var difference = Duration.between(earliestPolicyStartedDate, LocalDateTime.now());
+		final var earliestRunStartedDate = ExperimentUtils.getTrainingEarliestRunStartedDate(experiment, runType);
+		final var difference = Duration.between(earliestRunStartedDate, LocalDateTime.now());
 		return difference.toSeconds() * (100 - progress) / progress;
 	}
 
-	private static boolean isAnyPolicyNotFinished(List<LocalDateTime> stoppedTimes) {
+	private static boolean isAnyNotFinished(List<LocalDateTime> stoppedTimes) {
 		return stoppedTimes.stream().anyMatch(Objects::isNull);
 	}
 }

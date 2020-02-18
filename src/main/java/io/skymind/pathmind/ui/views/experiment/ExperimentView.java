@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import io.skymind.pathmind.db.dao.RunDAO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private ExperimentDAO experimentDAO;
 	@Autowired
 	private PolicyDAO policyDAO;
+	@Autowired
+	private RunDAO runDAO;
 	@Autowired
 	private TrainingService trainingService;
 	@Autowired
@@ -208,15 +211,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	@Override
-	protected void initLoadData() throws InvalidDataException {
+	protected void initLoadData() {
 		experiment = experimentDAO.getExperiment(experimentId)
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
+		experiment.setRuns(runDAO.getRunsForExperiment(experimentId));
 		policy = selectBestPolicy(experiment.getPolicies());
 	}
 
 	@Override
-	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
+	protected void initScreen(BeforeEnterEvent event) {
 		screenTitlePanel.setSubtitle(projectName);
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		policyChartPanel.init(experiment);
@@ -232,7 +236,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private Policy selectHighestPerformingPolicy(List<Policy> policies, RunType runType) {
 		return policies.stream()
 				.filter(p -> p.getRun().getRunTypeEnum() == runType)
-				.max(Comparator.comparing(p -> PolicyUtils.getLastScore(p), Comparator.nullsLast(Comparator.naturalOrder()))).get();
+				.max(Comparator.comparing(PolicyUtils::getLastScore, Comparator.nullsLast(Comparator.naturalOrder())))
+				.orElse(null);
 	}
 	
 	private void processSelectedPolicy(Policy selectedPolicy) {
@@ -254,6 +259,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     experiment.getPolicies().add(updatedPolicy);
                 });
 	}
+
+	private void addOrUpdateRun(Run updatedRun) {
+		experiment.getRuns().stream()
+				.filter(run -> run.getId() == updatedRun.getId())
+				.findAny()
+				.ifPresentOrElse(
+						run -> experiment.getRuns().set(experiment.getRuns().indexOf(run), updatedRun),
+						() -> experiment.getRuns().add(updatedRun));
+	}
 	
 	private void processRunUpdate(Run run) {
 		updatedRunForPolicies(run);
@@ -270,12 +284,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			exportPolicyButton.setEnabled(policyDAO.hasPolicyFile(policy.getId()));
 		}
 
-		RunType selectedRunType = policy.getRun().getRunTypeEnum();
-		if (selectedRunType == RunType.DiscoveryRun) {
-			runFullTraining.setVisible(true);
-			runFullTraining.setEnabled(isTrainingFinished);
-		} else if (selectedRunType == RunType.FullRun) {
-			runFullTraining.setVisible(false);
+		if(policy != null && policy.getRun() != null) {
+			RunType selectedRunType = policy.getRun().getRunTypeEnum();
+			if (selectedRunType == RunType.DiscoveryRun) {
+				runFullTraining.setVisible(true);
+				runFullTraining.setEnabled(isTrainingFinished);
+			} else if (selectedRunType == RunType.FullRun) {
+				runFullTraining.setVisible(false);
+			}
 		}
 	}
 	
@@ -297,7 +313,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			Policy bestPolicy = selectBestPolicy(experiment.getPolicies());
 			
 			// Refresh other components, existing best policy is updated or we have a new best policy 
-			if (policy.equals(event.getPolicy()) || !policy.equals(bestPolicy)) {
+			if (event.getPolicy().equals(policy) || (bestPolicy != null && !bestPolicy.equals(policy))) {
 				policy = bestPolicy;
 				PushUtils.push(getUI(), () -> processSelectedPolicy(bestPolicy));
 			}
@@ -315,23 +331,23 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
     }
 
-    class ExperimentViewRunUpdateSubscriber implements RunUpdateSubscriber
-    {
-        @Override
-        public boolean filterBusEvent(RunUpdateBusEvent event) {
-            return experiment != null && experiment.getId() == event.getRun().getExperiment().getId();
-        }
+	class ExperimentViewRunUpdateSubscriber implements RunUpdateSubscriber {
+		@Override
+		public void handleBusEvent(RunUpdateBusEvent event) {
+			addOrUpdateRun(event.getRun());
+			PushUtils.push(getUI(), () -> processRunUpdate(event.getRun()));
+		}
 
-        @Override
-        public void handleBusEvent(RunUpdateBusEvent event) {
-            PushUtils.push(getUI(), () -> processRunUpdate(event.getRun()));
-        }
+		@Override
+		public boolean filterBusEvent(RunUpdateBusEvent event) {
+			return experiment != null && experiment.getId() == event.getRun().getExperiment().getId();
+		}
 
-        @Override
-        public Optional<UI> getUI() {
-            return ExperimentView.this.getUI();
-        }
-    }
+		@Override
+		public Optional<UI> getUI() {
+			return ExperimentView.this.getUI();
+		}
+	}
 	
 	
 }

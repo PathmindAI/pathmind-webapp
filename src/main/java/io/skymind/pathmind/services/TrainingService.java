@@ -84,30 +84,6 @@ public abstract class TrainingService {
                 policy);          // base policy
     }
 
-    private Policy generateTempPolicy(JobSpec spec, Run run) {
-        return generateTempPolicy(spec, run, null);
-    }
-
-    // We want to create a copy of List<RewardScore> so that the references are unique and one doesn't affect the other.
-    protected Policy generateTempPolicy(JobSpec spec, Run run, List<RewardScore> scores) {
-        // this is for ui filling gap until ui get a training progress from backend(rescale)
-        Policy tempPolicy = new Policy();
-
-        tempPolicy.setAlgorithmEnum(Algorithm.PPO);
-        tempPolicy.setRunId(run.getId());
-        tempPolicy.setLearningRate(spec.getLearningRates().get(0));
-        tempPolicy.setGamma(spec.getGammas().get(0));
-        tempPolicy.setBatchSize(spec.getBatchSizes().get(0));
-        tempPolicy.setExternalId(PolicyUtils.generatePolicyTempName(tempPolicy, run.getRunType()));
-        tempPolicy.setName(PolicyUtils.parsePolicyName(tempPolicy.getExternalId()));
-        tempPolicy.setNotes(PolicyUtils.generateDefaultNotes(tempPolicy));
-
-        if(scores != null)
-            tempPolicy.setScores(scores);
-
-        return tempPolicy;
-    }
-
     private void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec) {
         startRun(runType, exp, iterations, learningRates, gammas, batchSizes, maxTimeInSec, null);
     }

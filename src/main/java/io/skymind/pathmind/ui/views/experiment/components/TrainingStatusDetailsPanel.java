@@ -58,8 +58,6 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 
 	private void updateProgressRow(Experiment experiment, RunStatus trainingStatus, RunType runType) {
 		if(trainingStatus == Running) {
-			progressBar.setVisible(true);
-			progressValueLabel.setVisible(true);
 			updateProgressBar(experiment, runType);
 		} else if (trainingStatus == Completed) {
 			DateAndTimeUtils.withUserTimeZoneId(userTimeZone -> {
@@ -86,6 +84,8 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 			final var progressValue = formatProgressLabel(progress, formattedEstimatedTime);
 			progressValueLabel.setText(progressValue);
 			progressBar.setValue(progress);
+			progressBar.setVisible(true);
+			progressValueLabel.setVisible(true);
 		}
 	}
 

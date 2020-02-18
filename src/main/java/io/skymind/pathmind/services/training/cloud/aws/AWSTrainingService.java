@@ -54,13 +54,7 @@ public class AWSTrainingService extends TrainingService {
                 maxTimeInSec
         );
 
-        List<RewardScore> rewardScores = null;
         if (basePolicy != null) {
-            // We want to create a copy of List<RewardScore> so that the references are unique and one doesn't affect the other.
-            rewardScores = basePolicy.getScores().stream()
-                    .map(score -> new RewardScore(score.getMax(), score.getMin(), score.getMean(), score.getIteration()))
-                    .collect(Collectors.toList());
-
             String checkpointFileId = executionProviderMetaDataDAO.getCheckPointFileKey(basePolicy.getExternalId());
             if (checkpointFileId != null) {
                 // for AWS provider, need to pass s3 path
@@ -75,9 +69,5 @@ public class AWSTrainingService extends TrainingService {
 
         runDAO.markAsStarting(run.getId());
         log.info("Started " + runType + " training job with id {}", executionId);
-
-        policyDAO.insertPolicy(generateTempPolicy(spec, run, rewardScores));
     }
-
-
 }
