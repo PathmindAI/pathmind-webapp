@@ -12,6 +12,9 @@ class VerificationEmailViewSent extends PolymerElement {
   static get template() {
     return html`
       <style include="pathmind-dialog-view sign-up-view-styles">
+        .content {
+          width: 470px;
+        }
         .inner-content {
           padding: var(--lumo-space-l) var(--lumo-space-l);
         }

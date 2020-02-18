@@ -12,21 +12,33 @@ import "@vaadin/vaadin-text-field/src/vaadin-email-field.js";
 class ResetPasswordView extends PolymerElement {
   static get template() {
     return html`
-    <style include="pathmind-dialog-view">
-      .content {
-        margin: auto;
-      }
-    </style>
+      <style include="pathmind-dialog-view sign-up-view-styles">
+        .content {
+          width: 460px;
+        }
+        h3 {
+          margin-bottom: 0;
+        }
+        h3 + p {
+          margin-top: 0;
+        }
+      </style>
       <div class="content">
-        <vaadin-tabs>
-          <vaadin-tab>
-            Reset Password
-          </vaadin-tab>
-        </vaadin-tabs>
-        <vaadin-vertical-layout id="prePart" style="width: 100%;" class="inner-content">
-          <div class="section-title">
+        <span class="welcome-text">Welcome to</span>
+        <img
+          class="logo"
+          src="frontend/images/pathmind-logo.png"
+          alt="Pathmind logo"
+        />
+        <vaadin-vertical-layout
+          id="prePart"
+          style="width: 100%;"
+          class="inner-content"
+        >
+          <h3>Reset Password</h3>
+          <p>
             Please enter the user email and reset link will be sent
-          </div>
+          </p>
           <div class="error-message">{{message}}</div>
           <vaadin-email-field
             id="email"
@@ -36,8 +48,8 @@ class ResetPasswordView extends PolymerElement {
             required
           ></vaadin-email-field>
           <vaadin-vertical-layout id="buttonsCont">
-            <vaadin-button id="sendBtn" theme="primary" class="positive-action-btn">
-              Send 
+            <vaadin-button id="sendBtn" theme="primary">
+              Send
             </vaadin-button>
             <vaadin-button id="cancelBtn" theme="tertiary">
               Cancel
@@ -50,9 +62,8 @@ class ResetPasswordView extends PolymerElement {
           class="inner-content"
           id="postPart"
         >
-          <div class="section-title">
-            Please enter your new password
-          </div>
+          <h3>Reset Password</h3>
+          <p>Please enter your new password</p>
           <vaadin-password-field
             id="newPassword"
             label="New Password"
@@ -67,7 +78,9 @@ class ResetPasswordView extends PolymerElement {
             label="Confirm New Password"
           ></vaadin-password-field>
           <vaadin-vertical-layout id="buttonsCont">
-            <vaadin-button id="changePassword" theme="primary"  class="positive-action-btn">Save Password</vaadin-button>
+            <vaadin-button id="changePassword" theme="primary"
+              >Save Password</vaadin-button
+            >
           </vaadin-vertical-layout>
         </vaadin-vertical-layout>
         <a class="support" href="{{contactLink}}">Contact Support</a>
