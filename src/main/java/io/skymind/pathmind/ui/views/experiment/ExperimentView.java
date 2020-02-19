@@ -1,13 +1,5 @@
 package io.skymind.pathmind.ui.views.experiment;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
@@ -16,14 +8,10 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.WildcardParameter;
-
+import com.vaadin.flow.router.*;
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
@@ -47,8 +35,10 @@ import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
@@ -57,6 +47,14 @@ import io.skymind.pathmind.ui.views.experiment.components.PolicyHighlightPanel;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
@@ -79,7 +77,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
 	private RewardFunctionEditor rewardFunctionEditor;
 	private PolicyChartPanel policyChartPanel;
-	
+
 	private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
     private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
 
@@ -106,7 +104,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policyUpdateSubscriber = new ExperimentViewPolicyUpdateSubscriber();
 		runUpdateSubscriber = new ExperimentViewRunUpdateSubscriber();
 	}
-	
+
 	@Override
 	protected void onDetach(DetachEvent event) {
 		EventBus.unsubscribe(policyUpdateSubscriber);
@@ -191,11 +189,23 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				policyHighlightPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton),
 				trainingStatusDetailsPanel,
-				rewardFunctionEditor);
+				rewardFunctionEditor,
+				createViewNotesField());
 	}
 
 	private Breadcrumbs createBreadcrumbs() {        
 		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
+	}
+
+	private HorizontalLayout createViewNotesField() {
+		return new NotesField(
+			"Experiment Notes",
+			experiment.getUserNotes(),
+			updatedNotes -> {
+				experimentDAO.updateUserNotes(experimentId, updatedNotes);
+				NotificationUtils.showSuccess("Notes saved");
+			}
+		);
 	}
 
 	/**
@@ -241,7 +251,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 		processSelectedPolicy(policy);
 	}
-	
+
 	private Policy selectBestPolicy(List<Policy> policies) {
 		RunType runType = ExperimentUtils.getTrainingType(experiment);
 		return selectHighestPerformingPolicy(policies, runType);
@@ -254,7 +264,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				.max(Comparator.comparing(p -> PolicyUtils.getLastScore(p)));
 		return highestPerformingPolicy.orElse(policies.get(policies.size()-1));
 	}
-	
+
 	private void processSelectedPolicy(Policy selectedPolicy) {
 		policyHighlightPanel.update(selectedPolicy);
 		policyChartPanel.init(selectedPolicy);
@@ -286,24 +296,23 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private void addOrUpdatePolicy(Policy updatedPolicy) {
+		ArrayList<Policy> policiesToAdd = new ArrayList<>();
 		experiment.getPolicies().stream()
         .filter(policy -> policy.getId() == updatedPolicy.getId())
         .findAny()
         .ifPresentOrElse(
-                policy -> {
-                    experiment.getPolicies().set(experiment.getPolicies().indexOf(policy), updatedPolicy);
-                },
-                () -> {
-                    experiment.getPolicies().add(updatedPolicy);
-                });
+                policy -> experiment.getPolicies().set(experiment.getPolicies().indexOf(policy), updatedPolicy),
+                () -> policiesToAdd.add(updatedPolicy));
+		// This is needed to avoid ConcurrentModificationException when adding values in a stream and then filtering on them.
+		experiment.getPolicies().addAll(policiesToAdd);
 	}
-	
+
 	private void processRunUpdate(Run run) {
 		updatedRunForPolicies(run);
 		updateButtonEnablement();
 		PushUtils.push(getUI(), () -> trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment));
 	}
-	
+
 	private void updateButtonEnablement() {
 		// to avoid multiple download policy file from rescale server,
 		// we put the "saving" for temporary
@@ -323,7 +332,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			runFullTraining.setVisible(false);
 		}
 	}
-	
+
 	private void updatedRunForPolicies(Run run) {
 		experiment.getPolicies().stream()
         	.filter(policy -> policy.getRunId() == run.getId())
@@ -340,8 +349,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			addOrUpdatePolicy(event.getPolicy());
 			// Calculate the best policy again
 			Policy bestPolicy = selectBestPolicy(experiment.getPolicies());
-			
-			// Refresh other components, existing best policy is updated or we have a new best policy 
+
+			// Refresh other components, existing best policy is updated or we have a new best policy
 			if (policy.equals(event.getPolicy()) || !policy.equals(bestPolicy)) {
 				policy = bestPolicy;
 				PushUtils.push(getUI(), () -> processSelectedPolicy(bestPolicy));
@@ -377,6 +386,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             return ExperimentView.this.getUI();
         }
     }
-	
-	
+
+
 }
