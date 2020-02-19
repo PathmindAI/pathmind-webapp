@@ -1,11 +1,22 @@
-.default-view.experiments-view {
-  height: 100%;
+.experiments-view {
+  height: auto;
 }
 .experiments-view vaadin-split-layout > vaadin-vertical-layout {
   width: 100%;
-  background: white;
   border-radius: var(--lumo-border-radius);
   padding: var(--lumo-space-m);
   box-sizing: border-box;
   overflow: hidden;
+}
+
+.experiments-view vaadin-split-layout vaadin-grid {
+  margin-top: var(--lumo-space-xs);
+}
+
+.experiments-view vaadin-split-layout > vaadin-vertical-layout[slot="primary"] {
+  height: auto !important;
+}
+
+.experiments-view juicy-ace-editor {
+  margin-top: 0;
 }

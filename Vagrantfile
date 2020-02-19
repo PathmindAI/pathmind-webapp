@@ -28,7 +28,7 @@ Vagrant.configure("2") do |config|
     sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE pathmind to skynet;"
 
     echo "-------------------- Setting Env Vars"
-    sudo echo "export DB_URL=jdbc:postgresql://localhost/pathmind?user=skynet\\&password=skynetskynet123" > /etc/profile.d/pathmindvar.sh
+    sudo echo "export DB_URL=jdbc:postgresql://localhost/pathmind?user=skynet\\&password=skynetskynet123\n export JOB_MOCK_CYCLE=10" > /etc/profile.d/pathmindvar.sh
 
     echo "-------------------- Setting up .bash_profile"
     sudo echo "cd /vagrant" > /home/vagrant/.bash_profile

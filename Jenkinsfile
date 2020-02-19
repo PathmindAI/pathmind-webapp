@@ -167,11 +167,10 @@ pipeline {
 				reportDir: 'pathmind-bdd-tests/target/site/serenity',
 				reportFiles: 'index.html',
 				reportName: "Tests",
-                                keepAll:     true,
-                                alwaysLinkToLastBuild: true,
-                                allowMissing: false
+        keepAll:     true,
+        alwaysLinkToLastBuild: true,
+        allowMissing: false
 				])
-
 			}
 		}
             }

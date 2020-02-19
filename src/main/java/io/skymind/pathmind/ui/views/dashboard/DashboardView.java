@@ -3,7 +3,9 @@ package io.skymind.pathmind.ui.views.dashboard;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -11,13 +13,19 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.Stage;
 import io.skymind.pathmind.data.DashboardItem;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
+import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.dashboard.components.DashboardLine;
@@ -34,7 +42,7 @@ import java.time.LocalDateTime;
 
 
 @Route(value= Routes.DASHBOARD_URL, layout = MainLayout.class)
-public class DashboardView extends PathMindDefaultView
+public class DashboardView extends PathMindDefaultView implements RunUpdateSubscriber
 {
 	@Autowired
 	private DashboardDataProvider dataProvider;
@@ -45,6 +53,8 @@ public class DashboardView extends PathMindDefaultView
 	private Grid<DashboardItem> dashboardGrid;
 	
 	private EmptyDashboardPlaceholder placeholder;
+	
+	private long loggedUserId;
 
 	@Override
 	protected boolean isAccessAllowedForUser() {
@@ -107,7 +117,7 @@ public class DashboardView extends PathMindDefaultView
 
 	@Override
 	protected void initLoadData() throws InvalidDataException {
-		// Do nothing, data is loaded by Dashboard Data Provider
+		loggedUserId = SecurityUtils.getUserId();
 	}
 
 	@Override
@@ -120,4 +130,25 @@ public class DashboardView extends PathMindDefaultView
 			dashboardGrid.setDataProvider(dataProvider);
 		});
 	}
+	
+	@Override
+ 	protected void onAttach(AttachEvent attachEvent) {
+ 		EventBus.subscribe(this);
+ 	}
+
+ 	@Override
+ 	protected void onDetach(DetachEvent detachEvent) {
+ 		EventBus.unsubscribe(this);
+ 	}
+
+ 	@Override
+ 	public void handleBusEvent(RunUpdateBusEvent event) {
+ 		PushUtils.push(this, () -> dataProvider.refreshItemByExperiment(event.getRun().getExperimentId()));
+ 	}
+
+ 	@Override
+ 	public boolean filterBusEvent(RunUpdateBusEvent event) {
+ 		// Do not do anything if run is in progress 
+ 		return !RunStatus.isRunning(event.getRun().getStatusEnum()) && event.getRun().getProject().getPathmindUserId() == loggedUserId;
+ 	}
 }

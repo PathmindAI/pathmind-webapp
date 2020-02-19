@@ -16,14 +16,18 @@ import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.amazonaws.util.IOUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @Service
 public class AWSApiClient {
     private final AWSCredentials credentials;
@@ -34,6 +38,7 @@ public class AWSApiClient {
     private final Regions regions;
     private final String bucketName;
     private final String queueUrl;
+    private final int mockCycle;
 
     public AWSApiClient(
             @Value("${pathmind.aws.region}") String region,
@@ -41,6 +46,7 @@ public class AWSApiClient {
             @Value("${pathmind.aws.secret_key}") String secretAccessKey,
             @Value("${pathmind.aws.s3.bucket}") String bucketName,
             @Value("${pathmind.aws.sqs_url}") String queueUrl,
+            @Value("${pathmind.aws.mock_cycle:0}") int mockCycle,
             ObjectMapper objectMapper) {
 
         this.regions = Regions.fromName(region);
@@ -65,6 +71,12 @@ public class AWSApiClient {
         this.queueUrl = queueUrl;
 
         this.objectMapper = objectMapper;
+
+        this.mockCycle = mockCycle;
+        if (mockCycle != 0) {
+            Assert.isTrue(mockCycle > 0, "Mock Cycle should be greater than zero");
+            log.warn("Running with mock cycle {}", mockCycle);
+        }
     }
 
     public List<Bucket> listBuckets() {
@@ -97,8 +109,9 @@ public class AWSApiClient {
         s3Client.deleteObject(bucketName, keyId);
     }
 
-    public String jobSubmit(String jobId) throws JsonProcessingException {
-        Job job = new Job(bucketName, jobId);
+    public String jobSubmit(String jobId, RunType type) throws JsonProcessingException {
+        final String mockType = type == null ? null : type.toString();
+        Job job = new Job(bucketName, jobId, mockCycle, mockType);
 
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
