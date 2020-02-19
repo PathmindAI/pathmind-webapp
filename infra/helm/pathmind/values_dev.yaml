@@ -26,6 +26,8 @@ env:
 
 name: pathmind  
 
+namespace: dev
+
 ingress:
   enabled: false
   annotations: {}

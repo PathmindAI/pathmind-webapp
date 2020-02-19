@@ -19,6 +19,8 @@ env:
 
 name: pathmind-ma
 
+namespace: test
+
 ingress:
   enabled: false
   annotations: {}
