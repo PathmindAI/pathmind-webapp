@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{JOB_ID}}
-  namespace: default
+  namespace: {{NAMESPACE}}
 spec:
   replicas: 1
   selector:

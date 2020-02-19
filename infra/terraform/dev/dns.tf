@@ -10,7 +10,7 @@ resource "aws_route53_record" "app_alias" {
   type       = "A"
 
   alias {
-    name                   = "af6393ed7791e4f95905a6325c284360-1266555724.us-east-1.elb.amazonaws.com",
+    name                   = "a621ea157326545e89154154abbb8cf4-158616531.us-east-1.elb.amazonaws.com",
     zone_id                = "Z35SXDOTRQ7X7K"
     evaluate_target_health = true
   }
@@ -22,7 +22,7 @@ resource "aws_route53_record" "grafana_alias" {
   type       = "A"
 
   alias {
-    name                   = "af6393ed7791e4f95905a6325c284360-1266555724.us-east-1.elb.amazonaws.com",
+    name                   = "a621ea157326545e89154154abbb8cf4-158616531.us-east-1.elb.amazonaws.com",
     zone_id                = "Z35SXDOTRQ7X7K"
     evaluate_target_health = true
   }
@@ -34,7 +34,7 @@ resource "aws_route53_record" "kibana_alias" {
   type       = "A"
 
   alias {
-    name                   = "af6393ed7791e4f95905a6325c284360-1266555724.us-east-1.elb.amazonaws.com",
+    name                   = "a621ea157326545e89154154abbb8cf4-158616531.us-east-1.elb.amazonaws.com",
     zone_id                = "Z35SXDOTRQ7X7K"
     evaluate_target_health = true
   }
@@ -46,7 +46,7 @@ resource "aws_route53_record" "pgadmin_alias" {
   type       = "A"
 
   alias {
-    name                   = "af6393ed7791e4f95905a6325c284360-1266555724.us-east-1.elb.amazonaws.com",
+    name                   = "a621ea157326545e89154154abbb8cf4-158616531.us-east-1.elb.amazonaws.com",
     zone_id                = "Z35SXDOTRQ7X7K"
     evaluate_target_health = true
   }
@@ -58,7 +58,7 @@ resource "aws_route53_record" "jenkins_alias" {
   type       = "A"
 
   alias {
-    name                   = "af6393ed7791e4f95905a6325c284360-1266555724.us-east-1.elb.amazonaws.com",
+    name                   = "a621ea157326545e89154154abbb8cf4-158616531.us-east-1.elb.amazonaws.com",
     zone_id                = "Z35SXDOTRQ7X7K"
     evaluate_target_health = true
   }
@@ -70,7 +70,33 @@ resource "aws_route53_record" "model_analyzer_alias" {
   type       = "A"
 
   alias {
-    name                   = "af6393ed7791e4f95905a6325c284360-1266555724.us-east-1.elb.amazonaws.com",
+    name                   = "a621ea157326545e89154154abbb8cf4-158616531.us-east-1.elb.amazonaws.com",
+    zone_id                = "Z35SXDOTRQ7X7K"
+    evaluate_target_health = true
+  }
+}
+
+
+
+resource "aws_route53_record" "app_alias_test" {
+  zone_id    = "${data.aws_route53_zone.zone.id}"
+  name       = "test.${var.domain_name}"
+  type       = "A"
+
+  alias {
+    name                   = "a621ea157326545e89154154abbb8cf4-158616531.us-east-1.elb.amazonaws.com",
+    zone_id                = "Z35SXDOTRQ7X7K"
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "model_analyzer_alias_test" {
+  zone_id    = "${data.aws_route53_zone.zone.id}"
+  name       = "ma.test.${var.domain_name}"
+  type       = "A"
+
+  alias {
+    name                   = "a621ea157326545e89154154abbb8cf4-158616531.us-east-1.elb.amazonaws.com",
     zone_id                = "Z35SXDOTRQ7X7K"
     evaluate_target_health = true
   }
