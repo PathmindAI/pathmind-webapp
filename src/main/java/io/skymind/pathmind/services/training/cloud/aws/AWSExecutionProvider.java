@@ -238,37 +238,41 @@ public class AWSExecutionProvider implements ExecutionProvider {
         return Collections.emptyMap();
     }
 
+    private void installRllibScript(List<String> instructions) {
+        instructions.addAll(Arrays.asList(
+                // Setup JVM
+                "tar xf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
+                "rm -rf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
+                "export JAVA_HOME=`pwd`/jdk8u222-b10",
+                "export JDK_HOME=$JAVA_HOME",
+                "export JRE_HOME=$JAVA_HOME/jre",
+                "export PATH=$JAVA_HOME/bin:$PATH",
+                "export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH",
+
+                // Setup Anaconda
+                "mkdir conda",
+                "cd conda",
+                "tar xf ../rllibpack.tar.gz",
+                "rm ../rllibpack.tar.gz",
+                "source bin/activate",
+                "cd ..",
+
+                // Setup NativeRL
+                "mkdir work",
+                "cd work",
+                "unzip ../nativerl-1.0.0-SNAPSHOT-bin.zip",
+                "rm ../nativerl-1.0.0-SNAPSHOT-bin.zip",
+                "mv nativerl-bin/* .",
+                "mv examples/train.sh .",
+                "cd .."
+        ));
+    }
+
     private void installRllib(RLLib rllibVersion, List<String> instructions, List<String> files) {
         switch (rllibVersion) {
             case VERSION_0_7_0:
-                instructions.addAll(Arrays.asList(
-                        // Setup JVM
-                        "tar xf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
-                        "rm -rf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
-                        "export JAVA_HOME=`pwd`/jdk8u222-b10",
-                        "export JDK_HOME=$JAVA_HOME",
-                        "export JRE_HOME=$JAVA_HOME/jre",
-                        "export PATH=$JAVA_HOME/bin:$PATH",
-                        "export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH",
-
-                        // Setup Anaconda
-                        "mkdir conda",
-                        "cd conda",
-                        "tar xf ../rllibpack.tar.gz",
-                        "rm ../rllibpack.tar.gz",
-                        "source bin/activate",
-                        "cd ..",
-
-                        // Setup NativeRL
-                        "mkdir work",
-                        "cd work",
-                        "unzip ../nativerl-1.0.0-SNAPSHOT-bin.zip",
-                        "rm ../nativerl-1.0.0-SNAPSHOT-bin.zip",
-                        "mv nativerl-bin/* .",
-                        "mv examples/train.sh .",
-                        "cd .."
-                ));
-
+            case VERSION_0_7_0_MULTI:
+                installRllibScript(instructions);
                 files.addAll(fileManager.getFiles(rllibVersion));
                 break;
             default:
@@ -293,13 +297,17 @@ public class AWSExecutionProvider implements ExecutionProvider {
         }
     }
 
+    private void installHelperScript(List<String> instructions) {
+        instructions.addAll(Arrays.asList(
+                "mv PathmindPolicy.jar work/lib/"
+        ));
+    }
+
     private void installHelper(PathmindHelper pathmindHelperVersion, List<String> instructions, List<String> files) {
         switch (pathmindHelperVersion) {
             case VERSION_0_0_24:
-                instructions.addAll(Arrays.asList(
-                        "mv PathmindPolicy.jar work/lib/"
-                ));
-
+            case VERSION_0_0_24_MULTI:
+                installHelperScript(instructions);
                 files.addAll(fileManager.getFiles(pathmindHelperVersion));
                 break;
             default:
