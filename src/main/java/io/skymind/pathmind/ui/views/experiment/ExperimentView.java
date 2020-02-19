@@ -40,6 +40,7 @@ import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.ui.views.experiment.components.ExperimentsNavbar;
 import io.skymind.pathmind.ui.views.experiment.components.PolicyChartPanel;
 import io.skymind.pathmind.ui.views.experiment.components.PolicyHighlightPanel;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
@@ -64,9 +65,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private static final double DEFAULT_SPLIT_PANE_RATIO = 70;
 
 	private long experimentId = -1;
+	private long modelId = -1;
 	private long policyId = -1;
 	private Policy policy;
 	private Experiment experiment;
+	private List<Experiment> experiments;
 
 	private ScreenTitlePanel screenTitlePanel;
 
@@ -74,6 +77,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
 	private RewardFunctionEditor rewardFunctionEditor;
 	private PolicyChartPanel policyChartPanel;
+	private ExperimentsNavbar experimentsNavbar;
 
 	private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
     private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
@@ -137,8 +141,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private Component getLeftPanel() {
+		experimentsNavbar = new ExperimentsNavbar(experiments, modelId);
 		policyChartPanel = new PolicyChartPanel();
-		return policyChartPanel;
+
+		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+			experimentsNavbar,
+			policyChartPanel,
+			30
+		);
 	}
 
 	private VerticalLayout getRightPanel() {
@@ -222,6 +232,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
 		policy = selectBestPolicy(experiment.getPolicies());
+		modelId = experiment.getModelId();
+		experiments = experimentDAO.getExperimentsForModel(modelId);
 	}
 
 	@Override
