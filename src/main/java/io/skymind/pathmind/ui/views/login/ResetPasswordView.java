@@ -5,7 +5,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
@@ -143,7 +142,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 					userService.changePassword(user, newPassword.getValue());
 					user.setPasswordResetSendAt(null);
 					userService.update(user);
-					NotificationUtils.showNotification(CHANGED_CONFIRMATION, NotificationVariant.LUMO_SUCCESS);
+					NotificationUtils.showSuccess(CHANGED_CONFIRMATION);
 					UI.getCurrent().navigate(LoginView.class);
 				} else {
 					newPassword.setInvalid(true);
@@ -164,7 +163,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 
 	private void startResetProcess(String email) {
 		PathmindUser user = userService.findByEmailIgnoreCase(email);
-		NotificationUtils.showNotification(SEND_CONFIRMATION, NotificationVariant.LUMO_SUCCESS);
+		NotificationUtils.showSuccess(SEND_CONFIRMATION);
 		getModel().setMessage("");
 
 		if (user == null) {

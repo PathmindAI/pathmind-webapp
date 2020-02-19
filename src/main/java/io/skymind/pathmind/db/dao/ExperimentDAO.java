@@ -45,8 +45,8 @@ public class ExperimentDAO
 		return ExperimentRepository.getExperimentsForModel(ctx, modelId);
 	}
 
-	public void updateRewardFunction(Experiment experiment) {
-		ExperimentRepository.updateRewardFunction(ctx, experiment);
+	public void updateExperiment(Experiment experiment) {
+		ExperimentRepository.updateExperiment(ctx, experiment);
 	}
 
 	public void archive(long experimentId, boolean isArchive) {
@@ -82,5 +82,9 @@ public class ExperimentDAO
 
 	public long insertExperiment(long modelId, LocalDateTime createdDate) {
 		return ExperimentRepository.insertExperiment(ctx, modelId, createdDate);
+	}
+
+	public void updateUserNotes(long experimentId, String userNotes) {
+		ExperimentRepository.updateUserNotes(ctx, experimentId, userNotes);
 	}
 }
