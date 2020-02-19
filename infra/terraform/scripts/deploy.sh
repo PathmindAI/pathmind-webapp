@@ -36,7 +36,7 @@ cp ${backend} backend.tf
 set +e
 #remove old files
 rm -rf .terraform 2> /dev/null
-rm -rf modules 2> /dev/null
+rm -rf modules/kubernetes 2> /dev/null
 rm dns.tf >/dev/null 2>&1
 set -e
 

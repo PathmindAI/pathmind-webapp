@@ -36,6 +36,8 @@ kops create cluster \
 --network-cidr=${CIDR_BLOCK} \
 ${NAME}
 
+exit
+
 terraform init 
 terraform apply \
 -var-file=${vars} \

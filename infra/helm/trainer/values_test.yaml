@@ -16,8 +16,8 @@ image:
 env:
   SQS_URL: https://queue.amazonaws.com/839270835622/test-training-queue.fifo
   ENVIRONMENT: test
-  NAME: test-pathmind.k8s.local
-  KOPS_STATE_STORE: s3://test-pathmind-kops-state/k8s.test-pathmind.k8s.local
+  NAME: dev-pathmind.k8s.local
+  KOPS_STATE_STORE: s3://dev-pathmind-kops-state/k8s.dev-pathmind.k8s.local
   RL_IMAGE: 839270835622.dkr.ecr.us-east-1.amazonaws.com/rl_training:test
 
   
