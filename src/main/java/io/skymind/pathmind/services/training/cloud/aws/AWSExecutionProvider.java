@@ -1,8 +1,10 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
+import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
@@ -26,6 +28,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static io.skymind.pathmind.constants.RunStatus.*;
 
 @Service
 @Slf4j
@@ -33,22 +38,14 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private final AWSApiClient client;
     private final ObjectMapper objectMapper;
     private final AWSFileManager fileManager;
-
-    private static final List<String> KNOWN_ERROR_MSGS = new ArrayList<>();
-
-    static {
-        KNOWN_ERROR_MSGS.add("python3: can\'t open file \'rllibtrain.py\'");
-        KNOWN_ERROR_MSGS.add("SyntaxError: invalid syntax");
-        KNOWN_ERROR_MSGS.add("Fatal Python error: Segmentation fault");
-        KNOWN_ERROR_MSGS.add("Worker crashed during call to train()");
-        KNOWN_ERROR_MSGS.add("java.lang.ArrayIndexOutOfBoundsException");
-    }
+    private final TrainingErrorDAO trainingErrorDAO;
 
     private static final String AWS_JOB_ID_PREFIX = "id";
 
-    public AWSExecutionProvider(AWSApiClient client, ObjectMapper objectMapper) {
+    public AWSExecutionProvider(AWSApiClient client, ObjectMapper objectMapper, TrainingErrorDAO trainingErrorDAO) {
         this.client = client;
         this.objectMapper = objectMapper;
+        this.trainingErrorDAO = trainingErrorDAO;
         this.fileManager = AWSFileManager.getInstance();
     }
 
@@ -110,7 +107,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public RunStatus status(String jobHandle) {
+    public ProviderJobStatus status(String jobHandle) {
         List<String> errors = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_ERROR);
         List<String> completes = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_COMPLETE);
         List<String> trials = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_LIST).stream()
@@ -119,12 +116,18 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
         boolean killed = getFile(jobHandle, TrainingFile.KILLED).isPresent();
         if (killed) {
-            return RunStatus.Killed;
+            return new ProviderJobStatus(Killed);
          }
 
         List<String> knownErrsCheck = getTrialStatus(jobHandle, TrainingFile.KNOWN_ERROR);
         if (errors.size() > 0 || knownErrsCheck.size() > 0) {
-            return RunStatus.Error;
+            final var allErrorsList = Stream.concat(knownErrsCheck.stream(), errors.stream())
+                    .collect(Collectors.toList());
+            var oneLineErrors = allErrorsList.stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining(" ; "));
+            log.warn("{} error(s) detected for the AWS jobHandle {}: {}", allErrorsList.size(), jobHandle, oneLineErrors);
+            return new ProviderJobStatus(Error, allErrorsList);
         }
 
         // todo need to change to use database once Daniel create proper database(TRAINER_JOB)
@@ -132,13 +135,13 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
         if (experimentState != null) {
             if (completes.size() > 0 && completes.size() == trials.size()) {
-                return RunStatus.Completed;
+                return new ProviderJobStatus(Completed);
             }
 
-            return RunStatus.Running;
+            return new ProviderJobStatus(Running);
         }
 
-        return RunStatus.Starting;
+        return new ProviderJobStatus(Starting);
     }
 
     @Override
@@ -409,7 +412,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private void checkErrors(List<String> instructions) {
         instructions.add("cd ..");
-        instructions.addAll(KNOWN_ERROR_MSGS.stream()
+        instructions.addAll(trainingErrorDAO.getAllKnownErrorsKeywords().stream()
                 .map(msg -> "grep -m 2 \"" + msg + "\" " + TrainingFile.SCRIPT_LOG + " >> " + TrainingFile.KNOWN_ERROR)
                 .collect(Collectors.toList()));
     }
