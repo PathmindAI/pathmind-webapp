@@ -1,5 +1,8 @@
 package io.skymind.pathmind.db.dao;
 
+import io.skymind.pathmind.data.*;
+import org.jooq.*;
+
 import static io.skymind.pathmind.data.db.Tables.PATHMIND_USER;
 import static io.skymind.pathmind.data.db.Tables.POLICY;
 import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
@@ -87,9 +90,10 @@ class ExperimentRepository
 				.execute();
 	}
 
-	protected static void updateRewardFunction(DSLContext ctx, Experiment experiment) {
+	protected static void updateExperiment(DSLContext ctx, Experiment experiment) {
 		ctx.update(EXPERIMENT)
 				.set(EXPERIMENT.REWARD_FUNCTION, experiment.getRewardFunction())
+				.set(EXPERIMENT.USER_NOTES, experiment.getUserNotes())
 				.where(EXPERIMENT.ID.eq(experiment.getId()))
 				.execute();
 	}
@@ -286,5 +290,12 @@ class ExperimentRepository
 				.where(PATHMIND_USER.ID.eq(userId))
 					.and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
 				.fetchOne(count());
+	}
+
+	protected static void updateUserNotes(DSLContext ctx, long experimentId, String userNotes) {
+		ctx.update(Tables.EXPERIMENT)
+				.set(Tables.EXPERIMENT.USER_NOTES, userNotes)
+				.where(Tables.EXPERIMENT.ID.eq(experimentId))
+				.execute();
 	}
 }

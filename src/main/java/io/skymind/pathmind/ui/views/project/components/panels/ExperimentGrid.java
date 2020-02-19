@@ -61,6 +61,13 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setAutoWidth(true)
 				.setResizable(true)
 				.setSortable(true);
+		addColumn(experiment -> {
+			String userNotes = experiment.getUserNotes();
+			return userNotes.isEmpty() ? "--" : userNotes;
+		})
+				.setHeader("Notes")
+				.setResizable(true)
+				.setSortable(false);
 
 		// Sort by name by default
 		sort(Arrays.asList(new GridSortOrder<Experiment>(nameColumn, SortDirection.DESCENDING)));
