@@ -17,6 +17,7 @@ import io.skymind.pathmind.data.db.tables.Project;
 import io.skymind.pathmind.data.db.tables.RewardScore;
 import io.skymind.pathmind.data.db.tables.Run;
 import io.skymind.pathmind.data.db.tables.TrainerJob;
+import io.skymind.pathmind.data.db.tables.TrainingError;
 import io.skymind.pathmind.data.db.tables.records.ExecutionProviderMetaDataRecord;
 import io.skymind.pathmind.data.db.tables.records.ExperimentRecord;
 import io.skymind.pathmind.data.db.tables.records.GuideRecord;
@@ -30,6 +31,7 @@ import io.skymind.pathmind.data.db.tables.records.ProjectRecord;
 import io.skymind.pathmind.data.db.tables.records.RewardScoreRecord;
 import io.skymind.pathmind.data.db.tables.records.RunRecord;
 import io.skymind.pathmind.data.db.tables.records.TrainerJobRecord;
+import io.skymind.pathmind.data.db.tables.records.TrainingErrorRecord;
 
 import javax.annotation.processing.Generated;
 
@@ -75,6 +77,7 @@ public class Keys {
     public static final UniqueKey<ProjectRecord> UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = UniqueKeys0.UNIQUE_PROJECT_NAME_PATHMIND_USER_ID;
     public static final UniqueKey<RunRecord> RUN_PKEY = UniqueKeys0.RUN_PKEY;
     public static final UniqueKey<TrainerJobRecord> TRAINER_JOB_PKEY = UniqueKeys0.TRAINER_JOB_PKEY;
+    public static final UniqueKey<TrainingErrorRecord> TRAINING_ERROR_PKEY = UniqueKeys0.TRAINING_ERROR_PKEY;
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -90,6 +93,7 @@ public class Keys {
     public static final ForeignKey<ProjectRecord, PathmindUserRecord> PROJECT__PM_FK_PROJECT_PATHMIND_USER = ForeignKeys0.PROJECT__PM_FK_PROJECT_PATHMIND_USER;
     public static final ForeignKey<RewardScoreRecord, PolicyRecord> REWARD_SCORE__PM_FK_REWARD_SCORE_POLICY = ForeignKeys0.REWARD_SCORE__PM_FK_REWARD_SCORE_POLICY;
     public static final ForeignKey<RunRecord, ExperimentRecord> RUN__PM_FK_RUN_EXPERIMENT = ForeignKeys0.RUN__PM_FK_RUN_EXPERIMENT;
+    public static final ForeignKey<RunRecord, TrainingErrorRecord> RUN__PM_FK_TRAINING_ERROR = ForeignKeys0.RUN__PM_FK_TRAINING_ERROR;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
@@ -110,6 +114,7 @@ public class Keys {
         public static final UniqueKey<ProjectRecord> UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = Internal.createUniqueKey(Project.PROJECT, "unique_project_name_pathmind_user_id", Project.PROJECT.PATHMIND_USER_ID, Project.PROJECT.NAME);
         public static final UniqueKey<RunRecord> RUN_PKEY = Internal.createUniqueKey(Run.RUN, "run_pkey", Run.RUN.ID);
         public static final UniqueKey<TrainerJobRecord> TRAINER_JOB_PKEY = Internal.createUniqueKey(TrainerJob.TRAINER_JOB, "trainer_job_pkey", TrainerJob.TRAINER_JOB.JOB_ID);
+        public static final UniqueKey<TrainingErrorRecord> TRAINING_ERROR_PKEY = Internal.createUniqueKey(TrainingError.TRAINING_ERROR, "training_error_pkey", TrainingError.TRAINING_ERROR.ID);
     }
 
     private static class ForeignKeys0 {
@@ -123,5 +128,6 @@ public class Keys {
         public static final ForeignKey<ProjectRecord, PathmindUserRecord> PROJECT__PM_FK_PROJECT_PATHMIND_USER = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.PATHMIND_USER_PKEY, Project.PROJECT, "project__pm_fk_project_pathmind_user", Project.PROJECT.PATHMIND_USER_ID);
         public static final ForeignKey<RewardScoreRecord, PolicyRecord> REWARD_SCORE__PM_FK_REWARD_SCORE_POLICY = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.POLICY_PKEY, RewardScore.REWARD_SCORE, "reward_score__pm_fk_reward_score_policy", RewardScore.REWARD_SCORE.POLICY_ID);
         public static final ForeignKey<RunRecord, ExperimentRecord> RUN__PM_FK_RUN_EXPERIMENT = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.EXPERIMENT_PKEY, Run.RUN, "run__pm_fk_run_experiment", Run.RUN.EXPERIMENT_ID);
+        public static final ForeignKey<RunRecord, TrainingErrorRecord> RUN__PM_FK_TRAINING_ERROR = Internal.createForeignKey(io.skymind.pathmind.data.db.Keys.TRAINING_ERROR_PKEY, Run.RUN, "run__pm_fk_training_error", Run.RUN.TRAINING_ERROR_ID);
     }
 }

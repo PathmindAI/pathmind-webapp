@@ -4,23 +4,24 @@ import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.PathmindUser;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.policy.RewardScore;
-import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
-import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.services.training.ExecutionProgressUpdater;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static io.skymind.pathmind.db.dao.TrainingErrorDAO.UNKNOWN_ERROR_KEYWORD;
 
 @Service
 @Slf4j
@@ -31,14 +32,16 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     private final RunDAO runDAO;
     private final PolicyDAO policyDAO;
     private final UserDAO userDAO;
+    private final TrainingErrorDAO trainingErrorDAO;
     private EmailNotificationService emailNotificationService;
 
-    public AWSExecutionProgressUpdater(AWSExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, PolicyDAO policyDAO, UserDAO userDAO, EmailNotificationService emailNotificationService){
+    public AWSExecutionProgressUpdater(AWSExecutionProvider provider, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO, PolicyDAO policyDAO, UserDAO userDAO, EmailNotificationService emailNotificationService, TrainingErrorDAO trainingErrorDAO){
         this.provider = provider;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.runDAO = runDAO;
         this.policyDAO = policyDAO;
         this.userDAO = userDAO;
+        this.trainingErrorDAO = trainingErrorDAO;
         this.emailNotificationService = emailNotificationService;
     }
 
@@ -53,13 +56,14 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         runsWithAwsJobs.parallelStream().forEach(run -> {
             try {
                 String jobHandle = awsJobIds.get(run.getId());
-                RunStatus runStatus = provider.status(jobHandle);
+                ProviderJobStatus providerJobStatus = provider.status(jobHandle);
 
                 final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(), jobHandle);
 
                 setStoppedAtForFinishedPolicies(policies, jobHandle);
+                setRunError(run, providerJobStatus);
 
-                runDAO.updateRun(run, runStatus, policies);
+                runDAO.updateRun(run, providerJobStatus, policies);
 
                 // STEPH -> REFACTOR -> QUESTION -> Does this need to be transactional with runDAO.updateRun and put
                 // into updateRun()? For now I left it here, it's no worse than what's in production today. I mainly kept it out
@@ -68,9 +72,9 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                 // service component so that if there is a policyFile (byte[]) then it's done before the updateRun()
                 // method is called and we can just do a simple isPolicyFile != null check as to whether or not to
                 // also update it in the database.
-                savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), jobHandle, runStatus);
+                savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), jobHandle, providerJobStatus.getRunStatus());
 
-                sendNotificationMail(runStatus, run);
+                sendNotificationMail(providerJobStatus.getRunStatus(), run);
             } catch (Exception e) {
                 log.error("Error for run: " + run.getId() + " : " + e.getMessage(), e);
                 emailNotificationService.sendEmailExceptionNotification("Error for run: " + run.getId() + " : " + e.getMessage(), e);
@@ -160,5 +164,26 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                     return ProgressInterpreter.interpret(e, previousScores);
                 })
                 .collect(Collectors.toList());
+    }
+
+    private void setRunError(Run run, ProviderJobStatus jobStatus) {
+        final var status = jobStatus.getRunStatus();
+        if (status == RunStatus.Error && !CollectionUtils.isEmpty(jobStatus.getDescription())) {
+            // TODO (KW): 05.02.2020 gets only first error, refactor if multiple errors scenario is possible
+            final var errorMessage = jobStatus.getDescription().get(0);
+            final var allErrorsKeywords = trainingErrorDAO.getAllErrorsKeywords();
+            final var knownErrorMessage = allErrorsKeywords.stream()
+                    .filter(errorMessage::contains)
+                    .findAny()
+                    .orElseGet(() -> {
+                        log.warn("Unrecognized error: {}", errorMessage);
+                        return UNKNOWN_ERROR_KEYWORD;
+                    });
+
+            final var foundError = trainingErrorDAO.getErrorByKeyword(knownErrorMessage);
+            foundError.ifPresent(
+                    e -> run.setTrainingErrorId(e.getId())
+            );
+        }
     }
 }

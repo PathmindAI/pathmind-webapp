@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
+import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
@@ -85,7 +86,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public RunStatus status(String jobHandle) {
+    public ProviderJobStatus status(String jobHandle) {
         final List<JobStatus> statuses = client.jobStatusHistory(jobHandle).getResults();
 
         if (statuses.size() > 0) {
@@ -108,24 +109,24 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 }
 
                 if (status.getStatusReason().equals("Completed successfully") && errs.size() == 0) {
-                    return RunStatus.Completed;
+                    return new ProviderJobStatus(RunStatus.Completed);
                 } else {
                     if (errs.size() > 0) {
                         log.info(jobHandle + " will be considered as an error");
                     }
-                    return RunStatus.Error;
+                    return new ProviderJobStatus(RunStatus.Error);
                 }
             } else if (statuses.stream().anyMatch(it -> it.getStatus().equals("Executing"))) {
-                return RunStatus.Running;
+                return new ProviderJobStatus(RunStatus.Running);
             }
         }
 
-        return RunStatus.Starting;
+        return new ProviderJobStatus(RunStatus.Starting);
     }
 
     @Override
     public Map<String, String> progress(String jobHandle) {
-        final RunStatus runStatus = status(jobHandle);
+        final RunStatus runStatus = status(jobHandle).getRunStatus();
         return progress(jobHandle, runStatus);
     }
 
@@ -184,7 +185,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     @Override
     public String console(String jobHandle) {
-        final RunStatus runStatus = status(jobHandle);
+        final RunStatus runStatus = status(jobHandle).getRunStatus();
 
         if (runStatus.equals(RunStatus.Completed)) {
             return client.consoleOutput(jobHandle, DEFAULT_RUN_ID);

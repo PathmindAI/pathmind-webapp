@@ -4,8 +4,10 @@ variable "awssecretaccesskey" {}
 variable "domain_name" {}
 variable "subdomain" {}
 variable "appdomain" {}
-variable "DB_URL" {}
-variable "DB_URL_CLI" {}
+variable "DB_URL_DEV" {}
+variable "DB_URL_CLI_DEV" {}
+variable "DB_URL_TEST" {}
+variable "DB_URL_CLI_TEST" {}
 variable "SEGMENT_WEBSITE_KEY" {}
 variable "SEGMENT_SERVER_KEY" {}
 variable "environment" { }
