@@ -123,7 +123,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 					model.setFile(UploadUtils.createZipFileFromBuffer(buffer));
 				} else {
 					MemoryBuffer buffer = MemoryBuffer.class.cast(receiver);
-					model.setFile(buffer.getInputStream().readAllBytes());
+					model.setFile(UploadUtils.ensureZipFileStructure(buffer.getInputStream().readAllBytes()));
 				}
 				fileCheckerCommand.execute();
 				log.info("Upload completed");
