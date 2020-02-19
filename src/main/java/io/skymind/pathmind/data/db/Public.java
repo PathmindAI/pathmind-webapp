@@ -17,6 +17,7 @@ import io.skymind.pathmind.data.db.tables.Project;
 import io.skymind.pathmind.data.db.tables.RewardScore;
 import io.skymind.pathmind.data.db.tables.Run;
 import io.skymind.pathmind.data.db.tables.TrainerJob;
+import io.skymind.pathmind.data.db.tables.TrainingError;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,6 +116,11 @@ public class Public extends SchemaImpl {
     public final TrainerJob TRAINER_JOB = io.skymind.pathmind.data.db.tables.TrainerJob.TRAINER_JOB;
 
     /**
+     * The table <code>public.training_error</code>.
+     */
+    public final TrainingError TRAINING_ERROR = io.skymind.pathmind.data.db.tables.TrainingError.TRAINING_ERROR;
+
+    /**
      * No further instances allowed
      */
     private Public() {
@@ -148,6 +154,7 @@ public class Public extends SchemaImpl {
             Project.PROJECT,
             RewardScore.REWARD_SCORE,
             Run.RUN,
-            TrainerJob.TRAINER_JOB);
+            TrainerJob.TRAINER_JOB,
+            TrainingError.TRAINING_ERROR);
     }
 }
