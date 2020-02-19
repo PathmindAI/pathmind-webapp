@@ -1,12 +1,17 @@
 package io.skymind.pathmind.db.dao;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import io.skymind.pathmind.data.*;
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.constants.RunType;
+import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.ProviderJobStatus;
+import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.policy.RewardScore;
+import io.skymind.pathmind.data.utils.PolicyUtils;
+import io.skymind.pathmind.data.utils.RunUtils;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
@@ -14,17 +19,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.skymind.pathmind.bus.EventBus;
-import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.constants.RunType;
-import io.skymind.pathmind.data.policy.RewardScore;
-import io.skymind.pathmind.data.utils.PolicyUtils;
-import io.skymind.pathmind.data.utils.RunUtils;
-import org.springframework.util.CollectionUtils;
-
-import static io.skymind.pathmind.db.dao.TrainingErrorDAO.UNKNOWN_ERROR_KEYWORD;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class RunDAO
@@ -32,11 +31,9 @@ public class RunDAO
     private static Logger log = LoggerFactory.getLogger(RunDAO.class);
 
     private final DSLContext ctx;
-    private final TrainingErrorDAO trainingErrorDAO;
 
-    public RunDAO(DSLContext ctx, TrainingErrorDAO trainingErrorDAO) {
+    public RunDAO(DSLContext ctx) {
         this.ctx = ctx;
-        this.trainingErrorDAO = trainingErrorDAO;
     }
 
     public Run getRun(long runId) {
@@ -138,30 +135,10 @@ public class RunDAO
         final var status = jobStatus.getRunStatus();
         // IMPORTANT -> Needed for both the updateStatus and EventBus post.
         run.setStatusEnum(status);
-        if(status == RunStatus.Error && !CollectionUtils.isEmpty(jobStatus.getDescription())) {
-            // TODO (KW): 05.02.2020 gets only first error, refactor if multiple errors scenario is possible
-            final var error = jobStatus.getDescription().get(0);
-            setRunError(run, error);
-        }
+
         // STEPH -> REFACTOR -> QUESTION -> Isn't this just a duplicate of setStoppedAtForFinishedPolicies()
         run.setStoppedAt(RunStatus.isRunning(status) ? null : LocalDateTime.now());
         RunRepository.updateStatus(transactionCtx, run);
-    }
-
-    private void setRunError(Run run, String errorMessage) {
-        final var allErrorsKeywords = trainingErrorDAO.getAllErrorsKeywords();
-        final var knownErrorMessage = allErrorsKeywords.stream()
-                .filter(errorMessage::contains)
-                .findAny()
-                .orElseGet(() -> {
-                    log.warn("Unrecognized error: {}", errorMessage);
-                    return UNKNOWN_ERROR_KEYWORD;
-                });
-
-        final var foundError = trainingErrorDAO.getErrorByKeyword(knownErrorMessage);
-        foundError.ifPresent(
-                e -> run.setTrainingErrorId(e.getId())
-        );
     }
 
     private void updatePolicies(Run run, List<Policy> policies, DSLContext transactionCtx)

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Repository
 public class TrainingErrorDAO {
-	static final String UNKNOWN_ERROR_KEYWORD = "unknown error";
+	public static final String UNKNOWN_ERROR_KEYWORD = "unknown error";
 	static final String NOT_AN_ERROR = "Not an error";
 	private final DSLContext ctx;
 
