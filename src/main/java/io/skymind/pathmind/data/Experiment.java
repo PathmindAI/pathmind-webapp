@@ -10,6 +10,7 @@ public class Experiment extends ArchivableData
 	private String rewardFunction;
 	private LocalDateTime dateCreated;
 	private LocalDateTime lastActivityDate;
+	private String userNotes;
 
 	// Helper GUI attributes not stored in the database
 	private Project project;
@@ -90,5 +91,13 @@ public class Experiment extends ArchivableData
 
 	public void setRuns(List<Run> runs) {
 		this.runs = runs;
+	}
+
+	public String getUserNotes() {
+		return userNotes;
+	}
+
+	public void setUserNotes(String userNotes) {
+		this.userNotes = userNotes;
 	}
 }
