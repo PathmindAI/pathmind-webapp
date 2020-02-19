@@ -3,7 +3,6 @@ package io.skymind.pathmind.data.utils;
 import static io.skymind.pathmind.constants.RunStatus.NotStarted;
 import static io.skymind.pathmind.constants.RunStatus.Running;
 import static io.skymind.pathmind.constants.RunStatus.Starting;
-import static io.skymind.pathmind.constants.RunType.FullRun;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -49,7 +48,6 @@ public class ExperimentUtils
 	}
 
 	public static RunStatus getTrainingStatus(Experiment experiment) {
-		RunType runType = getTrainingType(experiment);
 		RunStatus status = experiment.getRuns().stream()
 				.map(Run::getStatusEnum)
 				.min(Comparator.comparingInt(RunStatus::getValue))
@@ -59,7 +57,6 @@ public class ExperimentUtils
 		// So checking that to make sure
 		if (status == NotStarted || status == Starting) {
 			if (experiment.getPolicies().stream()
-					.filter(p -> p.getRun().getRunTypeEnum() == runType)
 					.map(PolicyUtils::getRunStatus)
 					.map(RunStatus::getValue)
 					.anyMatch(statusVal -> statusVal > Starting.getValue())) {
@@ -69,30 +66,16 @@ public class ExperimentUtils
 		return status;
 	}
 
-	/**
-	 * Returns a most significant training type for a given experiment. <br/>
-	 * E.g if experiment contains test, discovery and full runs it will return {@link RunType#FullRun}
-	 */
-	public static RunType getTrainingType(Experiment experiment) {
+	public static LocalDateTime getTrainingStartedDate(Experiment experiment) {
 		return experiment.getRuns().stream()
-				.map(Run::getRunTypeEnum)
-				.max(Comparator.comparingInt(RunType::getValue))
-				.orElse(FullRun);
-	}
-
-
-	public static LocalDateTime getTrainingStartedDate(Experiment experiment, RunType runType) {
-		return experiment.getRuns().stream()
-				.filter(run -> run.getRunTypeEnum() == runType)
 				.map(Run::getStartedAt)
 				.filter(Objects::nonNull)
 				.min(LocalDateTime::compareTo)
 				.orElse(LocalDateTime.now());
 	}
 
-	public static LocalDateTime getTrainingEarliestRunStartedDate(Experiment experiment, RunType runType) {
+	public static LocalDateTime getTrainingEarliestRunStartedDate(Experiment experiment) {
 		return experiment.getRuns().stream()
-				.filter(run -> run.getRunTypeEnum() == runType)
 				.map(Run::getStartedAt)
 				.filter(Objects::nonNull)
 				.min(LocalDateTime::compareTo)
@@ -129,8 +112,8 @@ public class ExperimentUtils
 				.reduce(0, Integer::sum);
 	}
 
-	public static double getEstimatedTrainingTime(Experiment experiment, double progress, RunType runType){
-		final var earliestRunStartedDate = ExperimentUtils.getTrainingEarliestRunStartedDate(experiment, runType);
+	public static double getEstimatedTrainingTime(Experiment experiment, double progress){
+		final var earliestRunStartedDate = ExperimentUtils.getTrainingEarliestRunStartedDate(experiment);
 		final var difference = Duration.between(earliestRunStartedDate, LocalDateTime.now());
 		return difference.toSeconds() * (100 - progress) / progress;
 	}

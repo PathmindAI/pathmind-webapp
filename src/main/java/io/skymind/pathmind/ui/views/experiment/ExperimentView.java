@@ -1,5 +1,14 @@
 package io.skymind.pathmind.ui.views.experiment;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
@@ -7,18 +16,21 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.WildcardParameter;
+
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
@@ -32,7 +44,6 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -46,14 +57,6 @@ import io.skymind.pathmind.ui.views.experiment.components.PolicyHighlightPanel;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
@@ -94,7 +97,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private SegmentIntegrator segmentIntegrator;
 
 	private String projectName;
-	private Button runFullTraining;
 
 	public ExperimentView() {
 		super();
@@ -153,24 +155,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policyHighlightPanel = new PolicyHighlightPanel();
 		trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
 
-		runFullTraining = new Button("Start Full Run", new Image("frontend/images/start.svg", "run"), click -> {
-			final var experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
-			if(experiment.isPresent()) {
-				trainingService.startFullRun(experiment.get(), policy);
-				segmentIntegrator.fullRunStarted();
-				new RunConfirmDialog().open();
-			}
-		});
-		runFullTraining.setVisible(false);
-		runFullTraining.addClassNames("large-image-btn", "run");
-
 		exportPolicyButton = new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()));
 		exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportPolicyButton.addClassName("half-width");
 		exportPolicyButton.setEnabled(false);
 
 		return WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullCenterHorizontal(runFullTraining),
 				policyHighlightPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton),
 				trainingStatusDetailsPanel,
@@ -239,14 +229,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private Policy selectBestPolicy(List<Policy> policies) {
-		RunType runType = ExperimentUtils.getTrainingType(experiment);
-		return selectHighestPerformingPolicy(policies, runType);
-	}
-
-	private Policy selectHighestPerformingPolicy(List<Policy> policies, RunType runType) {
 		return policies.stream()
-				.filter(p -> p.getRun().getRunTypeEnum() == runType)
-				.max(Comparator.comparing(PolicyUtils::getLastScore, Comparator.nullsLast(Comparator.naturalOrder())))
+				.filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
+				.max(Comparator.comparing(PolicyUtils::getLastScore))
 				.orElse(null);
 	}
 
@@ -288,19 +273,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		// to avoid multiple download policy file from rescale server,
 		// we put the "saving" for temporary
 		// policy dao will check if there's real policy file exist or not
-		boolean isTrainingFinished = ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed;
-		if (isTrainingFinished) {
+		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed) {
 			exportPolicyButton.setEnabled(policyDAO.hasPolicyFile(policy.getId()));
-		}
-
-		if(policy != null && policy.getRun() != null) {
-			RunType selectedRunType = policy.getRun().getRunTypeEnum();
-			if (selectedRunType == RunType.DiscoveryRun) {
-				runFullTraining.setVisible(true);
-				runFullTraining.setEnabled(isTrainingFinished);
-			} else if (selectedRunType == RunType.FullRun) {
-				runFullTraining.setVisible(false);
-			}
 		}
 	}
 
