@@ -4,7 +4,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -140,7 +139,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 			model.getUserNotes(),
 			updatedNotes -> {
 				modelDAO.updateUserNotes(modelId, updatedNotes);
-				NotificationUtils.showNotification("Notes saved", NotificationVariant.LUMO_SUCCESS);
+				NotificationUtils.showSuccess("Notes saved");
 			}
 		);
 	}

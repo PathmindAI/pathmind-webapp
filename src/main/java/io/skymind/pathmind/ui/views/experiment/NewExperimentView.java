@@ -11,7 +11,6 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -229,7 +228,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         experimentDAO.updateExperiment(experiment);
         segmentIntegrator.draftSaved();
-        NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
+        NotificationUtils.showSuccess("Draft successfully saved");
     }
 
     private Breadcrumbs createBreadcrumbs() {        

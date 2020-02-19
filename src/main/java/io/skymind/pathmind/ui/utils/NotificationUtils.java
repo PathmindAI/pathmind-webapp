@@ -15,7 +15,6 @@ public class NotificationUtils {
     public static void showSuccess(String html) {
         CloseableNotification notification = new CloseableNotification(html);
         notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-        notification.setDuration(-1);
         notification.open();
     }
 

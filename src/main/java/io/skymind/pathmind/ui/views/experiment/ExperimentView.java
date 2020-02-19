@@ -8,7 +8,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
@@ -185,7 +184,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			experiment.getUserNotes(),
 			updatedNotes -> {
 				experimentDAO.updateUserNotes(experimentId, updatedNotes);
-				NotificationUtils.showNotification("Notes saved", NotificationVariant.LUMO_SUCCESS);
+				NotificationUtils.showSuccess("Notes saved");
 			}
 		);
 	}
