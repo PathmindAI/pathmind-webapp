@@ -1,10 +1,5 @@
 package io.skymind.pathmind.ui.views.experiment;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -16,16 +11,15 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -48,6 +42,10 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
@@ -64,6 +62,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private PathmindTextArea rewardVariablesTextArea;
     private PathmindTextArea tipsTextArea;
     private RewardFunctionEditor rewardFunctionEditor;
+    private TextArea notesFieldTextArea;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -107,7 +106,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             errorMessageWrapper
         );
         errorsWrapper.addClassName("errors-wrapper");
-        
+
         rewardFunctionEditor = new RewardFunctionEditor();
         rewardFunctionEditor.addValueChangeListener(changeEvent -> {
             final List<String> errors = RewardValidationService.validateRewardFunction(changeEvent.getValue());
@@ -179,8 +178,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 "reward -= after[2] - before[2];"
         );
 
+        notesFieldTextArea = new TextArea("Experiment Notes", "", "Add Notes");
+        notesFieldTextArea.setSizeFull();
+        binder.forField(notesFieldTextArea)
+                .bind(Experiment::getUserNotes, Experiment::setUserNotes);
+
         return WrapperUtils.wrapSizeFullVertical(
                 getTopButtonPanel(),
+                notesFieldTextArea,
                 rewardVariablesTextArea,
                 tipsTextArea);
     }
@@ -197,7 +202,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         	return;
         }
 
-        experimentDAO.updateRewardFunction(experiment);
+        experimentDAO.updateExperiment(experiment);
         segmentIntegrator.rewardFuntionCreated();
         
         trainingService.startDiscoveryRun(experiment);
@@ -221,9 +226,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         	return;
         }
 
-        experimentDAO.updateRewardFunction(experiment);
+        experimentDAO.updateExperiment(experiment);
         segmentIntegrator.draftSaved();
-        NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
+        NotificationUtils.showSuccess("Draft successfully saved");
     }
 
     private Breadcrumbs createBreadcrumbs() {        
