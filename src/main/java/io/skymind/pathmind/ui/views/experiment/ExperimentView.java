@@ -22,10 +22,12 @@ import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.TrainingError;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
@@ -50,6 +52,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -87,6 +90,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Autowired
 	private PolicyDAO policyDAO;
 	@Autowired
+	private TrainingErrorDAO trainingErrorDAO;
+	@Autowired
 	private TrainingService trainingService;
 	@Autowired
 	private UserDAO userDAO;
@@ -94,6 +99,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private SegmentIntegrator segmentIntegrator;
 
 	private String projectName;
+	private Button runDiscoveryTraining;
 	private Button runFullTraining;
 
 	public ExperimentView() {
@@ -159,11 +165,24 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policyHighlightPanel = new PolicyHighlightPanel();
 		trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
 
+		runDiscoveryTraining = new Button("Start Discovery Run", new Image("frontend/images/start.svg", "run"), click -> {
+			final var experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
+			if(experiment.isPresent()) {
+				trainingService.startDiscoveryRun(experiment.get());
+				segmentIntegrator.discoveryRunStarted();
+				clearErrorState();
+				new RunConfirmDialog().open();
+			}
+		});
+		runDiscoveryTraining.setVisible(false);
+		runDiscoveryTraining.addClassNames("large-image-btn", "run");
+		
 		runFullTraining = new Button("Start Full Run", new Image("frontend/images/start.svg", "run"), click -> {
 			final var experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
 			if(experiment.isPresent()) {
 				trainingService.startFullRun(experiment.get(), policy);
 				segmentIntegrator.fullRunStarted();
+				clearErrorState();
 				new RunConfirmDialog().open();
 			}
 		});
@@ -176,7 +195,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		exportPolicyButton.setEnabled(false);
 
 		return WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullCenterHorizontal(runFullTraining),
+				WrapperUtils.wrapWidthFullCenterHorizontal(runDiscoveryTraining, runFullTraining),
 				policyHighlightPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton),
 				trainingStatusDetailsPanel,
@@ -251,9 +270,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private Policy selectHighestPerformingPolicy(List<Policy> policies, RunType runType) {
-		return policies.stream()
+		Optional<Policy> highestPerformingPolicy = policies.stream()
 				.filter(p -> p.getRun().getRunTypeEnum() == runType)
-				.max(Comparator.comparing(p -> PolicyUtils.getLastScore(p), Comparator.nullsLast(Comparator.naturalOrder()))).get();
+				.filter(p -> PolicyUtils.getLastScore(p) != null)
+				.max(Comparator.comparing(p -> PolicyUtils.getLastScore(p)));
+		return highestPerformingPolicy.orElse(policies.get(policies.size()-1));
 	}
 
 	private void processSelectedPolicy(Policy selectedPolicy) {
@@ -261,19 +282,41 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policyChartPanel.init(selectedPolicy);
 		policyChartPanel.highlightPolicy(selectedPolicy);
 		updateButtonEnablement();
+		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Error) {
+			trainingErrorDAO.getErrorById(selectedPolicy.getRun().getTrainingErrorId())
+				.ifPresent(error -> updateUIForError(error, selectedPolicy.getRun().getRunTypeEnum()));
+		}
+	}
+	
+	private void updateUIForError(TrainingError error, RunType runType) {
+		policyHighlightPanel.setErrorDescription(error.getDescription());
+		if (error.isRestartable()) {
+			if (runType == RunType.DiscoveryRun) {
+				runFullTraining.setVisible(false);
+				runDiscoveryTraining.setVisible(true);
+				runDiscoveryTraining.setEnabled(true);
+			} else if (runType == RunType.FullRun) {
+				runDiscoveryTraining.setVisible(false);
+				runFullTraining.setVisible(true);
+				runFullTraining.setEnabled(true);
+			}
+		}
+	}
+	private void clearErrorState() {
+		policyHighlightPanel.setErrorDescription(null);
+		updateButtonEnablement();
 	}
 
 	private void addOrUpdatePolicy(Policy updatedPolicy) {
+		ArrayList<Policy> policiesToAdd = new ArrayList<>();
 		experiment.getPolicies().stream()
         .filter(policy -> policy.getId() == updatedPolicy.getId())
         .findAny()
         .ifPresentOrElse(
-                policy -> {
-                    experiment.getPolicies().set(experiment.getPolicies().indexOf(policy), updatedPolicy);
-                },
-                () -> {
-                    experiment.getPolicies().add(updatedPolicy);
-                });
+                policy -> experiment.getPolicies().set(experiment.getPolicies().indexOf(policy), updatedPolicy),
+                () -> policiesToAdd.add(updatedPolicy));
+		// This is needed to avoid ConcurrentModificationException when adding values in a stream and then filtering on them.
+		experiment.getPolicies().addAll(policiesToAdd);
 	}
 
 	private void processRunUpdate(Run run) {
@@ -293,9 +336,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 		RunType selectedRunType = policy.getRun().getRunTypeEnum();
 		if (selectedRunType == RunType.DiscoveryRun) {
+			runDiscoveryTraining.setVisible(false);
 			runFullTraining.setVisible(true);
 			runFullTraining.setEnabled(isTrainingFinished);
 		} else if (selectedRunType == RunType.FullRun) {
+			runDiscoveryTraining.setVisible(false);
 			runFullTraining.setVisible(false);
 		}
 	}

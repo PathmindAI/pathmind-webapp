@@ -123,7 +123,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 					model.setFile(UploadUtils.createZipFileFromBuffer(buffer));
 				} else {
 					MemoryBuffer buffer = MemoryBuffer.class.cast(receiver);
-					model.setFile(buffer.getInputStream().readAllBytes());
+					model.setFile(UploadUtils.ensureZipFileStructure(buffer.getInputStream().readAllBytes()));
 				}
 				fileCheckerCommand.execute();
 				log.info("Upload completed");
@@ -183,7 +183,6 @@ public class UploadModelWizardPanel extends VerticalLayout
 						"<ul>" +
 							"<li>model.jar</li>" +
 							"<li>the \"database\" folder if needed</li>" +
-							"<li>custom libraries from the \"lib\" folder if needed. (This is uncommon)</li>" +
 						"</ul>" +
 					"<li>Upload the new zip file below." +
 				"</ol>");

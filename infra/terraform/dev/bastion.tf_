@@ -1,0 +1,12 @@
+#Create k8s bastions
+resource "null_resource" "k8s_bastion" {
+  provisioner "local-exec" {
+    command = "../scripts/create_bastion.sh '${var.cluster_name}' '${var.kops_bucket}'"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "export KOPS_STATE_STORE='s3://${var.kops_bucket}/k8s.${var.cluster_name}'; kops delete instancegroup bastions --yes"
+  }
+  depends_on = ["null_resource.validate_k8s"]
+}
+
