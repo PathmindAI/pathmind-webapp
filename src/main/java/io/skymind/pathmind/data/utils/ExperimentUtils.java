@@ -101,12 +101,11 @@ public class ExperimentUtils
 	}
 
 	/**
-	 * Calculates a total number of processed iterations for policies that were initialized with given type.
+	 * Calculates a total number of processed iterations for policies.
 	 * It sums up a size of reward list for each policy.
 	 */
-	public static Integer getNumberOfProcessedIterations(Experiment experiment, RunType runType){
+	public static Integer getNumberOfProcessedIterations(Experiment experiment){
 		return experiment.getPolicies().stream()
-				.filter(policy -> policy.getRun().getRunTypeEnum() == runType)
 				.map(Policy::getScores)
 				.map(List::size)
 				.reduce(0, Integer::sum);

@@ -17,6 +17,7 @@ import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.data.utils.RunUtils;
+import io.skymind.pathmind.services.training.constant.RunConstants;
 import io.skymind.pathmind.ui.components.ElapsedTimer;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -69,8 +70,8 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 	}
 
 	private void updateProgressBar(Experiment experiment) {
-		final var totalIterations = (double) RunUtils.getNumberOfTrainingIterationsForRunType(RunType.DiscoveryRun);
-		final Integer iterationsProcessed = ExperimentUtils.getNumberOfProcessedIterations(experiment, RunType.DiscoveryRun);
+		final int totalIterations = RunConstants.PBT_RUN_ITERATIONS;
+		final Integer iterationsProcessed = ExperimentUtils.getNumberOfProcessedIterations(experiment);
 
 		final var progress = (iterationsProcessed / totalIterations) * 100;
 		if (progress > 0 && progress <= 100) {
