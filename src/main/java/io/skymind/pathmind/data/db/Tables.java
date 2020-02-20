@@ -17,6 +17,7 @@ import io.skymind.pathmind.data.db.tables.Project;
 import io.skymind.pathmind.data.db.tables.RewardScore;
 import io.skymind.pathmind.data.db.tables.Run;
 import io.skymind.pathmind.data.db.tables.TrainerJob;
+import io.skymind.pathmind.data.db.tables.TrainingError;
 
 import javax.annotation.processing.Generated;
 
@@ -98,4 +99,9 @@ public class Tables {
      * The table <code>public.trainer_job</code>.
      */
     public static final TrainerJob TRAINER_JOB = TrainerJob.TRAINER_JOB;
+
+    /**
+     * The table <code>public.training_error</code>.
+     */
+    public static final TrainingError TRAINING_ERROR = TrainingError.TRAINING_ERROR;
 }

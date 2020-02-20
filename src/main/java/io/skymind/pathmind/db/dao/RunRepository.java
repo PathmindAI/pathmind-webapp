@@ -1,6 +1,7 @@
 package io.skymind.pathmind.db.dao;
 
-import static io.skymind.pathmind.data.db.Tables.*;
+import static io.skymind.pathmind.data.db.Tables.POLICY;
+import static io.skymind.pathmind.data.db.Tables.POLICY_FILE;
 import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.data.db.tables.Model.MODEL;
 import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
@@ -22,8 +23,6 @@ import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.db.Tables;
 import io.skymind.pathmind.data.db.tables.records.RunRecord;
-import org.jooq.Record1;
-import org.jooq.Result;
 
 class RunRepository
 {
@@ -125,15 +124,24 @@ class RunRepository
         ctx.update(Tables.RUN)
                 .set(Tables.RUN.STATUS, run.getStatus())
                 .set(Tables.RUN.STOPPED_AT, run.getStoppedAt())
+				.set(Tables.RUN.TRAINING_ERROR_ID, run.getTrainingErrorId())
                 .where(Tables.RUN.ID.eq(run.getId()))
                 .execute();
     }
     
     protected static void markAsNotificationSent(DSLContext ctx, long runId){
     	ctx.update(Tables.RUN)
-    	.set(Tables.RUN.NOTIFICATION_SENT_AT, LocalDateTime.now())
-    	.where(Tables.RUN.ID.eq(runId)).execute();
+    		.set(Tables.RUN.NOTIFICATION_SENT_AT, LocalDateTime.now())
+    		.where(Tables.RUN.ID.eq(runId)).execute();
     }
+    
+    protected static void clearNotificationSentInfo(DSLContext ctx, long experimentId, int runType) {
+		ctx.update(Tables.RUN)
+			.set(Tables.RUN.NOTIFICATION_SENT_AT, (LocalDateTime) null)
+			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId)
+					.and(Tables.RUN.RUN_TYPE.eq(runType)))
+			.execute();
+	}
 
     protected static int getRunType(DSLContext ctx, long runId) {
         return ctx.select(Tables.RUN.RUN_TYPE)
