@@ -1,5 +1,10 @@
 package io.skymind.pathmind.ui.views.experiment;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -20,6 +25,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -42,10 +48,6 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
@@ -63,6 +65,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private PathmindTextArea tipsTextArea;
     private RewardFunctionEditor rewardFunctionEditor;
     private TextArea notesFieldTextArea;
+    private Button startRunButton;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -89,16 +92,35 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected Component getMainContent() {
         binder = new Binder<>(Experiment.class);
-        return WrapperUtils.wrapWidthFullVertical(
+        VerticalLayout mainContent = WrapperUtils.wrapWidthFullVertical(
                 createBreadcrumbs(),
                 WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         getLeftPanel(),
                         getRightPanel(),
                         DEFAULT_SPLIT_PANE_RATIO)
                 );
+        setupBinder();
+        return mainContent;
     }
 
-    private Component getLeftPanel() {
+    private void setupBinder() {
+    	binder.forField(rewardFunctionEditor)
+	        .asRequired()
+	        .withValidator((value, _context) -> {
+	            final List<String> errors = RewardValidationService.validateRewardFunction(value);
+	            if (errors.size() == 0) {
+	                return ValidationResult.ok();
+	            } else {
+	                return ValidationResult.error("Reward Function has compile errors!");
+	            }
+	        })
+	        .bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
+    	binder.forField(notesFieldTextArea)
+        	.bind(Experiment::getUserNotes, Experiment::setUserNotes);
+    	binder.addStatusChangeListener(evt -> startRunButton.setEnabled(!evt.hasValidationErrors()));
+	}
+
+	private Component getLeftPanel() {
         Div errorMessageWrapper = new Div();
         errorMessageWrapper.addClassName("error-message-wrapper");
         errorsWrapper = new Div(
@@ -124,18 +146,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                         errorMessageWrapper.addClassName(wrapperClassName);
                     });
         });
-        binder.forField(rewardFunctionEditor)
-                .asRequired()
-                .withValidator((value, _context) -> {
-                    final List<String> errors = RewardValidationService.validateRewardFunction(value);
-                    if (errors.size() == 0) {
-                        return ValidationResult.ok();
-                    } else {
-                        return ValidationResult.error("Reward Function has compile errors!");
-                    }
-                })
-                .bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
-
 
         return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
                 getRewardFnEditorPanel(),
@@ -180,8 +190,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         notesFieldTextArea = new TextArea("Experiment Notes", "", "Add Notes");
         notesFieldTextArea.setSizeFull();
-        binder.forField(notesFieldTextArea)
-                .bind(Experiment::getUserNotes, Experiment::setUserNotes);
 
         return WrapperUtils.wrapSizeFullVertical(
                 getTopButtonPanel(),
@@ -191,9 +199,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private Component getTopButtonPanel() {
-        final Button startRunButton = new Button("Start Training", new Image("frontend/images/start.svg", "run"),
+        startRunButton = new Button("Start Training", new Image("frontend/images/start.svg", "run"),
                 click -> handleStartRunButtonClicked());
         startRunButton.addClassNames("large-image-btn","run");
+        startRunButton.setEnabled(false);
         return WrapperUtils.wrapWidthFullCenterVertical(startRunButton);
     }
 
