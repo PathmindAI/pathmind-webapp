@@ -16,6 +16,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
@@ -34,16 +35,19 @@ import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.TrainingError;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -90,6 +94,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Autowired
 	private RunDAO runDAO;
 	@Autowired
+	private TrainingErrorDAO trainingErrorDAO;
+	@Autowired
 	private TrainingService trainingService;
 	@Autowired
 	private UserDAO userDAO;
@@ -97,6 +103,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private SegmentIntegrator segmentIntegrator;
 
 	private String projectName;
+	private Button restartTraining;
 
 	public ExperimentView() {
 		super();
@@ -155,12 +162,25 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policyHighlightPanel = new PolicyHighlightPanel();
 		trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
 
+		restartTraining = new Button("Restart Training", new Image("frontend/images/start.svg", "run"), click -> {
+			final var experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
+			if(experiment.isPresent()) {
+				trainingService.startDiscoveryRun(experiment.get());
+				segmentIntegrator.discoveryRunStarted();
+				clearErrorState();
+				new RunConfirmDialog().open();
+			}
+		});
+		restartTraining.setVisible(false);
+		restartTraining.addClassNames("large-image-btn", "run");
+		
 		exportPolicyButton = new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()));
 		exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportPolicyButton.addClassName("half-width");
 		exportPolicyButton.setEnabled(false);
 
 		return WrapperUtils.wrapSizeFullVertical(
+				WrapperUtils.wrapWidthFullCenterHorizontal(restartTraining),
 				policyHighlightPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton),
 				trainingStatusDetailsPanel,
@@ -240,6 +260,21 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policyChartPanel.init(selectedPolicy);
 		policyChartPanel.highlightPolicy(selectedPolicy);
 		updateButtonEnablement();
+		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Error) {
+			trainingErrorDAO.getErrorById(selectedPolicy.getRun().getTrainingErrorId())
+				.ifPresent(error -> updateUIForError(error));
+		}
+	}
+	
+	private void updateUIForError(TrainingError error) {
+		policyHighlightPanel.setErrorDescription(error.getDescription());
+		restartTraining.setVisible(error.isRestartable());
+		restartTraining.setEnabled(error.isRestartable());
+	}
+	
+	private void clearErrorState() {
+		policyHighlightPanel.setErrorDescription(null);
+		updateButtonEnablement();
 	}
 
 	private void addOrUpdatePolicy(Policy updatedPolicy) {
@@ -276,6 +311,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed) {
 			exportPolicyButton.setEnabled(policyDAO.hasPolicyFile(policy.getId()));
 		}
+		restartTraining.setVisible(false);
 	}
 
 	private void updatedRunForPolicies(Run run) {

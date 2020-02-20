@@ -7,6 +7,7 @@ import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
@@ -65,6 +66,14 @@ public class RunDAO
     public void markAsNotificationSent(long runId){
     	RunRepository.markAsNotificationSent(ctx, runId);
     }
+    
+    /**
+     * This is used in case a run is restarted, so that Notification Sent value is cleared
+     * and a notification can be sent again after the training is completed
+     */
+    public void clearNotificationSentInfo(long experimentId, int runType) {
+    	RunRepository.clearNotificationSentInfo(ctx, experimentId, runType);
+    }
 
     public List<Long> getExecutingRuns() {
         return RunRepository.getExecutingRuns(ctx);
@@ -75,7 +84,7 @@ public class RunDAO
     }
 
     @Transactional
-    public void updateRun(Run run, RunStatus status, List<Policy> policies)
+    public void updateRun(Run run, ProviderJobStatus status, List<Policy> policies)
     {
         ctx.transaction(configuration ->
         {
@@ -103,9 +112,11 @@ public class RunDAO
         ExperimentRepository.updateLastActivityDate(transactionCtx, run.getExperimentId());
     }
 
-    private void updateRun(Run run, RunStatus status, DSLContext transactionCtx) {
+    private void updateRun(Run run, ProviderJobStatus jobStatus, DSLContext transactionCtx) {
+        final var status = jobStatus.getRunStatus();
         // IMPORTANT -> Needed for both the updateStatus and EventBus post.
         run.setStatusEnum(status);
+
         // STEPH -> REFACTOR -> QUESTION -> Isn't this just a duplicate of setStoppedAtForFinishedPolicies()
         run.setStoppedAt(RunStatus.isRunning(status) ? null : LocalDateTime.now());
         RunRepository.updateStatus(transactionCtx, run);
