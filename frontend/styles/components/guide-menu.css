@@ -44,7 +44,7 @@
   height: 17px;
   top: 50%;
   left: -26px;
-  background-image: url("/frontend/icons/checkmark_grey.svg");
+  background-image: url("/frontend/icons/icon-checkmark-grey.svg");
   background-size: cover;
   transform: translateY(-60%);
 }
