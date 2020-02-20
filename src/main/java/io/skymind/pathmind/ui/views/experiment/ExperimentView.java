@@ -163,13 +163,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
 
 		restartTraining = new Button("Restart Training", new Image("frontend/images/start.svg", "run"), click -> {
-			final var experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
-			if(experiment.isPresent()) {
-				trainingService.startDiscoveryRun(experiment.get());
-				segmentIntegrator.discoveryRunStarted();
-				clearErrorState();
-				new RunConfirmDialog().open();
-			}
+			trainingService.startDiscoveryRun(experiment);
+			segmentIntegrator.discoveryRunStarted();
+			loadExperiment(experimentId);
+			trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
+			clearErrorState();
+			new RunConfirmDialog().open();
 		});
 		restartTraining.setVisible(false);
 		restartTraining.addClassNames("large-image-btn", "run");
@@ -232,11 +231,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected void initLoadData() {
+		loadExperiment(experimentId);
+		policy = selectBestPolicy(experiment.getPolicies());
+	}
+	
+	private void loadExperiment(long experimentId) {
 		experiment = experimentDAO.getExperiment(experimentId)
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
 		experiment.setRuns(runDAO.getRunsForExperiment(experimentId));
-		policy = selectBestPolicy(experiment.getPolicies());
 	}
 
 	@Override
@@ -259,15 +262,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policyHighlightPanel.update(selectedPolicy);
 		policyChartPanel.init(selectedPolicy);
 		policyChartPanel.highlightPolicy(selectedPolicy);
-		updateButtonEnablement();
-		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Error) {
-			experiment.getRuns().stream()
-					.filter(run -> run.getStatusEnum() == RunStatus.Error)
-					.findAny()
-					.map(Run::getTrainingErrorId)
-					.flatMap(trainingErrorDAO::getErrorById)
-					.ifPresent(this::updateUIForError);
-		}
+		updateRightPanelForExperiment();
 	}
 	
 	private void updateUIForError(TrainingError error) {
@@ -302,10 +297,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 						() -> experiment.getRuns().add(updatedRun));
 	}
 
-	private void processRunUpdate(Run run) {
-		updatedRunForPolicies(run);
+	private void updateRightPanelForExperiment() {
 		updateButtonEnablement();
-		PushUtils.push(getUI(), () -> trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment));
+		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
+		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Error) {
+			experiment.getRuns().stream()
+					.filter(r -> r.getStatusEnum() == RunStatus.Error)
+					.findAny()
+					.map(Run::getTrainingErrorId)
+					.flatMap(trainingErrorDAO::getErrorById)
+					.ifPresent(this::updateUIForError);
+		}
 	}
 
 	private void updateButtonEnablement() {
@@ -340,7 +342,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				policy = bestPolicy;
 				PushUtils.push(getUI(), () -> processSelectedPolicy(bestPolicy));
 			}
-			PushUtils.push(getUI(), () -> trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment));
+			PushUtils.push(getUI(), () -> updateRightPanelForExperiment());
 		}
 
 		@Override
@@ -358,7 +360,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		@Override
 		public void handleBusEvent(RunUpdateBusEvent event) {
 			addOrUpdateRun(event.getRun());
-			PushUtils.push(getUI(), () -> processRunUpdate(event.getRun()));
+			updatedRunForPolicies(event.getRun());
+			PushUtils.push(getUI(), () -> updateRightPanelForExperiment());
 		}
 
 		@Override
