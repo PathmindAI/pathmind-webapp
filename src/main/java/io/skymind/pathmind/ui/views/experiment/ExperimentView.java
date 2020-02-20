@@ -261,8 +261,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policyChartPanel.highlightPolicy(selectedPolicy);
 		updateButtonEnablement();
 		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Error) {
-			trainingErrorDAO.getErrorById(selectedPolicy.getRun().getTrainingErrorId())
-				.ifPresent(error -> updateUIForError(error));
+			experiment.getRuns().stream()
+					.filter(run -> run.getStatusEnum() == RunStatus.Error)
+					.findAny()
+					.map(Run::getTrainingErrorId)
+					.flatMap(trainingErrorDAO::getErrorById)
+					.ifPresent(this::updateUIForError);
 		}
 	}
 	
