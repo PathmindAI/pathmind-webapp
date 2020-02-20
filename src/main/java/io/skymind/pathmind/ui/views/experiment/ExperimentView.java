@@ -27,6 +27,7 @@ import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -96,6 +97,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Autowired
 	private UserDAO userDAO;
 	@Autowired
+	private RunDAO runDAO;
+	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 
 	private String projectName;
@@ -142,18 +145,19 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		  createBreadcrumbs(),
 		  mainSplitLayout
 	  );
+
+	  System.out.println("are you called?");
 	  
 	  return mainLayout;
 	}
 
 	private Component getLeftPanel() {
-		experimentsNavbar = new ExperimentsNavbar(experiments, modelId);
+		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiments, experiment, modelId);
 		policyChartPanel = new PolicyChartPanel();
 
-		return WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+		return WrapperUtils.wrapWidthFullHorizontal(
 			experimentsNavbar,
-			policyChartPanel,
-			30
+			policyChartPanel
 		);
 	}
 
@@ -253,6 +257,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policy = selectBestPolicy(experiment.getPolicies());
 		modelId = experiment.getModelId();
 		experiments = experimentDAO.getExperimentsForModel(modelId);
+		setRunsToExperiments();
 	}
 
 	@Override
@@ -351,6 +356,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         	.forEach(policy -> {
         		policy.setRun(run);
         });
+	}
+
+	private void setRunsToExperiments() {
+		// set runs to experiments
+		experiments.stream()
+				.forEach(e -> e.setRuns(runDAO.getRunsForExperiment(e.getId())));
 	}
 
 	class ExperimentViewPolicyUpdateSubscriber implements PolicyUpdateSubscriber
