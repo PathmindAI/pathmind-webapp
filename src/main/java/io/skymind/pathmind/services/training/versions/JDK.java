@@ -3,12 +3,11 @@ package io.skymind.pathmind.services.training.versions;
 import java.util.Arrays;
 import java.util.List;
 
-public enum PathmindHelper implements VersionEnum {
-    VERSION_0_0_24,
-    VERSION_0_0_25;
+public enum JDK implements VersionEnum {
+    VERSION_8_222;
 
     @Override
     public List<String> fileNames() {
-        return Arrays.asList("PathmindPolicy.jar");
+        return Arrays.asList("OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz");
     }
 }

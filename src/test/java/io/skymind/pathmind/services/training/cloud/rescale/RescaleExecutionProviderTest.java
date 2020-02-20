@@ -1,21 +1,7 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.skymind.pathmind.constants.RunType;
-import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
-import io.skymind.pathmind.services.training.ExecutionEnvironment;
-import io.skymind.pathmind.services.training.JobSpec;
-import io.skymind.pathmind.services.training.cloud.rescale.api.RescaleRestApiClient;
-import io.skymind.pathmind.services.training.versions.AnyLogic;
-import io.skymind.pathmind.services.training.versions.PathmindHelper;
-import io.skymind.pathmind.services.training.versions.RLLib;
-import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.Arrays;
-import java.util.Map;
 
 @Ignore
 public class RescaleExecutionProviderTest

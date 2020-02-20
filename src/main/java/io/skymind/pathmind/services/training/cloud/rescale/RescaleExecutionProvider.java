@@ -14,7 +14,7 @@ import io.skymind.pathmind.services.training.cloud.rescale.api.dto.JobStatus;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
-import io.skymind.pathmind.services.training.versions.RLLib;
+import io.skymind.pathmind.services.training.versions.NativeRL;
 import io.skymind.pathmind.services.training.versions.RescaleFileManager;
 import lombok.extern.slf4j.Slf4j;
 
@@ -364,7 +364,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         ));
     }
 
-    private void installRllib(RLLib rllibVersion, List<String> instructions, List<FileReference> files) {
+    private void installRllib(NativeRL rllibVersion, List<String> instructions, List<FileReference> files) {
         switch (rllibVersion) {
             case VERSION_0_7_0:
                 instructions.addAll(Arrays.asList(
