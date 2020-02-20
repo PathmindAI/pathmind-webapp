@@ -30,10 +30,10 @@ class VerificationEmailViewSent extends PolymerElement {
         <img
           class="logo"
           src="frontend/images/pathmind-logo.png"
-          alt="Pathmind logo"
+          alt="Pathmind"
         />
         <vaadin-vertical-layout class="inner-content">
-          <h3>A verification email is sent.</h3>
+          <h3>We sent you a verification email.</h3>
           <iron-icon class="icon" icon="vaadin:check-circle"></iron-icon>
           <p>
             Follow the instructions in the email to verify your account.

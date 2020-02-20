@@ -20,16 +20,16 @@ class EmailVerificationView extends PolymerElement {
           alt="Pathmind logo"
         />
         <vaadin-vertical-layout class="inner-content">
-          <h3>Email verification</h3>
+          <h3>Email Verified</h3>
           <p hidden$="{{error}}">
-            Your email was successfully verified.
+            Thanks for verifying your email.
           </p>
           <p class="error-message" hidden$="{{!error}}">
             Verification link is no longer valid.
           </p>
           <vaadin-vertical-layout id="buttonsCont">
             <vaadin-button id="backToApp" theme="primary"
-              >Back to Application</vaadin-button
+              >Get Started with Pathmind</vaadin-button
             >
           </vaadin-vertical-layout>
         </vaadin-vertical-layout>
