@@ -13,11 +13,7 @@ class SignUpView extends PolymerElement {
           src="frontend/images/pathmind-logo.png"
           alt="Pathmind logo"
         />
-        <vaadin-vertical-layout
-          style="width: 100%;"
-          class="inner-content"
-          id="emailPart"
-        >
+        <vaadin-vertical-layout class="inner-content" id="emailPart">
           <h3>{{title}}</h3>
           <div class="do-not-share-url">
             <iron-icon icon="vaadin:exclamation-circle-o"></iron-icon>
@@ -55,11 +51,7 @@ class SignUpView extends PolymerElement {
           <p class="form-hints">No credit card required</p>
           <a router-link href="/sign-in">Already have an account?</a>
         </vaadin-vertical-layout>
-        <vaadin-vertical-layout
-          style="width: 100%;"
-          class="inner-content"
-          id="passwordPart"
-        >
+        <vaadin-vertical-layout class="inner-content" id="passwordPart">
           <h3>{{title}}</h3>
           <vaadin-password-field
             id="newPassword"

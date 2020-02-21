@@ -111,11 +111,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
     @Override
     protected void initLoadData() throws InvalidDataException {
-        final var foundProject = projectDAO.getProject(projectId);
-        if (foundProject == null) {
-            throw new InvalidDataException(String.format(PROJECT_NOT_FOUND_EXCEPTION_MESSAGE, projectId));
-        }
-        this.project = foundProject;
+		project = projectDAO.getProject(projectId)
+				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + projectId));
     }
 
 	@Override

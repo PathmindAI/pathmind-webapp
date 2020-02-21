@@ -93,6 +93,7 @@ def process_message(message):
     if not message:
         return
     global mockup_status
+    app_logger.info('Received {message}'.format(message=message['Body']))
     body=json.loads(message['Body'])
     s3bucket=body['S3Bucket']
     s3path=body['S3Path']
@@ -171,6 +172,11 @@ def process_message(message):
                 line=line.replace('{{S3BUCKET}}',s3bucket)
                 line=line.replace('{{S3PATH}}',s3path)
                 line=line.replace('{{JOB_ID}}',job_id)
+                if ENVIRONMENT=='prod':
+                    NAMESPACE='default'
+                else:
+                    NAMESPACE=ENVIRONMENT
+                line=line.replace('{{NAMESPACE}}',NAMESPACE)
                 line=line.replace('{{ENVIRONMENT}}',ENVIRONMENT)
                 line=line.replace('{{SQS_URL}}',SQS_URL)
                 file.write(line+'\n')

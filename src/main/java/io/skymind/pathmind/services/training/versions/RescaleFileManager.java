@@ -1,7 +1,6 @@
 package io.skymind.pathmind.services.training.versions;
 
 import io.skymind.pathmind.services.training.cloud.rescale.api.dto.FileReference;
-import io.skymind.pathmind.services.training.cloud.rescale.api.dto.RescaleFile;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,17 +34,19 @@ public class RescaleFileManager {
         vTable.put(AnyLogic.VERSION_8_5_1, Arrays.asList(
                 "FcrKm" // Anylogic 8.5.1 Base Environment: baseEnv.zip
         ));
-        vTable.put(RLLib.VERSION_0_7_0, Arrays.asList(
+        vTable.put(NativeRL.VERSION_0_7_0, Arrays.asList(
 //                "LZAENb", // conda
 //                "jniWLb", // conda TF 2.0, RAY 0.7.6
                 "xGfzT", // conda TF 1.13.1, RAY 0.7.6
 //                "jKjXa", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-10-15 DH version
 //                "OoYSOb", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-11-02 DH version
-                "RnFgSc", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-11-27 DH version
+//                "RnFgSc", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-11-27 DH version,
+                "oyeGse", // nativerl-1.0.0-SNAPSHOT-bin.zip, multi-agent #728
                 "fDRBHd"  // OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz
         ));
         vTable.put(PathmindHelper.VERSION_0_0_24, Arrays.asList(
-                "kuQJAd" // PathmindPolicy.jar, 2019-08-28
+//                "kuQJAd", // PathmindPolicy.jar, 2019-08-28
+                "CaYsDe" // PathmindPolicy.jar, multi-agent #728
         ));
 
         versions.put("PROD", vTable);

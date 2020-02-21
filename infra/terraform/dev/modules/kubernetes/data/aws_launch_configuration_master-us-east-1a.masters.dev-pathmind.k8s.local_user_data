@@ -179,7 +179,7 @@ kubeAPIServer:
   - http://127.0.0.1:4001
   etcdServersOverrides:
   - /events#http://127.0.0.1:4002
-  image: k8s.gcr.io/kube-apiserver:v1.15.7
+  image: k8s.gcr.io/kube-apiserver:v1.15.9
   insecureBindAddress: 127.0.0.1
   insecurePort: 8080
   kubeletPreferredAddressTypes:
@@ -205,7 +205,7 @@ kubeControllerManager:
   clusterCIDR: 100.96.0.0/11
   clusterName: dev-pathmind.k8s.local
   configureCloudRoutes: false
-  image: k8s.gcr.io/kube-controller-manager:v1.15.7
+  image: k8s.gcr.io/kube-controller-manager:v1.15.9
   leaderElection:
     leaderElect: true
   logLevel: 2
@@ -214,10 +214,10 @@ kubeProxy:
   clusterCIDR: 100.96.0.0/11
   cpuRequest: 100m
   hostnameOverride: '@aws'
-  image: k8s.gcr.io/kube-proxy:v1.15.7
+  image: k8s.gcr.io/kube-proxy:v1.15.9
   logLevel: 2
 kubeScheduler:
-  image: k8s.gcr.io/kube-scheduler:v1.15.7
+  image: k8s.gcr.io/kube-scheduler:v1.15.9
   leaderElection:
     leaderElect: true
   logLevel: 2
@@ -271,8 +271,8 @@ __EOF_IG_SPEC
 
 cat > kube_env.yaml << '__EOF_KUBE_ENV'
 Assets:
-- e018fc3b934cb5325bc55444e029ddc357544191132794162de9e3663dd7e952@https://storage.googleapis.com/kubernetes-release/release/v1.15.7/bin/linux/amd64/kubelet
-- 01eb6cf747a0164a68df07fac2a50698bab51af0306d2797ed5971786fde9779@https://storage.googleapis.com/kubernetes-release/release/v1.15.7/bin/linux/amd64/kubectl
+- 680d6afa09cd51061937ebb33fd5c9f3ff6892791de97b028b1e7d6b16383990@https://storage.googleapis.com/kubernetes-release/release/v1.15.9/bin/linux/amd64/kubelet
+- 4475f68c51af23925d7bd7fc3d1bd01bedd3d4ccbb64503517d586e31d6f607c@https://storage.googleapis.com/kubernetes-release/release/v1.15.9/bin/linux/amd64/kubectl
 - 3ca15c0a18ee830520cf3a95408be826cbd255a1535a38e0be9608b25ad8bf64@https://storage.googleapis.com/kubernetes-release/network-plugins/cni-plugins-amd64-v0.7.5.tgz
 - 71b7bc444ba0a5f7cd7a36e91b594c1c3d13890e160d85e0dfde38c46a24e416@https://artifacts.k8s.io/binaries/kops/1.15.0/linux/amd64/utils.tar.gz,https://github.com/kubernetes/kops/releases/download/1.15.0/linux-amd64-utils.tar.gz,https://kubeupv2.s3.amazonaws.com/kops/1.15.0/linux/amd64/utils.tar.gz
 ClusterName: dev-pathmind.k8s.local
