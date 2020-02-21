@@ -1,13 +1,5 @@
 package io.skymind.pathmind.services;
 
-import static io.skymind.pathmind.services.training.constant.RunConstants.DISCOVERY_RUN_BATCH_SIZES;
-import static io.skymind.pathmind.services.training.constant.RunConstants.DISCOVERY_RUN_GAMMAS;
-import static io.skymind.pathmind.services.training.constant.RunConstants.DISCOVERY_RUN_LEARNING_RATES;
-import static io.skymind.pathmind.services.training.constant.RunConstants.TRAINING_HYPERPARAMETERS;
-
-import java.util.Arrays;
-import java.util.List;
-
 import io.skymind.pathmind.constants.Algorithm;
 import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
@@ -26,6 +18,11 @@ import io.skymind.pathmind.services.training.constant.RunConstants;
 import io.skymind.pathmind.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static io.skymind.pathmind.services.training.constant.RunConstants.*;
+
 @Slf4j
 public abstract class TrainingService {
     private static final int MINUTE = 60;
@@ -38,15 +35,21 @@ public abstract class TrainingService {
     protected final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     protected ExecutionEnvironment executionEnvironment;
 
-    public TrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
+    public TrainingService(boolean multiAgent, ExecutionProvider executionProvider,
+                           RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO,
+                           ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
         this.executionProvider = executionProvider;
         this.runDAO = runDAO;
         this.modelDAO = modelDAO;
         this.policyDAO = policyDAO;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
 
-//        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5, PathmindHelper.VERSION_0_0_24, RLLib.VERSION_0_7_0);
-        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_1, PathmindHelper.VERSION_0_0_25, NativeRL.VERSION_0_7_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
+        PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_0_0_25;
+        if (multiAgent) {
+            pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
+        }
+
+        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_1, pathmindHelperVersion, NativeRL.VERSION_0_7_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
     }
 
     public void startTestRun(Experiment exp){

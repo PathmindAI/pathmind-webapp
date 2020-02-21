@@ -393,7 +393,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("STEP_TIME", "1"),
                 var("STOP_TIME", "420"),
                 var("TIME_UNIT", "MINUTE"),
-                var("MAX_TIME_IN_SEC", String.valueOf(job.getMaxTimeInSec()))
+                var("MAX_TIME_IN_SEC", String.valueOf(job.getMaxTimeInSec())),
+                var("MULTIAGENT", String.valueOf(job.isMultiAgent()))
         ));
     }
 
