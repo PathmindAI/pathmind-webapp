@@ -1,15 +1,17 @@
 package io.skymind.pathmind.services;
 
-import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.DashboardItem;
-import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,25 +27,43 @@ public class DashboardItemService {
 
 	public List<DashboardItem> getDashboardItemsForUser(long userId, int offset, int limit) {
 		final List<DashboardItem> dashboardItemsForUser = experimentDAO.getDashboardItemsForUser(userId, offset, limit);
-		dashboardItemsForUser.forEach(this::setPoliciesToDashboardItem);
+
+		final List<DashboardItem> inTrainingDashboardItems = dashboardItemsForUser.stream()
+				.filter(DashboardItem::hasTrainingInProgress)
+				.collect(Collectors.toList());
+
+		final List<Long> inTrainingExperimentsIDs = inTrainingDashboardItems.stream()
+				.map(DashboardItem::getExperiment)
+				.map(Experiment::getId)
+				.collect(Collectors.toList());
+
+		if(!CollectionUtils.isEmpty(inTrainingExperimentsIDs)) {
+			final Map<Long, Integer> iterationsForExperiments = policyDao.getRewardScoresCountForExperiments(inTrainingExperimentsIDs);
+			inTrainingDashboardItems.forEach(
+					item -> {
+						final long experimentId = item.getExperiment().getId();
+						if(iterationsForExperiments.containsKey(experimentId)) {
+							item.setIterationsProcessed(iterationsForExperiments.get(experimentId));
+						}
+					}
+			);
+		}
+
 		return dashboardItemsForUser;
 	}
 
 	public Optional<DashboardItem> getSingleDashboardItem(long experimentId) {
 		return experimentDAO.getSingleDashboardItem(experimentId).stream()
-				.peek(this::setPoliciesToDashboardItem)
+				.peek(item -> {
+					if(item.hasTrainingInProgress()) {
+						final Map<Long, Integer> iterations = policyDao.getRewardScoresCountForExperiments(List.of(experimentId));
+						item.setIterationsProcessed(iterations.getOrDefault(experimentId, 0));
+					}
+				})
 				.findAny();
 	}
 
 	public int countTotalDashboardItemsForUser(long userId) {
 		return experimentDAO.countDashboardItemsForUser(userId);
-	}
-
-	// Since it is required mostly for the progress bar feature, it updates policies for an experiment if it has training in progress
-	private void setPoliciesToDashboardItem(DashboardItem item) {
-		if (item.getExperiment() != null && item.getLatestRun() != null && RunStatus.isRunning(item.getLatestRun().getStatusEnum())) {
-			final List<Policy> policiesForExperiment = policyDao.getPoliciesForExperiment(item.getExperiment().getId());
-			item.getExperiment().setPolicies(policiesForExperiment);
-		}
 	}
 }

@@ -141,13 +141,22 @@ public class ExperimentUtils
 		return difference.toSeconds() * (100 - progress) / progress;
 	}
 
+	public static double getEstimatedTrainingTimeForSingleRun(Run run, double progress) {
+		final var difference = Duration.between(run.getStartedAt(), LocalDateTime.now());
+		return difference.toSeconds() * (100 - progress) / progress;
+	}
+
 	private static boolean isAnyPolicyNotFinished(List<LocalDateTime> stoppedTimes) {
 		return stoppedTimes.stream().anyMatch(Objects::isNull);
 	}
 	
-	public static double calculateExperimentProgress(Experiment experiment, RunType runType) {
-		double totalIterations = (double) RunUtils.getNumberOfTrainingIterationsForRunType(runType);
+	public static double calculateProgressByExperiment(Experiment experiment, RunType runType) {
 		Integer iterationsProcessed = getNumberOfProcessedIterations(experiment, runType);
+		return calculateProgressByIterationsProcessed(iterationsProcessed, runType);
+	}
+
+	public static double calculateProgressByIterationsProcessed(Integer iterationsProcessed, RunType runType) {
+		double totalIterations = (double) RunUtils.getNumberOfTrainingIterationsForRunType(runType);
 		double progress = (iterationsProcessed / totalIterations) * 100;
 		return Math.max(Math.min(100d, progress), 0);
 	}

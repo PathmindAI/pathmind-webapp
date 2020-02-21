@@ -88,9 +88,11 @@ public class DashboardLine extends HorizontalLayout {
 	}
 	
 	private void updateProgress(PathmindTrainingProgress trainingProgress, DashboardItem item) {
-		double progress = ExperimentUtils.calculateExperimentProgress(item.getExperiment(), item.getLatestRun().getRunTypeEnum());
-		final double estimatedTime = ExperimentUtils.getEstimatedTrainingTime(item.getExperiment(), progress, item.getLatestRun().getRunTypeEnum());
-		trainingProgress.setValue(progress, estimatedTime);
+		final double progress = ExperimentUtils.calculateProgressByIterationsProcessed(item.getIterationsProcessed(), item.getLatestRun().getRunTypeEnum());
+		if (progress > 0 && progress <= 100) {
+			final double estimatedTime = ExperimentUtils.getEstimatedTrainingTimeForSingleRun(item.getLatestRun(), progress);
+			trainingProgress.setValue(progress, estimatedTime);
+		}
 	}
 	
 }

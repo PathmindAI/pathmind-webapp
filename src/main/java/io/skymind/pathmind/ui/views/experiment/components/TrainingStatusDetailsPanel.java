@@ -74,7 +74,7 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 	}
 
 	private void updateProgressBar(Experiment experiment, RunType runType) {
-		final double progress = ExperimentUtils.calculateExperimentProgress(experiment, runType);
+		final double progress = ExperimentUtils.calculateProgressByExperiment(experiment, runType);
 		if (progress > 0 && progress <= 100) {
 			final double estimatedTime = ExperimentUtils.getEstimatedTrainingTime(experiment, progress, runType);
 			trainingProgress.setValue(progress, estimatedTime);
