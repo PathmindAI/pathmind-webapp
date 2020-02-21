@@ -89,3 +89,5 @@ spec:
               value: "{{ .Values.env.SQS_URL }}"
             - name: S3_BUCKET
               value: "{{ .Values.env.S3_BUCKET }}"
+            - name: MULTI_AGENT
+              value: "{{ .Values.env.MULTI_AGENT }}"

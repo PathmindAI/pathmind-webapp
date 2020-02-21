@@ -36,7 +36,7 @@ public class ModelDAO
 	}
 
 	@Transactional
-	public long addModelToProject(Model model, long projectId)
+	public long addModelToProject(Model model, long projectId, String userNotes)
 	{
 		return ctx.transactionResult(configuration ->
 		{
@@ -45,6 +45,7 @@ public class ModelDAO
 			String modelName = Integer.toString(ModelRepository.getModelCount(transactionCtx, projectId) + 1);
 			long modelId = ModelRepository.insertModel(transactionCtx, model, modelName, dateCreated, projectId);
 			ModelRepository.insertModelFile(transactionCtx, modelId, model.getFile());
+			ModelRepository.updateUserNotes(transactionCtx, modelId, userNotes);
 			return ExperimentRepository.insertExperiment(transactionCtx, modelId, dateCreated);
 		});
 	}

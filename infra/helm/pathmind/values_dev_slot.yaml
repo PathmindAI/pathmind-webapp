@@ -25,6 +25,7 @@ env:
   DB_SECRET_NAME: dburl
   DB_SECRET_KEY: DB_URL
   MODEL_ANALYZER_URL: https://ma.dev.devpathmind.com
+  MULTI_AGENT: false
 
 name: pathmind-slot
 
