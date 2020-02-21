@@ -11,10 +11,7 @@ import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.ExperimentState;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
-import io.skymind.pathmind.services.training.versions.AWSFileManager;
-import io.skymind.pathmind.services.training.versions.AnyLogic;
-import io.skymind.pathmind.services.training.versions.PathmindHelper;
-import io.skymind.pathmind.services.training.versions.RLLib;
+import io.skymind.pathmind.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
@@ -57,7 +54,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
         final ExecutionEnvironment env = job.getEnv();
 
         // Set up which files are needed, and how to install them
-        installRllib(env.getRllibVersion(), instructions, files);
+        installJDK(env.getJdkVersion(), instructions, files);
+        installConda(env.getCondaVersion(), instructions, files);
+        installNativeRL(env.getRllibVersion(), instructions, files);
         installAnyLogic(env.getAnylogicVersion(), instructions, files);
         installHelper(env.getPathmindHelperVersion(), instructions, files);
         installModel(job.getModelFileId(), instructions, files);
@@ -241,27 +240,11 @@ public class AWSExecutionProvider implements ExecutionProvider {
         return Collections.emptyMap();
     }
 
-    private void installRllib(RLLib rllibVersion, List<String> instructions, List<String> files) {
-        switch (rllibVersion) {
+    private void installNativeRL(NativeRL nativerlVersion, List<String> instructions, List<String> files) {
+        switch (nativerlVersion) {
             case VERSION_0_7_0:
+            case VERSION_0_7_6:
                 instructions.addAll(Arrays.asList(
-                        // Setup JVM
-                        "tar xf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
-                        "rm -rf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
-                        "export JAVA_HOME=`pwd`/jdk8u222-b10",
-                        "export JDK_HOME=$JAVA_HOME",
-                        "export JRE_HOME=$JAVA_HOME/jre",
-                        "export PATH=$JAVA_HOME/bin:$PATH",
-                        "export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH",
-
-                        // Setup Anaconda
-                        "mkdir conda",
-                        "cd conda",
-                        "tar xf ../rllibpack.tar.gz",
-                        "rm ../rllibpack.tar.gz",
-                        "source bin/activate",
-                        "cd ..",
-
                         // Setup NativeRL
                         "mkdir work",
                         "cd work",
@@ -272,10 +255,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         "cd .."
                 ));
 
-                files.addAll(fileManager.getFiles(rllibVersion));
+                files.addAll(fileManager.getFiles(nativerlVersion));
                 break;
             default:
-                throw new IllegalArgumentException("Unsupported RLLib Version: " + rllibVersion);
+                throw new IllegalArgumentException("Unsupported nativeRL Version: " + nativerlVersion);
         }
     }
 
@@ -296,9 +279,55 @@ public class AWSExecutionProvider implements ExecutionProvider {
         }
     }
 
+    private void installJDK(JDK jdkVersion, List<String> instructions, List<String> files) {
+        switch (jdkVersion) {
+            case VERSION_8_222:
+                instructions.addAll(Arrays.asList(
+                        // Setup JVM
+                        "tar xf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
+                        "rm -rf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
+                        "export JAVA_HOME=`pwd`/jdk8u222-b10",
+                        "export JDK_HOME=$JAVA_HOME",
+                        "export JRE_HOME=$JAVA_HOME/jre",
+                        "export PATH=$JAVA_HOME/bin:$PATH",
+                        "export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH"
+                ));
+
+                files.addAll(fileManager.getFiles(jdkVersion));
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported JDK Version: " + jdkVersion);
+        }
+    }
+
+    private void installConda(Conda condaVersion, List<String> instructions, List<String> files) {
+        switch (condaVersion) {
+            case VERSION_0_7_0:
+            case VERSION_0_7_6:
+            case VERSION_0_8_1:
+                instructions.addAll(Arrays.asList(
+                        // Setup Anaconda
+                        "mkdir conda",
+                        "cd conda",
+                        "tar xf ../rllibpack.tar.gz",
+                        "rm ../rllibpack.tar.gz",
+                        "source bin/activate",
+                        "cd .."
+                ));
+
+                files.addAll(fileManager.getFiles(condaVersion));
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported Conda Version: " + condaVersion);
+        }
+
+    }
+
     private void installHelper(PathmindHelper pathmindHelperVersion, List<String> instructions, List<String> files) {
         switch (pathmindHelperVersion) {
             case VERSION_0_0_24:
+            case VERSION_0_0_25:
+            case VERSION_0_0_25_Multi:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));

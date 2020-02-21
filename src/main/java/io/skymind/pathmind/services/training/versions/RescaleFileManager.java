@@ -1,7 +1,6 @@
 package io.skymind.pathmind.services.training.versions;
 
 import io.skymind.pathmind.services.training.cloud.rescale.api.dto.FileReference;
-import io.skymind.pathmind.services.training.cloud.rescale.api.dto.RescaleFile;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,7 +34,7 @@ public class RescaleFileManager {
         vTable.put(AnyLogic.VERSION_8_5_1, Arrays.asList(
                 "FcrKm" // Anylogic 8.5.1 Base Environment: baseEnv.zip
         ));
-        vTable.put(RLLib.VERSION_0_7_0, Arrays.asList(
+        vTable.put(NativeRL.VERSION_0_7_0, Arrays.asList(
 //                "LZAENb", // conda
 //                "jniWLb", // conda TF 2.0, RAY 0.7.6
                 "xGfzT", // conda TF 1.13.1, RAY 0.7.6

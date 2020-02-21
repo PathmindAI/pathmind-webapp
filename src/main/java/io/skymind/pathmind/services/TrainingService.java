@@ -23,9 +23,7 @@ import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.constant.RunConstants;
-import io.skymind.pathmind.services.training.versions.AnyLogic;
-import io.skymind.pathmind.services.training.versions.PathmindHelper;
-import io.skymind.pathmind.services.training.versions.RLLib;
+import io.skymind.pathmind.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -48,7 +46,7 @@ public abstract class TrainingService {
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
 
 //        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5, PathmindHelper.VERSION_0_0_24, RLLib.VERSION_0_7_0);
-        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_1, PathmindHelper.VERSION_0_0_24, RLLib.VERSION_0_7_0);
+        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_1, PathmindHelper.VERSION_0_0_25, NativeRL.VERSION_0_7_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
     }
 
     public void startTestRun(Experiment exp){
