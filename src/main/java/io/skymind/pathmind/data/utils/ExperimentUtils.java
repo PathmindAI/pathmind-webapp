@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
@@ -70,15 +69,9 @@ public class ExperimentUtils
 		return experiment.getRuns().stream()
 				.map(Run::getStartedAt)
 				.filter(Objects::nonNull)
-				.min(LocalDateTime::compareTo)
-				.orElse(LocalDateTime.now());
-	}
-
-	public static LocalDateTime getTrainingEarliestRunStartedDate(Experiment experiment) {
-		return experiment.getRuns().stream()
-				.map(Run::getStartedAt)
-				.filter(Objects::nonNull)
-				.min(LocalDateTime::compareTo)
+				// experiment can have multiple run, in case of a restart
+				// so we take the latest one
+				.max(LocalDateTime::compareTo)
 				.orElse(LocalDateTime.now());
 	}
 
@@ -112,7 +105,7 @@ public class ExperimentUtils
 	}
 
 	public static double getEstimatedTrainingTime(Experiment experiment, double progress){
-		final var earliestRunStartedDate = ExperimentUtils.getTrainingEarliestRunStartedDate(experiment);
+		final var earliestRunStartedDate = ExperimentUtils.getTrainingStartedDate(experiment);
 		final var difference = Duration.between(earliestRunStartedDate, LocalDateTime.now());
 		return difference.toSeconds() * (100 - progress) / progress;
 	}
