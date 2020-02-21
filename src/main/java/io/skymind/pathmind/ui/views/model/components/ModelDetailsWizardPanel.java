@@ -27,7 +27,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private NumberField numberOfObservationsNumberField;
 	private NumberField numberOfPossibleActionsNumberField;
-	private PathmindTextArea getObservationForRewardFunctionTextArea;
+	public PathmindTextArea notesFieldTextArea;
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
@@ -36,7 +36,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 	{
 		setupFields();
 		setupForm();
-		setupGetObservationForRewardFunctionTextArea();
+		setupNotesFieldTextArea();
 		nextStepButton.setIconAfterText(true);
 		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -66,38 +66,37 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 				Model.MAX_NUMBER_OF_POSSIBLE_ACTIONS,
 				Model.DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS);
 
-		getObservationForRewardFunctionTextArea = new PathmindTextArea();
-		getObservationForRewardFunctionTextArea.setValue(Model.DEFAULT_GET_OBSERVATION_FOR_REWARD_FUNCTION);
+		notesFieldTextArea = new PathmindTextArea();
+		notesFieldTextArea.setPlaceholder("Add your notes here");;
 	}
 
 	private void bindFields(Binder<Model> binder) {
 		ModelBinders.bindNumberOfObservations(binder, numberOfObservationsNumberField);
 		ModelBinders.bindNumberOfPossibleActions(binder, numberOfPossibleActionsNumberField);
-		ModelBinders.bindGetObservationForRewardFunction(binder, getObservationForRewardFunctionTextArea);
+		ModelBinders.bindNotesFieldTextArea(binder, notesFieldTextArea);
 	}
 
 	public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
 		nextStepButton.addClickListener(listener);
 	}
 
-	private void setupGetObservationForRewardFunctionTextArea() {
-		getObservationForRewardFunctionTextArea.setWidthFull();
-		getObservationForRewardFunctionTextArea.setHeight("200px");
-		getObservationForRewardFunctionTextArea.setSpellcheck(false);
+	private void setupNotesFieldTextArea() {
+		notesFieldTextArea.setWidthFull();
+		notesFieldTextArea.setHeight("200px");
 	}
 
 	private void setupForm() {
 		formPanel.add(getNumberOfObservationsPanel(),
 				getNumberOfPossibleActionsPanel(),
-				getObservationForRewardFunctionPanel());
+				getNotesFieldPanel());
 		formPanel.setPadding(false);
 	}
 
-	private Component getObservationForRewardFunctionPanel() {
+	private Component getNotesFieldPanel() {
 		VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
-				LabelFactory.createLabel("Reward Variables", BOLD_LABEL),
-				LabelFactory.createLabel("Copy your reward variables here for easy reference."),
-				getObservationForRewardFunctionTextArea);
+				LabelFactory.createLabel("Model Notes", BOLD_LABEL),
+				LabelFactory.createLabel("Add any notes for yourself about the model you're uploading."),
+				notesFieldTextArea);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
 	}
