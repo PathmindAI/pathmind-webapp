@@ -261,8 +261,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void processSelectedPolicy(Policy selectedPolicy) {
 		policyHighlightPanel.update(selectedPolicy);
 		policyChartPanel.init(selectedPolicy);
-		policyChartPanel.highlightPolicy(selectedPolicy);
 		updateRightPanelForExperiment();
+		if (selectedPolicy != null) {
+			policyChartPanel.highlightPolicy(selectedPolicy);
+		}
 	}
 	
 	private void updateUIForError(TrainingError error) {
