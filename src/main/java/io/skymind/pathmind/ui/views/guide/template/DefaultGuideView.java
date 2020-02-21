@@ -1,7 +1,11 @@
 package io.skymind.pathmind.ui.views.guide.template;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.page.Page;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
@@ -17,15 +21,17 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.guide.GuideMenu;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.util.JavaScriptUtils;
 
 @Route(value = Routes.GUIDE_URL, layout = MainLayout.class)
-public abstract class DefaultGuideView extends PathMindDefaultView implements HasUrlParameter<Long> {
+public abstract class DefaultGuideView extends PathMindDefaultView
+		implements HasUrlParameter<Long>, AfterNavigationObserver {
 
 	protected abstract DefaultPageContent initPageContent();
 
 	@Autowired
 	private GuideDAO guideDAO;
-	
+
 	@Autowired
 	protected SegmentIntegrator segmentIntegrator;
 
@@ -52,12 +58,11 @@ public abstract class DefaultGuideView extends PathMindDefaultView implements Ha
 		DefaultPageContent pageContent = initPageContent();
 		pageContent.initBtns(guideDAO, guideStep, projectId, segmentIntegrator);
 
-		HorizontalLayout gridWrapper = WrapperUtils.wrapWidthFullBetweenHorizontal(
-			new GuideMenu(guideStep, projectId, segmentIntegrator), pageContent
-        );
+		HorizontalLayout gridWrapper = WrapperUtils
+				.wrapWidthFullBetweenHorizontal(new GuideMenu(guideStep, projectId, segmentIntegrator), pageContent);
 		gridWrapper.getStyle().set("background-color", "white");
 		gridWrapper.getStyle().set("flex-grow", "1");
-        return gridWrapper;
+		return gridWrapper;
 	}
 
 	@Override
@@ -69,4 +74,12 @@ public abstract class DefaultGuideView extends PathMindDefaultView implements Ha
 	public void setParameter(BeforeEvent event, Long projectId) {
 		this.projectId = projectId;
 	}
+
+	@Override
+	public void afterNavigation(AfterNavigationEvent event) {
+		Page page = UI.getCurrent().getPage();
+
+		page.executeJs(
+				"document.querySelector('vaadin-app-layout').shadowRoot.querySelector('div[content]').scrollTo(0,0)");
+    }
 }

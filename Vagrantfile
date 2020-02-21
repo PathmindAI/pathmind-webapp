@@ -15,11 +15,7 @@ Vagrant.configure("2") do |config|
     apt-get update
 
     # Install postgresql, maven, node and java
-    apt-get install -y postgresql openjdk-11-jdk maven curl
-    curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-    apt-get install -y nodejs
-    echo "-------------------- upgrading packages to latest"
-    apt-get upgrade -y
+    apt-get install -y postgresql openjdk-11-jdk maven
 
     # Create User and login
     echo "-------------------- Setting up DB"
@@ -28,10 +24,12 @@ Vagrant.configure("2") do |config|
     sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE pathmind to skynet;"
 
     echo "-------------------- Setting Env Vars"
-    sudo echo "export DB_URL=jdbc:postgresql://localhost/pathmind?user=skynet\\&password=skynetskynet123" > /etc/profile.d/pathmindvar.sh
+    sudo echo "export DB_URL=jdbc:postgresql://localhost/pathmind?user=skynet\\&password=skynetskynet123\n export JOB_MOCK_CYCLE=10" > /etc/profile.d/pathmindvar.sh
 
     echo "-------------------- Setting up .bash_profile"
     sudo echo "cd /vagrant" > /home/vagrant/.bash_profile
+
+    echo "-------------------- Now Run `mvn -Pproduction spring-boot:run` to start Pathmind
 
 SHELL
     
