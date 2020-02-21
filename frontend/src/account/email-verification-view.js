@@ -11,32 +11,25 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 class EmailVerificationView extends PolymerElement {
   static get template() {
     return html`
-      <style include="pathmind-dialog-view">
-          .error-message,
-          .section-title {
-            margin: 20px auto 0;
-            font-size: 1.1em;
-          }
-      </style>
+      <style include="pathmind-dialog-view sign-up-view-styles"></style>
       <div class="content">
-        <vaadin-tabs>
-          <vaadin-tab>
-            Email verification
-          </vaadin-tab>
-        </vaadin-tabs>
-        <vaadin-vertical-layout style="width: 100%;" class="inner-content">
-          <div class="section-title" hidden$="{{error}}">
-            Your email was successfully verified.
-          </div>
-
-          <div class="error-message" hidden$="{{!error}}">Verification link is no longer valid.</div>
-          
+        <span class="welcome-text">Welcome to</span>
+        <img
+          class="logo"
+          src="frontend/images/pathmind-logo.png"
+          alt="Pathmind logo"
+        />
+        <vaadin-vertical-layout class="inner-content">
+          <h3>Email Verified</h3>
+          <p hidden$="{{error}}">
+            Thanks for verifying your email.
+          </p>
+          <p class="error-message" hidden$="{{!error}}">
+            Verification link is no longer valid.
+          </p>
           <vaadin-vertical-layout id="buttonsCont">
-            <vaadin-button
-              id="backToApp"
-              theme="primary"
-              class="positive-action-btn"
-              >Back to Application</vaadin-button
+            <vaadin-button id="backToApp" theme="primary"
+              >Get Started with Pathmind</vaadin-button
             >
           </vaadin-vertical-layout>
         </vaadin-vertical-layout>

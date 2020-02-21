@@ -93,6 +93,7 @@ def process_message(message):
     if not message:
         return
     global mockup_status
+    app_logger.info('Received {message}'.format(message=message['Body']))
     body=json.loads(message['Body'])
     s3bucket=body['S3Bucket']
     s3path=body['S3Path']
