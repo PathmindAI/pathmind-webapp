@@ -35,6 +35,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
     public PolicyChartPanel() {
         setupChart();
         add(chart);
+        addClassName("policy-chart-panel");
     }
 
     private void updateData(Policy updatedPolicy) {

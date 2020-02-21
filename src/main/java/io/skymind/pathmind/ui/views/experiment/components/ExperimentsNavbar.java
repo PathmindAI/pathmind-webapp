@@ -4,7 +4,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -12,7 +11,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
@@ -33,7 +31,7 @@ public class ExperimentsNavbar extends VerticalLayout {
         for (final Experiment experiment : experiments) {
 			if (!ExperimentUtils.isDraftRunType(experiment)) {
 				Boolean isCurrentExperiment = (experiment.getId() == currentExperiment.getId());
-				RunStatus overallExperimentStatus = getRunsStatus(experiment);
+				RunStatus overallExperimentStatus = ExperimentUtils.getTrainingStatus(experiment);
 				rowsWrapper.add(createRow(experiment, overallExperimentStatus, isCurrentExperiment));
 			}
         }
@@ -43,19 +41,6 @@ public class ExperimentsNavbar extends VerticalLayout {
 		add(new NewExperimentButton(experimentDAO, modelId));
 		add(rowsWrapper);
 		addClassName("experiments-navbar");
-	}
-
-	private RunStatus getRunsStatus(Experiment experiment) {
-		// Discovery Run and Full Run will be combined, 
-		// so there's no need to distinguish between them
-		RunStatus overallExperimentStatus = RunStatus.NotStarted;
-		for (final Run run : experiment.getRuns()) {
-			RunStatus currentRunStatus = run.getStatusEnum();
-			if (currentRunStatus.getValue() > overallExperimentStatus.getValue()) {
-				overallExperimentStatus = currentRunStatus;
-			}
-		}
-		return overallExperimentStatus;
 	}
 
 	private HorizontalLayout createRow(Experiment experiment, RunStatus overallExperimentStatus, Boolean isCurrentExperiment) {
@@ -73,7 +58,6 @@ public class ExperimentsNavbar extends VerticalLayout {
 		return newRow;
 	}
 
-	// TODO: +error, stopped status icons
 	private Component createStatusIcon(RunStatus status) {
 		if (status.getValue() <= RunStatus.Running.getValue()) {
 			Div loadingSpinner = new Div();
@@ -82,7 +66,7 @@ public class ExperimentsNavbar extends VerticalLayout {
 		} else if (status == RunStatus.Completed) {
 			return new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE);
 		}
-		return new Span("no icon yet");
+		return new Icon(VaadinIcon.EXCLAMATION_CIRCLE_O);
 	}
 
 	private Div createExperimentName(String experimentNumber) {

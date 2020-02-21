@@ -1,5 +1,8 @@
 .experiments-navbar {
   width: auto !important;
+  background: white;
+  border-radius: var(--lumo-border-radius);
+  padding: var(--lumo-space-m);
 }
 
 .experiments-navbar-items {
@@ -44,15 +47,18 @@
   height: 24px;
   top: 0;
   left: 0;
-  background-image: url("/frontend/icons/icon-loading-spinner.png");
+  background-image: url("/frontend/icons/icon-loading.png");
   background-repeat: no-repeat;
   background-size: 100% auto;
   background-position: center;
-  animation: rotate 1s linear infinite;
 }
 
 iron-icon[icon="vaadin:check-circle"] {
   color: var(--pm-green-color);
+}
+
+iron-icon[icon="vaadin:exclamation-circle-o"] {
+  color: var(--pm-red-color);
 }
 
 .experiment-name {
@@ -78,10 +84,4 @@ iron-icon[icon="vaadin:check-circle"] {
   font-size: var(--lumo-font-size-s);
   color: var(--pm-gray-color-dark);
   margin-top: var(--lumo-space-xs);
-}
-
-@keyframes rotate {
-  100% {
-    transform: rotate(360deg);
-  }
 }

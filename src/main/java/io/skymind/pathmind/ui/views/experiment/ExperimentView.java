@@ -258,6 +258,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		modelId = experiment.getModelId();
 		experiments = experimentDAO.getExperimentsForModel(modelId);
 		setRunsToExperiments();
+		setPoliciesToExperiments();
 	}
 
 	@Override
@@ -361,7 +362,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void setRunsToExperiments() {
 		// set runs to experiments
 		experiments.stream()
-				.forEach(e -> e.setRuns(runDAO.getRunsForExperiment(e.getId())));
+				.forEach(experiment -> experiment.setRuns(runDAO.getRunsForExperiment(experiment.getId())));
+	}
+
+	private void setPoliciesToExperiments() {
+		// set policies to experiments
+		experiments.stream()
+				.forEach(experiment -> experiment.setPolicies(policyDAO.getPoliciesForExperiment(experiment.getId())));
 	}
 
 	class ExperimentViewPolicyUpdateSubscriber implements PolicyUpdateSubscriber
