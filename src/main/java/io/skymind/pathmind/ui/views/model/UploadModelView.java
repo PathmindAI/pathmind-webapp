@@ -46,8 +46,6 @@ import java.util.List;
 @Slf4j
 public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<Long> {
 
-	private static final String PROJECT_NOT_FOUND_EXCEPTION_MESSAGE = "Project with ID %s was not found";
-
 	@Autowired
 	private ProjectDAO projectDAO;
 
@@ -126,8 +124,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			return;
 		}
 
-		final long experimentId = modelDAO.addModelToProject(model, project.getId());
-
+		final String modelNotes = modelDetailsWizardPanel.notesFieldTextArea.getValue();
+		final long experimentId = modelDAO.addModelToProject(model, project.getId(), modelNotes);
 		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 	}
 
