@@ -2,6 +2,8 @@ package io.skymind.pathmind.ui.views.model;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
@@ -29,6 +31,7 @@ import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.ui.views.guide.GuideOverview;
 import io.skymind.pathmind.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.ui.views.model.components.UploadModelStatusWizardPanel;
 import io.skymind.pathmind.ui.views.model.components.UploadModelWizardPanel;
@@ -102,16 +105,14 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		return WrapperUtils.wrapFormCenterVertical(
 				statusPanel,
 				uploadModelWizardPanel,
-				modelDetailsWizardPanel);
+				modelDetailsWizardPanel,
+				createBacktoGuideButton());
 	}
 
     @Override
     protected void initLoadData() throws InvalidDataException {
-        final var foundProject = projectDAO.getProject(projectId);
-        if (foundProject == null) {
-            throw new InvalidDataException(String.format(PROJECT_NOT_FOUND_EXCEPTION_MESSAGE, projectId));
-        }
-        this.project = foundProject;
+		project = projectDAO.getProject(projectId)
+				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + projectId));
     }
 
 	@Override
@@ -143,6 +144,13 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private void setVisibleWizardPanel(Component wizardPanel) {
 		wizardPanels.stream()
 				.forEach(panel -> panel.setVisible(panel.equals(wizardPanel)));
+	}
+
+	private Button createBacktoGuideButton() {
+		Button backToGuideButton = new Button("Back to Pathmind Guide", click -> UI.getCurrent().navigate(GuideOverview.class, projectId));
+		backToGuideButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		backToGuideButton.getStyle().set("margin-top", "var(--lumo-space-xxl)");
+		return backToGuideButton;
 	}
 
 	/**

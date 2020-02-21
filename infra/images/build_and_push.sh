@@ -8,6 +8,7 @@
 docker_folder=$1
 image=$2
 tag=$3
+add_args=$4
 
 if [ "$docker_folder" == "" ] || [ "$image" == "" ] || [ "$tag" == "" ]
 then
@@ -46,6 +47,6 @@ $(aws ecr get-login --region ${region} --no-include-email)
 # Build the docker image locally with the image name and then push it to ECR
 # with the full name.
 
-docker build  -t ${image} -f ${docker_folder}/Dockerfile ${docker_folder}/. && \
+docker build  -t ${image} -f ${docker_folder}/Dockerfile ${add_args} ${docker_folder}/. && \
 	docker tag ${image} ${fullname} && \
 	docker push ${fullname}

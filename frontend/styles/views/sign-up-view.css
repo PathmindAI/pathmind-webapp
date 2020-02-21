@@ -1,51 +1,66 @@
 :host {
-  display: flex;
-  height: 100%;
-  width: 100%;
-  flex-direction: column;
-  background: var(--pm-app-bg-color);
-  align-items: center;
-  overflow-y: auto;
-  padding-top: var(--lumo-space-xl);
-  box-sizing: border-box;
-}
-
-.content-wrapper {
-  display: flex;
-  flex-direction: column;
-  max-width: 600px;
-  min-width: 300px;
-  width: 600px;
+  overflow-x: hidden;
 }
 
 .content {
-  margin-top: var(--lumo-size-s);
-  background: #fff;
-  border-radius: var(--lumo-border-radius);
-  padding: 50px 80px 30px;
+  width: 445px;
+  padding: 0;
+  margin: 50px auto 0;
 }
 
-vaadin-text-field,
-vaadin-password-field {
+.welcome-text {
+  color: var(--pm-orange-color);
+}
+
+.logo {
+  width: 200px;
+  margin-bottom: 25px;
+}
+
+.inner-content {
+  align-items: center;
   width: 100%;
+  padding: var(--lumo-space-l) var(--lumo-space-xl);
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  margin-top: 0;
+}
+
+a {
+  color: var(--pm-text-color);
+  text-decoration: underline;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+h3 {
+  font-size: var(--lumo-font-size-xl);
+  margin-top: 0;
+  margin-bottom: var(--lumo-size-xl);
+}
+
+h3 + vaadin-password-field {
+  padding-top: 0;
 }
 
 #buttonsCont {
-  margin-top: 60px;
+  margin-top: 45px;
   width: 100%;
 }
 
-.positive-action-btn {
-  width: 250px;
-  margin: 5px auto;
+#buttonsCont vaadin-button:first-child {
+  margin-top: 0;
+}
+
+#buttonsCont + p {
+  margin-bottom: var(--lumo-space-xl);
 }
 
 .notes {
-  font-size: 0.9em;
-  font-weight: 700;
-  color: #979797;
-  padding-left: 15px;
-  padding-top: 5px;
+  font-size: var(--lumo-font-size-s);
+  color: var(--pm-tertiary-text-color);
+  padding-left: var(--lumo-space-s);
 }
 
 .notes span:last-child {
@@ -54,4 +69,58 @@ vaadin-password-field {
 
 .notes .secondary {
   color: #e7e7e7;
+}
+
+.form-hints {
+  font-size: var(--lumo-font-size-s);
+  color: var(--pm-tertiary-text-color);
+  margin: 0;
+}
+
+#forgotPasswordBtn {
+  width: 200px;
+}
+
+#errorCont {
+  justify-content: space-between;
+  width: 100%;
+}
+
+#errorCont .error-message {
+  padding-top: 8px;
+}
+
+.do-not-share-url {
+  display: flex;
+  align-self: flex-start;
+  color: var(--pm-primary-color);
+}
+
+.do-not-share-url iron-icon {
+  width: 16px;
+  margin-right: 6px;
+}
+
+.policy {
+  font-size: var(--lumo-font-size-xs);
+  color: var(--pm-tertiary-text-color);
+}
+
+.policy a {
+  font-weight: 700;
+  color: var(--pm-tertiary-text-color);
+  text-decoration: none;
+}
+
+.policy a:hover {
+  text-decoration: underline;
+}
+
+.support {
+  margin-top: var(--lumo-size-xl);
+  text-decoration: underline;
+}
+
+.support:hover {
+  text-decoration: none;
 }

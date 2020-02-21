@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ModelDAO
@@ -30,8 +31,8 @@ public class ModelDAO
     	return ModelRepository.getModelFile(ctx, id);
 	}
 
-	public Model getModel(long modelId) {
-    	return ModelRepository.getModel(ctx, modelId);
+	public Optional<Model> getModel(long modelId) {
+    	return Optional.ofNullable(ModelRepository.getModel(ctx, modelId));
 	}
 
 	@Transactional
@@ -46,5 +47,9 @@ public class ModelDAO
 			ModelRepository.insertModelFile(transactionCtx, modelId, model.getFile());
 			return ExperimentRepository.insertExperiment(transactionCtx, modelId, dateCreated);
 		});
+	}
+
+	public void updateUserNotes(long modelId, String userNotes) {
+		ModelRepository.updateUserNotes(ctx, modelId, userNotes);
 	}
 }

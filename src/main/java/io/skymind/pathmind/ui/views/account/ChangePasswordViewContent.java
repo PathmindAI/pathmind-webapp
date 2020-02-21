@@ -5,7 +5,6 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
@@ -73,12 +72,11 @@ public class ChangePasswordViewContent extends PolymerTemplate<ChangePasswordVie
 		updateBtn.addClickListener(e -> {
 			if (validate())  {
 				if (userService.changePassword(user, newPassword.getValue())) {
-					NotificationUtils.showNotification("Password was successfully changed.", NotificationVariant.LUMO_SUCCESS);
+					NotificationUtils.showSuccess("Password was successfully changed.");
 					segmentIntegrator.passwordChanged();
 					getUI().ifPresent(ui -> ui.navigate(AccountView.class));
 				} else {
-					NotificationUtils.showNotification("There was an error during changing password, please try again",
-							NotificationVariant.LUMO_ERROR);
+					NotificationUtils.showError("There was an error during changing password, please try again");
 				}
 			}
 		});

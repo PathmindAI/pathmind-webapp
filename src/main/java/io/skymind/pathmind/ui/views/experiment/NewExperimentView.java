@@ -8,16 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -40,7 +41,6 @@ import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.FormUtils;
-import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -49,7 +49,7 @@ import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import lombok.extern.slf4j.Slf4j;
 
-@CssImport("./styles/styles.css")
+@CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
 @Slf4j
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
@@ -60,14 +60,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private ScreenTitlePanel screenTitlePanel;
 
-    private Label modelRevisionLabel;
-    private Label experimentLabel;
-    private Label projectLabel;
-
-    private PathmindTextArea errorsTextArea;
-    private PathmindTextArea getObservationTextArea;
+    private Div errorsWrapper;
+    private PathmindTextArea rewardVariablesTextArea;
     private PathmindTextArea tipsTextArea;
     private RewardFunctionEditor rewardFunctionEditor;
+    private TextArea notesFieldTextArea;
+    private Button startRunButton;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -94,60 +92,92 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected Component getMainContent() {
         binder = new Binder<>(Experiment.class);
-        return WrapperUtils.wrapWidthFullVertical(
+        VerticalLayout mainContent = WrapperUtils.wrapWidthFullVertical(
                 createBreadcrumbs(),
                 WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         getLeftPanel(),
                         getRightPanel(),
                         DEFAULT_SPLIT_PANE_RATIO)
                 );
+        setupBinder();
+        return mainContent;
     }
 
-    private Component getLeftPanel() {
-        errorsTextArea = new PathmindTextArea("Errors");
-        errorsTextArea.setReadOnly(true);
-        errorsTextArea.setSizeFull();
-        errorsTextArea.setReadOnly(true);
+    private void setupBinder() {
+    	binder.forField(rewardFunctionEditor)
+	        .asRequired()
+	        .withValidator((value, _context) -> {
+	            final List<String> errors = RewardValidationService.validateRewardFunction(value);
+	            if (errors.size() == 0) {
+	                return ValidationResult.ok();
+	            } else {
+	                return ValidationResult.error("Reward Function has compile errors!");
+	            }
+	        })
+	        .bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
+    	binder.forField(notesFieldTextArea)
+        	.bind(Experiment::getUserNotes, Experiment::setUserNotes);
+    	binder.addStatusChangeListener(evt -> startRunButton.setEnabled(!evt.hasValidationErrors()));
+	}
+
+	private Component getLeftPanel() {
+        Div errorMessageWrapper = new Div();
+        errorMessageWrapper.addClassName("error-message-wrapper");
+        errorsWrapper = new Div(
+            new Span("Errors"),
+            errorMessageWrapper
+        );
+        errorsWrapper.addClassName("errors-wrapper");
 
         rewardFunctionEditor = new RewardFunctionEditor();
         rewardFunctionEditor.addValueChangeListener(changeEvent -> {
             final List<String> errors = RewardValidationService.validateRewardFunction(changeEvent.getValue());
+            final String errorText = String.join("\n", errors);
+            final String wrapperClassName = (errorText.length() == 0) ? "noError" : "hasError";
             PushUtils.push(UI.getCurrent(),
-                    () -> errorsTextArea.setValue(String.join("\n", errors)));
+                    () ->  {
+                        errorMessageWrapper.removeAll();
+                        if ((errorText.length() == 0)) {
+                            errorMessageWrapper.add(new Icon(VaadinIcon.CHECK), new Span("No Errors"));
+                        } else {
+                            errorMessageWrapper.setText(errorText);
+                        }
+                        errorMessageWrapper.removeClassNames("hasError", "noError");
+                        errorMessageWrapper.addClassName(wrapperClassName);
+                    });
         });
-        binder.forField(rewardFunctionEditor)
-                .asRequired()
-                .withValidator((value, _context) -> {
-                    final List<String> errors = RewardValidationService.validateRewardFunction(value);
-                    if (errors.size() == 0) {
-                        return ValidationResult.ok();
-                    } else {
-                        return ValidationResult.error("Reward Function has compile errors!");
-                    }
-                })
-                .bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
-
 
         return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
-                WrapperUtils.wrapSizeFullVertical(
-                        new Label("Write your reward function:"),
-                        rewardFunctionEditor),
-                WrapperUtils.wrapSizeFullVertical(errorsTextArea),
-                70);
+                getRewardFnEditorPanel(),
+                errorsWrapper,
+            60);
+    }
+
+    private VerticalLayout getRewardFnEditorPanel() {
+        HorizontalLayout header = WrapperUtils.wrapWidthFullBetweenHorizontal(
+            new Span("Write your reward function:"),
+            getActionButton()
+        );
+        header.getStyle().set("align-items", "center");
+        VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(
+            header,
+            rewardFunctionEditor
+        );
+        rewardFnEditorPanel.addClassName("reward-fn-editor-panel");
+        return rewardFnEditorPanel;
     }
 
     private VerticalLayout getRightPanel() {
-        getObservationTextArea = new PathmindTextArea("getObservation");
-        getObservationTextArea.setSizeFull();
-        getObservationTextArea.setReadOnly(true);
-        getObservationTextArea.setReadOnly(true);
+        rewardVariablesTextArea = new PathmindTextArea("Reward Variables");
+        rewardVariablesTextArea.setSizeFull();
+        rewardVariablesTextArea.setReadOnly(true);
 
         tipsTextArea = new PathmindTextArea("Tips");
         tipsTextArea.setSizeFull();
         tipsTextArea.setReadOnly(true);
         tipsTextArea.setValue(
                 "1. The \"after\" variable is used to retrieve the observation value after an action is performed. The \"before\" variable is used to retrieve the observation value before an action is performed. So if our observation value needs to be maximized, we can write\n" +
-                "reward = after[0]- before[0];\n" +
+                "reward = after[0] - before[0];\n" +
                 "\n" +
                 "2. Weights can also be added to the reward calculation. In this case, if a condition is satisfied, then the learning agent is rewarded a score of 5 otherwise it gets a zero.\n" +
                 "reward = after[0] > before[0] ? 5 : 0;\n" +
@@ -158,18 +188,21 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 "reward -= after[2] - before[2];"
         );
 
+        notesFieldTextArea = new TextArea("Experiment Notes", "", "Add Notes");
+        notesFieldTextArea.setSizeFull();
+
         return WrapperUtils.wrapSizeFullVertical(
                 getTopButtonPanel(),
-                getTopStatusPanel(),
-                getObservationTextArea,
-                tipsTextArea,
-                getActionButtons());
+                notesFieldTextArea,
+                rewardVariablesTextArea,
+                tipsTextArea);
     }
 
     private Component getTopButtonPanel() {
-        final Button startRunButton = new Button("Start Discovery Run", new Image("frontend/images/start.svg", "run"),
+        startRunButton = new Button("Start Training", new Image("frontend/images/start.svg", "run"),
                 click -> handleStartRunButtonClicked());
         startRunButton.addClassNames("large-image-btn","run");
+        startRunButton.setEnabled(false);
         return WrapperUtils.wrapWidthFullCenterVertical(startRunButton);
     }
 
@@ -178,7 +211,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         	return;
         }
 
-        experimentDAO.updateRewardFunction(experiment);
+        experimentDAO.updateExperiment(experiment);
         segmentIntegrator.rewardFuntionCreated();
         
         trainingService.startDiscoveryRun(experiment);
@@ -190,26 +223,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
     }
 
-    private Component getTopStatusPanel() {
-        modelRevisionLabel = new Label();
-        experimentLabel = new Label();
-        projectLabel = new Label();
-
-        FormLayout formLayout = GuiUtils.getTitleBarFullWidth(3);
-
-        formLayout.addFormItem(projectLabel, "Project");
-        formLayout.addFormItem(modelRevisionLabel, "Model");
-        formLayout.addFormItem(experimentLabel, "Experiment");
-
-        return formLayout;
-    }
-
-    private HorizontalLayout getActionButtons() {
-        final Button saveDraftButton = new Button("Save Draft", new Icon(VaadinIcon.FILE),
+    private Button getActionButton() {
+        Button actionButton = new Button("Save Draft", new Icon(VaadinIcon.FILE),
                 click -> handleSaveDraftClicked());
-
-        return WrapperUtils.wrapWidthFullCenterHorizontal(
-                saveDraftButton);
+        actionButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        return actionButton;
     }
 
     private void handleSaveDraftClicked() {
@@ -217,9 +235,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         	return;
         }
 
-        experimentDAO.updateRewardFunction(experiment);
+        experimentDAO.updateExperiment(experiment);
         segmentIntegrator.draftSaved();
-        NotificationUtils.showNotification("Draft successfully saved", NotificationVariant.LUMO_SUCCESS);
+        NotificationUtils.showSuccess("Draft successfully saved");
     }
 
     private Breadcrumbs createBreadcrumbs() {        
@@ -249,13 +267,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         binder.setBean(experiment);
 
         screenTitlePanel.setSubtitle(experiment.getProject().getName());
-        getObservationTextArea.setValue(experiment.getModel().getGetObservationForRewardFunction());
-        updateTopStatusPanel(experiment);
-    }
-
-    private void updateTopStatusPanel(Experiment experiment) {
-        modelRevisionLabel.setText(experiment.getModel().getName());
-        experimentLabel.setText(experiment.getName());
-        projectLabel.setText(experiment.getProject().getName());
+        rewardVariablesTextArea.setValue(experiment.getModel().getGetObservationForRewardFunction());
     }
 }

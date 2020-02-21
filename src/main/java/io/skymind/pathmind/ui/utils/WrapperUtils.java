@@ -8,6 +8,12 @@ import com.vaadin.flow.component.splitlayout.SplitLayout;
 
 public class WrapperUtils
 {
+	public static VerticalLayout wrapVerticalWithNoPaddingOrSpacing(Component... components) {
+		VerticalLayout wrapper = new VerticalLayout(components);
+		wrapper.setPadding(false);
+		wrapper.setSpacing(false);
+		return wrapper;
+	}
 	public static VerticalLayout wrapWidthFullVertical(Component... components) {
 		VerticalLayout wrapper = new VerticalLayout(components);
 		wrapper.setWidthFull();

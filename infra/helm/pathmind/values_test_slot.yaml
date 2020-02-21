@@ -24,10 +24,11 @@ env:
   S3_BUCKET: test-training-dynamic-files.pathmind.com
   DB_SECRET_NAME: dburl
   DB_SECRET_KEY: DB_URL
+  MODEL_ANALYZER_URL: https://ma.test.devpathmind.com
 
 name: pathmind-slot
 
-namespace: default
+namespace: test
 
 ingress:
   enabled: false

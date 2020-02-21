@@ -24,6 +24,7 @@ env:
   S3_BUCKET: prod-training-dynamic-files.pathmind.com
   DB_SECRET_NAME: dburl
   DB_SECRET_KEY: DB_URL
+  MODEL_ANALYZER_URL: https://ma.devpathmind.com
 
 name: pathmind-slot  
 

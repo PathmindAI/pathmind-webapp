@@ -1,5 +1,12 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
+import static io.skymind.pathmind.utils.ChartUtils.createActiveSeriesPlotOptions;
+import static io.skymind.pathmind.utils.ChartUtils.createPassiveSeriesPlotOptions;
+
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.charts.Chart;
@@ -8,7 +15,7 @@ import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.function.SerializableConsumer;
+
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
@@ -17,12 +24,6 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.components.FilterableComponent;
 import io.skymind.pathmind.ui.utils.PushUtils;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-
-import static io.skymind.pathmind.utils.ChartUtils.createActiveSeriesPlotOptions;
-import static io.skymind.pathmind.utils.ChartUtils.createPassiveSeriesPlotOptions;
 
 @Component
 public class PolicyChartPanel extends VerticalLayout implements FilterableComponent<Policy>, PolicyUpdateSubscriber {
@@ -57,7 +58,6 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
                         series -> {
                             ListSeries listSeries = ((ListSeries) series);
                             listSeries.setData(PolicyUtils.getMeanScores(updatedPolicy));
-
                             if (!series.getName().equals(updatedPolicy.getName())) {
                                 listSeries.setName(updatedPolicy.getName());
                             }
@@ -93,6 +93,8 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
     private void addPolicyToChart(Policy policy) {
         ListSeries listSeries = new ListSeries(policy.getName(), PolicyUtils.getMeanScores(policy));
         listSeries.setId(Long.toString(policy.getId()));
+        // Insert the series as passive by default, they will be highlighted after best policy calculation
+        listSeries.setPlotOptions(createPassiveSeriesPlotOptions());
         chart.getConfiguration().addSeries(listSeries);
     }
 
@@ -144,10 +146,6 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
     @Override
     public boolean filterBusEvent(PolicyUpdateBusEvent event) {
         return experiment.getId() == event.getPolicy().getExperiment().getId();
-    }
-
-    public void addSeriesClickListener(SerializableConsumer<String> seriesClickListener) {
-    	chart.addSeriesClickListener(evt -> seriesClickListener.accept(evt.getSeries().getId()));
     }
 }
 
