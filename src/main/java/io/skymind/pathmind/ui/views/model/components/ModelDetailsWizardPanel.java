@@ -67,7 +67,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 				Model.DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS);
 
 		notesFieldTextArea = new PathmindTextArea();
-		notesFieldTextArea.setPlaceholder("Add Notes");;
+		notesFieldTextArea.setPlaceholder("Add your notes here");;
 	}
 
 	private void bindFields(Binder<Model> binder) {
@@ -83,7 +83,6 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 	private void setupNotesFieldTextArea() {
 		notesFieldTextArea.setWidthFull();
 		notesFieldTextArea.setHeight("200px");
-		notesFieldTextArea.setSpellcheck(false);
 	}
 
 	private void setupForm() {
@@ -96,7 +95,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 	private Component getNotesFieldPanel() {
 		VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
 				LabelFactory.createLabel("Model Notes", BOLD_LABEL),
-				LabelFactory.createLabel("Put your notes here for the uploaded model."),
+				LabelFactory.createLabel("Add any notes for yourself about the model you're uploading."),
 				notesFieldTextArea);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
