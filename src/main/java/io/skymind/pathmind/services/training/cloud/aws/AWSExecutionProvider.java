@@ -326,6 +326,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private void installHelper(PathmindHelper pathmindHelperVersion, List<String> instructions, List<String> files) {
         switch (pathmindHelperVersion) {
             case VERSION_0_0_24:
+            case VERSION_0_0_25:
+            case VERSION_0_0_25_Multi:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));

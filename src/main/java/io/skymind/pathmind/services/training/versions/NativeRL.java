@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum NativeRL implements VersionEnum{
+    @Deprecated
     VERSION_0_7_0,
     VERSION_0_7_6,
     VERSION_0_8_1;
