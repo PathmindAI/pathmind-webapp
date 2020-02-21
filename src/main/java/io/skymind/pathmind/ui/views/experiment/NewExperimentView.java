@@ -61,7 +61,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private ScreenTitlePanel screenTitlePanel;
 
     private Div errorsWrapper;
-    private PathmindTextArea rewardVariablesTextArea;
     private PathmindTextArea tipsTextArea;
     private RewardFunctionEditor rewardFunctionEditor;
     private TextArea notesFieldTextArea;
@@ -168,10 +167,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private VerticalLayout getRightPanel() {
-        rewardVariablesTextArea = new PathmindTextArea("Reward Variables");
-        rewardVariablesTextArea.setSizeFull();
-        rewardVariablesTextArea.setReadOnly(true);
-
         tipsTextArea = new PathmindTextArea("Tips");
         tipsTextArea.setSizeFull();
         tipsTextArea.setReadOnly(true);
@@ -194,7 +189,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         return WrapperUtils.wrapSizeFullVertical(
                 getTopButtonPanel(),
                 notesFieldTextArea,
-                rewardVariablesTextArea,
                 tipsTextArea);
     }
 
@@ -267,6 +261,5 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         binder.setBean(experiment);
 
         screenTitlePanel.setSubtitle(experiment.getProject().getName());
-        rewardVariablesTextArea.setValue(experiment.getModel().getGetObservationForRewardFunction());
     }
 }
