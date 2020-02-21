@@ -29,7 +29,7 @@ public class RescaleTrainingService extends TrainingService {
     protected void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, Policy basePolicy) {
         final Run run = runDAO.createRun(exp, runType);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
-        final Model model = modelDAO.getModel(exp.getModelId());
+        final Model model = modelDAO.getModel(exp.getModelId()).get();
 
         // Get model file id, either uploading it if necessary, or just getting it from the metadata database table
         String modelFileId = executionProviderMetaDataDAO.getModelFileKey(exp.getModelId());

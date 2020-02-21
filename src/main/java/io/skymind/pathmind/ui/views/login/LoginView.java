@@ -18,7 +18,6 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
@@ -124,11 +123,9 @@ public class LoginView extends HorizontalLayout
 			PathmindUser user = userService.findByEmailIgnoreCase(email);
 			if (user != null) {
 				emailNotificationService.sendVerificationEmail(user);
-				NotificationUtils.showNotification("Email verification was sent to your email.",
-						NotificationVariant.LUMO_SUCCESS);
+				NotificationUtils.showSuccess("Email verification was sent to your email.");
 			} else {
-				NotificationUtils.showNotification("Email: " + email + " was not found. Please try to login again.",
-						NotificationVariant.LUMO_ERROR);
+				NotificationUtils.showError("Email: " + email + " was not found. Please try to login again.");
 			}
 		});
 

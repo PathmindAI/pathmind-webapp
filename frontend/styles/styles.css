@@ -187,8 +187,7 @@ img {
   align-self: center;
 }
 
-.projects-view .content,
-.models-view .content {
+.projects-view .content {
   flex: 1;
   max-width: 1200px;
   align-self: center;
@@ -197,6 +196,11 @@ img {
 .projects-view .view-section,
 .models-view .view-section {
   flex: 1;
+  margin-top: var(--lumo-space-xs);
+}
+
+.models-view vaadin-split-layout {
+  margin-bottom: var(--lumo-space-xl);
 }
 
 account-view {
@@ -266,6 +270,10 @@ account-view {
 }
 .tag:empty {
   display: none;
+}
+.error-label {
+  background: var(--lumo-error-color-10pct);
+  color: var(--lumo-error-color);
 }
 
 /* Typography Styles */

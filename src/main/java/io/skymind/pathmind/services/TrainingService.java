@@ -15,9 +15,7 @@ import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.constant.RunConstants;
-import io.skymind.pathmind.services.training.versions.AnyLogic;
-import io.skymind.pathmind.services.training.versions.PathmindHelper;
-import io.skymind.pathmind.services.training.versions.RLLib;
+import io.skymind.pathmind.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -46,17 +44,12 @@ public abstract class TrainingService {
         this.policyDAO = policyDAO;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
 
-//        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5, PathmindHelper.VERSION_0_0_24, RLLib.VERSION_0_7_0);
-//        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_1, PathmindHelper.VERSION_0_0_24, RLLib.VERSION_0_7_0);
-
-        PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_0_0_24;
-        RLLib rlLibVersion = RLLib.VERSION_0_7_0;
+        PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_0_0_25;
         if (miltiagent) {
-            pathmindHelperVersion = PathmindHelper.VERSION_0_0_24_MULTI;
-            rlLibVersion = RLLib.VERSION_0_7_0_MULTI;
+            pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
         }
 
-        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_1, pathmindHelperVersion, rlLibVersion);
+        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_1, pathmindHelperVersion, NativeRL.VERSION_0_7_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
     }
 
     public void startTestRun(Experiment exp){
@@ -117,6 +110,7 @@ public abstract class TrainingService {
     }
 
     private void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec) {
+    	runDAO.clearNotificationSentInfo(exp.getId(), runType.getValue());
         startRun(runType, exp, iterations, learningRates, gammas, batchSizes, maxTimeInSec, null);
     }
 

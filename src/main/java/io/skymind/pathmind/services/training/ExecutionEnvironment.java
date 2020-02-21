@@ -1,18 +1,20 @@
 package io.skymind.pathmind.services.training;
 
-import io.skymind.pathmind.services.training.versions.AnyLogic;
-import io.skymind.pathmind.services.training.versions.PathmindHelper;
-import io.skymind.pathmind.services.training.versions.RLLib;
+import io.skymind.pathmind.services.training.versions.*;
 
 public class ExecutionEnvironment {
     private final AnyLogic anylogicVersion;
     private final PathmindHelper pathmindHelperVersion;
-    private final RLLib rllibVersion;
+    private final NativeRL rllibVersion;
+    private final JDK jdkVersion;
+    private final Conda condaVersion;
 
-    public ExecutionEnvironment(AnyLogic anylogicVersion, PathmindHelper pathmindHelperVersion, RLLib rllibVersion) {
+    public ExecutionEnvironment(AnyLogic anylogicVersion, PathmindHelper pathmindHelperVersion, NativeRL rllibVersion, JDK jdkVersion, Conda condaVersion) {
         this.anylogicVersion = anylogicVersion;
         this.pathmindHelperVersion = pathmindHelperVersion;
         this.rllibVersion = rllibVersion;
+        this.jdkVersion = jdkVersion;
+        this.condaVersion = condaVersion;
     }
 
     public AnyLogic getAnylogicVersion() {
@@ -23,7 +25,15 @@ public class ExecutionEnvironment {
         return pathmindHelperVersion;
     }
 
-    public RLLib getRllibVersion() {
+    public NativeRL getRllibVersion() {
         return rllibVersion;
+    }
+
+    public JDK getJdkVersion() {
+        return jdkVersion;
+    }
+
+    public Conda getCondaVersion() {
+        return condaVersion;
     }
 }

@@ -32,7 +32,7 @@ public class AWSTrainingService extends TrainingService {
     protected void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, Policy basePolicy) {
         final Run run = runDAO.createRun(exp, runType);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
-        final Model model = modelDAO.getModel(exp.getModelId());
+        final Model model = modelDAO.getModel(exp.getModelId()).get();
 
         executionProvider.uploadModel(run.getId(), modelDAO.getModelFile(model.getId()));
 
