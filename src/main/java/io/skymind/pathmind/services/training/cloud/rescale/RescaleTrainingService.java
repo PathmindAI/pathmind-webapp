@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RescaleTrainingService extends TrainingService {
     public RescaleTrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
-        super(executionProvider, runDAO, modelDAO, policyDAO, executionProviderMetaDataDAO);
+        super(false, executionProvider, runDAO, modelDAO, policyDAO, executionProviderMetaDataDAO);
     }
 
     protected void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, Policy basePolicy) {
@@ -55,7 +55,8 @@ public class RescaleTrainingService extends TrainingService {
                 learningRates,
                 gammas,
                 batchSizes,
-                maxTimeInSec
+                maxTimeInSec,
+                false
         );
 
         if (basePolicy != null) {

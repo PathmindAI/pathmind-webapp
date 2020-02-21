@@ -883,6 +883,13 @@
         </rollback>
     </changeSet>
 
+    <!-- #873 Error when clicking 'upload model' -->
+    <changeSet id="20200217-01" author="steph@followsteph.com">
+        <sql>
+            INSERT INTO guide (project_id, step) (SELECT project.id, 0 FROM project LEFT JOIN guide ON project.id=guide.project_id WHERE guide.project_id IS NULL);
+        </sql>
+    </changeSet>
+
     <changeSet id="20200218-01" author="krystian.walaszczyk@ext.vaadin.com">
         <createTable tableName="TRAINING_ERROR">
             <column autoIncrement="true" name="ID" type="BIGINT">
