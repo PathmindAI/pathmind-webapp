@@ -20,7 +20,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -42,7 +41,6 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.FormUtils;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
-import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
@@ -106,18 +104,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private void setupBinder() {
     	binder.forField(rewardFunctionEditor)
 	        .asRequired()
-	        .withValidator((value, _context) -> {
-	            final List<String> errors = RewardValidationService.validateRewardFunction(value);
-	            if (errors.size() == 0) {
-	                return ValidationResult.ok();
-	            } else {
-	                return ValidationResult.error("Reward Function has compile errors!");
-	            }
-	        })
 	        .bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
     	binder.forField(notesFieldTextArea)
         	.bind(Experiment::getUserNotes, Experiment::setUserNotes);
-    	binder.addStatusChangeListener(evt -> startRunButton.setEnabled(!evt.hasValidationErrors()));
 	}
 
 	private Component getLeftPanel() {
@@ -134,17 +123,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             final List<String> errors = RewardValidationService.validateRewardFunction(changeEvent.getValue());
             final String errorText = String.join("\n", errors);
             final String wrapperClassName = (errorText.length() == 0) ? "noError" : "hasError";
-            PushUtils.push(UI.getCurrent(),
-                    () ->  {
-                        errorMessageWrapper.removeAll();
-                        if ((errorText.length() == 0)) {
-                            errorMessageWrapper.add(new Icon(VaadinIcon.CHECK), new Span("No Errors"));
-                        } else {
-                            errorMessageWrapper.setText(errorText);
-                        }
-                        errorMessageWrapper.removeClassNames("hasError", "noError");
-                        errorMessageWrapper.addClassName(wrapperClassName);
-                    });
+            
+	        errorMessageWrapper.removeAll();
+	        if ((errorText.length() == 0)) {
+	            errorMessageWrapper.add(new Icon(VaadinIcon.CHECK), new Span("No Errors"));
+	            startRunButton.setEnabled(true);
+	        } else {
+	            errorMessageWrapper.setText(errorText);
+	            startRunButton.setEnabled(false);
+	        }
+	        errorMessageWrapper.removeClassNames("hasError", "noError");
+	        errorMessageWrapper.addClassName(wrapperClassName);
         });
 
         return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
@@ -231,10 +220,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleSaveDraftClicked() {
-        if (!FormUtils.isValidForm(binder, experiment)) {
-        	return;
-        }
-
         experimentDAO.updateExperiment(experiment);
         segmentIntegrator.draftSaved();
         NotificationUtils.showSuccess("Draft successfully saved");
@@ -265,7 +250,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
         binder.setBean(experiment);
-
         screenTitlePanel.setSubtitle(experiment.getProject().getName());
         rewardVariablesTextArea.setValue(experiment.getModel().getGetObservationForRewardFunction());
     }
