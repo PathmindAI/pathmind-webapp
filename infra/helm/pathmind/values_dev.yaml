@@ -22,6 +22,8 @@ env:
   ENVIRONMENT: dev
   SQS_URL: https://queue.amazonaws.com/839270835622/dev-training-queue.fifo
   S3_BUCKET: dev-training-dynamic-files.pathmind.com
+  DB_SECRET_NAME: dburl
+  DB_SECRET_KEY: DB_URL
   MODEL_ANALYZER_URL: https://ma.dev.devpathmind.com
   MULTI_AGENT: false
 
