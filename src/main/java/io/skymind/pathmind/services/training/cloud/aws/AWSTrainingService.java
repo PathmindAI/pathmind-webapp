@@ -23,10 +23,12 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class AWSTrainingService extends TrainingService {
-    public AWSTrainingService(@Value("${pathmind.training.multiagent:false}") boolean miltiagent,
+    private final boolean multiAgent;
+    public AWSTrainingService(@Value("${pathmind.training.multiagent:false}") boolean multiAgent,
                               ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO,
                               ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
-        super(miltiagent, executionProvider, runDAO, modelDAO, policyDAO, executionProviderMetaDataDAO);
+        super(multiAgent, executionProvider, runDAO, modelDAO, policyDAO, executionProviderMetaDataDAO);
+        this.multiAgent = multiAgent;
     }
 
     protected void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, Policy basePolicy) {
@@ -53,7 +55,8 @@ public class AWSTrainingService extends TrainingService {
                 learningRates,
                 gammas,
                 batchSizes,
-                maxTimeInSec
+                maxTimeInSec,
+                multiAgent
         );
 
         List<RewardScore> rewardScores = null;

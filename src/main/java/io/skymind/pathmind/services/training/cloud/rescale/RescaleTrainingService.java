@@ -55,7 +55,8 @@ public class RescaleTrainingService extends TrainingService {
                 learningRates,
                 gammas,
                 batchSizes,
-                maxTimeInSec
+                maxTimeInSec,
+                false
         );
 
         List<RewardScore> rewardScores = null;

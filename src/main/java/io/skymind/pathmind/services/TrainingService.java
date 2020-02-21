@@ -35,7 +35,7 @@ public abstract class TrainingService {
     protected final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     protected ExecutionEnvironment executionEnvironment;
 
-    public TrainingService(boolean miltiagent, ExecutionProvider executionProvider,
+    public TrainingService(boolean multiAgent, ExecutionProvider executionProvider,
                            RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO,
                            ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
         this.executionProvider = executionProvider;
@@ -45,7 +45,7 @@ public abstract class TrainingService {
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
 
         PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_0_0_25;
-        if (miltiagent) {
+        if (multiAgent) {
             pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
         }
 
