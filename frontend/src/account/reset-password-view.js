@@ -33,7 +33,8 @@ class ResetPasswordView extends PolymerElement {
         <vaadin-vertical-layout id="prePart" class="inner-content">
           <h3>Reset Your Password</h3>
           <p>
-           Enter your work email and we'll send you a link to set a new password.
+            Enter your work email and we'll send you a link to set a new
+            password.
           </p>
           <div class="error-message">{{message}}</div>
           <vaadin-email-field

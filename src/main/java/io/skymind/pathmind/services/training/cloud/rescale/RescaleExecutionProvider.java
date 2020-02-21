@@ -14,7 +14,7 @@ import io.skymind.pathmind.services.training.cloud.rescale.api.dto.JobStatus;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
-import io.skymind.pathmind.services.training.versions.RLLib;
+import io.skymind.pathmind.services.training.versions.NativeRL;
 import io.skymind.pathmind.services.training.versions.RescaleFileManager;
 import lombok.extern.slf4j.Slf4j;
 
@@ -359,12 +359,12 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         files.add(new FileReference(modelId, false));
         instructions.addAll(Arrays.asList(
                 "cd work",
-                "unzip ../model.zip",
+                "unzip -o ../model.zip",
                 "rm ../model.zip"
         ));
     }
 
-    private void installRllib(RLLib rllibVersion, List<String> instructions, List<FileReference> files) {
+    private void installRllib(NativeRL rllibVersion, List<String> instructions, List<FileReference> files) {
         switch (rllibVersion) {
             case VERSION_0_7_0:
                 instructions.addAll(Arrays.asList(
@@ -375,7 +375,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "export JDK_HOME=$JAVA_HOME",
                         "export JRE_HOME=$JAVA_HOME/jre",
                         "export PATH=$JAVA_HOME/bin:$PATH",
-                        "export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH",
+                        "export LD_LIBRARY_PATH=`pwd`/conda/lib:$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH",
 
                         // Setup Anaconda
                         "mkdir conda",
