@@ -1,5 +1,7 @@
 package io.skymind.pathmind.services;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import javax.tools.*;
 import java.io.IOException;
 import java.net.URI;
@@ -7,7 +9,16 @@ import java.util.*;
 
 public class RewardValidationService {
 
-    public static List<String> validateRewardFunction(String rewardFunction){
+    @Value("${pathmind.training.multiagent:false}")
+    private boolean multiAgent;
+
+    public List<String> validateRewardFunction(String rewardFunction){
+        // Disable reward function validation for Multi-agent
+        // https://github.com/SkymindIO/pathmind-webapp/issues/919
+        if (this.multiAgent) {
+            return Collections.emptyList();
+        }
+
         final String code = fillInTemplate(rewardFunction);
         final String[] lines = code.split("\n");
         int startReward = 0;
