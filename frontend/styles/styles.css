@@ -208,11 +208,12 @@ img {
   background: white;
 }
 
-@media (max-width: 1280px) {
+/* In case we want the side menu go to the top for smaller screens
+@media (max-width: 1279px) {
   .guide-view-wrapper {
     flex-direction: column;
   }
-}
+} */
 
 account-view {
   background: var(--pm-app-bg-color);
@@ -262,7 +263,7 @@ account-view {
   }
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1024px) {
   html {
     font-size: 13px;
   }

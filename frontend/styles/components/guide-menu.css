@@ -65,7 +65,8 @@
   opacity: 0.5;
 }
 
-@media (max-width: 1280px) {
+/* In case we want the side menu go to the top for smaller screens
+@media (max-width: 1279px) {
   .guide-menu {
     align-items: center;
     width: 100% !important;
@@ -91,4 +92,4 @@
     font-size: var(--lumo-font-size-m);
     margin-top: var(--lumo-space-s);
   }
-}
+} */
