@@ -59,7 +59,7 @@ public class Model extends ArchivableData
 	}
 
 	public void setGetObservationForRewardFunction(String getObservationForRewardFunction) {
-		this.getObservationForRewardFunction = getObservationForRewardFunction;
+		this.getObservationForRewardFunction = getObservationForRewardFunction != null ? getObservationForRewardFunction : "";
 	}
 
 	public byte[] getFile() {
