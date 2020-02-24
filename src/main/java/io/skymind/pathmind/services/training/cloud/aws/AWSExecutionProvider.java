@@ -265,6 +265,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private void installAnyLogic(AnyLogic anylogicVersion, List<String> instructions, List<String> files) {
         switch (anylogicVersion) {
             case VERSION_8_5_1:
+            case VERSION_8_5_2:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip",
                         "rm baseEnv.zip",
