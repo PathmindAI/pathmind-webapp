@@ -49,7 +49,7 @@ public class DateAndTimeUtils
 				(seconds > 0 ? (seconds + " sec") : "");
 	}
 
-	public static String getOnlyTheHighestDateLevel(long totalSeconds)
+	public static String formatETA(long totalSeconds)
 	{
 		if(totalSeconds == 0)
 			return "0 sec";
@@ -58,7 +58,9 @@ public class DateAndTimeUtils
 		long minutes = (totalSeconds % 3600) / 60;
 		long seconds = totalSeconds % 60;
 
-		if(hours > 0)
+		if(hours > 10) 
+			return "10+ hr";
+		else if (hours > 0)
 			return hours + " hr";
 		else if (minutes > 0)
 			return minutes + " min";
