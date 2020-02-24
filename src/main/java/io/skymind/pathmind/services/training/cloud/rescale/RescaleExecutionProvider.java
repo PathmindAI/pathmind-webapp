@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services.training.cloud.rescale;
 
+import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
@@ -13,7 +14,7 @@ import io.skymind.pathmind.services.training.cloud.rescale.api.dto.JobStatus;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AnyLogic;
 import io.skymind.pathmind.services.training.versions.PathmindHelper;
-import io.skymind.pathmind.services.training.versions.RLLib;
+import io.skymind.pathmind.services.training.versions.NativeRL;
 import io.skymind.pathmind.services.training.versions.RescaleFileManager;
 import lombok.extern.slf4j.Slf4j;
 
@@ -85,7 +86,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public RunStatus status(String jobHandle) {
+    public ProviderJobStatus status(String jobHandle) {
         final List<JobStatus> statuses = client.jobStatusHistory(jobHandle).getResults();
 
         if (statuses.size() > 0) {
@@ -108,24 +109,24 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                 }
 
                 if (status.getStatusReason().equals("Completed successfully") && errs.size() == 0) {
-                    return RunStatus.Completed;
+                    return new ProviderJobStatus(RunStatus.Completed);
                 } else {
                     if (errs.size() > 0) {
                         log.info(jobHandle + " will be considered as an error");
                     }
-                    return RunStatus.Error;
+                    return new ProviderJobStatus(RunStatus.Error);
                 }
             } else if (statuses.stream().anyMatch(it -> it.getStatus().equals("Executing"))) {
-                return RunStatus.Running;
+                return new ProviderJobStatus(RunStatus.Running);
             }
         }
 
-        return RunStatus.Starting;
+        return new ProviderJobStatus(RunStatus.Starting);
     }
 
     @Override
     public Map<String, String> progress(String jobHandle) {
-        final RunStatus runStatus = status(jobHandle);
+        final RunStatus runStatus = status(jobHandle).getRunStatus();
         return progress(jobHandle, runStatus);
     }
 
@@ -184,7 +185,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
 
     @Override
     public String console(String jobHandle) {
-        final RunStatus runStatus = status(jobHandle);
+        final RunStatus runStatus = status(jobHandle).getRunStatus();
 
         if (runStatus.equals(RunStatus.Completed)) {
             return client.consoleOutput(jobHandle, DEFAULT_RUN_ID);
@@ -353,12 +354,12 @@ public class RescaleExecutionProvider implements ExecutionProvider {
         files.add(new FileReference(modelId, false));
         instructions.addAll(Arrays.asList(
                 "cd work",
-                "unzip ../model.zip",
+                "unzip -o ../model.zip",
                 "rm ../model.zip"
         ));
     }
 
-    private void installRllib(RLLib rllibVersion, List<String> instructions, List<FileReference> files) {
+    private void installRllib(NativeRL rllibVersion, List<String> instructions, List<FileReference> files) {
         switch (rllibVersion) {
             case VERSION_0_7_0:
                 instructions.addAll(Arrays.asList(
@@ -369,7 +370,7 @@ public class RescaleExecutionProvider implements ExecutionProvider {
                         "export JDK_HOME=$JAVA_HOME",
                         "export JRE_HOME=$JAVA_HOME/jre",
                         "export PATH=$JAVA_HOME/bin:$PATH",
-                        "export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH",
+                        "export LD_LIBRARY_PATH=`pwd`/conda/lib:$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH",
 
                         // Setup Anaconda
                         "mkdir conda",

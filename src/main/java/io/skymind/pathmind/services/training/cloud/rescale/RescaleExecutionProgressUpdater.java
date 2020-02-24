@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.db.dao.PolicyDAO;
-import org.springframework.stereotype.Service;
 
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.RunType;
@@ -63,9 +63,9 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
         {
             try {
                 final String rescaleJobId = rescaleJobIds.get(run.getId());
-                final RunStatus jobStatus = provider.status(rescaleJobId);
+                final ProviderJobStatus jobStatus = provider.status(rescaleJobId);
 
-                final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus);
+                final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus.getRunStatus());
                 final List<String> finishedPolicyNamesFromRescale = getTerminatedPolicesFromProvider(rescaleJobId);
 
                 setStoppedAtForFinishedPolicies(policies, finishedPolicyNamesFromRescale);
@@ -79,9 +79,9 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
                 // service component so that if there is a policyFile (byte[]) then it's done before the updateRun()
                 // method is called and we can just do a simple isPolicyFile != null check as to whether or not to
                 // also update it in the database.
-                savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus);
-                
-                sendNotificationMail(jobStatus, run);
+                savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), rescaleJobId, jobStatus.getRunStatus());
+
+                sendNotificationMail(jobStatus.getRunStatus(), run);
             } catch (Exception e) {
                 log.error("Error for run: " + run.getId() + " : " + e.getMessage(), e);
                 emailNotificationService.sendEmailExceptionNotification("Error for run: " + run.getId() + " : " + e.getMessage(), e);
@@ -91,12 +91,12 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
 
     /**
      * Send notification mail if Run is completed successfully or with error
-     * and if the Run type is discovery or full run 
+     * and if the Run type is discovery or full run
      */
     private void sendNotificationMail(RunStatus jobStatus, Run run) {
 		if (jobStatus == RunStatus.Completed || jobStatus == RunStatus.Error) {
 			if (run.getRunTypeEnum() == RunType.DiscoveryRun ||  run.getRunTypeEnum() == RunType.FullRun) {
-				
+
 				// Do not send notification if there is another run with same run type still executing or the notification is already been sent
 				if (runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
 					boolean isSuccessful = jobStatus == RunStatus.Completed;
@@ -109,7 +109,7 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
 				}
 			}
 		}
-		
+
 	}
 
 	private List<Run> getRunsWithRescaleJobs(List<Long> runIds, Map<Long, String> rescaleJobIds) {

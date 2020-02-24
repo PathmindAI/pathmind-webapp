@@ -23,13 +23,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RescaleTrainingService extends TrainingService {
     public RescaleTrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
-        super(executionProvider, runDAO, modelDAO, policyDAO, executionProviderMetaDataDAO);
+        super(false, executionProvider, runDAO, modelDAO, policyDAO, executionProviderMetaDataDAO);
     }
 
-    protected void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples, boolean multiAgent, Policy basePolicy) {
+    protected void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples, Policy basePolicy) {
         final Run run = runDAO.createRun(exp, runType);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
-        final Model model = modelDAO.getModel(exp.getModelId());
+        final Model model = modelDAO.getModel(exp.getModelId()).get();
 
         // Get model file id, either uploading it if necessary, or just getting it from the metadata database table
         String modelFileId = executionProviderMetaDataDAO.getModelFileKey(exp.getModelId());
@@ -54,7 +54,7 @@ public class RescaleTrainingService extends TrainingService {
                 runType,
                 maxTimeInSec,
                 numSamples,
-                multiAgent
+                false
         );
 
         List<RewardScore> rewardScores = null;

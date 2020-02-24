@@ -2,6 +2,7 @@ package io.skymind.pathmind.data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Experiment extends ArchivableData
 {
@@ -10,6 +11,7 @@ public class Experiment extends ArchivableData
 	private String rewardFunction;
 	private LocalDateTime dateCreated;
 	private LocalDateTime lastActivityDate;
+	private String userNotes;
 
 	// Helper GUI attributes not stored in the database
 	private Project project;
@@ -80,8 +82,9 @@ public class Experiment extends ArchivableData
 		return policies;
 	}
 
+	// IMPORTANT -> This is resolves #893. I looked at ThreadLocal as well as adjusting how the code uses the policies but deemed this to offer the best tradeoffs.
 	public void setPolicies(List<Policy> policies) {
-		this.policies = policies;
+		this.policies = new CopyOnWriteArrayList<>(policies);
 	}
 
 	public List<Run> getRuns() {
@@ -90,5 +93,13 @@ public class Experiment extends ArchivableData
 
 	public void setRuns(List<Run> runs) {
 		this.runs = runs;
+	}
+
+	public String getUserNotes() {
+		return userNotes;
+	}
+
+	public void setUserNotes(String userNotes) {
+		this.userNotes = userNotes;
 	}
 }

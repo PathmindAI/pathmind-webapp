@@ -79,6 +79,7 @@
 
 :host([focus-ring][theme~="tertiary"]) {
   box-shadow: none;
+}
 
 :host(.half-width) {
   min-width: unset;

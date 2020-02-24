@@ -22,9 +22,14 @@ env:
   ENVIRONMENT: test
   SQS_URL: https://queue.amazonaws.com/839270835622/test-training-queue.fifo
   S3_BUCKET: test-training-dynamic-files.pathmind.com
+  DB_SECRET_NAME: dburl
+  DB_SECRET_KEY: DB_URL
   MODEL_ANALYZER_URL: https://ma.test.devpathmind.com
+  MULTI_AGENT: true
 
 name: pathmind  
+
+namespace: test
 
 ingress:
   enabled: false

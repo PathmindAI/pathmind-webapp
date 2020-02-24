@@ -860,4 +860,88 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20200211-01" author="steph@followsteph.com">
+        <addColumn tableName="PROJECT">
+            <column name="USER_NOTES" type="VARCHAR" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="MODEL">
+            <column name="USER_NOTES" type="VARCHAR" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="EXPERIMENT">
+            <column name="USER_NOTES" type="VARCHAR" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="PROJECT" columnName="USER_NOTES"/>
+            <dropColumn tableName="MODEL" columnName="USER_NOTES"/>
+            <dropColumn tableName="EXPERIMENT" columnName="USER_NOTES"/>
+        </rollback>
+    </changeSet>
+
+    <!-- #873 Error when clicking 'upload model' -->
+    <changeSet id="20200217-01" author="steph@followsteph.com">
+        <sql>
+            INSERT INTO guide (project_id, step) (SELECT project.id, 0 FROM project LEFT JOIN guide ON project.id=guide.project_id WHERE guide.project_id IS NULL);
+        </sql>
+    </changeSet>
+
+    <changeSet id="20200218-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <createTable tableName="TRAINING_ERROR">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="KEYWORD" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR" />
+            <column name="RESTARTABLE" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <insert tableName="TRAINING_ERROR">
+            <column name="id" value="0"/>
+            <column name="KEYWORD" value="Not an error"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="python3: can't open file 'rllibtrain.py'"/>
+            <column name="RESTARTABLE" value="true"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="SyntaxError: invalid syntax"/>
+            <column name="DESCRIPTION" value="Please fix the reward function."/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="Fatal Python error: Segmentation fault"/>
+            <column name="DESCRIPTION" value="Please restart your training."/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="Worker crashed during call to train()"/>
+            <column name="RESTARTABLE" value="true"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="java.lang.ArrayIndexOutOfBoundsException"/>
+            <column name="DESCRIPTION" value="Please try again."/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="unknown error"/>
+            <column name="DESCRIPTION" value="Unrecognized error. Please contact Pathmind team."/>
+        </insert>
+        <rollback>
+            <dropTable tableName="TRAINING_ERROR"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200218-02" author="krystian.walaszczyk@ext.vaadin.com">
+        <addColumn tableName="RUN">
+            <column name="TRAINING_ERROR_ID" type="BIGINT">
+                <constraints nullable="true" foreignKeyName="PM_FK_TRAINING_ERROR" references="TRAINING_ERROR(ID)"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -103,11 +103,18 @@ public class ProjectsView extends PathMindDefaultView
 				.setResizable(true)
 				.setSortable(true);
 
+		projectGrid.addColumn(project -> {
+				String userNotes = project.getUserNotes();
+				return userNotes.isEmpty() ? "--" : userNotes;
+		})
+				.setHeader("Notes")
+				.setResizable(true)
+				.setSortable(false);
+
 		projectGrid.sort(Arrays.asList(new GridSortOrder<>(lastActivityColumn, SortDirection.DESCENDING)));
 
-		projectGrid.addItemClickListener(event -> {
-			getUI().ifPresent(ui -> ui.navigate(ModelsView.class, event.getItem().getId()));
-		});
+		projectGrid.addItemClickListener(event ->
+				getUI().ifPresent(ui -> ui.navigate(ModelsView.class, event.getItem().getId())));
 	}
 
 	private List<Project> getProjects() {

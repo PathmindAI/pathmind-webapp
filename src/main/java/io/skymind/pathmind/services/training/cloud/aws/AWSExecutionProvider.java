@@ -2,7 +2,9 @@ package io.skymind.pathmind.services.training.cloud.aws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
+import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
@@ -10,10 +12,7 @@ import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.CheckPoint;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.ExperimentState;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
-import io.skymind.pathmind.services.training.versions.AWSFileManager;
-import io.skymind.pathmind.services.training.versions.AnyLogic;
-import io.skymind.pathmind.services.training.versions.PathmindHelper;
-import io.skymind.pathmind.services.training.versions.RLLib;
+import io.skymind.pathmind.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
@@ -28,28 +27,23 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.skymind.pathmind.constants.RunStatus.*;
+import static io.skymind.pathmind.constants.RunStatus.Error;
+
 @Service
 @Slf4j
 public class AWSExecutionProvider implements ExecutionProvider {
     private final AWSApiClient client;
     private final ObjectMapper objectMapper;
     private final AWSFileManager fileManager;
-
-    private static final List<String> KNOWN_ERROR_MSGS = new ArrayList<>();
-
-    static {
-        KNOWN_ERROR_MSGS.add("python3: can\'t open file \'rllibtrain.py\'");
-        KNOWN_ERROR_MSGS.add("SyntaxError: invalid syntax");
-        KNOWN_ERROR_MSGS.add("Fatal Python error: Segmentation fault");
-        KNOWN_ERROR_MSGS.add("Worker crashed during call to train()");
-        KNOWN_ERROR_MSGS.add("java.lang.ArrayIndexOutOfBoundsException");
-    }
+    private final TrainingErrorDAO trainingErrorDAO;
 
     private static final String AWS_JOB_ID_PREFIX = "id";
 
-    public AWSExecutionProvider(AWSApiClient client, ObjectMapper objectMapper) {
+    public AWSExecutionProvider(AWSApiClient client, ObjectMapper objectMapper, TrainingErrorDAO trainingErrorDAO) {
         this.client = client;
         this.objectMapper = objectMapper;
+        this.trainingErrorDAO = trainingErrorDAO;
         this.fileManager = AWSFileManager.getInstance();
     }
 
@@ -61,7 +55,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
         final ExecutionEnvironment env = job.getEnv();
 
         // Set up which files are needed, and how to install them
-        installRllib(env.getRllibVersion(), instructions, files);
+        installJDK(env.getJdkVersion(), instructions, files);
+        installConda(env.getCondaVersion(), instructions, files);
+        installNativeRL(env.getRllibVersion(), instructions, files);
         installAnyLogic(env.getAnylogicVersion(), instructions, files);
         installHelper(env.getPathmindHelperVersion(), instructions, files);
         installModel(job.getModelFileId(), instructions, files);
@@ -111,11 +107,11 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public RunStatus status(String jobHandle) {
+    public ProviderJobStatus status(String jobHandle) {
         if (outputExist(jobHandle)){
             boolean killed = getFile(jobHandle, TrainingFile.KILLED).isPresent();
             if (killed) {
-                return RunStatus.Killed;
+                return new ProviderJobStatus(Killed);
             }
 
             ExperimentState experimentState = getExperimentState(jobHandle);
@@ -128,17 +124,23 @@ public class AWSExecutionProvider implements ExecutionProvider {
             }
 
             if (trialStatusCount.getOrDefault("ERROR", 0L) > 0 || knownErrsCheck.size() > 0) {
-                return RunStatus.Error;
+                final var allErrorsList = knownErrsCheck.stream()
+                        .collect(Collectors.toList());
+                var oneLineErrors = allErrorsList.stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(" ; "));
+                log.warn("{} error(s) detected for the AWS jobHandle {}: {}", allErrorsList.size(), jobHandle, oneLineErrors);
+                return new ProviderJobStatus(Error, allErrorsList);
             }
 
             if (experimentState.getCheckpoints().size() ==  trialStatusCount.getOrDefault("TERMINATED", 0L)) {
-                return RunStatus.Completed;
+                return new ProviderJobStatus(Completed);
             }
 
-            return RunStatus.Running;
+            return new ProviderJobStatus(Running);
         }
 
-        return RunStatus.Starting;
+        return new ProviderJobStatus(Starting);
     }
 
     @Override
@@ -242,27 +244,11 @@ public class AWSExecutionProvider implements ExecutionProvider {
         return Collections.emptyMap();
     }
 
-    private void installRllib(RLLib rllibVersion, List<String> instructions, List<String> files) {
-        switch (rllibVersion) {
+    private void installNativeRL(NativeRL nativerlVersion, List<String> instructions, List<String> files) {
+        switch (nativerlVersion) {
             case VERSION_0_7_0:
+            case VERSION_0_7_6:
                 instructions.addAll(Arrays.asList(
-                        // Setup JVM
-                        "tar xf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
-                        "rm -rf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
-                        "export JAVA_HOME=`pwd`/jdk8u222-b10",
-                        "export JDK_HOME=$JAVA_HOME",
-                        "export JRE_HOME=$JAVA_HOME/jre",
-                        "export PATH=$JAVA_HOME/bin:$PATH",
-                        "export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH",
-
-                        // Setup Anaconda
-                        "mkdir conda",
-                        "cd conda",
-                        "tar xf ../rllibpack.tar.gz",
-                        "rm ../rllibpack.tar.gz",
-                        "source bin/activate",
-                        "cd ..",
-
                         // Setup NativeRL
                         "mkdir work",
                         "cd work",
@@ -273,16 +259,17 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         "cd .."
                 ));
 
-                files.addAll(fileManager.getFiles(rllibVersion));
+                files.addAll(fileManager.getFiles(nativerlVersion));
                 break;
             default:
-                throw new IllegalArgumentException("Unsupported RLLib Version: " + rllibVersion);
+                throw new IllegalArgumentException("Unsupported nativeRL Version: " + nativerlVersion);
         }
     }
 
     private void installAnyLogic(AnyLogic anylogicVersion, List<String> instructions, List<String> files) {
         switch (anylogicVersion) {
             case VERSION_8_5_1:
+            case VERSION_8_5_2:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip",
                         "rm baseEnv.zip",
@@ -297,10 +284,55 @@ public class AWSExecutionProvider implements ExecutionProvider {
         }
     }
 
+    private void installJDK(JDK jdkVersion, List<String> instructions, List<String> files) {
+        switch (jdkVersion) {
+            case VERSION_8_222:
+                instructions.addAll(Arrays.asList(
+                        // Setup JVM
+                        "tar xf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
+                        "rm -rf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
+                        "export JAVA_HOME=`pwd`/jdk8u222-b10",
+                        "export JDK_HOME=$JAVA_HOME",
+                        "export JRE_HOME=$JAVA_HOME/jre",
+                        "export PATH=$JAVA_HOME/bin:$PATH",
+                        "export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server:$JAVA_HOME/jre/lib/amd64/:$LD_LIBRARY_PATH"
+                ));
+
+                files.addAll(fileManager.getFiles(jdkVersion));
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported JDK Version: " + jdkVersion);
+        }
+    }
+
+    private void installConda(Conda condaVersion, List<String> instructions, List<String> files) {
+        switch (condaVersion) {
+            case VERSION_0_7_0:
+            case VERSION_0_7_6:
+            case VERSION_0_8_1:
+                instructions.addAll(Arrays.asList(
+                        // Setup Anaconda
+                        "mkdir conda",
+                        "cd conda",
+                        "tar xf ../rllibpack.tar.gz",
+                        "rm ../rllibpack.tar.gz",
+                        "source bin/activate",
+                        "cd .."
+                ));
+
+                files.addAll(fileManager.getFiles(condaVersion));
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported Conda Version: " + condaVersion);
+        }
+
+    }
+
     private void installHelper(PathmindHelper pathmindHelperVersion, List<String> instructions, List<String> files) {
         switch (pathmindHelperVersion) {
             case VERSION_0_0_24:
-            case VERSION_0_0_24_M:
+            case VERSION_0_0_25:
+            case VERSION_0_0_25_Multi:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));
@@ -411,7 +443,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private void checkErrors(List<String> instructions) {
         instructions.add("cd ..");
-        instructions.addAll(KNOWN_ERROR_MSGS.stream()
+        instructions.addAll(trainingErrorDAO.getAllKnownErrorsKeywords().stream()
                 .map(msg -> "grep -m 2 \"" + msg + "\" " + TrainingFile.SCRIPT_LOG + " >> " + TrainingFile.KNOWN_ERROR)
                 .collect(Collectors.toList()));
     }
