@@ -18,7 +18,6 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
@@ -96,18 +95,25 @@ public class LoginView extends HorizontalLayout
 		// innerContent.add(title, badCredentials, emailNotVerified, createLoginForm(), createSignUp());
 		innerContent.add(title, badCredentials, emailNotVerified, createLoginForm());
 
+		Anchor termsLink = new Anchor(termsOfUseUrl, "Terms of Use");
+		termsLink.setTarget("_blank");
+
+		Anchor privacyLink = new Anchor(privacyPolicyUrl, "Privacy Policy");
+		privacyLink.setTarget("_blank");
+
 		Div policy = new Div();
 		policy.addClassName("policy");
 		policy.add(new Span("By clicking Sign In, you agree to Pathmind's "),
-				new Anchor(termsOfUseUrl, "Terms of Use"),
+				termsLink,
 				new Span(" and "),
-				new Anchor(privacyPolicyUrl, "Privacy Policy"),
+				privacyLink,
 				new Span("."));
 
 		Div loginPanel = new Div();
 		add(loginPanel);
 		loginPanel.setClassName("content");
 		loginPanel.add(welcome, img, innerContent, policy);
+		setSpacing(false);
 	}
 
 	private void updateEmailNotVerified() {
@@ -117,11 +123,9 @@ public class LoginView extends HorizontalLayout
 			PathmindUser user = userService.findByEmailIgnoreCase(email);
 			if (user != null) {
 				emailNotificationService.sendVerificationEmail(user);
-				NotificationUtils.showNotification("Email verification was sent to your email.",
-						NotificationVariant.LUMO_SUCCESS);
+				NotificationUtils.showSuccess("Email verification was sent to your email.");
 			} else {
-				NotificationUtils.showNotification("Email: " + email + " was not found. Please try to login again.",
-						NotificationVariant.LUMO_ERROR);
+				NotificationUtils.showError("Email: " + email + " was not found. Please try to login again.");
 			}
 		});
 
@@ -135,7 +139,7 @@ public class LoginView extends HorizontalLayout
 
 	private Component createSignUp() {
 		Span dontHaveAccount = new Span("Don't have an account?");
-		dontHaveAccount.getStyle().set("color", "var(--pm-secondary-text-color)");
+		dontHaveAccount.getStyle().set("color", "var(--lumo-secondary-text-color)");
 		RouterLink start = new RouterLink("Get started", SignUpView.class);
 
 		Div signUpCont = new Div();

@@ -1,0 +1,95 @@
+.guide-menu {
+  align-self: flex-start;
+  flex: 0 0 auto;
+  position: sticky;
+  width: auto !important;
+  top: 32px;
+  padding: var(--lumo-space-xl);
+  padding-left: var(--lumo-space-xxl);
+}
+.guide-links-wrapper {
+  display: grid;
+  gap: var(--lumo-space-m);
+}
+.guide-menu a {
+  display: block;
+  position: relative;
+  color: var(--pm-blue-color-darkest-25pct);
+  line-height: 1.3em;
+  text-decoration: none;
+}
+.guide-menu a:last-of-type {
+  margin-bottom: 0;
+}
+.guide-menu a:not(.disabled):hover,
+.guide-menu a[highlight]:hover {
+  color: var(--pm-blue-color-darkest-50pct);
+}
+.guide-menu a:not(.skipLink)::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  top: 50%;
+  left: -30px;
+  border: 1px solid var(--pm-blue-color-darkest-25pct);
+  transform: translateY(-50%);
+}
+.guide-menu a:not(.disabled) {
+  color: var(--pm-blue-color-darkest);
+}
+.guide-menu a[highlight] {
+  font-weight: 700;
+}
+.guide-menu .completed::after {
+  content: "";
+  position: absolute;
+  width: 23px;
+  height: 17px;
+  top: 50%;
+  left: -26px;
+  background-image: url("/frontend/icons/checkmark_grey.svg");
+  background-size: cover;
+  transform: translateY(-60%);
+}
+.guide-menu a.disabled {
+  pointer-events: none;
+  cursor: default;
+}
+.guide-menu vaadin-button {
+  color: var(--pm-blue-color-darkest);
+  font-size: var(--lumo-font-size-s);
+  margin-top: var(--lumo-space-xxl);
+}
+.guide-menu vaadin-button:hover {
+  opacity: 0.5;
+}
+
+/* In case we want the side menu go to the top for smaller screens
+@media (max-width: 1279px) {
+  .guide-menu {
+    align-items: center;
+    width: 100% !important;
+    top: 25px;
+    background: white;
+    padding: var(--lumo-space-s);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.05);
+  }
+  .guide-links-wrapper {
+    grid-template-columns: repeat(4, calc(25% - var(--lumo-space-xs)));
+    gap: var(--lumo-space-xs);
+    align-items: center;
+    width: 100%;
+    max-width: 940px;
+    margin-top: 0;
+  }
+  .guide-menu a {
+    padding: var(--lumo-space-xs) 0;
+    margin-top: 0;
+    margin-left: 30px;
+  }
+  .guide-menu vaadin-button {
+    font-size: var(--lumo-font-size-m);
+    margin-top: var(--lumo-space-s);
+  }
+} */

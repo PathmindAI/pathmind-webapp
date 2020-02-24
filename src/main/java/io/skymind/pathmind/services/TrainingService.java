@@ -14,13 +14,14 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
-import io.skymind.pathmind.services.training.versions.AnyLogic;
-import io.skymind.pathmind.services.training.versions.PathmindHelper;
-import io.skymind.pathmind.services.training.versions.RLLib;
+import io.skymind.pathmind.services.training.constant.RunConstants;
+import io.skymind.pathmind.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static io.skymind.pathmind.services.training.constant.RunConstants.*;
 
 @Slf4j
 public abstract class TrainingService {
@@ -34,24 +35,30 @@ public abstract class TrainingService {
     protected final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     protected ExecutionEnvironment executionEnvironment;
 
-    public TrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
+    public TrainingService(boolean multiAgent, ExecutionProvider executionProvider,
+                           RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO,
+                           ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
         this.executionProvider = executionProvider;
         this.runDAO = runDAO;
         this.modelDAO = modelDAO;
         this.policyDAO = policyDAO;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
 
-//        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5, PathmindHelper.VERSION_0_0_24, RLLib.VERSION_0_7_0);
-        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_1, PathmindHelper.VERSION_0_0_24, RLLib.VERSION_0_7_0);
+        PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_0_0_25;
+        if (multiAgent) {
+            pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
+        }
+
+        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
     }
 
     public void startDiscoveryRun(Experiment exp){
         startRun(RunType.DiscoveryRun,
                 exp,
-                100,
-                Arrays.asList(1e-3, 1e-4, 1e-5), // Learning rate
-                Arrays.asList(0.9, 0.99), // gamma
-                Arrays.asList(64, 128), // batch size
+                RunConstants.DISCOVERY_RUN_ITERATIONS,
+                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_LEARNING_RATES), // Learning rate
+                (List<Double>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_GAMMAS), // gamma
+                (List<Integer>) TRAINING_HYPERPARAMETERS.get(DISCOVERY_RUN_BATCH_SIZES), // batch size
                 30 * MINUTE
         );
     }
@@ -59,7 +66,7 @@ public abstract class TrainingService {
     public void startFullRun(Experiment exp, Policy policy){
         startRun(RunType.FullRun,
                 exp,
-                500,
+                RunConstants.FULL_RUN_ITERATIONS,
                 Arrays.asList(policy.getLearningRate()),
                 Arrays.asList(policy.getGamma()),
                 Arrays.asList(policy.getBatchSize()),
@@ -92,6 +99,7 @@ public abstract class TrainingService {
     }
 
     private void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec) {
+    	runDAO.clearNotificationSentInfo(exp.getId(), runType.getValue());
         startRun(runType, exp, iterations, learningRates, gammas, batchSizes, maxTimeInSec, null);
     }
 

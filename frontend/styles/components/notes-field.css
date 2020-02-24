@@ -1,0 +1,50 @@
+.notes-field-wrapper,
+.notes-block {
+  width: 100%;
+}
+
+.header {
+  justify-content: space-between;
+  width: 100%;
+  height: 33px; /* to match archives panel for positioning for now */
+  font-size: var(--lumo-font-size-s);
+  border-bottom: 1px solid var(--lumo-contrast-10pct);
+  /* border width is 2px on new design
+     border color is var(--pm-secondary-text-color) on new design 
+     to be updated when doing styles revamp for all Projects views
+  */
+  margin-bottom: var(--lumo-space-xs);
+}
+
+.header > span {
+  display: block;
+  position: relative;
+  color: var(--pm-primary-color);
+  font-weight: bold;
+  margin-left: var(--lumo-space-s);
+}
+
+.header > span::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  left: 0;
+  bottom: -1px;
+  background-color: var(--pm-primary-color);
+}
+
+.header vaadin-button {
+  color: var(--pm-tertiary-text-color);
+  margin-right: var(--lumo-space-s);
+  margin-bottom: 4px;
+}
+
+.header vaadin-button:hover,
+.header vaadin-button[disabled] {
+  opacity: 0.5;
+}
+
+.notes-block vaadin-text-area {
+  width: 100%;
+}

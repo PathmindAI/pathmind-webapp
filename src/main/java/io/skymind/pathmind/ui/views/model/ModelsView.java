@@ -1,25 +1,21 @@
 package io.skymind.pathmind.ui.views.model;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-
+import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.data.Model;
+import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -29,15 +25,22 @@ import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
-import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.buttons.UploadModelButton;
+import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
 import io.skymind.pathmind.ui.views.model.filter.ModelFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 @CssImport("./styles/styles.css")
 @Route(value= Routes.MODELS_URL, layout = MainLayout.class)
@@ -49,14 +52,14 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	private ProjectDAO projectDAO;
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private GuideDAO guideDAO;
 
 	private long projectId;
-	private String projectName;
-	private List<Model> models;
+	private Project project;
 
 	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
-	private Div instructionsDiv;
 	private ScreenTitlePanel titlePanel;
 	private SearchBox<Model> searchBox;
 
@@ -69,7 +72,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	{
 		setupGrid();
 		setupArchivesTabPanel();
-		setupInstructionsDiv();
 		searchBox = getSearchBox();
 		
 		addClassName("models-view");
@@ -78,38 +80,27 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		// to do something special to get the full size content in the AppLayout component which
 		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
 		// Hence the workaround below:
-		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-			createBreadcrumbs(),
+		VerticalLayout leftPanel = WrapperUtils.wrapSizeFullVertical(
+			archivesTabPanel,
 			new ViewSection(
 				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-				archivesTabPanel,
-				modelGrid,
-				instructionsDiv
-			),
+				modelGrid
+			)
+		);
+		leftPanel.setPadding(false);
+		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
+			WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+				leftPanel,
+				createViewNotesField(),
+			70),
 			WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
 		);
-		return gridWrapper;
-	}
-	
-	private void setupInstructionsDiv() {
-		instructionsDiv = new Div();
-		instructionsDiv.setWidthFull();
-		instructionsDiv.getElement().setProperty("innerHTML",
-				"<p>To prepare your AnyLogic model for reinforcement learning, install the Pathmind Helper</p>" +
-				"<p><strong>The basics:</strong></p>" +
-				"<ol>" +
-					"<li>The Pathmind Helper is an AnyLogic palette item that you add to your simulation. You can <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">download it here</a>.</li>" +
-					"<li>Add Pathmind Helper as a library in AnyLogic.</li>" +
-					"<li>Add a Pathmind Helper to your model.</li>" +
-					"<li>Fill in these functions:</li>" +
-						"<ul>" +
-							"<li>Observation for rewards</li>" +
-							"<li>Observation for training</li>"+
-							"<li>doAction</li>" +
-						"</ul>" +
-				"</ol>" +
-				"<p>When you're ready, upload your model in the next step.</p>" +
-				"<p><a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper\" target=\"_blank\">For more details, see our documentation</a></p>");
+		gridWrapper.setPadding(false);
+		gridWrapper.setSpacing(false);
+		
+		return WrapperUtils.wrapSizeFullVertical(
+				createBreadcrumbs(),
+				gridWrapper);
 	}
 
 	private void setupArchivesTabPanel() {
@@ -137,11 +128,18 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 				.setHeader("Date Created")
 				.setResizable(true)
 				.setSortable(true);
-		Grid.Column<Model> lastActivityColumn = modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+		modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setResizable(true)
 				.setSortable(true);
+		modelGrid.addColumn(model -> {
+				String userNotes = model.getUserNotes();
+				return userNotes.isEmpty() ? "--" : userNotes;
+		})
+				.setHeader("Notes")
+				.setResizable(true)
+				.setSortable(false);
 
 		modelGrid.addItemClickListener(event -> getUI().ifPresent(ui -> UI.getCurrent().navigate(ExperimentsView.class, event.getItem().getId())));
 
@@ -150,11 +148,22 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	}
 
 	public List<Model> getModels() {
-		return models;
+		return project.getModels();
 	}
 
 	private Breadcrumbs createBreadcrumbs() {
-		return new Breadcrumbs(projectDAO.getProject(projectId));
+		return new Breadcrumbs(project);
+	}
+
+	private HorizontalLayout createViewNotesField() {
+		return new NotesField(
+			"Project Notes",
+			project.getUserNotes(),
+			updatedNotes -> {
+					projectDAO.updateUserNotes(projectId, updatedNotes);
+					NotificationUtils.showSuccess("Notes saved");
+			}
+		);
 	}
 
 	@Override
@@ -170,26 +179,24 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 	@Override
 	protected void initLoadData() throws InvalidDataException {
-		models = modelDAO.getModelsForProject(projectId);
-		projectName = projectDAO.getProject(projectId).getName();
+		project = projectDAO.getProject(projectId)
+				.orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));
+		project.setModels(modelDAO.getModelsForProject(projectId));
 	}
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
+		if (project.getModels().isEmpty()) {
+			GuideStep guideStep = guideDAO.getGuideStep(projectId);
+			event.forwardTo(guideStep.getPath(), projectId);
+		}
 		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
 			// modelGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
-			modelGrid.setItems(models);
+			modelGrid.setItems(project.getModels());
 		});
-		arrangeGridAndInstructionsVisibility(!models.isEmpty());
+
 		archivesTabPanel.initData();
-		titlePanel.setSubtitle(projectName);
-	}
-	
-	private void arrangeGridAndInstructionsVisibility(boolean hasModels) {
-		instructionsDiv.setVisible(!hasModels);
-		modelGrid.setVisible(hasModels);
-		archivesTabPanel.setVisible(hasModels);
-		searchBox.setVisible(hasModels);
+		titlePanel.setSubtitle(project.getName());
 	}
 
 	@Override

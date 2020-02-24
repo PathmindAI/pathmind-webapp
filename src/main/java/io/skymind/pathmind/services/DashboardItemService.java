@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,10 @@ public class DashboardItemService {
 
 	public List<DashboardItem> getDashboardItemsForUser(long userId, int offset, int limit) {
 		return experimentDAO.getDashboardItemsForUser(userId, offset, limit);
+	}
+
+	public Optional<DashboardItem> getSingleDashboardItem(long experimentId) {
+		return experimentDAO.getSingleDashboardItem(experimentId).stream().findAny();
 	}
 
 	public int countTotalDashboardItemsForUser(long userId) {

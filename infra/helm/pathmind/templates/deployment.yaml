@@ -49,8 +49,8 @@ spec:
             - name: DB_URL
               valueFrom:
                 secretKeyRef:
-                  name: dburl
-                  key: DB_URL
+                  name: {{ .Values.env.DB_SECRET_NAME }}
+                  key: {{ .Values.env.DB_SECRET_KEY }}
             - name: INTERCOM_APP_ID 
               value: "{{ .Values.env.INTERCOM_APP_ID }}"
             - name: SEGMENT_WEBSITE_KEY
@@ -69,6 +69,8 @@ spec:
               value: "{{ .Values.env.PATHMIND_LOG_FILE_PATH }}"
             - name: SCM_COMMAND_IDLE_TIMEOUT
               value: "{{ .Values.env.SCM_COMMAND_IDLE_TIMEOUT }}"
+            - name: MODEL_ANALYZER_URL
+              value: "{{ .Values.env.MODEL_ANALYZER_URL }}"
             - name: ENVIRONMENT
               value: "{{ .Values.env.ENVIRONMENT }}"
             - name: AWS_DEFAULT_REGION
@@ -87,3 +89,5 @@ spec:
               value: "{{ .Values.env.SQS_URL }}"
             - name: S3_BUCKET
               value: "{{ .Values.env.S3_BUCKET }}"
+            - name: MULTI_AGENT
+              value: "{{ .Values.env.MULTI_AGENT }}"

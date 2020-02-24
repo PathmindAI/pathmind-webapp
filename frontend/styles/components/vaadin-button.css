@@ -50,6 +50,7 @@
 
 /* Primary Button Styles */
 :host([theme~="primary"]) {
+  font-weight: bold;
   min-width: 225px;
   height: 40px;
 }
@@ -62,6 +63,27 @@
 
 :host([theme~="primary"]:hover)::before {
   opacity: 0;
+}
+
+/* Secondary Button Styles */
+:host([theme~="secondary"]) {
+  font-weight: bold;
+  border: 1px solid var(--pm-primary-color);
+}
+
+:host([theme~="secondary"]:hover) {
+  color: white;
+  background-color: var(--lumo-primary-color-25pct);
+  border-color: var(--lumo-primary-color-25pct);
+}
+
+:host([focus-ring][theme~="tertiary"]) {
+  box-shadow: none;
+}
+
+:host(.half-width) {
+  min-width: unset;
+  width: 50%;
 }
 
 /* This is to override all Vaadin-Button on the webapp */

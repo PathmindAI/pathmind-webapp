@@ -1,17 +1,12 @@
 package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.data.Project;
-import io.skymind.pathmind.data.db.tables.Experiment;
-import io.skymind.pathmind.data.db.tables.Model;
 import io.skymind.pathmind.data.db.tables.records.ProjectRecord;
 import org.jooq.DSLContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static io.skymind.pathmind.data.db.Tables.MODEL;
 import static io.skymind.pathmind.data.db.Tables.PROJECT;
 
 class ProjectRepository
@@ -46,5 +41,12 @@ class ProjectRepository
 		savedProject.setPathmindUserId(project.getPathmindUserId());
 		savedProject.store();
 		return savedProject.key().get(PROJECT.ID);
+	}
+
+	protected static void updateUserNotes(DSLContext ctx, long projectId, String userNotes) {
+		ctx.update(PROJECT)
+				.set(PROJECT.USER_NOTES, userNotes)
+				.where(PROJECT.ID.eq(projectId))
+				.execute();
 	}
 }

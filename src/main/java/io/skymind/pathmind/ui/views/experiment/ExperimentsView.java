@@ -1,11 +1,5 @@
 package io.skymind.pathmind.ui.views.experiment;
 
-import static io.skymind.pathmind.ui.constants.CssMindPathStyles.READONLY_LABEL;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -15,7 +9,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
@@ -33,7 +26,9 @@ import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.buttons.ShowRewardFunctionButton;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
@@ -41,6 +36,11 @@ import io.skymind.pathmind.ui.views.experiment.filter.ExperimentFilter;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.READONLY_LABEL;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENTS_URL, layout = MainLayout.class)
@@ -55,7 +55,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	private UserDAO userDAO;
 
 	private long modelId;
-	private Model currentModel;
+	private Model model;
 	private String projectName;
 	private List<Experiment> experiments;
 
@@ -80,11 +80,12 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 		return WrapperUtils.wrapSizeFullVertical(
 				WrapperUtils.wrapWidthFullBetweenHorizontal(createBreadcrumbs(), getSearchBox()),
-				archivesTabPanel,
 				WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-						WrapperUtils.wrapSizeFullVertical(
+					WrapperUtils.wrapSizeFullVertical(
+								archivesTabPanel,
 								experimentGrid),
 						WrapperUtils.wrapSizeFullVertical(
+								createViewNotesField(),
 								rewardFunctionTitle,
 								rewardFunctionEditor,
 								getObservationTextArea),
@@ -104,7 +105,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	 * that there has to be at least one experiment to be able to get here.
 	 */
 	private Breadcrumbs createBreadcrumbs() {
-		return new Breadcrumbs(experiments.get(0).getProject(), currentModel);
+		return new Breadcrumbs(experiments.get(0).getProject(), model);
 	}
 
 	private void setupGetObservationTextArea() {
@@ -130,6 +131,17 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		experimentGrid = new ExperimentGrid();
 		experimentGrid.addComponentColumn(exp -> createActionButtons(exp)).setHeader("Actions").setSortable(false);
 		experimentGrid.addItemClickListener(event -> handleExperimentClick(event.getItem()));
+	}
+
+	private HorizontalLayout createViewNotesField() {
+		return new NotesField(
+			"Model Notes",
+			model.getUserNotes(),
+			updatedNotes -> {
+				modelDAO.updateUserNotes(modelId, updatedNotes);
+				NotificationUtils.showSuccess("Notes saved");
+			}
+		);
 	}
 
 	private HorizontalLayout createActionButtons(Experiment exp) {
@@ -176,6 +188,8 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	@Override
 	protected void initLoadData() throws InvalidDataException {
+		model = modelDAO.getModel(modelId)
+				.orElseThrow(() -> new InvalidDataException("Attempted to access Model: " + modelId));
 		experiments = experimentDAO.getExperimentsForModel(modelId);
 		if (experiments == null || experiments.isEmpty())
 			throw new InvalidDataException("Attempted to access Experiments for Model: " + modelId);
@@ -183,9 +197,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		// set runs to experiment
 		experiments.stream()
 				.forEach(e -> e.setRuns(runDAO.getRunsForExperiment(e.getId())));
-
-		// set current model
-		currentModel = modelDAO.getModel(modelId);
 	}
 
 	@Override
@@ -195,7 +206,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 			experimentGrid.setItems(experiments);
 		});
 		archivesTabPanel.initData();
-		getObservationTextArea.setValue(currentModel.getGetObservationForRewardFunction());
+		getObservationTextArea.setValue(model.getGetObservationForRewardFunction());
 		showRewardFunction(experiments.get(0));
 		titlePanel.setSubtitle(projectName);
 	}

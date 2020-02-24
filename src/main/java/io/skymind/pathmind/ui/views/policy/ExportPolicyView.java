@@ -1,6 +1,7 @@
 package io.skymind.pathmind.ui.views.policy;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDate;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,6 @@ import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUti
 @Route(value = Routes.EXPORT_POLICY_URL, layout = MainLayout.class)
 public class ExportPolicyView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
-	private static final String DEFAULT_POLICY_DOWNLOAD_FILENAME = "Policy.zip";
-
 	@Autowired
 	private PolicyDAO policyDAO;
 	@Autowired
@@ -79,7 +78,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
 		exportLink = new Anchor();
 		exportLink.add(exportButton);
-		exportLink.getElement().setAttribute("href", getResourceStream(DEFAULT_POLICY_DOWNLOAD_FILENAME));
+		exportLink.getElement().setAttribute("href", getResourceStream(generatePolicyFileName()));
 		exportLink.getElement().setAttribute("download", true);
 
 		cancelButton = new Button("Cancel", click -> handleCancelButtonClicked());
@@ -87,16 +86,25 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
 		nameTextField = new TextField();
 		nameTextField.setLabel("Name");
-		nameTextField.setValue(DEFAULT_POLICY_DOWNLOAD_FILENAME);
+		nameTextField.setValue(generatePolicyFileName());
 		nameTextField.setWidthFull();
 		nameTextField.addValueChangeListener(change ->
-			exportLink.setHref(getResourceStream(StringUtils.isEmpty(nameTextField.getValue()) ? DEFAULT_POLICY_DOWNLOAD_FILENAME : nameTextField.getValue())));
+			exportLink.setHref(getResourceStream(StringUtils.isEmpty(nameTextField.getValue()) ? generatePolicyFileName() : nameTextField.getValue())));
 
 		return WrapperUtils.wrapFormCenterVertical(
 				nameTextField,
 				new Image("/frontend/images/exportPolicyIcon.gif", "Export Policy"),
 				exportLink,
 				cancelButton);
+	}
+	
+	public String generatePolicyFileName() {
+		return String.format("Pm-%s-Model%s-Experiment%s-%4$ty%4$tm%4$td-Policy.zip", removeSpaces(policy.getProject().getName()), policy.getModel().getName(), policy.getExperiment().getName(), LocalDate.now());
+	}
+	
+	
+	private String removeSpaces(String val) {
+		return val.replaceAll(" ", "");
 	}
 
 	private StreamResource getResourceStream(String filename) {

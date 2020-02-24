@@ -6,6 +6,7 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -26,7 +27,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private NumberField numberOfObservationsNumberField;
 	private NumberField numberOfPossibleActionsNumberField;
-	private PathmindTextArea getObservationForRewardFunctionTextArea;
+	public PathmindTextArea notesFieldTextArea;
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
@@ -35,8 +36,9 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 	{
 		setupFields();
 		setupForm();
-		setupGetObservationForRewardFunctionTextArea();
+		setupNotesFieldTextArea();
 		nextStepButton.setIconAfterText(true);
+		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
 		add(WrapperUtils.wrapWidthFullHorizontal(
 				new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE),
@@ -64,45 +66,45 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 				Model.MAX_NUMBER_OF_POSSIBLE_ACTIONS,
 				Model.DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS);
 
-		getObservationForRewardFunctionTextArea = new PathmindTextArea();
-		getObservationForRewardFunctionTextArea.setValue(Model.DEFAULT_GET_OBSERVATION_FOR_REWARD_FUNCTION);
+		notesFieldTextArea = new PathmindTextArea();
+		notesFieldTextArea.setPlaceholder("Add your notes here");;
 	}
 
 	private void bindFields(Binder<Model> binder) {
 		ModelBinders.bindNumberOfObservations(binder, numberOfObservationsNumberField);
 		ModelBinders.bindNumberOfPossibleActions(binder, numberOfPossibleActionsNumberField);
-		ModelBinders.bindGetObservationForRewardFunction(binder, getObservationForRewardFunctionTextArea);
+		ModelBinders.bindNotesFieldTextArea(binder, notesFieldTextArea);
 	}
 
 	public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
 		nextStepButton.addClickListener(listener);
 	}
 
-	private void setupGetObservationForRewardFunctionTextArea() {
-		getObservationForRewardFunctionTextArea.setWidthFull();
-		getObservationForRewardFunctionTextArea.setHeight("200px");
-		getObservationForRewardFunctionTextArea.setSpellcheck(false);
+	private void setupNotesFieldTextArea() {
+		notesFieldTextArea.setWidthFull();
+		notesFieldTextArea.setHeight("200px");
 	}
 
 	private void setupForm() {
 		formPanel.add(getNumberOfObservationsPanel(),
 				getNumberOfPossibleActionsPanel(),
-				getObservationForRewardFunctionPanel());
+				getNotesFieldPanel());
+		formPanel.setPadding(false);
 	}
 
-	private Component getObservationForRewardFunctionPanel() {
+	private Component getNotesFieldPanel() {
 		VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
-				LabelFactory.createLabel("Copy your Observation for Reward function in here for easy reference."),
-				LabelFactory.createLabel("getObservation for Reward Function", BOLD_LABEL),
-				getObservationForRewardFunctionTextArea);
+				LabelFactory.createLabel("Model Notes", BOLD_LABEL),
+				LabelFactory.createLabel("Add any notes for yourself about the model you're uploading."),
+				notesFieldTextArea);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
 	}
 
 	private VerticalLayout getNumberOfObservationsPanel() {
 		VerticalLayout wrapper = new VerticalLayout(
-				LabelFactory.createLabel("Number of Observations for Training", BOLD_LABEL),
-				LabelFactory.createLabel("Enter the number of observations present in the 'observation of training' array"),
+				LabelFactory.createLabel("Number of Observations", BOLD_LABEL),
+				LabelFactory.createLabel("Enter the number of observations in your observations array."),
 				numberOfObservationsNumberField);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
@@ -110,8 +112,8 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private VerticalLayout getNumberOfPossibleActionsPanel() {
 		VerticalLayout wrapper = new VerticalLayout(
-				LabelFactory.createLabel("Number of Possible Actions", BOLD_LABEL),
-				LabelFactory.createLabel("This is the number of possible actions in doAction()"),
+				LabelFactory.createLabel("Number of Actions", BOLD_LABEL),
+				LabelFactory.createLabel("This is the total number of possible actions."),
 				numberOfPossibleActionsNumberField);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;

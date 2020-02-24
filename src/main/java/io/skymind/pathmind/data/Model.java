@@ -25,6 +25,7 @@ public class Model extends ArchivableData
 	private String getObservationForRewardFunction = "";
 	private byte[] file;
 	private long projectId;
+	private String userNotes;
 
 	public Model() {
 	}
@@ -58,7 +59,7 @@ public class Model extends ArchivableData
 	}
 
 	public void setGetObservationForRewardFunction(String getObservationForRewardFunction) {
-		this.getObservationForRewardFunction = getObservationForRewardFunction;
+		this.getObservationForRewardFunction = getObservationForRewardFunction != null ? getObservationForRewardFunction : "";
 	}
 
 	public byte[] getFile() {
@@ -83,5 +84,13 @@ public class Model extends ArchivableData
 
 	public void setNumberOfPossibleActions(int numberOfPossibleActions) {
 		this.numberOfPossibleActions = numberOfPossibleActions;
+	}
+
+	public String getUserNotes() {
+		return userNotes;
+	}
+
+	public void setUserNotes(String userNotes) {
+		this.userNotes = userNotes;
 	}
 }

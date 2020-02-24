@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services.training;
 
+import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.services.training.progress.ProgressInterpreter;
@@ -46,7 +47,7 @@ public interface ExecutionProvider {
      * @param jobHandle Job Handle
      * @return The current status
      */
-    RunStatus status(String jobHandle);
+    ProviderJobStatus status(String jobHandle);
 
     /**
      * Collects the current progress of the training job identified by the given job handle.
