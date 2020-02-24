@@ -1,5 +1,14 @@
 package io.skymind.pathmind.ui.views.experiment;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
@@ -11,14 +20,18 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.WildcardParameter;
+
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
@@ -27,6 +40,7 @@ import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -47,14 +61,6 @@ import io.skymind.pathmind.ui.views.experiment.components.PolicyHighlightPanel;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
@@ -86,6 +92,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Autowired
 	private PolicyDAO policyDAO;
 	@Autowired
+	private RunDAO runDAO;
+	@Autowired
 	private TrainingErrorDAO trainingErrorDAO;
 	@Autowired
 	private TrainingService trainingService;
@@ -95,8 +103,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private SegmentIntegrator segmentIntegrator;
 
 	private String projectName;
-	private Button runDiscoveryTraining;
-	private Button runFullTraining;
+	private Button restartTraining;
 
 	public ExperimentView() {
 		super();
@@ -155,37 +162,24 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policyHighlightPanel = new PolicyHighlightPanel();
 		trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
 
-		runDiscoveryTraining = new Button("Start Discovery Run", new Image("frontend/images/start.svg", "run"), click -> {
-			final var experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
-			if(experiment.isPresent()) {
-				trainingService.startDiscoveryRun(experiment.get());
-				segmentIntegrator.discoveryRunStarted();
-				clearErrorState();
-				new RunConfirmDialog().open();
-			}
+		restartTraining = new Button("Restart Training", new Image("frontend/images/start.svg", "run"), click -> {
+			trainingService.startDiscoveryRun(experiment);
+			segmentIntegrator.discoveryRunStarted();
+			loadExperiment(experimentId);
+			trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
+			clearErrorState();
+			new RunConfirmDialog().open();
 		});
-		runDiscoveryTraining.setVisible(false);
-		runDiscoveryTraining.addClassNames("large-image-btn", "run");
+		restartTraining.setVisible(false);
+		restartTraining.addClassNames("large-image-btn", "run");
 		
-		runFullTraining = new Button("Start Full Run", new Image("frontend/images/start.svg", "run"), click -> {
-			final var experiment = experimentDAO.getExperiment(policy.getRun().getExperimentId());
-			if(experiment.isPresent()) {
-				trainingService.startFullRun(experiment.get(), policy);
-				segmentIntegrator.fullRunStarted();
-				clearErrorState();
-				new RunConfirmDialog().open();
-			}
-		});
-		runFullTraining.setVisible(false);
-		runFullTraining.addClassNames("large-image-btn", "run");
-
 		exportPolicyButton = new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()));
 		exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportPolicyButton.addClassName("half-width");
 		exportPolicyButton.setEnabled(false);
 
 		return WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullCenterHorizontal(runDiscoveryTraining, runFullTraining),
+				WrapperUtils.wrapWidthFullCenterHorizontal(restartTraining),
 				policyHighlightPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton),
 				trainingStatusDetailsPanel,
@@ -236,15 +230,20 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	@Override
-	protected void initLoadData() throws InvalidDataException {
+	protected void initLoadData() {
+		loadExperiment(experimentId);
+		policy = selectBestPolicy(experiment.getPolicies());
+	}
+	
+	private void loadExperiment(long experimentId) {
 		experiment = experimentDAO.getExperiment(experimentId)
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
-		policy = selectBestPolicy(experiment.getPolicies());
+		experiment.setRuns(runDAO.getRunsForExperiment(experimentId));
 	}
 
 	@Override
-	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
+	protected void initScreen(BeforeEnterEvent event) {
 		screenTitlePanel.setSubtitle(projectName);
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		policyChartPanel.init(experiment);
@@ -253,43 +252,27 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private Policy selectBestPolicy(List<Policy> policies) {
-		RunType runType = ExperimentUtils.getTrainingType(experiment);
-		return selectHighestPerformingPolicy(policies, runType);
-	}
-
-	private Policy selectHighestPerformingPolicy(List<Policy> policies, RunType runType) {
-		Optional<Policy> highestPerformingPolicy = policies.stream()
-				.filter(p -> p.getRun().getRunTypeEnum() == runType)
-				.filter(p -> PolicyUtils.getLastScore(p) != null)
-				.max(Comparator.comparing(p -> PolicyUtils.getLastScore(p)));
-		return highestPerformingPolicy.orElse(policies.get(policies.size()-1));
+		return policies.stream()
+				.filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
+				.max(Comparator.comparing(PolicyUtils::getLastScore))
+				.orElse(null);
 	}
 
 	private void processSelectedPolicy(Policy selectedPolicy) {
 		policyHighlightPanel.update(selectedPolicy);
 		policyChartPanel.init(selectedPolicy);
-		policyChartPanel.highlightPolicy(selectedPolicy);
-		updateButtonEnablement();
-		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Error) {
-			trainingErrorDAO.getErrorById(selectedPolicy.getRun().getTrainingErrorId())
-				.ifPresent(error -> updateUIForError(error, selectedPolicy.getRun().getRunTypeEnum()));
+		updateRightPanelForExperiment();
+		if (selectedPolicy != null) {
+			policyChartPanel.highlightPolicy(selectedPolicy);
 		}
 	}
 	
-	private void updateUIForError(TrainingError error, RunType runType) {
+	private void updateUIForError(TrainingError error) {
 		policyHighlightPanel.setErrorDescription(error.getDescription());
-		if (error.isRestartable()) {
-			if (runType == RunType.DiscoveryRun) {
-				runFullTraining.setVisible(false);
-				runDiscoveryTraining.setVisible(true);
-				runDiscoveryTraining.setEnabled(true);
-			} else if (runType == RunType.FullRun) {
-				runDiscoveryTraining.setVisible(false);
-				runFullTraining.setVisible(true);
-				runFullTraining.setEnabled(true);
-			}
-		}
+		restartTraining.setVisible(error.isRestartable());
+		restartTraining.setEnabled(error.isRestartable());
 	}
+	
 	private void clearErrorState() {
 		policyHighlightPanel.setErrorDescription(null);
 		updateButtonEnablement();
@@ -307,30 +290,36 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		experiment.getPolicies().addAll(policiesToAdd);
 	}
 
-	private void processRunUpdate(Run run) {
-		updatedRunForPolicies(run);
+	private void addOrUpdateRun(Run updatedRun) {
+		experiment.getRuns().stream()
+				.filter(run -> run.getId() == updatedRun.getId())
+				.findAny()
+				.ifPresentOrElse(
+						run -> experiment.getRuns().set(experiment.getRuns().indexOf(run), updatedRun),
+						() -> experiment.getRuns().add(updatedRun));
+	}
+
+	private void updateRightPanelForExperiment() {
 		updateButtonEnablement();
-		PushUtils.push(getUI(), () -> trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment));
+		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
+		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Error) {
+			experiment.getRuns().stream()
+					.filter(r -> r.getStatusEnum() == RunStatus.Error)
+					.findAny()
+					.map(Run::getTrainingErrorId)
+					.flatMap(trainingErrorDAO::getErrorById)
+					.ifPresent(this::updateUIForError);
+		}
 	}
 
 	private void updateButtonEnablement() {
 		// to avoid multiple download policy file from rescale server,
 		// we put the "saving" for temporary
 		// policy dao will check if there's real policy file exist or not
-		boolean isTrainingFinished = ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed;
-		if (isTrainingFinished) {
+		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed) {
 			exportPolicyButton.setEnabled(policyDAO.hasPolicyFile(policy.getId()));
 		}
-
-		RunType selectedRunType = policy.getRun().getRunTypeEnum();
-		if (selectedRunType == RunType.DiscoveryRun) {
-			runDiscoveryTraining.setVisible(false);
-			runFullTraining.setVisible(true);
-			runFullTraining.setEnabled(isTrainingFinished);
-		} else if (selectedRunType == RunType.FullRun) {
-			runDiscoveryTraining.setVisible(false);
-			runFullTraining.setVisible(false);
-		}
+		restartTraining.setVisible(false);
 	}
 
 	private void updatedRunForPolicies(Run run) {
@@ -351,11 +340,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			Policy bestPolicy = selectBestPolicy(experiment.getPolicies());
 
 			// Refresh other components, existing best policy is updated or we have a new best policy
-			if (policy.equals(event.getPolicy()) || !policy.equals(bestPolicy)) {
+			if (event.getPolicy().equals(policy) || (bestPolicy != null && !bestPolicy.equals(policy))) {
 				policy = bestPolicy;
 				PushUtils.push(getUI(), () -> processSelectedPolicy(bestPolicy));
 			}
-			PushUtils.push(getUI(), () -> trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment));
+			PushUtils.push(getUI(), () -> updateRightPanelForExperiment());
 		}
 
 		@Override
@@ -369,23 +358,22 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
     }
 
-    class ExperimentViewRunUpdateSubscriber implements RunUpdateSubscriber
-    {
-        @Override
-        public boolean filterBusEvent(RunUpdateBusEvent event) {
-            return experiment != null && experiment.getId() == event.getRun().getExperiment().getId();
-        }
+	class ExperimentViewRunUpdateSubscriber implements RunUpdateSubscriber {
+		@Override
+		public void handleBusEvent(RunUpdateBusEvent event) {
+			addOrUpdateRun(event.getRun());
+			updatedRunForPolicies(event.getRun());
+			PushUtils.push(getUI(), () -> updateRightPanelForExperiment());
+		}
 
-        @Override
-        public void handleBusEvent(RunUpdateBusEvent event) {
-            PushUtils.push(getUI(), () -> processRunUpdate(event.getRun()));
-        }
+		@Override
+		public boolean filterBusEvent(RunUpdateBusEvent event) {
+			return experiment != null && experiment.getId() == event.getRun().getExperiment().getId();
+		}
 
-        @Override
-        public Optional<UI> getUI() {
-            return ExperimentView.this.getUI();
-        }
-    }
-
-
+		@Override
+		public Optional<UI> getUI() {
+			return ExperimentView.this.getUI();
+		}
+	}
 }

@@ -13,11 +13,6 @@ import io.skymind.pathmind.services.training.constant.RunConstants;
 import io.skymind.pathmind.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static io.skymind.pathmind.services.training.constant.RunConstants.*;
-
 @Slf4j
 public abstract class TrainingService {
     private static final int MINUTE = 60;
@@ -76,6 +71,7 @@ public abstract class TrainingService {
     }
 
     private void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples) {
+        runDAO.clearNotificationSentInfo(exp.getId(), runType.getValue());
         startRun(runType, exp, iterations, maxTimeInSec, numSamples, null);
     }
 

@@ -5,7 +5,6 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
@@ -14,10 +13,6 @@ import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.JSONB;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 //@Service
 @Slf4j
@@ -57,13 +52,7 @@ public class RescaleTrainingService extends TrainingService {
                 false
         );
 
-        List<RewardScore> rewardScores = null;
         if (basePolicy != null) {
-            // We want to create a copy of List<RewardScore> so that the references are unique and one doesn't affect the other.
-            rewardScores = basePolicy.getScores().stream()
-                    .map(score -> new RewardScore(score.getMax(), score.getMin(), score.getMean(), score.getIteration()))
-                    .collect(Collectors.toList());
-
             String checkpointFileId = executionProviderMetaDataDAO.getCheckPointFileKey(basePolicy.getExternalId());
             if (checkpointFileId == null) {
                 checkpointFileId = executionProvider.uploadCheckpoint(policyDAO.getSnapshotFile(basePolicy.getId()));
@@ -79,7 +68,5 @@ public class RescaleTrainingService extends TrainingService {
 
         runDAO.markAsStarting(run.getId());
         log.info("Started " + runType + " training job with id {}", executionId);
-
-//        policyDAO.insertPolicy(generateTempPolicy(spec, run, rewardScores));
     }
 }
