@@ -53,6 +53,7 @@ img {
   width: 100%;
 }
 .content {
+  box-sizing: border-box;
   align-items: flex-start;
   max-width: 660px;
   padding: var(--lumo-space-xl) 0 0 0;
@@ -90,4 +91,16 @@ vaadin-button {
 }
 vaadin-button:first-of-type {
   margin-top: 80px;
+}
+
+@media (max-width: 1280px) {
+  .content {
+    padding: var(--lumo-space-xl) var(--lumo-space-s);
+  }
+  .video-wrapper {
+    width: 100%;
+  }
+  pre {
+    padding: var(--lumo-space-s);
+  }
 }

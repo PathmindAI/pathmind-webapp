@@ -203,6 +203,17 @@ img {
   margin-bottom: var(--lumo-space-xl);
 }
 
+.guide-view-wrapper {
+  flex-grow: 1;
+  background: white;
+}
+
+@media (max-width: 1280px) {
+  .guide-view-wrapper {
+    flex-direction: column;
+  }
+}
+
 account-view {
   background: var(--pm-app-bg-color);
   height: 100%;
@@ -239,13 +250,13 @@ account-view {
   width: 275px;
 }
 
-@media (min-width: 1201px) {
+@media (min-width: 1281px) {
   html {
     font-size: 16px;
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1280px) {
   html {
     font-size: 14px;
   }
