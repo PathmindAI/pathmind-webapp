@@ -1,35 +1,30 @@
-# Default values for pathmind.
+# Default values for postgres.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind
-  tag: prod
+  repository: postgres
+  tag: latest
   pullPolicy: Always
 
-service:
-  type: NodePort
-  port: 80
-
 env:
-  APPLICATION_URL: http://app.pathmind.com
-  INTERCOM_APP_ID: byklc7u3
-  WEBSITE_HTTPLOGGING_RETENTION_DAYS: 5
-  PATHMIND_LOG_FILE_PATH: /tmp/
-  SCM_COMMAND_IDLE_TIMEOUT: 1800
-  ENVIRONMENT: prod
-  SQS_URL: https://queue.amazonaws.com/839270835622/prod-training-queue.fifo
-  S3_BUCKET: prod-training-dynamic-files.pathmind.com
-  DB_SECRET_NAME: dburl
-  DB_SECRET_KEY: DB_URL
-  MODEL_ANALYZER_URL: https://ma.devpathmind.com
-  MULTI_AGENT: false
-  
-name: pathmind
+  POSTGRES_USER: pathminddb
+  POSTGRES_PASSWORD: Asdf1234
+  POSTGRES_DB: pathminddb
+
+name: postgres
 
 namespace: default
+
+service:
+  type: ClusterIP
+  port: 5432
+  targetPort: 5432
+
+pvc:
+  claimName: postgres-pvc
 
 ingress:
   enabled: false
@@ -62,4 +57,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-

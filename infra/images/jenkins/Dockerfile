@@ -19,6 +19,7 @@ COPY security.groovy /usr/share/jenkins/ref/init.groovy.d/
 
 #Install python packages
 RUN apt update && \
+	apt-get install postgresql-client -y && \
 	apt-get install maven -y && \
 	apt-get install -y unzip xvfb libxi6 libgconf-2-4 && \
 	apt-get install -y default-jdk  && \
