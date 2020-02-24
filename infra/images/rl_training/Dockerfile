@@ -20,6 +20,7 @@ RUN apt-get update && \
         apt-get install libsm-dev -y && \
         apt-get install libxrender-dev -y && \
         apt-get install libxext-dev -y && \
+        apt-get install fontconfig -y && \
         curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
         python get-pip.py && \
         pip install -r requirements.txt && \
