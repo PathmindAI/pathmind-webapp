@@ -5,7 +5,6 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
@@ -16,9 +15,6 @@ import io.skymind.pathmind.services.training.JobSpec;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -31,7 +27,7 @@ public class AWSTrainingService extends TrainingService {
         this.multiAgent = multiAgent;
     }
 
-    protected void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, Policy basePolicy) {
+    protected void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples, Policy basePolicy) {
         final Run run = runDAO.createRun(exp, runType);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelDAO.getModel(exp.getModelId()).get();
@@ -52,10 +48,8 @@ public class AWSTrainingService extends TrainingService {
                 iterations,
                 executionEnvironment,
                 runType,
-                learningRates,
-                gammas,
-                batchSizes,
                 maxTimeInSec,
+                numSamples,
                 multiAgent
         );
 
@@ -75,4 +69,6 @@ public class AWSTrainingService extends TrainingService {
         runDAO.markAsStarting(run.getId());
         log.info("Started " + runType + " training job with id {}", executionId);
     }
+
+
 }
