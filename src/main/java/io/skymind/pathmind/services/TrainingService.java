@@ -49,7 +49,7 @@ public abstract class TrainingService {
             pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
         }
 
-        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_1, pathmindHelperVersion, NativeRL.VERSION_0_7_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
+        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
     }
 
     public void startTestRun(Experiment exp){
