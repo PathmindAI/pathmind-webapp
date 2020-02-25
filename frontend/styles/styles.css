@@ -178,7 +178,6 @@ img {
   padding: var(--lumo-space-xl);
   box-sizing: border-box;
   min-width: 520px;
-  min-height: 560px;
 }
 
 .dashboard-view .view-section {
