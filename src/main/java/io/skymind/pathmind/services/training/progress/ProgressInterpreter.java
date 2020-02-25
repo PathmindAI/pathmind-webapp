@@ -3,8 +3,6 @@ package io.skymind.pathmind.services.training.progress;
 import com.opencsv.CSVReader;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.policy.RewardScore;
-import io.skymind.pathmind.data.utils.PolicyUtils;
-import io.skymind.pathmind.data.utils.RunUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.StringReader;
@@ -23,7 +21,6 @@ public class ProgressInterpreter
 {
     private static final int ALGORITHM = 0;
     private static final int NAME = 2;
-    private static final int HYPERPARAMETERS = 3;
 
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss");
 
@@ -37,31 +34,17 @@ public class ProgressInterpreter
         int keyLength = keyString.length();
         String dateTime = null;
 
-        if (keyString.endsWith(RunUtils.TEMPORARY_POSTFIX)) {
-            // looks something like this:
-            // PPO_PathmindEnvironment_0_gamma=0.99,lr=1.0E-5,sgd_minibatch_size=128_1TEMP
-            keyString = keyString.substring(0, keyLength - RunUtils.TEMPORARY_POSTFIX.length() - 2);
-        } else {
-            // looks something like this:
-            // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128_2019-08-05_13-56-455cdir_3f
-            dateTime = keyString.substring(keyLength - TRIAL_ID_LEN - DATE_LEN, keyLength - TRIAL_ID_LEN);
-            keyString = keyString.substring(0, keyLength - TRIAL_ID_LEN - DATE_LEN - 1);
-        }
+        // looks something like this:
+        // PPO_PathmindEnvironment_0_clip_param=0.2,entropy_coeff=0.035,gamma=0.94978,kl_coeff=0.3,kl_target=0.03,lambda=0.96,lr=0.0016037,nu_2020-02-12_22-16-07ix9qrg3i
+        dateTime = keyString.substring(keyLength - TRIAL_ID_LEN - DATE_LEN, keyLength - TRIAL_ID_LEN);
+        keyString = keyString.substring(0, keyLength - TRIAL_ID_LEN - DATE_LEN - 1);
 
         // keyString now looks like :
-        // PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128
+        // PPO_PathmindEnvironment_0_clip_param=0.2,entropy_coeff=0.035,gamma=0.94978,kl_coeff=0.3,kl_target=0.03,lambda=0.96,lr=0.0016037,nu
         List<String> list = Arrays.asList(keyString.split("_", 4));
 
         policy.setAlgorithm(list.get(ALGORITHM));
         policy.setName(list.get(NAME));
-
-        Arrays.stream(list.get(HYPERPARAMETERS).split(",")).forEach(it -> {
-            final String[] split = it.split("=");
-            setHyperParameter(policy, split[0], split[1]);
-        });
-
-        // Generated from the hyperparameters
-        policy.setNotes(PolicyUtils.generateDefaultNotes(policy));
 
         try {
             if (dateTime != null) {
@@ -74,20 +57,6 @@ public class ProgressInterpreter
         }
 
         return policy;
-    }
-
-    private static void setHyperParameter(Policy policy, String name, String value) {
-        switch (name) {
-            case PolicyUtils.LEARNING_RATE:
-                policy.setLearningRate(Double.valueOf(value));
-                break;
-            case PolicyUtils.GAMMA:
-                policy.setGamma(Double.valueOf(value));
-                break;
-            case PolicyUtils.BATCH_SIZE:
-                policy.setBatchSize(Integer.valueOf(value));
-                break;
-        }
     }
 
     public static Policy interpret(Map.Entry<String, String> entry){
