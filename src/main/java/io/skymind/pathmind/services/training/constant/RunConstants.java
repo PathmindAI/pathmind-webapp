@@ -11,7 +11,7 @@ public final class RunConstants {
 	/**
 	 * Number of possible iterations for a single discovery run
 	 */
-	public static final int DISCOVERY_RUN_ITERATIONS = 100;
+	public static final int DISCOVERY_RUN_ITERATIONS = 50;
 
 	/**
 	 * Number of possible iterations for a single full run
