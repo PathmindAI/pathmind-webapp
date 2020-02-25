@@ -22,7 +22,6 @@ import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.UploadModelButton;
@@ -34,7 +33,6 @@ import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
-import io.skymind.pathmind.ui.views.model.filter.ModelFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -61,7 +59,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
 	private ScreenTitlePanel titlePanel;
-	private SearchBox<Model> searchBox;
 
 	public ModelsView()
 	{
@@ -72,7 +69,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	{
 		setupGrid();
 		setupArchivesTabPanel();
-		searchBox = getSearchBox();
 		
 		addClassName("models-view");
 
@@ -82,10 +78,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		// Hence the workaround below:
 		VerticalLayout leftPanel = WrapperUtils.wrapSizeFullVertical(
 			archivesTabPanel,
-			new ViewSection(
-				WrapperUtils.wrapWidthFullRightHorizontal(searchBox),
-				modelGrid
-			)
+			new ViewSection(modelGrid)
 		);
 		leftPanel.setPadding(false);
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
@@ -96,7 +89,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 			WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
 		);
 		gridWrapper.setPadding(false);
-		gridWrapper.setSpacing(false);
 		
 		return WrapperUtils.wrapSizeFullVertical(
 				createBreadcrumbs(),
@@ -109,10 +101,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 				modelGrid,
 				this::getModels,
 				(modelId, isArchivable) -> modelDAO.archive(modelId, isArchivable));
-	}
-
-	private SearchBox<Model> getSearchBox() {
-		return new SearchBox<Model>(modelGrid, new ModelFilter());
 	}
 
 	private void setupGrid()
