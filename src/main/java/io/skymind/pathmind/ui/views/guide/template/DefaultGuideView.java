@@ -21,7 +21,6 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.guide.GuideMenu;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.util.JavaScriptUtils;
 
 @Route(value = Routes.GUIDE_URL, layout = MainLayout.class)
 public abstract class DefaultGuideView extends PathMindDefaultView
@@ -60,8 +59,7 @@ public abstract class DefaultGuideView extends PathMindDefaultView
 
 		HorizontalLayout gridWrapper = WrapperUtils
 				.wrapWidthFullBetweenHorizontal(new GuideMenu(guideStep, projectId, segmentIntegrator), pageContent);
-		gridWrapper.getStyle().set("background-color", "white");
-		gridWrapper.getStyle().set("flex-grow", "1");
+		gridWrapper.addClassName("guide-view-wrapper");
 		return gridWrapper;
 	}
 
