@@ -144,9 +144,6 @@ public class RescaleExecutionProgressUpdater implements ExecutionProgressUpdater
                     executionProviderMetaDataDAO.putCheckPointFileKey(finishPolicyName, entry.getKey());
                 }
             });
-            // STEPH -> REFACTOR -> Combined so that this is transactional. For now I just left it as is for the merge
-            // conflict just to process the PR and will clean it up as part of another ticket.
-            runDAO.cleanUpTemporary(runId);
         }
     }
 

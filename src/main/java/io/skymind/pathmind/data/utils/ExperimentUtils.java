@@ -3,7 +3,6 @@ package io.skymind.pathmind.data.utils;
 import static io.skymind.pathmind.constants.RunStatus.NotStarted;
 import static io.skymind.pathmind.constants.RunStatus.Running;
 import static io.skymind.pathmind.constants.RunStatus.Starting;
-import static io.skymind.pathmind.constants.RunType.FullRun;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -13,10 +12,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.services.training.constant.RunConstants;
 
 public class ExperimentUtils
 {
@@ -49,10 +48,8 @@ public class ExperimentUtils
 	}
 
 	public static RunStatus getTrainingStatus(Experiment experiment) {
-		RunType runType = getTrainingType(experiment);
-		RunStatus status = experiment.getPolicies().stream()
-				.filter(p -> p.getRun().getRunTypeEnum() == runType)
-				.map(PolicyUtils::getRunStatus)
+		RunStatus status = experiment.getRuns().stream()
+				.map(Run::getStatusEnum)
 				.min(Comparator.comparingInt(RunStatus::getValue))
 				.orElse(NotStarted);
 		
@@ -60,7 +57,6 @@ public class ExperimentUtils
 		// So checking that to make sure
 		if (status == NotStarted || status == Starting) {
 			if (experiment.getPolicies().stream()
-					.filter(p -> p.getRun().getRunTypeEnum() == runType)
 					.map(PolicyUtils::getRunStatus)
 					.map(RunStatus::getValue)
 					.anyMatch(statusVal -> statusVal > Starting.getValue())) {
@@ -70,48 +66,26 @@ public class ExperimentUtils
 		return status;
 	}
 
-	/**
-	 * Returns a most significant training type for a given experiment. <br/>
-	 * E.g if experiment contains test, discovery and full runs it will return {@link RunType#FullRun}
-	 */
-	public static RunType getTrainingType(Experiment experiment) {
-		return experiment.getPolicies().stream()
-				.map(Policy::getRun)
-				.map(Run::getRunTypeEnum)
-				.max(Comparator.comparingInt(RunType::getValue))
-				.orElse(FullRun);
-	}
-
-
-	public static LocalDateTime getTrainingStartedDate(Experiment experiment, RunType runType) {
-		return experiment.getPolicies().stream()
-				.map(Policy::getRun)
-				.filter(run -> run.getRunTypeEnum() == runType)
+	public static LocalDateTime getTrainingStartedDate(Experiment experiment) {
+		return experiment.getRuns().stream()
 				.map(Run::getStartedAt)
 				.filter(Objects::nonNull)
-				.min(LocalDateTime::compareTo)
-				.orElse(LocalDateTime.now());
-	}
-
-	public static LocalDateTime getTrainingOldestPolicyStartedDate(Experiment experiment, RunType runType) {
-		return experiment.getPolicies().stream()
-				.filter(policy -> policy.getRun().getRunTypeEnum() == runType)
-				.map(Policy::getStartedAt)
-				.filter(Objects::nonNull)
-				.min(LocalDateTime::compareTo)
+				// experiment can have multiple run, in case of a restart
+				// so we take the latest one
+				.max(LocalDateTime::compareTo)
 				.orElse(LocalDateTime.now());
 	}
 
 	/**
-	 * Searches the most recent stopped_at date of all policies in given experiment.
+	 * Searches the most recent stopped_at date of all runs in given experiment.
 	 * Returns null if any policy has not finished yet.
 	 */
 	public static LocalDateTime getTrainingCompletedTime(Experiment experiment) {
-		final var stoppedTimes = experiment.getPolicies().stream()
-				.map(Policy::getStoppedAt)
+		final var stoppedTimes = experiment.getRuns().stream()
+				.map(Run::getStoppedAt)
 				.collect(Collectors.toList());
 
-		if (isAnyPolicyNotFinished(stoppedTimes)) {
+		if (isAnyNotFinished(stoppedTimes)) {
 			return null;
 		}
 
@@ -121,23 +95,19 @@ public class ExperimentUtils
 	}
 
 	/**
-	 * Calculates a total number of processed iterations for policies that were initialized with given type.
+	 * Calculates a total number of processed iterations for policies.
 	 * It sums up a size of reward list for each policy.
 	 */
-	public static Integer getNumberOfProcessedIterations(Experiment experiment, RunType runType){
-		if (experiment.getPolicies() == null) {
-			return 0;
-		}
+	public static Integer getNumberOfProcessedIterations(Experiment experiment){
 		return experiment.getPolicies().stream()
-				.filter(policy -> policy.getRun().getRunTypeEnum() == runType)
 				.map(Policy::getScores)
 				.map(List::size)
 				.reduce(0, Integer::sum);
 	}
 
-	public static double getEstimatedTrainingTime(Experiment experiment, double progress, RunType runType){
-		final var earliestPolicyStartedDate = ExperimentUtils.getTrainingOldestPolicyStartedDate(experiment, runType);
-		final var difference = Duration.between(earliestPolicyStartedDate, LocalDateTime.now());
+	public static double getEstimatedTrainingTime(Experiment experiment, double progress){
+		final var earliestRunStartedDate = ExperimentUtils.getTrainingStartedDate(experiment);
+		final var difference = Duration.between(earliestRunStartedDate, LocalDateTime.now());
 		return difference.toSeconds() * (100 - progress) / progress;
 	}
 
@@ -146,17 +116,17 @@ public class ExperimentUtils
 		return difference.toSeconds() * (100 - progress) / progress;
 	}
 
-	private static boolean isAnyPolicyNotFinished(List<LocalDateTime> stoppedTimes) {
+	private static boolean isAnyNotFinished(List<LocalDateTime> stoppedTimes) {
 		return stoppedTimes.stream().anyMatch(Objects::isNull);
 	}
 	
-	public static double calculateProgressByExperiment(Experiment experiment, RunType runType) {
-		Integer iterationsProcessed = getNumberOfProcessedIterations(experiment, runType);
-		return calculateProgressByIterationsProcessed(iterationsProcessed, runType);
+	public static double calculateProgressByExperiment(Experiment experiment) {
+		Integer iterationsProcessed = getNumberOfProcessedIterations(experiment);
+		return calculateProgressByIterationsProcessed(iterationsProcessed);
 	}
 
-	public static double calculateProgressByIterationsProcessed(Integer iterationsProcessed, RunType runType) {
-		double totalIterations = (double) RunUtils.getNumberOfTrainingIterationsForRunType(runType);
+	public static double calculateProgressByIterationsProcessed(Integer iterationsProcessed) {
+		double totalIterations = RunConstants.PBT_RUN_ITERATIONS;
 		double progress = (iterationsProcessed / totalIterations) * 100;
 		return Math.max(Math.min(100d, progress), 0);
 	}
