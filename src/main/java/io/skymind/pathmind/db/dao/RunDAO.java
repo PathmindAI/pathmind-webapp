@@ -1,18 +1,5 @@
 package io.skymind.pathmind.db.dao;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
@@ -24,7 +11,17 @@ import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.policy.RewardScore;
 import io.skymind.pathmind.data.utils.PolicyUtils;
-import io.skymind.pathmind.data.utils.RunUtils;
+import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class RunDAO
@@ -95,7 +92,6 @@ public class RunDAO
 
             updateRun(run, status, transactionCtx);
             updateExperiment(run, transactionCtx);
-            updateFirstPolicy(run, policies, transactionCtx);
             updatePolicies(run, policies, transactionCtx);
         });
 
@@ -109,22 +105,6 @@ public class RunDAO
         // Send run updated event, meaning that all policies under the run is updated.
         // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
         EventBus.post(new RunUpdateBusEvent(run));
-    }
-
-    // STEPH -> REFACTOR -> QUESTION -> Rename method with an explanation of what this does? It generates a temp policy name but why? And why get only index 0.
-    private void updateFirstPolicy(Run run, List<Policy> policies, DSLContext transactionCtx) {
-        // IMPORTANT -> Keep the policies.size() check  first because if it fails then we can avoid the database call.
-        if (policies.size() > 0 && PolicyRepository.isTemporaryPolicy(ctx, run.getId(), RunUtils.TEMPORARY_POSTFIX)) {
-            Optional<Policy> optionalPolicy = policies.stream()
-                    .filter(p -> p.getExternalId().contains("PathmindEnvironment_0"))
-                    .findFirst();
-
-            if (optionalPolicy.isPresent()) {
-                //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
-                Policy policy = optionalPolicy.get();
-                PolicyRepository.updatePolicyExternalId(transactionCtx, run.getId(), policy.getExternalId(), PolicyUtils.generatePolicyTempName(policy.getExternalId(), run.getRunType()));
-            }
-        }
     }
 
     private void updateExperiment(Run run, DSLContext transactionCtx) {
@@ -173,24 +153,8 @@ public class RunDAO
         }
     }
 
-    // STEPH -> REFACTOR -> Can we just make this as a single SQL call with a WHERE?. This should be in the updatePolicies method rather than in the service
-    // to make it all transactional. I will do this as another github issue in another PR.
-    public void cleanUpTemporary(long runId) {
-        boolean isExist = PolicyRepository.isTemporaryPolicy(ctx, runId, RunUtils.TEMPORARY_POSTFIX);
-        if (isExist) {
-            PolicyRepository.deleteTemporaryPolicy(ctx, runId, RunUtils.TEMPORARY_POSTFIX);
-            log.info("Cleaned Temporary Policies in " + runId);
-        }
-    }
-
     public List<RewardScore> getScores(long runId, String policyExtId) {
         Policy policy =  PolicyRepository.getPolicy(ctx, runId, policyExtId);
-
-        // check temporary policy
-        if (policy == null) {
-            int runType = RunRepository.getRunType(ctx, runId);
-            policy = PolicyRepository.getPolicy(ctx, runId, PolicyUtils.generatePolicyTempName(policyExtId, runType));
-        }
 
         if (policy == null) {
             return null;

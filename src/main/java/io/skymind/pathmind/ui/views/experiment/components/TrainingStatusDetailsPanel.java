@@ -1,29 +1,25 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
-import static io.skymind.pathmind.constants.RunStatus.Completed;
-import static io.skymind.pathmind.constants.RunStatus.Running;
-import static io.skymind.pathmind.constants.RunStatus.isRunning;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
-
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
 import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
+import io.skymind.pathmind.services.training.constant.RunConstants;
 import io.skymind.pathmind.ui.components.ElapsedTimer;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
+import static io.skymind.pathmind.constants.RunStatus.*;
+
 public class TrainingStatusDetailsPanel extends VerticalLayout {
 	private Span statusLabel = LabelFactory.createLabel(RunStatus.NotStarted.toString());
-	private Span runTypeLabel = LabelFactory.createLabel("");
 	/**
 	 * Label for training progress status.
 	 * If training is still in progress it shows it's % progress. If training is finished it shows its completed date.
@@ -37,7 +33,6 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("1px", 1, FormLayout.ResponsiveStep.LabelsPosition.ASIDE));
 		VerticalLayout statusRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(statusLabel, trainingProgress, completedTimeLabel);
 		formLayout.addFormItem(statusRow, "Status :").setClassName("training-status");
-		formLayout.addFormItem(runTypeLabel, "Run Type :").setClassName("training-status");
 		formLayout.addFormItem(elapsedTimeLabel, "Elapsed :").setClassName("training-status");
 		formLayout.setSizeFull();
 		add(formLayout);
@@ -47,18 +42,13 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 		final var trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
 		statusLabel.setText(trainingStatus.toString());
 
-		final var runType = ExperimentUtils.getTrainingType(experiment);
-		runTypeLabel.setText(runType.toString());
-
-		updateElapsedTimer(experiment, trainingStatus, runType);
-		updateProgressRow(experiment, trainingStatus, runType);
+		updateElapsedTimer(experiment, trainingStatus);
+		updateProgressRow(experiment, trainingStatus);
 	}
 
-	private void updateProgressRow(Experiment experiment, RunStatus trainingStatus, RunType runType) {
+	private void updateProgressRow(Experiment experiment, RunStatus trainingStatus) {
 		if(trainingStatus == Running) {
-			trainingProgress.setVisible(true);
-			completedTimeLabel.setVisible(false);
-			updateProgressBar(experiment, runType);
+			updateProgressBar(experiment);
 		} else if (trainingStatus == Completed) {
 			DateAndTimeUtils.withUserTimeZoneId(userTimeZone -> {
 				LocalDateTime trainingCompletedTime = ExperimentUtils.getTrainingCompletedTime(experiment);
@@ -73,11 +63,13 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 		}
 	}
 
-	private void updateProgressBar(Experiment experiment, RunType runType) {
-		final double progress = ExperimentUtils.calculateProgressByExperiment(experiment, runType);
+	private void updateProgressBar(Experiment experiment) {
+		final double progress = ExperimentUtils.calculateProgressByExperiment(experiment);
 		if (progress > 0 && progress <= 100) {
-			final double estimatedTime = ExperimentUtils.getEstimatedTrainingTime(experiment, progress, runType);
+			final double estimatedTime = ExperimentUtils.getEstimatedTrainingTime(experiment, progress);
 			trainingProgress.setValue(progress, estimatedTime);
+			completedTimeLabel.setVisible(false);
+			trainingProgress.setVisible(true);
 		}
 	}
 
@@ -85,9 +77,9 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 	 * Calculates a elapsed time and updates a timer. Elapsed time is a difference between training start date and it's
 	 * completed date (or current date in case the training is still in progress).
 	 */
-	private void updateElapsedTimer(Experiment experiment, RunStatus trainingStatus, RunType runType) {
+	private void updateElapsedTimer(Experiment experiment, RunStatus trainingStatus) {
 		final var isTrainingRunning = isRunning(trainingStatus);
-		final var startTime = ExperimentUtils.getTrainingStartedDate(experiment, runType);
+		final var startTime = ExperimentUtils.getTrainingStartedDate(experiment);
 		final var endTime = calculateEndTimeForElapsedTime(experiment, isTrainingRunning);
 		final var timeElapsed = Duration.between(startTime, endTime).toSeconds();
 		elapsedTimeLabel.updateTimer(timeElapsed, isTrainingRunning);

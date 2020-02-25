@@ -11,12 +11,18 @@ public final class RunConstants {
 	/**
 	 * Number of possible iterations for a single discovery run
 	 */
-	public static final int DISCOVERY_RUN_ITERATIONS = 100;
+	public static final int DISCOVERY_RUN_ITERATIONS = 50;
 
 	/**
 	 * Number of possible iterations for a single full run
 	 */
 	public static final int FULL_RUN_ITERATIONS = 500;
+
+	/**
+	 * Number of possible iterations for PBT run
+	 */
+	public static final int PBT_RUN_ITERATIONS = 500;
+
 	public static final String DISCOVERY_RUN_LEARNING_RATES = "DISCOVERY_RUN_LEARNING_RATES";
 	public static final String DISCOVERY_RUN_GAMMAS = "DISCOVERY_RUN_GAMMAS";
 	public static final String DISCOVERY_RUN_BATCH_SIZES = "DISCOVERY_RUN_BATCH_SIZES";

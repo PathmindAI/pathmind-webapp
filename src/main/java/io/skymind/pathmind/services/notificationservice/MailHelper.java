@@ -45,8 +45,11 @@ public class MailHelper
 	@Value("${sendgrid.api.key}")
 	private String apiKey;
 
-	@Value("${pathmind.email.from}")
-	private String from;
+	@Value("${pathmind.email.from.email}")
+	private String fromEmail;
+
+	@Value("${pathmind.email.from.name}")
+	private String fromName;
 
 	/**
 	 * Sends an email using SendGrid
@@ -84,7 +87,7 @@ public class MailHelper
 			throw new PathMindException("Email fields are missing");
 		}
 		Mail mail = new Mail();
-		mail.setFrom(new Email(from));
+		mail.setFrom(createFromEmail());
 		mail.setTemplateId(verificationEmailTemplateId);
 
 		Personalization personalization = new Personalization();
@@ -102,7 +105,7 @@ public class MailHelper
 			throw new PathMindException("Email fields are missing");
 		}
 		Mail mail = new Mail();
-		mail.setFrom(new Email(from));
+		mail.setFrom(createFromEmail());
 		mail.setTemplateId(resetPasswordTemplateId);
 
 		Personalization personalization = new Personalization();
@@ -132,7 +135,7 @@ public class MailHelper
 			throw new PathMindException("Email fields are missing");
 		}
 		Mail mail = new Mail();
-		mail.setFrom(new Email(from));
+		mail.setFrom(createFromEmail());
 		mail.setTemplateId(isSuccessful ? trainingCompletedTemplateId : trainingFailedTemplateId);
 		
 		Personalization personalization = new Personalization();
@@ -143,5 +146,10 @@ public class MailHelper
 		personalization.addTo(new Email(to));
 		mail.addPersonalization(personalization);
 		return mail;
+	}
+	
+	
+	private Email createFromEmail() {
+		return new Email(fromEmail, fromName);
 	}
 }
