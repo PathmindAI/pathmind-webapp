@@ -20,7 +20,6 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.components.PathmindTextArea;
-import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
@@ -64,7 +63,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	private PathmindTextArea getObservationTextArea;
 	private RewardFunctionEditor rewardFunctionEditor;
 	private Span rewardFunctionTitle;
-	private ScreenTitlePanel titlePanel;
 
 	public ExperimentsView() {
 		super();
@@ -79,7 +77,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		projectName = getProjectName();
 
 		return WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullBetweenHorizontal(createBreadcrumbs(), getSearchBox()),
+				WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
 				WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 					WrapperUtils.wrapSizeFullVertical(
 								archivesTabPanel,
@@ -172,8 +170,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	@Override
 	protected Component getTitlePanel() {
-		titlePanel = new ScreenTitlePanel("PROJECT");
-		return titlePanel;
+		return null;
 	}
 
 	public List<Experiment> getExperiments() {
@@ -208,7 +205,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		archivesTabPanel.initData();
 		getObservationTextArea.setValue(model.getGetObservationForRewardFunction());
 		showRewardFunction(experiments.get(0));
-		titlePanel.setSubtitle(projectName);
 	}
 
 	@Override

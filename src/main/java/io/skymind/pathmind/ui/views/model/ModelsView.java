@@ -21,7 +21,6 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
-import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
@@ -60,7 +59,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
-	private ScreenTitlePanel titlePanel;
 	private SearchBox<Model> searchBox;
 
 	public ModelsView()
@@ -99,7 +97,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		gridWrapper.setSpacing(false);
 		
 		return WrapperUtils.wrapSizeFullVertical(
-				createBreadcrumbs(),
+				WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
 				gridWrapper);
 	}
 
@@ -168,8 +166,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 
 	@Override
 	protected Component getTitlePanel() {
-		titlePanel = new ScreenTitlePanel("PROJECT");
-		return titlePanel;
+		return null;
 	}
 
 	@Override
@@ -196,7 +193,6 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		});
 
 		archivesTabPanel.initData();
-		titlePanel.setSubtitle(project.getName());
 	}
 
 	@Override
