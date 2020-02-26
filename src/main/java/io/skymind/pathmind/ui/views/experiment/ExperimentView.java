@@ -75,6 +75,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private RewardFunctionEditor rewardFunctionEditor;
 	private PolicyChartPanel policyChartPanel;
 	private ExperimentsNavbar experimentsNavbar;
+	private NotesField notesField;
 
 	private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
     private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
@@ -187,20 +188,22 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		exportPolicyButton.addClassName("half-width");
 		exportPolicyButton.setEnabled(false);
 
+		notesField = createViewNotesField();
+
 		return WrapperUtils.wrapSizeFullVertical(
 				WrapperUtils.wrapWidthFullCenterHorizontal(runDiscoveryTraining, runFullTraining),
 				policyHighlightPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton),
 				trainingStatusDetailsPanel,
 				rewardFunctionEditor,
-				createViewNotesField());
+				notesField);
 	}
 
 	private Breadcrumbs createBreadcrumbs() {        
 		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
 	}
 
-	private HorizontalLayout createViewNotesField() {
+	private NotesField createViewNotesField() {
 		return new NotesField(
 			"Experiment Notes",
 			experiment.getUserNotes(),
@@ -227,6 +230,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		experimentId = selectedExperiment.getId();
 		loadExperimentData();
 		updateScreenComponents();
+		notesField.setNotesText(experiment.getUserNotes());
 		UI.getCurrent().getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId());
 	}
 

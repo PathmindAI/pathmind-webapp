@@ -21,8 +21,8 @@ public class NotesField extends HorizontalLayout {
 	private TextArea blockEditableField;
 	private Consumer<String> saveConsumer;
 
-	public NotesField(String title, String text, Consumer<String> saveConsumer) {
-		this.notesText = text;
+	public NotesField(String title, String notesText, Consumer<String> saveConsumer) {
+		this.notesText = notesText;
 		this.title = title;
 		this.saveConsumer = saveConsumer;
 		add(editableFieldWrapper());
@@ -93,8 +93,9 @@ public class NotesField extends HorizontalLayout {
 		isEditting = !isEditting;
 	}
 
-	private void setNotesText(String notesText) {
+	public void setNotesText(String notesText) {
 		this.notesText = notesText;
+		blockEditableField.setValue(notesText);
 	}
 
 	public void saveButtonOnClick() {

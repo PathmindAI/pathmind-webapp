@@ -77,15 +77,11 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
-        System.out.println(">>>>>>>>>>>>>>> " + experiment.getId());
         updateChart(experiment.getPolicies());
     }
 
     private void updateChart(List<Policy> policies) {
-//        if(!chart.getConfiguration().getSeries().isEmpty())
-//            chart.getConfiguration().getSeries().clear();
         // As we cannot clear the chart's ListSeries we need to do things a bit differently.
-
         chart.getConfiguration().setSeries(
                 policies.stream()
                         .map(policy -> createListSeriesForPolicy(policy))
