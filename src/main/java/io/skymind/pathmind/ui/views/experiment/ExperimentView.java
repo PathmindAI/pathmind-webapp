@@ -8,7 +8,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -96,6 +95,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private String projectName;
 	private Button runDiscoveryTraining;
 	private Button runFullTraining;
+	private Breadcrumbs pageBreadcrumbs;
 
 	public ExperimentView() {
 		super();
@@ -132,9 +132,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		DEFAULT_SPLIT_PANE_RATIO);
 	  // TODO -> Charts do not re-flow automatically: https://vaadin.com/forum/thread/17878341/resizable-charts (https://github.com/vaadin/vaadin-charts/issues/457)
 	  mainSplitLayout.addSplitterDragendListener(evt -> getUI().ifPresent(ui -> ui.getPage().executeJs("Array.from(window.document.getElementsByTagName('vaadin-chart')).forEach( el => el.__reflow());")));
-	
+
+	  pageBreadcrumbs = createBreadcrumbs();
+
 	  VerticalLayout mainLayout = WrapperUtils.wrapSizeFullVertical(
-		  createBreadcrumbs(),
+		pageBreadcrumbs,
 		  mainSplitLayout
 	  );
 
@@ -231,6 +233,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		loadExperimentData();
 		updateScreenComponents();
 		notesField.setNotesText(experiment.getUserNotes());
+		pageBreadcrumbs.setText(3, "Experiment #"+experiment.getName());
 		UI.getCurrent().getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId());
 	}
 

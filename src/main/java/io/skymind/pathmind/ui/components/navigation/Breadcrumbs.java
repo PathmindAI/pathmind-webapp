@@ -22,6 +22,8 @@ public class Breadcrumbs extends HorizontalLayout
 {
 	private static final String BREADCRUMB_CLASSNAME = "breadcrumb";
 
+	private List<BreadcrumbItem> items = new ArrayList<>();
+
 	public Breadcrumbs() {
 		this(null, null, null);
 	}
@@ -39,7 +41,6 @@ public class Breadcrumbs extends HorizontalLayout
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public Breadcrumbs(Project project, Model model, Experiment experiment, boolean hasRootItem) {
-		List<BreadcrumbItem> items = new ArrayList<>();
 
 		if(hasRootItem) {
 			items.add(new BreadcrumbItem("Projects", ProjectsView.class, null));
@@ -72,12 +73,19 @@ public class Breadcrumbs extends HorizontalLayout
 		separator.addClassName("breadcrumb-separator");
 		return separator;
 	}
+
+	public void setText(int index, String newText) {
+		int itemIndex = index > items.size() ? items.size() - 1 : index;
+		items.get(itemIndex).setText(newText);
+	}
 	
 	private class BreadcrumbItem<T, C extends Component & HasUrlParameter<T>> {
 		private String name;
 		private Class<C> navigationTarget;
 		private T parameter;
 		private boolean isCurrentStep = false;
+		protected Span spanComponent;
+		protected RouterLink routerLinkComponent;
 		
 		public BreadcrumbItem(String name, Class<C> navigationTarget, T parameter) {
 			this.name = name;
@@ -91,9 +99,11 @@ public class Breadcrumbs extends HorizontalLayout
 		
 		private Component createComponent() {
 			if (isCurrentStep) {
-				return createLabel();
+				spanComponent = createLabel();
+				return spanComponent;
 			} else {
-				return createLink();
+				routerLinkComponent = createLink();
+				return routerLinkComponent;
 			}
 		}
 		
@@ -106,6 +116,14 @@ public class Breadcrumbs extends HorizontalLayout
 			Span label = new Span(name);
 			label.addClassName(BREADCRUMB_CLASSNAME);
 			return label;		
+		}
+
+		private void setText(String newText) {
+			if (isCurrentStep) {
+				spanComponent.setText(newText);
+			} else {
+				routerLinkComponent.setText(newText);
+			}
 		}
 	}
 }
