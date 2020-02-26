@@ -65,7 +65,7 @@ public class DateAndTimeUtils
 		else if (minutes > 0)
 			return minutes + " min";
 		else
-			return seconds + " sec";
+			return "less than a minute";
 	}
 
 	public static NumberFormat getElapsedTimeNumberFormat() {
