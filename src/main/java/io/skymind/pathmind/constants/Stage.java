@@ -4,10 +4,9 @@ public enum Stage {
 
 	SetUpSimulation(0, "Set up simulation"), 
 	WriteRewardFunction(1, "Write reward function"), 
-	DiscoveryRunTraining(2, "Discovery run training"), 
-	FullRunTraining(3, "Full run training"), 
-	Export(4, "Export"),
-	Completed(5, "Completed");
+	TrainPolicy(2, "Train policy"), 
+	Export(3, "Export"),
+	Completed(4, "Completed");
 	
 	private int id;
 	private String name;
@@ -17,8 +16,15 @@ public enum Stage {
 		this.name = name;
 	}
 
-	public String toString() {
+	public String getName() {
 		return name;
+	}
+	public String getNameAfterDone() {
+		if (TrainPolicy.getValue() == id) {
+			return "Training";
+		} else {
+			return getName();
+		}
 	}
 
 	public int getValue() {

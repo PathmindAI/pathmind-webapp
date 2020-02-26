@@ -40,6 +40,10 @@ public class PolicyDAO {
         return policies;
     }
 
+    public Map<Long, Integer> getRewardScoresCountForExperiments(List<Long> experimentIds) {
+        return RewardScoreRepository.getRewardScoresCountForExperiments(ctx, experimentIds);
+    }
+
     /**
      * To avoid multiple download policy file from rescale server,
      * we put the "saving" for temporary
