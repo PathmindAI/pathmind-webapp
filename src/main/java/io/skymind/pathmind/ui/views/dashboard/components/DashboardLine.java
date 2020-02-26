@@ -42,7 +42,11 @@ public class DashboardLine extends HorizontalLayout {
 		Span navigateIcon = new Span(VaadinIcon.CHEVRON_RIGHT.create());
 		navigateIcon.setClassName("navigate-icon");
 		add(wrapper, navigateIcon);
-		
+
+		// When a link in breadcrumb is clicked, the same click event is also triggered for DashboardLine
+		// We cannot stop propagation yet (see issue: https://github.com/vaadin/flow/issues/1363)
+		// but applied the workaround suggested in the issue
+		breadcrumb.getElement().addEventListener("click", evt -> {}).addEventData("event.stopPropagation()");
 		addClickListener(evt -> clickHandler.accept(item));
 	}
 
