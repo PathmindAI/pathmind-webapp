@@ -144,8 +144,4 @@ public class PolicyUtils
         policy.setModel(run.getModel());
         policy.setProject(run.getProject());
     }
-
-    public static List<Long> convertToPolicyIds(List<Policy> policies) {
-        return policies.stream().map(policy -> policy.getId()).collect(Collectors.toList());
-    }
 }

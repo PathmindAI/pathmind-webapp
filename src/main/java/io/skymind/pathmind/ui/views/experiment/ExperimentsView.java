@@ -48,8 +48,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	@Autowired
 	private ExperimentDAO experimentDAO;
 	@Autowired
-	private RunDAO runDAO;
-	@Autowired
 	private ModelDAO modelDAO;
 	@Autowired
 	private UserDAO userDAO;
@@ -161,7 +159,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		if (ExperimentUtils.isDraftRunType(experiment)) {
 			UI.getCurrent().navigate(NewExperimentView.class, experiment.getId());
 		} else {
-			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+			UI.getCurrent().navigate(ExperimentView.class, experiment.getId());
 		}
 	}
 
@@ -193,10 +191,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		experiments = experimentDAO.getExperimentsForModel(modelId);
 		if (experiments == null || experiments.isEmpty())
 			throw new InvalidDataException("Attempted to access Experiments for Model: " + modelId);
-
-		// set runs to experiment
-		experiments.stream()
-				.forEach(e -> e.setRuns(runDAO.getRunsForExperiment(e.getId())));
 	}
 
 	@Override

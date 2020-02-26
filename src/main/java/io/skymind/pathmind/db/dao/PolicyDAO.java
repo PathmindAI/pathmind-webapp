@@ -4,6 +4,7 @@ import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.policy.RewardScore;
+import io.skymind.pathmind.data.utils.DataUtils;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -30,7 +31,7 @@ public class PolicyDAO
 
     public List<Policy> getPoliciesForExperiment(long experimentId) {
         List<Policy> policies = PolicyRepository.getPoliciesForExperiment(ctx, experimentId);
-        Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(ctx, PolicyUtils.convertToPolicyIds(policies));
+        Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(ctx, DataUtils.convertToIds(policies));
         policies.stream().forEach(policy -> policy.setScores(rewardScores.get(policy.getId())));
         return policies;
     }

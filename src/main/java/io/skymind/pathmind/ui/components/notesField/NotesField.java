@@ -19,15 +19,13 @@ public class NotesField extends HorizontalLayout {
 	private Boolean isEditting = false;
 	private Button saveButton;
 	private TextArea blockEditableField;
-	private Consumer<String> saveCallBack;
+	private Consumer<String> saveConsumer;
 
-	public NotesField(String title, String text, Consumer<String> saveCallbackFn) {
+	public NotesField(String title, String text, Consumer<String> saveConsumer) {
 		this.notesText = text;
 		this.title = title;
+		this.saveConsumer = saveConsumer;
 		add(editableFieldWrapper());
-		if (saveCallbackFn != null) {
-			saveCallBack = saveCallbackFn;
-		}
 		setSpacing(false);
 		addClassName("notes-field-wrapper");
 	}
@@ -95,8 +93,12 @@ public class NotesField extends HorizontalLayout {
 		isEditting = !isEditting;
 	}
 
+	private void setNotesText(String notesText) {
+		this.notesText = notesText;
+	}
+
 	public void saveButtonOnClick() {
 		notesText = blockEditableField.getValue();
-		saveCallBack.accept(notesText);
-	};
+		saveConsumer.accept(notesText);
+	}
 }

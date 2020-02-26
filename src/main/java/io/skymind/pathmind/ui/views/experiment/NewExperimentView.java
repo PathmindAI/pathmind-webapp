@@ -211,7 +211,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         ConfirmDialog confirmDialog = new RunConfirmDialog();
         confirmDialog.open();
 
-        UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+        UI.getCurrent().navigate(ExperimentView.class, experimentId);
     }
 
     private Button getActionButton() {

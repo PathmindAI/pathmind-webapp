@@ -16,15 +16,21 @@ import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
-import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 
 @CssImport("./styles/views/experiment/experiment-navbar.css")
-public class ExperimentsNavbar extends VerticalLayout {
+public class ExperimentsNavbar extends VerticalLayout
+{
+	private static final String CURRENT = "current";
 
-	public ExperimentsNavbar(ExperimentDAO experimentDAO, List<Experiment> experiments, Experiment currentExperiment, long modelId) {
+	private HorizontalLayout oldRow;
 
+	public ExperimentsNavbar(ExperimentDAO experimentDAO, List<Experiment> experiments, Experiment currentExperiment, long modelId, Consumer<Experiment> selectExperimentConsumer)
+	{
 		VerticalLayout rowsWrapper = new VerticalLayout();
 		rowsWrapper.addClassName("experiments-navbar-items");
 		rowsWrapper.setPadding(false);
@@ -34,7 +40,7 @@ public class ExperimentsNavbar extends VerticalLayout {
 			if (!ExperimentUtils.isDraftRunType(experiment)) {
 				Boolean isCurrentExperiment = (experiment.getId() == currentExperiment.getId());
 				RunStatus overallExperimentStatus = getRunsStatus(experiment);
-				rowsWrapper.add(createRow(experiment, overallExperimentStatus, isCurrentExperiment));
+				rowsWrapper.add(createRow(experiment, overallExperimentStatus, isCurrentExperiment, selectExperimentConsumer));
 			}
         }
 
@@ -48,29 +54,28 @@ public class ExperimentsNavbar extends VerticalLayout {
 	private RunStatus getRunsStatus(Experiment experiment) {
 		// Discovery Run and Full Run will be combined, 
 		// so there's no need to distinguish between them
-		RunStatus overallExperimentStatus = RunStatus.NotStarted;
-		for (final Run run : experiment.getRuns()) {
-			RunStatus currentRunStatus = run.getStatusEnum();
-			if (currentRunStatus.getValue() > overallExperimentStatus.getValue()) {
-				overallExperimentStatus = currentRunStatus;
-			}
-		}
-		return overallExperimentStatus;
+		return Collections.max(experiment.getRuns(), Comparator.comparingInt(Run::getStatus)).getStatusEnum();
 	}
 
-	private HorizontalLayout createRow(Experiment experiment, RunStatus overallExperimentStatus, Boolean isCurrentExperiment) {
-		String experimentId = Long.toString(experiment.getId());
+	private HorizontalLayout createRow(Experiment experiment, RunStatus overallExperimentStatus, Boolean isCurrentExperiment, Consumer<Experiment> selectExperimentConsumer) {
 		HorizontalLayout newRow = new HorizontalLayout();
 		newRow.add(createStatusIcon(overallExperimentStatus));
 		newRow.add(createExperimentName(experiment.getName()));
-		newRow.addClickListener(event -> getUI().ifPresent(ui -> 
-				ui.navigate(ExperimentView.class, experimentId)));
+		newRow.addClickListener(event -> getUI().ifPresent(ui -> handleRowClicked(experiment, selectExperimentConsumer, newRow)));
 		newRow.addClassName("experiment-navbar-item");
 		newRow.setSpacing(false);
 		if (isCurrentExperiment) {
-			newRow.addClassName("current");
+			oldRow = newRow;
+			newRow.addClassName(CURRENT);
 		}
 		return newRow;
+	}
+
+	private void handleRowClicked(Experiment experiment, Consumer<Experiment> selectExperimentConsumer, HorizontalLayout newRow) {
+		newRow.addClassName(CURRENT);
+		oldRow.removeClassName(CURRENT);
+		selectExperimentConsumer.accept(experiment);
+		oldRow = newRow;
 	}
 
 	// TODO: +error, stopped status icons

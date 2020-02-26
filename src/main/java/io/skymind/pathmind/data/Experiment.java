@@ -6,7 +6,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Experiment extends ArchivableData
 {
-	private long id;
 	private long modelId;
 	private String rewardFunction;
 	private LocalDateTime dateCreated;
@@ -20,14 +19,6 @@ public class Experiment extends ArchivableData
 	private List<Run> runs;
 
 	public Experiment() {
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
 	}
 
 	public String getRewardFunction() {

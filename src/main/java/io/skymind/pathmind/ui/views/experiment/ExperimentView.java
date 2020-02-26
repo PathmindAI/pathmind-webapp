@@ -10,6 +10,7 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.*;
 import io.skymind.pathmind.bus.EventBus;
@@ -27,7 +28,6 @@ import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
-import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -49,8 +49,6 @@ import io.skymind.pathmind.ui.views.experiment.components.PolicyHighlightPanel;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.ui.views.policy.ExportPolicyView;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -60,17 +58,14 @@ import java.util.Optional;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
-public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<String> {
+public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
+{
 	private Button exportPolicyButton;
-
-	private static final int EXPERIMENT_ID_SEGMENT = 0;
-	private static final int POLICY_ID_SEGMENT = 1;
 
 	private static final double DEFAULT_SPLIT_PANE_RATIO = 70;
 
 	private long experimentId = -1;
 	private long modelId = -1;
-	private long policyId = -1;
 	private Policy policy;
 	private Experiment experiment;
 	private List<Experiment> experiments;
@@ -96,8 +91,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private TrainingService trainingService;
 	@Autowired
 	private UserDAO userDAO;
-	@Autowired
-	private RunDAO runDAO;
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 
@@ -146,13 +139,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		  mainSplitLayout
 	  );
 
-	  System.out.println("are you called?");
-	  
 	  return mainLayout;
 	}
 
 	private Component getLeftPanel() {
-		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiments, experiment, modelId);
+		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiments, experiment, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
 		policyChartPanel = new PolicyChartPanel();
 
 		return WrapperUtils.wrapWidthFullHorizontal(
@@ -222,26 +213,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		);
 	}
 
-	/**
-	 * For now I'm doing a manual parse of the parameter since Vaadin only seems
-	 * to have the ability to parse to a wildcard parameter if you need more than one parameter
-	 * as explained in this Vaadin issue: https://github.com/vaadin/flow/issues/4213 There is an
-	 * add-on but I don't think it's worth adding on yet since this is the only place we have this
-	 * need and Vaadin will most likely add this capability in the future.
-	 */
 	@Override
-	public void setParameter(BeforeEvent event, @WildcardParameter String parameter) {
-		if (StringUtils.isEmpty(parameter)) {
-			this.experimentId = -1;
-			return;
-		}
-
-		String[] segments = parameter.split("/");
-
-		if (NumberUtils.isDigits(segments[EXPERIMENT_ID_SEGMENT]))
-			experimentId = Long.parseLong(segments[EXPERIMENT_ID_SEGMENT]);
-		if (segments.length > 1 && NumberUtils.isDigits(segments[POLICY_ID_SEGMENT]))
-			policyId = Long.parseLong(segments[POLICY_ID_SEGMENT]);
+	public void setParameter(BeforeEvent event, Long experimentId) {
+		this.experimentId = experimentId;
 	}
 
 	@Override
@@ -249,22 +223,39 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		return userDAO.isUserAllowedAccessToExperiment(experimentId);
 	}
 
+	private void selectExperiment(Experiment selectedExperiment) {
+		experiment = experimentDAO.getExperiment(selectedExperiment.getId())
+				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
+		experimentId = selectedExperiment.getId();
+		loadExperimentData();
+		updateScreenComponents();
+		UI.getCurrent().getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId());
+	}
+
 	@Override
 	protected void initLoadData() throws InvalidDataException {
 		experiment = experimentDAO.getExperiment(experimentId)
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-		experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
-		policy = selectBestPolicy(experiment.getPolicies());
+		loadExperimentData();
+		// The logic below is a bit odd in that this is almost a model view but as a result it needs to be done after the experiment is loaded.
 		modelId = experiment.getModelId();
 		experiments = experimentDAO.getExperimentsForModel(modelId);
-		setRunsToExperiments();
+	}
+
+	private void loadExperimentData() {
+		experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
+		policy = selectBestPolicy(experiment.getPolicies());
 	}
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
 		screenTitlePanel.setSubtitle(projectName);
+		updateScreenComponents();
+	}
+
+	private void updateScreenComponents() {
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
-		policyChartPanel.init(experiment);
+		policyChartPanel.setExperiment(experiment);
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 		processSelectedPolicy(policy);
 	}
@@ -284,7 +275,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private void processSelectedPolicy(Policy selectedPolicy) {
 		policyHighlightPanel.update(selectedPolicy);
-		policyChartPanel.init(selectedPolicy);
 		policyChartPanel.highlightPolicy(selectedPolicy);
 		updateButtonEnablement();
 		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Error) {
@@ -353,15 +343,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void updatedRunForPolicies(Run run) {
 		experiment.getPolicies().stream()
         	.filter(policy -> policy.getRunId() == run.getId())
-        	.forEach(policy -> {
-        		policy.setRun(run);
-        });
-	}
-
-	private void setRunsToExperiments() {
-		// set runs to experiments
-		experiments.stream()
-				.forEach(e -> e.setRuns(runDAO.getRunsForExperiment(e.getId())));
+        	.forEach(policy -> policy.setRun(run));
 	}
 
 	class ExperimentViewPolicyUpdateSubscriber implements PolicyUpdateSubscriber
