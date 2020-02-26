@@ -15,6 +15,7 @@ import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
+import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -57,12 +58,18 @@ public class ExperimentsNavbar extends VerticalLayout
 	}
 
 	private HorizontalLayout createRow(Experiment experiment, RunStatus overallExperimentStatus, Boolean isCurrentExperiment, Consumer<Experiment> selectExperimentConsumer) {
+		
 		HorizontalLayout newRow = new HorizontalLayout();
 		newRow.add(createStatusIcon(overallExperimentStatus));
-		newRow.add(createExperimentName(experiment.getName()));
+		
+		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+			newRow.add(createExperimentText(experiment.getName(), DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId)));
+		});
+		
 		newRow.addClickListener(event -> getUI().ifPresent(ui -> handleRowClicked(experiment, selectExperimentConsumer, newRow)));
 		newRow.addClassName("experiment-navbar-item");
 		newRow.setSpacing(false);
+
 		if (isCurrentExperiment) {
 			oldRow = newRow;
 			newRow.addClassName(CURRENT);
@@ -77,7 +84,6 @@ public class ExperimentsNavbar extends VerticalLayout
 		oldRow = newRow;
 	}
 
-	// TODO: +error, stopped status icons
 	private Component createStatusIcon(RunStatus status) {
 		if (status.getValue() <= RunStatus.Running.getValue()) {
 			Div loadingSpinner = new Div();
@@ -89,10 +95,10 @@ public class ExperimentsNavbar extends VerticalLayout
 		return new Icon(VaadinIcon.EXCLAMATION_CIRCLE_O);
 	}
 
-	private Div createExperimentName(String experimentNumber) {
+	private Div createExperimentText(String experimentNumber, String experimentDateCreated) {
 		Div experimentNameWrapper = new Div();
-		experimentNameWrapper.add(new Paragraph(experimentNumber));
-		experimentNameWrapper.add(new Paragraph("Experiment"));
+		experimentNameWrapper.add(new Paragraph("Experiment #"+experimentNumber));
+		experimentNameWrapper.add(new Paragraph("Created "+experimentDateCreated));
 		experimentNameWrapper.addClassName("experiment-name");
 		return experimentNameWrapper;
 	}
