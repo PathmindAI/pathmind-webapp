@@ -30,10 +30,9 @@ public class ModelBinders
 				.bind(Model::getNumberOfPossibleActions, Model::setNumberOfPossibleActions);
 	}
 
-	public static void bindGetObservationForRewardFunction(Binder<Model> binder, TextArea getObservationForRewardFunctionTextArea)
+	public static void bindNotesFieldTextArea(Binder<Model> binder, TextArea notesFieldTextArea)
 	{
-		binder.forField(getObservationForRewardFunctionTextArea)
-				.asRequired("Field is required")
-				.bind(Model::getGetObservationForRewardFunction, Model::setGetObservationForRewardFunction);
+		binder.forField(notesFieldTextArea)
+				.bind(Model::getUserNotes, Model::setUserNotes);
 	}
 }

@@ -33,7 +33,9 @@ public class JobSpec {
 
     private final int maxTimeInSec;
 
-    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec) {
+    private final boolean multiAgent;
+
+    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, boolean multiAgent) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
@@ -51,6 +53,7 @@ public class JobSpec {
         this.gammas = gammas;
         this.batchSizes = batchSizes;
         this.maxTimeInSec = maxTimeInSec;
+        this.multiAgent = multiAgent;
     }
 
     public long getUserId() {
@@ -131,5 +134,9 @@ public class JobSpec {
 
     public void setCheckpointFileId(String checkpointFileId) {
         this.checkpointFileId = checkpointFileId;
+    }
+
+    public boolean isMultiAgent() {
+        return multiAgent;
     }
 }

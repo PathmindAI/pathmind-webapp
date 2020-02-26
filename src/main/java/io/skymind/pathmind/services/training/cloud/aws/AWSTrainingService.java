@@ -14,7 +14,7 @@ import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.JSONB;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,8 +23,12 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class AWSTrainingService extends TrainingService {
-    public AWSTrainingService(ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
-        super(executionProvider, runDAO, modelDAO, policyDAO, executionProviderMetaDataDAO);
+    private final boolean multiAgent;
+    public AWSTrainingService(@Value("${pathmind.training.multiagent:false}") boolean multiAgent,
+                              ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO,
+                              ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
+        super(multiAgent, executionProvider, runDAO, modelDAO, policyDAO, executionProviderMetaDataDAO);
+        this.multiAgent = multiAgent;
     }
 
     protected void startRun(RunType runType, Experiment exp, int iterations, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, Policy basePolicy) {
@@ -51,7 +55,8 @@ public class AWSTrainingService extends TrainingService {
                 learningRates,
                 gammas,
                 batchSizes,
-                maxTimeInSec
+                maxTimeInSec,
+                multiAgent
         );
 
         List<RewardScore> rewardScores = null;

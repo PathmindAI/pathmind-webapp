@@ -4,7 +4,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -87,7 +86,7 @@ public class ExperimentsNavbar extends VerticalLayout
 		} else if (status == RunStatus.Completed) {
 			return new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE);
 		}
-		return new Span("no icon yet");
+		return new Icon(VaadinIcon.EXCLAMATION_CIRCLE_O);
 	}
 
 	private Div createExperimentName(String experimentNumber) {

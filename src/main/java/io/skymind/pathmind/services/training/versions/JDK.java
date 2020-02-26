@@ -3,13 +3,11 @@ package io.skymind.pathmind.services.training.versions;
 import java.util.Arrays;
 import java.util.List;
 
-public enum AnyLogic implements VersionEnum {
-    VERSION_8_5,
-    VERSION_8_5_1,
-    VERSION_8_5_2;
+public enum JDK implements VersionEnum {
+    VERSION_8_222;
 
     @Override
     public List<String> fileNames() {
-        return Arrays.asList("baseEnv.zip");
+        return Arrays.asList("OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz");
     }
 }

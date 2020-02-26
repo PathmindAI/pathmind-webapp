@@ -32,6 +32,7 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
     public PolicyChartPanel() {
         setupChart();
         add(chart);
+        addClassName("policy-chart-panel");
     }
 
     private void updateData(Policy updatedPolicy) {

@@ -49,8 +49,8 @@ spec:
             - name: DB_URL
               valueFrom:
                 secretKeyRef:
-                  name: dburl
-                  key: DB_URL
+                  name: {{ .Values.env.DB_SECRET_NAME }}
+                  key: {{ .Values.env.DB_SECRET_KEY }}
             - name: INTERCOM_APP_ID 
               value: "{{ .Values.env.INTERCOM_APP_ID }}"
             - name: SEGMENT_WEBSITE_KEY
@@ -89,3 +89,5 @@ spec:
               value: "{{ .Values.env.SQS_URL }}"
             - name: S3_BUCKET
               value: "{{ .Values.env.S3_BUCKET }}"
+            - name: MULTI_AGENT
+              value: "{{ .Values.env.MULTI_AGENT }}"
