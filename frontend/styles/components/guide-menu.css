@@ -65,9 +65,12 @@
   opacity: 0.5;
 }
 
-/* In case we want the side menu go to the top for smaller screens
-@media (max-width: 1279px) {
+/* The side menu goes to the top for smaller screens 
+   Using 50% screen width of 1440px */
+@media (max-width: 720px) {
   .guide-menu {
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
     width: 100% !important;
     top: 25px;
@@ -75,21 +78,18 @@
     padding: var(--lumo-space-s);
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.05);
   }
-  .guide-links-wrapper {
-    grid-template-columns: repeat(4, calc(25% - var(--lumo-space-xs)));
-    gap: var(--lumo-space-xs);
-    align-items: center;
-    width: 100%;
-    max-width: 940px;
-    margin-top: 0;
-  }
   .guide-menu a {
     padding: var(--lumo-space-xs) 0;
-    margin-top: 0;
-    margin-left: 30px;
+    margin: 0;
+  }
+  .guide-menu a:not(.skipLink)::before {
+    content: none;
+  }
+  .guide-menu a:not([highlight]) {
+    display: none;
   }
   .guide-menu vaadin-button {
     font-size: var(--lumo-font-size-m);
-    margin-top: var(--lumo-space-s);
+    margin-top: 0;
   }
-} */
+}
