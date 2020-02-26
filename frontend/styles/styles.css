@@ -164,6 +164,11 @@ img {
 .centered-field-label {
   width: 100px;
 }
+.truncated-label {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .default-view {
   background: var(--pm-app-bg-color);
