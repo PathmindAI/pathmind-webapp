@@ -126,6 +126,11 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 		final String modelNotes = modelDetailsWizardPanel.notesFieldTextArea.getValue();
 		final long experimentId = modelDAO.addModelToProject(model, project.getId(), modelNotes);
+		
+		if (!modelNotes.isEmpty()) {
+			segmentIntegrator.addedNotesUploadModelView();
+		}
+
 		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 	}
 

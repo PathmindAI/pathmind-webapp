@@ -29,6 +29,7 @@ import io.skymind.pathmind.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
@@ -54,6 +55,8 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	private UserDAO userDAO;
 	@Autowired
 	private GuideDAO guideDAO;
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
 	private long projectId;
 	private Project project;
@@ -162,6 +165,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 			updatedNotes -> {
 					projectDAO.updateUserNotes(projectId, updatedNotes);
 					NotificationUtils.showSuccess("Notes saved");
+					segmentIntegrator.updatedNotesModelsView();
 			}
 		);
 	}

@@ -28,6 +28,7 @@ import io.skymind.pathmind.ui.components.buttons.ShowRewardFunctionButton;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
@@ -53,6 +54,8 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	private ModelDAO modelDAO;
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
 	private long modelId;
 	private Model model;
@@ -140,6 +143,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 			updatedNotes -> {
 				modelDAO.updateUserNotes(modelId, updatedNotes);
 				NotificationUtils.showSuccess("Notes saved");
+				segmentIntegrator.updatedNotesExperimentsView();
 			}
 		);
 	}
