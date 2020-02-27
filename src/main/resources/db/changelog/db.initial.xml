@@ -944,4 +944,73 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="20200224-01" author="onur@vaadin.com">
+        <update tableName="TRAINING_ERROR">
+            <column name="DESCRIPTION" value="Training failed to initialize. Please contact the Pathmind team."/>
+            <column name="RESTARTABLE" value="false"/>
+            <where>ID = 1</where>
+        </update>
+        <update tableName="TRAINING_ERROR">
+            <column name="DESCRIPTION" value="Invalid reward function syntax. Create a new experiment to update your reward function."/>
+            <where>ID = 2</where>
+        </update>
+        <update tableName="TRAINING_ERROR">
+            <column name="DESCRIPTION" value="Runtime error. Please contact the Pathmind team."/>
+            <where>ID = 3</where>
+        </update>
+        <update tableName="TRAINING_ERROR">
+            <column name="DESCRIPTION" value="Runtime error. Please contact the Pathmind team."/>
+            <column name="RESTARTABLE" value="false"/>
+            <where>ID = 4</where>
+        </update>
+        <update tableName="TRAINING_ERROR">
+            <column name="DESCRIPTION" value="Incorrect number of actions or observations detected. Please double check the size of your actions or observations array and re-upload your model."/>
+            <where>ID = 5</where>
+        </update>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="RuntimeError: java.lang.NoSuchMethodError"/>
+            <column name="DESCRIPTION" value="Unsupported version of AnyLogic detected. Please contact support@pathmind.com."/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="unzip: cannot find or open model.jar, model.jar.zip or model.jar.ZIP"/>
+            <column name="DESCRIPTION" value="Import error. Invalid zip file."/>
+        </insert>
+    </changeSet>
+
+    <!-- #829 Flag that binaries lives in s3 already -->
+    <changeSet id="20200213-01" author="alexander.makarov@toptal.com">
+        <addColumn tableName="MODEL">
+            <column name="MODEL_FILE_MOVED_TO_S3" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="POLICY">
+            <column name="POLICY_FILE_MOVED_TO_S3" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="POLICY">
+            <column name="POLICY_SNAPSHOT_MOVED_TO_S3" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="MODEL" columnName="MODEL_FILE_MOVED_TO_S3" />
+            <dropColumn tableName="POLICY" columnName="POLICY_FILE_MOVED_TO_S3" />
+            <dropColumn tableName="POLICY" columnName="POLICY_SNAPSHOT_MOVED_TO_S3" />
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200213-02" author="alexander.makarov@toptal.com">
+        <addColumn tableName="POLICY">
+            <column name="HAS_FILE" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <sql>
+            UPDATE POLICY SET HAS_FILE = TRUE
+            WHERE EXISTS( SELECT POLICY_ID FROM POLICY_FILE WHERE POLICY_ID = ID AND FILE IS NOT NULL );
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

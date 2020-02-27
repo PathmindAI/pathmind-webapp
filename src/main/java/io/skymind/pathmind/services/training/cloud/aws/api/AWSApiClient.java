@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -95,14 +97,35 @@ public class AWSApiClient {
         return s3Client.putObject(bucketName, keyId, file).getETag();
     }
 
+    public String fileUpload(String keyId, byte[] bytes) {
+        long contentLength = bytes.length;
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(contentLength);
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        return s3Client.putObject(bucketName, keyId, bis, metadata).getETag();
+    }
+
     public byte[] fileContents(String keyId) {
+        return fileContents(keyId, false);
+    }
+
+    public byte[] fileContents(String keyId, boolean checkExists) {
+        if (checkExists) {
+            if (!fileExists(keyId)) {
+                return null;
+            }
+        }
         S3Object o = s3Client.getObject(bucketName, keyId);
         try {
             return IOUtils.toByteArray(o.getObjectContent());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to get content from {}/{}", bucketName, keyId, e);
             return null;
         }
+    }
+
+    public boolean fileExists(String keyId) {
+        return s3Client.doesObjectExist(bucketName, keyId);
     }
 
     public void fileDelete(String bucketName, String keyId) {

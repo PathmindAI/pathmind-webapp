@@ -71,6 +71,8 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
         chart.getConfiguration().getLegend().setEnabled(false);
         chart.getConfiguration().addxAxis(xAxis);
         chart.getConfiguration().addyAxis(yAxis);
+        chart.getConfiguration().getTooltip().setFormatter(
+                "return 'Iteration#:' + this.x + '<br/>' + 'Mean Reward:' + this.y.toFixed(Math.abs(this.y) > 1 ? 1 : 6)");
         chart.setSizeFull();
     }
 

@@ -97,12 +97,10 @@ class RunRepository
                 .from(Tables.RUN)
                 .leftOuterJoin(POLICY)
                     .on(POLICY.RUN_ID.eq(Tables.RUN.ID))
-                .leftOuterJoin(POLICY_FILE)
-                    .on(POLICY.ID.eq(POLICY_FILE.POLICY_ID))
                 .where(Tables.RUN.STATUS.eq(RunStatus.Starting.getValue())
                         .or(Tables.RUN.STATUS.eq(RunStatus.Running.getValue()))
                         .or(Tables.RUN.STATUS.eq(RunStatus.Completed.getValue()))
-                        .and(POLICY_FILE.FILE.isNull()))
+                        .and(POLICY.HAS_FILE.isNull().or(POLICY.HAS_FILE.isFalse())))
                 .fetch(Tables.RUN.ID);
     }
 
