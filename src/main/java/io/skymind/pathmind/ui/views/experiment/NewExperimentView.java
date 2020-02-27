@@ -34,7 +34,6 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.PathmindTextArea;
-import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -55,8 +54,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private long experimentId = -1;
     private Experiment experiment;
-
-    private ScreenTitlePanel screenTitlePanel;
 
     private Div errorsWrapper;
     private PathmindTextArea tipsTextArea;
@@ -82,15 +79,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     protected Component getTitlePanel() {
-        screenTitlePanel = new ScreenTitlePanel("PROJECT");
-        return screenTitlePanel;
+        return null;
     }
 
     @Override
     protected Component getMainContent() {
         binder = new Binder<>(Experiment.class);
         VerticalLayout mainContent = WrapperUtils.wrapWidthFullVertical(
-                createBreadcrumbs(),
+            WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
                 WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         getLeftPanel(),
                         getRightPanel(),
@@ -248,6 +244,5 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
         binder.setBean(experiment);
-        screenTitlePanel.setSubtitle(experiment.getProject().getName());
     }
 }
