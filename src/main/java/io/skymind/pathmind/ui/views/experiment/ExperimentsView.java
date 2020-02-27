@@ -61,9 +61,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	private ArchivesTabPanel<Experiment> archivesTabPanel;
 	private ExperimentGrid experimentGrid;
-	private PathmindTextArea getObservationTextArea;
-	private RewardFunctionEditor rewardFunctionEditor;
-	private Span rewardFunctionTitle;
 	private ScreenTitlePanel titlePanel;
 
 	public ExperimentsView() {
@@ -73,8 +70,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	protected Component getMainContent() {
 		setupExperimentListPanel();
-		setupGetObservationTextArea();
-		setupRewardFunctionEditor();
 		setupArchivesTabPanel();
 		projectName = getProjectName();
 
@@ -84,10 +79,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		);
 		leftPanel.setPadding(false);
 		VerticalLayout rightPanel = WrapperUtils.wrapSizeFullVertical(
-			createViewNotesField(),
-			rewardFunctionTitle,
-			rewardFunctionEditor,
-			getObservationTextArea
+			createViewNotesField()
 		);
 		rightPanel.setPadding(false);
 
@@ -100,13 +92,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewExperimentButton(experimentDAO, modelId)));
 	}
 
-	private void setupRewardFunctionEditor() {
-		rewardFunctionTitle = LabelFactory.createLabel("Reward Functions", READONLY_LABEL);
-		rewardFunctionEditor = new RewardFunctionEditor();
-		rewardFunctionEditor.setReadonly(true);
-		rewardFunctionEditor.setSizeFull();
-	}
-
 	/**
 	 * Using any experiment's getProject() since they should all be the same. I'm assuming at this point
 	 * that there has to be at least one experiment to be able to get here.
@@ -115,16 +100,10 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		return new Breadcrumbs(experiments.get(0).getProject(), model);
 	}
 
-	private void setupGetObservationTextArea() {
-		getObservationTextArea = new PathmindTextArea("getObservations");
-		getObservationTextArea.setSizeFull();
-		getObservationTextArea.setReadOnly(true);
-	}
-
 	private void setupArchivesTabPanel() {
 		archivesTabPanel = new ArchivesTabPanel<Experiment>(
 				"Experiments",
-				false,
+				true,
 				experimentGrid,
 				this::getExperiments,
 				(experimentId, isArchivable) -> experimentDAO.archive(experimentId, isArchivable));
@@ -132,7 +111,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	private void setupExperimentListPanel() {
 		experimentGrid = new ExperimentGrid();
-		experimentGrid.addComponentColumn(exp -> createActionButtons(exp)).setHeader("Actions").setSortable(false);
 		experimentGrid.addItemClickListener(event -> handleExperimentClick(event.getItem()));
 	}
 
@@ -147,19 +125,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		);
 	}
 
-	private HorizontalLayout createActionButtons(Experiment exp) {
-		ShowRewardFunctionButton showRewardFunctionButton = new ShowRewardFunctionButton();
-		showRewardFunctionButton.addClickListener(evt -> showRewardFunction(exp));
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.add(archivesTabPanel.getArchivesButton(exp), showRewardFunctionButton);
-		return layout;
-	}
-
-	private void showRewardFunction(Experiment exp) {
-		rewardFunctionTitle.setText("Reward Function - Experiment #" + exp.getName());
-		rewardFunctionEditor.setValue(exp.getRewardFunction());
-	}
-
 	private void handleExperimentClick(Experiment experiment) {
 		if (ExperimentUtils.isDraftRunType(experiment)) {
 			UI.getCurrent().navigate(NewExperimentView.class, experiment.getId());
@@ -167,7 +132,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 			UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
 		}
 	}
-
+	
 	@Override
 	protected boolean isAccessAllowedForUser() {
 		return userDAO.isUserAllowedAccessToModel(modelId);
@@ -209,8 +174,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 			experimentGrid.setItems(experiments);
 		});
 		archivesTabPanel.initData();
-		getObservationTextArea.setValue(model.getGetObservationForRewardFunction());
-		showRewardFunction(experiments.get(0));
 		titlePanel.setSubtitle(projectName);
 	}
 
