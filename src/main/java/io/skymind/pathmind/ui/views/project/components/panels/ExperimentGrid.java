@@ -27,7 +27,11 @@ public class ExperimentGrid extends Grid<Experiment>
 		Grid.Column<Experiment> nameColumn = addColumn(
 				TemplateRenderer.<Experiment> of("[[item.name]] <span class='tag'>[[item.draft]]</span>")
 					.withProperty("name", Experiment::getName)
-					.withProperty("draft", experiment -> experiment.getRuns().isEmpty() ? "Draft" : ""))
+					.withProperty("draft", experiment -> {
+						if(experiment.getRuns() == null)
+							return "--";
+						return experiment.getRuns().isEmpty() ? "Draft" : "";
+					}))
 				.setComparator(Comparator.comparing(Experiment::getName))
 				.setHeader("Experiment")
 				.setAutoWidth(true)
@@ -40,6 +44,9 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setResizable(true)
 				.setSortable(true);
 		addColumn(experiment -> {
+			if(experiment.getRuns() == null)
+				return "--";
+			
 			Optional<Run> run = experiment.getRuns().stream()
 					.filter(r -> r.getRunTypeEnum().equals(RunType.DiscoveryRun))
 					.findAny();
