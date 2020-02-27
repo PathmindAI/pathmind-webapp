@@ -10,6 +10,17 @@ resource "null_resource" "namespace" {
   }
 }
 
+resource "null_resource" "apipassword" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic apipassword --from-literal APIPASSWORD=${var.apipassword}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret apipassword"
+  }
+  depends_on = ["null_resource.namespace"]
+}
+
 resource "null_resource" "awsaccesskey" {
   provisioner "local-exec" {
     command = "kubectl create secret generic awsaccesskey --from-literal AWS_ACCESS_KEY_ID=${var.awsaccesskey} -n ${var.environment}"
@@ -136,15 +147,16 @@ resource "null_resource" "trainer" {
   depends_on = ["null_resource.db_url_cli_secret"]
 }
 
-#Install Canary
+#install Canary
 resource "null_resource" "canary" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../../k8s/canary/ -n ${var.environment}"
+    command = "helm install canary ../../helm/canary -f ../../helm/canary/values_${var.environment}.yaml -n ${var.environment}"
   }
   provisioner "local-exec" {
     when = "destroy"
-    command = "kubectl delete -f ../../k8s/canary/ -n ${var.environment}"
+    command = "helm delete canary -n ${var.environment}"
     on_failure = "continue"
   }
   depends_on = ["null_resource.pathmind","null_resource.pathmind-slot"]
 }
+

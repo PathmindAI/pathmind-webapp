@@ -9,6 +9,7 @@ public class CssMindPathStyles
 	public static final String BOLD_LABEL = "bold-label";
 	public static final String READONLY_LABEL = "readonly-label";
 	public static final String NO_TOP_MARGIN_LABEL = "no-top-margin-label";
+	public static final String TRUNCATED_LABEL = "truncated-label";
 
 	public static final String WELCOME_TEXT = "welcome-text";
 
