@@ -1,6 +1,7 @@
 package io.skymind.pathmind.ui.views.dashboard;
 
-import io.skymind.pathmind.db.dao.ExperimentDAO;
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -16,9 +17,9 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.bus.subscribers.RunUpdateSubscriber;
-import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.constants.Stage;
 import io.skymind.pathmind.data.DashboardItem;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
@@ -37,8 +38,6 @@ import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.model.UploadModelView;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-
-import java.time.LocalDateTime;
 
 
 @Route(value= Routes.DASHBOARD_URL, layout = MainLayout.class)
@@ -148,7 +147,6 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
  	@Override
  	public boolean filterBusEvent(RunUpdateBusEvent event) {
- 		// Do not do anything if run is in progress 
- 		return !RunStatus.isRunning(event.getRun().getStatusEnum()) && event.getRun().getProject().getPathmindUserId() == loggedUserId;
+ 		return event.getRun().getProject().getPathmindUserId() == loggedUserId;
  	}
 }

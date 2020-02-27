@@ -3,6 +3,7 @@ package io.skymind.pathmind.ui.views.policy;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 
+import io.skymind.pathmind.services.PolicyFileService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,6 +39,8 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 {
 	@Autowired
 	private PolicyDAO policyDAO;
+	@Autowired
+	private PolicyFileService policyFileService;
 	@Autowired
 	private UserDAO userDAO;
 	@Autowired
@@ -109,7 +112,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
 	private StreamResource getResourceStream(String filename) {
 		return new StreamResource(filename,
-				() -> new ByteArrayInputStream(policyDAO.getPolicyFile(policyId)));
+				() -> new ByteArrayInputStream(policyFileService.getPolicyFile(policyId)));
 	}
 
 	private void handleCancelButtonClicked() {

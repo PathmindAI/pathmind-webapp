@@ -3,6 +3,7 @@ package io.skymind.pathmind.data;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import io.skymind.pathmind.constants.RunStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -17,6 +18,8 @@ public class DashboardItem {
 	private Experiment experiment;
 	private Run latestRun;
 	private LocalDateTime latestUpdateTime;
+	private int iterationsProcessed;
+
 	/**
 	 * Flag indicates if a policy for {@link DashboardItem#latestRun} was already exported by a user
 	 */
@@ -69,7 +72,15 @@ public class DashboardItem {
 	public void setPolicyExported(boolean policyExported) {
 		this.policyExported = policyExported;
 	}
-	
+
+	public int getIterationsProcessed() {
+		return iterationsProcessed;
+	}
+
+	public void setIterationsProcessed(int iterationsProcessed) {
+		this.iterationsProcessed = iterationsProcessed;
+	}
+
 	@Override
  	public boolean equals(Object o) {
  		if(this == o) return true;
@@ -84,4 +95,8 @@ public class DashboardItem {
  	public int hashCode() {
  		return Objects.hash(getProject(), getModel(), getExperiment());
  	}
+
+ 	public boolean hasTrainingInProgress() {
+		return this.getExperiment() != null && this.getLatestRun() != null && RunStatus.isRunning(this.getLatestRun().getStatusEnum());
+	}
 }
