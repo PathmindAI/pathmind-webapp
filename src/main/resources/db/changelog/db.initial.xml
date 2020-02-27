@@ -976,4 +976,41 @@
             <column name="DESCRIPTION" value="Import error. Invalid zip file."/>
         </insert>
     </changeSet>
+
+    <!-- #829 Flag that binaries lives in s3 already -->
+    <changeSet id="20200213-01" author="alexander.makarov@toptal.com">
+        <addColumn tableName="MODEL">
+            <column name="MODEL_FILE_MOVED_TO_S3" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="POLICY">
+            <column name="POLICY_FILE_MOVED_TO_S3" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="POLICY">
+            <column name="POLICY_SNAPSHOT_MOVED_TO_S3" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="MODEL" columnName="MODEL_FILE_MOVED_TO_S3" />
+            <dropColumn tableName="POLICY" columnName="POLICY_FILE_MOVED_TO_S3" />
+            <dropColumn tableName="POLICY" columnName="POLICY_SNAPSHOT_MOVED_TO_S3" />
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200213-02" author="alexander.makarov@toptal.com">
+        <addColumn tableName="POLICY">
+            <column name="HAS_FILE" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <sql>
+            UPDATE POLICY SET HAS_FILE = TRUE
+            WHERE EXISTS( SELECT POLICY_ID FROM POLICY_FILE WHERE POLICY_ID = ID AND FILE IS NOT NULL );
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

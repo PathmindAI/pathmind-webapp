@@ -11,6 +11,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -28,7 +29,6 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.components.PathmindTextArea;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
@@ -40,7 +40,6 @@ import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
-import io.skymind.pathmind.ui.views.experiment.filter.ExperimentFilter;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
@@ -81,18 +80,25 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		setupArchivesTabPanel();
 		projectName = getProjectName();
 
+		VerticalLayout leftPanel = WrapperUtils.wrapSizeFullVertical(
+			archivesTabPanel,
+			new ViewSection(experimentGrid)
+		);
+		leftPanel.setPadding(false);
+		VerticalLayout rightPanel = WrapperUtils.wrapSizeFullVertical(
+			createViewNotesField(),
+			rewardFunctionTitle,
+			rewardFunctionEditor,
+			getObservationTextArea
+		);
+		rightPanel.setPadding(false);
+
 		return WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullBetweenHorizontal(createBreadcrumbs(), getSearchBox()),
+				createBreadcrumbs(),
 				WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-					WrapperUtils.wrapSizeFullVertical(
-								archivesTabPanel,
-								new ViewSection(experimentGrid)),
-						WrapperUtils.wrapSizeFullVertical(
-								createViewNotesField(),
-								rewardFunctionTitle,
-								rewardFunctionEditor,
-								getObservationTextArea),
-						70),
+						leftPanel,
+						rightPanel,
+				70),
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewExperimentButton(experimentDAO, modelId)));
 	}
 
@@ -115,10 +121,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		getObservationTextArea = new PathmindTextArea("getObservations");
 		getObservationTextArea.setSizeFull();
 		getObservationTextArea.setReadOnly(true);
-	}
-
-	private SearchBox getSearchBox() {
-		return new SearchBox<Experiment>(experimentGrid, new ExperimentFilter());
 	}
 
 	private void setupArchivesTabPanel() {

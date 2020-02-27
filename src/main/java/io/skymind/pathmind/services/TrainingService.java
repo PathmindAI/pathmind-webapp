@@ -4,7 +4,6 @@ import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
-import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
@@ -20,17 +19,18 @@ public abstract class TrainingService {
 
     protected final ExecutionProvider executionProvider;
     protected final RunDAO runDAO;
-    protected final ModelDAO modelDAO;
+    protected final ModelService modelService;
     protected final PolicyDAO policyDAO;
     protected final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     protected ExecutionEnvironment executionEnvironment;
 
     public TrainingService(boolean multiAgent, ExecutionProvider executionProvider,
-                           RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO,
+                           RunDAO runDAO, ModelService modelService,
+                           PolicyDAO policyDAO,
                            ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
         this.executionProvider = executionProvider;
         this.runDAO = runDAO;
-        this.modelDAO = modelDAO;
+        this.modelService = modelService;
         this.policyDAO = policyDAO;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
 

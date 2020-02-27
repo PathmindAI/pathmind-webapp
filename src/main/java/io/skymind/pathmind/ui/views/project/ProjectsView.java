@@ -22,7 +22,6 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
 import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
@@ -32,7 +31,6 @@ import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.model.ModelsView;
-import io.skymind.pathmind.ui.views.project.filter.ProjectFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 @CssImport("./styles/styles.css")
@@ -45,7 +43,7 @@ public class ProjectsView extends PathMindDefaultView
 	private List<Project> projects;
 	private Grid<Project> projectGrid;
 
-	private ArchivesTabPanel archivesTabPanel;
+	private ArchivesTabPanel<Project> archivesTabPanel;
 
 	public ProjectsView() {
 		super();
@@ -59,12 +57,11 @@ public class ProjectsView extends PathMindDefaultView
 		addClassName("projects-view");
 
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-					archivesTabPanel,
-					new ViewSection(
-						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
-					projectGrid
-				));
+				archivesTabPanel,
+				new ViewSection(projectGrid)
+		);
 		gridWrapper.addClassName("content");
+		gridWrapper.setPadding(false);
 		
 		return WrapperUtils.wrapSizeFullVertical(
 				createBreadcrumbs(),
@@ -72,12 +69,8 @@ public class ProjectsView extends PathMindDefaultView
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
 	}
 
-	private SearchBox<Project> getSearchBox() {
-		return new SearchBox<Project>(projectGrid, new ProjectFilter());
-	}
-
 	private void setupTabbedPanel() {
-		archivesTabPanel = new ArchivesTabPanel<Project>(
+		archivesTabPanel = new ArchivesTabPanel<>(
 				"Projects",
 				projectGrid,
 				this::getProjects,

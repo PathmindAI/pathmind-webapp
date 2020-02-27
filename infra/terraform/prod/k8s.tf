@@ -64,6 +64,17 @@ resource "null_resource" "configmap_ingress_nginx" {
   depends_on = ["null_resource.service_ingress_nginx"]
 }
 
+resource "null_resource" "apipassword" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic apipassword --from-literal APIPASSWORD=${var.apipassword}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret apipassword"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}
+
 resource "null_resource" "awsaccesskey" {
   provisioner "local-exec" {
     command = "kubectl create secret generic awsaccesskey --from-literal AWS_ACCESS_KEY_ID=${var.awsaccesskey}"
@@ -237,11 +248,11 @@ resource "null_resource" "efk" {
 #Install Canary
 resource "null_resource" "canary" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../../k8s/canary/"
+    command = "helm install canary ../../helm/canary -f ../../helm/canary/values_${var.environment}.yaml"
   }
   provisioner "local-exec" {
     when = "destroy"
-    command = "kubectl delete -f ../../k8s/canary/"
+    command = "helm delete canary"
   }
   depends_on = ["null_resource.jenkins","null_resource.prometheus","null_resource.pathmind","null_resource.efk","null_resource.pathmind-slot"]
 }
