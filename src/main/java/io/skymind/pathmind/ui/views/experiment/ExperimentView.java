@@ -57,9 +57,13 @@ import java.util.Optional;
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
-	private Button exportPolicyButton;
-
 	private static final double DEFAULT_SPLIT_PANE_RATIO = 70;
+
+	// We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
+	// on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
+	private Object experimentLock = new Object();
+
+	private Button exportPolicyButton;
 
 	private long experimentId = -1;
 	private long modelId = -1;
@@ -227,24 +231,30 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private void selectExperiment(Experiment selectedExperiment) {
-		experiment = experimentDAO.getExperiment(selectedExperiment.getId())
-				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
-		experimentId = selectedExperiment.getId();
-		loadExperimentData();
-		updateScreenComponents();
-		notesField.setNotesText(experiment.getUserNotes());
-		pageBreadcrumbs.setText(3, "Experiment #"+experiment.getName());
-		UI.getCurrent().getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId());
+		synchronized (experimentLock) {
+			experiment = experimentDAO.getExperiment(selectedExperiment.getId())
+					.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
+			experimentId = selectedExperiment.getId();
+			loadExperimentData();
+			updateScreenComponents();
+			notesField.setNotesText(experiment.getUserNotes());
+			pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
+			UI.getCurrent().getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId());
+		}
 	}
 
 	@Override
 	protected void initLoadData() throws InvalidDataException {
-		experiment = experimentDAO.getExperiment(experimentId)
-				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-		loadExperimentData();
-		// The logic below is a bit odd in that this is almost a model view but as a result it needs to be done after the experiment is loaded.
-		modelId = experiment.getModelId();
-		experiments = experimentDAO.getExperimentsForModel(modelId);
+		// The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
+		// same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
+		synchronized (experimentLock) {
+			experiment = experimentDAO.getExperiment(experimentId)
+					.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
+			loadExperimentData();
+			// The logic below is a bit odd in that this is almost a model view but as a result it needs to be done after the experiment is loaded.
+			modelId = experiment.getModelId();
+			experiments = experimentDAO.getExperimentsForModel(modelId);
+		}
 	}
 
 	private void loadExperimentData() {
@@ -355,17 +365,22 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     {
 		@Override
 		public void handleBusEvent(PolicyUpdateBusEvent event) {
-			// Update or insert the policy in experiment.getPolicies
-			addOrUpdatePolicy(event.getPolicy());
-			// Calculate the best policy again
-			Policy bestPolicy = selectBestPolicy(experiment.getPolicies());
+			synchronized (experimentLock) {
+				// Need a check in case the experiment was on hold waiting for the change of experiment to load
+				if(event.getPolicy().getExperiment().getId() != experimentId)
+					return;
+				// Update or insert the policy in experiment.getPolicies
+				addOrUpdatePolicy(event.getPolicy());
+				// Calculate the best policy again
+				Policy bestPolicy = selectBestPolicy(experiment.getPolicies());
 
-			// Refresh other components, existing best policy is updated or we have a new best policy
-			if (policy.equals(event.getPolicy()) || !policy.equals(bestPolicy)) {
-				policy = bestPolicy;
-				PushUtils.push(getUI(), () -> processSelectedPolicy(bestPolicy));
+				// Refresh other components, existing best policy is updated or we have a new best policy
+				if (policy.equals(event.getPolicy()) || !policy.equals(bestPolicy)) {
+					policy = bestPolicy;
+					PushUtils.push(getUI(), () -> processSelectedPolicy(bestPolicy));
+				}
+				PushUtils.push(getUI(), () -> trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment));
 			}
-			PushUtils.push(getUI(), () -> trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment));
 		}
 
 		@Override

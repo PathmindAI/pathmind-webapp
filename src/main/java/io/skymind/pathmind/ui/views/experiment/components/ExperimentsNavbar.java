@@ -36,13 +36,13 @@ public class ExperimentsNavbar extends VerticalLayout
 		rowsWrapper.setPadding(false);
 		rowsWrapper.setSpacing(false);
 
-        for (final Experiment experiment : experiments) {
-			if (!ExperimentUtils.isDraftRunType(experiment)) {
-				Boolean isCurrentExperiment = (experiment.getId() == currentExperiment.getId());
-				RunStatus overallExperimentStatus = getRunsStatus(experiment);
-				rowsWrapper.add(createRow(experiment, overallExperimentStatus, isCurrentExperiment, selectExperimentConsumer));
-			}
-        }
+		experiments.stream()
+				.filter(experiment -> !ExperimentUtils.isDraftRunType(experiment))
+				.forEach(experiment -> {
+					Boolean isCurrentExperiment = (experiment.getId() == currentExperiment.getId());
+					RunStatus overallExperimentStatus = getRunsStatus(experiment);
+					rowsWrapper.add(createRow(experiment, overallExperimentStatus, isCurrentExperiment, selectExperimentConsumer));
+				});
 
 		setPadding(false);
 		setSpacing(false);

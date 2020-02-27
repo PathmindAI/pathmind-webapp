@@ -24,7 +24,10 @@ import static io.skymind.pathmind.utils.ChartUtils.createActiveSeriesPlotOptions
 import static io.skymind.pathmind.utils.ChartUtils.createPassiveSeriesPlotOptions;
 
 @Component
-public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubscriber {
+public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubscriber
+{
+    private Object experimentLock = new Object();
+
     private Chart chart = new Chart(ChartType.SPLINE);
 
     private Experiment experiment;
@@ -33,10 +36,6 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
         setupChart();
         add(chart);
         addClassName("policy-chart-panel");
-    }
-
-    private void updateData(Policy updatedPolicy) {
-        updatedPolicyChart(updatedPolicy);
     }
 
     private void updatedPolicyChart(Policy updatedPolicy) {
@@ -76,8 +75,10 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
     }
 
     public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-        updateChart(experiment.getPolicies());
+        synchronized (experimentLock) {
+            this.experiment = experiment;
+            updateChart(experiment.getPolicies());
+        }
     }
 
     private void updateChart(List<Policy> policies) {
@@ -126,7 +127,12 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
 
     @Override
     public void handleBusEvent(PolicyUpdateBusEvent event) {
-        PushUtils.push(this, () -> updateData(event.getPolicy()));
+        synchronized (experimentLock) {
+            // We need to check after the lock is acquired as changing experiments can take up to several seconds.
+            if (event.getPolicy().getExperiment().getId() != experiment.getId())
+                return;
+            PushUtils.push(this, () -> updatedPolicyChart(event.getPolicy()));
+        }
     }
 
     @Override
