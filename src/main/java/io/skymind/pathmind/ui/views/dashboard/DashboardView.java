@@ -36,6 +36,7 @@ import io.skymind.pathmind.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
+import io.skymind.pathmind.ui.views.guide.GuideOverview;
 import io.skymind.pathmind.ui.views.model.UploadModelView;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
@@ -96,7 +97,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 		Stage stage = DashboardUtils.calculateStage(item);
 		switch (stage) {
 			case SetUpSimulation :
-				getUI().ifPresent(ui -> ui.navigate(UploadModelView.class, item.getProject().getId()));
+				getUI().ifPresent(ui -> ui.navigate(GuideOverview.class, item.getProject().getId()));
 				break;
 			case WriteRewardFunction:
 				var experimentId = item.getExperiment() == null ?
