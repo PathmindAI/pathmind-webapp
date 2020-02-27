@@ -78,17 +78,13 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 			new ViewSection(experimentGrid)
 		);
 		leftPanel.setPadding(false);
-		VerticalLayout rightPanel = WrapperUtils.wrapSizeFullVertical(
-			createViewNotesField()
-		);
-		rightPanel.setPadding(false);
 
 		return WrapperUtils.wrapSizeFullVertical(
 				createBreadcrumbs(),
 				WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 						leftPanel,
-						rightPanel,
-				70),
+						createViewNotesField(),
+						70),
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewExperimentButton(experimentDAO, modelId)));
 	}
 
