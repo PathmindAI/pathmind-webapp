@@ -97,6 +97,28 @@ resource "null_resource" "awssecretaccesskey" {
   depends_on = ["null_resource.configmap_ingress_nginx"]
 }
 
+resource "null_resource" "jenkinspassword" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic jenkinspassword --from-literal JENKINSPASSWORD=${var.jenkinspassword}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret jenkinspassword"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}
+
+resource "null_resource" "pgadminpassword" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic pgadminpassword --from-literal PGADMINPASSWORD=${var.pgadminpassword}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret pgadminpassword"
+    on_failure = "continue"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}
 
 resource "null_resource" "db_url_secret" {
   provisioner "local-exec" {
