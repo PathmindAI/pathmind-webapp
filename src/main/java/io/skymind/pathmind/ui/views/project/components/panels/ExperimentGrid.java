@@ -51,10 +51,11 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setResizable(true)
 				.setSortable(true);
 		addColumn(experiment -> {
+			if(experiment.getRuns() == null)
+				return "--";
 			List<Run> runs = experiment.getRuns().stream()
 					.filter(r -> r.getRunTypeEnum().equals(RunType.FullRun))
 					.collect(Collectors.toList());
-
 			return runs.size() > 0 ? runs.size() : "--";
 		})
 				.setHeader("Full Run")
