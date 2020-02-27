@@ -5,6 +5,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLink;
 
@@ -50,15 +51,22 @@ public class GuideMenu extends VerticalLayout {
     }
 
     private Component createChecklistItem(String itemName, Class navigationTarget, long itemIndex) {
+        long currentStep = itemIndex+1;
+        long totalSteps = guideStep.Recap.getValue()+1;
+        Span checklistStep = new Span("("+currentStep+" of "+totalSteps+")");
+        Div checklistItemWrapper = new Div();
         RouterLink checklistItem = new RouterLink(itemName, navigationTarget, projectId);
 
         if (itemIndex < guideStep.getValue()) {
-            checklistItem.addClassName("completed");
+            checklistItemWrapper.addClassName("completed");
         } else if (itemIndex > guideStep.getValue()) {
-            checklistItem.addClassName("disabled");
+            checklistItemWrapper.addClassName("disabled");
         }
 
-        return checklistItem;
+        checklistItemWrapper.add(checklistItem);
+        checklistItemWrapper.add(checklistStep);
+
+        return checklistItemWrapper;
     }
 
     private Button createSkipToUploadModelButton() {
