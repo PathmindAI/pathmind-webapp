@@ -14,7 +14,6 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
-import io.skymind.pathmind.ui.components.SearchBox;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
@@ -24,7 +23,6 @@ import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.model.ModelsView;
-import io.skymind.pathmind.ui.views.project.filter.ProjectFilter;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -56,21 +54,15 @@ public class ProjectsView extends PathMindDefaultView
 		addClassName("projects-view");
 
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-					archivesTabPanel,
-					new ViewSection(
-						WrapperUtils.wrapWidthFullRightHorizontal(getSearchBox()),
-					projectGrid
-				),
+				archivesTabPanel,
+				new ViewSection(projectGrid),
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
 		gridWrapper.addClassName("content");
+		gridWrapper.setPadding(false);
 		
 		return WrapperUtils.wrapSizeFullVertical(
 				WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
 				gridWrapper);
-	}
-
-	private SearchBox<Project> getSearchBox() {
-		return new SearchBox<Project>(projectGrid, new ProjectFilter());
 	}
 
 	private void setupTabbedPanel() {
