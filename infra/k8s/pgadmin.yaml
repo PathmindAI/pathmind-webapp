@@ -23,7 +23,10 @@ spec:
         - name: PGADMIN_DEFAULT_EMAIL
           value: "admin"
         - name: PGADMIN_DEFAULT_PASSWORD
-          value: "admin"
+          valueFrom:
+            secretKeyRef:
+              name: pgadminpassword
+              key: PGADMINPASSWORD
         - name: PGADMIN_PORT
           value: "80"
         ports:

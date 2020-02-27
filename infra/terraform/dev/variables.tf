@@ -30,3 +30,5 @@ variable "node_size" {  }
 variable "master_size" {  }
 variable "cidr_block" {  }
 variable "apipassword" {  }
+variable "jenkinspassword" {  }
+variable "pgadminpassword" {  }
