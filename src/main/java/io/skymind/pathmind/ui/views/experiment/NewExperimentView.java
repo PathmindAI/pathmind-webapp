@@ -194,6 +194,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         	return;
         }
 
+        if (!notesFieldTextArea.isEmpty()) {
+            segmentIntegrator.addedNotesNewExperimentView();
+        }
+
         experimentDAO.updateExperiment(experiment);
         segmentIntegrator.rewardFuntionCreated();
         
