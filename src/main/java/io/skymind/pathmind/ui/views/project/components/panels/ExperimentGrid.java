@@ -27,17 +27,13 @@ public class ExperimentGrid extends Grid<Experiment>
 		Grid.Column<Experiment> nameColumn = addColumn(
 				TemplateRenderer.<Experiment> of("[[item.name]] <span class='tag'>[[item.draft]]</span>")
 					.withProperty("name", Experiment::getName)
-					.withProperty("draft", experiment -> {
-						if(experiment.getRuns() == null)
-							return "--";
-						return experiment.getRuns().isEmpty() ? "Draft" : "";
-					}))
+					.withProperty("draft", experiment -> experiment.getRuns() == null || experiment.getRuns().isEmpty() ? "Draft" : ""))
 				.setComparator(Comparator.comparing(Experiment::getName))
 				.setHeader("Experiment")
 				.setAutoWidth(true)
 				.setResizable(true)
 				.setSortable(true);
-		Grid.Column<Experiment> lastActivityColumn = addColumn(new ZonedDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+		addColumn(new ZonedDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Experiment::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setAutoWidth(true)
@@ -46,11 +42,9 @@ public class ExperimentGrid extends Grid<Experiment>
 		addColumn(experiment -> {
 			if(experiment.getRuns() == null)
 				return "--";
-			
 			Optional<Run> run = experiment.getRuns().stream()
 					.filter(r -> r.getRunTypeEnum().equals(RunType.DiscoveryRun))
 					.findAny();
-
 			return run.isPresent() ? run.get().getStatusEnum() : "--";
 		})
 				.setHeader("Discovery Run")
@@ -78,7 +72,7 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setSortable(false);
 
 		// Sort by name by default
-		sort(Arrays.asList(new GridSortOrder<Experiment>(nameColumn, SortDirection.DESCENDING)));
+		sort(Arrays.asList(new GridSortOrder<>(nameColumn, SortDirection.DESCENDING)));
 
 		getElement().getStyle().set("padding-top", "20px");
 	}
