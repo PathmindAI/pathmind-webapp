@@ -27,15 +27,12 @@ public class JobSpec {
 
     private final RunType type;
 
-    private final List<Double> learningRates;
-    private final List<Double> gammas;
-    private final List<Integer> batchSizes;
-
     private final int maxTimeInSec;
 
+    private final int numSamples;
     private final boolean multiAgent;
 
-    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, List<Double> learningRates, List<Double> gammas, List<Integer> batchSizes, int maxTimeInSec, boolean multiAgent) {
+    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
@@ -49,10 +46,8 @@ public class JobSpec {
         this.iterations = iterations;
         this.env = env;
         this.type = type;
-        this.learningRates = learningRates;
-        this.gammas = gammas;
-        this.batchSizes = batchSizes;
         this.maxTimeInSec = maxTimeInSec;
+        this.numSamples = numSamples;
         this.multiAgent = multiAgent;
     }
 
@@ -108,18 +103,6 @@ public class JobSpec {
         return runId;
     }
 
-    public List<Double> getLearningRates() {
-        return learningRates;
-    }
-
-    public List<Double> getGammas() {
-        return gammas;
-    }
-
-    public List<Integer> getBatchSizes() {
-        return batchSizes;
-    }
-
     public int getMaxTimeInSec() {
         return maxTimeInSec;
     }
@@ -134,6 +117,10 @@ public class JobSpec {
 
     public void setCheckpointFileId(String checkpointFileId) {
         this.checkpointFileId = checkpointFileId;
+    }
+
+    public int getNumSamples() {
+        return numSamples;
     }
 
     public boolean isMultiAgent() {

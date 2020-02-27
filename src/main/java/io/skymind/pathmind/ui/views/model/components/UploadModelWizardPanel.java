@@ -2,6 +2,7 @@ package io.skymind.pathmind.ui.views.model.components;
 
 import static io.skymind.pathmind.ui.constants.CssMindPathStyles.NO_TOP_MARGIN_LABEL;
 import static io.skymind.pathmind.ui.constants.CssMindPathStyles.SECTION_SUBTITLE_LABEL;
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.TRUNCATED_LABEL;
 
 import java.io.IOException;
 
@@ -51,7 +52,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	{
 		this.model = model;
 
-		projectNameLabel = LabelFactory.createLabel("", SECTION_SUBTITLE_LABEL, NO_TOP_MARGIN_LABEL);
+		projectNameLabel = LabelFactory.createLabel("", SECTION_SUBTITLE_LABEL, NO_TOP_MARGIN_LABEL, TRUNCATED_LABEL);
 		
 		setupLayout();
 
