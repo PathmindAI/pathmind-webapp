@@ -6,9 +6,9 @@ import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
-import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
@@ -21,18 +21,19 @@ import org.springframework.stereotype.Service;
 public class AWSTrainingService extends TrainingService {
     private final boolean multiAgent;
     public AWSTrainingService(@Value("${pathmind.training.multiagent:false}") boolean multiAgent,
-                              ExecutionProvider executionProvider, RunDAO runDAO, ModelDAO modelDAO, PolicyDAO policyDAO,
+                              ExecutionProvider executionProvider, RunDAO runDAO, ModelService modelService,
+                              PolicyDAO policyDAO,
                               ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
-        super(multiAgent, executionProvider, runDAO, modelDAO, policyDAO, executionProviderMetaDataDAO);
+        super(multiAgent, executionProvider, runDAO, modelService, policyDAO, executionProviderMetaDataDAO);
         this.multiAgent = multiAgent;
     }
 
     protected void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples, Policy basePolicy) {
         final Run run = runDAO.createRun(exp, runType);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
-        final Model model = modelDAO.getModel(exp.getModelId()).get();
+        final Model model = modelService.getModel(exp.getModelId()).get();
 
-        executionProvider.uploadModel(run.getId(), modelDAO.getModelFile(model.getId()));
+        executionProvider.uploadModel(run.getId(), modelService.getModelFile(model.getId()));
 
         final JobSpec spec = new JobSpec(
                 exp.getProject().getPathmindUserId(),

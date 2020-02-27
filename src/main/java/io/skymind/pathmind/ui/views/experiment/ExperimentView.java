@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.skymind.pathmind.services.PolicyFileService;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
@@ -96,6 +98,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Autowired
 	private TrainingErrorDAO trainingErrorDAO;
 	@Autowired
+	private PolicyFileService policyFileService;
+	@Autowired
 	private TrainingService trainingService;
 	@Autowired
 	private UserDAO userDAO;
@@ -172,7 +176,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		});
 		restartTraining.setVisible(false);
 		restartTraining.addClassNames("large-image-btn", "run");
-		
+
 		exportPolicyButton = new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()));
 		exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportPolicyButton.addClassName("half-width");
@@ -235,7 +239,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		loadExperiment(experimentId);
 		policy = selectBestPolicy(experiment.getPolicies());
 	}
-	
+
 	private void loadExperiment(long experimentId) {
 		experiment = experimentDAO.getExperiment(experimentId)
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
@@ -267,13 +271,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			policyChartPanel.highlightPolicy(selectedPolicy);
 		}
 	}
-	
+
 	private void updateUIForError(TrainingError error) {
 		policyHighlightPanel.setErrorDescription(error.getDescription());
 		restartTraining.setVisible(error.isRestartable());
 		restartTraining.setEnabled(error.isRestartable());
 	}
-	
+
 	private void clearErrorState() {
 		policyHighlightPanel.setErrorDescription(null);
 		updateButtonEnablement();
@@ -318,7 +322,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		// we put the "saving" for temporary
 		// policy dao will check if there's real policy file exist or not
 		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed) {
-			exportPolicyButton.setEnabled(policyDAO.hasPolicyFile(policy.getId()));
+			exportPolicyButton.setEnabled(policyFileService.hasPolicyFile(policy.getId()));
 		}
 		restartTraining.setVisible(false);
 	}

@@ -29,3 +29,4 @@ variable "node_count" {  }
 variable "node_size" {  }
 variable "master_size" {  }
 variable "cidr_block" {  }
+variable "apipassword" {  }

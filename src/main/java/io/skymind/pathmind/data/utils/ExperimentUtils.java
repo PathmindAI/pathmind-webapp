@@ -15,6 +15,7 @@ import io.skymind.pathmind.constants.RunStatus;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.services.training.constant.RunConstants;
 
 public class ExperimentUtils
 {
@@ -110,7 +111,23 @@ public class ExperimentUtils
 		return difference.toSeconds() * (100 - progress) / progress;
 	}
 
+	public static double getEstimatedTrainingTimeForSingleRun(Run run, double progress) {
+		final var difference = Duration.between(run.getStartedAt(), LocalDateTime.now());
+		return difference.toSeconds() * (100 - progress) / progress;
+	}
+
 	private static boolean isAnyNotFinished(List<LocalDateTime> stoppedTimes) {
 		return stoppedTimes.stream().anyMatch(Objects::isNull);
+	}
+	
+	public static double calculateProgressByExperiment(Experiment experiment) {
+		Integer iterationsProcessed = getNumberOfProcessedIterations(experiment);
+		return calculateProgressByIterationsProcessed(iterationsProcessed);
+	}
+
+	public static double calculateProgressByIterationsProcessed(Integer iterationsProcessed) {
+		double totalIterations = RunConstants.PBT_RUN_ITERATIONS;
+		double progress = (iterationsProcessed / totalIterations) * 100;
+		return Math.max(Math.min(100d, progress), 0);
 	}
 }

@@ -102,10 +102,9 @@ public class RunDAO
     private void fireEventBusUpdates(Run run, List<Policy> policies) {
         // An event for each policy since we only need to update some of the policies in a run.
         policies.stream().forEach(policy -> EventBus.post(new PolicyUpdateBusEvent(policy)));
-        // This is only needed because if the run is completed then with the current API there are no policies
-        // to update. By updating the run we can then let all the interested policies on screen know to update themselves.
-        if(policies.isEmpty())
-            EventBus.post(new RunUpdateBusEvent(run));
+        // Send run updated event, meaning that all policies under the run is updated.
+        // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
+        EventBus.post(new RunUpdateBusEvent(run));
     }
 
     private void updateExperiment(Run run, DSLContext transactionCtx) {

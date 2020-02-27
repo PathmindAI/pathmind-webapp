@@ -26,9 +26,9 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-body-size: 500m
   hosts:
     - host: dev.devpathmind.com
-      paths: [/:80:pathmind-dev]
+      paths: [/:80:canary-dev]
     - host: test.devpathmind.com
-      paths: [/:80:pathmind-test]
+      paths: [/:80:canary-test]
     #model analyzer
     - host: ma.dev.devpathmind.com
       paths: [/:8080:pathmind-ma-dev]
