@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 import io.skymind.pathmind.services.PolicyFileService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
@@ -32,6 +33,8 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
+
+import static io.skymind.pathmind.utils.StringUtils.toCamelCase;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPORT_POLICY_URL, layout = MainLayout.class)
@@ -102,14 +105,9 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	}
 	
 	public String generatePolicyFileName() {
-		return String.format("Pm-%s-Model%s-Experiment%s-%4$ty%4$tm%4$td-Policy.zip", removeSpaces(policy.getProject().getName()), policy.getModel().getName(), policy.getExperiment().getName(), LocalDate.now());
+		return String.format("Pm-%s-Model%s-Experiment%s-%4$ty%4$tm%4$td-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getExperiment().getName(), LocalDate.now());
 	}
 	
-	
-	private String removeSpaces(String val) {
-		return val.replaceAll(" ", "");
-	}
-
 	private StreamResource getResourceStream(String filename) {
 		return new StreamResource(filename,
 				() -> new ByteArrayInputStream(policyFileService.getPolicyFile(policyId)));
