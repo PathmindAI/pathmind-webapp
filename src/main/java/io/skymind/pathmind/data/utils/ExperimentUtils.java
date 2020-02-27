@@ -129,6 +129,11 @@ public class ExperimentUtils
 		return subtractedTime > 0 ? subtractedTime : difference;
 	}
 
+	public static double getEstimatedTrainingTimeForSingleRun(Run run, double progress) {
+		final var difference = Duration.between(run.getStartedAt(), LocalDateTime.now());
+		return difference.toSeconds() * (100 - progress) / progress;
+	}
+
 	private static boolean isAnyNotFinished(List<LocalDateTime> stoppedTimes) {
 		return stoppedTimes.stream().anyMatch(Objects::isNull);
 	}

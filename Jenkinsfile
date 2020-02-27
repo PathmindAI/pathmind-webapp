@@ -68,6 +68,7 @@ pipeline {
             }
             steps {
 		script {
+		        DOCKER_TAG = "dev"
 		        if(env.BRANCH_NAME == 'master'){
 		                DOCKER_TAG = "prod"
 		        }
@@ -143,7 +144,7 @@ pipeline {
             steps {
 		script {
 				echo "Updating helm chart"
-				sh "helm upgrade --install pathmind ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
+				sh "bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} ${DOCKER_TAG} ${WORKSPACE}"
 		}
             }
         }
@@ -209,7 +210,7 @@ pipeline {
 		script {
                 	DEPLOY_PROD = true
 			echo "Updating helm chart"
-			sh "helm upgrade --install pathmind ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}.yaml"
+			sh "bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} default ${WORKSPACE}"
 		}
             }
         }

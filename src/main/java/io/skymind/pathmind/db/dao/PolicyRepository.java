@@ -76,6 +76,7 @@ class PolicyRepository
 		policy.setProject(record.into(PROJECT).into(Project.class));
 	}
 
+	@Deprecated
 	protected static boolean hasPolicyFile(DSLContext ctx, long policyId) {
 		return ctx.select(DSL.one())
 				.from(POLICY_FILE)
@@ -85,6 +86,7 @@ class PolicyRepository
 				.fetchOptional().isPresent();
 	}
 
+	@Deprecated
 	protected static byte[] getPolicyFile(DSLContext ctx, long policyId) {
 		return ctx.select(POLICY_FILE.FILE)
 				.from(POLICY_FILE)
@@ -159,27 +161,12 @@ class PolicyRepository
 				.execute();
 	}
 
+	@Deprecated
 	protected static byte[] getSnapshotFile(DSLContext ctx, long policyId) {
 		return ctx.select(POLICY_SNAPSHOT.SNAPSHOT)
 				.from(POLICY_SNAPSHOT)
 				.where(POLICY_SNAPSHOT.POLICY_ID.eq(policyId))
 				.fetchOne(POLICY_SNAPSHOT.SNAPSHOT);
-	}
-
-	protected static void savePolicyFile(DSLContext ctx, long runId, String externalId, byte[] policyFile) {
-		ctx.insertInto(POLICY_FILE)
-				.set(POLICY_FILE.POLICY_ID, ctx.select(POLICY.ID).from(POLICY).where(POLICY.EXTERNAL_ID.eq(externalId).and(POLICY.RUN_ID.eq(runId))))
-				.set(POLICY_FILE.FILE, policyFile)
-				.onConflictDoNothing()
-				.execute();
-	}
-
-	protected static void saveCheckpointFile(DSLContext ctx, long runId, String externalId, byte[] checkpointFile) {
-		ctx.insertInto(POLICY_SNAPSHOT)
-				.set(POLICY_SNAPSHOT.POLICY_ID, ctx.select(POLICY.ID).from(POLICY).where(POLICY.EXTERNAL_ID.eq(externalId).and(POLICY.RUN_ID.eq(runId))))
-				.set(POLICY_SNAPSHOT.SNAPSHOT, checkpointFile)
-				.onConflictDoNothing()
-				.execute();
 	}
 
 	public static List<Policy> getExportedPoliciesByRunId(DSLContext ctx, long runId) {
@@ -197,5 +184,16 @@ class PolicyRepository
 				.where(POLICY.ID.eq(policyId))
 				.execute();
 
+	}
+
+	static Long getPolicyIdByRunIdAndExternalId(DSLContext ctx, long runId, String externalId) {
+		return ctx.select(POLICY.ID).from(POLICY)
+				.where(
+						POLICY.EXTERNAL_ID.eq(externalId).and(POLICY.RUN_ID.eq(runId))
+				).fetchOne(POLICY.ID);
+	}
+
+	public static void setHasFile(DSLContext ctx, Long policyId, boolean value) {
+		ctx.update(POLICY).set(POLICY.HAS_FILE, value).where(POLICY.ID.eq(policyId)).execute();
 	}
 }

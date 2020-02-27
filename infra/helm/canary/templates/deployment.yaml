@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+  labels:
+{{ include "canary.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        timestamp: "{{ date "20060102150405" .Release.Time }}"
+      labels:
+        app.kubernetes.io/name: {{ .Values.name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      volumes:
+        - name: nginxcan-configs
+          configMap:
+            name: nginxcan-config
+        - name: nginxcan-mainconfig
+          configMap:
+            name: nginxcan-mainconfig
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["nginx"]
+          args: ["-c","/etc/nginx/customconfig/nginx.conf", "-g", "daemon off;"]
+          env:
+            - name: BASE_SVC_URL
+              value: ".{{ .Values.namespace }}.svc.cluster.local"
+            - name: STABLE_SVC_NAME
+              value: pathmind
+            - name: CANARY_SVC_NAME
+              value: pathmind-slot
+            - name: CANARY_WEIGHT
+              value: "{{ .Values.canary_weight }}"
+            - name: COOKIE_MAX_AGE
+              value: "172800"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginxcan-configs
+              mountPath: /etc/nginx/conf.d
+            - name: nginxcan-mainconfig
+              mountPath: /etc/nginx/customconfig
