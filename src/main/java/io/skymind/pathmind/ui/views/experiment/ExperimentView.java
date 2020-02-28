@@ -48,7 +48,6 @@ import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.notesField.NotesField;
@@ -78,8 +77,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private long policyId = -1;
 	private Policy policy;
 	private Experiment experiment;
-
-	private ScreenTitlePanel screenTitlePanel;
 
 	private PolicyHighlightPanel policyHighlightPanel;
 	private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
@@ -130,8 +127,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected Component getTitlePanel() {
-		screenTitlePanel = new ScreenTitlePanel("PROJECT");
-		return screenTitlePanel;
+		return null;
 	}
 
 	@Override
@@ -145,10 +141,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	  // TODO -> Charts do not re-flow automatically: https://vaadin.com/forum/thread/17878341/resizable-charts (https://github.com/vaadin/vaadin-charts/issues/457)
 	  mainSplitLayout.addSplitterDragendListener(evt -> getUI().ifPresent(ui -> ui.getPage().executeJs("Array.from(window.document.getElementsByTagName('vaadin-chart')).forEach( el => el.__reflow());")));
 	
-	  VerticalLayout mainLayout = WrapperUtils.wrapSizeFullVertical(
-		  createBreadcrumbs(),
-		  mainSplitLayout
-	  );
+		VerticalLayout mainLayout = WrapperUtils.wrapSizeFullVertical(
+			WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
+			mainSplitLayout
+		);
 	  
 	  return mainLayout;
 	}
@@ -202,6 +198,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			updatedNotes -> {
 				experimentDAO.updateUserNotes(experimentId, updatedNotes);
 				NotificationUtils.showSuccess("Notes saved");
+				segmentIntegrator.updatedNotesExperimentView();
 			}
 		);
 	}
@@ -248,7 +245,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
-		screenTitlePanel.setSubtitle(projectName);
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		policyChartPanel.init(experiment);
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);

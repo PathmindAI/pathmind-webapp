@@ -34,7 +34,10 @@ spec:
             - name: ADMIN_USER
               value: admin
             - name: ADMIN_PASSWORD
-              value: password
+              valueFrom:
+                secretKeyRef:
+                  name: jenkinspassword
+                  key: JENKINSPASSWORD
             - name: JAVA_OPTS
               value: -Dhudson.model.DirectoryBrowserSupport.CSP="sandbox allow-same-origin allow-scripts; default-src 'self'; script-src * 'unsafe-inline'; img-src *; style-src * 'unsafe-inline'; font-src *"
             - name: DOCKER_HOST
