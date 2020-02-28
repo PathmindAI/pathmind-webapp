@@ -5,6 +5,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -20,19 +21,18 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.components.PathmindTextArea;
-import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.components.SearchBox;
+import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.ui.components.buttons.ShowRewardFunctionButton;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.layouts.MainLayout;
+import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
-import io.skymind.pathmind.ui.views.experiment.filter.ExperimentFilter;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
@@ -53,6 +53,8 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	private ModelDAO modelDAO;
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
 	private long modelId;
 	private Model model;
@@ -64,7 +66,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	private PathmindTextArea getObservationTextArea;
 	private RewardFunctionEditor rewardFunctionEditor;
 	private Span rewardFunctionTitle;
-	private ScreenTitlePanel titlePanel;
 
 	public ExperimentsView() {
 		super();
@@ -78,18 +79,25 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		setupArchivesTabPanel();
 		projectName = getProjectName();
 
+		VerticalLayout leftPanel = WrapperUtils.wrapSizeFullVertical(
+			archivesTabPanel,
+			new ViewSection(experimentGrid)
+		);
+		leftPanel.setPadding(false);
+		VerticalLayout rightPanel = WrapperUtils.wrapSizeFullVertical(
+			createViewNotesField(),
+			rewardFunctionTitle,
+			rewardFunctionEditor,
+			getObservationTextArea
+		);
+		rightPanel.setPadding(false);
+
 		return WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullBetweenHorizontal(createBreadcrumbs(), getSearchBox()),
+				WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
 				WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-					WrapperUtils.wrapSizeFullVertical(
-								archivesTabPanel,
-								experimentGrid),
-						WrapperUtils.wrapSizeFullVertical(
-								createViewNotesField(),
-								rewardFunctionTitle,
-								rewardFunctionEditor,
-								getObservationTextArea),
-						70),
+						leftPanel,
+						rightPanel,
+				70),
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewExperimentButton(experimentDAO, modelId)));
 	}
 
@@ -114,10 +122,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		getObservationTextArea.setReadOnly(true);
 	}
 
-	private SearchBox getSearchBox() {
-		return new SearchBox<Experiment>(experimentGrid, new ExperimentFilter());
-	}
-
 	private void setupArchivesTabPanel() {
 		archivesTabPanel = new ArchivesTabPanel<Experiment>(
 				"Experiments",
@@ -140,6 +144,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 			updatedNotes -> {
 				modelDAO.updateUserNotes(modelId, updatedNotes);
 				NotificationUtils.showSuccess("Notes saved");
+				segmentIntegrator.updatedNotesExperimentsView();
 			}
 		);
 	}
@@ -172,8 +177,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 
 	@Override
 	protected Component getTitlePanel() {
-		titlePanel = new ScreenTitlePanel("PROJECT");
-		return titlePanel;
+		return null;
 	}
 
 	public List<Experiment> getExperiments() {
@@ -208,7 +212,6 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 		archivesTabPanel.initData();
 		getObservationTextArea.setValue(model.getGetObservationForRewardFunction());
 		showRewardFunction(experiments.get(0));
-		titlePanel.setSubtitle(projectName);
 	}
 
 	@Override

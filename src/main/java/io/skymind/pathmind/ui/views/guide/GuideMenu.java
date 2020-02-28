@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLink;
 
@@ -26,20 +27,25 @@ public class GuideMenu extends VerticalLayout {
     public GuideMenu(GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {
 		super();
         addClassName("guide-menu");
+        setSpacing(false);
 
         this.projectId = projectId;
         this.guideStep = guideStep;
         this.segmentIntegrator = segmentIntegrator;
-        
-        add(createChecklistItem("Overview", GuideOverview.class, 0));
-        add(createChecklistItem("Install Pathmind Helper", InstallPathmindHelperView.class, 1));
-        add(createChecklistItem("Build Observation Space", ObservationView.class, 2));
-        add(createChecklistItem("Build Action Space", ActionSpaceView.class, 3));
-        add(createChecklistItem("Triggering Actions", TriggerActionsView.class, 4));
-        add(createChecklistItem("Define \"Done\" Condition", DoneConditionView.class, 5));
-        add(createChecklistItem("Define Reward Variables", RewardView.class, 6));
-        add(createChecklistItem("Conclusion / Re-cap", RecapView.class, 7));
 
+        Div guideLinksWrapper = new Div();
+        guideLinksWrapper.addClassName("guide-links-wrapper");
+        
+        guideLinksWrapper.add(createChecklistItem("Overview", GuideOverview.class, 0));
+        guideLinksWrapper.add(createChecklistItem("Install Pathmind Helper", InstallPathmindHelperView.class, 1));
+        guideLinksWrapper.add(createChecklistItem("Build Observation Space", ObservationView.class, 2));
+        guideLinksWrapper.add(createChecklistItem("Build Action Space", ActionSpaceView.class, 3));
+        guideLinksWrapper.add(createChecklistItem("Triggering Actions", TriggerActionsView.class, 4));
+        guideLinksWrapper.add(createChecklistItem("Define \"Done\" Condition", DoneConditionView.class, 5));
+        guideLinksWrapper.add(createChecklistItem("Define Reward Variables", RewardView.class, 6));
+        guideLinksWrapper.add(createChecklistItem("Conclusion / Re-cap", RecapView.class, 7));
+
+        add(guideLinksWrapper);
         add(createSkipToUploadModelButton());
     }
 

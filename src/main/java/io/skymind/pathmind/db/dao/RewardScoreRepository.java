@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.data.db.Tables.REWARD_SCORE;
+import static io.skymind.pathmind.data.db.Tables.*;
+import static org.jooq.impl.DSL.count;
 
 class RewardScoreRepository
 {
@@ -36,6 +37,17 @@ class RewardScoreRepository
 						JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MIN)),
 						JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MEAN)),
 						record.get(REWARD_SCORE.ITERATION)));
+	}
+
+	protected static Map<Long, Integer> getRewardScoresCountForExperiments(DSLContext ctx, List<Long> experimentIds) {
+		return ctx.select(EXPERIMENT.ID, count())
+				.from(REWARD_SCORE)
+				.leftJoin(POLICY).on(POLICY.ID.eq(REWARD_SCORE.POLICY_ID))
+				.leftJoin(RUN).on(RUN.ID.eq(POLICY.RUN_ID))
+				.leftJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
+				.where(EXPERIMENT.ID.in(experimentIds))
+				.groupBy(EXPERIMENT.ID)
+				.fetchMap(EXPERIMENT.ID, count());
 	}
 
 	protected static int getMaxRewardScoreIteration(DSLContext ctx, long policyId) {

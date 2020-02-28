@@ -81,7 +81,6 @@ img {
 }
 
 #nav-main-links a[highlight] {
-  color: var(--pm-primary-color);
   font-weight: bold;
 }
 
@@ -164,6 +163,11 @@ img {
 .centered-field-label {
   width: 100px;
 }
+.truncated-label {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .default-view {
   background: var(--pm-app-bg-color);
@@ -189,19 +193,30 @@ img {
 
 .projects-view .content {
   flex: 1;
-  max-width: 1200px;
+  max-width: 1480px;
   align-self: center;
+  padding: 0;
+  margin-top: var(--lumo-space-m);
 }
 
 .projects-view .view-section,
-.models-view .view-section {
+.models-view .view-section,
+.experiments-view .view-section {
   flex: 1;
   margin-top: var(--lumo-space-xs);
 }
 
-.models-view vaadin-split-layout {
-  margin-bottom: var(--lumo-space-xl);
+.guide-view-wrapper {
+  flex-grow: 1;
+  background: white;
 }
+
+/* In case we want the side menu go to the top for smaller screens
+@media (max-width: 1279px) {
+  .guide-view-wrapper {
+    flex-direction: column;
+  }
+} */
 
 account-view {
   background: var(--pm-app-bg-color);
@@ -239,19 +254,19 @@ account-view {
   width: 275px;
 }
 
-@media (min-width: 1201px) {
+@media (min-width: 1281px) {
   html {
     font-size: 16px;
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1280px) {
   html {
     font-size: 14px;
   }
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1024px) {
   html {
     font-size: 13px;
   }
