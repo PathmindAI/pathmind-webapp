@@ -6,11 +6,14 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static io.skymind.pathmind.utils.StringUtils.toCamelCase;
 
 @Slf4j
 public class PolicyUtils
@@ -100,5 +103,12 @@ public class PolicyUtils
 
     public static List<Long> convertToPolicyIds(List<Policy> policies) {
         return policies.stream().map(policy -> policy.getId()).collect(Collectors.toList());
+    }
+
+    public static String generatePolicyFileName(Policy policy) {
+        if(!ObjectUtils.allNotNull(policy, policy.getProject(), policy.getModel(), policy.getExperiment())) {
+            return "-";
+        }
+        return String.format("%s-M%sE%s-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getExperiment().getName());
     }
 }
