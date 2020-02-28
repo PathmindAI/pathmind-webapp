@@ -26,7 +26,7 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
     public boolean hasPolicyFile(long policyId) {
         boolean exists = awsApiClient.fileExists(POLICY_FILE + policyId);
         if (!exists) {
-            log.warn("Policy File was not found in S3, fallback lookup in DB");
+            log.warn("Has Policy File was not found in S3, fallback lookup in DB");
             exists = policyDAO.hasPolicyFile(policyId);
         }
         return exists;
@@ -46,7 +46,7 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
     public byte[] getSnapshotFile(long policyId) {
         byte[] content = awsApiClient.fileContents(POLICY_CHECKPOINT + policyId, true);
         if (ArrayUtils.isEmpty(content)) {
-            log.warn("Policy File was not found in S3, fallback lookup in DB");
+            log.warn("Snapshot File was not found in S3, fallback lookup in DB");
             content = policyDAO.getSnapshotFile(policyId);
         }
         return content;
