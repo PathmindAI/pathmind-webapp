@@ -78,7 +78,7 @@ public class PolicyChartPanel extends VerticalLayout implements FilterableCompon
         chart.getConfiguration().addxAxis(xAxis);
         chart.getConfiguration().addyAxis(yAxis);
         chart.getConfiguration().getTooltip().setFormatter(
-                "return 'Iteration#:' + this.x + '<br/>' + 'Mean Reward:' + this.y.toFixed(Math.abs(this.y) > 1 ? 1 : 6)");
+                "return 'Iteration#:' + this.x + '<br/>' + 'Mean Reward:' + this.y.toFixed(Math.abs(this.y) > 1 ? 1 : 6) + '<br/>' + 'Episode Count:' + 'TODO'");
         chart.setSizeFull();
     }
 
