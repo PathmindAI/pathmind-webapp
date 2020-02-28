@@ -14,7 +14,6 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
-import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.ui.components.buttons.NewProjectButton;
@@ -62,7 +61,7 @@ public class ProjectsView extends PathMindDefaultView
 		gridWrapper.setPadding(false);
 		
 		return WrapperUtils.wrapSizeFullVertical(
-				createBreadcrumbs(),
+				WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
 				gridWrapper);
 	}
 
@@ -119,7 +118,7 @@ public class ProjectsView extends PathMindDefaultView
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("PROJECTS");
+		return null;
 	}
 
 	@Override

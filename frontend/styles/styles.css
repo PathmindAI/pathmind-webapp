@@ -95,7 +95,6 @@ hr {
 }
 
 #nav-main-links a[highlight] {
-  color: var(--pm-primary-color);
   font-weight: bold;
 }
 
