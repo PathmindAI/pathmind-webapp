@@ -22,6 +22,29 @@ resource "null_resource" "awssecretaccesskey" {
   depends_on = ["null_resource.validate_k8s"]
 }
 
+resource "null_resource" "jenkinspassword" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic jenkinspassword --from-literal JENKINSPASSWORD=${var.jenkinspassword}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret jenkinspassword"
+  }
+  depends_on = ["null_resource.validate_k8s"]
+}
+
+resource "null_resource" "pgadminpassword" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic pgadminpassword --from-literal PGADMINPASSWORD=${var.pgadminpassword}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret pgadminpassword"
+    on_failure = "continue"
+  }
+  depends_on = ["null_resource.validate_k8s"]
+}
+
 resource "null_resource" "segment_website_key_secret" {
   provisioner "local-exec" {
     command = "kubectl create secret generic segmentwebsitekey --from-literal SEGMENT_WEBSITE_KEY=${var.SEGMENT_WEBSITE_KEY}"
