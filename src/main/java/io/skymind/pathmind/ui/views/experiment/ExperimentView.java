@@ -1,16 +1,5 @@
 package io.skymind.pathmind.ui.views.experiment;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import io.skymind.pathmind.services.PolicyFileService;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
@@ -25,12 +14,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.WildcardParameter;
-
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
@@ -43,15 +26,11 @@ import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.data.TrainingError;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.data.utils.PolicyUtils;
-import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
-import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.db.dao.TrainingErrorDAO;
-import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
+import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.notesField.NotesField;
@@ -87,8 +66,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private Policy policy;
 	private Experiment experiment;
 	private List<Experiment> experiments;
-
-	private ScreenTitlePanel screenTitlePanel;
 
 	private PolicyHighlightPanel policyHighlightPanel;
 	private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
@@ -142,8 +119,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected Component getTitlePanel() {
-		screenTitlePanel = new ScreenTitlePanel("PROJECT");
-		return screenTitlePanel;
+		return null;
 	}
 
 	@Override
@@ -225,6 +201,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			updatedNotes -> {
 				experimentDAO.updateUserNotes(experimentId, updatedNotes);
 				NotificationUtils.showSuccess("Notes saved");
+				segmentIntegrator.updatedNotesExperimentView();
 			}
 		);
 	}
@@ -273,7 +250,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
-		screenTitlePanel.setSubtitle(projectName);
 		updateScreenComponents();
 	}
 

@@ -54,6 +54,11 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	private static final String EVENT_COMPLETED_GUIDE_REWARD = "Completed Guide Define Reward Variables";
 	private static final String EVENT_COMPLETED_GUIDE_RECAP = "Completed Guide Conclusion / Recap";
 	private static final String EVENT_SKIP_TO_UPLOAD_MODEL = "Skipped Guide to Upload Model";
+	private static final String EVENT_UPDATED_NOTES_MODELS_VIEW = "Updated Notes on Models View";
+	private static final String EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW = "Updated Notes on Experiments View";
+	private static final String EVENT_UPDATED_NOTES_EXPERIMENT_VIEW = "Updated Notes on Experiment View";
+	private static final String EVENT_ADDED_NOTES_UPLOAD_MODEL_VIEW = "Added Notes on Upload Model View";
+	private static final String EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW = "Added Notes on New Experiment View";
 
 	public SegmentIntegrator(@Value("${skymind.segment.website.source.key}") String key,
 			@Value("${skymind.segment.enabled}") Boolean enabled) {
@@ -153,6 +158,26 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 
 	public void skippedGuideToUploadModel() {
 		track(EVENT_SKIP_TO_UPLOAD_MODEL);
+	}
+
+	public void updatedNotesModelsView() {
+		track(EVENT_UPDATED_NOTES_MODELS_VIEW);
+	}
+
+	public void updatedNotesExperimentsView() {
+		track(EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW);
+	}
+
+	public void updatedNotesExperimentView() {
+		track(EVENT_UPDATED_NOTES_EXPERIMENT_VIEW);
+	}
+
+	public void addedNotesUploadModelView() {
+		track(EVENT_ADDED_NOTES_UPLOAD_MODEL_VIEW);
+	}
+
+	public void addedNotesNewExperimentView() {
+		track(EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW);
 	}
 
 	private void track(String event) {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -18,6 +19,7 @@ import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUti
 import io.skymind.pathmind.ui.views.model.ModelsView;
 import io.skymind.pathmind.ui.views.project.ProjectsView;
 
+@CssImport(value = "./styles/components/breadcrumbs.css")
 public class Breadcrumbs extends HorizontalLayout
 {
 	private static final String BREADCRUMB_CLASSNAME = "breadcrumb";
