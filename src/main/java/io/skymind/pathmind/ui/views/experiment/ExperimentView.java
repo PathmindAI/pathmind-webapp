@@ -186,12 +186,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
 
 		restartTraining = new Button("Restart Training", new Image("frontend/images/start.svg", "run"), click -> {
-			trainingService.startDiscoveryRun(experiment);
-			segmentIntegrator.discoveryRunStarted();
-			initLoadData();
-			trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
-			clearErrorState();
-			new RunConfirmDialog().open();
+			synchronized (experimentLock) {
+				trainingService.startDiscoveryRun(experiment);
+				segmentIntegrator.discoveryRunStarted();
+				initLoadData();
+				trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
+				clearErrorState();
+				new RunConfirmDialog().open();
+			}
 		});
 		restartTraining.setVisible(false);
 		restartTraining.addClassNames("large-image-btn", "run");
@@ -238,6 +240,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private void selectExperiment(Experiment selectedExperiment) {
+		// The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
+		// same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
 		synchronized (experimentLock) {
 			experiment = experimentDAO.getExperiment(selectedExperiment.getId())
 					.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
@@ -252,23 +256,19 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected void initLoadData() throws InvalidDataException {
-		// The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
-		// same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
-		synchronized (experimentLock) {
-			experiment = experimentDAO.getExperiment(experimentId)
-					.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-			loadExperimentData();
-			// The logic below is a bit odd in that this is almost a model view but as a result it needs to be done after the experiment is loaded.
-			modelId = experiment.getModelId();
-			experiments = experimentDAO.getExperimentsForModel(modelId);
-			// Quick and temporary solution to fix some the runs not being loaded for the individual experiment.
-			experiment.setRuns(experiments.stream().filter(exp -> exp.getId() == experimentId).findFirst().get().getRuns());
-		}
+		experiment = experimentDAO.getExperiment(experimentId)
+				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
+		loadExperimentData();
+		// The logic below is a bit odd in that this is almost a model view but as a result it needs to be done after the experiment is loaded.
 	}
 
 	private void loadExperimentData() {
+		modelId = experiment.getModelId();
 		experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
 		policy = selectBestPolicy(experiment.getPolicies());
+		experiments = experimentDAO.getExperimentsForModel(modelId);
+		// Quick and temporary solution to fix some the runs not being loaded for the individual experiment.
+		experiment.setRuns(experiments.stream().filter(exp -> exp.getId() == experimentId).findFirst().get().getRuns());
 	}
 
 	@Override
