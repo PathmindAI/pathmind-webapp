@@ -27,6 +27,8 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindModelUploader;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.model.UploadMode;
+import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.webapp.utils.UploadUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,11 +51,12 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private Text errorText;
 	private UploadModeSwitcherButton uploadModeSwitcher;
 	
-	private boolean isFolderUploadMode = true;
+	private UploadMode mode;
 
-	public UploadModelWizardPanel(Model model)
+	public UploadModelWizardPanel(Model model, UploadMode mode)
 	{
 		this.model = model;
+		this.mode = mode;
 
 		projectNameLabel = LabelFactory.createLabel("", SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT, SECTION_SUBTITLE_LABEL);
 
@@ -65,7 +68,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	}
 	
 	private void setupLayout() {
-		setupUploadPanel(isFolderUploadMode);
+		setupUploadPanel();
 		setupFileCheckPanel();
 
 		sectionTitleWrapper = new Div();
@@ -77,7 +80,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 		add(sectionTitleWrapper,
 				LabelFactory.createLabel("Upload Model", NO_TOP_MARGIN_LABEL),
 				GuiUtils.getFullWidthHr(),
-				getInstructionsDiv(isFolderUploadMode),
+				getInstructionsDiv(),
 				uploadModelPanel,
 				fileCheckPanel,
 				getUploadModeSwitchButton());
@@ -88,7 +91,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private HorizontalLayout getUploadModeSwitchButton() {
 		HorizontalLayout buttonWrapper = WrapperUtils.wrapWidthFullCenterHorizontal();
 		buttonWrapper.getStyle().set("margin", "var(--lumo-space-xxl) 0 calc(-1 * var(--lumo-space-l))");
-		uploadModeSwitcher = new UploadModeSwitcherButton(isFolderUploadMode, () -> switchUploadMode());
+		uploadModeSwitcher = new UploadModeSwitcherButton(mode, () -> switchUploadMode());
 		upload.isFolderUploadSupported(isFolderUploadSupported -> {
 			uploadModeSwitcher.setVisible(isFolderUploadSupported);
 		});
@@ -98,10 +101,9 @@ public class UploadModelWizardPanel extends VerticalLayout
 	
 
 	private void switchUploadMode() {
-		isFolderUploadMode = !isFolderUploadMode;
-		
-		removeAll();
-		setupLayout();
+		UploadMode switchedMode = mode == UploadMode.FOLDER ? UploadMode.ZIP : UploadMode.FOLDER;
+ 		getUI().ifPresent(ui -> 
+ 			ui.navigate(UploadModelView.class, UploadModelViewNavigationUtils.getUploadModelParameters(model.getProjectId(), switchedMode)));
 	}
 
 	private void setupFileCheckPanel() {
@@ -112,9 +114,9 @@ public class UploadModelWizardPanel extends VerticalLayout
 				errorText);
 	}
 
-	private void setupUploadPanel(boolean isFolderUploadMode)
+	private void setupUploadPanel()
 	{
-		upload = new PathmindModelUploader(isFolderUploadMode);
+		upload = new PathmindModelUploader(mode);
 
 		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/123
 //		upload.setMaxFileSize(PathmindConstants.MAX_UPLOAD_FILE_SIZE);
@@ -163,11 +165,11 @@ public class UploadModelWizardPanel extends VerticalLayout
 		fileCheckerCommand = command;
 	}
 	
-	private Div getInstructionsDiv(boolean isFolderUploadMode) {
+	private Div getInstructionsDiv() {
 		Div div = new Div();
 		div.setWidthFull();
 		upload.isFolderUploadSupported(isFolderUploadSupported -> {
-			if (isFolderUploadMode && isFolderUploadSupported) {
+			if (mode == UploadMode.FOLDER && isFolderUploadSupported) {
 				setInstructionsForFolderUploadDiv(div);
 			} else {
 				setInstructionsForZipUploadDiv(div);
