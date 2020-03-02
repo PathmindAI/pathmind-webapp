@@ -69,6 +69,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private UserDAO userDAO;
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
+	@Autowired
+    private RewardValidationService rewardValidationService;
 
     private Binder<Experiment> binder;
 
@@ -115,7 +117,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         rewardFunctionEditor = new RewardFunctionEditor();
         rewardFunctionEditor.addValueChangeListener(changeEvent -> {
-            final List<String> errors = RewardValidationService.validateRewardFunction(changeEvent.getValue());
+            final List<String> errors = rewardValidationService.validateRewardFunction(changeEvent.getValue());
             final String errorText = String.join("\n", errors);
             final String wrapperClassName = (errorText.length() == 0) ? "noError" : "hasError";
             
