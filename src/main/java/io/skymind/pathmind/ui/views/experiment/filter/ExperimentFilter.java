@@ -10,7 +10,6 @@ public class ExperimentFilter implements PathmindFilterInterface<Experiment>
 	public boolean isMatch(Experiment experiment, String searchValue) {
 		return SearchUtils.contains(experiment.getName(), searchValue) ||
 				SearchUtils.contains(experiment.getLastActivityDate(), searchValue); // ||
-//				SearchUtils.contains(experiment.getTestRun(), searchValue) ||
 //				SearchUtils.contains(experiment.getDiscoveryRun(), searchValue) ||
 //				SearchUtils.contains(experiment.getFullRun(), searchValue) ||
 //				SearchUtils.contains(experiment.getArchive(), searchValue) ||
