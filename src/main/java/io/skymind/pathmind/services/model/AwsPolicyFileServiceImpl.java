@@ -1,11 +1,16 @@
 package io.skymind.pathmind.services.model;
 
+import io.skymind.pathmind.bus.EventBus;
+import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -68,6 +73,12 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
     public void savePolicyFile(Long policyId, byte[] policyFile) {
         awsApiClient.fileUpload(POLICY_FILE + policyId, policyFile);
         policyDAO.setHasFile(policyId, true);
+
+        Optional.ofNullable(policyDAO.getPolicy(policyId))
+                .ifPresent(policy -> {
+                    policy.setHasFile(true);
+                    EventBus.post(new PolicyUpdateBusEvent(policy));
+                });
     }
 
     @Override
