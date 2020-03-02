@@ -52,18 +52,6 @@ public abstract class TrainingService {
         );
     }
 
-    public void startFullRun(Experiment exp, Policy policy){
-        startRun(RunType.FullRun,
-                exp,
-                RunConstants.FULL_RUN_ITERATIONS,
-                Arrays.asList(policy.getLearningRate()),
-                Arrays.asList(policy.getGamma()),
-                Arrays.asList(policy.getBatchSize()),
-                24 * HOUR, // 24 hr
-                10,
-                policy);          // base policy
-    }
-
     private void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples) {
         runDAO.clearNotificationSentInfo(exp.getId(), runType.getValue());
         startRun(runType, exp, iterations, maxTimeInSec, numSamples, null);
