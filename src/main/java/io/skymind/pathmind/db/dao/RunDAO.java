@@ -143,13 +143,6 @@ public class RunDAO
                         .collect(Collectors.toList());
                 RewardScoreRepository.insertRewardScores(transactionCtx, policy.getId(), newRewardScores);
             }
-
-            // STEPH -> REFACTOR -> Now that it's transactional is it ok to post to the eventbus? For now this is no worse then what we are doing in production today
-            // but we should look at putting this after the transaction has been completed. The only issue is that it's a list of policies that may need
-            // to be updated. As in this should technically be placed outside of the transaction in updateRun() rather than here. Again it's no worse then what we
-            // have in place today, and if I'm correct the worse place is that we'd have an update that isn't legit and it would be corrected on the next update anyways.
-            // Created a github issue:
-            EventBus.post(new PolicyUpdateBusEvent(policy));
         }
     }
 

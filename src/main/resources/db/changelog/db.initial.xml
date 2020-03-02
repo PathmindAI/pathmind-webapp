@@ -1013,4 +1013,16 @@
         </sql>
     </changeSet>
 
+    <changeSet id="20200228_01" author="krystian.walaszczyk@ext.vaadin.com">
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="ray.memory_monitor.RayOutOfMemoryError"/>
+            <column name="DESCRIPTION" value="Run terminated. Server is out of memory. Please contact Pathmind support."/>
+            <column name="RESTARTABLE" value="true"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="FileNotFoundError: [Errno 2] No such file or directory: 'database/db.properties'"/>
+            <column name="DESCRIPTION" value="Missing database. Please re-upload your model and try again."/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
