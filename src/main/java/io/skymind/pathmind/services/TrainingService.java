@@ -43,15 +43,6 @@ public abstract class TrainingService {
         executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6_PBT, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
     }
 
-    public void startTestRun(Experiment exp){
-        startRun(RunType.TestRun,
-                exp,
-                50,
-                15 * MINUTE,
-                10
-        );
-    }
-
     public void startDiscoveryRun(Experiment exp){
         startRun(RunType.DiscoveryRun,
                 exp,
@@ -59,15 +50,6 @@ public abstract class TrainingService {
                 2 * HOUR, // 2 hr
                 10
         );
-    }
-
-    public void startFullRun(Experiment exp, Policy policy){
-        startRun(RunType.FullRun,
-                exp,
-                RunConstants.FULL_RUN_ITERATIONS,
-                24 * HOUR, // 24 hr
-                10,
-                policy);          // base policy
     }
 
     private void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples) {

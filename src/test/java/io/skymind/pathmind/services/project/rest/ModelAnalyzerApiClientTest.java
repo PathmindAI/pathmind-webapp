@@ -21,16 +21,16 @@ public class ModelAnalyzerApiClientTest {
         ObjectMapper objectMapper = ObjectMapperHolder.getJsonMapper();
 
         final ModelAnalyzerApiClient client = new ModelAnalyzerApiClient(
-                "http://pathmindmodelanalyzer-env-1.zmjtstudaf.us-east-1.elasticbeanstalk.com",
-                null,
+                "https://ma.dev.devpathmind.com",
+                null,false,
                 objectMapper,
                 WebClient.builder());
 
         File model = new ClassPathResource("model/call_center.zip").getFile();
         HyperparametersDTO hyperparametersDTO = client.analyze(model);
 
-        assertEquals(hyperparametersDTO.getActions(), "70");
-        assertEquals(hyperparametersDTO.getObservations(), "125");
+        assertEquals(hyperparametersDTO.getActions(), "125");
+        assertEquals(hyperparametersDTO.getObservations(), "70");
         assertEquals(hyperparametersDTO.getRewardFunction(), "new double[]{this.getReward()}");
     }
 
