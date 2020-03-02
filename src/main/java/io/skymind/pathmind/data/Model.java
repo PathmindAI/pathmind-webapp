@@ -1,7 +1,6 @@
 package io.skymind.pathmind.data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class Model extends ArchivableData
 {
