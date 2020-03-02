@@ -1,13 +1,31 @@
 package io.skymind.pathmind.services;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import javax.tools.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 
+@Slf4j
+@Service
 public class RewardValidationService {
 
-    public static List<String> validateRewardFunction(String rewardFunction){
+    private final boolean multiAgent;
+
+    public RewardValidationService(@Value("${pathmind.training.multiagent:false}") boolean multiAgent) {
+        this.multiAgent = multiAgent;
+    }
+
+    public List<String> validateRewardFunction(String rewardFunction){
+
+        if (multiAgent) {
+            log.warn("Skip reward function validation in multi-agent mode");
+            return Collections.emptyList();
+        }
+
         final String code = fillInTemplate(rewardFunction);
         final String[] lines = code.split("\n");
         int startReward = 0;
