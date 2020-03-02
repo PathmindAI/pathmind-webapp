@@ -133,7 +133,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 return new ProviderJobStatus(Error, allErrorsList);
             }
 
-            if (experimentState.getCheckpoints().size() ==  trialStatusCount.getOrDefault("TERMINATED", 0L)) {
+            if (experimentState != null && experimentState.getCheckpoints() != null && experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L)) {
                 return new ProviderJobStatus(Completed);
             }
 
