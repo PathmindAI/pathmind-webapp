@@ -56,7 +56,7 @@ public abstract class TrainingService {
         startRun(RunType.DiscoveryRun,
                 exp,
                 RunConstants.DISCOVERY_RUN_ITERATIONS,
-                30 * MINUTE,
+                2 * HOUR, // 2 hr
                 10
         );
     }
