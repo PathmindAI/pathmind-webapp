@@ -81,7 +81,6 @@ img {
 }
 
 #nav-main-links a[highlight] {
-  color: var(--pm-primary-color);
   font-weight: bold;
 }
 
@@ -164,6 +163,11 @@ img {
 .centered-field-label {
   width: 100px;
 }
+.truncated-label {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .default-view {
   background: var(--pm-app-bg-color);
@@ -189,18 +193,17 @@ img {
 
 .projects-view .content {
   flex: 1;
-  max-width: 1200px;
+  max-width: 1480px;
   align-self: center;
+  padding: 0;
+  margin-top: var(--lumo-space-m);
 }
 
 .projects-view .view-section,
-.models-view .view-section {
+.models-view .view-section,
+.experiments-view .view-section {
   flex: 1;
   margin-top: var(--lumo-space-xs);
-}
-
-.models-view vaadin-split-layout {
-  margin-bottom: var(--lumo-space-xl);
 }
 
 .guide-view-wrapper {

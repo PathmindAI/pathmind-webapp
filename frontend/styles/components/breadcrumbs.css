@@ -1,17 +1,33 @@
 .breadcrumb {
   position: relative;
-  color: var(--pm-tertiary-text-color);
+  color: var(--lumo-body-text-color);
 }
 
-.breadcrumb:hover,
 .breadcrumb:last-child {
-  color: var(--lumo-primary-text-color);
+  font-weight: bold;
 }
 
 .breadcrumb ~ span {
-  color: var(--pm-tertiary-text-color);
+  color: var(--lumo-body-text-color);
   cursor: default;
 }
+
 .breadcrumb ~ .breadcrumb-separator {
-  margin: 0 var(--lumo-space-xs);
+  margin: 0 var(--lumo-space-s);
+}
+
+/* Keep old styles for dashboard */
+.dashboard-view .breadcrumb {
+  color: var(--pm-tertiary-text-color);
+}
+
+.dashboard-view .breadcrumb:hover,
+.dashboard-view .breadcrumb:last-child {
+  color: var(--lumo-primary-text-color);
+  font-weight: normal;
+}
+
+.dashboard-view .breadcrumb ~ span {
+  color: var(--pm-tertiary-text-color);
+  cursor: default;
 }

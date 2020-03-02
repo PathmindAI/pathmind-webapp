@@ -1,7 +1,5 @@
 package io.skymind.pathmind.ui.views.dashboard.components;
 
-import static io.skymind.pathmind.constants.RunStatus.isRunning;
-
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -11,9 +9,8 @@ import com.vaadin.flow.function.SerializableConsumer;
 
 import io.skymind.pathmind.constants.Stage;
 import io.skymind.pathmind.data.DashboardItem;
-import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.data.utils.RunUtils;
-import io.skymind.pathmind.ui.components.ElapsedTimer;
+import io.skymind.pathmind.data.utils.ExperimentUtils;
+import io.skymind.pathmind.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
@@ -26,6 +23,8 @@ public class DashboardLine extends HorizontalLayout {
 	
 	private Stage currentStage;
 	private DashboardItem dashboardItem;
+	
+	private static String INPROGRESS_INDICATOR = "...";
 	
 	public DashboardLine(DashboardItem item, SerializableConsumer<DashboardItem> clickHandler) {
 		this.dashboardItem = item;
@@ -42,7 +41,11 @@ public class DashboardLine extends HorizontalLayout {
 		Span navigateIcon = new Span(VaadinIcon.CHEVRON_RIGHT.create());
 		navigateIcon.setClassName("navigate-icon");
 		add(wrapper, navigateIcon);
-		
+
+		// When a link in breadcrumb is clicked, the same click event is also triggered for DashboardLine
+		// We cannot stop propagation yet (see issue: https://github.com/vaadin/flow/issues/1363)
+		// but applied the workaround suggested in the issue
+		breadcrumb.getElement().addEventListener("click", evt -> {}).addEventData("event.stopPropagation()");
 		addClickListener(evt -> clickHandler.accept(item));
 	}
 
@@ -53,9 +56,7 @@ public class DashboardLine extends HorizontalLayout {
 		stagesContainer.add(createSeparator());
 		stagesContainer.add(createStageItem(Stage.WriteRewardFunction));
 		stagesContainer.add(createSeparator());
-		stagesContainer.add(createStageItem(Stage.DiscoveryRunTraining));
-		stagesContainer.add(createSeparator());
-		stagesContainer.add(createStageItem(Stage.FullRunTraining));
+		stagesContainer.add(createStageItem(Stage.TrainPolicy));
 		stagesContainer.add(createSeparator());
 		stagesContainer.add(createStageItem(Stage.Export));
 		return stagesContainer;
@@ -64,23 +65,23 @@ public class DashboardLine extends HorizontalLayout {
 	private Span createStageItem(Stage stage) {
 		Span item = null; 
 		if (stage.getValue() < currentStage.getValue()) {
-			item = new Span(VaadinIcon.CHECK.create(), new Text(stage.toString()));
+			item = new Span(VaadinIcon.CHECK.create(), new Text(stage.getNameAfterDone()));
 			item.setClassName("stage-done");
 		} else if (stage.getValue() == currentStage.getValue()) {
 			if (DashboardUtils.isTrainingInProgress(stage, dashboardItem.getLatestRun())) {
-				ElapsedTimer elapsedTimer = new ElapsedTimer();
-				updateElapsedTimer(elapsedTimer, dashboardItem.getLatestRun());
-				item = new Span(VaadinIcon.HOURGLASS.create(), new Text(stage.toString()), elapsedTimer);
+				PathmindTrainingProgress trainingProgress = new PathmindTrainingProgress();
+				updateProgress(trainingProgress, dashboardItem);
+				item = new Span(new Text(stage.getNameAfterDone() + INPROGRESS_INDICATOR), trainingProgress);
 				item.setClassName("stage-active");
 			} else if (DashboardUtils.isTrainingInFailed(stage, dashboardItem.getLatestRun())) {
-				item = new Span(VaadinIcon.CLOSE.create(), new Text(stage.toString()));
+				item = new Span(VaadinIcon.CLOSE.create(), new Text(stage.getNameAfterDone()));
 				item.setClassName("stage-failed");
 			} else {
-				item = new Span(stage.toString());
+				item = new Span(stage.getNameAfterDone());
 				item.setClassName("stage-active");
 			}
 		} else {
-			item = new Span(stage.toString());
+			item = new Span(stage.getName());
 			item.setClassName("stage-next");
 		}
 		return item;
@@ -90,9 +91,12 @@ public class DashboardLine extends HorizontalLayout {
 		return new Span(">");
 	}
 	
-	private void updateElapsedTimer(ElapsedTimer elapsedTimer, Run run) {
-		final var elapsedTime = RunUtils.getElapsedTime(run);
-		elapsedTimer.updateTimer(elapsedTime, isRunning(run.getStatusEnum()));
+	private void updateProgress(PathmindTrainingProgress trainingProgress, DashboardItem item) {
+		final double progress = ExperimentUtils.calculateProgressByIterationsProcessed(item.getIterationsProcessed());
+		if (progress > 0 && progress <= 100) {
+			final double estimatedTime = ExperimentUtils.getEstimatedTrainingTimeForSingleRun(item.getLatestRun(), progress);
+			trainingProgress.setValue(progress, estimatedTime);
+		}
 	}
 	
 }

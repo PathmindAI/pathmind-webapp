@@ -12,8 +12,6 @@ import static io.skymind.pathmind.services.training.constant.RunConstants.*;
 
 public class RunUtils
 {
-	public final static String TEMPORARY_POSTFIX = "TEMP";
-
 	private RunUtils() {
 	}
 

@@ -14,12 +14,12 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ModelUtils;
-import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
+import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
 import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
@@ -50,7 +50,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private ProjectDAO projectDAO;
 
 	@Autowired
-	private ModelDAO modelDAO;
+	private ModelService modelService;
 
 	@Autowired
 	private ProjectFileCheckService projectFileCheckService;
@@ -125,7 +125,12 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		}
 
 		final String modelNotes = modelDetailsWizardPanel.notesFieldTextArea.getValue();
-		final long experimentId = modelDAO.addModelToProject(model, project.getId(), modelNotes);
+		final long experimentId = modelService.addModelToProject(model, project.getId(), modelNotes);
+		
+		if (!modelNotes.isEmpty()) {
+			segmentIntegrator.addedNotesUploadModelView();
+		}
+
 		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 	}
 
