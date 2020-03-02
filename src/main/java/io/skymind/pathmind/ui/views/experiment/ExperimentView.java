@@ -249,6 +249,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policyChartPanel.init(experiment);
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 		processSelectedPolicy(policy);
+		updateRightPanelForExperiment();
 	}
 
 	private Policy selectBestPolicy(List<Policy> policies) {
@@ -261,7 +262,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void processSelectedPolicy(Policy selectedPolicy) {
 		policyHighlightPanel.update(selectedPolicy);
 		policyChartPanel.init(selectedPolicy);
-		updateRightPanelForExperiment();
 		if (selectedPolicy != null) {
 			policyChartPanel.highlightPolicy(selectedPolicy);
 		}
