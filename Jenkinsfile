@@ -210,7 +210,7 @@ pipeline {
 		script {
                 	DEPLOY_PROD = true
 			echo "Updating helm chart"
-			sh "bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} default ${WORKSPACE}"
+			sh "bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
 		}
             }
         }

@@ -29,32 +29,17 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
 
     @Override
     public boolean hasPolicyFile(long policyId) {
-        boolean exists = awsApiClient.fileExists(POLICY_FILE + policyId);
-        if (!exists) {
-            log.warn("Policy File was not found in S3, fallback lookup in DB");
-            exists = policyDAO.hasPolicyFile(policyId);
-        }
-        return exists;
+        return awsApiClient.fileExists(POLICY_FILE + policyId);
     }
 
     @Override
     public byte[] getPolicyFile(long policyId) {
-        byte[] content = awsApiClient.fileContents(POLICY_FILE + policyId, true);
-        if (ArrayUtils.isEmpty(content)) {
-            log.warn("Policy File was not found in S3, fallback lookup in DB");
-            content = policyDAO.getPolicyFile(policyId);
-        }
-        return content;
+        return awsApiClient.fileContents(POLICY_FILE + policyId, true);
     }
 
     @Override
     public byte[] getSnapshotFile(long policyId) {
-        byte[] content = awsApiClient.fileContents(POLICY_CHECKPOINT + policyId, true);
-        if (ArrayUtils.isEmpty(content)) {
-            log.warn("Policy File was not found in S3, fallback lookup in DB");
-            content = policyDAO.getSnapshotFile(policyId);
-        }
-        return content;
+        return awsApiClient.fileContents(POLICY_CHECKPOINT + policyId, true);
     }
 
     @Override

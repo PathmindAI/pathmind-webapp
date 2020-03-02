@@ -7,7 +7,7 @@ import org.jooq.DSLContext;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static io.skymind.pathmind.data.db.Tables.*;
+import static io.skymind.pathmind.data.db.Tables.MODEL;
 
 class ModelRepository
 {
@@ -31,10 +31,6 @@ class ModelRepository
 				.from(MODEL)
 				.where(MODEL.PROJECT_ID.eq(projectId))
 				.fetchOne(0, int.class);
-	}
-
-	protected static byte[] getModelFile(DSLContext ctx, long id) {
-		return ctx.select(MODEL_FILE.FILE).from(MODEL_FILE).where(MODEL_FILE.MODEL_ID.eq(id)).fetchOne(MODEL_FILE.FILE);
 	}
 
 	/**

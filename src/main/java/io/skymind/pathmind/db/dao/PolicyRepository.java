@@ -12,9 +12,7 @@ import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.data.db.Tables.*;
 
-class PolicyRepository
-{
-	private static final String SAVING = "saving";
+class PolicyRepository {
 
 	protected static List<Policy> getActivePoliciesForUser(DSLContext ctx, long userId) {
         Result<?> result = ctx
@@ -74,25 +72,6 @@ class PolicyRepository
 		policy.setExperiment(record.into(EXPERIMENT).into(Experiment.class));
 		policy.setModel(record.into(MODEL).into(Model.class));
 		policy.setProject(record.into(PROJECT).into(Project.class));
-	}
-
-	@Deprecated
-	protected static boolean hasPolicyFile(DSLContext ctx, long policyId) {
-		return ctx.select(DSL.one())
-				.from(POLICY_FILE)
-				.where(POLICY_FILE.POLICY_ID.eq(policyId)
-						.and(POLICY_FILE.FILE.isNotNull())
-						.and(POLICY_FILE.FILE.notEqual(SAVING.getBytes())))
-				.fetchOptional().isPresent();
-	}
-
-	@Deprecated
-	protected static byte[] getPolicyFile(DSLContext ctx, long policyId) {
-		return ctx.select(POLICY_FILE.FILE)
-				.from(POLICY_FILE)
-				.where(POLICY_FILE.POLICY_ID.eq(policyId)
-						.and(POLICY_FILE.FILE.isNotNull()))
-				.fetchOne(POLICY_FILE.FILE);
 	}
 
 	protected static long insertPolicy(DSLContext ctx, Policy policy) {
@@ -159,14 +138,6 @@ class PolicyRepository
 		ctx.delete(POLICY)
 				.where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.like("%" + tempKeyword)))
 				.execute();
-	}
-
-	@Deprecated
-	protected static byte[] getSnapshotFile(DSLContext ctx, long policyId) {
-		return ctx.select(POLICY_SNAPSHOT.SNAPSHOT)
-				.from(POLICY_SNAPSHOT)
-				.where(POLICY_SNAPSHOT.POLICY_ID.eq(policyId))
-				.fetchOne(POLICY_SNAPSHOT.SNAPSHOT);
 	}
 
 	public static List<Policy> getExportedPoliciesByRunId(DSLContext ctx, long runId) {
