@@ -44,21 +44,6 @@ public class PolicyDAO {
         return RewardScoreRepository.getRewardScoresCountForExperiments(ctx, experimentIds);
     }
 
-    /**
-     * To avoid multiple download policy file from rescale server,
-     * we put the "saving" for temporary
-     * policy dao will check if there's real policy file exist or not
-     */
-    @Deprecated
-    public boolean hasPolicyFile(long policyId) {
-        return PolicyRepository.hasPolicyFile(ctx, policyId);
-    }
-
-    @Deprecated
-    public byte[] getPolicyFile(long policyId) {
-        return PolicyRepository.getPolicyFile(ctx, policyId);
-    }
-
     @Transactional
     public long insertPolicy(Policy policy) {
         ctx.transaction(configuration ->
@@ -79,11 +64,6 @@ public class PolicyDAO {
 
     public List<Policy> getActivePoliciesForUser(long userId) {
         return PolicyRepository.getActivePoliciesForUser(ctx, userId);
-    }
-
-    @Deprecated
-    public byte[] getSnapshotFile(long policyId) {
-        return PolicyRepository.getSnapshotFile(ctx, policyId);
     }
 
     public void updateExportedDate(long policyId) {
