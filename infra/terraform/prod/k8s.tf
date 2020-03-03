@@ -311,3 +311,13 @@ resource "null_resource" "cert_manager" {
   depends_on = ["null_resource.canary"]
 }
 
+resource "null_resource" "canary_configmap" {
+  provisioner "local-exec" {
+    command = "kubectl create configmap canary --from-literal=canary_weight=99 --from-literal=deploy_to=-slot"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete configmap canary"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}
