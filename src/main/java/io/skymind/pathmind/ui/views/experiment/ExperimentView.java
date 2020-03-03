@@ -317,7 +317,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		// we put the "saving" for temporary
 		// policy dao will check if there's real policy file exist or not
 		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed) {
-			exportPolicyButton.setEnabled(policyFileService.hasPolicyFile(policy.getId()));
+			exportPolicyButton.setEnabled(policy.hasFile());
 		}
 		restartTraining.setVisible(false);
 	}
