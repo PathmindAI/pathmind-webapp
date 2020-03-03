@@ -132,11 +132,10 @@ class RunRepository
     		.where(Tables.RUN.ID.eq(runId)).execute();
     }
     
-    protected static void clearNotificationSentInfo(DSLContext ctx, long experimentId, int runType) {
+    protected static void clearNotificationSentInfo(DSLContext ctx, long experimentId) {
 		ctx.update(Tables.RUN)
 			.set(Tables.RUN.NOTIFICATION_SENT_AT, (LocalDateTime) null)
-			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId)
-					.and(Tables.RUN.RUN_TYPE.eq(runType)))
+			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
 			.execute();
 	}
 

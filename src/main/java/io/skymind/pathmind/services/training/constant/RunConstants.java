@@ -9,16 +9,6 @@ public final class RunConstants {
 	}
 
 	/**
-	 * Number of possible iterations for a single discovery run
-	 */
-	public static final int DISCOVERY_RUN_ITERATIONS = 50;
-
-	/**
-	 * Number of possible iterations for a single full run
-	 */
-	public static final int FULL_RUN_ITERATIONS = 500;
-
-	/**
 	 * Number of possible iterations for PBT run
 	 */
 	public static final int PBT_RUN_ITERATIONS = 500;

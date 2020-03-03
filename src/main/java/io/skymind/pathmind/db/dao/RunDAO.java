@@ -71,8 +71,8 @@ public class RunDAO
      * This is used in case a run is restarted, so that Notification Sent value is cleared
      * and a notification can be sent again after the training is completed
      */
-    public void clearNotificationSentInfo(long experimentId, int runType) {
-    	RunRepository.clearNotificationSentInfo(ctx, experimentId, runType);
+    public void clearNotificationSentInfo(long experimentId) {
+    	RunRepository.clearNotificationSentInfo(ctx, experimentId);
     }
 
     public List<Long> getExecutingRuns() {

@@ -163,7 +163,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
 
 		restartTraining = new Button("Restart Training", new Image("frontend/images/start.svg", "run"), click -> {
-			trainingService.startDiscoveryRun(experiment);
+			trainingService.startRun(experiment);
 			segmentIntegrator.discoveryRunStarted();
 			loadExperiment(experimentId);
 			trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
