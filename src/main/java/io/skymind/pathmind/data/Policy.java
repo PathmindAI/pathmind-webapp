@@ -28,6 +28,8 @@ public class Policy extends Data
     // REFACTOR -> Same as Progress which is not saved to the database and is parsed back and forth...
     private List<RewardScore> scores;
 
+    private boolean hasFile;
+
     // Helper GUI attributes not stored in the database
 	private Project project;
 	private Model model;
@@ -153,5 +155,13 @@ public class Policy extends Data
 
 	public void setBatchSize(int batchSize) {
 		this.batchSize = batchSize;
+	}
+
+	public boolean hasFile() {
+		return hasFile;
+	}
+
+	public void setHasFile(boolean hasFile) {
+		this.hasFile = hasFile;
 	}
 }

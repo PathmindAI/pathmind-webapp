@@ -56,8 +56,8 @@ public class ExperimentUtils
 		// In Running status, there can be some runs completed while others are yet to be started
 		// So checking that to make sure
 		if (status == NotStarted || status == Starting) {
-			if (experiment.getPolicies().stream()
-					.map(PolicyUtils::getRunStatus)
+			if (experiment.getRuns().stream()
+					.map(Run::getStatusEnum)
 					.map(RunStatus::getValue)
 					.anyMatch(statusVal -> statusVal > Starting.getValue())) {
 				status = Running;

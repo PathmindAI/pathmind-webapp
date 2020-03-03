@@ -20,7 +20,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row15;
+import org.jooq.Row13;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = -1556987625;
+    private static final long serialVersionUID = -1329301141;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -116,16 +116,6 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.exported_at</code>.
      */
     public final TableField<PolicyRecord, LocalDateTime> EXPORTED_AT = createField(DSL.name("exported_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
-
-    /**
-     * The column <code>public.policy.policy_file_moved_to_s3</code>.
-     */
-    public final TableField<PolicyRecord, Boolean> POLICY_FILE_MOVED_TO_S3 = createField(DSL.name("policy_file_moved_to_s3"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
-
-    /**
-     * The column <code>public.policy.policy_snapshot_moved_to_s3</code>.
-     */
-    public final TableField<PolicyRecord, Boolean> POLICY_SNAPSHOT_MOVED_TO_S3 = createField(DSL.name("policy_snapshot_moved_to_s3"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.policy.has_file</code>.
@@ -221,11 +211,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row15 type methods
+    // Row13 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row15<Long, Long, String, String, LocalDateTime, LocalDateTime, String, Double, Double, Integer, String, LocalDateTime, Boolean, Boolean, Boolean> fieldsRow() {
-        return (Row15) super.fieldsRow();
+    public Row13<Long, Long, String, String, LocalDateTime, LocalDateTime, String, Double, Double, Integer, String, LocalDateTime, Boolean> fieldsRow() {
+        return (Row13) super.fieldsRow();
     }
 }
