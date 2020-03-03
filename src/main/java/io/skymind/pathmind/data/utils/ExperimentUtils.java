@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import io.skymind.pathmind.constants.RunStatus;
@@ -107,8 +108,25 @@ public class ExperimentUtils
 
 	public static double getEstimatedTrainingTime(Experiment experiment, double progress){
 		final var earliestRunStartedDate = ExperimentUtils.getTrainingStartedDate(experiment);
-		final var difference = Duration.between(earliestRunStartedDate, LocalDateTime.now());
-		return difference.toSeconds() * (100 - progress) / progress;
+		return calculateTrainingSecondsLeft(earliestRunStartedDate, progress);
+	}
+
+	public static double getEstimatedTrainingTime(LocalDateTime startedDate, double progress) {
+		return calculateTrainingSecondsLeft(startedDate, progress);
+	}
+
+	private static double calculateTrainingSecondsLeft(LocalDateTime startedDate, double progress) {
+		var difference = Duration.between(startedDate, LocalDateTime.now()).toSeconds();
+		difference = subtractPretrainingTime(difference);
+		return difference * (100 - progress) / progress;
+	}
+
+	/**
+	 * To make ETA more realistic we subtract 15 minutes as pre-training warm-up time
+	 */
+	private static long subtractPretrainingTime(long difference) {
+		long subtractedTime = difference - TimeUnit.MINUTES.toSeconds(15);
+		return subtractedTime > 0 ? subtractedTime : difference;
 	}
 
 	public static double getEstimatedTrainingTimeForSingleRun(Run run, double progress) {
