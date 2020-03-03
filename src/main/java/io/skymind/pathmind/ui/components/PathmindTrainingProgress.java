@@ -18,7 +18,7 @@ public class PathmindTrainingProgress extends VerticalLayout {
 	
 	public void setValue(double progress, double estimatedTime) {
 		progressBar.setValue(progress);
-		String formattedEstimatedTime = DateAndTimeUtils.getOnlyTheHighestDateLevel((long) estimatedTime);
+		String formattedEstimatedTime = DateAndTimeUtils.formatETA((long) estimatedTime);
 		progressValueLabel.setText(formatProgressLabel(progress, formattedEstimatedTime));
 	}
 	
