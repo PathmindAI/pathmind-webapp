@@ -53,7 +53,7 @@ public class GuideMenu extends VerticalLayout {
     private Component createChecklistItem(String itemName, Class navigationTarget, long itemIndex) {
         long currentStep = itemIndex+1;
         long totalSteps = guideStep.Recap.getValue()+1;
-        Span checklistStep = new Span("("+currentStep+" of "+totalSteps+")");
+        Span checklistStep = new Span("(Step "+currentStep+" of "+totalSteps+")");
         Div checklistItemWrapper = new Div();
         RouterLink checklistItem = new RouterLink(itemName, navigationTarget, projectId);
 
