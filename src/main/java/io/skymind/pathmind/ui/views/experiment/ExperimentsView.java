@@ -210,7 +210,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 			experimentGrid.setItems(experiments);
 		});
 		archivesTabPanel.initData();
-		getObservationTextArea.setValue(model.getGetObservationForRewardFunction());
+//		getObservationTextArea.setValue(model.getGetObservationForRewardFunction());
 		showRewardFunction(experiments.get(0));
 	}
 

@@ -1065,5 +1065,9 @@
         <dropColumn tableName="POLICY" columnName="GAMMA" />
         <dropColumn tableName="POLICY" columnName="BATCH_SIZE" />
     </changeSet>
+    
+    <changeSet id="20200303-02" author="krystian.walaszczyk@ext.vaadin.com">
+        <dropColumn tableName="MODEL" columnName="GET_OBSERVATION_FOR_REWARD_FUNCTION"/>
+    </changeSet>
 
 </databaseChangeLog>
