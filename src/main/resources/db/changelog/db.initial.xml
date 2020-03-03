@@ -1014,8 +1014,54 @@
     </changeSet>
 
     <changeSet id="20200228_01" author="krystian.walaszczyk@ext.vaadin.com">
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="ray.memory_monitor.RayOutOfMemoryError"/>
+            <column name="DESCRIPTION" value="Run terminated. Server is out of memory. Please contact Pathmind support."/>
+            <column name="RESTARTABLE" value="true"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="FileNotFoundError: [Errno 2] No such file or directory: 'database/db.properties'"/>
+            <column name="DESCRIPTION" value="Missing database. Please re-upload your model and try again."/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20200215-01" author="alexander.makarov@toptal.com">
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM MODEL_FILE, MODEL WHERE ID=MODEL_ID AND MODEL_FILE_MOVED_TO_S3=FALSE AND FILE IS NOT NULL;
+            </sqlCheck>
+        </preConditions>
+        <dropTable tableName="MODEL_FILE" />
+        <dropColumn tableName="MODEL" columnName="MODEL_FILE_MOVED_TO_S3" />
+    </changeSet>
+    <changeSet id="20200215-02" author="alexander.makarov@toptal.com">
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM POLICY_FILE, POLICY WHERE ID=POLICY_ID AND POLICY_FILE_MOVED_TO_S3=FALSE AND FILE IS NOT NULL;
+            </sqlCheck>
+        </preConditions>
+        <dropTable tableName="POLICY_FILE" />
+        <dropColumn tableName="POLICY" columnName="POLICY_FILE_MOVED_TO_S3" />
+    </changeSet>
+    <changeSet id="20200215-03" author="alexander.makarov@toptal.com">
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM POLICY_SNAPSHOT, POLICY WHERE ID=POLICY_ID AND POLICY_SNAPSHOT_MOVED_TO_S3=FALSE AND SNAPSHOT IS NOT NULL;
+            </sqlCheck>
+        </preConditions>
+        <dropTable tableName="POLICY_SNAPSHOT" />
+        <dropColumn tableName="POLICY" columnName="POLICY_SNAPSHOT_MOVED_TO_S3" />
+    </changeSet>
+    <!-- Please be aware, vacuum might take few minutes to complete -->
+    <changeSet id="20200215-04" author="alexander.makarov@toptal.com" runInTransaction="false">
+        <sql>
+            VACUUM FULL;
+        </sql>
+    </changeSet>
+
+    <changeSet id="20200303-01" author="krystian.walaszczyk@ext.vaadin.com">
         <addColumn tableName="REWARD_SCORE">
-            <column name="EPISODE_COUNT" type="INT" />
+            <column name="EPISODE_COUNT" type="INT"/>
         </addColumn>
     </changeSet>
 

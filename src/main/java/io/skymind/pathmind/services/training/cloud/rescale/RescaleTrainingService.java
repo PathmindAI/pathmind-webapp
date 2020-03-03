@@ -56,8 +56,9 @@ public class RescaleTrainingService extends TrainingService {
         if (basePolicy != null) {
             String checkpointFileId = executionProviderMetaDataDAO.getCheckPointFileKey(basePolicy.getExternalId());
             if (checkpointFileId == null) {
-                checkpointFileId = executionProvider.uploadCheckpoint(policyDAO.getSnapshotFile(basePolicy.getId()));
-                executionProviderMetaDataDAO.putCheckPointFileKey(basePolicy.getExternalId(), checkpointFileId);
+                log.error("policyDAO.getSnapshotFile needs to be changed with policyService to access getSnapshotFile ");
+//                checkpointFileId = executionProvider.uploadCheckpoint(policyDAO.getSnapshotFile(basePolicy.getId()));
+//                executionProviderMetaDataDAO.putCheckPointFileKey(basePolicy.getExternalId(), checkpointFileId);
             }
 
             spec.setCheckpointFileId(checkpointFileId);
