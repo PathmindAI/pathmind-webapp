@@ -27,10 +27,6 @@ public class ModelDAO
     	ModelRepository.archive(ctx, modelId, isArchive);
 	}
 
-	public byte[] getModelFile(long id) {
-    	return ModelRepository.getModelFile(ctx, id);
-	}
-
 	public Optional<Model> getModel(long modelId) {
     	return Optional.ofNullable(ModelRepository.getModel(ctx, modelId));
 	}
