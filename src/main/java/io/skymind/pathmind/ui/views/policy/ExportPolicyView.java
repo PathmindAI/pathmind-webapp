@@ -3,6 +3,7 @@ package io.skymind.pathmind.ui.views.policy;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.services.PolicyFileService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
@@ -74,6 +75,8 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	@Override
 	protected Component getMainContent()
 	{
+		final String policyFileName = PolicyUtils.generatePolicyFileName(policy);
+
 		exportButton = new Button("Export");
 		exportButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportButton.setWidth("200px");
@@ -84,7 +87,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
 		exportLink = new Anchor();
 		exportLink.add(exportButton);
-		exportLink.getElement().setAttribute("href", getResourceStream(generatePolicyFileName()));
+		exportLink.getElement().setAttribute("href", getResourceStream(policyFileName));
 		exportLink.getElement().setAttribute("download", true);
 
 		cancelButton = new Button("Cancel", click -> handleCancelButtonClicked());
@@ -92,20 +95,16 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
 		nameTextField = new TextField();
 		nameTextField.setLabel("Name");
-		nameTextField.setValue(generatePolicyFileName());
+		nameTextField.setValue(policyFileName);
 		nameTextField.setWidthFull();
 		nameTextField.addValueChangeListener(change ->
-			exportLink.setHref(getResourceStream(StringUtils.isEmpty(nameTextField.getValue()) ? generatePolicyFileName() : nameTextField.getValue())));
+			exportLink.setHref(getResourceStream(StringUtils.isEmpty(nameTextField.getValue()) ? policyFileName : nameTextField.getValue())));
 
 		return WrapperUtils.wrapFormCenterVertical(
 				nameTextField,
 				new Image("/frontend/images/exportPolicyIcon.gif", "Export Policy"),
 				exportLink,
 				cancelButton);
-	}
-	
-	public String generatePolicyFileName() {
-		return String.format("Pm-%s-Model%s-Experiment%s-%4$ty%4$tm%4$td-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getExperiment().getName(), LocalDate.now());
 	}
 	
 	private StreamResource getResourceStream(String filename) {
@@ -128,7 +127,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	}
 
 	@Override
-	protected void initLoadData() throws InvalidDataException {
+	protected void initLoadData() {
 		policy = policyDAO.getPolicy(policyId);
 		if(policy == null)
 			throw new InvalidDataException("Attempted to access Policy: " + policyId);

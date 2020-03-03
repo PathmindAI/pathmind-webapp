@@ -255,6 +255,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policyChartPanel.setExperiment(experiment);
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 		processSelectedPolicy(policy);
+		updateRightPanelForExperiment();
 	}
 
 	private Policy selectBestPolicy(List<Policy> policies) {
@@ -266,7 +267,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private void processSelectedPolicy(Policy selectedPolicy) {
 		policyHighlightPanel.update(selectedPolicy);
-		policyChartPanel.highlightPolicy(selectedPolicy);
+		if (selectedPolicy != null) {
+  		policyChartPanel.highlightPolicy(selectedPolicy);
 		updateButtonEnablement();
 		updateRightPanelForExperiment();
 	}
@@ -321,7 +323,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		// we put the "saving" for temporary
 		// policy dao will check if there's real policy file exist or not
 		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed) {
-			exportPolicyButton.setEnabled(policyFileService.hasPolicyFile(policy.getId()));
+			exportPolicyButton.setEnabled(policy.hasFile());
 		}
 		restartTraining.setVisible(false);
 	}
