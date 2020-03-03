@@ -94,7 +94,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 
-	private String projectName;
 	private Breadcrumbs pageBreadcrumbs;
 	private Button restartTraining;
 
@@ -124,8 +123,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected Component getMainContent() {
-	  projectName = ExperimentUtils.getProjectName(experiment);
-
 	  SplitLayout mainSplitLayout = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 		getLeftPanel(),
 		getRightPanel(),

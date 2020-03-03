@@ -64,16 +64,16 @@ public class ExperimentsNavbar extends VerticalLayout
 		
 		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
 			newRow.add(createExperimentText(experiment.getName(), DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId)));
-		});
-		
-		newRow.addClickListener(event -> getUI().ifPresent(ui -> handleRowClicked(experiment, selectExperimentConsumer, newRow)));
-		newRow.addClassName("experiment-navbar-item");
-		newRow.setSpacing(false);
+			newRow.addClickListener(event -> getUI().ifPresent(ui -> handleRowClicked(experiment, selectExperimentConsumer, newRow)));
+			newRow.addClassName("experiment-navbar-item");
+			newRow.setSpacing(false);
 
-		if (isCurrentExperiment) {
-			oldRow = newRow;
-			newRow.addClassName(CURRENT);
-		}
+			if (isCurrentExperiment) {
+				oldRow = newRow;
+				newRow.addClassName(CURRENT);
+			}
+		});
+
 		return newRow;
 	}
 
