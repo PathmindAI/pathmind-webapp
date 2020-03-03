@@ -12,8 +12,7 @@ public class PolicyFilter implements PathmindFilterInterface<Policy>
 //				SearchUtils.contains(policy.getCompleted().toString(), searchValue) ||
 //				SearchUtils.contains(policy.getProgress().toString(), searchValue) ||
 				SearchUtils.contains(policy.getName(), searchValue) ||
-				SearchUtils.contains(policy.getRun().getRunTypeEnum().toString(), searchValue) ||
-				SearchUtils.contains(policy.getAlgorithmEnum().toString(), searchValue);
+				SearchUtils.contains(policy.getRun().getRunTypeEnum().toString(), searchValue);
 //				SearchUtils.contains(policy.getNotes(), searchValue)
 	}
 }

@@ -43,7 +43,6 @@ public class ProgressInterpreter
         // PPO_PathmindEnvironment_0_clip_param=0.2,entropy_coeff=0.035,gamma=0.94978,kl_coeff=0.3,kl_target=0.03,lambda=0.96,lr=0.0016037,nu
         List<String> list = Arrays.asList(keyString.split("_", 4));
 
-        policy.setAlgorithm(list.get(ALGORITHM));
         policy.setName(list.get(NAME));
 
         try {

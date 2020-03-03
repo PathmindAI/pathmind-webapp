@@ -1059,4 +1059,11 @@
         </sql>
     </changeSet>
 
+    <changeSet id="20200303-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <dropColumn tableName="POLICY" columnName="ALGORITHM" />
+        <dropColumn tableName="POLICY" columnName="LEARNING_RATE" />
+        <dropColumn tableName="POLICY" columnName="GAMMA" />
+        <dropColumn tableName="POLICY" columnName="BATCH_SIZE" />
+    </changeSet>
+
 </databaseChangeLog>

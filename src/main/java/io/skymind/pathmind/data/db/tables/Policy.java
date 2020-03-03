@@ -20,7 +20,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row13;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = -1329301141;
+    private static final long serialVersionUID = 934207681;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -86,26 +86,6 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.stopped_at</code>.
      */
     public final TableField<PolicyRecord, LocalDateTime> STOPPED_AT = createField(DSL.name("stopped_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
-
-    /**
-     * The column <code>public.policy.algorithm</code>.
-     */
-    public final TableField<PolicyRecord, String> ALGORITHM = createField(DSL.name("algorithm"), org.jooq.impl.SQLDataType.VARCHAR(3), this, "");
-
-    /**
-     * The column <code>public.policy.learning_rate</code>.
-     */
-    public final TableField<PolicyRecord, Double> LEARNING_RATE = createField(DSL.name("learning_rate"), org.jooq.impl.SQLDataType.DOUBLE.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.DOUBLE)), this, "");
-
-    /**
-     * The column <code>public.policy.gamma</code>.
-     */
-    public final TableField<PolicyRecord, Double> GAMMA = createField(DSL.name("gamma"), org.jooq.impl.SQLDataType.DOUBLE.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.DOUBLE)), this, "");
-
-    /**
-     * The column <code>public.policy.batch_size</code>.
-     */
-    public final TableField<PolicyRecord, Integer> BATCH_SIZE = createField(DSL.name("batch_size"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * The column <code>public.policy.notes</code>.
@@ -211,11 +191,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row13 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<Long, Long, String, String, LocalDateTime, LocalDateTime, String, Double, Double, Integer, String, LocalDateTime, Boolean> fieldsRow() {
-        return (Row13) super.fieldsRow();
+    public Row9<Long, Long, String, String, LocalDateTime, LocalDateTime, String, LocalDateTime, Boolean> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }

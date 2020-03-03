@@ -16,7 +16,7 @@ class PolicyRepository {
 
 	protected static List<Policy> getActivePoliciesForUser(DSLContext ctx, long userId) {
         Result<?> result = ctx
-                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.HAS_FILE)
+                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.HAS_FILE)
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
                 .select(EXPERIMENT.ID, EXPERIMENT.NAME)
                 .select(MODEL.ID, MODEL.NAME)
@@ -42,7 +42,7 @@ class PolicyRepository {
 
 	protected static Policy getPolicy(DSLContext ctx, long policyId) {
         Record record = ctx
-				.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES, POLICY.HAS_FILE)
+				.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.NOTES, POLICY.HAS_FILE)
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
                 .select(EXPERIMENT.ID, EXPERIMENT.NAME)
                 .select(MODEL.ID, MODEL.NAME)
@@ -76,15 +76,15 @@ class PolicyRepository {
 
 	protected static long insertPolicy(DSLContext ctx, Policy policy) {
 		return ctx.insertInto(POLICY)
-				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
-				.values(policy.getName(), policy.getRunId(), policy.getExternalId(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize(), policy.getNotes())
+				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NOTES)
+				.values(policy.getName(), policy.getRunId(), policy.getExternalId(), policy.getNotes())
 				.returning(POLICY.ID)
 				.fetchOne()
 				.getValue(POLICY.ID);
 	}
 
 	protected static List<Policy> getPoliciesForExperiment(DSLContext ctx, long experimentId) {
-		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.RUN_ID, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES, POLICY.HAS_FILE)
+		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.RUN_ID, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.NOTES, POLICY.HAS_FILE)
 				.select(EXPERIMENT.asterisk())
 				.select(RUN.asterisk())
 				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.ARCHIVED, MODEL.USER_NOTES)
@@ -115,8 +115,8 @@ class PolicyRepository {
 	// STEPH -> Still passing progressJSon as a temporary solution until I have the time to completely replace it and put the data in the database.
 	protected static long updateOrInsertPolicy(DSLContext ctx, Policy policy) {
 		return ctx.insertInto(POLICY)
-				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
-				.values(policy.getName(), policy.getRunId(), policy.getExternalId(), policy.getStartedAt(), policy.getStoppedAt(), policy.getAlgorithm(), policy.getLearningRate(), policy.getGamma(), policy.getBatchSize(), policy.getNotes())
+				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.NOTES)
+				.values(policy.getName(), policy.getRunId(), policy.getExternalId(), policy.getStartedAt(), policy.getStoppedAt(), policy.getNotes())
 				.onConflict(POLICY.RUN_ID, POLICY.EXTERNAL_ID)
 				.doUpdate()
 				.set(POLICY.STARTED_AT, policy.getStartedAt())
@@ -126,23 +126,9 @@ class PolicyRepository {
 				.getValue(POLICY.ID);
 	}
 
-	protected static boolean isTemporaryPolicy(DSLContext ctx, long runId, String tempKeyword) {
-		return ctx.select(DSL.one())
-				.from(POLICY)
-				.where(POLICY.RUN_ID.eq(runId)
-						.and(POLICY.EXTERNAL_ID.like("%" + tempKeyword)))
-				.fetchOptional().isPresent();
-	}
-
-	protected static void deleteTemporaryPolicy(DSLContext ctx, long runId, String tempKeyword) {
-		ctx.delete(POLICY)
-				.where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.like("%" + tempKeyword)))
-				.execute();
-	}
-
 	public static List<Policy> getExportedPoliciesByRunId(DSLContext ctx, long runId) {
 		return ctx.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT,
-				POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.EXPORTED_AT)
+				POLICY.STOPPED_AT, POLICY.EXPORTED_AT)
 				.from(POLICY)
 				.where(POLICY.RUN_ID.eq(runId))
 				.and(POLICY.EXPORTED_AT.isNotNull())
