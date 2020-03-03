@@ -92,6 +92,7 @@ def process_message(message):
     """
     if not message:
         return
+    global update_cluster
     global mockup_status
     app_logger.info('Received {message}'.format(message=message['Body']))
     body=json.loads(message['Body'])
@@ -229,6 +230,7 @@ def process_message(message):
             sh.kops('create','-f',JOB_IG_FILE)
             app_logger.info('Creating deployment {job_id}'.format(job_id=job_id))
             sh.kubectl('apply','-f',JOB_DEPLOYMENT_FILE)
+            update_cluster=True
         except Exception as e:
             app_logger.error(traceback.format_exc())
 
@@ -294,6 +296,7 @@ def main():
     """
     main function listens on sqs queue defined in SQS_URL env variable
     """
+    global update_cluster
     sqs = boto3.client('sqs')
     while True:
         app_logger.info('Waiting for messages in {SQS_URL}'\
@@ -308,8 +311,10 @@ def main():
         if ('Messages' in resp):
             for message in resp['Messages']:
                 process_message(message)
-            app_logger.info('Updating cluster')
-            sh.kops('update','cluster',NAME,'--yes')
+            if update_cluster:
+                app_logger.info('Updating cluster')
+                sh.kops('update','cluster',NAME,'--yes')
+            update_cluster=False
 
 
 if __name__ == "__main__":
@@ -326,6 +331,7 @@ if __name__ == "__main__":
     mockup_status={}
     mem_ig_template=[]
     mem_deployment_template=[]
+    update_cluster=False
     logger=LoggerInit()
     app_logger=logger.get_logger("trainer")
     #Init kubectl
