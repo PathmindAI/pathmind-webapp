@@ -11,11 +11,11 @@ environment=$2
 WORKSPACE=$3
 domain="devpathmind.com"
 apiuser="api"
-apipassword=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n dev | base64 --decode`
+apipassword=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n ${namespace} | base64 --decode`
 
 #Get the deployment target
-canary_weight=`kubectl get configmap canary -n dev -o jsonpath='{.data.canary_weight}'`
-deploy_to=`kubectl get configmap canary -n dev -o jsonpath='{.data.deploy_to}'`
+canary_weight=`kubectl get configmap canary -n ${namespace} -o jsonpath='{.data.canary_weight}'`
+deploy_to=`kubectl get configmap canary -n ${namespace} -o jsonpath='{.data.deploy_to}'`
 
 #Deploy app
 helm upgrade --install pathmind${deploy_to} \

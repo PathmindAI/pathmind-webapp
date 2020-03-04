@@ -1,5 +1,11 @@
 package io.skymind.pathmind.ui.views.project;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -9,6 +15,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
+
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
@@ -24,11 +31,6 @@ import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.model.ModelsView;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 
 @CssImport("./styles/styles.css")
 @Route(value= Routes.PROJECTS_URL, layout = MainLayout.class)
@@ -40,7 +42,7 @@ public class ProjectsView extends PathMindDefaultView
 	private List<Project> projects;
 	private Grid<Project> projectGrid;
 
-	private ArchivesTabPanel archivesTabPanel;
+	private ArchivesTabPanel<Project> archivesTabPanel;
 
 	public ProjectsView() {
 		super();
@@ -55,18 +57,19 @@ public class ProjectsView extends PathMindDefaultView
 
 		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
 				archivesTabPanel,
-				new ViewSection(projectGrid),
-				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
+				new ViewSection(projectGrid)
+		);
 		gridWrapper.addClassName("content");
 		gridWrapper.setPadding(false);
 		
 		return WrapperUtils.wrapSizeFullVertical(
 				WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
-				gridWrapper);
+				gridWrapper,
+				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
 	}
 
 	private void setupTabbedPanel() {
-		archivesTabPanel = new ArchivesTabPanel<Project>(
+		archivesTabPanel = new ArchivesTabPanel<>(
 				"Projects",
 				projectGrid,
 				this::getProjects,
