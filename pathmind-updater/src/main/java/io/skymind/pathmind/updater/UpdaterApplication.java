@@ -15,30 +15,30 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@SpringBootApplication(scanBasePackages = "io.skymind.pathmind")
-@PropertySource({"application.properties", "shared.properties"})
+//@SpringBootApplication(scanBasePackages = "io.skymind.pathmind")
+//@PropertySource({"application.properties", "shared.properties"})
 public class UpdaterApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(UpdaterApplication.class, args);
-	}
-
-	@Bean
-	public ExecutorService checkerExecutorService(@Value("${pathmind.filecheck.poolsize}") int poolSize) {
-		return Executors.newFixedThreadPool(poolSize);
-	}
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-
-	@Primary
-	@Bean
-	public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
-		ObjectMapper objectMapper = builder.createXmlMapper(false).build();
-		objectMapper.configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
-
-		return objectMapper;
-	}
+//	public static void main(String[] args) {
+//		SpringApplication.run(UpdaterApplication.class, args);
+//	}
+//
+//	@Bean
+//	public ExecutorService checkerExecutorService(@Value("${pathmind.filecheck.poolsize}") int poolSize) {
+//		return Executors.newFixedThreadPool(poolSize);
+//	}
+//
+//	@Bean
+//	public PasswordEncoder passwordEncoder() {
+//		return new BCryptPasswordEncoder();
+//	}
+//
+//	@Primary
+//	@Bean
+//	public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
+//		ObjectMapper objectMapper = builder.createXmlMapper(false).build();
+//		objectMapper.configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
+//
+//		return objectMapper;
+//	}
 }
