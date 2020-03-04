@@ -160,3 +160,14 @@ resource "null_resource" "canary" {
   depends_on = ["null_resource.pathmind","null_resource.pathmind-slot"]
 }
 
+resource "null_resource" "canary_configmap" {
+  provisioner "local-exec" {
+    command = "kubectl create configmap canary --from-literal=canary_weight=99 --from-literal=deploy_to=-slot -n ${var.environment}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete configmap canary -n ${var.environment}"
+  }
+  depends_on = ["null_resource.namespace"]
+}
+
