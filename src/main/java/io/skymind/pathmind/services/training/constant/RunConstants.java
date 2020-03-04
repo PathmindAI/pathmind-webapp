@@ -21,7 +21,7 @@ public final class RunConstants {
 	/**
 	 * Number of possible iterations for PBT run
 	 */
-	public static final int PBT_RUN_ITERATIONS = 500;
+	public static final int PBT_RUN_ITERATIONS = 250;
 
 	public static final String DISCOVERY_RUN_LEARNING_RATES = "DISCOVERY_RUN_LEARNING_RATES";
 	public static final String DISCOVERY_RUN_GAMMAS = "DISCOVERY_RUN_GAMMAS";
