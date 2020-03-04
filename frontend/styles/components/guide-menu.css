@@ -14,7 +14,7 @@
 .guide-menu a {
   display: block;
   position: relative;
-  color: var(--pm-blue-color-darkest-25pct);
+  color: var(--pm-blue-color-darkest);
   line-height: 1.3em;
   text-decoration: none;
 }
@@ -24,7 +24,7 @@
 .guide-menu a:last-of-type {
   margin-bottom: 0;
 }
-.guide-menu a:not(.disabled):hover,
+.guide-menu div:not(.disabled) a:hover,
 .guide-menu a[highlight]:hover {
   color: var(--pm-blue-color-darkest-50pct);
 }
@@ -38,8 +38,8 @@
   border: 1px solid var(--pm-blue-color-darkest-25pct);
   transform: translateY(-50%);
 }
-.guide-menu a:not(.disabled) {
-  color: var(--pm-blue-color-darkest);
+.guide-menu .disabled a {
+  color: var(--pm-blue-color-darkest-25pct);
 }
 .guide-menu a[highlight] {
   font-weight: 700;
@@ -55,7 +55,7 @@
   background-size: cover;
   transform: translateY(-60%);
 }
-.guide-menu a.disabled {
+.guide-menu .disabled a {
   pointer-events: none;
   cursor: default;
 }
@@ -91,15 +91,11 @@
   }
   .guide-menu a {
     padding: var(--lumo-space-xs) 0;
-    margin: 0;
+    margin: 0 0 0 30px;
   }
   .guide-menu a[highlight] + span {
     display: block;
     margin-left: var(--lumo-space-xs);
-  }
-  .guide-menu a:not(.skipLink)::before,
-  .guide-menu .completed a::after {
-    content: none;
   }
   .guide-menu a:not([highlight]) {
     display: none;
