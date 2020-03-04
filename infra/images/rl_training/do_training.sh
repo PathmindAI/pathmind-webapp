@@ -33,6 +33,9 @@ pid_tail=$!
 
 sleep $sleep_time
 
+#Clean output folder
+aws s3 rm ${s3_url}/output/ --recursive
+
 while true
 do
         ps ax | grep $pid | grep -v grep > /dev/null
