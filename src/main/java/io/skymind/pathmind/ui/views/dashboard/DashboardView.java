@@ -104,7 +104,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 				getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
 				break;
 			default :
-				getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(item.getExperiment())));
+				getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, item.getExperiment().getId()));
 				break;
 		}
 	}

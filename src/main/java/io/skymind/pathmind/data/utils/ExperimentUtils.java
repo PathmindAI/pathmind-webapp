@@ -33,7 +33,7 @@ public class ExperimentUtils
 	}
 
 	public static boolean isDraftRunType(Experiment experiment) {
-		return experiment.getRuns().isEmpty();
+		return experiment.getRuns() == null || experiment.getRuns().isEmpty();
 	}
 
 	public static String getProjectName(Experiment experiment) {
