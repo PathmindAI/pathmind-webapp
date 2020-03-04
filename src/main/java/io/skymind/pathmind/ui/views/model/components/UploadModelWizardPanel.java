@@ -11,6 +11,7 @@ import java.io.IOException;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.progressbar.ProgressBarVariant;
@@ -66,7 +67,6 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private void setupLayout() {
 		setupUploadPanel(isFolderUploadMode);
 		setupFileCheckPanel();
-		setupUploadModeSwitchButton();
 
 		sectionTitleWrapper = new Div();
 		Span projectText = new Span("Project : ");
@@ -80,16 +80,20 @@ public class UploadModelWizardPanel extends VerticalLayout
 				getInstructionsDiv(isFolderUploadMode),
 				uploadModelPanel,
 				fileCheckPanel,
-				WrapperUtils.wrapWidthFullCenterHorizontal(uploadModeSwitcher));
+				getUploadModeSwitchButton());
 
 		fileCheckPanel.setVisible(false);
 	}
 
-	private void setupUploadModeSwitchButton() {
+	private HorizontalLayout getUploadModeSwitchButton() {
+		HorizontalLayout buttonWrapper = WrapperUtils.wrapWidthFullCenterHorizontal();
+		buttonWrapper.getStyle().set("margin", "var(--lumo-space-xxl) 0 calc(-1 * var(--lumo-space-l))");
 		uploadModeSwitcher = new UploadModeSwitcherButton(isFolderUploadMode, () -> switchUploadMode());
 		upload.isFolderUploadSupported(isFolderUploadSupported -> {
 			uploadModeSwitcher.setVisible(isFolderUploadSupported);
 		});
+		buttonWrapper.add(uploadModeSwitcher);
+		return buttonWrapper;
 	}
 	
 
