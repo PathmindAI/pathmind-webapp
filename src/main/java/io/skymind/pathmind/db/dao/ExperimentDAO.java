@@ -4,9 +4,14 @@ import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH
 import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_SINGLE_BY_EXPERIMENT;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import io.skymind.pathmind.data.Run;
+import io.skymind.pathmind.data.utils.DataUtils;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -42,7 +47,15 @@ public class ExperimentDAO
 	}
 
 	public List<Experiment> getExperimentsForModel(long modelId) {
-		return ExperimentRepository.getExperimentsForModel(ctx, modelId);
+		List<Experiment> experiments = ExperimentRepository.getExperimentsForModel(ctx, modelId);
+		Map<Long, List<Run>> runsGroupedByExperiment = RunRepository.getRunsForExperiments(ctx, DataUtils.convertToIds(experiments));
+		experiments.stream().forEach(experiment ->
+				experiment.setRuns(runsGroupedByExperiment.get(experiment.getId())));
+		// A quick solution to fix a bug due to null checks bot being implemented throughout the app.
+		experiments.stream()
+				.filter(experiment -> experiment.getRuns() == null)
+				.forEach(experiment -> experiment.setRuns(new ArrayList<Run>()));
+		return experiments;
 	}
 
 	public void updateExperiment(Experiment experiment) {

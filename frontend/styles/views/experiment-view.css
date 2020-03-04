@@ -1,31 +1,22 @@
-.experiment-view {
-    height: 100%;
-}
-
-.experiment-view > vaadin-split-layout {
-    padding: var(--lumo-space-m);
-    box-sizing: border-box;
-}
-
-.experiment-view vaadin-split-layout  > vaadin-vertical-layout,
-.experiment-view vaadin-split-layout  > vaadin-horizontal-layout {
-    width: 100%;
-    background: white;
-    border-radius: var(--lumo-border-radius);
-    padding: var(--lumo-space-m);
-    box-sizing: border-box;
-    overflow: hidden;
-    overflow-y: auto;
+.experiment-view vaadin-split-layout > vaadin-vertical-layout,
+.policy-chart-panel {
+  width: 100%;
+  background: white;
+  border-radius: var(--lumo-border-radius);
+  padding: var(--lumo-space-m);
+  box-sizing: border-box;
+  overflow: hidden;
+  overflow-y: auto;
 }
 
 .experiment-view vaadin-grid {
-    min-height: 60px;
+  min-height: 60px;
 }
 
 vaadin-chart {
-    min-height: 400px;
+  min-height: 400px;
 }
 
 juicy-ace-editor {
-    min-height: 80px;
+  min-height: 80px;
 }

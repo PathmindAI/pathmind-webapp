@@ -21,8 +21,8 @@ html {
   --pm-blue-color-darkest-50pct: rgba(26, 41, 73, 0.5);
   --pm-blue-color-darkest-25pct: rgba(26, 41, 73, 0.25);
   --pm-blue-color: #1900ff;
-  --pm-brown-color: #821b1a;
-  --pm-green-color: #1ccc28;
+  --pm-red-color: #930100;
+  --pm-green-color: #00a60b;
 
   /* pathmind typography */
   --pm-line-height-xl: 2em;
@@ -211,12 +211,13 @@ img {
   background: white;
 }
 
-/* In case we want the side menu go to the top for smaller screens
-@media (max-width: 1279px) {
+/* The side menu goes to the top for smaller screens 
+   Using 50% screen width of 1440px */
+@media (max-width: 720px) {
   .guide-view-wrapper {
     flex-direction: column;
   }
-} */
+}
 
 account-view {
   background: var(--pm-app-bg-color);

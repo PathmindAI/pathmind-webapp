@@ -113,7 +113,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	}
 
 	private void handleCancelButtonClicked() {
-		UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(policy));
+		UI.getCurrent().navigate(ExperimentView.class, policy.getExperiment().getId());
 	}
 
 	@Override
