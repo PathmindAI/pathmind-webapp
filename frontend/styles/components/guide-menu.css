@@ -14,14 +14,17 @@
 .guide-menu a {
   display: block;
   position: relative;
-  color: var(--pm-blue-color-darkest-25pct);
+  color: var(--pm-blue-color-darkest);
   line-height: 1.3em;
   text-decoration: none;
+}
+.guide-menu a + span {
+  display: none;
 }
 .guide-menu a:last-of-type {
   margin-bottom: 0;
 }
-.guide-menu a:not(.disabled):hover,
+.guide-menu div:not(.disabled) a:hover,
 .guide-menu a[highlight]:hover {
   color: var(--pm-blue-color-darkest-50pct);
 }
@@ -35,13 +38,13 @@
   border: 1px solid var(--pm-blue-color-darkest-25pct);
   transform: translateY(-50%);
 }
-.guide-menu a:not(.disabled) {
-  color: var(--pm-blue-color-darkest);
+.guide-menu .disabled a {
+  color: var(--pm-blue-color-darkest-25pct);
 }
 .guide-menu a[highlight] {
   font-weight: 700;
 }
-.guide-menu .completed::after {
+.guide-menu .completed a::after {
   content: "";
   position: absolute;
   width: 23px;
@@ -52,7 +55,7 @@
   background-size: cover;
   transform: translateY(-60%);
 }
-.guide-menu a.disabled {
+.guide-menu .disabled a {
   pointer-events: none;
   cursor: default;
 }
@@ -65,9 +68,12 @@
   opacity: 0.5;
 }
 
-/* In case we want the side menu go to the top for smaller screens
-@media (max-width: 1279px) {
+/* The side menu goes to the top for smaller screens 
+   Using 50% screen width of 1440px */
+@media (max-width: 720px) {
   .guide-menu {
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
     width: 100% !important;
     top: 25px;
@@ -76,20 +82,26 @@
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.05);
   }
   .guide-links-wrapper {
-    grid-template-columns: repeat(4, calc(25% - var(--lumo-space-xs)));
-    gap: var(--lumo-space-xs);
+    display: block;
+    gap: unset;
+  }
+  .guide-links-wrapper div {
+    display: flex;
     align-items: center;
-    width: 100%;
-    max-width: 940px;
-    margin-top: 0;
   }
   .guide-menu a {
     padding: var(--lumo-space-xs) 0;
-    margin-top: 0;
-    margin-left: 30px;
+    margin: 0 0 0 30px;
+  }
+  .guide-menu a[highlight] + span {
+    display: block;
+    margin-left: var(--lumo-space-xs);
+  }
+  .guide-menu a:not([highlight]) {
+    display: none;
   }
   .guide-menu vaadin-button {
     font-size: var(--lumo-font-size-m);
-    margin-top: var(--lumo-space-s);
+    margin-top: 0;
   }
-} */
+}
