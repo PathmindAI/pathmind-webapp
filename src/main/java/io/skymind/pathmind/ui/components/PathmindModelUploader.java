@@ -13,6 +13,7 @@ import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DomEvent;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.upload.Upload;
@@ -24,28 +25,32 @@ import com.vaadin.flow.server.Command;
 import elemental.json.Json;
 
 /**
- * Basically <code>vaadin-upload</code> component, but some changes are done to enable selecting folders for uploading:
- * - <code>webkitdirectory</code> and <code>mozdirectory</code> attributes are added to input element
- * - Added <code>addAllFilesUploadedListener</code> method, that is triggered after all files are uploaded
- * - Added MultiFileMemoryBufferWithFileStructure as default receiver, which works with file path, instead of filename
- * - The filter is done in client side, see model-upload-filter.js for details
+ * Basically <code>vaadin-upload</code> component, but some changes are done to
+ * enable selecting folders for uploading: - <code>webkitdirectory</code> and
+ * <code>mozdirectory</code> attributes are added to input element - Added
+ * <code>addAllFilesUploadedListener</code> method, that is triggered after all
+ * files are uploaded - Added MultiFileMemoryBufferWithFileStructure as default
+ * receiver, which works with file path, instead of filename - The filter is
+ * done in client side, see model-upload-filter.js for details
  * 
  * PathmindModelUploader works in two modes: Folder upload and zip file upload,
- * In constructor, default mode is set, then a client-side check is performed for folder upload support by browser, 
- * and finally <code>isFolderUploadMode</code> is set true if it's constructed in folder upload mode and browser supports folder upload.
- *  
+ * In constructor, default mode is set, then a client-side check is performed
+ * for folder upload support by browser, and finally
+ * <code>isFolderUploadMode</code> is set true if it's constructed in folder
+ * upload mode and browser supports folder upload.
+ * 
  */
 
 @JavaScript("/src/upload/model-upload-filter.js")
 public class PathmindModelUploader extends Upload {
-	
+
 	private int numOfFilesUploaded = 0;
-	
+
 	private List<Command> allFilesCompletedListeners = new ArrayList<>();
-	
+
 	private Boolean isFolderUploadSupported;
 	private Boolean isFolderUploadMode;
-	
+
 	public PathmindModelUploader(boolean isFolderUploadMode) {
 		super();
 		checkIfFolderUploadSupported(isFolderUploadSupported -> {
@@ -73,9 +78,11 @@ public class PathmindModelUploader extends Upload {
 			}
 		});
 	}
+
 	private Button createUploadButton() {
 		Button uploadButton = new Button(VaadinIcon.UPLOAD.create());
-		uploadButton.setText(this.isFolderUploadMode ? "Select folder to upload..." : "Select zip file...");
+		uploadButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		uploadButton.setText(this.isFolderUploadMode ? "Upload exported folder" : "Upload zip file");
 		return uploadButton;
 	}
 	/**

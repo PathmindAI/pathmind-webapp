@@ -1,12 +1,10 @@
 package io.skymind.pathmind.ui.views.policy;
 
 import java.io.ByteArrayInputStream;
-import java.time.LocalDate;
 
 import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.services.PolicyFileService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
@@ -35,7 +33,7 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 
-import static io.skymind.pathmind.utils.StringUtils.toCamelCase;
+import static io.skymind.pathmind.utils.StringUtils.removeInvalidChars;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPORT_POLICY_URL, layout = MainLayout.class)
@@ -108,7 +106,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	}
 	
 	private StreamResource getResourceStream(String filename) {
-		return new StreamResource(filename,
+		return new StreamResource(removeInvalidChars(filename),
 				() -> new ByteArrayInputStream(policyFileService.getPolicyFile(policyId)));
 	}
 

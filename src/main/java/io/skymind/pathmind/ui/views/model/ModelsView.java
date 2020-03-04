@@ -41,7 +41,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @CssImport("./styles/styles.css")
-@Route(value= Routes.MODELS_URL, layout = MainLayout.class)
+@Route(value= Routes.PROJECT_URL, layout = MainLayout.class)
 public class ModelsView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 	@Autowired
@@ -167,14 +167,14 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	}
 
 	@Override
-	protected void initLoadData() throws InvalidDataException {
+	protected void initLoadData() {
 		project = projectDAO.getProject(projectId)
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));
 		project.setModels(modelDAO.getModelsForProject(projectId));
 	}
 
 	@Override
-	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
+	protected void initScreen(BeforeEnterEvent event) {
 		if (project.getModels().isEmpty()) {
 			GuideStep guideStep = guideDAO.getGuideStep(projectId);
 			event.forwardTo(guideStep.getPath(), projectId);
