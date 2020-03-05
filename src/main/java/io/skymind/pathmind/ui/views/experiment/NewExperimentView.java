@@ -34,7 +34,6 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.PathmindTextArea;
-import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
@@ -43,7 +42,6 @@ import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
-import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @CssImport("./styles/views/new-experiment-view.css")

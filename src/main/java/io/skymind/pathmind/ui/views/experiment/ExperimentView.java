@@ -31,7 +31,6 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.layouts.MainLayout;
