@@ -134,7 +134,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	  pageBreadcrumbs = createBreadcrumbs();
 
 	  VerticalLayout mainLayout = WrapperUtils.wrapSizeFullVertical(
-			pageBreadcrumbs,
+			WrapperUtils.wrapWidthFullCenterHorizontal(pageBreadcrumbs),
 		  	mainSplitLayout
 	  );
 
