@@ -28,13 +28,7 @@ class GuideOverviewContent extends PolymerElement {
   }
 
   static get properties() {
-    return {
-      videoLink: {
-        value() {
-          return "https://fast.wistia.net/embed/iframe/2dsk9brzr9";
-        }
-      }
-    };
+    return {};
   }
 }
 
