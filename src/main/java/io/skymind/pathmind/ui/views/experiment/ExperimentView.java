@@ -31,6 +31,7 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.TrainingService;
+import io.skymind.pathmind.ui.components.TabPanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.notesField.NotesField;
@@ -151,6 +152,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private VerticalLayout getRightPanel() {
+		TabPanel rewardFunctionEditorHeader = new TabPanel("Reward Function");
 		rewardFunctionEditor = new RewardFunctionEditor();
 		rewardFunctionEditor.setReadonly(true);
 		rewardFunctionEditor.setSizeFull();
@@ -183,7 +185,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				policyHighlightPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton),
 				trainingStatusDetailsPanel,
-				rewardFunctionEditor,
+				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+					rewardFunctionEditorHeader, rewardFunctionEditor
+				),
 				notesField);
 	}
 
