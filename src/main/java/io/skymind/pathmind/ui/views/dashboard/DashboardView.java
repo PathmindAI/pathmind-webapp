@@ -17,9 +17,11 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.constants.GuideStep;
 import io.skymind.pathmind.constants.Stage;
 import io.skymind.pathmind.data.DashboardItem;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
@@ -35,9 +37,6 @@ import io.skymind.pathmind.ui.views.dashboard.dataprovider.DashboardDataProvider
 import io.skymind.pathmind.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
-import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
-import io.skymind.pathmind.ui.views.guide.GuideOverview;
-import io.skymind.pathmind.ui.views.model.UploadModelView;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 
@@ -49,6 +48,9 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
 	@Autowired
 	private ExperimentDAO experimentDAO;
+	
+	@Autowired
+	private GuideDAO guideDAO;
 	
 	private Grid<DashboardItem> dashboardGrid;
 	
@@ -97,7 +99,8 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 		Stage stage = DashboardUtils.calculateStage(item);
 		switch (stage) {
 			case SetUpSimulation :
-				getUI().ifPresent(ui -> ui.navigate(GuideOverview.class, item.getProject().getId()));
+				GuideStep step = guideDAO.getGuideStep(item.getProject().getId());
+				getUI().ifPresent(ui -> ui.navigate(step.getPath() + "/" + item.getProject().getId()));
 				break;
 			case WriteRewardFunction:
 				var experimentId = item.getExperiment() == null ?
