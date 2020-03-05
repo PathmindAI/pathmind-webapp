@@ -54,14 +54,10 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 
-	
-	private TextField nameTextField;
-
 	private Button exportButton;
 	private Anchor exportLink;
 	private Button cancelButton;
 	
-
 	private long policyId;
 	private Policy policy;
 
@@ -80,7 +76,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	{
 		final String policyFileName = PolicyUtils.generatePolicyFileName(policy);
 
-		exportButton = new Button("Export");
+		exportButton = new Button("Export Policy");
 		exportButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportButton.setWidth("200px");
 		exportButton.addClickListener(evt -> {
@@ -99,17 +95,10 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 		cancelButton = new Button("Cancel", click -> handleCancelButtonClicked());
 		cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-		nameTextField = new TextField();
-		nameTextField.setLabel("File Name");
-		nameTextField.setValue(policyFileName);
-		nameTextField.setWidthFull();
-		nameTextField.addValueChangeListener(change ->
-			exportLink.setHref(getResourceStream(StringUtils.isEmpty(nameTextField.getValue()) ? policyFileName : nameTextField.getValue())));
-
 		VerticalLayout wrapperContent = WrapperUtils.wrapFormCenterVertical(
-						LabelFactory.createLabel("Export", CssMindPathStyles.SECTION_TITLE_LABEL),
+						LabelFactory.createLabel("Export Policy", CssMindPathStyles.SECTION_TITLE_LABEL),
 						new Image("/frontend/images/exportPolicyIcon.gif", "Export Policy"),
-						nameTextField,
+						LabelFactory.createLabel(policyFileName),
 						createInstructionsDiv(),
 						learnMoreLink,
 						exportLink);
@@ -150,13 +139,15 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 		Div div = new Div();
 		div.setClassName("export-instructions");
 		div.getElement().setProperty("innerHTML",
+				"<h3>To use your policy:</h3>" +
 				"<ol>" +
-					"<li>Download this file</li>" +
-					"<li>Open your AnyLogic simulation</li>" +
-					"<li>Select the Pathmind Helper</li>" +
-					"<li>Check \"Use Policy\"</li>" +
-					"<li>Choose the policy file where you saved it</li>" +
-					"<li>Run your simulation</li>" +
+					"<li>Download this file.</li>" +
+					"<li>Return to AnyLogic and open the Pathmind Helper properties in your simulation.</li>" +
+					"<ul>" +
+						"<li>Change the 'Mode' to 'Use Policy'.</li>" +
+						"<li>In 'policyFile', click 'Browse' and select the file you downloaded.</li>" +
+					"</ul>" +
+					"<li>Run the simulation to see the policy in action.</li>" +
 				"</ol>");
 		return div;
 	}
