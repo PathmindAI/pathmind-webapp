@@ -367,3 +367,7 @@ h4 {
 .stage-next {
   color: var(--lumo-secondary-text-color);
 }
+
+.export-instructions{
+	width: 100%;
+}
