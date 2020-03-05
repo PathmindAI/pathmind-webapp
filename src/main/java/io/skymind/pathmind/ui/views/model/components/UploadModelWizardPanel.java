@@ -1,6 +1,8 @@
 package io.skymind.pathmind.ui.views.model.components;
 
 import static io.skymind.pathmind.ui.constants.CssMindPathStyles.NO_TOP_MARGIN_LABEL;
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
+import static io.skymind.pathmind.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT;
 import static io.skymind.pathmind.ui.constants.CssMindPathStyles.SECTION_SUBTITLE_LABEL;
 import static io.skymind.pathmind.ui.constants.CssMindPathStyles.TRUNCATED_LABEL;
 
@@ -9,6 +11,7 @@ import java.io.IOException;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.progressbar.ProgressBarVariant;
@@ -22,7 +25,6 @@ import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.ui.components.LabelFactory;
 import io.skymind.pathmind.ui.components.PathmindModelUploader;
-import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.utils.GuiUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.utils.UploadUtils;
@@ -33,6 +35,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 {
 	private final Model model;
 
+	private Div sectionTitleWrapper;
 	private Span projectNameLabel;
 
 	private VerticalLayout uploadModelPanel;
@@ -52,8 +55,8 @@ public class UploadModelWizardPanel extends VerticalLayout
 	{
 		this.model = model;
 
-		projectNameLabel = LabelFactory.createLabel("", SECTION_SUBTITLE_LABEL, NO_TOP_MARGIN_LABEL, TRUNCATED_LABEL);
-		
+		projectNameLabel = LabelFactory.createLabel("", SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT, SECTION_SUBTITLE_LABEL);
+
 		setupLayout();
 
 		setClassName("view-section"); // adds the white 'panel' style with rounded corners
@@ -64,23 +67,33 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private void setupLayout() {
 		setupUploadPanel(isFolderUploadMode);
 		setupFileCheckPanel();
-		setupUploadModeSwitchButton();
-		add(LabelFactory.createLabel("Project", CssMindPathStyles.SECTION_TITLE_LABEL),
-				projectNameLabel,
+
+		sectionTitleWrapper = new Div();
+		Span projectText = new Span("Project : ");
+		projectText.addClassName(SECTION_TITLE_LABEL);
+		sectionTitleWrapper.add(projectText, projectNameLabel);
+		sectionTitleWrapper.addClassName(TRUNCATED_LABEL);
+
+		add(sectionTitleWrapper,
+				LabelFactory.createLabel("Upload Model", NO_TOP_MARGIN_LABEL),
 				GuiUtils.getFullWidthHr(),
 				getInstructionsDiv(isFolderUploadMode),
 				uploadModelPanel,
 				fileCheckPanel,
-				WrapperUtils.wrapWidthFullCenterHorizontal(uploadModeSwitcher));
+				getUploadModeSwitchButton());
 
 		fileCheckPanel.setVisible(false);
 	}
 
-	private void setupUploadModeSwitchButton() {
+	private HorizontalLayout getUploadModeSwitchButton() {
+		HorizontalLayout buttonWrapper = WrapperUtils.wrapWidthFullCenterHorizontal();
+		buttonWrapper.getStyle().set("margin", "var(--lumo-space-xxl) 0 calc(-1 * var(--lumo-space-l))");
 		uploadModeSwitcher = new UploadModeSwitcherButton(isFolderUploadMode, () -> switchUploadMode());
 		upload.isFolderUploadSupported(isFolderUploadSupported -> {
 			uploadModeSwitcher.setVisible(isFolderUploadSupported);
 		});
+		buttonWrapper.add(uploadModeSwitcher);
+		return buttonWrapper;
 	}
 	
 
@@ -163,22 +176,18 @@ public class UploadModelWizardPanel extends VerticalLayout
 		return div;
 	}
 
-	// TODO -> CSS -> Move CSS to styles.css
 	private void setInstructionsForFolderUploadDiv(Div div) {
 		div.getElement().setProperty("innerHTML",
 				"<ol>" +
-					"<li>Make sure you have <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">Pathmind Helper</a> installed in your model.</li>" +
-					"<li><a href=\"https://help.anylogic.com/topic/com.anylogic.help/html/standalone/Export_Java_Application.html\" target=\"_blank\">Export your model as a standalone Java application.</a></li>" +
-					"<li>Click Upload files button.</li>" +
-					"<li>Select the exported folder.</li>" +
+					"<li><a href=\"https://help.anylogic.com/topic/com.anylogic.help/html/standalone/Export_Java_Application.html\" target=\"_blank\">Export your model as a standalone Java application.</a><br/>(AnyLogic Professional is required)</li>" +
+					"<li>Upload the exported folder.</li>" +
 				"</ol>");
 	}
 	
 	private void setInstructionsForZipUploadDiv(Div div) {
 		div.getElement().setProperty("innerHTML",
 				"<ol>" +
-					"<li>Make sure you have <a href=\"https://help.pathmind.com/en/articles/3354371-using-the-pathmind-helper/\" target=\"_blank\">Pathmind Helper</a> installed in your model.</li>" +
-					"<li><a href=\"https://help.anylogic.com/topic/com.anylogic.help/html/standalone/Export_Java_Application.html\" target=\"_blank\">Export your model as a standalone Java application.</a></li>" +
+					"<li><a href=\"https://help.anylogic.com/topic/com.anylogic.help/html/standalone/Export_Java_Application.html\" target=\"_blank\">Export your model as a standalone Java application.</a><br/>(AnyLogic Professional is required)</li>" +
 					"<li>Open the exported folder.</li>" +
 					"<li>Create a zip file that contains:</li>" +
 						"<ul>" +

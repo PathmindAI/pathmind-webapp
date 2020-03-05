@@ -46,8 +46,8 @@ public abstract class TrainingService {
     public void startDiscoveryRun(Experiment exp){
         startRun(RunType.DiscoveryRun,
                 exp,
-                RunConstants.DISCOVERY_RUN_ITERATIONS,
-                2 * HOUR, // 2 hr
+                RunConstants.PBT_RUN_ITERATIONS,
+                150 * MINUTE, // 2.5 hours
                 10
         );
     }
