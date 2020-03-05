@@ -10,4 +10,8 @@ public class StringUtils {
 		}
 		return WordUtils.capitalizeFully(val).replaceAll(" ", "");
 	}
+	
+	public static String removeInvalidChars(String str) {
+		return str.replaceAll("[^a-zA-Z0-9\\-\\.]","");
+	}
 }
