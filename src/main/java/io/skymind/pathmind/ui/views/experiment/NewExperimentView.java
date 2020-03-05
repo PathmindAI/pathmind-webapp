@@ -202,9 +202,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         trainingService.startDiscoveryRun(experiment);
         segmentIntegrator.discoveryRunStarted();
 
-        ConfirmDialog confirmDialog = new RunConfirmDialog();
-        confirmDialog.open();
-
         UI.getCurrent().navigate(ExperimentView.class, experimentId);
     }
 
