@@ -41,8 +41,16 @@ public class Breadcrumbs extends HorizontalLayout
 		this(project, model, experiment, true);
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
 	public Breadcrumbs(Project project, Model model, Experiment experiment, boolean hasRootItem) {
+		this(project, model, experiment, null, hasRootItem);
+	}
+	
+	public Breadcrumbs(Project project, Model model, Experiment experiment, String stepName) {
+		this(project, model, experiment, stepName, true);
+	}
+	
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public Breadcrumbs(Project project, Model model, Experiment experiment, String stepName, boolean hasRootItem) {
 
 		if(hasRootItem) {
 			items.add(new BreadcrumbItem("Projects", ProjectsView.class, null));
@@ -55,7 +63,11 @@ public class Breadcrumbs extends HorizontalLayout
 			items.add(new BreadcrumbItem("Model #" + model.getName(), ExperimentsView.class, model.getId()));
 		}
 		if (experiment != null) {
-			items.add(new BreadcrumbItem("Experiment #" + experiment.getName(), ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment)));
+			items.add(new BreadcrumbItem("Experiment #" + experiment.getName(), ExperimentView.class, experiment.getId()));
+		}
+		
+		if (stepName != null) {
+			items.add(new BreadcrumbItem(stepName));
 		}
 		
 		items.get(items.size() - 1).asCurrentStep();
@@ -89,6 +101,10 @@ public class Breadcrumbs extends HorizontalLayout
 		protected Span spanComponent;
 		protected RouterLink routerLinkComponent;
 		
+		public BreadcrumbItem(String name) {
+			this.name = name;
+		}
+		
 		public BreadcrumbItem(String name, Class<C> navigationTarget, T parameter) {
 			this.name = name;
 			this.navigationTarget = navigationTarget;
@@ -100,7 +116,7 @@ public class Breadcrumbs extends HorizontalLayout
 		}
 		
 		private Component createComponent() {
-			if (isCurrentStep) {
+			if (isCurrentStep || navigationTarget == null) {
 				spanComponent = createLabel();
 				return spanComponent;
 			} else {
