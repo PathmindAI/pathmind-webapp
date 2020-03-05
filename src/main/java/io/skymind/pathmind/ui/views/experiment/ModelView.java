@@ -1,9 +1,5 @@
 package io.skymind.pathmind.ui.views.experiment;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -13,13 +9,11 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
-import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
@@ -33,13 +27,15 @@ import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.MODEL_URL, layout = MainLayout.class)
-public class ExperimentsView extends PathMindDefaultView implements HasUrlParameter<Long> {
+public class ModelView extends PathMindDefaultView implements HasUrlParameter<Long> {
 	@Autowired
 	private ExperimentDAO experimentDAO;
 	@Autowired
@@ -57,9 +53,9 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	private ArchivesTabPanel<Experiment> archivesTabPanel;
 	private ExperimentGrid experimentGrid;
 
-	public ExperimentsView() {
+	public ModelView() {
 		super();
-		addClassName("experiments-view");
+		addClassName("model-view");
 	}
 
 	protected Component getMainContent() {
@@ -145,7 +141,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	}
 
 	@Override
-	protected void initLoadData() throws InvalidDataException {
+	protected void initLoadData() {
 		model = modelDAO.getModel(modelId)
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Model: " + modelId));
 		experiments = experimentDAO.getExperimentsForModel(modelId);
@@ -154,7 +150,7 @@ public class ExperimentsView extends PathMindDefaultView implements HasUrlParame
 	}
 
 	@Override
-	protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
+	protected void initScreen(BeforeEnterEvent event) {
 		DateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
 			// experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			experimentGrid.setItems(experiments);
