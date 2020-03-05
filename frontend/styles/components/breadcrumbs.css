@@ -18,7 +18,7 @@
 
 /* Keep old styles for dashboard */
 .dashboard-view .breadcrumb {
-  color: var(--pm-tertiary-text-color);
+  color: var(--lumo-secondary-text-color);
 }
 
 .dashboard-view .breadcrumb:hover,
@@ -28,6 +28,6 @@
 }
 
 .dashboard-view .breadcrumb ~ span {
-  color: var(--pm-tertiary-text-color);
+  color: var(--lumo-secondary-text-color);
   cursor: default;
 }

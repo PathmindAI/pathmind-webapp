@@ -13,16 +13,6 @@ class GuideOverviewContent extends PolymerElement {
           main steps in that preparation process. At each step, we link to more
           detailed instructions.
         </p>
-        <h4>Key concepts</h4>
-        <div class="video-wrapper">
-          <iframe
-            src$="[[videoLink]]"
-            frameborder="0"
-            webkitallowfullscreen
-            mozallowfullscreen
-            allowfullscreen
-          ></iframe>
-        </div>
         <vaadin-button id="nextBtn" theme="secondary">
           I've read the overview
         </vaadin-button>
@@ -38,13 +28,7 @@ class GuideOverviewContent extends PolymerElement {
   }
 
   static get properties() {
-    return {
-      videoLink: {
-        value() {
-          return "https://fast.wistia.net/embed/iframe/2dsk9brzr9";
-        }
-      }
-    };
+    return {};
   }
 }
 
