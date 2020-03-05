@@ -4,18 +4,24 @@ import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.policy.RewardScore;
+import io.skymind.pathmind.data.utils.DataUtils;
 import io.skymind.pathmind.data.utils.PolicyUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Map;
 
+import static java.text.MessageFormat.format;
+import static java.util.Objects.nonNull;
+
+@Slf4j
 @Repository
-public class PolicyDAO
-{
+public class PolicyDAO {
     private final DSLContext ctx;
 
     public PolicyDAO(DSLContext ctx) {
@@ -23,29 +29,20 @@ public class PolicyDAO
     }
 
     public Policy getPolicy(long policyId) {
-          Policy policy = PolicyRepository.getPolicy(ctx, policyId);
-          policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(ctx, policyId));
-          return policy;
+        Policy policy = PolicyRepository.getPolicy(ctx, policyId);
+        policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(ctx, policyId));
+        return policy;
     }
 
     public List<Policy> getPoliciesForExperiment(long experimentId) {
         List<Policy> policies = PolicyRepository.getPoliciesForExperiment(ctx, experimentId);
-        Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(ctx, PolicyUtils.convertToPolicyIds(policies));
+        Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(ctx, DataUtils.convertToIds(policies));
         policies.stream().forEach(policy -> policy.setScores(rewardScores.get(policy.getId())));
         return policies;
     }
 
-    /**
-     * To avoid multiple download policy file from rescale server,
-     * we put the "saving" for temporary
-     * policy dao will check if there's real policy file exist or not
-     */
-    public boolean hasPolicyFile(long policyId) {
-        return PolicyRepository.hasPolicyFile(ctx, policyId);
-    }
-
-    public byte[] getPolicyFile(long policyId) {
-        return PolicyRepository.getPolicyFile(ctx, policyId);
+    public Map<Long, Integer> getRewardScoresCountForExperiments(List<Long> experimentIds) {
+        return RewardScoreRepository.getRewardScoresCountForExperiments(ctx, experimentIds);
     }
 
     @Transactional
@@ -70,18 +67,26 @@ public class PolicyDAO
         return PolicyRepository.getActivePoliciesForUser(ctx, userId);
     }
 
-    public byte[] getSnapshotFile(long policyId) {
-        return PolicyRepository.getSnapshotFile(ctx, policyId);
-    }
-
-    public void savePolicyFile(long runId, String externalId, byte[] policyFile) {
-        PolicyRepository.savePolicyFile(ctx, runId, externalId, policyFile);
-    }
-
-    public void saveCheckpointFile(long runId, String externalId, byte[] checkpointFile) {
-        PolicyRepository.saveCheckpointFile(ctx, runId, externalId, checkpointFile);
-    }
     public void updateExportedDate(long policyId) {
         PolicyRepository.updateExportedDate(ctx, policyId);
+    }
+
+    public Long getPolicyId(long runId, String externalId) {
+        return PolicyRepository.getPolicyIdByRunIdAndExternalId(ctx, runId, externalId);
+    }
+
+    public void setHasFile(Long policyId, boolean value) {
+        PolicyRepository.setHasFile(ctx, policyId, value);
+    }
+
+    public Long assurePolicyId(Long runId, String finishPolicyName) {
+        Assert.notNull(runId, "runId should be provided");
+        Assert.hasText(finishPolicyName, "finalPolicyName should be provided");
+        Long policyId = getPolicyId(runId, finishPolicyName);
+        Assert.state(
+                nonNull(policyId),
+                format("Can not find policyId for run {0} and finishName {1}", runId, finishPolicyName)
+        );
+        return policyId;
     }
 }

@@ -30,16 +30,19 @@ public class ModelAnalyzerApiClient {
     private final String token;
     private final ObjectMapper objectMapper;
     private final WebClient client;
+    private final boolean multiAgent;
 
     public ModelAnalyzerApiClient(
             @Value("${skymind.model.analyzer.base-url}") String url,
             @Value("${skymind.model.analyzer.token}") String token,
+            @Value("${pathmind.training.multiagent:false}") boolean multiAgent,
             ObjectMapper objectMapper,
             WebClient.Builder webClientBuilder
     ) {
         this.url = url;
         this.token = token;
         this.objectMapper = objectMapper;
+        this.multiAgent = multiAgent;
 
         client = webClientBuilder
                 .baseUrl(this.url)
@@ -66,6 +69,11 @@ public class ModelAnalyzerApiClient {
     }
 
     public HyperparametersDTO analyze(File file) throws IOException {
+        if (multiAgent) {
+            log.warn("Skip model analysis in multi-agent mode");
+            return null;
+        }
+
         final HttpPost post = new HttpPost(this.url + "/api/v1/extract-hyperparameters");
         post.setEntity(MultipartEntityBuilder.create()
                 .addBinaryBody("file", file, ContentType.MULTIPART_FORM_DATA, file.getName())

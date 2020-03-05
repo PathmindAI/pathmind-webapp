@@ -1,14 +1,15 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.constants.RunStatus;
+import io.skymind.pathmind.data.ProviderJobStatus;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.CheckPoint;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.ExperimentState;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.*;
@@ -25,9 +26,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static io.skymind.pathmind.constants.RunStatus.*;
+import static io.skymind.pathmind.constants.RunStatus.Error;
 
 @Service
 @Slf4j
@@ -107,33 +108,32 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public ProviderJobStatus status(String jobHandle) {
-        List<String> errors = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_ERROR);
-        List<String> completes = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_COMPLETE);
-        List<String> trials = getTrialStatus(jobHandle, TrainingFile.RAY_TRIAL_LIST).stream()
-                .filter(it -> !it.endsWith(".json"))
-                .collect(Collectors.toList());
+        if (outputExist(jobHandle)){
+            boolean killed = getFile(jobHandle, TrainingFile.KILLED).isPresent();
+            if (killed) {
+                return new ProviderJobStatus(Killed);
+            }
 
-        boolean killed = getFile(jobHandle, TrainingFile.KILLED).isPresent();
-        if (killed) {
-            return new ProviderJobStatus(Killed);
-         }
+            ExperimentState experimentState = getExperimentState(jobHandle);
+            List<String> knownErrsCheck = getTrialStatus(jobHandle, TrainingFile.KNOWN_ERROR);
 
-        List<String> knownErrsCheck = getTrialStatus(jobHandle, TrainingFile.KNOWN_ERROR);
-        if (errors.size() > 0 || knownErrsCheck.size() > 0) {
-            final var allErrorsList = Stream.concat(knownErrsCheck.stream(), errors.stream())
-                    .collect(Collectors.toList());
-            var oneLineErrors = allErrorsList.stream()
-                    .map(Object::toString)
-                    .collect(Collectors.joining(" ; "));
-            log.warn("{} error(s) detected for the AWS jobHandle {}: {}", allErrorsList.size(), jobHandle, oneLineErrors);
-            return new ProviderJobStatus(Error, allErrorsList);
-        }
+            Map<String, Long> trialStatusCount = Collections.emptyMap();
+            if (experimentState != null) {
+                trialStatusCount = experimentState.getCheckpoints().stream()
+                        .collect(Collectors.groupingBy(CheckPoint::getStatus, Collectors.counting()));
+            }
 
-        // todo need to change to use database once Daniel create proper database(TRAINER_JOB)
-        ExperimentState experimentState = getExperimentState(jobHandle);
+            if (trialStatusCount.getOrDefault("ERROR", 0L) > 0 || knownErrsCheck.size() > 0) {
+                final var allErrorsList = knownErrsCheck.stream()
+                        .collect(Collectors.toList());
+                var oneLineErrors = allErrorsList.stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(" ; "));
+                log.warn("{} error(s) detected for the AWS jobHandle {}: {}", allErrorsList.size(), jobHandle, oneLineErrors);
+                return new ProviderJobStatus(Error, allErrorsList);
+            }
 
-        if (experimentState != null) {
-            if (completes.size() > 0 && completes.size() == trials.size()) {
+            if (experimentState != null && experimentState.getCheckpoints() != null && experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L)) {
                 return new ProviderJobStatus(Completed);
             }
 
@@ -194,6 +194,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 .map(it -> client.fileContents(it.getKey()));
     }
 
+    public boolean outputExist(String jobHandle) {
+        return client.listObjects(jobHandle + "/output").getObjectSummaries().size() > 0 ? true : false;
+    }
+
     public List<String> getTrialStatus(String jobHandle, String fileName) {
         Optional<byte[]> listOpt = getFile(jobHandle, fileName);
         if (listOpt.isPresent()) {
@@ -244,6 +248,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         switch (nativerlVersion) {
             case VERSION_0_7_0:
             case VERSION_0_7_6:
+            case VERSION_0_7_6_PBT:
                 instructions.addAll(Arrays.asList(
                         // Setup NativeRL
                         "mkdir work",
@@ -265,6 +270,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private void installAnyLogic(AnyLogic anylogicVersion, List<String> instructions, List<String> files) {
         switch (anylogicVersion) {
             case VERSION_8_5_1:
+            case VERSION_8_5_2:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip",
                         "rm baseEnv.zip",
@@ -384,16 +390,12 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("MAX_REWARD_MEAN", String.valueOf(Integer.MAX_VALUE)), // disabled for now
                 var("TEST_ITERATIONS", "0"), // disabled for now
 
-                // Not yet picked up by training script
-                var("LEARNING_RATES", job.getLearningRates().stream().map(Object::toString).collect(Collectors.joining(","))),
-                var("GAMMAS", job.getGammas().stream().map(Object::toString).collect(Collectors.joining(","))),
-                var("BATCH_SIZES", job.getBatchSizes().stream().map(Object::toString).collect(Collectors.joining(","))),
-
                 // Still has to be set, but doesn't actually do something, needs to be removed from train.sh
                 var("STEP_TIME", "1"),
                 var("STOP_TIME", "420"),
                 var("TIME_UNIT", "MINUTE"),
                 var("MAX_TIME_IN_SEC", String.valueOf(job.getMaxTimeInSec())),
+                var("NUM_SAMPLES", String.valueOf(job.getNumSamples())),
                 var("MULTIAGENT", String.valueOf(job.isMultiAgent()))
         ));
     }

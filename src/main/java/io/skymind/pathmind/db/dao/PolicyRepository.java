@@ -12,13 +12,11 @@ import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.data.db.Tables.*;
 
-class PolicyRepository
-{
-	private static final String SAVING = "saving";
+class PolicyRepository {
 
 	protected static List<Policy> getActivePoliciesForUser(DSLContext ctx, long userId) {
         Result<?> result = ctx
-                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM)
+                .select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.HAS_FILE)
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
                 .select(EXPERIMENT.ID, EXPERIMENT.NAME)
                 .select(MODEL.ID, MODEL.NAME)
@@ -44,7 +42,7 @@ class PolicyRepository
 
 	protected static Policy getPolicy(DSLContext ctx, long policyId) {
         Record record = ctx
-				.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
+				.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES, POLICY.HAS_FILE)
                 .select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
                 .select(EXPERIMENT.ID, EXPERIMENT.NAME)
                 .select(MODEL.ID, MODEL.NAME)
@@ -76,23 +74,6 @@ class PolicyRepository
 		policy.setProject(record.into(PROJECT).into(Project.class));
 	}
 
-	protected static boolean hasPolicyFile(DSLContext ctx, long policyId) {
-		return ctx.select(DSL.one())
-				.from(POLICY_FILE)
-				.where(POLICY_FILE.POLICY_ID.eq(policyId)
-						.and(POLICY_FILE.FILE.isNotNull())
-						.and(POLICY_FILE.FILE.notEqual(SAVING.getBytes())))
-				.fetchOptional().isPresent();
-	}
-
-	protected static byte[] getPolicyFile(DSLContext ctx, long policyId) {
-		return ctx.select(POLICY_FILE.FILE)
-				.from(POLICY_FILE)
-				.where(POLICY_FILE.POLICY_ID.eq(policyId)
-						.and(POLICY_FILE.FILE.isNotNull()))
-				.fetchOne(POLICY_FILE.FILE);
-	}
-
 	protected static long insertPolicy(DSLContext ctx, Policy policy) {
 		return ctx.insertInto(POLICY)
 				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
@@ -103,7 +84,7 @@ class PolicyRepository
 	}
 
 	protected static List<Policy> getPoliciesForExperiment(DSLContext ctx, long experimentId) {
-		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.RUN_ID, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES)
+		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.RUN_ID, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.LEARNING_RATE, POLICY.GAMMA, POLICY.BATCH_SIZE, POLICY.NOTES, POLICY.HAS_FILE)
 				.select(EXPERIMENT.asterisk())
 				.select(RUN.asterisk())
 				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.ARCHIVED, MODEL.USER_NOTES)
@@ -159,29 +140,6 @@ class PolicyRepository
 				.execute();
 	}
 
-	protected static byte[] getSnapshotFile(DSLContext ctx, long policyId) {
-		return ctx.select(POLICY_SNAPSHOT.SNAPSHOT)
-				.from(POLICY_SNAPSHOT)
-				.where(POLICY_SNAPSHOT.POLICY_ID.eq(policyId))
-				.fetchOne(POLICY_SNAPSHOT.SNAPSHOT);
-	}
-
-	protected static void savePolicyFile(DSLContext ctx, long runId, String externalId, byte[] policyFile) {
-		ctx.insertInto(POLICY_FILE)
-				.set(POLICY_FILE.POLICY_ID, ctx.select(POLICY.ID).from(POLICY).where(POLICY.EXTERNAL_ID.eq(externalId).and(POLICY.RUN_ID.eq(runId))))
-				.set(POLICY_FILE.FILE, policyFile)
-				.onConflictDoNothing()
-				.execute();
-	}
-
-	protected static void saveCheckpointFile(DSLContext ctx, long runId, String externalId, byte[] checkpointFile) {
-		ctx.insertInto(POLICY_SNAPSHOT)
-				.set(POLICY_SNAPSHOT.POLICY_ID, ctx.select(POLICY.ID).from(POLICY).where(POLICY.EXTERNAL_ID.eq(externalId).and(POLICY.RUN_ID.eq(runId))))
-				.set(POLICY_SNAPSHOT.SNAPSHOT, checkpointFile)
-				.onConflictDoNothing()
-				.execute();
-	}
-
 	public static List<Policy> getExportedPoliciesByRunId(DSLContext ctx, long runId) {
 		return ctx.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT,
 				POLICY.STOPPED_AT, POLICY.ALGORITHM, POLICY.EXPORTED_AT)
@@ -197,5 +155,16 @@ class PolicyRepository
 				.where(POLICY.ID.eq(policyId))
 				.execute();
 
+	}
+
+	static Long getPolicyIdByRunIdAndExternalId(DSLContext ctx, long runId, String externalId) {
+		return ctx.select(POLICY.ID).from(POLICY)
+				.where(
+						POLICY.EXTERNAL_ID.eq(externalId).and(POLICY.RUN_ID.eq(runId))
+				).fetchOne(POLICY.ID);
+	}
+
+	public static void setHasFile(DSLContext ctx, Long policyId, boolean value) {
+		ctx.update(POLICY).set(POLICY.HAS_FILE, value).where(POLICY.ID.eq(policyId)).execute();
 	}
 }

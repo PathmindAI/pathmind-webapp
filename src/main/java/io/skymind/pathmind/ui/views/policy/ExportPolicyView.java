@@ -1,8 +1,9 @@
 package io.skymind.pathmind.ui.views.policy;
 
 import java.io.ByteArrayInputStream;
-import java.time.LocalDate;
 
+import io.skymind.pathmind.data.utils.PolicyUtils;
+import io.skymind.pathmind.services.PolicyFileService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,12 +33,16 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 
+import static io.skymind.pathmind.utils.StringUtils.removeInvalidChars;
+
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPORT_POLICY_URL, layout = MainLayout.class)
 public class ExportPolicyView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 	@Autowired
 	private PolicyDAO policyDAO;
+	@Autowired
+	private PolicyFileService policyFileService;
 	@Autowired
 	private UserDAO userDAO;
 	@Autowired
@@ -68,6 +73,8 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	@Override
 	protected Component getMainContent()
 	{
+		final String policyFileName = PolicyUtils.generatePolicyFileName(policy);
+
 		exportButton = new Button("Export");
 		exportButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportButton.setWidth("200px");
@@ -78,7 +85,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
 		exportLink = new Anchor();
 		exportLink.add(exportButton);
-		exportLink.getElement().setAttribute("href", getResourceStream(generatePolicyFileName()));
+		exportLink.getElement().setAttribute("href", getResourceStream(policyFileName));
 		exportLink.getElement().setAttribute("download", true);
 
 		cancelButton = new Button("Cancel", click -> handleCancelButtonClicked());
@@ -86,10 +93,10 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
 		nameTextField = new TextField();
 		nameTextField.setLabel("Name");
-		nameTextField.setValue(generatePolicyFileName());
+		nameTextField.setValue(policyFileName);
 		nameTextField.setWidthFull();
 		nameTextField.addValueChangeListener(change ->
-			exportLink.setHref(getResourceStream(StringUtils.isEmpty(nameTextField.getValue()) ? generatePolicyFileName() : nameTextField.getValue())));
+			exportLink.setHref(getResourceStream(StringUtils.isEmpty(nameTextField.getValue()) ? policyFileName : nameTextField.getValue())));
 
 		return WrapperUtils.wrapFormCenterVertical(
 				nameTextField,
@@ -98,22 +105,13 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 				cancelButton);
 	}
 	
-	public String generatePolicyFileName() {
-		return String.format("Pm-%s-Model%s-Experiment%s-%4$ty%4$tm%4$td-Policy.zip", removeSpaces(policy.getProject().getName()), policy.getModel().getName(), policy.getExperiment().getName(), LocalDate.now());
-	}
-	
-	
-	private String removeSpaces(String val) {
-		return val.replaceAll(" ", "");
-	}
-
 	private StreamResource getResourceStream(String filename) {
-		return new StreamResource(filename,
-				() -> new ByteArrayInputStream(policyDAO.getPolicyFile(policyId)));
+		return new StreamResource(removeInvalidChars(filename),
+				() -> new ByteArrayInputStream(policyFileService.getPolicyFile(policyId)));
 	}
 
 	private void handleCancelButtonClicked() {
-		UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(policy));
+		UI.getCurrent().navigate(ExperimentView.class, policy.getExperiment().getId());
 	}
 
 	@Override
@@ -127,7 +125,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	}
 
 	@Override
-	protected void initLoadData() throws InvalidDataException {
+	protected void initLoadData() {
 		policy = policyDAO.getPolicy(policyId);
 		if(policy == null)
 			throw new InvalidDataException("Attempted to access Policy: " + policyId);

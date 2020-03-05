@@ -64,6 +64,17 @@ resource "null_resource" "configmap_ingress_nginx" {
   depends_on = ["null_resource.service_ingress_nginx"]
 }
 
+resource "null_resource" "apipassword" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic apipassword --from-literal APIPASSWORD=${var.apipassword}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret apipassword"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}
+
 resource "null_resource" "awsaccesskey" {
   provisioner "local-exec" {
     command = "kubectl create secret generic awsaccesskey --from-literal AWS_ACCESS_KEY_ID=${var.awsaccesskey}"
@@ -86,6 +97,28 @@ resource "null_resource" "awssecretaccesskey" {
   depends_on = ["null_resource.configmap_ingress_nginx"]
 }
 
+resource "null_resource" "jenkinspassword" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic jenkinspassword --from-literal JENKINSPASSWORD=${var.jenkinspassword}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret jenkinspassword"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}
+
+resource "null_resource" "pgadminpassword" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic pgadminpassword --from-literal PGADMINPASSWORD=${var.pgadminpassword}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret pgadminpassword"
+    on_failure = "continue"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}
 
 resource "null_resource" "db_url_secret" {
   provisioner "local-exec" {
@@ -237,11 +270,11 @@ resource "null_resource" "efk" {
 #Install Canary
 resource "null_resource" "canary" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../../k8s/canary/"
+    command = "helm install canary ../../helm/canary -f ../../helm/canary/values_${var.environment}.yaml"
   }
   provisioner "local-exec" {
     when = "destroy"
-    command = "kubectl delete -f ../../k8s/canary/"
+    command = "helm delete canary"
   }
   depends_on = ["null_resource.jenkins","null_resource.prometheus","null_resource.pathmind","null_resource.efk","null_resource.pathmind-slot"]
 }
@@ -278,3 +311,13 @@ resource "null_resource" "cert_manager" {
   depends_on = ["null_resource.canary"]
 }
 
+resource "null_resource" "canary_configmap" {
+  provisioner "local-exec" {
+    command = "kubectl create configmap canary --from-literal=canary_weight=99 --from-literal=deploy_to=-slot"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete configmap canary"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}

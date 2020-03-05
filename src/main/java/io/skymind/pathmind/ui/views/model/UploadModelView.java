@@ -14,12 +14,12 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.utils.ModelUtils;
-import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.security.SecurityUtils;
+import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
 import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
@@ -33,7 +33,6 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.ui.views.guide.GuideOverview;
 import io.skymind.pathmind.ui.views.model.components.ModelDetailsWizardPanel;
-import io.skymind.pathmind.ui.views.model.components.UploadModelStatusWizardPanel;
 import io.skymind.pathmind.ui.views.model.components.UploadModelWizardPanel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private ProjectDAO projectDAO;
 
 	@Autowired
-	private ModelDAO modelDAO;
+	private ModelService modelService;
 
 	@Autowired
 	private ProjectFileCheckService projectFileCheckService;
@@ -64,7 +63,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private UI ui;
 
-	private UploadModelStatusWizardPanel statusPanel;
 	private UploadModelWizardPanel uploadModelWizardPanel;
 	private ModelDetailsWizardPanel modelDetailsWizardPanel;
 
@@ -87,7 +85,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 		modelBinder = new Binder<>(Model.class);
 
-		statusPanel = new UploadModelStatusWizardPanel();
 		uploadModelWizardPanel = new UploadModelWizardPanel(model);
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
 
@@ -100,11 +97,14 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		uploadModelWizardPanel.addFileUploadCompletedListener(() -> handleUploadWizardClicked());
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked());
 
-		return WrapperUtils.wrapFormCenterVertical(
-				statusPanel,
+		VerticalLayout wrapper = WrapperUtils.wrapFormCenterVertical(
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel,
 				createBacktoGuideButton());
+
+		wrapper.getStyle().set("width", "auto");
+		wrapper.getStyle().set("padding-top", "var(--lumo-space-xxl)");
+		return wrapper;
 	}
 
     @Override
@@ -116,6 +116,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		uploadModelWizardPanel.setProjectName(project.getName());
+		modelDetailsWizardPanel.setProjectName(project.getName());
 	}
 
 	private void handleMoreDetailsClicked()
@@ -125,7 +126,12 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		}
 
 		final String modelNotes = modelDetailsWizardPanel.notesFieldTextArea.getValue();
-		final long experimentId = modelDAO.addModelToProject(model, project.getId(), modelNotes);
+		final long experimentId = modelService.addModelToProject(model, project.getId(), modelNotes);
+		
+		if (!modelNotes.isEmpty()) {
+			segmentIntegrator.addedNotesUploadModelView();
+		}
+
 		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 	}
 
@@ -186,7 +192,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			}
 
 			modelBinder.readBean(model);
-			statusPanel.setModelDetails();
 			segmentIntegrator.modelImported(true);
 		});
 	}

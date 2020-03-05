@@ -20,7 +20,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -35,14 +34,12 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.PathmindTextArea;
-import io.skymind.pathmind.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.FormUtils;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
-import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
@@ -58,8 +55,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private long experimentId = -1;
     private Experiment experiment;
 
-    private ScreenTitlePanel screenTitlePanel;
-
     private Div errorsWrapper;
     private PathmindTextArea tipsTextArea;
     private RewardFunctionEditor rewardFunctionEditor;
@@ -74,6 +69,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private UserDAO userDAO;
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
+	@Autowired
+    private RewardValidationService rewardValidationService;
 
     private Binder<Experiment> binder;
 
@@ -84,15 +81,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     protected Component getTitlePanel() {
-        screenTitlePanel = new ScreenTitlePanel("PROJECT");
-        return screenTitlePanel;
+        return null;
     }
 
     @Override
     protected Component getMainContent() {
         binder = new Binder<>(Experiment.class);
         VerticalLayout mainContent = WrapperUtils.wrapWidthFullVertical(
-                createBreadcrumbs(),
+            WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
                 WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         getLeftPanel(),
                         getRightPanel(),
@@ -105,18 +101,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private void setupBinder() {
     	binder.forField(rewardFunctionEditor)
 	        .asRequired()
-	        .withValidator((value, _context) -> {
-	            final List<String> errors = RewardValidationService.validateRewardFunction(value);
-	            if (errors.size() == 0) {
-	                return ValidationResult.ok();
-	            } else {
-	                return ValidationResult.error("Reward Function has compile errors!");
-	            }
-	        })
 	        .bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
     	binder.forField(notesFieldTextArea)
         	.bind(Experiment::getUserNotes, Experiment::setUserNotes);
-    	binder.addStatusChangeListener(evt -> startRunButton.setEnabled(!evt.hasValidationErrors()));
 	}
 
 	private Component getLeftPanel() {
@@ -130,20 +117,20 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         rewardFunctionEditor = new RewardFunctionEditor();
         rewardFunctionEditor.addValueChangeListener(changeEvent -> {
-            final List<String> errors = RewardValidationService.validateRewardFunction(changeEvent.getValue());
+            final List<String> errors = rewardValidationService.validateRewardFunction(changeEvent.getValue());
             final String errorText = String.join("\n", errors);
             final String wrapperClassName = (errorText.length() == 0) ? "noError" : "hasError";
-            PushUtils.push(UI.getCurrent(),
-                    () ->  {
-                        errorMessageWrapper.removeAll();
-                        if ((errorText.length() == 0)) {
-                            errorMessageWrapper.add(new Icon(VaadinIcon.CHECK), new Span("No Errors"));
-                        } else {
-                            errorMessageWrapper.setText(errorText);
-                        }
-                        errorMessageWrapper.removeClassNames("hasError", "noError");
-                        errorMessageWrapper.addClassName(wrapperClassName);
-                    });
+            
+	        errorMessageWrapper.removeAll();
+	        if ((errorText.length() == 0)) {
+	            errorMessageWrapper.add(new Icon(VaadinIcon.CHECK), new Span("No Errors"));
+	            startRunButton.setEnabled(true);
+	        } else {
+	            errorMessageWrapper.setText(errorText);
+	            startRunButton.setEnabled(false);
+	        }
+	        errorMessageWrapper.removeClassNames("hasError", "noError");
+	        errorMessageWrapper.addClassName(wrapperClassName);
         });
 
         return WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
@@ -205,16 +192,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         	return;
         }
 
+        if (!notesFieldTextArea.isEmpty()) {
+            segmentIntegrator.addedNotesNewExperimentView();
+        }
+
         experimentDAO.updateExperiment(experiment);
         segmentIntegrator.rewardFuntionCreated();
         
         trainingService.startDiscoveryRun(experiment);
         segmentIntegrator.discoveryRunStarted();
 
-        ConfirmDialog confirmDialog = new RunConfirmDialog();
-        confirmDialog.open();
-
-        UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+        UI.getCurrent().navigate(ExperimentView.class, experimentId);
     }
 
     private Button getActionButton() {
@@ -225,10 +213,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleSaveDraftClicked() {
-        if (!FormUtils.isValidForm(binder, experiment)) {
-        	return;
-        }
-
         experimentDAO.updateExperiment(experiment);
         segmentIntegrator.draftSaved();
         NotificationUtils.showSuccess("Draft successfully saved");
@@ -249,7 +233,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     @Override
-    protected void initLoadData() throws InvalidDataException {
+    protected void initLoadData() {
         experiment = experimentDAO.getExperiment(experimentId)
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		if(MockDefaultValues.isDebugAccelerate() && StringUtils.isEmpty(experiment.getRewardFunction()))
@@ -257,9 +241,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     @Override
-    protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
+    protected void initScreen(BeforeEnterEvent event) {
         binder.setBean(experiment);
-
-        screenTitlePanel.setSubtitle(experiment.getProject().getName());
     }
 }

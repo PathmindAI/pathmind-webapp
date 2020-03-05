@@ -6,13 +6,15 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static io.skymind.pathmind.utils.StringUtils.toCamelCase;
+import static io.skymind.pathmind.utils.StringUtils.removeInvalidChars;
 
 @Slf4j
 public class PolicyUtils
@@ -20,9 +22,6 @@ public class PolicyUtils
     public static final String LEARNING_RATE = "lr";
     public static final String GAMMA = "gamma";
     public static final String BATCH_SIZE = "sgd_minibatch_size";
-
-    private static final String lrPatternStr = "lr=.*,";
-    private static final Pattern lrPattern = Pattern.compile(lrPatternStr);
 
     private PolicyUtils() {
     }
@@ -95,48 +94,6 @@ public class PolicyUtils
                 GAMMA + "=" + policy.getGamma();
     }
 
-    // original name ex: PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_2019-10-11_21-16-2858waz_89
-    // get rid of time and extra info
-    // add run type and "TEMP"
-    public static String generatePolicyTempName(String policyExtId, int runType)
-    {
-        String policyTempName = policyExtId.substring(0, policyExtId.length() - 27) + runType + RunUtils.TEMPORARY_POSTFIX;
-
-        Matcher matcher = lrPattern.matcher(policyTempName);
-
-        if (matcher.find()) {
-            String lr = matcher.group();
-
-            lr = lr.replace("lr=", "").replace(",", "");
-            lr = "lr=" + Double.valueOf(lr).toString() + ",";
-
-            policyTempName = policyTempName.replaceFirst(lrPatternStr, lr);
-        }
-
-        //PPO_PathmindEnvironment_0_gamma=0.99,lr=1e-05,sgd_minibatch_size=128_1TEMP
-        return policyTempName;
-    }
-
-    // generate policy temporary name since we don't know the exact policy ext id
-    // when we start a new job
-    public static String generatePolicyTempName(Policy policy, int runType) {
-        String hyperparameters = String.join(
-                ",",
-                "gamma=" + policy.getGamma(),
-                "lr=" + policy.getLearningRate(),
-                "sgd_minibatch_size=" + policy.getBatchSize());
-
-        String name = String.join(
-                "_",
-                policy.getAlgorithm(),
-                "PathmindEnvironment",
-                "0",
-                hyperparameters,
-                runType + RunUtils.TEMPORARY_POSTFIX);
-
-        return name;
-    }
-
     public static void loadPolicyDataModel(Policy policy, long policyId, Run run) {
         policy.setId(policyId);
         policy.setRun(run);
@@ -147,5 +104,12 @@ public class PolicyUtils
 
     public static List<Long> convertToPolicyIds(List<Policy> policies) {
         return policies.stream().map(policy -> policy.getId()).collect(Collectors.toList());
+    }
+
+    public static String generatePolicyFileName(Policy policy) {
+        if(!ObjectUtils.allNotNull(policy, policy.getProject(), policy.getModel(), policy.getExperiment())) {
+            return "-";
+        }
+        return removeInvalidChars(String.format("%s-M%sE%s-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getExperiment().getName()));
     }
 }

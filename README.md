@@ -13,7 +13,7 @@ The other parts of Pathmind (NativeRL, Pathmind Helper) can be currently still b
 - **Dependency Injection / Application Container:** Spring Boot 2
 - **Database:** PostgreSQL 10
 - **Build:** Maven
-- **Deployment:** Azure
+- **Deployment:** AWS
 - **Database Migrations:** Liquibase
 
 [Detailed documentation can be found on the wiki](https://github.com/SkymindIO/pathmind-webapp/wiki)

@@ -75,10 +75,10 @@ vaadin-button[part="vaadin-login-submit"] {
 
 .policy {
   font-size: var(--lumo-font-size-xs);
-  color: var(--pm-tertiary-text-color);
+  color: var(--lumo-secondary-text-color);
 }
 
 .policy a {
   font-weight: 700;
-  color: var(--pm-tertiary-text-color);
+  color: var(--lumo-secondary-text-color);
 }

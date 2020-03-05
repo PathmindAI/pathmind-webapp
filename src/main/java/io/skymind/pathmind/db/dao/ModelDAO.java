@@ -27,10 +27,6 @@ public class ModelDAO
     	ModelRepository.archive(ctx, modelId, isArchive);
 	}
 
-	public byte[] getModelFile(long id) {
-    	return ModelRepository.getModelFile(ctx, id);
-	}
-
 	public Optional<Model> getModel(long modelId) {
     	return Optional.ofNullable(ModelRepository.getModel(ctx, modelId));
 	}
@@ -44,7 +40,7 @@ public class ModelDAO
 			LocalDateTime dateCreated = LocalDateTime.now();
 			String modelName = Integer.toString(ModelRepository.getModelCount(transactionCtx, projectId) + 1);
 			long modelId = ModelRepository.insertModel(transactionCtx, model, modelName, dateCreated, projectId);
-			ModelRepository.insertModelFile(transactionCtx, modelId, model.getFile());
+			model.setId(modelId);
 			ModelRepository.updateUserNotes(transactionCtx, modelId, userNotes);
 			return ExperimentRepository.insertExperiment(transactionCtx, modelId, dateCreated);
 		});

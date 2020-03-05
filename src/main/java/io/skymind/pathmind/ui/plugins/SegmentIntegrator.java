@@ -36,7 +36,6 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	private static final String EVENT_IMPORT_MODEL = "Import Model";
 	private static final String EVENT_CREATE_PROJECT = "Create Project";
 	private static final String EVENT_CREATE_REWARD_FUNTION = "Create Reward Function";
-	private static final String EVENT_START_TEST_RUN = "Start Test Run";
 	private static final String EVENT_START_DISCOVERY_RUN = "Start Discovery Run";
 	private static final String EVENT_START_FULL_RUN = "Start Full Run";
 	private static final String EVENT_EXPORT_POLICY = "Export Policy";
@@ -54,6 +53,11 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	private static final String EVENT_COMPLETED_GUIDE_REWARD = "Completed Guide Define Reward Variables";
 	private static final String EVENT_COMPLETED_GUIDE_RECAP = "Completed Guide Conclusion / Recap";
 	private static final String EVENT_SKIP_TO_UPLOAD_MODEL = "Skipped Guide to Upload Model";
+	private static final String EVENT_UPDATED_NOTES_MODELS_VIEW = "Updated Notes on Models View";
+	private static final String EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW = "Updated Notes on Experiments View";
+	private static final String EVENT_UPDATED_NOTES_EXPERIMENT_VIEW = "Updated Notes on Experiment View";
+	private static final String EVENT_ADDED_NOTES_UPLOAD_MODEL_VIEW = "Added Notes on Upload Model View";
+	private static final String EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW = "Added Notes on New Experiment View";
 
 	public SegmentIntegrator(@Value("${skymind.segment.website.source.key}") String key,
 			@Value("${skymind.segment.enabled}") Boolean enabled) {
@@ -81,10 +85,6 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 
 	public void rewardFuntionCreated() {
 		track(EVENT_CREATE_REWARD_FUNTION);
-	}
-
-	public void testRunStarted() {
-		track(EVENT_START_TEST_RUN);
 	}
 
 	public void discoveryRunStarted() {
@@ -153,6 +153,26 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 
 	public void skippedGuideToUploadModel() {
 		track(EVENT_SKIP_TO_UPLOAD_MODEL);
+	}
+
+	public void updatedNotesModelsView() {
+		track(EVENT_UPDATED_NOTES_MODELS_VIEW);
+	}
+
+	public void updatedNotesExperimentsView() {
+		track(EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW);
+	}
+
+	public void updatedNotesExperimentView() {
+		track(EVENT_UPDATED_NOTES_EXPERIMENT_VIEW);
+	}
+
+	public void addedNotesUploadModelView() {
+		track(EVENT_ADDED_NOTES_UPLOAD_MODEL_VIEW);
+	}
+
+	public void addedNotesNewExperimentView() {
+		track(EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW);
 	}
 
 	private void track(String event) {

@@ -1,7 +1,6 @@
 package io.skymind.pathmind.db.dao;
 
 import static io.skymind.pathmind.data.db.Tables.POLICY;
-import static io.skymind.pathmind.data.db.Tables.POLICY_FILE;
 import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.data.db.tables.Model.MODEL;
 import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
@@ -73,11 +72,11 @@ class RunRepository
         return run.into(new Run());
     }
 
-    protected static List<Run> getRunsForExperiment(DSLContext ctx, long experimentId) {
+    protected static Map<Long, List<Run>> getRunsForExperiments(DSLContext ctx, List<Long> experimentIds) {
         return ctx.select(Tables.RUN.asterisk())
-                .from(Tables.RUN)
-                .where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
-                .fetchInto(Run.class);
+                .from(RUN)
+                .where(Tables.RUN.EXPERIMENT_ID.in(experimentIds))
+                .fetchGroups(RUN.EXPERIMENT_ID, Run.class);
     }
 
     protected static List<Long> getAlreadyNotifiedOrStillExecutingRunsWithType(DSLContext ctx, long experimentId, int runType) {
@@ -97,12 +96,10 @@ class RunRepository
                 .from(Tables.RUN)
                 .leftOuterJoin(POLICY)
                     .on(POLICY.RUN_ID.eq(Tables.RUN.ID))
-                .leftOuterJoin(POLICY_FILE)
-                    .on(POLICY.ID.eq(POLICY_FILE.POLICY_ID))
                 .where(Tables.RUN.STATUS.eq(RunStatus.Starting.getValue())
                         .or(Tables.RUN.STATUS.eq(RunStatus.Running.getValue()))
                         .or(Tables.RUN.STATUS.eq(RunStatus.Completed.getValue()))
-                        .and(POLICY_FILE.FILE.isNull()))
+                        .and(POLICY.HAS_FILE.isNull().or(POLICY.HAS_FILE.isFalse())))
                 .fetch(Tables.RUN.ID);
     }
 

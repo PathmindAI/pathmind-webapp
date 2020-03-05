@@ -9,6 +9,7 @@ public class CssMindPathStyles
 	public static final String BOLD_LABEL = "bold-label";
 	public static final String READONLY_LABEL = "readonly-label";
 	public static final String NO_TOP_MARGIN_LABEL = "no-top-margin-label";
+	public static final String TRUNCATED_LABEL = "truncated-label";
 
 	public static final String WELCOME_TEXT = "welcome-text";
 
@@ -16,6 +17,7 @@ public class CssMindPathStyles
 	public static final String LOGO_LABEL = "logo-label";
 
 	public static final String SECTION_TITLE_LABEL = "section-title-label";
+	public static final String SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT = "section-title-label-regular-font-weight";
 	public static final String SECTION_SUBTITLE_LABEL = "section-subtitle-label";
 	public static final String SECTION_STATUS_PANEL = "section-status-panel";
 

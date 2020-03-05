@@ -7,6 +7,7 @@ public enum NativeRL implements VersionEnum{
     @Deprecated
     VERSION_0_7_0,
     VERSION_0_7_6,
+    VERSION_0_7_6_PBT,
     VERSION_0_8_1;
 
     @Override
