@@ -330,12 +330,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private void updateButtonEnablement() {
-		// to avoid multiple download policy file from rescale server,
-		// we put the "saving" for temporary
-		// policy dao will check if there's real policy file exist or not
-		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed) {
-			exportPolicyButton.setEnabled(policy.hasFile());
-		}
+		exportPolicyButton.setEnabled(ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed && policy.hasFile());
 		restartTraining.setVisible(false);
 	}
 
@@ -351,26 +346,23 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		public void handleBusEvent(PolicyUpdateBusEvent event) {
 			synchronized (experimentLock) {
 				// Need a check in case the experiment was on hold waiting for the change of experiment to load
-				if (event.getPolicy().getExperiment().getId() != experimentId)
+				if (event.getExperimentId() != experimentId)
 					return;
 				// Update or insert the policy in experiment.getPolicies
-				addOrUpdatePolicy(event.getPolicy());
+				event.getPolicies().forEach(policy -> addOrUpdatePolicy(policy));
 				
 				// Calculate the best policy again
-				Policy bestPolicy = selectBestPolicy(experiment.getPolicies());
-
-				// Refresh other components, existing best policy is updated or we have a new best policy
-				if (event.getPolicy().equals(policy) || (bestPolicy != null && !bestPolicy.equals(policy))) {
-					policy = bestPolicy;
-					PushUtils.push(getUI(), () -> processSelectedPolicy(bestPolicy));
-				}
-				PushUtils.push(getUI(), () -> updateRightPanelForExperiment());
+				policy = selectBestPolicy(experiment.getPolicies());
+				PushUtils.push(getUI(), () -> {
+					processSelectedPolicy(policy);
+					updateRightPanelForExperiment();
+				});
 			}
 		}
 
 		@Override
 		public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-			return experiment != null && experiment.getId() == event.getPolicy().getExperiment().getId();
+			return experiment != null && experiment.getId() == event.getExperimentId();
 		}
 
         @Override
