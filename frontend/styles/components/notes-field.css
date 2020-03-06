@@ -39,7 +39,7 @@
 }
 
 .header vaadin-button {
-  color: var(--pm-tertiary-text-color);
+  color: var(--lumo-secondary-text-color);
   margin-right: var(--lumo-space-s);
   margin-bottom: 4px;
 }

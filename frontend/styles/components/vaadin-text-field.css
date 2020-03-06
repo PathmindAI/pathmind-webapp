@@ -3,7 +3,7 @@
 }
 
 :host [part="label"] {
-  color: var(--pm-tertiary-text-color);
+  color: var(--lumo-secondary-text-color);
   font-size: var(--lumo-font-size-xs);
 }
 

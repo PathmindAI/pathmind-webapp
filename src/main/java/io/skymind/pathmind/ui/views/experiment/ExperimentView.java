@@ -71,6 +71,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private PolicyHighlightPanel policyHighlightPanel;
 	private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
 	private RewardFunctionEditor rewardFunctionEditor;
+	private TrainingStartingPlaceholder trainingStartingPlaceholder;
 	private PolicyChartPanel policyChartPanel;
 	private ExperimentsNavbar experimentsNavbar;
 	private NotesField notesField;
@@ -144,9 +145,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private Component getLeftPanel() {
 		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiments, experiment, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
 		policyChartPanel = new PolicyChartPanel();
+		trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 
 		return WrapperUtils.wrapWidthFullHorizontal(
 			experimentsNavbar,
+			trainingStartingPlaceholder, 
 			policyChartPanel
 		);
 	}
@@ -167,7 +170,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				initLoadData();
 				trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 				clearErrorState();
-				new RunConfirmDialog().open();
+				setPolicyChartVisibility();
 			}
 		});
 		restartTraining.setVisible(false);
@@ -255,11 +258,18 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private void updateScreenComponents() {
+		setPolicyChartVisibility();
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		policyChartPanel.setExperiment(experiment);
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 		processSelectedPolicy(policy);
 		updateRightPanelForExperiment();
+	}
+
+	private void setPolicyChartVisibility() {
+		RunStatus trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
+		trainingStartingPlaceholder.setVisible(trainingStatus == RunStatus.Starting);
+		policyChartPanel.setVisible(trainingStatus != RunStatus.Starting);
 	}
 
 	private Policy selectBestPolicy(List<Policy> policies) {
@@ -349,6 +359,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 					return;
 				// Update or insert the policy in experiment.getPolicies
 				addOrUpdatePolicy(event.getPolicy());
+				
 				// Calculate the best policy again
 				Policy bestPolicy = selectBestPolicy(experiment.getPolicies());
 
@@ -377,7 +388,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		public void handleBusEvent(RunUpdateBusEvent event) {
 			addOrUpdateRun(event.getRun());
 			updatedRunForPolicies(event.getRun());
-			PushUtils.push(getUI(), () -> updateRightPanelForExperiment());
+			PushUtils.push(getUI(), () -> {
+				setPolicyChartVisibility();
+				updateRightPanelForExperiment();
+			});
 		}
 
 		@Override
