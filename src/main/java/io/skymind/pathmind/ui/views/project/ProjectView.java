@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.model;
+package io.skymind.pathmind.ui.views.project;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -32,7 +32,7 @@ import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.ModelView;
+import io.skymind.pathmind.ui.views.model.ModelView;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 

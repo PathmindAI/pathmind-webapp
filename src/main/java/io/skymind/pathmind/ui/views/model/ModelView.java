@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.experiment;
+package io.skymind.pathmind.ui.views.model;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -27,6 +27,8 @@ import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.ui.views.project.components.panels.ExperimentGrid;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;

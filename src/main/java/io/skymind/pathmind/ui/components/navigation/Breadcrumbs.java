@@ -14,9 +14,9 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.ui.views.experiment.ModelView;
+import io.skymind.pathmind.ui.views.model.ModelView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
-import io.skymind.pathmind.ui.views.model.ProjectView;
+import io.skymind.pathmind.ui.views.project.ProjectView;
 import io.skymind.pathmind.ui.views.project.ProjectsView;
 
 @CssImport(value = "./styles/components/breadcrumbs.css")
