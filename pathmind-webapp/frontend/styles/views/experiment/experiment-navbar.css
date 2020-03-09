@@ -2,11 +2,11 @@
   width: auto !important;
   background: white;
   border-radius: var(--lumo-border-radius);
-  padding: 0;
+  padding: var(--lumo-space-s);
 }
 
 .experiments-navbar vaadin-button {
-  margin: var(--lumo-space-m);
+  margin: 0 auto var(--lumo-space-s);
 }
 
 .experiments-navbar-items {
@@ -19,7 +19,7 @@
   flex-shrink: 0;
   width: 100%;
   height: 65px;
-  padding: 0 var(--lumo-space-l);
+  padding: 0 var(--lumo-space-s);
   border-top: 0.5px solid var(--pm-gray-color-light);
   cursor: pointer;
 }
@@ -71,16 +71,12 @@ iron-icon[icon="vaadin:exclamation-circle-o"] {
 }
 
 .experiment-name {
-  margin-left: var(--lumo-space-l);
+  margin-left: calc(var(--lumo-space-s) * 2);
 }
 
 .experiment-name p {
   line-height: 1em;
   margin: 0;
-}
-
-.experiment-name p:first-child {
-  font-size: 18px;
 }
 
 .current .experiment-name p:first-child {
