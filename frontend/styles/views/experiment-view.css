@@ -1,5 +1,6 @@
 .experiment-view vaadin-split-layout > vaadin-vertical-layout,
-.policy-chart-panel, .training-starting-placeholder {
+.policy-chart-panel,
+.training-starting-placeholder {
   width: 100%;
   background: white;
   border-radius: var(--lumo-border-radius);
@@ -9,9 +10,9 @@
   overflow-y: auto;
 }
 
-.training-starting-placeholder{
-	justify-content: center;
-	text-align: left;
+.training-starting-placeholder {
+  justify-content: center;
+  text-align: left;
 }
 
 .experiment-view vaadin-grid {
