@@ -5,3 +5,10 @@
   font-weight: bold;
   color: var(--pm-primary-color) !important;
 }
+:host::before,
+:host::after {
+  width: calc(100% - 0.75rem * 2);
+}
+:host(:first-child) {
+  margin-left: calc(-1 * var(--lumo-space-s));
+}
