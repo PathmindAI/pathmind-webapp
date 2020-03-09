@@ -31,7 +31,6 @@ import io.skymind.pathmind.ui.utils.VaadinUtils;
 @CssImport(value = "./styles/components/override/vaadin-grid.css")
 @CssImport(value = "./styles/layouts/vaadin-app-layout.css", themeFor = "vaadin-app-layout")
 @CssImport(value = "./styles/views/experiment-view.css")
-@CssImport(value = "./styles/views/model-view.css")
 @CssImport(value = "./styles/views/dashboard-view.css")
 @CssImport(value = "./styles/views/pathmind-dialog-view.css", id = "pathmind-dialog-view")
 @CssImport(value = "./styles/views/guide-view.css", id = "guide-view")
