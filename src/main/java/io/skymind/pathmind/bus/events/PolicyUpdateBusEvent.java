@@ -13,6 +13,9 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent
 
 	public PolicyUpdateBusEvent(List<Policy> policies)
 	{
+		if (policies == null || policies.isEmpty()) {
+			throw new RuntimeException("There is no policy");
+		}
 		policies.forEach(policy -> {
 			if(policy.getRun() == null)
 				throw new RuntimeException("Run is null");
@@ -22,11 +25,9 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent
 				throw new RuntimeException("Model is null");
 			if(policy.getProject() == null)
 				throw new RuntimeException("Project is null");
-			
-			experimentId = policy.getExperiment().getId();
 		});
 		
-
+		experimentId = policies.get(0).getExperiment().getId();
 		this.policies = policies;
 	}
 
