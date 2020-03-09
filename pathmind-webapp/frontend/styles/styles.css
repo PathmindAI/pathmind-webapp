@@ -113,28 +113,37 @@ hr {
   width: 100%;
 }
 
-.section-label-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: white;
-}
-
-.section-label-subtitle {
-  font-size: 1.2rem;
-  color: white;
-}
-
 .project-title-label {
   font-size: 18px;
   font-weight: bold;
   color: #999;
 }
 
-.action-menu {
+.page-title {
+  color: var(--lumo-body-text-color);
+  font-weight: bold;
+  margin-top: var(--lumo-space-m);
+}
+
+.dashboard-view .page-title {
+  /* To make the white panel on Dashboard page to be 
+     at the same position as the Projects, Project, and Model pages */
+  margin-bottom: 2rem;
+}
+
+.guide .page-title {
   position: sticky;
   top: 0;
-  background-color: var(--pm-primary-color);
+  color: white;
+  font-weight: normal;
+  background-color: var(--lumo-primary-color);
+  margin-top: 0;
+  padding: var(--lumo-space-xs);
   z-index: 1;
+}
+
+.guide .page-title .section-label-title {
+  font-weight: bold;
 }
 
 .light-text-label {

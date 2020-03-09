@@ -110,7 +110,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("DASHBOARD");
+		return new ScreenTitlePanel("Dashboard");
 	}
 
 	@Override

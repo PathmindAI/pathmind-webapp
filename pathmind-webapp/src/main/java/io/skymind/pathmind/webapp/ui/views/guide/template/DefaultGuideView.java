@@ -40,6 +40,7 @@ public abstract class DefaultGuideView extends PathMindDefaultView
 
 	public DefaultGuideView() {
 		super();
+		addClassName("guide");
 	}
 
 	@Override

@@ -31,3 +31,9 @@
   color: var(--lumo-secondary-text-color);
   cursor: default;
 }
+
+.experiment-view .breadcrumb {
+  /* To make the white panels on Experiment page to be 
+     at the same position as the Projects, Project, and Model pages */
+  margin-bottom: 2.3rem;
+}

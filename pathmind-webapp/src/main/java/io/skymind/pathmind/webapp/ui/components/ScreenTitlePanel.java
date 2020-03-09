@@ -24,7 +24,7 @@ public class ScreenTitlePanel extends HorizontalLayout
 	{
 		setWidthFull();
 		setJustifyContentMode(JustifyContentMode.CENTER);
-		addClassName("action-menu");
+		addClassName("page-title");
 
 		titleLabel = LabelFactory.createLabel(title, "section-label-title");
 		add(titleLabel);
