@@ -93,19 +93,6 @@ resource "null_resource" "segment_server_key_secret" {
   depends_on = ["null_resource.namespace"]
 }
 
-#install pathmind-ma
-resource "null_resource" "pathmind_ma" {
-  provisioner "local-exec" {
-    command = "helm install pathmind-ma ../../helm/pathmind-ma -f ../../helm/pathmind-ma/values_${var.environment}.yaml -n ${var.environment}"
-  }
-  provisioner "local-exec" {
-    when = "destroy"
-    command = "helm delete pathmind-ma -n ${var.environment}"
-    on_failure = "continue"
-  }
-  depends_on = ["null_resource.pathmind"]
-}
-
 #install pathmind
 resource "null_resource" "pathmind" {
   provisioner "local-exec" {
