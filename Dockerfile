@@ -6,6 +6,7 @@ COPY . .
 
 RUN apt-get update -y && \
 	apt-get install wget -y && \
+	apt-get install rsync -y && \
 	wget https://deb.nodesource.com/setup_13.x && \
 	bash ./setup_13.x && \
 	apt-get update -y && \ 
