@@ -298,16 +298,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		updateButtonEnablement();
 	}
 
-	private void addOrUpdatePolicy(Policy updatedPolicy) {
-		ArrayList<Policy> policiesToAdd = new ArrayList<>();
-		experiment.getPolicies().stream()
-        .filter(policy -> policy.getId() == updatedPolicy.getId())
-        .findAny()
-        .ifPresentOrElse(
-                policy -> experiment.getPolicies().set(experiment.getPolicies().indexOf(policy), updatedPolicy),
-                () -> policiesToAdd.add(updatedPolicy));
-		// This is needed to avoid ConcurrentModificationException when adding values in a stream and then filtering on them.
-		experiment.getPolicies().addAll(policiesToAdd);
+	private void addOrUpdatePolicies(List<Policy> updatedPolicies) {
+		updatedPolicies.forEach(updatedPolicy -> {
+			if (experiment.getPolicies().contains(updatedPolicy)) {
+				experiment.getPolicies().set(experiment.getPolicies().indexOf(updatedPolicy), updatedPolicy);
+			} else {
+				experiment.getPolicies().add(updatedPolicy);
+			}
+		});
 	}
 
 	private void addOrUpdateRun(Run updatedRun) {
@@ -352,7 +350,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				if (event.getExperimentId() != experimentId)
 					return;
 				// Update or insert the policy in experiment.getPolicies
-				event.getPolicies().forEach(policy -> addOrUpdatePolicy(policy));
+				addOrUpdatePolicies(event.getPolicies());
 				
 				// Calculate the best policy again
 				policy = selectBestPolicy(experiment.getPolicies());
