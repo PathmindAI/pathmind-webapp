@@ -221,7 +221,7 @@ hr {
 .models-view .view-section,
 .experiments-view .view-section {
   flex: 1;
-  margin-top: var(--lumo-space-xs);
+  margin-top: 0;
 }
 
 .guide-view-wrapper {

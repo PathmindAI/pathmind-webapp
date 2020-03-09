@@ -16,8 +16,9 @@ public class TrainingStartingPlaceholder extends VerticalLayout {
 		progressBar.setIndeterminate(true);
 		VerticalLayout placeholderContent = WrapperUtils.wrapFormCenterVertical(
 				LabelFactory.createLabel("Starting the training…", CssMindPathStyles.SECTION_TITLE_LABEL),
-				new Paragraph("You’ll see the results as the training starts. This could take a couple minutes."),
-	            new Paragraph("We'll send you an email when training completes!"),
+				new Paragraph("You’ll see the first results here within a few minutes."),
+				new Paragraph("The Pathmind training process starts a cluster to explore multiple combinations of hyperparameters automatically. We train the policy for your simulation using the best configuration."),
+				new Paragraph("Training will take a few hours. We’ll send you an email when it’s complete!"),
 	            progressBar);
 		
 		add(placeholderContent);
