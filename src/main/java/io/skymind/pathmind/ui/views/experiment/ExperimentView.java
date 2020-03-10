@@ -331,7 +331,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private void updateButtonEnablement() {
-		exportPolicyButton.setEnabled(ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed && policy.hasFile());
+		boolean isCompleted = ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed;
+		exportPolicyButton.setEnabled(isCompleted && policy != null && policy.hasFile());
 		restartTraining.setVisible(false);
 	}
 
