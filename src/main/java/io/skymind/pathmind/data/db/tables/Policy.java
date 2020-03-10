@@ -20,7 +20,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = 934207681;
+    private static final long serialVersionUID = -1094028393;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -86,11 +86,6 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.stopped_at</code>.
      */
     public final TableField<PolicyRecord, LocalDateTime> STOPPED_AT = createField(DSL.name("stopped_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
-
-    /**
-     * The column <code>public.policy.notes</code>.
-     */
-    public final TableField<PolicyRecord, String> NOTES = createField(DSL.name("notes"), org.jooq.impl.SQLDataType.VARCHAR, this, "");
 
     /**
      * The column <code>public.policy.exported_at</code>.
@@ -191,11 +186,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<Long, Long, String, String, LocalDateTime, LocalDateTime, String, LocalDateTime, Boolean> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row8<Long, Long, String, String, LocalDateTime, LocalDateTime, LocalDateTime, Boolean> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }

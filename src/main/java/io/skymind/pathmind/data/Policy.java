@@ -14,8 +14,6 @@ public class Policy extends Data
     private LocalDateTime startedAt;
     private LocalDateTime stoppedAt;
 
-	private String notes;
-
     // REFACTOR -> Same as Progress which is not saved to the database and is parsed back and forth...
     private List<RewardScore> scores;
 
@@ -89,14 +87,6 @@ public class Policy extends Data
 
 	public void setStoppedAt(LocalDateTime stoppedAt) {
 		this.stoppedAt = stoppedAt;
-	}
-
-	public String getNotes() {
-		return notes;
-	}
-
-	public void setNotes(String notes) {
-		this.notes = notes;
 	}
 
 	public List<RewardScore> getScores() {

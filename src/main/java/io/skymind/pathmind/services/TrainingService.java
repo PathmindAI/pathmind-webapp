@@ -1,6 +1,5 @@
 package io.skymind.pathmind.services;
 
-import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;

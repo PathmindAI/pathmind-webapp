@@ -1070,4 +1070,8 @@
         <dropColumn tableName="MODEL" columnName="GET_OBSERVATION_FOR_REWARD_FUNCTION"/>
     </changeSet>
 
+    <changeSet id="20200303-03" author="krystian.walaszczyk@ext.vaadin.com">
+        <dropColumn tableName="POLICY" columnName="NOTES" />
+    </changeSet>
+
 </databaseChangeLog>
