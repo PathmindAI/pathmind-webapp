@@ -22,9 +22,4 @@ public class ObservationView extends DefaultGuideView {
 	protected DefaultPageContent initPageContent() {
 		return pageContent;
 	}
-
-	@Override
-	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("PATHMIND GUIDE", "Build Observation Space");
-	}
 }

@@ -131,21 +131,6 @@ hr {
   margin-bottom: 2rem;
 }
 
-.guide .page-title {
-  position: sticky;
-  top: 0;
-  color: white;
-  font-weight: normal;
-  background-color: var(--lumo-primary-color);
-  margin-top: 0;
-  padding: var(--lumo-space-xs);
-  z-index: 1;
-}
-
-.guide .page-title .section-label-title {
-  font-weight: bold;
-}
-
 .light-text-label {
   font-size: var(--lumo-font-size-m);
   color: var(--pm-orange-color);
@@ -199,6 +184,16 @@ hr {
 .default-view {
   background: var(--pm-app-bg-color);
   height: 100%;
+}
+
+.default-view.guide {
+  background: white;
+}
+
+@media (min-width: 720px) {
+  .default-view.guide {
+    padding-top: var(--lumo-space-m);
+  }
 }
 
 .view-section {

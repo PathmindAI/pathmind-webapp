@@ -22,9 +22,4 @@ public class RecapView extends DefaultGuideView {
 	protected DefaultPageContent initPageContent() {
 		return pageContent;
 	}
-
-	@Override
-	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("PATHMIND GUIDE", "Conclusion");
-	}
 }

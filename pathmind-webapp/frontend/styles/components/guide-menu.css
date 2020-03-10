@@ -76,7 +76,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100% !important;
-    top: 25px;
+    top: 0;
     background: white;
     padding: var(--lumo-space-s);
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.05);
