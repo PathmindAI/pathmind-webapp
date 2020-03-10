@@ -25,27 +25,27 @@ public class ExperimentGrid extends Grid<Experiment>
 					.withProperty("draft", experiment -> experiment.getRuns() == null || experiment.getRuns().isEmpty() ? "Draft" : ""))
 				.setComparator(Comparator.comparing(Experiment::getName))
 				.setHeader("Experiment")
-				.setWidth("150px")
+				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true)
 				.setSortable(true);
 		addColumn(new ZonedDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Experiment::getLastActivityDate))
 				.setHeader("Last Activity")
-				.setWidth("150px")
+				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setAutoWidth(true)
 				.setResizable(true)
 				.setSortable(true);
 		addColumn(experiment -> ExperimentUtils.getTrainingStatus(experiment))
 				.setHeader("Status")
-				.setWidth("150px")
+				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true)
 				.setSortable(true);
 		addColumn(experiment -> {
 					String userNotes = experiment.getUserNotes();
-					return userNotes.isEmpty() ? "--" : userNotes;
+					return userNotes.isEmpty() ? "—" : userNotes;
 				})
 				.setHeader("Notes")
 				.setFlexGrow(1)
