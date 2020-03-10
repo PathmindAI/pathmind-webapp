@@ -24,7 +24,7 @@ public class ExperimentGrid extends Grid<Experiment>
 					.withProperty("name", Experiment::getName)
 					.withProperty("draft", experiment -> experiment.getRuns() == null || experiment.getRuns().isEmpty() ? "Draft" : ""))
 				.setComparator(Comparator.comparing(Experiment::getName))
-				.setHeader("Experiment")
+				.setHeader("Exp #")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true)
