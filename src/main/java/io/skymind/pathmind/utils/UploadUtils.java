@@ -20,7 +20,7 @@ import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 public class UploadUtils {
 	
 	private static String MODEL = "model.jar";
-	private static String[] WHITE_LIST = {"model.jar", "database/db.script", "database/db.properties"};
+	private static String[] WHITE_LIST = {"model.jar", "database/db.script", "database/db.properties", "database/db.data"};
 	
 	public static byte[] createZipFileFromBuffer(MultiFileMemoryBuffer buffer) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
