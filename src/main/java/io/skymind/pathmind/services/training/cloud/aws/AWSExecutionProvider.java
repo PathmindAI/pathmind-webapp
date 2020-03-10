@@ -114,6 +114,16 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 return new ProviderJobStatus(Killed);
             }
 
+            boolean restarting = getFile(jobHandle, TrainingFile.RESTARTING).isPresent();
+            boolean restarted = getFile(jobHandle, TrainingFile.RESTARTED).isPresent();
+            if (restarting && !restarted) {
+                return new ProviderJobStatus(Restarting);
+            }
+
+            if (restarted) {
+                log.info(jobHandle + "is restarted!!");
+            }
+
             ExperimentState experimentState = getExperimentState(jobHandle);
             List<String> knownErrsCheck = getTrialStatus(jobHandle, TrainingFile.KNOWN_ERROR);
 
