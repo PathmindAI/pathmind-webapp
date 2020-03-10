@@ -249,6 +249,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_7_0:
             case VERSION_0_7_6:
             case VERSION_0_7_6_PBT:
+            case VERSION_0_7_6_RESUME:
                 instructions.addAll(Arrays.asList(
                         // Setup NativeRL
                         "mkdir work",
