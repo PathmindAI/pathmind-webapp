@@ -144,7 +144,7 @@ public class ExperimentUtils
 	}
 
 	public static double calculateProgressByIterationsProcessed(Integer iterationsProcessed) {
-		double totalIterations = RunConstants.PBT_RUN_ITERATIONS;
+		double totalIterations = RunConstants.PBT_RUN_ITERATIONS * RunConstants.PBT_NUM_SAMPLES;
 		double progress = (iterationsProcessed / totalIterations) * 100;
 		return Math.max(Math.min(100d, progress), 0);
 	}

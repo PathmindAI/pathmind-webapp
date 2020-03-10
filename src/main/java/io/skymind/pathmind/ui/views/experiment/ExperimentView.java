@@ -31,7 +31,7 @@ import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
+import io.skymind.pathmind.ui.components.TabPanel;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.components.notesField.NotesField;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -70,6 +70,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private PolicyHighlightPanel policyHighlightPanel;
 	private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
 	private RewardFunctionEditor rewardFunctionEditor;
+	private TrainingStartingPlaceholder trainingStartingPlaceholder;
 	private PolicyChartPanel policyChartPanel;
 	private ExperimentsNavbar experimentsNavbar;
 	private NotesField notesField;
@@ -143,14 +144,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private Component getLeftPanel() {
 		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiments, experiment, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
 		policyChartPanel = new PolicyChartPanel();
+		trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 
 		return WrapperUtils.wrapWidthFullHorizontal(
 			experimentsNavbar,
+			trainingStartingPlaceholder, 
 			policyChartPanel
 		);
 	}
 
 	private VerticalLayout getRightPanel() {
+		TabPanel rewardFunctionEditorHeader = new TabPanel("Reward Function");
 		rewardFunctionEditor = new RewardFunctionEditor();
 		rewardFunctionEditor.setReadonly(true);
 		rewardFunctionEditor.setSizeFull();
@@ -165,7 +169,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				initLoadData();
 				trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 				clearErrorState();
-				new RunConfirmDialog().open();
+				setPolicyChartVisibility();
 			}
 		});
 		restartTraining.setVisible(false);
@@ -183,7 +187,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				policyHighlightPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton),
 				trainingStatusDetailsPanel,
-				rewardFunctionEditor,
+				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+					rewardFunctionEditorHeader, rewardFunctionEditor
+				),
 				notesField);
 	}
 
@@ -251,11 +257,18 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private void updateScreenComponents() {
+		setPolicyChartVisibility();
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		policyChartPanel.setExperiment(experiment);
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 		processSelectedPolicy(policy);
 		updateRightPanelForExperiment();
+	}
+
+	private void setPolicyChartVisibility() {
+		RunStatus trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
+		trainingStartingPlaceholder.setVisible(trainingStatus == RunStatus.Starting);
+		policyChartPanel.setVisible(trainingStatus != RunStatus.Starting);
 	}
 
 	private Policy selectBestPolicy(List<Policy> policies) {
@@ -324,7 +337,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		// we put the "saving" for temporary
 		// policy dao will check if there's real policy file exist or not
 		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed) {
-			exportPolicyButton.setEnabled(policy.hasFile());
+			exportPolicyButton.setEnabled(policy != null && policy.hasFile());
 		}
 		restartTraining.setVisible(false);
 	}
@@ -345,6 +358,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 					return;
 				// Update or insert the policy in experiment.getPolicies
 				addOrUpdatePolicy(event.getPolicy());
+				
 				// Calculate the best policy again
 				Policy bestPolicy = selectBestPolicy(experiment.getPolicies());
 
@@ -373,7 +387,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		public void handleBusEvent(RunUpdateBusEvent event) {
 			addOrUpdateRun(event.getRun());
 			updatedRunForPolicies(event.getRun());
-			PushUtils.push(getUI(), () -> updateRightPanelForExperiment());
+			PushUtils.push(getUI(), () -> {
+				setPolicyChartVisibility();
+				updateRightPanelForExperiment();
+			});
 		}
 
 		@Override

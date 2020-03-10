@@ -57,7 +57,7 @@
 
 .support {
   display: inline-block;
-  color: var(--pm-tertiary-text-color);
+  color: var(--lumo-secondary-text-color);
   margin: 10px auto 0;
 }
 
