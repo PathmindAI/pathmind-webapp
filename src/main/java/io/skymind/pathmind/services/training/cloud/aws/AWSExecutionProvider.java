@@ -27,7 +27,6 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.constants.RunStatus.*;
 import static io.skymind.pathmind.constants.RunStatus.Error;
 
 @Service
@@ -111,13 +110,13 @@ public class AWSExecutionProvider implements ExecutionProvider {
         if (outputExist(jobHandle)){
             boolean killed = getFile(jobHandle, TrainingFile.KILLED).isPresent();
             if (killed) {
-                return new ProviderJobStatus(Killed);
+                return ProviderJobStatus.KILLED;
             }
 
             boolean restarting = getFile(jobHandle, TrainingFile.RESTARTING).isPresent();
             boolean restarted = getFile(jobHandle, TrainingFile.RESTARTED).isPresent();
             if (restarting && !restarted) {
-                return new ProviderJobStatus(Restarting);
+                return ProviderJobStatus.RESTARTING;
             }
 
             if (restarted) {
@@ -144,13 +143,13 @@ public class AWSExecutionProvider implements ExecutionProvider {
             }
 
             if (experimentState != null && experimentState.getCheckpoints() != null && experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L)) {
-                return new ProviderJobStatus(Completed);
+                return ProviderJobStatus.COMPLETED;
             }
 
-            return new ProviderJobStatus(Running);
+            return ProviderJobStatus.RUNNING;
         }
 
-        return new ProviderJobStatus(Starting);
+        return ProviderJobStatus.STARTING;
     }
 
     @Override

@@ -5,9 +5,17 @@ import io.skymind.pathmind.constants.RunStatus;
 import java.util.Collections;
 import java.util.List;
 
+import static io.skymind.pathmind.constants.RunStatus.*;
+
 public class ProviderJobStatus {
 	private RunStatus runStatus;
 	private List<String> description;
+
+	public static ProviderJobStatus KILLED = new ProviderJobStatus(Killed);
+	public static ProviderJobStatus RESTARTING = new ProviderJobStatus(Restarting);
+	public static ProviderJobStatus COMPLETED = new ProviderJobStatus(Completed);
+	public static ProviderJobStatus RUNNING = new ProviderJobStatus(Running);
+	public static ProviderJobStatus STARTING = new ProviderJobStatus(Starting);
 
 	public ProviderJobStatus(RunStatus runStatus) {
 		this(runStatus, Collections.emptyList());
