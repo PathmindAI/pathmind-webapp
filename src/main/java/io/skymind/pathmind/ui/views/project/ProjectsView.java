@@ -29,7 +29,6 @@ import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.model.ModelsView;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 
 @CssImport("./styles/styles.css")
@@ -114,7 +113,7 @@ public class ProjectsView extends PathMindDefaultView
 		projectGrid.sort(Arrays.asList(new GridSortOrder<>(lastActivityColumn, SortDirection.DESCENDING)));
 
 		projectGrid.addItemClickListener(event ->
-				getUI().ifPresent(ui -> ui.navigate(ModelsView.class, event.getItem().getId())));
+				getUI().ifPresent(ui -> ui.navigate(ProjectView.class, event.getItem().getId())));
 	}
 
 	private List<Project> getProjects() {
