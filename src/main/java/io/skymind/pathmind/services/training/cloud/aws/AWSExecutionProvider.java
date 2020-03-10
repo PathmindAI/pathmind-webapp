@@ -397,7 +397,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("TIME_UNIT", "MINUTE"),
                 var("MAX_TIME_IN_SEC", String.valueOf(job.getMaxTimeInSec())),
                 var("NUM_SAMPLES", String.valueOf(job.getNumSamples())),
-                var("MULTIAGENT", String.valueOf(job.isMultiAgent()))
+                var("MULTIAGENT", String.valueOf(job.isMultiAgent())),
+                var("RESUME", String.valueOf(job.isResume())),
+                var("CHECKPOINT_FREQUENCY", String.valueOf(job.getCheckpointFrequency()))
         ));
     }
 
