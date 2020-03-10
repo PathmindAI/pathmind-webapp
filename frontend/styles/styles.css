@@ -218,8 +218,8 @@ hr {
 }
 
 .projects-view .view-section,
-.models-view .view-section,
-.experiments-view .view-section {
+.project-view .view-section,
+.model-view .view-section {
   flex: 1;
   margin-top: 0;
 }
