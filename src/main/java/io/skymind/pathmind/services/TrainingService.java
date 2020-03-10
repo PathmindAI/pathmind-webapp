@@ -14,9 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class TrainingService {
-    private static final int MINUTE = 60;
-    private static final int HOUR = 60 * 60;
-
     protected final ExecutionProvider executionProvider;
     protected final RunDAO runDAO;
     protected final ModelService modelService;
@@ -47,8 +44,8 @@ public abstract class TrainingService {
         startRun(RunType.DiscoveryRun,
                 exp,
                 RunConstants.PBT_RUN_ITERATIONS,
-                150 * MINUTE, // 2.5 hours
-                10
+                RunConstants.PBT_MAX_TIME_IN_SEC,
+                RunConstants.PBT_NUM_SAMPLES
         );
     }
 

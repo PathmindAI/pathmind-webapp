@@ -14,9 +14,9 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
+import io.skymind.pathmind.ui.views.model.ModelView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
-import io.skymind.pathmind.ui.views.model.ModelsView;
+import io.skymind.pathmind.ui.views.project.ProjectView;
 import io.skymind.pathmind.ui.views.project.ProjectsView;
 
 @CssImport(value = "./styles/components/breadcrumbs.css")
@@ -49,10 +49,10 @@ public class Breadcrumbs extends HorizontalLayout
 		}
 
 		if (project != null) {
-			items.add(new BreadcrumbItem(project.getName(), ModelsView.class, project.getId()));
+			items.add(new BreadcrumbItem(project.getName(), ProjectView.class, project.getId()));
 		}
 		if (model != null) {
-			items.add(new BreadcrumbItem("Model #" + model.getName(), ExperimentsView.class, model.getId()));
+			items.add(new BreadcrumbItem("Model #" + model.getName(), ModelView.class, model.getId()));
 		}
 		if (experiment != null) {
 			items.add(new BreadcrumbItem("Experiment #" + experiment.getName(), ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment)));
