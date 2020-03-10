@@ -2,7 +2,7 @@ html {
   /* pathmind-colors */
   --pm-primary-color: #4f97aa;
   --pm-text-color: #1a2949;
-  --pm-tertiary-text-color: #888888;
+  --pm-secondary-text-color: #888888;
   --pm-app-bg-color: #f0f1f6;
   --pm-highlight-light: rgba(240, 241, 246, 0.25);
   --pm-highlight-medium: rgba(240, 241, 246, 0.5);
@@ -21,8 +21,8 @@ html {
   --pm-blue-color-darkest-50pct: rgba(26, 41, 73, 0.5);
   --pm-blue-color-darkest-25pct: rgba(26, 41, 73, 0.25);
   --pm-blue-color: #1900ff;
-  --pm-brown-color: #821b1a;
-  --pm-green-color: #1ccc28;
+  --pm-red-color: #930100;
+  --pm-green-color: #00a60b;
 
   /* pathmind typography */
   --pm-line-height-xl: 2em;
@@ -58,7 +58,7 @@ html {
   --lumo-error-color: #d80947;
   --lumo-header-text-color: #000000;
   --lumo-body-text-color: var(--pm-text-color);
-  --lumo-secondary-text-color: var(--pm-gray-color);
+  --lumo-secondary-text-color: var(--pm-gray-color-dark);
   --lumo-tertiary-text-color: #d7d7d7;
   --lumo-base-color: #ffffff;
   --lumo-primary-text-color: var(--pm-primary-color);
@@ -71,6 +71,20 @@ html {
 
 img {
   display: block;
+}
+
+ol,
+ul {
+  padding: 0 0 0 var(--lumo-font-size-m);
+}
+
+ol > li:not(:first-child) {
+  margin-top: var(--lumo-space-m);
+}
+
+hr {
+  margin: var(--lumo-space-s) 0;
+  background-color: var(--pm-gray-color-darker);
 }
 
 #nav-main-links,
@@ -143,13 +157,17 @@ img {
   font-weight: bold;
 }
 .no-top-margin-label {
-  font-weight: bold;
+  margin-top: 0;
+}
+
+.section-title-label,
+.section-title-label-regular-font-weight {
+  font-size: var(--lumo-font-size-xl);
+  color: var(--pm-text-color);
 }
 
 .section-title-label {
-  font-size: 22px;
   font-weight: bold;
-  color: var(--pm-text-color);
 }
 
 .section-subtitle-label {
@@ -182,7 +200,7 @@ img {
   padding: var(--lumo-space-xl);
   box-sizing: border-box;
   min-width: 520px;
-  min-height: 560px;
+  flex: 1;
 }
 
 .dashboard-view .view-section {
@@ -200,10 +218,10 @@ img {
 }
 
 .projects-view .view-section,
-.models-view .view-section,
-.experiments-view .view-section {
+.project-view .view-section,
+.model-view .view-section {
   flex: 1;
-  margin-top: var(--lumo-space-xs);
+  margin-top: 0;
 }
 
 .guide-view-wrapper {
@@ -211,12 +229,13 @@ img {
   background: white;
 }
 
-/* In case we want the side menu go to the top for smaller screens
-@media (max-width: 1279px) {
+/* The side menu goes to the top for smaller screens 
+   Using 50% screen width of 1440px */
+@media (max-width: 720px) {
   .guide-view-wrapper {
     flex-direction: column;
   }
-} */
+}
 
 account-view {
   background: var(--pm-app-bg-color);
@@ -248,6 +267,7 @@ account-view {
   position: relative;
   max-width: 100%;
   box-sizing: border-box;
+  min-height: 18px;
 }
 
 .create-project-button {

@@ -14,15 +14,17 @@ import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
+import io.skymind.pathmind.ui.views.model.ModelView;
 import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
-import io.skymind.pathmind.ui.views.model.ModelsView;
+import io.skymind.pathmind.ui.views.project.ProjectView;
 import io.skymind.pathmind.ui.views.project.ProjectsView;
 
 @CssImport(value = "./styles/components/breadcrumbs.css")
 public class Breadcrumbs extends HorizontalLayout
 {
 	private static final String BREADCRUMB_CLASSNAME = "breadcrumb";
+
+	private List<BreadcrumbItem> items = new ArrayList<>();
 
 	public Breadcrumbs() {
 		this(null, null, null);
@@ -41,17 +43,16 @@ public class Breadcrumbs extends HorizontalLayout
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public Breadcrumbs(Project project, Model model, Experiment experiment, boolean hasRootItem) {
-		List<BreadcrumbItem> items = new ArrayList<>();
 
 		if(hasRootItem) {
 			items.add(new BreadcrumbItem("Projects", ProjectsView.class, null));
 		}
 
 		if (project != null) {
-			items.add(new BreadcrumbItem(project.getName(), ModelsView.class, project.getId()));
+			items.add(new BreadcrumbItem(project.getName(), ProjectView.class, project.getId()));
 		}
 		if (model != null) {
-			items.add(new BreadcrumbItem("Model #" + model.getName(), ExperimentsView.class, model.getId()));
+			items.add(new BreadcrumbItem("Model #" + model.getName(), ModelView.class, model.getId()));
 		}
 		if (experiment != null) {
 			items.add(new BreadcrumbItem("Experiment #" + experiment.getName(), ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment)));
@@ -74,12 +75,19 @@ public class Breadcrumbs extends HorizontalLayout
 		separator.addClassName("breadcrumb-separator");
 		return separator;
 	}
+
+	public void setText(int index, String newText) {
+		int itemIndex = index > items.size() ? items.size() - 1 : index;
+		items.get(itemIndex).setText(newText);
+	}
 	
 	private class BreadcrumbItem<T, C extends Component & HasUrlParameter<T>> {
 		private String name;
 		private Class<C> navigationTarget;
 		private T parameter;
 		private boolean isCurrentStep = false;
+		protected Span spanComponent;
+		protected RouterLink routerLinkComponent;
 		
 		public BreadcrumbItem(String name, Class<C> navigationTarget, T parameter) {
 			this.name = name;
@@ -93,9 +101,11 @@ public class Breadcrumbs extends HorizontalLayout
 		
 		private Component createComponent() {
 			if (isCurrentStep) {
-				return createLabel();
+				spanComponent = createLabel();
+				return spanComponent;
 			} else {
-				return createLink();
+				routerLinkComponent = createLink();
+				return routerLinkComponent;
 			}
 		}
 		
@@ -108,6 +118,14 @@ public class Breadcrumbs extends HorizontalLayout
 			Span label = new Span(name);
 			label.addClassName(BREADCRUMB_CLASSNAME);
 			return label;		
+		}
+
+		private void setText(String newText) {
+			if (isCurrentStep) {
+				spanComponent.setText(newText);
+			} else {
+				routerLinkComponent.setText(newText);
+			}
 		}
 	}
 }

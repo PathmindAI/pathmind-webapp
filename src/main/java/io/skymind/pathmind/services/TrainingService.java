@@ -13,9 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class TrainingService {
-    private static final int MINUTE = 60;
-    private static final int HOUR = 60 * 60;
-
     protected final ExecutionProvider executionProvider;
     protected final RunDAO runDAO;
     protected final ModelService modelService;
@@ -41,12 +38,11 @@ public abstract class TrainingService {
 //        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
         executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6_PBT, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
     }
-
     public void startRun(Experiment exp){
         startRun(exp,
                 RunConstants.PBT_RUN_ITERATIONS,
-                2 * HOUR, // 2 hr
-                10
+                RunConstants.PBT_MAX_TIME_IN_SEC,
+                RunConstants.PBT_NUM_SAMPLES
         );
     }
 

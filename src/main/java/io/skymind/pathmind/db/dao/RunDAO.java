@@ -50,10 +50,6 @@ public class RunDAO
         RunRepository.markAsStarting(ctx, runId);
     }
 
-    public List<Run> getRunsForExperiment(long experimentId) {
-        return RunRepository.getRunsForExperiment(ctx, experimentId);
-    }
-
     /**
      * Returns true if
      * - there is no other run with same run type that still executing

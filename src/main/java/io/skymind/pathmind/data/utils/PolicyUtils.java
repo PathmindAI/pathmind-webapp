@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.utils.StringUtils.toCamelCase;
+import static io.skymind.pathmind.utils.StringUtils.removeInvalidChars;
 
 @Slf4j
 public class PolicyUtils
@@ -100,6 +101,6 @@ public class PolicyUtils
         if(!ObjectUtils.allNotNull(policy, policy.getProject(), policy.getModel(), policy.getExperiment())) {
             return "-";
         }
-        return String.format("%s-M%sE%s-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getExperiment().getName());
+        return removeInvalidChars(String.format("%s-M%sE%s-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getExperiment().getName()));
     }
 }

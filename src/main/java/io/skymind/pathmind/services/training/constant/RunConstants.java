@@ -5,13 +5,18 @@ import java.util.List;
 import java.util.Map;
 
 public final class RunConstants {
+	private static final int MINUTE = 60;
+	private static final int HOUR = 60 * 60;
+	
 	private RunConstants() {
 	}
 
 	/**
 	 * Number of possible iterations for PBT run
 	 */
-	public static final int PBT_RUN_ITERATIONS = 500;
+	public static final int PBT_RUN_ITERATIONS = 250;
+	public static final int PBT_MAX_TIME_IN_SEC = 150 * MINUTE;
+	public static final int PBT_NUM_SAMPLES = 10;
 
 	public static final String DISCOVERY_RUN_LEARNING_RATES = "DISCOVERY_RUN_LEARNING_RATES";
 	public static final String DISCOVERY_RUN_GAMMAS = "DISCOVERY_RUN_GAMMAS";

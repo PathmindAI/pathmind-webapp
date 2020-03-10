@@ -98,12 +98,13 @@ vaadin-button:first-of-type {
   margin-top: 80px;
 }
 
-/* In case we want the side menu go to the top for smaller screens
-@media (max-width: 1279px) {
+/* The side menu goes to the top for smaller screens 
+   Using 50% screen width of 1440px */
+@media (max-width: 720px) {
   .content {
     padding: var(--lumo-space-xl) var(--lumo-space-s);
   }
   pre {
     padding: var(--lumo-space-s);
   }
-} */
+}

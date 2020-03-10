@@ -45,7 +45,7 @@ public class ArchivesTabPanel<T extends ArchivableData> extends TabPanel
 		setAlignItems(Alignment.START);
 
 		Column<T> archiveColumn = isAutoCreateActionColumn
-				? grid.addComponentColumn(data -> getArchivesButton(data)).setHeader("Archive").setSortable(false)
+				? grid.addComponentColumn(data -> getArchivesButton(data)).setHeader("Archive").setSortable(false).setWidth("120px").setFlexGrow(0)
 				: null;
 
 		addTabClickListener(name -> {

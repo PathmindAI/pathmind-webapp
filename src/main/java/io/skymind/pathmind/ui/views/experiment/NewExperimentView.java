@@ -9,7 +9,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
@@ -34,7 +33,6 @@ import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.ui.components.PathmindTextArea;
-import io.skymind.pathmind.ui.components.dialog.RunConfirmDialog;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
@@ -43,7 +41,6 @@ import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.components.RewardFunctionEditor;
-import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @CssImport("./styles/views/new-experiment-view.css")
@@ -202,10 +199,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         trainingService.startRun(experiment);
         segmentIntegrator.discoveryRunStarted();
 
-        ConfirmDialog confirmDialog = new RunConfirmDialog();
-        confirmDialog.open();
-
-        UI.getCurrent().navigate(ExperimentView.class, ExperimentViewNavigationUtils.getExperimentParameters(experiment));
+        UI.getCurrent().navigate(ExperimentView.class, experimentId);
     }
 
     private Button getActionButton() {
@@ -236,7 +230,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     @Override
-    protected void initLoadData() throws InvalidDataException {
+    protected void initLoadData() {
         experiment = experimentDAO.getExperiment(experimentId)
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		if(MockDefaultValues.isDebugAccelerate() && StringUtils.isEmpty(experiment.getRewardFunction()))
@@ -244,7 +238,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     @Override
-    protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
+    protected void initScreen(BeforeEnterEvent event) {
         binder.setBean(experiment);
     }
 }
