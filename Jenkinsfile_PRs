@@ -1,4 +1,5 @@
 def RELEASE_ID
+def TEST_STATUS
 
 /*
     pathmind-webapp pipeline
@@ -176,7 +177,8 @@ pipeline {
 				echo "Running tests"
 				sh "if [ -d pathmind-bdd-tests ]; then rm -rf pathmind-bdd-tests; fi"
 				sh "git clone git@github.com:SkymindIO/pathmind-bdd-tests.git"
-                                sh "cd pathmind-bdd-tests; mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234"
+def statusCode = sh script:script, returnStatus:true
+				TEST_STATUS = sh( returnStatus: true, script: "cd pathmind-bdd-tests; mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234")
 			} catch (err) {
 			} finally {
 				publishHTML (target: [
@@ -209,6 +211,24 @@ pipeline {
 			sh "helm delete ${RELEASE_ID} -n ${env.BUILD_NUMBER}"
 			sh "kubectl delete namespace ${env.BUILD_NUMBER}"
 		}
+            }
+        }
+
+        stage('Set pipeline status') {
+            when {
+                allOf{
+                        expression { env.GIT_BRANCH != 'master' }
+                        expression { env.GIT_BRANCH != 'dev' }
+                        expression { env.GIT_BRANCH != 'test' }
+                }
+            }
+            steps {
+                script {
+                        if(TEST_STATUS != 0){
+				echo "Some bdd tests failed"
+				currentBuild.result = 'FAILURE'
+                        }
+                }
             }
         }
    }
