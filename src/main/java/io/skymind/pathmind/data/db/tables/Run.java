@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -1986543581;
+    private static final long serialVersionUID = 1463194207;
 
     /**
      * The reference instance of <code>public.run</code>
