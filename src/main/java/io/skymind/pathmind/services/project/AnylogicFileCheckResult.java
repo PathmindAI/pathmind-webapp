@@ -4,9 +4,9 @@ import java.util.List;
 
 public class AnylogicFileCheckResult implements FileCheckResult {
 
-    private boolean fileCheckComplete;
-    private boolean correctFileType;
-    private boolean modelJarFilePresent;
+    private boolean fileCheckComplete = false;
+    private boolean correctFileType = false;
+    private boolean modelJarFilePresent = false;
     private List<String> zipContentFileNames;
     private List<String> definedHelpers;
     private int numAction;

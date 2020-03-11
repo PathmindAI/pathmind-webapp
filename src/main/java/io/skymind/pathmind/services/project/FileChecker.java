@@ -6,6 +6,14 @@ import java.io.IOException;
 
 public interface FileChecker {
 
-    public FileCheckResult performFileCheck(StatusUpdater statusUpdater, File file) throws IOException;
+    /**
+     * performs file check whether it is valid zip file, it has proper contents
+     *
+     * @param statusUpdater
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    FileCheckResult performFileCheck(StatusUpdater statusUpdater, File file) throws IOException;
 
 }

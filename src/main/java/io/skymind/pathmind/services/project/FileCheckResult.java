@@ -4,29 +4,29 @@ import java.util.List;
 
 public interface FileCheckResult {
 
-    public boolean isFileCheckComplete();
+    boolean isFileCheckComplete();
 
-    public boolean isFileCheckSuccessful();
+    boolean isFileCheckSuccessful();
 
-    public boolean isCorrectFileType();
+    boolean isCorrectFileType();
 
-    public boolean isModelJarFilePresent();
+    boolean isModelJarFilePresent();
 
-    public boolean isHelperPresent();
+    boolean isHelperPresent();
 
-    public boolean isHelperUnique();
+    boolean isHelperUnique();
 
-    public List<String> getZipContentFileNames();
+    List<String> getZipContentFileNames();
 
-    public List<String> getDefinedHelpers();
+    List<String> getDefinedHelpers();
 
-    public void setCorrectFileType(boolean correctFileType);
+    void setCorrectFileType(boolean correctFileType);
 
-    public void setModelJarFilePresent(boolean modelJarFilePresent);
+    void setModelJarFilePresent(boolean modelJarFilePresent);
 
-    public void setZipContentFileNames(List<String> zipContentFileNames);
+    void setZipContentFileNames(List<String> zipContentFileNames);
 
-    public void setDefinedHelpers(List<String> definedHelpers);
+    void setDefinedHelpers(List<String> definedHelpers);
 
-    public void setFileCheckComplete(boolean fileCheckComplete);
+    void setFileCheckComplete(boolean fileCheckComplete);
 }
