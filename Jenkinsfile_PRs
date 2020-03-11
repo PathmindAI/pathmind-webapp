@@ -1,5 +1,5 @@
 def RELEASE_ID
-def TEST_STATUS
+def TEST_STATUS=0
 
 /*
     pathmind-webapp pipeline
@@ -178,7 +178,7 @@ pipeline {
 				sh "if [ -d pathmind-bdd-tests ]; then rm -rf pathmind-bdd-tests; fi"
 				sh "git clone git@github.com:SkymindIO/pathmind-bdd-tests.git"
 def statusCode = sh script:script, returnStatus:true
-				TEST_STATUS = sh( returnStatus: true, script: "cd pathmind-bdd-tests && mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234")
+				TEST_STATUS = ${sh( returnStatus: true, script: "cd pathmind-bdd-tests && mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234")}
 			} catch (err) {
 			} finally {
 				publishHTML (target: [
@@ -226,6 +226,7 @@ def statusCode = sh script:script, returnStatus:true
                 script {
                         if(TEST_STATUS != 0){
 				echo "Some bdd tests failed"
+				echo "${TEST_STATUS}"
 				currentBuild.result = 'FAILURE'
                         }
                 }
