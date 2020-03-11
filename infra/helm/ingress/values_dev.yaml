@@ -29,11 +29,6 @@ ingress:
       paths: [/:80:canary-dev]
     - host: test.devpathmind.com
       paths: [/:80:canary-test]
-    #model analyzer
-    - host: ma.dev.devpathmind.com
-      paths: [/:8080:pathmind-ma-dev]
-    - host: ma.test.devpathmind.com
-      paths: [/:8080:pathmind-ma-test]
     - host: jenkins.dev.devpathmind.com
       paths: [/:8080:jenkins]
     - host: grafana.dev.devpathmind.com
@@ -50,8 +45,6 @@ ingress:
         - test.devpathmind.com
         - pgadmin.dev.devpathmind.com
         - grafana.dev.devpathmind.com
-        - ma.dev.devpathmind.com
-        - ma.test.devpathmind.com
         - kibana.dev.devpathmind.com
         - jenkins.dev.devpathmind.com
 

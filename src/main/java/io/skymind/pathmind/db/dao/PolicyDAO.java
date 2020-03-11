@@ -45,24 +45,6 @@ public class PolicyDAO {
         return RewardScoreRepository.getRewardScoresCountForExperiments(ctx, experimentIds);
     }
 
-    @Transactional
-    public long insertPolicy(Policy policy) {
-        ctx.transaction(configuration ->
-        {
-            DSLContext transactionCtx = DSL.using(configuration);
-
-            policy.setId(PolicyRepository.insertPolicy(transactionCtx, policy));
-            RewardScoreRepository.insertRewardScores(transactionCtx, policy.getId(), policy.getScores());
-        });
-
-        // STEPH -> This should not be required since the GUI has the parent objects but until I have to the time it's an extra database call.
-        // NOTE -> Although we insert the RewardScore the data model object RewardScore does not have a reference to PolicyId so we don't need
-        // to do anything special to link the RewardScore to the policy, it's all done through the Policy data model object.
-        Policy savedPolicy = PolicyRepository.getPolicy(ctx, policy.getId());
-        EventBus.post(new PolicyUpdateBusEvent(savedPolicy));
-        return savedPolicy.getId();
-    }
-
     public List<Policy> getActivePoliciesForUser(long userId) {
         return PolicyRepository.getActivePoliciesForUser(ctx, userId);
     }
