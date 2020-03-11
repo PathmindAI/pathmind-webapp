@@ -24,8 +24,6 @@ where job_id='${S3PATH}';
 commit;
 EOF
 
-#Check if the training was already running
-
 
 bash script.sh > ${log_file} 2>&1 &
 pid=$!
@@ -56,7 +54,7 @@ do
                 #Set the status in trainer_job
                 psql "$DB_URL_CLI" << EOF
 update public.trainer_job
-set status=5,ec2_end_date=now(),update_date=NOW(),description='${description}'
+set status=4,ec2_end_date=now(),update_date=NOW(),description='${description}'
 where job_id='${S3PATH}';
 commit;
 EOF
