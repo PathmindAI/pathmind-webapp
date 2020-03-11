@@ -1,10 +1,9 @@
 package io.skymind.pathmind.ui.views.policy;
 
+import static io.skymind.pathmind.utils.StringUtils.removeInvalidChars;
+
 import java.io.ByteArrayInputStream;
 
-import io.skymind.pathmind.data.utils.PolicyUtils;
-import io.skymind.pathmind.services.PolicyFileService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
@@ -16,20 +15,19 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
+import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.ui.components.LabelFactory;
-import io.skymind.pathmind.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.ui.components.ViewSection;
 import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.layouts.MainLayout;
@@ -37,9 +35,6 @@ import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
-
-import static io.skymind.pathmind.utils.StringUtils.removeInvalidChars;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPORT_POLICY_URL, layout = MainLayout.class)
@@ -137,7 +132,6 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	
 	private Div createInstructionsDiv() {
 		Div div = new Div();
-		div.setClassName("export-instructions");
 		div.getElement().setProperty("innerHTML",
 				"<h3>To use your policy:</h3>" +
 				"<ol>" +
