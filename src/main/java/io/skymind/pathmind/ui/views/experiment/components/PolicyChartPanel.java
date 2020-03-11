@@ -5,19 +5,19 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.DataSeries;
+import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
+import com.vaadin.flow.component.charts.util.ChartSerialization;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+
 import io.skymind.pathmind.bus.EventBus;
 import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.ui.components.FilterableComponent;
-import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
 import io.skymind.pathmind.utils.ChartUtils;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import static io.skymind.pathmind.utils.ChartUtils.createActiveSeriesPlotOptions;
 import static io.skymind.pathmind.utils.ChartUtils.createPassiveSeriesPlotOptions;
 
-@Component
 public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubscriber
 {
     private Object experimentLock = new Object();
@@ -40,25 +39,27 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
         addClassName("policy-chart-panel");
     }
 
-    private void updatedPolicyChart(Policy updatedPolicy) {
+    private void updatedPolicyChart(List<Policy> updatedPolicies) {
         // TODO -> Do we need to keep experiment up to date if there are new policies, etc.? I don't believe it's necessary
         // but we should confirm it.
         // During a training run, additional policies will be created, i.e. for a discovery run, the policies will
         // be created as they actually start training. -- pdubs, 20190927
 
         // We cannot add the last item because there is no guarantee that the updates are in sequence
-        chart.getConfiguration().getSeries().stream()
-                .filter(series -> series.getId().equals(Long.toString(updatedPolicy.getId())))
-                .findAny()
-                .ifPresentOrElse(
-                        series -> {
-                            DataSeries dataSeries = (DataSeries) series;
-                            dataSeries.setData(ChartUtils.getRewardScoreSeriesItems(updatedPolicy));
-                            if (!series.getName().equals(updatedPolicy.getName())) {
-                            	dataSeries.setName(updatedPolicy.getName());
-                            }
-                        },
-                        () -> addPolicyToChart(updatedPolicy));
+    	updatedPolicies.forEach(updatedPolicy -> {
+    		chart.getConfiguration().getSeries().stream()
+    		.filter(series -> series.getId().equals(Long.toString(updatedPolicy.getId())))
+    		.findAny()
+    		.ifPresentOrElse(
+    				series -> {
+    					DataSeries dataSeries = (DataSeries) series;
+                        dataSeries.setData(ChartUtils.getRewardScoreSeriesItems(updatedPolicy));
+                        if (!series.getName().equals(updatedPolicy.getName())) {
+                        	dataSeries.setName(updatedPolicy.getName());
+                        }
+    				},
+    				() -> addPolicyToChart(updatedPolicy));
+    	});
         chart.drawChart();
     }
 
@@ -137,15 +138,15 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
     public void handleBusEvent(PolicyUpdateBusEvent event) {
         synchronized (experimentLock) {
             // We need to check after the lock is acquired as changing experiments can take up to several seconds.
-            if (event.getPolicy().getExperiment().getId() != experiment.getId())
+            if (event.getExperimentId() != experiment.getId())
                 return;
-            PushUtils.push(this, () -> updatedPolicyChart(event.getPolicy()));
+            PushUtils.push(this, () -> updatedPolicyChart(event.getPolicies()));
         }
     }
 
     @Override
     public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-        return experiment.getId() == event.getPolicy().getExperiment().getId();
+        return experiment.getId() == event.getExperimentId();
     }
 }
 
