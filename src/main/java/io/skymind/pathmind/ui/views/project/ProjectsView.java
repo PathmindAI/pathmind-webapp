@@ -88,7 +88,7 @@ public class ProjectsView extends PathMindDefaultView
 
 		projectGrid.addColumn(new ZonedDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Project::getDateCreated))
-				.setHeader("Date Created")
+				.setHeader("Created")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true)

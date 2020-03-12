@@ -109,14 +109,14 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		modelGrid = new Grid<>();
 
 		Grid.Column<Model> nameColumn = modelGrid.addColumn(Model::getName)
-				.setHeader("Model")
+				.setHeader("#")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true)
 				.setSortable(true);
 		modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getDateCreated))
-				.setHeader("Date Created")
+				.setHeader("Created")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true)
