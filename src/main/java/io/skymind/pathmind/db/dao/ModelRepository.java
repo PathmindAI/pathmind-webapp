@@ -13,7 +13,7 @@ class ModelRepository
 {
     protected static List<Model> getModelsForProject(DSLContext ctx, long projectId) {
         return ctx
-				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.ARCHIVED, MODEL.USER_NOTES)
+				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.ARCHIVED, MODEL.USER_NOTES)
 				.from(MODEL)
 				.where(MODEL.PROJECT_ID.eq(projectId))
 				.fetchInto(Model.class);
@@ -39,7 +39,7 @@ class ModelRepository
 	 * @return Model - beware, not all fields are initialized
 	 */
 	protected static Model getModel(DSLContext ctx, long modelId) {
-		return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.USER_NOTES)
+		return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.USER_NOTES)
 				.from(MODEL)
 				.where(MODEL.ID.eq(modelId))
 				.fetchOneInto(Model.class);
@@ -54,7 +54,6 @@ class ModelRepository
 		mod.setProjectId(projectId);
 		mod.setNumberOfPossibleActions(model.getNumberOfPossibleActions());
 		mod.setNumberOfObservations(model.getNumberOfObservations());
-		mod.setGetObservationForRewardFunction(model.getGetObservationForRewardFunction());
 		mod.store();
 		return mod.key().get(MODEL.ID);
 	}

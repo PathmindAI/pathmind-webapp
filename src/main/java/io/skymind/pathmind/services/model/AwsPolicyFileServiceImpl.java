@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 @Slf4j
@@ -62,7 +63,7 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
         Optional.ofNullable(policyDAO.getPolicy(policyId))
                 .ifPresent(policy -> {
                     policy.setHasFile(true);
-                    EventBus.post(new PolicyUpdateBusEvent(policy));
+                    EventBus.post(new PolicyUpdateBusEvent(Arrays.asList(policy)));
                 });
     }
 

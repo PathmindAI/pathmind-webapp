@@ -10,10 +10,6 @@ import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 
 public class ExperimentViewNavigationUtils
 {
-	public static String getExperimentParameters(Experiment experiment) {
-		return Long.toString(experiment.getId());
-	}
-	
 	public static void createAndNavigateToNewExperiment(UI ui, ExperimentDAO experimentDAO, long modelId, String defaultRewardFunction) {
 		String experimentName = Integer.toString (experimentDAO.getExperimentCount(modelId) + 1);
     	Experiment lastExperiment = experimentDAO.getLastExperimentForModel(modelId);
