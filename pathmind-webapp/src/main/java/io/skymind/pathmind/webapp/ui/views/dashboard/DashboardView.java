@@ -31,13 +31,13 @@ import io.skymind.pathmind.shared.bus.EventBus;
 import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.shared.data.DashboardItem;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
-
 
 @Route(value= Routes.DASHBOARD_URL, layout = MainLayout.class)
 public class DashboardView extends PathMindDefaultView implements RunUpdateSubscriber
@@ -86,7 +86,14 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 		dashboardGrid = new Grid<>();
 		dashboardGrid.addClassName("dashboard");
 		dashboardGrid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
-		dashboardGrid.addComponentColumn(item -> new DashboardLine(item, itm -> navigateFromDashboard(itm)));
+		dashboardGrid.addComponentColumn(item -> {
+			Experiment experiment = item.getExperiment();
+			String experimentNotes = "—";
+			if (experiment != null && !experiment.getUserNotes().isEmpty()) {
+				experimentNotes = experiment.getUserNotes();
+			}
+			return new DashboardLine(item, itm -> navigateFromDashboard(itm), experimentNotes);
+		});
 		dashboardGrid.setSelectionMode(SelectionMode.NONE);
 		dashboardGrid.setPageSize(10);
 	}

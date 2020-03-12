@@ -338,14 +338,28 @@ h4 {
   align-items: center;
 }
 .navigate-icon {
-  display: none;
+  opacity: 0;
 }
 .dashboard-placeholder {
   margin-top: 90px;
 }
 
 .dashboard-line:hover > .navigate-icon {
-  display: inline-flex;
+  opacity: 1;
+}
+.dashboard-item-main {
+  flex: 0 0 66%;
+}
+.dashboard-item-notes {
+  align-self: stretch;
+  padding: 0 0 0 var(--lumo-space-m);
+  border-left: 1px solid var(--pm-gray-color-light);
+}
+.dashboard-item-notes p {
+  max-height: 5rem;
+  white-space: normal;
+  overflow: hidden;
+  margin-bottom: 0;
 }
 
 .stages-container {
