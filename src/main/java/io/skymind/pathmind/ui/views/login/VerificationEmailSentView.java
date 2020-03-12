@@ -17,7 +17,7 @@ import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 @Tag("verification-email-sent-view")
 @JsModule("./src/account/verification-email-sent-view.js")
 @Route(value = Routes.VERIFICATION_EMAIL_SENT_URL)
-public class VerificationEmailSentView extends PolymerTemplate<VerificationEmailSentView.Model> implements PublicView {
+public class VerificationEmailSentView extends PolymerTemplate<TemplateModel> implements PublicView {
 
 	@Id("backToLogin")
 	private Button backToLogin;
@@ -32,8 +32,5 @@ public class VerificationEmailSentView extends PolymerTemplate<VerificationEmail
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
 		getElement().appendChild(segmentIntegrator.getElement());
-	}
-	
-	public interface Model extends TemplateModel {
 	}
 }
