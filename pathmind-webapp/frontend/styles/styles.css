@@ -125,12 +125,6 @@ hr {
   margin-top: var(--lumo-space-m);
 }
 
-.dashboard-view .page-title {
-  /* To make the white panel on Dashboard page to be 
-     at the same position as the Projects, Project, and Model pages */
-  margin-bottom: 2rem;
-}
-
 .light-text-label {
   font-size: var(--lumo-font-size-m);
   color: var(--pm-orange-color);
@@ -213,19 +207,26 @@ hr {
   align-self: center;
 }
 
-.projects-view .content {
-  flex: 1;
+.projects-view .page-content {
   max-width: 1480px;
   align-self: center;
   padding: 0;
-  margin-top: var(--lumo-space-m);
 }
 
 .projects-view .view-section,
 .project-view .view-section,
-.model-view .view-section {
+.model-view .view-section,
+.projects-view .page-content,
+.project-view .page-content,
+.model-view .page-content {
   flex: 1;
   margin-top: 0;
+}
+
+.experiment-view .page-content {
+  /* To make the white panels on Experiment page to be 
+     at the same position as the Projects, Project, and Model pages */
+  margin-top: var(--lumo-space-xl);
 }
 
 .guide-view-wrapper {

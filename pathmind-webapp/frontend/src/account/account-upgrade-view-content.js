@@ -12,7 +12,7 @@ class AccountUpgradeViewContent extends PolymerElement {
 
         .content {
           max-width: 100%;
-          padding: 60px 0;
+          padding: var(--lumo-space-xl) 0;
         }
 
         .cards-holder {
