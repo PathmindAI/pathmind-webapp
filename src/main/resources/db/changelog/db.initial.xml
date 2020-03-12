@@ -1065,4 +1065,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="20200312-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <addColumn tableName="MODEL">
+            <column name="REWARD_VARIABLES_COUNT" type="INT" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

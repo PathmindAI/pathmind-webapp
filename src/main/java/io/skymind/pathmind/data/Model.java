@@ -25,6 +25,7 @@ public class Model extends ArchivableData
 	private byte[] file;
 	private long projectId;
 	private String userNotes;
+	private int rewardVariablesCount;
 
 	public Model() {
 	}
@@ -91,5 +92,13 @@ public class Model extends ArchivableData
 
 	public void setUserNotes(String userNotes) {
 		this.userNotes = userNotes;
+	}
+
+	public int getRewardVariablesCount() {
+		return rewardVariablesCount;
+	}
+
+	public void setRewardVariablesCount(int rewardVariablesCount) {
+		this.rewardVariablesCount = rewardVariablesCount;
 	}
 }

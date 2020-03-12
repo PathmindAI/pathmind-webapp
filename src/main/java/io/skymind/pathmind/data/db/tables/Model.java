@@ -20,7 +20,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row10;
+import org.jooq.Row11;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = -2065016713;
+    private static final long serialVersionUID = -730030836;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -106,6 +106,11 @@ public class Model extends TableImpl<ModelRecord> {
      * The column <code>public.model.user_notes</code>.
      */
     public final TableField<ModelRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>public.model.reward_variables_count</code>.
+     */
+    public final TableField<ModelRecord, Integer> REWARD_VARIABLES_COUNT = createField(DSL.name("reward_variables_count"), org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * Create a <code>public.model</code> table reference
@@ -196,11 +201,11 @@ public class Model extends TableImpl<ModelRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row10 type methods
+    // Row11 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Integer, String, Boolean, String> fieldsRow() {
-        return (Row10) super.fieldsRow();
+    public Row11<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Integer, String, Boolean, String, Integer> fieldsRow() {
+        return (Row11) super.fieldsRow();
     }
 }
