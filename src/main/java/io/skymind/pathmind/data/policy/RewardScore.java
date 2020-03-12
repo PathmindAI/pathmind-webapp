@@ -7,15 +7,17 @@ public class RewardScore {
     private Double mean;
 
     private Integer iteration;
+    private Integer episodeCount;
 
     // for deserialization
     private RewardScore(){}
 
-    public RewardScore(Double max, Double min, Double mean, Integer iteration) {
+    public RewardScore(Double max, Double min, Double mean, Integer iteration, Integer episodeCount) {
         this.max = max;
         this.min = min;
         this.mean = mean;
         this.iteration = iteration;
+        this.episodeCount = episodeCount;
     }
 
     public Double getMax() {
@@ -48,5 +50,13 @@ public class RewardScore {
 
     public void setIteration(Integer iteration) {
         this.iteration = iteration;
+    }
+
+    public Integer getEpisodeCount() {
+        return episodeCount;
+    }
+
+    public void setEpisodeCount(Integer episodeCount) {
+        this.episodeCount = episodeCount;
     }
 }

@@ -86,12 +86,14 @@ public class ProgressInterpreter
                     final String max = record[0];   // episode_reward_max
                     final String min = record[1];   // episode_reward_min
                     final String mean = record[2];  // episode_reward_mean
+                    final Integer episodeCount = Integer.parseInt(record[4]);
 
                     scores.add(new RewardScore(
                             Double.valueOf(max.equals("nan") ? "NaN" : max),
                             Double.valueOf(min.equals("nan") ? "NaN" : min),
                             Double.valueOf(mean.equals("nan") ? "NaN" : mean),
-                            iter
+                            iter,
+                            episodeCount
                     ));
                 }
             }

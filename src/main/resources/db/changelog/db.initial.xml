@@ -1059,4 +1059,10 @@
         </sql>
     </changeSet>
 
+    <changeSet id="20200303-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <addColumn tableName="REWARD_SCORE">
+            <column name="EPISODE_COUNT" type="INT"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
