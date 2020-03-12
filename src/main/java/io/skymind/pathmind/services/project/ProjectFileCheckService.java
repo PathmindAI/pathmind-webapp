@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services.project;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
@@ -18,9 +19,11 @@ public class ProjectFileCheckService {
     @Autowired
     ExecutorService checkerExecutorService;
 
-
     @Autowired
     ModelAnalyzerApiClient client;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
     public void checkFile(StatusUpdater statusUpdater, byte[] data) {
@@ -31,12 +34,14 @@ public class ProjectFileCheckService {
 
                 try {
                     FileUtils.writeByteArrayToFile(tempFile, data);
-                    AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker();
+                    AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker(objectMapper);
                     //File check result.
                     final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
 
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
-                        setHyperparams(result, client.analyze(tempFile));
+                        if (result.getZipContentFileNames() == null) {
+                            setHyperparams(result, client.analyze(tempFile));
+                        }
                         statusUpdater.fileSuccessfullyVerified(result);
                     }
                 } finally {

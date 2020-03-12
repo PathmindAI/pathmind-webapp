@@ -23,6 +23,7 @@ import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
 import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
+import io.skymind.pathmind.services.project.meta.PathmindMeta;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
@@ -181,9 +182,15 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			setVisibleWizardPanel(modelDetailsWizardPanel);
 
 			if (result != null) {
-				model.setNumberOfPossibleActions(((AnylogicFileCheckResult) (result)).getNumAction());
-				model.setNumberOfObservations(((AnylogicFileCheckResult) (result)).getNumObservation());
-				model.setGetObservationForRewardFunction(((AnylogicFileCheckResult) (result)).getRewardVariableFunction());
+				AnylogicFileCheckResult anylogicFileCheckResult = ((AnylogicFileCheckResult) (result));
+				if (anylogicFileCheckResult.getPathmindMeta() != null) {
+					PathmindMeta meta = anylogicFileCheckResult.getPathmindMeta();
+					model.setNumberOfPossibleActions(meta.getPossibleActionCount());
+					model.setNumberOfObservations(meta.getObservationCount());
+				} else {
+					model.setNumberOfPossibleActions(anylogicFileCheckResult.getNumAction());
+					model.setNumberOfObservations(anylogicFileCheckResult.getNumObservation());
+				}
 			}
 
 			modelBinder.readBean(model);

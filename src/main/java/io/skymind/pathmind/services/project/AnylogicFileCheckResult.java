@@ -1,5 +1,7 @@
 package io.skymind.pathmind.services.project;
 
+import io.skymind.pathmind.services.project.meta.PathmindMeta;
+
 import java.util.List;
 
 public class AnylogicFileCheckResult implements FileCheckResult {
@@ -12,6 +14,7 @@ public class AnylogicFileCheckResult implements FileCheckResult {
     private int numAction;
     private int numObservation;
     private String rewardVariableFunction;
+    private PathmindMeta pathmindMeta;
 
     @Override
     public boolean isFileCheckComplete() {
@@ -110,5 +113,13 @@ public class AnylogicFileCheckResult implements FileCheckResult {
 
     public void setRewardVariableFunction(String rewardVariableFunction) {
         this.rewardVariableFunction = rewardVariableFunction;
+    }
+
+    public PathmindMeta getPathmindMeta() {
+        return pathmindMeta;
+    }
+
+    public void setPathmindMeta(PathmindMeta pathmindMeta) {
+        this.pathmindMeta = pathmindMeta;
     }
 }

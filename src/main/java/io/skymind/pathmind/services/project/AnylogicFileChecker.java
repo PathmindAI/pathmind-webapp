@@ -1,5 +1,7 @@
 package io.skymind.pathmind.services.project;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.services.project.meta.PathmindMeta;
 import io.skymind.pathmind.ui.components.status.StatusUpdater;
 import io.skymind.pathmind.utils.FileUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,12 @@ public class AnylogicFileChecker implements FileChecker {
 
     private byte[] buffer = new byte[1024];
 
+    private ObjectMapper objectMapper;
+
+    public AnylogicFileChecker(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     @Override
     public FileCheckResult performFileCheck(StatusUpdater statusUpdater, File file) {
         log.info("{} :- performFileCheck Started", uuid);
@@ -40,6 +48,7 @@ public class AnylogicFileChecker implements FileChecker {
                 if (anylogicFileCheckResult.isCorrectFileType() && unZipped != null) {
                     //Passing unzipped path to check whether model.jar exist and it is valid or not
                     File modelJarFile = checkJarFile(unZipped, anylogicFileCheckResult);
+                    checkMeta(unZipped, anylogicFileCheckResult);
                     statusUpdater.updateStatus(0.30);
 
                     if (anylogicFileCheckResult.isModelJarFilePresent() && modelJarFile != null) {
@@ -80,7 +89,7 @@ public class AnylogicFileChecker implements FileChecker {
 
     /* To check whether zip file is valid or not, if valid it returns unzipped temp directory */
     File checkZipFile(File file, AnylogicFileCheckResult anylogicFileCheckResult) throws IOException {
-        log.info("{} :- CheckZip File Started", uuid);
+        log.info("{} :- checkZipFile File Started", uuid);
 
         File unzippedFile = null;
 
@@ -118,8 +127,29 @@ public class AnylogicFileChecker implements FileChecker {
             }
         }
 
-        log.info("{} :- CheckZip File Completed", uuid);
+        log.info("{} :- checkZipFile File Completed", uuid);
         return unzippedFile;
+    }
+
+    // To check if pathmind_meta.json exist
+    void checkMeta(File unZipped, AnylogicFileCheckResult anylogicFileCheckResult) {
+        log.info("{} :- checkMeta Started", uuid);
+
+        Optional<File> metaJson = Arrays.stream(unZipped.listFiles())
+                .filter(file -> file.getName().equalsIgnoreCase("pathmind_meta.json"))
+                .findAny();
+
+        if (metaJson.isPresent()) {
+            try (FileInputStream fis = new FileInputStream(metaJson.get())) {
+                PathmindMeta pathmindMeta = objectMapper.readValue(fis, PathmindMeta.class);
+                anylogicFileCheckResult.setPathmindMeta(pathmindMeta);
+            } catch (Exception e) {
+                log.error("Error deserialize meta file", e);
+                anylogicFileCheckResult.setPathmindMeta(null);
+            }
+        }
+
+        log.info("{} :- checkMeta Completed", uuid);
     }
 
     // To Check if the model.jar exist and is a valid
@@ -137,8 +167,8 @@ public class AnylogicFileChecker implements FileChecker {
             modelJarFile = modelJar.get();
             try (ZipFile jarFile = new ZipFile(modelJarFile)) {
                 anylogicFileCheckResult.setModelJarFilePresent(true);
-            } catch (Exception ioe) {
-                log.error("Error opening jar file", ioe);
+            } catch (Exception e) {
+                log.error("Error opening jar file", e);
                 anylogicFileCheckResult.setModelJarFilePresent(false);
             }
         }
