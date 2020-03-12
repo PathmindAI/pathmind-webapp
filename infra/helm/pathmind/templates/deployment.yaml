@@ -35,14 +35,14 @@ spec:
             httpGet:
               path: /
               port: 80
-            initialDelaySeconds: 30
-            periodSeconds: 5
+            initialDelaySeconds: 60
+            periodSeconds: 60
           readinessProbe:
             httpGet:
               path: /
               port: 80
-            initialDelaySeconds: 30
-            periodSeconds: 5
+            initialDelaySeconds: 60
+            periodSeconds: 10
           env:
             - name: APPLICATION_URL
               value: "{{ .Values.env.APPLICATION_URL }}"
@@ -91,3 +91,5 @@ spec:
               value: "{{ .Values.env.S3_BUCKET }}"
             - name: MULTI_AGENT
               value: "{{ .Values.env.MULTI_AGENT }}"
+            - name: JOB_MOCK_CYCLE
+              value: "{{ .Values.env.JOB_MOCK_CYCLE }}"

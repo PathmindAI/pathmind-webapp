@@ -17,10 +17,13 @@
 }
 
 .header > span {
-  display: block;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
   position: relative;
   color: var(--pm-primary-color);
   font-weight: bold;
+  padding: 0.5rem 0;
   margin-left: var(--lumo-space-s);
 }
 
@@ -32,6 +35,7 @@
   left: 0;
   bottom: -1px;
   background-color: var(--pm-primary-color);
+  border-radius: var(--lumo-border-radius) var(--lumo-border-radius) 0 0;
 }
 
 .header vaadin-button {

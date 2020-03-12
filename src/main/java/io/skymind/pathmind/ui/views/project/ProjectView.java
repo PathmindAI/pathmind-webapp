@@ -1,4 +1,4 @@
-package io.skymind.pathmind.ui.views.model;
+package io.skymind.pathmind.ui.views.project;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -32,7 +32,7 @@ import io.skymind.pathmind.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.ui.utils.NotificationUtils;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.ui.views.experiment.ExperimentsView;
+import io.skymind.pathmind.ui.views.model.ModelView;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -42,7 +42,7 @@ import java.util.List;
 
 @CssImport("./styles/styles.css")
 @Route(value= Routes.PROJECT_URL, layout = MainLayout.class)
-public class ModelsView extends PathMindDefaultView implements HasUrlParameter<Long>
+public class ProjectView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 	@Autowired
 	private ModelDAO modelDAO;
@@ -61,7 +61,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
 
-	public ModelsView()
+	public ProjectView()
 	{
 		super();
 	}
@@ -71,7 +71,7 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		setupGrid();
 		setupArchivesTabPanel();
 		
-		addClassName("models-view");
+		addClassName("project-view");
 
 		// BUG -> I didn't have to really investigate but it looks like we may need
 		// to do something special to get the full size content in the AppLayout component which
@@ -109,28 +109,34 @@ public class ModelsView extends PathMindDefaultView implements HasUrlParameter<L
 		modelGrid = new Grid<>();
 
 		Grid.Column<Model> nameColumn = modelGrid.addColumn(Model::getName)
-				.setHeader("Model")
+				.setHeader("#")
+				.setAutoWidth(true)
+				.setFlexGrow(0)
 				.setResizable(true)
 				.setSortable(true);
 		modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getDateCreated))
-				.setHeader("Date Created")
+				.setHeader("Created")
+				.setAutoWidth(true)
+				.setFlexGrow(0)
 				.setResizable(true)
 				.setSortable(true);
 		modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getLastActivityDate))
 				.setHeader("Last Activity")
+				.setAutoWidth(true)
+				.setFlexGrow(0)
 				.setResizable(true)
 				.setSortable(true);
 		modelGrid.addColumn(model -> {
 				String userNotes = model.getUserNotes();
-				return userNotes.isEmpty() ? "--" : userNotes;
+				return userNotes.isEmpty() ? "—" : userNotes;
 		})
 				.setHeader("Notes")
 				.setResizable(true)
 				.setSortable(false);
 
-		modelGrid.addItemClickListener(event -> getUI().ifPresent(ui -> UI.getCurrent().navigate(ExperimentsView.class, event.getItem().getId())));
+		modelGrid.addItemClickListener(event -> getUI().ifPresent(ui -> UI.getCurrent().navigate(ModelView.class, event.getItem().getId())));
 
 		// Sort by name by default
 		modelGrid.sort(Arrays.asList(new GridSortOrder<>(nameColumn, SortDirection.DESCENDING)));
