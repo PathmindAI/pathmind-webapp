@@ -19,7 +19,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
@@ -68,7 +67,7 @@ public class ModelAnalyzerApiClient {
         return result;
     }
 
-    public HyperparametersDTO analyze(File file) throws IOException {
+    public HyperparametersDTO analyze(File file) {
         if (multiAgent) {
             log.warn("Skip model analysis in multi-agent mode");
             return null;

@@ -183,6 +183,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			if (result != null) {
 				model.setNumberOfPossibleActions(((AnylogicFileCheckResult) (result)).getNumAction());
 				model.setNumberOfObservations(((AnylogicFileCheckResult) (result)).getNumObservation());
+				model.setRewardVariablesCount(((AnylogicFileCheckResult) (result)).getRewardVariablesCount());
 				model.setGetObservationForRewardFunction(((AnylogicFileCheckResult) (result)).getRewardVariableFunction());
 			}
 
