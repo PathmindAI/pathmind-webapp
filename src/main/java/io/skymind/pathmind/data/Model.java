@@ -12,8 +12,6 @@ public class Model extends ArchivableData
 
 	public static final int DEFAULT_NUMBER_OF_OBSERVATIONS = 1;
 	public static final int DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS = 1;
-	public static final String DEFAULT_GET_OBSERVATION_FOR_REWARD_FUNCTION = "Copy and paste your getObservation for reward function here so you" +
-			"can reference it while writing your reward function in the next step.";
 
 	public static final String DEFAULT_INITIAL_MODEL_NAME = "Initial Model Revision";
 
@@ -21,7 +19,6 @@ public class Model extends ArchivableData
 	private LocalDateTime lastActivityDate;
 	private int numberOfObservations = DEFAULT_NUMBER_OF_OBSERVATIONS;
 	private int numberOfPossibleActions = DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS;
-	private String getObservationForRewardFunction = "";
 	private byte[] file;
 	private long projectId;
 	private String userNotes;
@@ -51,14 +48,6 @@ public class Model extends ArchivableData
 
 	public void setDateCreated(LocalDateTime dateCreated) {
 		this.dateCreated = dateCreated;
-	}
-
-	public String getGetObservationForRewardFunction() {
-		return getObservationForRewardFunction;
-	}
-
-	public void setGetObservationForRewardFunction(String getObservationForRewardFunction) {
-		this.getObservationForRewardFunction = getObservationForRewardFunction != null ? getObservationForRewardFunction : "";
 	}
 
 	public byte[] getFile() {

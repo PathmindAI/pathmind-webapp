@@ -17,10 +17,11 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row13;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = -1329301141;
+    private static final long serialVersionUID = -820203920;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -60,7 +61,7 @@ public class Policy extends TableImpl<PolicyRecord> {
     /**
      * The column <code>public.policy.id</code>.
      */
-    public final TableField<PolicyRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<PolicyRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('policy_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.policy.run_id</code>.
@@ -86,31 +87,6 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.stopped_at</code>.
      */
     public final TableField<PolicyRecord, LocalDateTime> STOPPED_AT = createField(DSL.name("stopped_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
-
-    /**
-     * The column <code>public.policy.algorithm</code>.
-     */
-    public final TableField<PolicyRecord, String> ALGORITHM = createField(DSL.name("algorithm"), org.jooq.impl.SQLDataType.VARCHAR(3), this, "");
-
-    /**
-     * The column <code>public.policy.learning_rate</code>.
-     */
-    public final TableField<PolicyRecord, Double> LEARNING_RATE = createField(DSL.name("learning_rate"), org.jooq.impl.SQLDataType.DOUBLE.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.DOUBLE)), this, "");
-
-    /**
-     * The column <code>public.policy.gamma</code>.
-     */
-    public final TableField<PolicyRecord, Double> GAMMA = createField(DSL.name("gamma"), org.jooq.impl.SQLDataType.DOUBLE.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.DOUBLE)), this, "");
-
-    /**
-     * The column <code>public.policy.batch_size</code>.
-     */
-    public final TableField<PolicyRecord, Integer> BATCH_SIZE = createField(DSL.name("batch_size"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
-
-    /**
-     * The column <code>public.policy.notes</code>.
-     */
-    public final TableField<PolicyRecord, String> NOTES = createField(DSL.name("notes"), org.jooq.impl.SQLDataType.VARCHAR, this, "");
 
     /**
      * The column <code>public.policy.exported_at</code>.
@@ -166,6 +142,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     }
 
     @Override
+    public Identity<PolicyRecord, Long> getIdentity() {
+        return Keys.IDENTITY_POLICY;
+    }
+
+    @Override
     public UniqueKey<PolicyRecord> getPrimaryKey() {
         return Keys.POLICY_PKEY;
     }
@@ -211,11 +192,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row13 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<Long, Long, String, String, LocalDateTime, LocalDateTime, String, Double, Double, Integer, String, LocalDateTime, Boolean> fieldsRow() {
-        return (Row13) super.fieldsRow();
+    public Row8<Long, Long, String, String, LocalDateTime, LocalDateTime, LocalDateTime, Boolean> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }
