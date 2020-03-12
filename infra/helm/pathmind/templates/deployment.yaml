@@ -91,3 +91,5 @@ spec:
               value: "{{ .Values.env.S3_BUCKET }}"
             - name: MULTI_AGENT
               value: "{{ .Values.env.MULTI_AGENT }}"
+            - name: JOB_MOCK_CYCLE
+              value: "{{ .Values.env.JOB_MOCK_CYCLE }}"

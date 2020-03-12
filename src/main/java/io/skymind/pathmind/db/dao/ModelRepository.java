@@ -7,13 +7,13 @@ import org.jooq.DSLContext;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static io.skymind.pathmind.data.db.Tables.*;
+import static io.skymind.pathmind.data.db.Tables.MODEL;
 
 class ModelRepository
 {
     protected static List<Model> getModelsForProject(DSLContext ctx, long projectId) {
         return ctx
-				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.ARCHIVED, MODEL.USER_NOTES)
+				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.ARCHIVED, MODEL.USER_NOTES)
 				.from(MODEL)
 				.where(MODEL.PROJECT_ID.eq(projectId))
 				.fetchInto(Model.class);
@@ -33,17 +33,13 @@ class ModelRepository
 				.fetchOne(0, int.class);
 	}
 
-	protected static byte[] getModelFile(DSLContext ctx, long id) {
-		return ctx.select(MODEL_FILE.FILE).from(MODEL_FILE).where(MODEL_FILE.MODEL_ID.eq(id)).fetchOne(MODEL_FILE.FILE);
-	}
-
 	/**
 	 * Note: This doesn't return a *FULL* model. Only the fields that seems relevant at the moment.
 	 * @param modelId
 	 * @return Model - beware, not all fields are initialized
 	 */
 	protected static Model getModel(DSLContext ctx, long modelId) {
-		return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION, MODEL.USER_NOTES)
+		return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.USER_NOTES)
 				.from(MODEL)
 				.where(MODEL.ID.eq(modelId))
 				.fetchOneInto(Model.class);
@@ -58,7 +54,6 @@ class ModelRepository
 		mod.setProjectId(projectId);
 		mod.setNumberOfPossibleActions(model.getNumberOfPossibleActions());
 		mod.setNumberOfObservations(model.getNumberOfObservations());
-		mod.setGetObservationForRewardFunction(model.getGetObservationForRewardFunction());
 		mod.store();
 		return mod.key().get(MODEL.ID);
 	}

@@ -5,7 +5,6 @@ import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -40,12 +39,7 @@ class AwsModelServiceImpl implements ModelService {
 
     @Override
     public byte[] getModelFile(long id) {
-        byte[] content = awsApiClient.fileContents(MODEL_FILES + id, true);
-        if (ArrayUtils.isEmpty(content)) {
-            log.warn("Model File was not found in S3, fallback lookup in DB");
-            content = modelDAO.getModelFile(id);
-        }
-        return content;
+        return awsApiClient.fileContents(MODEL_FILES + id, true);
     }
 
     @Override

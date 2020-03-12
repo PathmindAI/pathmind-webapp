@@ -43,7 +43,6 @@ public class ProgressInterpreter
         // PPO_PathmindEnvironment_0_clip_param=0.2,entropy_coeff=0.035,gamma=0.94978,kl_coeff=0.3,kl_target=0.03,lambda=0.96,lr=0.0016037,nu
         List<String> list = Arrays.asList(keyString.split("_", 4));
 
-        policy.setAlgorithm(list.get(ALGORITHM));
         policy.setName(list.get(NAME));
 
         try {
@@ -86,12 +85,14 @@ public class ProgressInterpreter
                     final String max = record[0];   // episode_reward_max
                     final String min = record[1];   // episode_reward_min
                     final String mean = record[2];  // episode_reward_mean
+                    final Integer episodeCount = Integer.parseInt(record[4]);
 
                     scores.add(new RewardScore(
                             Double.valueOf(max.equals("nan") ? "NaN" : max),
                             Double.valueOf(min.equals("nan") ? "NaN" : min),
                             Double.valueOf(mean.equals("nan") ? "NaN" : mean),
-                            iter
+                            iter,
+                            episodeCount
                     ));
                 }
             }

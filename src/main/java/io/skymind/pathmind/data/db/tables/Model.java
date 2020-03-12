@@ -17,10 +17,11 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row11;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = 1515001429;
+    private static final long serialVersionUID = -2039123966;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -60,7 +61,7 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.id</code>.
      */
-    public final TableField<ModelRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ModelRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('model_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.model.project_id</code>.
@@ -93,11 +94,6 @@ public class Model extends TableImpl<ModelRecord> {
     public final TableField<ModelRecord, Integer> NUMBER_OF_POSSIBLE_ACTIONS = createField(DSL.name("number_of_possible_actions"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>public.model.get_observation_for_reward_function</code>.
-     */
-    public final TableField<ModelRecord, String> GET_OBSERVATION_FOR_REWARD_FUNCTION = createField(DSL.name("get_observation_for_reward_function"), org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
-
-    /**
      * The column <code>public.model.archived</code>.
      */
     public final TableField<ModelRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
@@ -106,11 +102,6 @@ public class Model extends TableImpl<ModelRecord> {
      * The column <code>public.model.user_notes</code>.
      */
     public final TableField<ModelRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
-
-    /**
-     * The column <code>public.model.model_file_moved_to_s3</code>.
-     */
-    public final TableField<ModelRecord, Boolean> MODEL_FILE_MOVED_TO_S3 = createField(DSL.name("model_file_moved_to_s3"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * Create a <code>public.model</code> table reference
@@ -153,6 +144,11 @@ public class Model extends TableImpl<ModelRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.MODEL_PKEY, Indexes.MODEL_PROJECT_FK_INDEX);
+    }
+
+    @Override
+    public Identity<ModelRecord, Long> getIdentity() {
+        return Keys.IDENTITY_MODEL;
     }
 
     @Override
@@ -201,11 +197,11 @@ public class Model extends TableImpl<ModelRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row11 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Integer, String, Boolean, String, Boolean> fieldsRow() {
-        return (Row11) super.fieldsRow();
+    public Row9<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Integer, Boolean, String> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }

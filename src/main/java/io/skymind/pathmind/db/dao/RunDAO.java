@@ -50,10 +50,6 @@ public class RunDAO
         RunRepository.markAsStarting(ctx, runId);
     }
 
-    public List<Run> getRunsForExperiment(long experimentId) {
-        return RunRepository.getRunsForExperiment(ctx, experimentId);
-    }
-
     /**
      * Returns true if
      * - there is no other run with same run type that still executing
@@ -71,8 +67,8 @@ public class RunDAO
      * This is used in case a run is restarted, so that Notification Sent value is cleared
      * and a notification can be sent again after the training is completed
      */
-    public void clearNotificationSentInfo(long experimentId, int runType) {
-    	RunRepository.clearNotificationSentInfo(ctx, experimentId, runType);
+    public void clearNotificationSentInfo(long experimentId) {
+    	RunRepository.clearNotificationSentInfo(ctx, experimentId);
     }
 
     public List<Long> getExecutingRuns() {
@@ -101,7 +97,9 @@ public class RunDAO
 
     private void fireEventBusUpdates(Run run, List<Policy> policies) {
         // An event for each policy since we only need to update some of the policies in a run.
-        policies.stream().forEach(policy -> EventBus.post(new PolicyUpdateBusEvent(policy)));
+    	if (!policies.isEmpty()) {
+    		EventBus.post(new PolicyUpdateBusEvent(policies));
+    	}
         // Send run updated event, meaning that all policies under the run is updated.
         // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
         EventBus.post(new RunUpdateBusEvent(run));
@@ -143,13 +141,6 @@ public class RunDAO
                         .collect(Collectors.toList());
                 RewardScoreRepository.insertRewardScores(transactionCtx, policy.getId(), newRewardScores);
             }
-
-            // STEPH -> REFACTOR -> Now that it's transactional is it ok to post to the eventbus? For now this is no worse then what we are doing in production today
-            // but we should look at putting this after the transaction has been completed. The only issue is that it's a list of policies that may need
-            // to be updated. As in this should technically be placed outside of the transaction in updateRun() rather than here. Again it's no worse then what we
-            // have in place today, and if I'm correct the worse place is that we'd have an update that isn't legit and it would be corrected on the next update anyways.
-            // Created a github issue:
-            EventBus.post(new PolicyUpdateBusEvent(policy));
         }
     }
 

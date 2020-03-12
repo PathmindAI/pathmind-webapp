@@ -1,6 +1,5 @@
 package io.skymind.pathmind.services;
 
-import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
@@ -14,9 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class TrainingService {
-    private static final int MINUTE = 60;
-    private static final int HOUR = 60 * 60;
-
     protected final ExecutionProvider executionProvider;
     protected final RunDAO runDAO;
     protected final ModelService modelService;
@@ -42,38 +38,18 @@ public abstract class TrainingService {
 //        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
         executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6_PBT, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
     }
-
-    public void startTestRun(Experiment exp){
-        startRun(RunType.TestRun,
-                exp,
-                50,
-                15 * MINUTE,
-                10
+    public void startRun(Experiment exp){
+        startRun(exp,
+                RunConstants.PBT_RUN_ITERATIONS,
+                RunConstants.PBT_MAX_TIME_IN_SEC,
+                RunConstants.PBT_NUM_SAMPLES
         );
     }
 
-    public void startDiscoveryRun(Experiment exp){
-        startRun(RunType.DiscoveryRun,
-                exp,
-                RunConstants.DISCOVERY_RUN_ITERATIONS,
-                2 * HOUR, // 2 hr
-                10
-        );
+    private void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSamples) {
+        runDAO.clearNotificationSentInfo(exp.getId());
+        startRun(exp, iterations, maxTimeInSec, numSamples, null);
     }
 
-    public void startFullRun(Experiment exp, Policy policy){
-        startRun(RunType.FullRun,
-                exp,
-                RunConstants.FULL_RUN_ITERATIONS,
-                24 * HOUR, // 24 hr
-                10,
-                policy);          // base policy
-    }
-
-    private void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples) {
-        runDAO.clearNotificationSentInfo(exp.getId(), runType.getValue());
-        startRun(runType, exp, iterations, maxTimeInSec, numSamples, null);
-    }
-
-    protected abstract void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSampes, Policy basePolicy);
+    protected abstract void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSampes, Policy basePolicy);
 }

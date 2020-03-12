@@ -10,18 +10,6 @@ import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 
 public class ExperimentViewNavigationUtils
 {
-	/**
-	 * Temporary solution until Vaadin adds the ability to parse multiple parameters
-	 * into the view: https://github.com/vaadin/flow/issues/4213
-	 */
-	public static String getExperimentParameters(Policy policy) {
-		return policy.getExperiment().getId() + "/" + policy.getId();
-	}
-
-	public static String getExperimentParameters(Experiment experiment) {
-		return Long.toString(experiment.getId());
-	}
-	
 	public static void createAndNavigateToNewExperiment(UI ui, ExperimentDAO experimentDAO, long modelId, String defaultRewardFunction) {
 		String experimentName = Integer.toString (experimentDAO.getExperimentCount(modelId) + 1);
     	Experiment lastExperiment = experimentDAO.getLastExperimentForModel(modelId);

@@ -131,7 +131,6 @@ class AccountUpgradeViewContent extends PolymerElement {
               <span class="title">Professional</span>
               <span class="details">Monthly Subscription</span>
             </vaadin-vertical-layout>
-
             <div class="feature feature-available">
               Details coming soon.
             </div>

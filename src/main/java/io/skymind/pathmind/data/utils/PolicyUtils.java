@@ -6,18 +6,19 @@ import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.data.Run;
 import io.skymind.pathmind.utils.DateAndTimeUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static io.skymind.pathmind.utils.StringUtils.toCamelCase;
+import static io.skymind.pathmind.utils.StringUtils.removeInvalidChars;
+
 @Slf4j
 public class PolicyUtils
 {
-    public static final String LEARNING_RATE = "lr";
-    public static final String GAMMA = "gamma";
-    public static final String BATCH_SIZE = "sgd_minibatch_size";
 
     private PolicyUtils() {
     }
@@ -84,12 +85,6 @@ public class PolicyUtils
             .collect(Collectors.toList());
     }
 
-    public static String generateDefaultNotes(Policy policy) {
-        return  BATCH_SIZE + "=" + policy.getBatchSize() + ", " +
-                LEARNING_RATE + "=" + policy.getLearningRate() + ", " +
-                GAMMA + "=" + policy.getGamma();
-    }
-
     public static void loadPolicyDataModel(Policy policy, long policyId, Run run) {
         policy.setId(policyId);
         policy.setRun(run);
@@ -100,5 +95,12 @@ public class PolicyUtils
 
     public static List<Long> convertToPolicyIds(List<Policy> policies) {
         return policies.stream().map(policy -> policy.getId()).collect(Collectors.toList());
+    }
+
+    public static String generatePolicyFileName(Policy policy) {
+        if(!ObjectUtils.allNotNull(policy, policy.getProject(), policy.getModel(), policy.getExperiment())) {
+            return "-";
+        }
+        return removeInvalidChars(String.format("%s-M%sE%s-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getExperiment().getName()));
     }
 }

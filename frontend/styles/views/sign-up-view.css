@@ -59,7 +59,7 @@ h3 + vaadin-password-field {
 
 .notes {
   font-size: var(--lumo-font-size-s);
-  color: var(--pm-tertiary-text-color);
+  color: var(--lumo-secondary-text-color);
   padding-left: var(--lumo-space-s);
 }
 
@@ -73,7 +73,7 @@ h3 + vaadin-password-field {
 
 .form-hints {
   font-size: var(--lumo-font-size-s);
-  color: var(--pm-tertiary-text-color);
+  color: var(--lumo-secondary-text-color);
   margin: 0;
 }
 
@@ -103,12 +103,12 @@ h3 + vaadin-password-field {
 
 .policy {
   font-size: var(--lumo-font-size-xs);
-  color: var(--pm-tertiary-text-color);
+  color: var(--lumo-secondary-text-color);
 }
 
 .policy a {
   font-weight: 700;
-  color: var(--pm-tertiary-text-color);
+  color: var(--lumo-secondary-text-color);
   text-decoration: none;
 }
 

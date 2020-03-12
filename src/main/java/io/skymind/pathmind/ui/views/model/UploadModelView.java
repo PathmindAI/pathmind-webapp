@@ -33,7 +33,6 @@ import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.ui.views.guide.GuideOverview;
 import io.skymind.pathmind.ui.views.model.components.ModelDetailsWizardPanel;
-import io.skymind.pathmind.ui.views.model.components.UploadModelStatusWizardPanel;
 import io.skymind.pathmind.ui.views.model.components.UploadModelWizardPanel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +63,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private UI ui;
 
-	private UploadModelStatusWizardPanel statusPanel;
 	private UploadModelWizardPanel uploadModelWizardPanel;
 	private ModelDetailsWizardPanel modelDetailsWizardPanel;
 
@@ -87,7 +85,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 		modelBinder = new Binder<>(Model.class);
 
-		statusPanel = new UploadModelStatusWizardPanel();
 		uploadModelWizardPanel = new UploadModelWizardPanel(model);
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
 
@@ -100,11 +97,14 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		uploadModelWizardPanel.addFileUploadCompletedListener(() -> handleUploadWizardClicked());
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked());
 
-		return WrapperUtils.wrapFormCenterVertical(
-				statusPanel,
+		VerticalLayout wrapper = WrapperUtils.wrapFormCenterVertical(
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel,
 				createBacktoGuideButton());
+
+		wrapper.getStyle().set("width", "auto");
+		wrapper.getStyle().set("padding-top", "var(--lumo-space-xxl)");
+		return wrapper;
 	}
 
     @Override
@@ -116,6 +116,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		uploadModelWizardPanel.setProjectName(project.getName());
+		modelDetailsWizardPanel.setProjectName(project.getName());
 	}
 
 	private void handleMoreDetailsClicked()
@@ -135,13 +136,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	private void handleUploadWizardClicked() {
-		if (user.getEmail().equals("edward@skymind.io")) { // This is Ed!
-			log.info("User is Ed, skipping file check");
-			fileSuccessfullyVerified(null);
-		} else {
-			uploadModelWizardPanel.showFileCheckPanel();
-			projectFileCheckService.checkFile(this, model.getFile());
-		}
+		uploadModelWizardPanel.showFileCheckPanel();
+		projectFileCheckService.checkFile(this, model.getFile());
 	}
 
 	private void setVisibleWizardPanel(Component wizardPanel) {
@@ -187,11 +183,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			if (result != null) {
 				model.setNumberOfPossibleActions(((AnylogicFileCheckResult) (result)).getNumAction());
 				model.setNumberOfObservations(((AnylogicFileCheckResult) (result)).getNumObservation());
-				model.setGetObservationForRewardFunction(((AnylogicFileCheckResult) (result)).getRewardVariableFunction());
 			}
 
 			modelBinder.readBean(model);
-			statusPanel.setModelDetails();
 			segmentIntegrator.modelImported(true);
 		});
 	}

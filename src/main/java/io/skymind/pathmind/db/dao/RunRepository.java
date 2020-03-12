@@ -1,7 +1,6 @@
 package io.skymind.pathmind.db.dao;
 
 import static io.skymind.pathmind.data.db.Tables.POLICY;
-import static io.skymind.pathmind.data.db.Tables.POLICY_FILE;
 import static io.skymind.pathmind.data.db.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.data.db.tables.Model.MODEL;
 import static io.skymind.pathmind.data.db.tables.Project.PROJECT;
@@ -30,7 +29,7 @@ class RunRepository
         return ctx
                 .select(RUN.asterisk())
                 .select(EXPERIMENT.asterisk())
-                .select(MODEL.ID, MODEL.NAME, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION)
+                .select(MODEL.ID, MODEL.NAME)
                 .select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
                 .from(RUN)
                     .leftJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
@@ -44,7 +43,7 @@ class RunRepository
         return ctx
                 .select(RUN.asterisk())
                 .select(EXPERIMENT.asterisk())
-                .select(MODEL.ID, MODEL.NAME, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION)
+                .select(MODEL.ID, MODEL.NAME)
                 .select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
                 .from(RUN)
                     .leftJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
@@ -73,11 +72,11 @@ class RunRepository
         return run.into(new Run());
     }
 
-    protected static List<Run> getRunsForExperiment(DSLContext ctx, long experimentId) {
+    protected static Map<Long, List<Run>> getRunsForExperiments(DSLContext ctx, List<Long> experimentIds) {
         return ctx.select(Tables.RUN.asterisk())
-                .from(Tables.RUN)
-                .where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
-                .fetchInto(Run.class);
+                .from(RUN)
+                .where(Tables.RUN.EXPERIMENT_ID.in(experimentIds))
+                .fetchGroups(RUN.EXPERIMENT_ID, Run.class);
     }
 
     protected static List<Long> getAlreadyNotifiedOrStillExecutingRunsWithType(DSLContext ctx, long experimentId, int runType) {
@@ -133,18 +132,10 @@ class RunRepository
     		.where(Tables.RUN.ID.eq(runId)).execute();
     }
     
-    protected static void clearNotificationSentInfo(DSLContext ctx, long experimentId, int runType) {
+    protected static void clearNotificationSentInfo(DSLContext ctx, long experimentId) {
 		ctx.update(Tables.RUN)
 			.set(Tables.RUN.NOTIFICATION_SENT_AT, (LocalDateTime) null)
-			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId)
-					.and(Tables.RUN.RUN_TYPE.eq(runType)))
+			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
 			.execute();
 	}
-
-    protected static int getRunType(DSLContext ctx, long runId) {
-        return ctx.select(Tables.RUN.RUN_TYPE)
-                .from(Tables.RUN)
-                .where(Tables.RUN.ID.eq(runId))
-                .fetchOneInto(Integer.class).intValue();
-    }
 }
