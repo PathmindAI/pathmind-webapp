@@ -351,12 +351,17 @@ h4 {
   flex: 0 0 66%;
 }
 .dashboard-item-notes {
+  justify-content: space-between;
   align-self: stretch;
   padding: 0 0 0 var(--lumo-space-m);
   border-left: 1px solid var(--pm-gray-color-light);
 }
+.dashboard-item-notes span {
+  line-height: 1;
+}
 .dashboard-item-notes p {
-  max-height: 5rem;
+  height: 5rem;
+  line-height: 1.29rem;
   white-space: normal;
   overflow: hidden;
   margin-bottom: 0;
