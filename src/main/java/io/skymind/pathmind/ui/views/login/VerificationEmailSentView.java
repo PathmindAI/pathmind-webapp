@@ -9,6 +9,7 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.security.Routes;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
@@ -16,7 +17,7 @@ import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 @Tag("verification-email-sent-view")
 @JsModule("./src/account/verification-email-sent-view.js")
 @Route(value = Routes.VERIFICATION_EMAIL_SENT_URL)
-public class VerificationEmailSentView extends PolymerTemplate<SignUpView.Model> implements PublicView {
+public class VerificationEmailSentView extends PolymerTemplate<TemplateModel> implements PublicView {
 
 	@Id("backToLogin")
 	private Button backToLogin;
@@ -32,5 +33,4 @@ public class VerificationEmailSentView extends PolymerTemplate<SignUpView.Model>
 	protected void onAttach(AttachEvent attachEvent) {
 		getElement().appendChild(segmentIntegrator.getElement());
 	}
-	
 }

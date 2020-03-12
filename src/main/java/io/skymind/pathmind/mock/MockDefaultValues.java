@@ -19,7 +19,6 @@ public class MockDefaultValues
 
     public static final int NEW_PROJECT_NUMBER_OF_OBSERVATIONS = 70;
     public static final int NEW_PROJECT_NUMBER_OF_POSSIBLE_ACTIONS = 125;
-    public static final String NEW_PROJECT_GET_OBSERVATION_FOR_REWARD_FUNCTION = "reward = after[0] - before[0];";
 
     public static final String NEW_EXPERIMENT_REWARD_FUNCTION = "reward = after[0] - before[0];";
 
@@ -45,6 +44,5 @@ public class MockDefaultValues
     public static void addNewProjectModelSettings(Model model) {
         model.setNumberOfObservations(NEW_PROJECT_NUMBER_OF_OBSERVATIONS);
         model.setNumberOfPossibleActions(NEW_PROJECT_NUMBER_OF_POSSIBLE_ACTIONS);
-        model.setGetObservationForRewardFunction(NEW_PROJECT_GET_OBSERVATION_FOR_REWARD_FUNCTION);
     }
 }

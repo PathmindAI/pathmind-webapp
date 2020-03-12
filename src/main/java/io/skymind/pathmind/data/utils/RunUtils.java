@@ -25,13 +25,6 @@ public class RunUtils
 				Duration.between(run.getStartedAt(), run.getStoppedAt()).toSeconds();
 	}
 
-	public static int getNumberOfTrainingIterationsForRunType(RunType runType) {
-		if(runType == DiscoveryRun) {
-			return DISCOVERY_RUN_ITERATIONS * getNumberOfDiscoveryRuns();
-		}
-		return FULL_RUN_ITERATIONS;
-	}
-
 	private static int getNumberOfDiscoveryRuns() {
 		return TRAINING_HYPERPARAMETERS.values().stream()
 				.mapToInt(List::size)

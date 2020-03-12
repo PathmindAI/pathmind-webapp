@@ -43,7 +43,7 @@ class ExperimentRepository
 	protected static Experiment getExperiment(DSLContext ctx, long experimentId) {
 		Record record = ctx
 				.select(EXPERIMENT.asterisk())
-				.select(MODEL.ID, MODEL.NAME, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION)
+				.select(MODEL.ID, MODEL.NAME)
 				.select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
 				.from(EXPERIMENT)
 				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
@@ -63,7 +63,7 @@ class ExperimentRepository
 	protected static List<Experiment> getExperimentsForModel(DSLContext ctx, long modelId) {
 		Result<?> result = ctx
 				.select(EXPERIMENT.asterisk())
-				.select(MODEL.ID, MODEL.NAME, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION)
+				.select(MODEL.ID, MODEL.NAME)
 				.select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
 				.from(EXPERIMENT)
 				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))

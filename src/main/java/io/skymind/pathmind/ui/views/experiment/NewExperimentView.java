@@ -196,7 +196,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         experimentDAO.updateExperiment(experiment);
         segmentIntegrator.rewardFuntionCreated();
         
-        trainingService.startDiscoveryRun(experiment);
+        trainingService.startRun(experiment);
         segmentIntegrator.discoveryRunStarted();
 
         UI.getCurrent().navigate(ExperimentView.class, experimentId);
