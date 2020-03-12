@@ -36,10 +36,10 @@ public class ProjectFileCheckService {
                     FileUtils.writeByteArrayToFile(tempFile, data);
                     AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker(objectMapper);
                     //File check result.
-                    final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
+                    final AnylogicFileCheckResult result = (AnylogicFileCheckResult) anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
 
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
-                        if (result.getZipContentFileNames() == null) {
+                        if (result.getPathmindMeta() == null) {
                             setHyperparams(result, client.analyze(tempFile));
                         }
                         statusUpdater.fileSuccessfullyVerified(result);
