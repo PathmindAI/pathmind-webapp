@@ -24,6 +24,25 @@ where job_id='${S3PATH}';
 commit;
 EOF
 
+#Check if we need to resume the training
+output_files=`aws s3 ls  ${s3_url}/output/ | wc -l`
+if [ "${output_files}" -ge 0 ]
+then
+	description="Training is resumed"
+	curl -X POST -H 'Content-type: application/json' \
+		--data "{'text':'Killing Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
+		https://hooks.slack.com/services/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
+	echo "Resuming Training"
+	export RESUME=true
+	rm -rf /app/work/PPO/*
+	touch restarting
+	aws s3 cp restarting ${s3_url}/output/
+	aws s3 sync ${s3_url}/output/ /app/work/PPO/
+	aws s3 cp ${s3_url}/output/ ${s3_url}/output_backup_`date '+%Y%m%d%H%M'`/ --recursive
+	aws s3 rm ${s3_url}/output/ --recursive
+	touch restarted
+	aws s3 cp restarted ${s3_url}/output/
+fi
 
 bash script.sh > ${log_file} 2>&1 &
 pid=$!
@@ -54,7 +73,7 @@ do
                 #Set the status in trainer_job
                 psql "$DB_URL_CLI" << EOF
 update public.trainer_job
-set status=4,ec2_end_date=now(),update_date=NOW(),description='${description}'
+set status=5,ec2_end_date=now(),update_date=NOW(),description='${description}'
 where job_id='${S3PATH}';
 commit;
 EOF
