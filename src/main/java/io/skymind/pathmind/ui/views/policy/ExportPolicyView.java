@@ -1,10 +1,9 @@
 package io.skymind.pathmind.ui.views.policy;
 
+import static io.skymind.pathmind.utils.StringUtils.removeInvalidChars;
+
 import java.io.ByteArrayInputStream;
 
-import io.skymind.pathmind.data.utils.PolicyUtils;
-import io.skymind.pathmind.services.PolicyFileService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
@@ -13,27 +12,29 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 
 import io.skymind.pathmind.data.Policy;
+import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.Routes;
-import io.skymind.pathmind.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.services.PolicyFileService;
+import io.skymind.pathmind.ui.components.LabelFactory;
+import io.skymind.pathmind.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.ui.layouts.MainLayout;
 import io.skymind.pathmind.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.ui.utils.WrapperUtils;
 import io.skymind.pathmind.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.ui.views.experiment.utils.ExperimentViewNavigationUtils;
-
-import static io.skymind.pathmind.utils.StringUtils.removeInvalidChars;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPORT_POLICY_URL, layout = MainLayout.class)
@@ -48,14 +49,10 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 
-	private ScreenTitlePanel screenTitlePanel;
-
-	private TextField nameTextField;
-
 	private Button exportButton;
 	private Anchor exportLink;
 	private Button cancelButton;
-
+	
 	private long policyId;
 	private Policy policy;
 
@@ -66,8 +63,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
 	@Override
 	protected Component getTitlePanel() {
-		screenTitlePanel = new ScreenTitlePanel("EXPORT");
-		return screenTitlePanel;
+		return null;
 	}
 
 	@Override
@@ -75,7 +71,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	{
 		final String policyFileName = PolicyUtils.generatePolicyFileName(policy);
 
-		exportButton = new Button("Export");
+		exportButton = new Button("Export Policy");
 		exportButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportButton.setWidth("200px");
 		exportButton.addClickListener(evt -> {
@@ -88,20 +84,23 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 		exportLink.getElement().setAttribute("href", getResourceStream(policyFileName));
 		exportLink.getElement().setAttribute("download", true);
 
+		Anchor learnMoreLink = new Anchor("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy", "Learn how to validate your policy");
+		learnMoreLink.setTarget("_blank");
+
 		cancelButton = new Button("Cancel", click -> handleCancelButtonClicked());
 		cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-		nameTextField = new TextField();
-		nameTextField.setLabel("Name");
-		nameTextField.setValue(policyFileName);
-		nameTextField.setWidthFull();
-		nameTextField.addValueChangeListener(change ->
-			exportLink.setHref(getResourceStream(StringUtils.isEmpty(nameTextField.getValue()) ? policyFileName : nameTextField.getValue())));
-
-		return WrapperUtils.wrapFormCenterVertical(
-				nameTextField,
-				new Image("/frontend/images/exportPolicyIcon.gif", "Export Policy"),
-				exportLink,
+		VerticalLayout wrapperContent = WrapperUtils.wrapFormCenterVertical(
+						LabelFactory.createLabel("Export Policy", CssMindPathStyles.SECTION_TITLE_LABEL),
+						new Image("/frontend/images/exportPolicyIcon.gif", "Export Policy"),
+						LabelFactory.createLabel(policyFileName),
+						createInstructionsDiv(),
+						learnMoreLink,
+						exportLink);
+		wrapperContent.setClassName("view-section");
+		return WrapperUtils.wrapCenterVertical("100%", 
+				WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
+				wrapperContent,
 				cancelButton);
 	}
 	
@@ -129,5 +128,25 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 		policy = policyDAO.getPolicy(policyId);
 		if(policy == null)
 			throw new InvalidDataException("Attempted to access Policy: " + policyId);
+	}
+	
+	private Div createInstructionsDiv() {
+		Div div = new Div();
+		div.getElement().setProperty("innerHTML",
+				"<h3>To use your policy:</h3>" +
+				"<ol>" +
+					"<li>Download this file.</li>" +
+					"<li>Return to AnyLogic and open the Pathmind Helper properties in your simulation.</li>" +
+					"<ul>" +
+						"<li>Change the 'Mode' to 'Use Policy'.</li>" +
+						"<li>In 'policyFile', click 'Browse' and select the file you downloaded.</li>" +
+					"</ul>" +
+					"<li>Run the simulation to see the policy in action.</li>" +
+				"</ol>");
+		return div;
+	}
+	
+	private Breadcrumbs createBreadcrumbs() {        
+		return new Breadcrumbs(policy.getProject(), policy.getModel(), policy.getExperiment(), "Export");
 	}
 }
