@@ -10,7 +10,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.templatemodel.TemplateModel;
-import io.skymind.pathmind.db.data.PathmindUser;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

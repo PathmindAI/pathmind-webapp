@@ -1,6 +1,6 @@
 package io.skymind.pathmind.services.model;
 
-import io.skymind.pathmind.db.data.Model;
+import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;

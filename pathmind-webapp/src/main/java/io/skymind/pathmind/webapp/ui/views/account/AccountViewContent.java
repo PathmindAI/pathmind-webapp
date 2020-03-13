@@ -20,7 +20,7 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
-import io.skymind.pathmind.db.data.PathmindUser;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.services.billing.StripeService;
 import io.skymind.pathmind.webapp.ui.components.dialog.SubscriptionCancelDialog;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;

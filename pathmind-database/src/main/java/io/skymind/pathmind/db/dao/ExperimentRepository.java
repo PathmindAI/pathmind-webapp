@@ -23,12 +23,12 @@ import org.jooq.Result;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 
-import io.skymind.pathmind.db.data.DashboardItem;
-import io.skymind.pathmind.db.data.Experiment;
-import io.skymind.pathmind.db.data.Model;
-import io.skymind.pathmind.db.data.Policy;
-import io.skymind.pathmind.db.data.Project;
-import io.skymind.pathmind.db.data.Run;
+import io.skymind.pathmind.shared.data.DashboardItem;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.Project;
+import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.db.jooq.Tables;
 import io.skymind.pathmind.db.jooq.tables.records.ExperimentRecord;
 import io.skymind.pathmind.db.utils.DashboardQueryParams;

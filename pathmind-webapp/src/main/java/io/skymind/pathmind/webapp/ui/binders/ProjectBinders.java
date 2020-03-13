@@ -3,7 +3,7 @@ package io.skymind.pathmind.webapp.ui.binders;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 
-import io.skymind.pathmind.db.data.Project;
+import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.ui.converter.TrimmedStringConverter;

@@ -13,10 +13,10 @@ import io.skymind.pathmind.db.dao.PolicyDAO;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.db.data.PathmindUser;
-import io.skymind.pathmind.db.data.Policy;
-import io.skymind.pathmind.db.data.Run;
-import io.skymind.pathmind.db.data.RewardScore;
+import io.skymind.pathmind.shared.data.PathmindUser;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;

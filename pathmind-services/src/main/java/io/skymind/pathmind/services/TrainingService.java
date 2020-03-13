@@ -1,7 +1,7 @@
 package io.skymind.pathmind.services;
 
-import io.skymind.pathmind.db.data.Experiment;
-import io.skymind.pathmind.db.data.Policy;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;

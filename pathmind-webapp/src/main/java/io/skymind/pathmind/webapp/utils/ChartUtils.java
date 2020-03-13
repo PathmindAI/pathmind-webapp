@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.charts.model.PlotOptionsSeries;
-import io.skymind.pathmind.db.data.Policy;
+import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.webapp.ui.views.experiment.chart.RewardScoreSeriesItem;
 
 public class ChartUtils {

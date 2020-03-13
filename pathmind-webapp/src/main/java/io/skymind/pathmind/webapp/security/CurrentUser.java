@@ -1,6 +1,6 @@
 package io.skymind.pathmind.webapp.security;
 
-import io.skymind.pathmind.db.data.PathmindUser;
+import io.skymind.pathmind.shared.data.PathmindUser;
 
 @FunctionalInterface
 public interface CurrentUser {

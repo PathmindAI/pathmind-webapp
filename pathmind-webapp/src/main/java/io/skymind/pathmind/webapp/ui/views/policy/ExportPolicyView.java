@@ -2,7 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.policy;
 
 import java.io.ByteArrayInputStream;
 
-import io.skymind.pathmind.db.utils.PolicyUtils;
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
@@ -31,7 +31,7 @@ import com.vaadin.flow.server.StreamResource;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.PolicyFileService;
-import io.skymind.pathmind.db.data.Policy;
+import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.security.Routes;
 
 import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;

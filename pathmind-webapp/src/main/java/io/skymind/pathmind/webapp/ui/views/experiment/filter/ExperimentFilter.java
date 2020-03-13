@@ -1,6 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.filter;
 
-import io.skymind.pathmind.db.data.Experiment;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.ui.components.PathmindFilterInterface;
 import io.skymind.pathmind.webapp.utils.SearchUtils;
 

@@ -5,29 +5,25 @@ import static io.skymind.pathmind.webapp.utils.ChartUtils.createPassiveSeriesPlo
 
 import java.util.List;
 
-import io.skymind.pathmind.db.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.db.bus.subscribers.PolicyUpdateSubscriber;
-import io.skymind.pathmind.db.data.Experiment;
-import io.skymind.pathmind.db.data.Policy;
+import io.skymind.pathmind.shared.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.shared.bus.subscribers.PolicyUpdateSubscriber;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.utils.ChartUtils;
-import org.springframework.stereotype.Component;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.DataSeries;
-import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
-import com.vaadin.flow.component.charts.util.ChartSerialization;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.shared.bus.EventBus;
 
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubscriber

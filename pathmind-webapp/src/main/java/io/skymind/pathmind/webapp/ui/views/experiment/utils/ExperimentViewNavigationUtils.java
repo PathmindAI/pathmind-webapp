@@ -2,8 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.experiment.utils;
 
 import com.vaadin.flow.component.UI;
 
-import io.skymind.pathmind.db.data.Experiment;
-import io.skymind.pathmind.db.data.Policy;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;

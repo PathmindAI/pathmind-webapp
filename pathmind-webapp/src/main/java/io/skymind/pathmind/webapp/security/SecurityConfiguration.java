@@ -26,7 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
-import io.skymind.pathmind.db.data.PathmindUser;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
 
 @EnableWebSecurity

@@ -9,7 +9,7 @@ import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 
-import io.skymind.pathmind.db.data.DashboardItem;
+import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.services.DashboardItemService;
 

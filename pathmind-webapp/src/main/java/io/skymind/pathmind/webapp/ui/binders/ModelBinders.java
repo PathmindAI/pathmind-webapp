@@ -3,7 +3,7 @@ package io.skymind.pathmind.webapp.ui.binders;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
-import io.skymind.pathmind.db.data.Model;
+import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.converter.DoubleToIntegerConverter;
 
 public class ModelBinders

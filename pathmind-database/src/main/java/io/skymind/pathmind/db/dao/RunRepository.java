@@ -16,10 +16,10 @@ import org.jooq.Record;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.db.data.Experiment;
-import io.skymind.pathmind.db.data.Model;
-import io.skymind.pathmind.db.data.Project;
-import io.skymind.pathmind.db.data.Run;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Project;
+import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.db.jooq.Tables;
 import io.skymind.pathmind.db.jooq.tables.records.RunRecord;
 

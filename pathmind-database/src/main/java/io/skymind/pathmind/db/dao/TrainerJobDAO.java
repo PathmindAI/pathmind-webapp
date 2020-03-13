@@ -2,7 +2,7 @@ package io.skymind.pathmind.db.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.db.data.TrainerJob;
+import io.skymind.pathmind.shared.data.TrainerJob;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 

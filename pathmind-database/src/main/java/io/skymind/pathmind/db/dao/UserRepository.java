@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import org.jooq.DSLContext;
 
-import io.skymind.pathmind.db.data.PathmindUser;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 
 class UserRepository

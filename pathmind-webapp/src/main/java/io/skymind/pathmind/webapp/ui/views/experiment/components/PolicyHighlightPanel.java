@@ -4,8 +4,8 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import io.skymind.pathmind.db.data.Policy;
-import io.skymind.pathmind.db.utils.PolicyUtils;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindLabelBox;
 

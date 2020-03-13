@@ -1,10 +1,9 @@
-package io.skymind.pathmind.db.utils;
+package io.skymind.pathmind.shared.utils;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.db.data.Policy;
-import io.skymind.pathmind.db.data.Run;
-import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.Run;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 

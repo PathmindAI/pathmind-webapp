@@ -1,6 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.policy.filter;
 
-import io.skymind.pathmind.db.data.Policy;
+import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.webapp.ui.components.PathmindFilterInterface;
 import io.skymind.pathmind.webapp.utils.SearchUtils;
 

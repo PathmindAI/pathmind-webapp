@@ -1,7 +1,7 @@
 package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.shared.constants.GuideStep;
-import io.skymind.pathmind.db.data.Project;
+import io.skymind.pathmind.shared.data.Project;
 import java.time.LocalDateTime;
 import java.util.List;
 

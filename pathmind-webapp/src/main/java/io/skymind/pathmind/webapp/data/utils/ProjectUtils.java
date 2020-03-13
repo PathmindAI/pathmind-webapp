@@ -1,6 +1,6 @@
 package io.skymind.pathmind.webapp.data.utils;
 
-import io.skymind.pathmind.db.data.Project;
+import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.mock.MockDefaultValues;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 

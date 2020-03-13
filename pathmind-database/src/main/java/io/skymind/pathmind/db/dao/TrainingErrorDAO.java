@@ -1,6 +1,6 @@
 package io.skymind.pathmind.db.dao;
 
-import io.skymind.pathmind.db.data.TrainingError;
+import io.skymind.pathmind.shared.data.TrainingError;
 import org.jooq.DSLContext;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;

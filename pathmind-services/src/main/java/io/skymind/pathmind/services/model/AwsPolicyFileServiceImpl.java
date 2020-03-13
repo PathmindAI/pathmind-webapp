@@ -1,7 +1,7 @@
 package io.skymind.pathmind.services.model;
 
 import io.skymind.pathmind.shared.bus.EventBus;
-import io.skymind.pathmind.db.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.shared.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;

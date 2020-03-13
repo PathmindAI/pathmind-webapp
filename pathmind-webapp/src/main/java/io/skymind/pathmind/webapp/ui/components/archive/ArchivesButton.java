@@ -10,7 +10,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 
-import io.skymind.pathmind.db.data.ArchivableData;
+import io.skymind.pathmind.shared.data.ArchivableData;
 import io.skymind.pathmind.webapp.ui.components.PathmindButton;
 
 /**

@@ -1,6 +1,6 @@
 package io.skymind.pathmind.db.dao;
 
-import io.skymind.pathmind.db.data.RewardScore;
+import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.db.utils.JooqUtils;
 import org.jooq.DSLContext;
 import org.jooq.Query;

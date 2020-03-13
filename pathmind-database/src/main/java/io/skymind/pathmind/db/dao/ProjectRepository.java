@@ -1,6 +1,6 @@
 package io.skymind.pathmind.db.dao;
 
-import io.skymind.pathmind.db.data.Project;
+import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.db.jooq.tables.records.ProjectRecord;
 import org.jooq.DSLContext;
 

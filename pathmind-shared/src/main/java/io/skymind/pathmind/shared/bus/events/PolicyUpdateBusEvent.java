@@ -1,10 +1,10 @@
-package io.skymind.pathmind.db.bus.events;
+package io.skymind.pathmind.shared.bus.events;
 
 import java.util.List;
 
 import io.skymind.pathmind.shared.bus.BusEventType;
 import io.skymind.pathmind.shared.bus.PathmindBusEvent;
-import io.skymind.pathmind.db.data.Policy;
+import io.skymind.pathmind.shared.data.Policy;
 
 public class PolicyUpdateBusEvent implements PathmindBusEvent
 {

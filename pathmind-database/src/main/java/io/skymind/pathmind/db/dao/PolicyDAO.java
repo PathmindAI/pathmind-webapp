@@ -1,16 +1,11 @@
 package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.db.utils.DataUtils;
-import io.skymind.pathmind.shared.bus.EventBus;
-import io.skymind.pathmind.db.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.db.data.Policy;
-import io.skymind.pathmind.db.data.RewardScore;
-import io.skymind.pathmind.db.utils.PolicyUtils;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardScore;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;

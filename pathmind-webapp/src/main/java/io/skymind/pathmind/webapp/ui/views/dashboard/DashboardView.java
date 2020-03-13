@@ -15,7 +15,6 @@ import io.skymind.pathmind.webapp.ui.views.dashboard.dataprovider.DashboardDataP
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -29,9 +28,9 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 
 import io.skymind.pathmind.shared.bus.EventBus;
-import io.skymind.pathmind.db.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.db.bus.subscribers.RunUpdateSubscriber;
-import io.skymind.pathmind.db.data.DashboardItem;
+import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;

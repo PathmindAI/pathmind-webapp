@@ -8,7 +8,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializableConsumer;
 
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
-import io.skymind.pathmind.db.data.DashboardItem;
+import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;

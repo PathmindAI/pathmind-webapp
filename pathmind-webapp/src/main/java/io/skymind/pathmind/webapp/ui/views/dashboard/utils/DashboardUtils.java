@@ -1,8 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.dashboard.utils;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.db.data.DashboardItem;
-import io.skymind.pathmind.db.data.Run;
+import io.skymind.pathmind.shared.data.DashboardItem;
+import io.skymind.pathmind.shared.data.Run;
 
 public class DashboardUtils {
 

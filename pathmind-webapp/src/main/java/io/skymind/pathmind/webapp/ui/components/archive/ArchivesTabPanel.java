@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 
-import io.skymind.pathmind.db.data.ArchivableData;
+import io.skymind.pathmind.shared.data.ArchivableData;
 import io.skymind.pathmind.webapp.ui.components.TabPanel;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 

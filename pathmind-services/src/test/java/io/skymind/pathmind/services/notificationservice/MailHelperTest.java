@@ -2,7 +2,7 @@ package io.skymind.pathmind.services.notificationservice;
 
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Personalization;
-import io.skymind.pathmind.db.data.PathmindUser;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.exception.PathMindException;
 import org.junit.Before;
 import org.junit.Test;

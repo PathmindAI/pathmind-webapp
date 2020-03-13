@@ -1,6 +1,6 @@
 package io.skymind.pathmind.services;
 
-import io.skymind.pathmind.db.data.Model;
+import io.skymind.pathmind.shared.data.Model;
 
 import java.util.Optional;
 

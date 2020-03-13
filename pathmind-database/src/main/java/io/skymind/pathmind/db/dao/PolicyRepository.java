@@ -1,14 +1,13 @@
 package io.skymind.pathmind.db.dao;
 
-import io.skymind.pathmind.db.data.Experiment;
-import io.skymind.pathmind.db.data.Model;
-import io.skymind.pathmind.db.data.Policy;
-import io.skymind.pathmind.db.data.Project;
-import io.skymind.pathmind.db.data.Run;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.Project;
+import io.skymind.pathmind.shared.data.Run;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
-import org.jooq.impl.DSL;
 
 import java.time.LocalDateTime;
 import java.util.List;

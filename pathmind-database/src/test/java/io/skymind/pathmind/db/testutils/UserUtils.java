@@ -1,6 +1,6 @@
 package io.skymind.pathmind.db.testutils;
 
-import io.skymind.pathmind.db.data.PathmindUser;
+import io.skymind.pathmind.shared.data.PathmindUser;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

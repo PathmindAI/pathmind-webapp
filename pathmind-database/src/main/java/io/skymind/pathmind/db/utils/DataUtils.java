@@ -1,6 +1,6 @@
 package io.skymind.pathmind.db.utils;
 
-import io.skymind.pathmind.db.data.Data;
+import io.skymind.pathmind.shared.data.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;

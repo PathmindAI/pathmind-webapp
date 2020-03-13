@@ -1,16 +1,16 @@
 package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.shared.bus.EventBus;
-import io.skymind.pathmind.db.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.db.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.shared.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.db.data.Experiment;
-import io.skymind.pathmind.db.data.Policy;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
-import io.skymind.pathmind.db.data.Run;
-import io.skymind.pathmind.db.data.RewardScore;
-import io.skymind.pathmind.db.utils.PolicyUtils;
+import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.RewardScore;
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;

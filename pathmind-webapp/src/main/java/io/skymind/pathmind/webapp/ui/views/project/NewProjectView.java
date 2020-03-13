@@ -6,7 +6,7 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.db.data.Project;
+import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.webapp.data.utils.ProjectUtils;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.shared.security.Routes;

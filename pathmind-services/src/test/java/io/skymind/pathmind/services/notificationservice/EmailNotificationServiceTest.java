@@ -1,7 +1,7 @@
 package io.skymind.pathmind.services.notificationservice;
 
 import io.skymind.pathmind.PathmindApplicationTests;
-import io.skymind.pathmind.db.data.PathmindUser;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

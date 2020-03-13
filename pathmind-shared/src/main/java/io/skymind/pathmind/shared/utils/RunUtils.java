@@ -1,13 +1,11 @@
-package io.skymind.pathmind.db.utils;
+package io.skymind.pathmind.shared.utils;
 
-import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.db.data.Run;
+import io.skymind.pathmind.shared.data.Run;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static io.skymind.pathmind.shared.constants.RunType.DiscoveryRun;
 import static io.skymind.pathmind.shared.services.training.constant.RunConstants.*;
 
 public class RunUtils

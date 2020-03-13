@@ -1,4 +1,4 @@
-package io.skymind.pathmind.db.data;
+package io.skymind.pathmind.shared.data;
 
 import java.util.Objects;
 

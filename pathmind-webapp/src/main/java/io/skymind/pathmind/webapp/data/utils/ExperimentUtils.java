@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.db.data.Experiment;
-import io.skymind.pathmind.db.data.Policy;
-import io.skymind.pathmind.db.data.Run;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 
 public class ExperimentUtils

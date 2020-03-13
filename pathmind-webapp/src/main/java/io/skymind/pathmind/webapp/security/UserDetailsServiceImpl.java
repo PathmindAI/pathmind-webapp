@@ -2,7 +2,7 @@ package io.skymind.pathmind.webapp.security;
 
 import java.util.Collections;
 
-import io.skymind.pathmind.db.data.PathmindUser;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.webapp.exception.EmailIsNotVerifiedException;
 

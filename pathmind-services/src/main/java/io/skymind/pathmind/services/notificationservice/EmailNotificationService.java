@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 
 import com.sendgrid.helpers.mail.Mail;
 
-import io.skymind.pathmind.db.data.Experiment;
-import io.skymind.pathmind.db.data.PathmindUser;
-import io.skymind.pathmind.db.data.Project;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.PathmindUser;
+import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.exception.PathMindException;
 import io.skymind.pathmind.shared.security.Routes;

@@ -1,8 +1,8 @@
-package io.skymind.pathmind.db.bus.subscribers;
+package io.skymind.pathmind.shared.bus.subscribers;
 
 import io.skymind.pathmind.shared.bus.BusEventType;
 import io.skymind.pathmind.shared.bus.EventBusSubscriber;
-import io.skymind.pathmind.db.bus.events.UserUpdateBusEvent;
+import io.skymind.pathmind.shared.bus.events.UserUpdateBusEvent;
 
 public interface UserUpdateSubscriber extends EventBusSubscriber<UserUpdateBusEvent>
 {

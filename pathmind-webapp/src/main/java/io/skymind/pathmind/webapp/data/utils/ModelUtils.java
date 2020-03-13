@@ -1,6 +1,6 @@
 package io.skymind.pathmind.webapp.data.utils;
 
-import io.skymind.pathmind.db.data.Model;
+import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.mock.MockDefaultValues;
 
 import java.time.LocalDateTime;

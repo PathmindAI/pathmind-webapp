@@ -1,8 +1,8 @@
 package io.skymind.pathmind.updater;
 
 import com.opencsv.CSVReader;
-import io.skymind.pathmind.db.data.Policy;
-import io.skymind.pathmind.db.data.RewardScore;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardScore;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.StringReader;

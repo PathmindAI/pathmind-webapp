@@ -1,4 +1,4 @@
-package io.skymind.pathmind.db.data;
+package io.skymind.pathmind.shared.data;
 
 /**
  * This could also be an interface but honestly it would all be the same code repeated so I went with an abstract class.

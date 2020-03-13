@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -20,8 +19,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyHighlight
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.skymind.pathmind.services.PolicyFileService;
@@ -40,19 +37,18 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.WildcardParameter;
 
 import io.skymind.pathmind.shared.bus.EventBus;
-import io.skymind.pathmind.db.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.db.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.db.bus.subscribers.PolicyUpdateSubscriber;
-import io.skymind.pathmind.db.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.shared.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.shared.bus.subscribers.PolicyUpdateSubscriber;
+import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.db.data.Experiment;
-import io.skymind.pathmind.db.data.Policy;
-import io.skymind.pathmind.db.data.Run;
-import io.skymind.pathmind.db.data.TrainingError;
-import io.skymind.pathmind.db.utils.PolicyUtils;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.TrainingError;
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;

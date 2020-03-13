@@ -1,6 +1,6 @@
 package io.skymind.pathmind.services.training;
 
-import io.skymind.pathmind.db.data.Policy;
+import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.updater.ProgressInterpreter;
 import org.junit.Test;
 

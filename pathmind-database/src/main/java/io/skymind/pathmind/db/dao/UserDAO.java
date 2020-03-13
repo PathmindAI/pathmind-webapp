@@ -5,8 +5,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import io.skymind.pathmind.shared.bus.EventBus;
-import io.skymind.pathmind.db.bus.events.UserUpdateBusEvent;
-import io.skymind.pathmind.db.data.PathmindUser;
+import io.skymind.pathmind.shared.bus.events.UserUpdateBusEvent;
+import io.skymind.pathmind.shared.data.PathmindUser;
 
 @Repository
 public class UserDAO

@@ -1,8 +1,8 @@
-package io.skymind.pathmind.db.bus.events;
+package io.skymind.pathmind.shared.bus.events;
 
 import io.skymind.pathmind.shared.bus.BusEventType;
 import io.skymind.pathmind.shared.bus.PathmindBusEvent;
-import io.skymind.pathmind.db.data.Run;
+import io.skymind.pathmind.shared.data.Run;
 
 public class RunUpdateBusEvent implements PathmindBusEvent
 {

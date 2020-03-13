@@ -1,7 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.chart;
 
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
-import io.skymind.pathmind.db.data.RewardScore;
+import io.skymind.pathmind.shared.data.RewardScore;
 
 public class RewardScoreSeriesItem extends DataSeriesItem {
 	
