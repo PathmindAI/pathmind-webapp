@@ -17,6 +17,7 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -42,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Project extends TableImpl<ProjectRecord> {
 
-    private static final long serialVersionUID = -1312463662;
+    private static final long serialVersionUID = -219006564;
 
     /**
      * The reference instance of <code>public.project</code>
@@ -60,7 +61,7 @@ public class Project extends TableImpl<ProjectRecord> {
     /**
      * The column <code>public.project.id</code>.
      */
-    public final TableField<ProjectRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ProjectRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('project_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.project.pathmind_user_id</code>.
@@ -133,6 +134,11 @@ public class Project extends TableImpl<ProjectRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.PROJECT_PATHMIND_USER_FK_INDEX, Indexes.PROJECT_PKEY, Indexes.UNIQUE_PROJECT_NAME_PATHMIND_USER_ID);
+    }
+
+    @Override
+    public Identity<ProjectRecord, Long> getIdentity() {
+        return Keys.IDENTITY_PROJECT;
     }
 
     @Override

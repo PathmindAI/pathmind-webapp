@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import static io.skymind.pathmind.constants.RunType.DiscoveryRun;
+
 @Service
 @Slf4j
 public class AWSTrainingService extends TrainingService {
@@ -28,8 +30,8 @@ public class AWSTrainingService extends TrainingService {
         this.multiAgent = multiAgent;
     }
 
-    protected void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples, Policy basePolicy) {
-        final Run run = runDAO.createRun(exp, runType);
+    protected void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSamples, Policy basePolicy) {
+        final Run run = runDAO.createRun(exp, DiscoveryRun);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelService.getModel(exp.getModelId()).get();
 
@@ -48,7 +50,7 @@ public class AWSTrainingService extends TrainingService {
                 model.getNumberOfObservations(),
                 iterations,
                 executionEnvironment,
-                runType,
+                DiscoveryRun,
                 maxTimeInSec,
                 numSamples,
                 multiAgent,
@@ -70,7 +72,7 @@ public class AWSTrainingService extends TrainingService {
         executionProviderMetaDataDAO.putProviderRunJobId(spec.getRunId(),executionId);
 
         runDAO.markAsStarting(run.getId());
-        log.info("Started " + runType + " training job with id {}", executionId);
+        log.info("Started {} training job with id {}", DiscoveryRun, executionId);
     }
 
 

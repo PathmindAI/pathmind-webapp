@@ -1,6 +1,5 @@
 package io.skymind.pathmind.services;
 
-import io.skymind.pathmind.constants.RunType;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
@@ -41,20 +40,18 @@ public abstract class TrainingService {
         // todo revert to 0_7_6_PBT after testing resume
         executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6_RESUME, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
     }
-
-    public void startDiscoveryRun(Experiment exp){
-        startRun(RunType.DiscoveryRun,
-                exp,
+    public void startRun(Experiment exp){
+        startRun(exp,
                 RunConstants.PBT_RUN_ITERATIONS,
                 RunConstants.PBT_MAX_TIME_IN_SEC,
                 RunConstants.PBT_NUM_SAMPLES
         );
     }
 
-    private void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples) {
-        runDAO.clearNotificationSentInfo(exp.getId(), runType.getValue());
-        startRun(runType, exp, iterations, maxTimeInSec, numSamples, null);
+    private void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSamples) {
+        runDAO.clearNotificationSentInfo(exp.getId());
+        startRun(exp, iterations, maxTimeInSec, numSamples, null);
     }
 
-    protected abstract void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSampes, Policy basePolicy);
+    protected abstract void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSampes, Policy basePolicy);
 }

@@ -65,7 +65,7 @@ do
         last_modification=`echo $(( $(date +%s) - $(stat -c %Y -- "${log_file}") ))`
         if [ ${last_modification} -ge ${training_update_timeout} ]
         then
-                description="No update in the log file ${log_file} for more than ${last_modification}  seconds"
+                description="No update in the log file ${log_file} for more than ${last_modification} seconds, training is not killed"
                 curl -X POST -H 'Content-type: application/json' \
                 --data "{'text':'Killing Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
                 https://hooks.slack.com/services/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
@@ -77,11 +77,6 @@ set status=5,ec2_end_date=now(),update_date=NOW(),description='${description}'
 where job_id='${S3PATH}';
 commit;
 EOF
-                #Send sqs notification to destroy
-                aws sqs send-message \
-                        --queue-url ${SQS_URL} \
-                        --message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"1"}' \
-                        --message-group-id training
                 sleep 12h
         fi
         sleep $sleep_time

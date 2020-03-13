@@ -19,7 +19,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 env:
-  S3BUCKET: dev-training-static-files.pathmind.com
+  S3BUCKET: dev-model-analyzer-static-files.pathmind.com
 
 
 service:

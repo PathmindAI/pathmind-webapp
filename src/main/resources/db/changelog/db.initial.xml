@@ -1059,4 +1059,25 @@
         </sql>
     </changeSet>
 
+    <changeSet id="20200303-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <addColumn tableName="REWARD_SCORE">
+            <column name="EPISODE_COUNT" type="INT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200303-02" author="krystian.walaszczyk@ext.vaadin.com">
+        <dropColumn tableName="POLICY" columnName="ALGORITHM" />
+        <dropColumn tableName="POLICY" columnName="LEARNING_RATE" />
+        <dropColumn tableName="POLICY" columnName="GAMMA" />
+        <dropColumn tableName="POLICY" columnName="BATCH_SIZE" />
+    </changeSet>
+
+    <changeSet id="20200303-03" author="krystian.walaszczyk@ext.vaadin.com">
+        <dropColumn tableName="MODEL" columnName="GET_OBSERVATION_FOR_REWARD_FUNCTION"/>
+    </changeSet>
+
+    <changeSet id="20200303-04" author="krystian.walaszczyk@ext.vaadin.com">
+        <dropColumn tableName="POLICY" columnName="NOTES" />
+    </changeSet>
+
 </databaseChangeLog>

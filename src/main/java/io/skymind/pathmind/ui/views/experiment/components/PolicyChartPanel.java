@@ -4,9 +4,11 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
+import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
+import com.vaadin.flow.component.charts.util.ChartSerialization;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.bus.EventBus;
@@ -14,8 +16,8 @@ import io.skymind.pathmind.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.data.Experiment;
 import io.skymind.pathmind.data.Policy;
-import io.skymind.pathmind.data.utils.PolicyUtils;
 import io.skymind.pathmind.ui.utils.PushUtils;
+import io.skymind.pathmind.utils.ChartUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,11 +52,11 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
     		.findAny()
     		.ifPresentOrElse(
     				series -> {
-    					ListSeries listSeries = ((ListSeries) series);
-    					listSeries.setData(PolicyUtils.getMeanScores(updatedPolicy));
-    					if (!series.getName().equals(updatedPolicy.getName())) {
-    						listSeries.setName(updatedPolicy.getName());
-    					}
+    					DataSeries dataSeries = (DataSeries) series;
+                        dataSeries.setData(ChartUtils.getRewardScoreSeriesItems(updatedPolicy));
+                        if (!series.getName().equals(updatedPolicy.getName())) {
+                        	dataSeries.setName(updatedPolicy.getName());
+                        }
     				},
     				() -> addPolicyToChart(updatedPolicy));
     	});
@@ -73,7 +75,10 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
         chart.getConfiguration().addxAxis(xAxis);
         chart.getConfiguration().addyAxis(yAxis);
         chart.getConfiguration().getTooltip().setFormatter(
-                "return 'Iteration#:' + this.x + '<br/>' + 'Mean Reward:' + this.y.toFixed(Math.abs(this.y) > 1 ? 1 : 6)");
+                "return "
+                + "'<b>Iteration#:</b>' + this.x + '<br/>' + "
+                + "'<b>Mean Reward:</b>' + this.y.toFixed(Math.abs(this.y) > 1 ? 1 : 6) + '<br/>' + "
+                + "(this.point.episodeCount != null ? '<b>Episode Count:</b>' + this.point.episodeCount : '')");
         chart.setSizeFull();
     }
 
@@ -88,22 +93,23 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
         // As we cannot clear the chart's ListSeries we need to do things a bit differently.
         chart.getConfiguration().setSeries(
                 policies.stream()
-                        .map(policy -> createListSeriesForPolicy(policy))
+                        .map(policy -> createDataSeriesForPolicy(policy))
                         .collect(Collectors.toList()));
         chart.drawChart(true);
     }
 
     private void addPolicyToChart(Policy policy) {
-        ListSeries listSeries = createListSeriesForPolicy(policy);
-        chart.getConfiguration().addSeries(listSeries);
+        DataSeries dataSeries = createDataSeriesForPolicy(policy);
+        chart.getConfiguration().addSeries(dataSeries);
     }
-
-    private ListSeries createListSeriesForPolicy(Policy policy) {
-        ListSeries listSeries = new ListSeries(policy.getName(), PolicyUtils.getMeanScores(policy));
-        listSeries.setId(Long.toString(policy.getId()));
+    
+    private DataSeries createDataSeriesForPolicy(Policy policy) {
+    	DataSeries dataSeries = new DataSeries(policy.getName());
+        dataSeries.setData(ChartUtils.getRewardScoreSeriesItems(policy));
+        dataSeries.setId(Long.toString(policy.getId()));
         // Insert the series as passive by default, they will be highlighted after best policy calculation
-        listSeries.setPlotOptions(createPassiveSeriesPlotOptions());
-        return listSeries;
+        dataSeries.setPlotOptions(createPassiveSeriesPlotOptions());
+        return dataSeries;
     }
 
     // TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/129 -> Does not seem possible yet: https://vaadin.com/forum/thread/17856633/is-it-possible-to-highlight-a-series-in-a-chart-programmatically
@@ -114,7 +120,7 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
     		} else {
     			series.setPlotOptions(createPassiveSeriesPlotOptions());
     		}
-    		ListSeries.class.cast(series).updateSeries();
+    		DataSeries.class.cast(series).updateSeries();
     	});
     }
 
