@@ -28,8 +28,9 @@ public class DashboardLine extends HorizontalLayout {
 	private DashboardItem dashboardItem;
 	
 	private static String INPROGRESS_INDICATOR = "...";
+	private String experimentNotes = "—";
 	
-	public DashboardLine(DashboardItem item, SerializableConsumer<DashboardItem> clickHandler, String experimentNotes) {
+	public DashboardLine(DashboardItem item, SerializableConsumer<DashboardItem> clickHandler) {
 		this.dashboardItem = item;
 		setClassName("dashboard-line");
 		breadcrumb = new Breadcrumbs(item.getProject(), item.getModel(), item.getExperiment(), false);
@@ -42,11 +43,19 @@ public class DashboardLine extends HorizontalLayout {
 		VerticalLayout wrapper = new VerticalLayout(timestamp, breadcrumb, stages);
 		wrapper.setPadding(false);
 		wrapper.addClassName("dashboard-item-main");
-		VerticalLayout notes = new VerticalLayout(LabelFactory.createLabel("Experiment notes", "bold-label"), new Paragraph(experimentNotes));
-		notes.addClassName("dashboard-item-notes");
 		Span navigateIcon = new Span(VaadinIcon.CHEVRON_RIGHT.create());
 		navigateIcon.setClassName("navigate-icon");
-		add(wrapper, notes, navigateIcon);
+
+		if (item.getExperiment() != null) {
+			if (!item.getExperiment().getUserNotes().isEmpty()) {
+				experimentNotes = item.getExperiment().getUserNotes();
+			}
+			VerticalLayout notes = new VerticalLayout(LabelFactory.createLabel("Experiment notes", "bold-label"), new Paragraph(experimentNotes));
+			notes.addClassName("dashboard-item-notes");
+			add(wrapper, notes, navigateIcon);
+		} else {
+			add(wrapper, navigateIcon);
+		}
 
 		// When a link in breadcrumb is clicked, the same click event is also triggered for DashboardLine
 		// We cannot stop propagation yet (see issue: https://github.com/vaadin/flow/issues/1363)

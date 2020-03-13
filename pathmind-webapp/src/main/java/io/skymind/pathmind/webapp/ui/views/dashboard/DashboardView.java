@@ -86,14 +86,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 		dashboardGrid = new Grid<>();
 		dashboardGrid.addClassName("dashboard");
 		dashboardGrid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
-		dashboardGrid.addComponentColumn(item -> {
-			Experiment experiment = item.getExperiment();
-			String experimentNotes = "—";
-			if (experiment != null && !experiment.getUserNotes().isEmpty()) {
-				experimentNotes = experiment.getUserNotes();
-			}
-			return new DashboardLine(item, itm -> navigateFromDashboard(itm), experimentNotes);
-		});
+		dashboardGrid.addComponentColumn(item -> new DashboardLine(item, itm -> navigateFromDashboard(itm)));
 		dashboardGrid.setSelectionMode(SelectionMode.NONE);
 		dashboardGrid.setPageSize(10);
 	}

@@ -338,6 +338,9 @@ h4 {
   align-items: center;
 }
 .navigate-icon {
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
   opacity: 0;
 }
 .dashboard-placeholder {
