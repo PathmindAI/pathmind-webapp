@@ -19,9 +19,6 @@ import static io.skymind.pathmind.utils.StringUtils.removeInvalidChars;
 @Slf4j
 public class PolicyUtils
 {
-    public static final String LEARNING_RATE = "lr";
-    public static final String GAMMA = "gamma";
-    public static final String BATCH_SIZE = "sgd_minibatch_size";
 
     private PolicyUtils() {
     }
@@ -86,12 +83,6 @@ public class PolicyUtils
         return policy.getScores().stream()
             .map(rewardScore -> rewardScore.getMean())
             .collect(Collectors.toList());
-    }
-
-    public static String generateDefaultNotes(Policy policy) {
-        return  BATCH_SIZE + "=" + policy.getBatchSize() + ", " +
-                LEARNING_RATE + "=" + policy.getLearningRate() + ", " +
-                GAMMA + "=" + policy.getGamma();
     }
 
     public static void loadPolicyDataModel(Policy policy, long policyId, Run run) {

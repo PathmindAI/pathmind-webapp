@@ -12,20 +12,10 @@ public final class RunConstants {
 	}
 
 	/**
-	 * Number of possible iterations for a single discovery run
-	 */
-	public static final int DISCOVERY_RUN_ITERATIONS = 50;
-
-	/**
-	 * Number of possible iterations for a single full run
-	 */
-	public static final int FULL_RUN_ITERATIONS = 500;
-
-	/**
 	 * Number of possible iterations for PBT run
 	 */
 	public static final int PBT_RUN_ITERATIONS = 250;
-	public static final int PBT_MAX_TIME_IN_SEC = 150 * MINUTE;
+	public static final int PBT_MAX_TIME_IN_SEC = 24 * HOUR; // Setting this for GHD March 14, 2020 - Slin
 	public static final int PBT_NUM_SAMPLES = 10;
 
 	public static final String DISCOVERY_RUN_LEARNING_RATES = "DISCOVERY_RUN_LEARNING_RATES";

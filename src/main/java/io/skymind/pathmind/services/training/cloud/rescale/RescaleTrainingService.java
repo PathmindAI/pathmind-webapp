@@ -14,6 +14,8 @@ import io.skymind.pathmind.services.training.ExecutionProvider;
 import io.skymind.pathmind.services.training.JobSpec;
 import lombok.extern.slf4j.Slf4j;
 
+import static io.skymind.pathmind.constants.RunType.DiscoveryRun;
+
 //@Service
 @Slf4j
 public class RescaleTrainingService extends TrainingService {
@@ -22,8 +24,8 @@ public class RescaleTrainingService extends TrainingService {
         super(false, executionProvider, runDAO, modelService, policyDAO, executionProviderMetaDataDAO);
     }
 
-    protected void startRun(RunType runType, Experiment exp, int iterations, int maxTimeInSec, int numSamples, Policy basePolicy) {
-        final Run run = runDAO.createRun(exp, runType);
+    protected void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSamples, Policy basePolicy) {
+        final Run run = runDAO.createRun(exp, DiscoveryRun);
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelService.getModel(exp.getModelId()).get();
 
@@ -47,7 +49,7 @@ public class RescaleTrainingService extends TrainingService {
                 model.getNumberOfObservations(),
                 iterations,
                 executionEnvironment,
-                runType,
+                DiscoveryRun,
                 maxTimeInSec,
                 numSamples,
                 false
@@ -69,6 +71,6 @@ public class RescaleTrainingService extends TrainingService {
         executionProviderMetaDataDAO.putProviderRunJobId(spec.getRunId(),executionId);
 
         runDAO.markAsStarting(run.getId());
-        log.info("Started " + runType + " training job with id {}", executionId);
+        log.info("Started {} training job with id {}", DiscoveryRun, executionId);
     }
 }
