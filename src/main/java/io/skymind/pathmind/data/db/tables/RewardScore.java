@@ -20,7 +20,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row5;
+import org.jooq.Row6;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RewardScore extends TableImpl<RewardScoreRecord> {
 
-    private static final long serialVersionUID = 540202254;
+    private static final long serialVersionUID = 306416440;
 
     /**
      * The reference instance of <code>public.reward_score</code>
@@ -80,6 +80,11 @@ public class RewardScore extends TableImpl<RewardScoreRecord> {
      * The column <code>public.reward_score.iteration</code>.
      */
     public final TableField<RewardScoreRecord, Integer> ITERATION = createField(DSL.name("iteration"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.reward_score.episode_count</code>.
+     */
+    public final TableField<RewardScoreRecord, Integer> EPISODE_COUNT = createField(DSL.name("episode_count"), org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * Create a <code>public.reward_score</code> table reference
@@ -160,11 +165,11 @@ public class RewardScore extends TableImpl<RewardScoreRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row5 type methods
+    // Row6 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Long, BigDecimal, BigDecimal, BigDecimal, Integer> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row6<Long, BigDecimal, BigDecimal, BigDecimal, Integer, Integer> fieldsRow() {
+        return (Row6) super.fieldsRow();
     }
 }

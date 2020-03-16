@@ -15,7 +15,7 @@ service:
 
 env:
   ENVIRONMENT: test
-  S3BUCKET: test-training-static-files.pathmind.com
+  S3BUCKET: test-model-analyzer-static-files.pathmind.com
 
 name: pathmind-ma
 

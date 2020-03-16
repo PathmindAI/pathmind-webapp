@@ -29,7 +29,7 @@ class RunRepository
         return ctx
                 .select(RUN.asterisk())
                 .select(EXPERIMENT.asterisk())
-                .select(MODEL.ID, MODEL.NAME, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION)
+                .select(MODEL.ID, MODEL.NAME)
                 .select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
                 .from(RUN)
                     .leftJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
@@ -43,7 +43,7 @@ class RunRepository
         return ctx
                 .select(RUN.asterisk())
                 .select(EXPERIMENT.asterisk())
-                .select(MODEL.ID, MODEL.NAME, MODEL.GET_OBSERVATION_FOR_REWARD_FUNCTION)
+                .select(MODEL.ID, MODEL.NAME)
                 .select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
                 .from(RUN)
                     .leftJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
@@ -99,6 +99,7 @@ class RunRepository
                 .where(Tables.RUN.STATUS.eq(RunStatus.Starting.getValue())
                         .or(Tables.RUN.STATUS.eq(RunStatus.Running.getValue()))
                         .or(Tables.RUN.STATUS.eq(RunStatus.Completed.getValue()))
+                        .or(Tables.RUN.STATUS.eq(RunStatus.Restarting.getValue()))
                         .and(POLICY.HAS_FILE.isNull().or(POLICY.HAS_FILE.isFalse())))
                 .fetch(Tables.RUN.ID);
     }
@@ -132,18 +133,10 @@ class RunRepository
     		.where(Tables.RUN.ID.eq(runId)).execute();
     }
     
-    protected static void clearNotificationSentInfo(DSLContext ctx, long experimentId, int runType) {
+    protected static void clearNotificationSentInfo(DSLContext ctx, long experimentId) {
 		ctx.update(Tables.RUN)
 			.set(Tables.RUN.NOTIFICATION_SENT_AT, (LocalDateTime) null)
-			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId)
-					.and(Tables.RUN.RUN_TYPE.eq(runType)))
+			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
 			.execute();
 	}
-
-    protected static int getRunType(DSLContext ctx, long runId) {
-        return ctx.select(Tables.RUN.RUN_TYPE)
-                .from(Tables.RUN)
-                .where(Tables.RUN.ID.eq(runId))
-                .fetchOneInto(Integer.class).intValue();
-    }
 }

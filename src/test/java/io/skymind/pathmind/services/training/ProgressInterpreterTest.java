@@ -21,7 +21,6 @@ public class ProgressInterpreterTest {
         final LocalDateTime utcTime = LocalDateTime.parse("2019-08-05_13-56-45", DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss"));
         final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();
 
-        assertEquals("PPO", policy.getAlgorithm());
         assertEquals(time, policy.getStartedAt());
         assertEquals(17, policy.getScores().size());
         assertEquals(76.00000045448542, policy.getScores().get(16).getMax(), 0);

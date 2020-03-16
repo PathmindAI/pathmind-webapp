@@ -17,6 +17,7 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -42,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = -627485809;
+    private static final long serialVersionUID = -595777855;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -60,7 +61,7 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     /**
      * The column <code>public.experiment.id</code>.
      */
-    public final TableField<ExperimentRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ExperimentRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('experiment_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.experiment.model_id</code>.
@@ -138,6 +139,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.EXPERIMENT_MODEL_FK_INDEX, Indexes.EXPERIMENT_PKEY);
+    }
+
+    @Override
+    public Identity<ExperimentRecord, Long> getIdentity() {
+        return Keys.IDENTITY_EXPERIMENT;
     }
 
     @Override
