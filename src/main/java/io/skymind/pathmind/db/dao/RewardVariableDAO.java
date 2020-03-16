@@ -7,18 +7,18 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class RewardVariablesDAO {
+public class RewardVariableDAO {
     private final DSLContext ctx;
 
-    RewardVariablesDAO(DSLContext ctx) {
+    RewardVariableDAO(DSLContext ctx) {
         this.ctx = ctx;
     }
 
     public void saveRewardVariables(List<RewardVariable> rewardVariables) {
-        RewardVariablesRepository.insertRewardVariables(ctx, rewardVariables);
+        RewardVariableRepository.insertRewardVariables(ctx, rewardVariables);
     }
 
     public List<RewardVariable> getRewardVariablesForModel(long modelId) {
-        return RewardVariablesRepository.getRewardVariablesForModel(ctx, modelId);
+        return RewardVariableRepository.getRewardVariablesForModel(ctx, modelId);
     }
 }

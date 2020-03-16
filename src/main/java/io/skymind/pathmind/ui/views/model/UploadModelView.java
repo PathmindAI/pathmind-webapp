@@ -16,7 +16,7 @@ import io.skymind.pathmind.data.Project;
 import io.skymind.pathmind.data.RewardVariable;
 import io.skymind.pathmind.data.utils.ModelUtils;
 import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.db.dao.RewardVariablesDAO;
+import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.Routes;
@@ -54,7 +54,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private ProjectDAO projectDAO;
 
 	@Autowired
-	private RewardVariablesDAO rewardVariablesDAO;
+	private RewardVariableDAO rewardVariableDAO;
 
 	@Autowired
 	private ModelService modelService;
@@ -144,7 +144,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 				.map((rewardVariable -> new RewardVariable(model.getId(), rewardVariable.getValue(), counter.getAndIncrement())))
 				.collect(Collectors.toList());
 
-		rewardVariablesDAO.saveRewardVariables(rewardVariableList);
+		rewardVariableDAO.saveRewardVariables(rewardVariableList);
 
 		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 	}

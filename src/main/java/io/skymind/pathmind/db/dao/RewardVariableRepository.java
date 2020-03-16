@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.data.db.Tables.REWARD_VARIABLE;
 
-class RewardVariablesRepository {
-    private RewardVariablesRepository() {
+class RewardVariableRepository {
+    private RewardVariableRepository() {
     }
 
     static void insertRewardVariables(DSLContext ctx, List<RewardVariable> rewardVariables) {
