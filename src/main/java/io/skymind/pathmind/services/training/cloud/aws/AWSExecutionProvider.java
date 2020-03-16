@@ -27,7 +27,6 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.constants.RunStatus.*;
 import static io.skymind.pathmind.constants.RunStatus.Error;
 
 @Service
@@ -111,7 +110,17 @@ public class AWSExecutionProvider implements ExecutionProvider {
         if (outputExist(jobHandle)){
             boolean killed = getFile(jobHandle, TrainingFile.KILLED).isPresent();
             if (killed) {
-                return new ProviderJobStatus(Killed);
+                return ProviderJobStatus.KILLED;
+            }
+
+            boolean restarting = getFile(jobHandle, TrainingFile.RESTARTING).isPresent();
+            boolean restarted = getFile(jobHandle, TrainingFile.RESTARTED).isPresent();
+            if (restarting && !restarted) {
+                return ProviderJobStatus.RESTARTING;
+            }
+
+            if (restarted) {
+                log.info(jobHandle + "is restarted!!");
             }
 
             ExperimentState experimentState = getExperimentState(jobHandle);
@@ -134,13 +143,13 @@ public class AWSExecutionProvider implements ExecutionProvider {
             }
 
             if (experimentState != null && experimentState.getCheckpoints() != null && experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L)) {
-                return new ProviderJobStatus(Completed);
+                return ProviderJobStatus.COMPLETED;
             }
 
-            return new ProviderJobStatus(Running);
+            return ProviderJobStatus.RUNNING;
         }
 
-        return new ProviderJobStatus(Starting);
+        return ProviderJobStatus.STARTING;
     }
 
     @Override
@@ -249,6 +258,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_7_0:
             case VERSION_0_7_6:
             case VERSION_0_7_6_PBT:
+            case VERSION_0_7_6_RESUME:
                 instructions.addAll(Arrays.asList(
                         // Setup NativeRL
                         "mkdir work",
@@ -396,7 +406,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("TIME_UNIT", "MINUTE"),
                 var("MAX_TIME_IN_SEC", String.valueOf(job.getMaxTimeInSec())),
                 var("NUM_SAMPLES", String.valueOf(job.getNumSamples())),
-                var("MULTIAGENT", String.valueOf(job.isMultiAgent()))
+                var("MULTIAGENT", String.valueOf(job.isMultiAgent())),
+                var("RESUME", String.valueOf(job.isResume())),
+                var("CHECKPOINT_FREQUENCY", String.valueOf(job.getCheckpointFrequency()))
         ));
     }
 
