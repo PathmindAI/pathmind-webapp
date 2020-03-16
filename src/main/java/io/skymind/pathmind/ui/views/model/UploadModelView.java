@@ -34,6 +34,7 @@ import io.skymind.pathmind.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.ui.views.guide.GuideOverview;
 import io.skymind.pathmind.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.ui.views.model.components.UploadModelWizardPanel;
+import io.skymind.pathmind.ui.views.model.components.RewardVariablesPanel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -65,11 +66,14 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private UploadModelWizardPanel uploadModelWizardPanel;
 	private ModelDetailsWizardPanel modelDetailsWizardPanel;
+	private RewardVariablesPanel rewardVariablesPanel;
 
 	private List<Component> wizardPanels;
 
 	private PathmindUserDetails user;
 	private long projectId;
+	private long experimentId;
+	private String modelNotes;
 	private Project project;
 
 	public UploadModelView()
@@ -87,23 +91,28 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 		uploadModelWizardPanel = new UploadModelWizardPanel(model);
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
+		rewardVariablesPanel = new RewardVariablesPanel();
 
 		wizardPanels = Arrays.asList(
 				uploadModelWizardPanel,
-				modelDetailsWizardPanel);
+				modelDetailsWizardPanel,
+				rewardVariablesPanel);
 
 		setVisibleWizardPanel(uploadModelWizardPanel);
 
 		uploadModelWizardPanel.addFileUploadCompletedListener(() -> handleUploadWizardClicked());
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked());
+		rewardVariablesPanel.addButtonClickListener(click -> handleRewardVariablesClicked());
 
 		VerticalLayout wrapper = WrapperUtils.wrapFormCenterVertical(
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel,
+				rewardVariablesPanel,
 				createBacktoGuideButton());
 
 		wrapper.getStyle().set("width", "auto");
 		wrapper.getStyle().set("padding-top", "var(--lumo-space-xxl)");
+		wrapper.addClassName("upload-model-view");
 		return wrapper;
 	}
 
@@ -117,6 +126,17 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	protected void initScreen(BeforeEnterEvent event) {
 		uploadModelWizardPanel.setProjectName(project.getName());
 		modelDetailsWizardPanel.setProjectName(project.getName());
+		rewardVariablesPanel.setProjectName(project.getName());
+	}
+
+	private void handleRewardVariablesClicked() {
+		experimentId = modelService.addModelToProject(model, project.getId(), modelNotes);
+
+		// TODO: save value of reward variable names into DB
+		rewardVariablesPanel.rewardVariableNameFields.stream()
+				.forEach(rewardVariableName -> System.out.println(rewardVariableName.getValue()));
+
+		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 	}
 
 	private void handleMoreDetailsClicked()
@@ -125,14 +145,14 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			return;
 		}
 
-		final String modelNotes = modelDetailsWizardPanel.notesFieldTextArea.getValue();
-		final long experimentId = modelService.addModelToProject(model, project.getId(), modelNotes);
+		modelNotes = modelDetailsWizardPanel.notesFieldTextArea.getValue();
 		
 		if (!modelNotes.isEmpty()) {
 			segmentIntegrator.addedNotesUploadModelView();
 		}
 
-		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
+		rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount());
+		setVisibleWizardPanel(rewardVariablesPanel);
 	}
 
 	private void handleUploadWizardClicked() {

@@ -40,7 +40,6 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
-
 	public ModelDetailsWizardPanel(Binder<Model> binder)
 	{
 		setupFields();
@@ -90,7 +89,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 				Model.DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS);
 
 		notesFieldTextArea = new PathmindTextArea();
-		notesFieldTextArea.setPlaceholder("Add your notes here");;
+		notesFieldTextArea.setPlaceholder("Add your notes here");
 	}
 
 	private void bindFields(Binder<Model> binder) {
