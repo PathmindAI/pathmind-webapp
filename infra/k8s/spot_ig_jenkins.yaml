@@ -3,6 +3,7 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
+    #Will be replaced by the name of the cluster
     kops.k8s.io/cluster: {{ CLUSTER_NAME }}
   name: jenkins-node
 spec:
