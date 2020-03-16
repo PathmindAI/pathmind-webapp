@@ -17,3 +17,4 @@ node_size="t2.2xlarge"
 master_size="t2.large"
 node_zones="us-east-1a,us-east-1b,us-east-1c"
 cidr_block="172.10.32.0/19"
+
