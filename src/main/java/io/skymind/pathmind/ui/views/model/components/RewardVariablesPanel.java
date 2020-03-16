@@ -35,7 +35,7 @@ public class RewardVariablesPanel extends VerticalLayout
 	private Div sectionTitleWrapper;
 	private Span projectNameLabel;
 
-	public List<TextField> rewardVariableNameFields = new ArrayList<>();
+	private List<TextField> rewardVariableNameFields = new ArrayList<>();
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
@@ -114,5 +114,9 @@ public class RewardVariablesPanel extends VerticalLayout
 				LabelFactory.createLabel("This will make it easier to understand when you’re creating reward functions."));
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
+	}
+
+	public List<TextField> getRewardVariableNameFields() {
+		return rewardVariableNameFields;
 	}
 }

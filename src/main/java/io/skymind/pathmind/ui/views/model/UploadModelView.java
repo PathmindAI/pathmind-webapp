@@ -13,8 +13,10 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.data.Model;
 import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.data.RewardVariable;
 import io.skymind.pathmind.data.utils.ModelUtils;
 import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.db.dao.RewardVariablesDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.security.PathmindUserDetails;
 import io.skymind.pathmind.security.Routes;
@@ -40,6 +42,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
@@ -48,6 +52,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	@Autowired
 	private ProjectDAO projectDAO;
+
+	@Autowired
+	private RewardVariablesDAO rewardVariablesDAO;
 
 	@Autowired
 	private ModelService modelService;
@@ -132,9 +139,12 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private void handleRewardVariablesClicked() {
 		experimentId = modelService.addModelToProject(model, project.getId(), modelNotes);
 
-		// TODO: save value of reward variable names into DB
-		rewardVariablesPanel.rewardVariableNameFields.stream()
-				.forEach(rewardVariableName -> System.out.println(rewardVariableName.getValue()));
+		AtomicInteger counter = new AtomicInteger();
+		final List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariableNameFields().stream()
+				.map((rewardVariable -> new RewardVariable(model.getId(), rewardVariable.getValue(), counter.getAndIncrement())))
+				.collect(Collectors.toList());
+
+		rewardVariablesDAO.saveRewardVariables(rewardVariableList);
 
 		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 	}

@@ -12,6 +12,7 @@ import io.skymind.pathmind.data.db.tables.PathmindUser;
 import io.skymind.pathmind.data.db.tables.Policy;
 import io.skymind.pathmind.data.db.tables.Project;
 import io.skymind.pathmind.data.db.tables.RewardScore;
+import io.skymind.pathmind.data.db.tables.RewardVariable;
 import io.skymind.pathmind.data.db.tables.Run;
 import io.skymind.pathmind.data.db.tables.TrainerJob;
 import io.skymind.pathmind.data.db.tables.TrainingError;
@@ -71,6 +72,11 @@ public class Tables {
      * The table <code>public.reward_score</code>.
      */
     public static final RewardScore REWARD_SCORE = RewardScore.REWARD_SCORE;
+
+    /**
+     * The table <code>public.reward_variable</code>.
+     */
+    public static final RewardVariable REWARD_VARIABLE = RewardVariable.REWARD_VARIABLE;
 
     /**
      * The table <code>public.run</code>.

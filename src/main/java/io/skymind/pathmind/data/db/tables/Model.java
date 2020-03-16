@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = -730030836;
+    private static final long serialVersionUID = -1714443122;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -110,7 +110,7 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.reward_variables_count</code>.
      */
-    public final TableField<ModelRecord, Integer> REWARD_VARIABLES_COUNT = createField(DSL.name("reward_variables_count"), org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<ModelRecord, Integer> REWARD_VARIABLES_COUNT = createField(DSL.name("reward_variables_count"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>public.model</code> table reference

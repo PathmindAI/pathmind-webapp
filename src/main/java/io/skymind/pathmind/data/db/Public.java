@@ -12,6 +12,7 @@ import io.skymind.pathmind.data.db.tables.PathmindUser;
 import io.skymind.pathmind.data.db.tables.Policy;
 import io.skymind.pathmind.data.db.tables.Project;
 import io.skymind.pathmind.data.db.tables.RewardScore;
+import io.skymind.pathmind.data.db.tables.RewardVariable;
 import io.skymind.pathmind.data.db.tables.Run;
 import io.skymind.pathmind.data.db.tables.TrainerJob;
 import io.skymind.pathmind.data.db.tables.TrainingError;
@@ -40,7 +41,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -1100662514;
+    private static final long serialVersionUID = -2121064760;
 
     /**
      * The reference instance of <code>public</code>
@@ -88,6 +89,11 @@ public class Public extends SchemaImpl {
     public final RewardScore REWARD_SCORE = io.skymind.pathmind.data.db.tables.RewardScore.REWARD_SCORE;
 
     /**
+     * The table <code>public.reward_variable</code>.
+     */
+    public final RewardVariable REWARD_VARIABLE = io.skymind.pathmind.data.db.tables.RewardVariable.REWARD_VARIABLE;
+
+    /**
      * The table <code>public.run</code>.
      */
     public final Run RUN = io.skymind.pathmind.data.db.tables.Run.RUN;
@@ -132,6 +138,7 @@ public class Public extends SchemaImpl {
             Policy.POLICY,
             Project.PROJECT,
             RewardScore.REWARD_SCORE,
+            RewardVariable.REWARD_VARIABLE,
             Run.RUN,
             TrainerJob.TRAINER_JOB,
             TrainingError.TRAINING_ERROR);
