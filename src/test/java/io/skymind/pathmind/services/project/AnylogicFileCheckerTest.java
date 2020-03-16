@@ -29,7 +29,8 @@ import ch.qos.logback.core.read.ListAppender;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AnylogicFileCheckerTest {
-    private File validFile =new File("./src/test/resources/static/CoffeeShopAnylogicExported.zip");
+//    private File validFile =new File("./src/test/resources/static/CoffeeShopAnylogicExported.zip");
+    private File validFile =new File("./src/test/resources/static/CoffeeShop_Fast_Speed_for_Testing.zip");
     private File inValidFile =new File("./src/test/resources/static/CoffeeShop.zip");
     private File invalidFormat = new File("./src/test/resources/static/Sample.txt");
     private File corruptedType = new File("./src/test/resources/static/corrupted.zip");
@@ -50,7 +51,6 @@ public class AnylogicFileCheckerTest {
 
         definedHelpers.add("coffeeshop/Main##pathmindHelper");
 
-        fileNameList.add("database/");
         fileNameList.add("database/db.properties");
         fileNameList.add("database/db.script");
         fileNameList.add("model.jar");
@@ -81,7 +81,7 @@ public class AnylogicFileCheckerTest {
         File unZippedJar = anylogicFileChecker.checkZipFile(validFile, anylogicFileCheckResult);
         jarFile.set(unZippedJar);
         assertThat(unZippedJar, anExistingFileOrDirectory());
-        assertThat(unZippedJar, aFileWithCanonicalPath(containsString("model.jar")));
+        assertThat(unZippedJar, aFileWithCanonicalPath(containsString("pathmind")));
     }
 
     @Test

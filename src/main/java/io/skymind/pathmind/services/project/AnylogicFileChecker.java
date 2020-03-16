@@ -29,6 +29,11 @@ public class AnylogicFileChecker implements FileChecker {
 
     public AnylogicFileChecker(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+        try {
+            tempDir = Files.createTempDirectory("pathmind" + uuid).toFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -37,7 +42,6 @@ public class AnylogicFileChecker implements FileChecker {
 
         AnylogicFileCheckResult anylogicFileCheckResult = new AnylogicFileCheckResult();
         try {
-            tempDir = Files.createTempDirectory("pathmind" + uuid).toFile();
             //To check the file(model.zip) exist and does the server have permission to read
             if (file.exists() && file.isFile() && file.canRead()) {
                 log.info("Uploaded file exists and it is readable");
@@ -110,7 +114,6 @@ public class AnylogicFileChecker implements FileChecker {
                     if (!newFile.getParentFile().exists()) {
                         newFile.getParentFile().mkdirs();
                     }
-
                     try (FileOutputStream fos = new FileOutputStream(newFile)) {
                         int len;
                         while ((len = zis.read(buffer)) > 0) {
@@ -158,6 +161,8 @@ public class AnylogicFileChecker implements FileChecker {
         log.info("{} :- checkJarFile Started", uuid);
 
         File modelJarFile = null;
+
+        System.out.println("kepricondebug : " + unZipped);
 
         Optional<File> modelJar = Arrays.stream(unZipped.listFiles())
                 .filter(file -> file.getName().equalsIgnoreCase("model.jar"))
