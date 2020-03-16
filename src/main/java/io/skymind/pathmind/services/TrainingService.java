@@ -37,7 +37,9 @@ public abstract class TrainingService {
         }
 
 //        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
-        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6_PBT, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
+//        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6_PBT, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
+        // todo revert to 0_7_6_PBT after testing resume
+        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6_RESUME, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
     }
 
     public void startDiscoveryRun(Experiment exp){
