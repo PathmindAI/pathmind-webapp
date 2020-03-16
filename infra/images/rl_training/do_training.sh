@@ -26,11 +26,11 @@ EOF
 
 #Check if we need to resume the training
 output_files=`aws s3 ls  ${s3_url}/output/ | wc -l`
-if [ "${output_files}" -ge 0 ]
+if [ "${output_files}" -ge 1 ]
 then
 	description="Training is resumed"
 	curl -X POST -H 'Content-type: application/json' \
-		--data "{'text':'Killing Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
+		--data "{'text':'Resuming Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
 		https://hooks.slack.com/services/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
 	echo "Resuming Training"
 	export RESUME=true
@@ -115,6 +115,20 @@ cd ..
 aws s3 sync ./work/PPO ${s3_url}/output/
 aws s3 cp ${log_file} ${s3_url}/output/${log_file}
 aws s3 cp errors.log ${s3_url}/output/errors.log
+
+#delete old state files
+if [ "${RESUME}" == true ]
+then
+	for file in `ls -1tr ./work/PPO/experiment_state*json | sed '$d'`
+	do
+		#Delete locally
+		echo "Deleting old ${file}"
+		rm ${file}
+		#Delete from s3
+		file=`basename ${file}`
+		aws s3 rm ${s3_url}/output/${file}
+	done
+fi
 
 #Validate that the training was successful
 NUM_SAMPLES=`grep NUM_SAMPLES script.sh | grep export | cut -f2 -d"'" | sed "s/ //g"`
