@@ -53,7 +53,9 @@ public class AWSTrainingService extends TrainingService {
                 DiscoveryRun,
                 maxTimeInSec,
                 numSamples,
-                multiAgent
+                multiAgent,
+                false,
+                50
         );
 
         if (basePolicy != null) {

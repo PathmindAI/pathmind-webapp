@@ -99,6 +99,7 @@ class RunRepository
                 .where(Tables.RUN.STATUS.eq(RunStatus.Starting.getValue())
                         .or(Tables.RUN.STATUS.eq(RunStatus.Running.getValue()))
                         .or(Tables.RUN.STATUS.eq(RunStatus.Completed.getValue()))
+                        .or(Tables.RUN.STATUS.eq(RunStatus.Restarting.getValue()))
                         .and(POLICY.HAS_FILE.isNull().or(POLICY.HAS_FILE.isFalse())))
                 .fetch(Tables.RUN.ID);
     }

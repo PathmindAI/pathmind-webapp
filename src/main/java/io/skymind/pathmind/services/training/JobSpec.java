@@ -1,10 +1,11 @@
 package io.skymind.pathmind.services.training;
 
 import io.skymind.pathmind.constants.RunType;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.List;
-import java.util.function.Supplier;
-
+@Getter
 public class JobSpec {
     private final long userId;
     private final long modelId;
@@ -12,6 +13,7 @@ public class JobSpec {
     private final long runId;
 
     private final String modelFileId;
+    @Setter
     private String checkpointFileId;
 
     private final String variables;
@@ -31,8 +33,10 @@ public class JobSpec {
 
     private final int numSamples;
     private final boolean multiAgent;
+    private final boolean resume;
+    private final int checkpointFrequency;
 
-    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent) {
+    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent, boolean resume, int checkpointFrequency) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
@@ -49,81 +53,7 @@ public class JobSpec {
         this.maxTimeInSec = maxTimeInSec;
         this.numSamples = numSamples;
         this.multiAgent = multiAgent;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public long getModelId() {
-        return modelId;
-    }
-
-    public long getExperimentId() {
-        return experimentId;
-    }
-
-    public String getVariables() {
-        return variables;
-    }
-
-    public String getReset() {
-        return reset;
-    }
-
-    public String getReward() {
-        return reward;
-    }
-
-    public String getMetrics() {
-        return metrics;
-    }
-
-    public int getActions() {
-        return actions;
-    }
-
-    public int getObservations() {
-        return observations;
-    }
-
-    public int getIterations() {
-        return iterations;
-    }
-
-    public RunType getType() {
-        return type;
-    }
-
-    public ExecutionEnvironment getEnv() {
-        return env;
-    }
-
-    public long getRunId() {
-        return runId;
-    }
-
-    public int getMaxTimeInSec() {
-        return maxTimeInSec;
-    }
-
-    public String getModelFileId() {
-        return modelFileId;
-    }
-
-    public String getCheckpointFileId() {
-        return checkpointFileId;
-    }
-
-    public void setCheckpointFileId(String checkpointFileId) {
-        this.checkpointFileId = checkpointFileId;
-    }
-
-    public int getNumSamples() {
-        return numSamples;
-    }
-
-    public boolean isMultiAgent() {
-        return multiAgent;
+        this.resume = resume;
+        this.checkpointFrequency = checkpointFrequency;
     }
 }

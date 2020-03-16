@@ -52,7 +52,9 @@ public class RescaleTrainingService extends TrainingService {
                 DiscoveryRun,
                 maxTimeInSec,
                 numSamples,
-                false
+                false,
+                false,
+                50
         );
 
         if (basePolicy != null) {
