@@ -177,7 +177,13 @@ pipeline {
 				echo "Running tests"
 				sh "if [ -d pathmind-bdd-tests ]; then rm -rf pathmind-bdd-tests; fi"
 				sh "git clone git@github.com:SkymindIO/pathmind-bdd-tests.git"
-				TEST_STATUS = sh( returnStatus: true, script: "cd pathmind-bdd-tests && mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234")
+				BRANCH = sh( returnStatus: true, script: "cd pathmind-bdd-tests && git show-branch ${env.GIT_BRANCH}")
+				if(BRANCH == 0){
+					TEST_STATUS = sh( returnStatus: true, script: "cd pathmind-bdd-tests && git checkout ${env.GIT_BRANCH} && mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234")
+				}
+				else {
+					TEST_STATUS = sh( returnStatus: true, script: "cd pathmind-bdd-tests && mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234")
+				}
 			} catch (err) {
 			} finally {
 				publishHTML (target: [
