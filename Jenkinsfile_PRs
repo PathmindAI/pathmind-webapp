@@ -232,7 +232,7 @@ pipeline {
                 script {
                         if(TEST_STATUS != 0){
 				echo "Some bdd tests failed ${TEST_STATUS}"
-				currentBuild.result = 'FAILURE'
+				currentBuild.result = 'UNSTABLE'
                         }
                 }
             }
