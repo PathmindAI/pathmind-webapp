@@ -15,8 +15,7 @@ Vagrant.configure("2") do |config|
    
     # Add node sources
     wget https://deb.nodesource.com/setup_13.x && \
-	  bash ./setup_13.x && \
-   
+    bash ./setup_13.x && \
     apt-get update -y
 
     # Install postgresql, maven, node and java
