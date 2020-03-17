@@ -23,9 +23,6 @@ color: black;\
 font-size: 0.85rem;\
 line-height: 1.6rem;\
 }\
-.ace-eclipse .ace_fold {\
-background-color: rgb(60, 76, 114);\
-}\
 .ace-eclipse .ace_cursor {\
 color: black;\
 }\
@@ -97,6 +94,15 @@ border: 1px solid rgb(181, 213, 255);\
 }\
 .ace-eclipse .ace_indent-guide {\
 background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==") right repeat-y;\
+}\
+.ace-eclipse .ace_fold{\
+  background-image: none !important;\
+  background-color: transparent !important;\
+  color: gray !important;\
+  font-style: italic;\
+  border: none !important;\
+  height: unset;\
+  cursor: unset;\
 }';
 
     exports.cssClass = "ace-eclipse";

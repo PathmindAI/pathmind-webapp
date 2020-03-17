@@ -1,7 +1,10 @@
 package io.skymind.pathmind.ui.views.experiment.components;
 
+import java.util.List;
 
-
+import elemental.json.Json;
+import elemental.json.JsonObject;
+import io.skymind.pathmind.data.RewardVariable;
 import io.skymind.pathmind.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.ui.components.juicy.mode.JuicyAceMode;
 import io.skymind.pathmind.ui.components.juicy.theme.JuicyAceTheme;
@@ -19,5 +22,16 @@ public class RewardFunctionEditor extends JuicyAceEditor
 		setSizeFull();
 		setTheme(JuicyAceTheme.eclipse);
 		setMode(JuicyAceMode.java);
+	}
+	
+	public void setVariableNames(List<RewardVariable> rewardVariables) {
+		setVariableNames(convertToJson(rewardVariables));
+		addVariableNameSupport();
+	}
+
+	private JsonObject convertToJson(List<RewardVariable> rewardVariables) {
+		JsonObject json = Json.createObject();
+		rewardVariables.forEach(rewardVariable -> json.put(Integer.toString(rewardVariable.getArrayIndex()), rewardVariable.getName()));
+		return json;
 	}
 }

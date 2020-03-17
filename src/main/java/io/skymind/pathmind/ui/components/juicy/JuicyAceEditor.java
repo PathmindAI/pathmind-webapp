@@ -7,20 +7,20 @@ import com.vaadin.flow.component.Synchronize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.dependency.NpmPackage;
+
+import elemental.json.JsonObject;
 import io.skymind.pathmind.ui.components.juicy.mode.JuicyAceMode;
 import io.skymind.pathmind.ui.components.juicy.theme.JuicyAceTheme;
 
 //NOTE: consider to move as separate from project component
 @Tag("juicy-ace-editor")
 // Using CDN here as a workaround for an issue with webpack + ace-builds: https://github.com/DanielSchaffer/webpack-babel-multi-target-plugin/issues/39
-@JavaScript("https://unpkg.com/ace-builds@1.4.6/src-noconflict/ace.js")
-@JavaScript("https://unpkg.com/ace-builds@1.4.6/src-noconflict/ext-searchbox.js")
-@JavaScript("https://unpkg.com/ace-builds@1.4.6/src-noconflict/mode-java.js")
-@JavaScript("https://unpkg.com/ace-builds@1.4.6/src-noconflict/theme-eclipse.js")
-// The following line is commented due to the CDN workaround. The custom theme needs to be built in a different way
-//@JsModule("./src/juicy-ace-editor/theme-pathmind.js")
-@JavaScript("https://unpkg.com/ace-builds@1.4.6/src-noconflict/ext-beautify.js")
+@JavaScript("./src/juicy-ace-editor/ace/ace.js")
+@JavaScript("./src/juicy-ace-editor/ace/ext-searchbox.js")
+@JavaScript("./src/juicy-ace-editor/ace/ext-beautify.js")
+@JavaScript("./src/juicy-ace-editor/ace/mode/mode-java.js")
+@JavaScript("./src/juicy-ace-editor/ace/theme/theme-eclipse.js")
+@JavaScript("./src/juicy-ace-editor/juicy-ace-editor-variable-names.js")
 @JsModule("./src/juicy-ace-editor/juicy-ace-editor-npm.min.js")
 public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, String> implements HasSize, Focusable<JuicyAceEditor> {
     public JuicyAceEditor() {
@@ -78,5 +78,13 @@ public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, 
     @Synchronize({"change"})
     public String getValue() {
         return this.getElement().getProperty("value");
+    }
+    
+    protected void addVariableNameSupport() {
+    	getElement().executeJs("window.Pathmind.CodeEditor.addVariableNamesSupport($0)");
+    }
+    
+    protected void setVariableNames(JsonObject variableNames) {
+    	getElement().executeJs("window.Pathmind.CodeEditor.setVariableNames($0)", variableNames);
     }
 }

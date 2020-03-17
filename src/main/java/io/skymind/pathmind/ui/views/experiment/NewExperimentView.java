@@ -25,7 +25,9 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 
 import io.skymind.pathmind.data.Experiment;
+import io.skymind.pathmind.data.RewardVariable;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.exception.InvalidDataException;
 import io.skymind.pathmind.mock.MockDefaultValues;
@@ -51,6 +53,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private long experimentId = -1;
     private Experiment experiment;
+    private List<RewardVariable> rewardVariables;
 
     private Div errorsWrapper;
     private PathmindTextArea tipsTextArea;
@@ -60,6 +63,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Autowired
     private ExperimentDAO experimentDAO;
+    @Autowired
+    private RewardVariableDAO rewardVariableDAO;
     @Autowired
     private TrainingService trainingService;
 	@Autowired
@@ -233,6 +238,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     protected void initLoadData() {
         experiment = experimentDAO.getExperiment(experimentId)
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
+        rewardVariables = rewardVariableDAO.getRewardVariablesForModel(experiment.getModelId());
 		if(MockDefaultValues.isDebugAccelerate() && StringUtils.isEmpty(experiment.getRewardFunction()))
 			experiment.setRewardFunction(MockDefaultValues.NEW_EXPERIMENT_REWARD_FUNCTION);
     }
@@ -240,5 +246,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected void initScreen(BeforeEnterEvent event) {
         binder.setBean(experiment);
+        rewardFunctionEditor.setVariableNames(rewardVariables);
     }
 }
