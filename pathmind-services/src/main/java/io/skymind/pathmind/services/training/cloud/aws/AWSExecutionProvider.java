@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
@@ -125,7 +126,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             }
 
             if (restarted) {
-                log.info(jobHandle + "is restarted!!");
+                log.debug(jobHandle + " is restarted!!");
             }
 
             ExperimentState experimentState = getExperimentState(jobHandle);
@@ -228,10 +229,12 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private ExperimentState getExperimentState(String jobHandle) {
         Optional<ExperimentState> expOpt = client.listObjects(jobHandle + "/output/").getObjectSummaries().parallelStream()
                 .filter(it -> it.getKey().endsWith(".json") && it.getKey().contains("experiment_state-"))
-                .findAny()
+                .map(S3ObjectSummary::getKey)
+                .sorted(Comparator.reverseOrder())
+                .findFirst()
                 .map(it -> {
                     try {
-                        return objectMapper.readValue(client.fileContents(it.getKey()), ExperimentState.class);
+                        return objectMapper.readValue(client.fileContents(it), ExperimentState.class);
                     } catch (IOException e) {
                         log.error(e.getMessage(), e);
                         return  null;
@@ -392,6 +395,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
         return "export " + name + "=" + value.replace("'", "\\'");
     }
 
+    private String varCondition(String name, String value) {
+        return "export " + name + "=${" + name + ":='" + value.replace("'", "\\'") + "'}";
+    }
+
     private void setupVariables(JobSpec job, List<String> instructions) {
         instructions.addAll(Arrays.asList(
                 var("CLASS_SNIPPET", job.getVariables()),
@@ -412,7 +419,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("MAX_TIME_IN_SEC", String.valueOf(job.getMaxTimeInSec())),
                 var("NUM_SAMPLES", String.valueOf(job.getNumSamples())),
                 var("MULTIAGENT", String.valueOf(job.isMultiAgent())),
-                var("RESUME", String.valueOf(job.isResume())),
+                varCondition("RESUME", String.valueOf(job.isResume())),
                 var("CHECKPOINT_FREQUENCY", String.valueOf(job.getCheckpointFrequency()))
         ));
     }
