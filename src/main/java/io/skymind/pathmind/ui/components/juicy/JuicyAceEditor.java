@@ -19,7 +19,7 @@ import io.skymind.pathmind.ui.components.juicy.theme.JuicyAceTheme;
 @JavaScript("./src/juicy-ace-editor/ace/ext-searchbox.js")
 @JavaScript("./src/juicy-ace-editor/ace/ext-beautify.js")
 @JavaScript("./src/juicy-ace-editor/ace/mode/mode-java.js")
-@JavaScript("./src/juicy-ace-editor/ace/theme/theme-eclipse.js")
+@JavaScript("./src/juicy-ace-editor/ace/theme/theme-pathmind.js")
 @JavaScript("./src/juicy-ace-editor/juicy-ace-editor-variable-names.js")
 @JsModule("./src/juicy-ace-editor/juicy-ace-editor-npm.min.js")
 public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, String> implements HasSize, Focusable<JuicyAceEditor> {

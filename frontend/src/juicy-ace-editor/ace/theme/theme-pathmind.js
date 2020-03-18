@@ -11,6 +11,9 @@ background: transparent;\
 color: rgb(136, 136, 136);\
 border-top-left-radius: var(--lumo-border-radius);\
 }\
+.ace-eclipse .ace_fold {\
+background-color: rgb(60, 76, 114);\
+}\
 .ace-eclipse .ace_print-margin {\
 width: 1px;\
 background: #ebebeb;\
@@ -95,14 +98,48 @@ border: 1px solid rgb(181, 213, 255);\
 .ace-eclipse .ace_indent-guide {\
 background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==") right repeat-y;\
 }\
-.ace-eclipse .ace_fold{\
-  background-image: none !important;\
-  background-color: transparent !important;\
-  color: gray !important;\
+.ace-eclipse .ace_reward_variable{\
   font-style: italic;\
-  border: none !important;\
-  height: unset;\
-  cursor: unset;\
+}\
+.variable-color-0 {\
+  color: #000 !important;\
+  background-color: #67ea93 !important;\
+}\
+.variable-color-1 {\
+  color: #fff !important;\
+  background-color: #214e96 !important;\
+}\
+.variable-color-2 {\
+  color: #000 !important;\
+  background-color: #9bf7ec !important;\
+}\
+.variable-color-3 {\
+  color: #fff !important;\
+  background-color: #7550e5 !important;\
+}\
+.variable-color-4 {\
+  color: #000 !important;\
+  background-color: #b0f78c !important;\
+}\
+.variable-color-5 {\
+  color: #000 !important;\
+  background-color: #ef99a4 !important;\
+}\
+.variable-color-6 {\
+  color: #000 !important;\
+  background-color: #9bc0f7 !important;\
+}\
+.variable-color-7 {\
+  color: #fff !important;\
+  background-color: #931901 !important;\
+}\
+.variable-color-8 {\
+  color: #fff !important;\
+  background-color: #f413bc !important;\
+}\
+.variable-color-9 {\
+  color: #000 !important;\
+  background-color: #d1b112 !important;\
 }';
 
     exports.cssClass = "ace-eclipse";

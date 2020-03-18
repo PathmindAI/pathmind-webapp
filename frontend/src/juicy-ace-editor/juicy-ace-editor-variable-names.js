@@ -24,12 +24,36 @@ function matchVariableNameAndFold(matchingValue, index, row){
 	if (matchInfo){
 		let variableIndex = matchInfo[0];
 		if (rewardVariables[variableIndex]){
-			let variableName = "\"" + rewardVariables[variableIndex] + "\" " + variableIndex;
+			let variableName = variableIndex + " \"" + rewardVariables[variableIndex] + "\"";
 			let foldLocation = index + matchInfo.index;
 			let fold = editor.session.addFold(variableName, new Range(row, foldLocation, row, foldLocation + matchInfo[0].length));
 			fold.preventExpand = true;
 		}
 	}
+}
+
+function pushTokensForPlaceholder(renderTokens, placeholder){
+	let matchInfo = placeholder.match(/^[0-9]+ */);
+	if (matchInfo){
+		let variableIndex = Number(matchInfo[0]);
+		let variableName = placeholder.substring(matchInfo[0].length);
+		renderTokens.push({
+			type: "constant ace_numeric",
+			value: "" + variableIndex
+		}, {
+			type: "text",
+			value: " "
+		}, {
+			type: "reward_variable variable-color-" + variableIndex,
+			value: variableName
+		});
+	} else {
+		renderTokens.push({
+			type: "fold",
+			value: placeholder
+		});
+	}
+	
 }
 
 function onChange(e) {
@@ -58,6 +82,62 @@ function expandFold(fold) {
     }
     fold.subFolds = [];
 }
+function getFoldLineTokens(row, foldLine) {
+    var session = this.session;
+    var renderTokens = [];
+
+    function addTokens(tokens, from, to) {
+        var idx = 0, col = 0;
+        while ((col + tokens[idx].value.length) < from) {
+            col += tokens[idx].value.length;
+            idx++;
+
+            if (idx == tokens.length)
+                return;
+        }
+        if (col != from) {
+            var value = tokens[idx].value.substring(from - col);
+            if (value.length > (to - from))
+                value = value.substring(0, to - from);
+
+            renderTokens.push({
+                type: tokens[idx].type,
+                value: value
+            });
+
+            col = from + value.length;
+            idx += 1;
+        }
+
+        while (col < to && idx < tokens.length) {
+            var value = tokens[idx].value;
+            if (value.length + col > to) {
+                renderTokens.push({
+                    type: tokens[idx].type,
+                    value: value.substring(0, to - col)
+                });
+            } else
+                renderTokens.push(tokens[idx]);
+            col += value.length;
+            idx += 1;
+        }
+    }
+
+    var tokens = session.getTokens(row);
+    foldLine.walk(function(placeholder, row, column, lastColumn, isNewRow) {
+        if (placeholder != null) {
+        	pushTokensForPlaceholder(renderTokens, placeholder);
+        } else {
+            if (isNewRow)
+                tokens = session.getTokens(row);
+
+            if (tokens.length)
+                addTokens(tokens, lastColumn, column);
+        }
+    }, foldLine.end.row, this.session.getLine(foldLine.end.row).length);
+
+    return renderTokens;
+};
 if (!window.Pathmind){
 	window.Pathmind = {};
 }
@@ -66,6 +146,7 @@ window.Pathmind.CodeEditor = {
 	    	editor = editorWrapper.editor;
 	    	Range=ace.require("ace/range").Range;
 	    	editor.session.expandFold = expandFold;
+	    	editor.renderer.$textLayer.$getFoldLineTokens = getFoldLineTokens;
 	    	createVariableNameHints();
 	    	editor.session.on("change", e => onChange(e));
 	    },
