@@ -1,4 +1,6 @@
 def DOCKER_TAG
+def SLACK_URL="https://hooks.slack.com/services/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"
+def icon=":heavy_check_mark:"
 /*
     pathmind-webapp pipeline
     The pipeline is made up of following steps
@@ -66,6 +68,7 @@ pipeline {
                 }
             }
             steps {
+		sh "curl -X POST -H 'Content-type: application/json' --data '{\"text\":\":building_construction: Starting Jenkins Job\nBranch: ${env.BRANCH_NAME}\nUrl: ${env.RUN_DISPLAY_URL}\"}' ${SLACK_URL}"
 		script {
 		        DOCKER_TAG = "dev"
 		        if(env.BRANCH_NAME == 'master'){
@@ -197,7 +200,6 @@ pipeline {
             }
         }
 
-	////////// Step 6 //////////
 	stage('Deploying to Production') {
 	    when {
                 anyOf {
@@ -214,5 +216,16 @@ pipeline {
             }
         }
    }
+   post {
+        always {
+		echo 'Notifying Slack'
+		script {
+			if ( currentBuild.result != "SUCCESS" ) {
+				icon=":x:"
+			}
+		}
+		sh "curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"${icon} Jenkins Job Finished\nBranch: ${env.BRANCH_NAME}\nUrl: ${env.RUN_DISPLAY_URL}\nStatus: ${currentBuild.result}\"}' ${SLACK_URL}"
+        }
+    }
 }
 
