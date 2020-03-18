@@ -10,7 +10,7 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.shared.constants.GuideStep;
-import io.skymind.pathmind.data.Project;
+import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
