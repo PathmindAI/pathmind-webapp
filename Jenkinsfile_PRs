@@ -141,24 +141,31 @@ pipeline {
             }
             steps {
 		script {
-			echo "Creating name space ${env.BUILD_NUMBER}"
-			sh "kubectl create namespace ${env.BUILD_NUMBER}"
-			echo "Installing postgresql postgres-${env.BUILD_NUMBER}"
-			sh "helm upgrade --install postgres ${WORKSPACE}/infra/helm/postgres --set namespace=${env.BUILD_NUMBER} -n ${env.BUILD_NUMBER}"
-			sh "sleep 60"
-			echo "Creating secrets"
-			sh "kubectl create secret generic dburl --from-literal DB_URL='jdbc:postgresql://postgres/pathminddb?user=pathminddb&password=Asdf1234' -n ${env.BUILD_NUMBER}"
+                        echo "Creating name space ${env.BUILD_NUMBER}"
+                        sh "kubectl create namespace ${env.BUILD_NUMBER}"
+                        echo "Installing postgresql postgres-${env.BUILD_NUMBER}"
+                        sh "helm upgrade --install postgres ${WORKSPACE}/infra/helm/postgres --set namespace=${env.BUILD_NUMBER} -n ${env.BUILD_NUMBER}"
+
+                        echo "Waiting for psql to come up"
+                        sh "timeout 300 bash -c 'while ! pg_isready  -h postgres-${env.BUILD_NUMBER} -q; do sleep 5; done'"
+
+                        echo "Creating user"
+                        userpass='\\$2a\\$10\\$mnh8uyby0UslZw1fiKXc9uvX2370CJJMjYg3U7ztmVXRXmQo3VJLK'
+                        sh "echo \"insert into public.pathmind_user (email, password, account_type, email_verified_at) values ('evegeniy@skymind.io', '${userpass}', '0', '2020-02-02 20:24:48.067479') on conflict (email) do nothing;\" > /tmp/${env.BUILD_NUMBER}.sql"
+                        sh "psql 'host=postgres-${env.BUILD_NUMBER} dbname=pathminddb user=pathminddb password=Asdf1234' < /tmp/${env.BUILD_NUMBER}.sql"
+
+                        echo "Creating secrets"
+                        sh "kubectl create secret generic dburl --from-literal DB_URL='jdbc:postgresql://postgres/pathminddb?user=pathminddb&password=Asdf1234' -n ${env.BUILD_NUMBER}"
                         sh "kubectl create secret generic awsaccesskey --from-literal AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID} -n ${env.BUILD_NUMBER}"
                         sh "kubectl create secret generic awssecretaccesskey --from-literal AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY} -n ${env.BUILD_NUMBER}"
                         sh "kubectl create secret generic segmentwebsitekey --from-literal SEGMENT_WEBSITE_KEY=${env.SEGMENT_WEBSITE_KEY} -n ${env.BUILD_NUMBER}"
                         sh "kubectl create secret generic segmentserversitekey --from-literal SEGMENT_SERVER_KEY=${env.SEGMENT_SERVER_KEY} -n ${env.BUILD_NUMBER}"
-			echo "Installing ${RELEASE_ID}"
-			sh "helm upgrade --install ${RELEASE_ID} ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/${HELM_FILE} --set image.repository=${DOCKER_REG}/${RELEASE_ID} --set image.tag=latest --set env.APPLICATION_URL=http://${RELEASE_ID} --set namespace=${env.BUILD_NUMBER} --set env.JOB_MOCK_CYCLE=3 -n ${env.BUILD_NUMBER}"
-			sh "sleep 60"
-			echo "Creating user"
-			userpass='\\$2a\\$10\\$mnh8uyby0UslZw1fiKXc9uvX2370CJJMjYg3U7ztmVXRXmQo3VJLK'
-			sh "echo \"insert into public.pathmind_user (email, password, account_type, email_verified_at) values ('evegeniy@skymind.io', '${userpass}', '0', '2020-02-02 20:24:48.067479') on conflict (email) do nothing;\" > /tmp/${env.BUILD_NUMBER}.sql"
-			sh "psql 'host=postgres-${env.BUILD_NUMBER} dbname=pathminddb user=pathminddb password=Asdf1234' < /tmp/${env.BUILD_NUMBER}.sql"
+
+                        echo "Installing ${RELEASE_ID}"
+                        sh "helm upgrade --install ${RELEASE_ID} ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/${HELM_FILE} --set image.repository=${DOCKER_REG}/${RELEASE_ID} --set image.tag=latest --set env.APPLICATION_URL=http://${RELEASE_ID} --set namespace=${env.BUILD_NUMBER} --set env.JOB_MOCK_CYCLE=3 -n ${env.BUILD_NUMBER}"
+
+                        echo "Waiting for webapp to come up"
+                        sh "timeout 300 bash -c 'while ! curl http://${RELEASE_ID}; do sleep 5; done'"
 		}
             }
         }
