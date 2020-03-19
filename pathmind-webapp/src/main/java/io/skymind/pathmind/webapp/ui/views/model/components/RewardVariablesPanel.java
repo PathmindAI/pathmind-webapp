@@ -2,12 +2,11 @@ package io.skymind.pathmind.webapp.ui.views.model.components;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.NO_TOP_MARGIN_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_SUBTITLE_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_SUBTITLE_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.TRUNCATED_LABEL;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.ClickEvent;
@@ -20,10 +19,9 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 
+import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -31,11 +29,10 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 public class RewardVariablesPanel extends VerticalLayout
 {
 	private VerticalLayout formPanel = new VerticalLayout();
+	private RewardVariablesTable rewardVariablesTable;
 
 	private Div sectionTitleWrapper;
 	private Span projectNameLabel;
-
-	private List<TextField> rewardVariableNameFields = new ArrayList<>();
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
@@ -46,7 +43,7 @@ public class RewardVariablesPanel extends VerticalLayout
 		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
 		sectionTitleWrapper = new Div();
-		Span projectText = new Span("Project : ");
+		Span projectText = new Span("Project: ");
 		projectText.addClassName(SECTION_TITLE_LABEL);
 		projectNameLabel = LabelFactory.createLabel("", SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT, SECTION_SUBTITLE_LABEL);
 		sectionTitleWrapper.add(projectText, projectNameLabel);
@@ -76,36 +73,10 @@ public class RewardVariablesPanel extends VerticalLayout
 		formPanel.setPadding(false);
 	}
 
-	public void setupRewardVariablesTable(int rewardVaraiblesCount) {
-		VerticalLayout table = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-		table.addClassName("reward-variables-table");
-
-		HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(
-			new Span("#"),
-			new Span("Variable Name")
-		);
-		headerRow.addClassName("header-row");
-		GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
-
-		table.add(headerRow);
-
-		for (int i = 0; i < rewardVaraiblesCount; i++) {
-			table.add(createRow(i));
-		}
-
-		formPanel.add(table);
-	}
-
-	private HorizontalLayout createRow(int rowNumber) {
-		TextField rewardVariableNameField = new TextField();
-		rewardVariableNameField.addClassName("reward-variable-name-field");
-		HorizontalLayout row = WrapperUtils.wrapWidthFullHorizontal(
-			new Span(""+rowNumber),
-			rewardVariableNameField
-		);
-		rewardVariableNameFields.add(rewardVariableNameField);
-		GuiUtils.removeMarginsPaddingAndSpacing(row);
-		return row;
+	public void setupRewardVariablesTable(int rewardVariablesCount) {
+		rewardVariablesTable = new RewardVariablesTable();
+		rewardVariablesTable.setVariableSize(rewardVariablesCount);
+		formPanel.add(rewardVariablesTable);
 	}
 
 	private Component getRewardVariablesPanel() {
@@ -115,8 +86,8 @@ public class RewardVariablesPanel extends VerticalLayout
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
 	}
-
-	public List<TextField> getRewardVariableNameFields() {
-		return rewardVariableNameFields;
+	
+	public List<RewardVariable> getRewardVariables(){
+		return rewardVariablesTable.getValue();
 	}
 }

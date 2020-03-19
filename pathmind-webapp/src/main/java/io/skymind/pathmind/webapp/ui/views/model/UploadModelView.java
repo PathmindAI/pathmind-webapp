@@ -1,5 +1,10 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -11,21 +16,22 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.db.dao.RewardVariableDAO;
-import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Project;
-import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.webapp.data.utils.ModelUtils;
+
 import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.webapp.exception.InvalidDataException;
-import io.skymind.pathmind.shared.security.PathmindUserDetails;
-import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
 import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
+import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Project;
+import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.security.PathmindUserDetails;
+import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.webapp.data.utils.ModelUtils;
+import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
@@ -38,12 +44,6 @@ import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPa
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
@@ -139,10 +139,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private void handleRewardVariablesClicked() {
 		experimentId = modelService.addModelToProject(model, project.getId(), modelNotes);
 
-		AtomicInteger counter = new AtomicInteger();
-		final List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariableNameFields().stream()
-				.map((rewardVariable -> new RewardVariable(model.getId(), rewardVariable.getValue(), counter.getAndIncrement())))
-				.collect(Collectors.toList());
+		List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
+		rewardVariableList.forEach(rv -> rv.setModelId(model.getId()));
 
 		rewardVariableDAO.saveRewardVariables(rewardVariableList);
 

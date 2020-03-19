@@ -2,18 +2,21 @@
   height: 100%;
 }
 
-.new-experiment-view vaadin-split-layout > vaadin-vertical-layout,
-.new-experiment-view vaadin-split-layout > vaadin-horizontal-layout {
-  width: 100%;
-  background: white;
-  border-radius: var(--lumo-border-radius);
-  padding: var(--lumo-space-m);
-  box-sizing: border-box;
+.panel-title {
+  max-width: 460px;
+}
+
+.reward-function-wrapper {
+  padding: 20px 0;
+}
+juicy-ace-editor {
+  margin-top: var(--lumo-space-s);
 }
 
 .errors-wrapper {
   display: flex;
   flex-direction: column;
+  min-height: 100px;
 }
 
 .error-message-wrapper {
