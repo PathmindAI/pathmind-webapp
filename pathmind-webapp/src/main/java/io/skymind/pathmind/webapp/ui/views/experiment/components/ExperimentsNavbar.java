@@ -79,8 +79,8 @@ public class ExperimentsNavbar extends VerticalLayout
 	}
 
 	private void handleRowClicked(Experiment experiment, Consumer<Experiment> selectExperimentConsumer, HorizontalLayout newRow) {
-		newRow.addClassName(CURRENT);
 		oldRow.removeClassName(CURRENT);
+		newRow.addClassName(CURRENT);
 		selectExperimentConsumer.accept(experiment);
 		oldRow = newRow;
 	}
