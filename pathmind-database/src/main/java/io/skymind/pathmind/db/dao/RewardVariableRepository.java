@@ -14,15 +14,18 @@ class RewardVariableRepository {
     private RewardVariableRepository() {
     }
 
-    static void insertRewardVariables(DSLContext ctx, List<RewardVariable> rewardVariables) {
-        final List<Query> insertQueries = rewardVariables.stream()
+    static void insertOrUpdateRewardVariables(DSLContext ctx, List<RewardVariable> rewardVariables) {
+        final List<Query> saveQueries = rewardVariables.stream()
                 .map(rewardVariable ->
                         ctx.insertInto(REWARD_VARIABLE)
                                 .columns(REWARD_VARIABLE.MODEL_ID, REWARD_VARIABLE.NAME, REWARD_VARIABLE.ARRAY_INDEX)
-                                .values(rewardVariable.getModelId(), rewardVariable.getName(), rewardVariable.getArrayIndex()))
+                                .values(rewardVariable.getModelId(), rewardVariable.getName(), rewardVariable.getArrayIndex())
+                                .onConflict(REWARD_VARIABLE.MODEL_ID, REWARD_VARIABLE.ARRAY_INDEX)
+                                .doUpdate()
+                                .set(REWARD_VARIABLE.NAME, rewardVariable.getName()))
                 .collect(Collectors.toList());
 
-        ctx.batch(insertQueries).execute();
+        ctx.batch(saveQueries).execute();
     }
 
     static List<RewardVariable> getRewardVariablesForModel(DSLContext ctx, long modelId) {
