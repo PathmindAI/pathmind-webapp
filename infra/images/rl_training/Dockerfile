@@ -10,6 +10,7 @@ COPY do_training.sh .
 #basic packages
 RUN apt-get update && \
         apt-get install postgresql -y && \
+	apt-get install rsync -y && \
         apt-get install python -y && \
         apt-get install curl -y && \
         apt-get install vim -y && \
