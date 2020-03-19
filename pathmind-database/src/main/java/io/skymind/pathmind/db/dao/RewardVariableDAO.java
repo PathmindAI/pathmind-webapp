@@ -15,7 +15,7 @@ public class RewardVariableDAO {
     }
 
     public void saveRewardVariables(List<RewardVariable> rewardVariables) {
-        RewardVariableRepository.insertRewardVariables(ctx, rewardVariables);
+        RewardVariableRepository.insertOrUpdateRewardVariables(ctx, rewardVariables);
     }
 
     public List<RewardVariable> getRewardVariablesForModel(long modelId) {

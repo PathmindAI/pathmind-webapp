@@ -1109,4 +1109,10 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20200319-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <createIndex tableName="REWARD_VARIABLE" indexName="REWARD_VARIABLE_MODEL_FK_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
