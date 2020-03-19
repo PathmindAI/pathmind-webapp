@@ -32,3 +32,5 @@ variable "cidr_block" {  }
 variable "apipassword" {  }
 variable "jenkinspassword" {  }
 variable "pgadminpassword" {  }
+variable "githubuser" {  }
+variable "githubsecret" {  }

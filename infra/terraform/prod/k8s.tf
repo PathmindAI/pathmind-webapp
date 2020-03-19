@@ -75,6 +75,28 @@ resource "null_resource" "apipassword" {
   depends_on = ["null_resource.configmap_ingress_nginx"]
 }
 
+resource "null_resource" "githubuser" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic githubuser --from-literal GITHUB_USER=${var.githubuser}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret githubuser"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}
+
+resource "null_resource" "githubsecret" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic githubsecret --from-literal GITHUB_SECRET=${var.githubsecret}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret githubsecret"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}
+
 resource "null_resource" "awsaccesskey" {
   provisioner "local-exec" {
     command = "kubectl create secret generic awsaccesskey --from-literal AWS_ACCESS_KEY_ID=${var.awsaccesskey}"
