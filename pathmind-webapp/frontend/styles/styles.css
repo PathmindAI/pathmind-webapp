@@ -230,45 +230,14 @@ hr {
 }
 
 /* Upload Model View Reward Variable Names */
-.reward-variables-table {
-  max-height: 280px;
+.upload-model-view vaadin-custom-field {
+  width: 100%;
+  line-height: 1;
+}
+
+.reward-function-wrapper vaadin-custom-field {
+  margin-top: var(--lumo-space-l);
   overflow-y: auto;
-}
-
-.reward-variables-table .header-row {
-  border-top: 1px solid var(--pm-gray-color);
-}
-
-.reward-variables-table vaadin-horizontal-layout {
-  height: 32px;
-  border-left: 1px solid var(--pm-gray-color);
-  border-right: 1px solid var(--pm-gray-color);
-  border-bottom: 1px solid var(--pm-gray-color);
-}
-
-.reward-variables-table .header-row {
-  color: var(--pm-secondary-text-color);
-}
-
-.reward-variables-table span {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 var(--lumo-space-s);
-}
-
-.reward-variables-table span:first-child {
-  flex: 0 0 60px;
-  text-align: center;
-  border-right: 1px solid var(--pm-gray-color);
-}
-
-.reward-variables-table :not(.header-row) span:first-child {
-  background-color: var(--pm-gray-color-lighter);
-}
-
-.reward-variables-table vaadin-text-field {
-  padding: 0;
 }
 
 .guide-view-wrapper {

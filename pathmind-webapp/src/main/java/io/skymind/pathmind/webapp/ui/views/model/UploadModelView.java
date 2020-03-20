@@ -45,7 +45,6 @@ import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import lombok.extern.slf4j.Slf4j;
 
-@CssImport("./styles/styles.css")
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
 @Slf4j
 public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<Long> {

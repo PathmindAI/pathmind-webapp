@@ -69,7 +69,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 		setupFileCheckPanel();
 
 		sectionTitleWrapper = new Div();
-		Span projectText = new Span("Project : ");
+		Span projectText = new Span("Project: ");
 		projectText.addClassName(SECTION_TITLE_LABEL);
 		sectionTitleWrapper.add(projectText, projectNameLabel);
 		sectionTitleWrapper.addClassName(TRUNCATED_LABEL);
