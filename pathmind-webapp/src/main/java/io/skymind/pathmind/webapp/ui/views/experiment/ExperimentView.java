@@ -257,13 +257,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		experiment = experimentDAO.getExperiment(experimentId)
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		loadExperimentData();
-		// The logic below is a bit odd in that this is almost a model view but as a result it needs to be done after the experiment is loaded.
-		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(experimentId);
 	}
 
 	private void loadExperimentData() {
 		modelId = experiment.getModelId();
 		experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
+		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
 		policy = selectBestPolicy(experiment.getPolicies());
 		experiments = experimentDAO.getExperimentsForModel(modelId);
 		// Quick and temporary solution to fix some the runs not being loaded for the individual experiment.
@@ -273,12 +272,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		updateScreenComponents();
-		rewardFunctionEditor.setVariableNames(rewardVariables);
 	}
 
 	private void updateScreenComponents() {
 		setPolicyChartVisibility();
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
+		rewardFunctionEditor.setVariableNames(rewardVariables);
 		policyChartPanel.setExperiment(experiment);
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 		processSelectedPolicy(policy);
