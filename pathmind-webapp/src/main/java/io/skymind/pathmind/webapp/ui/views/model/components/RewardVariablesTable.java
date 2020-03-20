@@ -72,7 +72,7 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> {
 	}
 
 	@Override
-	protected void setPresentationValue(
+	public void setPresentationValue(
 			List<RewardVariable> newPresentationValue) {
 		rewardVariables = newPresentationValue;
 		setVariableSize(rewardVariables.size());

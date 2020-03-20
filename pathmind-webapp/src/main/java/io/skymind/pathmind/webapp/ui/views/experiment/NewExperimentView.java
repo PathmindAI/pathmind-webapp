@@ -170,9 +170,16 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private VerticalLayout getRewardVariableNamesPanel() {
 		rewardVariablesTable = new RewardVariablesTable();
 		rewardVariablesTable.setSizeFull();
+		// rewardVariablesTable.addValueChangeListener(event -> handleRewardVariableNameChanged(event.getValue()));
 		VerticalLayout wrapper = WrapperUtils.wrapSizeFullVertical(LabelFactory.createLabel("Reward variable names", CssMindPathStyles.BOLD_LABEL), rewardVariablesTable);
 		wrapper.setPadding(false);
 		return wrapper;
+	}
+
+	private void handleRewardVariableNameChanged(List<RewardVariable> updatedRewardVariables) {
+		System.out.println("updatedRewardVariables: "+updatedRewardVariables);
+		rewardFunctionEditor.setVariableNames(updatedRewardVariables);
+		rewardVariableDAO.saveRewardVariables(updatedRewardVariables);
 	}
 
 	private void handleStartRunButtonClicked() {
