@@ -171,16 +171,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private VerticalLayout getRewardVariableNamesPanel() {
 		rewardVariablesTable = new RewardVariablesTable();
 		rewardVariablesTable.setSizeFull();
-		rewardVariablesTable.addValueChangeListener(event -> System.out.println("Reward Variable Names: "+rewardVariablesTable.getRewardVariableNames()));
+		rewardVariablesTable.addValueChangeListener(evt -> handleRewardVariableNameChanged(evt.getValue()));
 		VerticalLayout wrapper = WrapperUtils.wrapSizeFullVertical(LabelFactory.createLabel("Reward variable names", CssMindPathStyles.BOLD_LABEL), rewardVariablesTable);
 		wrapper.setPadding(false);
 		return wrapper;
 	}
 
 	private void handleRewardVariableNameChanged(List<RewardVariable> updatedRewardVariables) {
-		System.out.println("updatedRewardVariables: "+updatedRewardVariables);
 		rewardFunctionEditor.setVariableNames(updatedRewardVariables);
-		rewardVariableDAO.saveRewardVariables(updatedRewardVariables);
 	}
 
 	private void handleStartRunButtonClicked() {
@@ -192,6 +190,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			segmentIntegrator.addedNotesNewExperimentView();
 		}
 
+		rewardVariableDAO.saveRewardVariables(rewardVariablesTable.getValue());
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.rewardFuntionCreated();
 
@@ -206,6 +205,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private void handleSaveDraftClicked() {
+		rewardVariableDAO.saveRewardVariables(rewardVariablesTable.getValue());
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.draftSaved();
 		NotificationUtils.showSuccess("Draft successfully saved");

@@ -7,6 +7,10 @@ function createVariableNameHints() {
   }
 }
 function createHintsForLine(line) {
+  let existingFolds = editor.session.getFoldLine(line, line);
+  if (existingFolds) {
+    editor.session.removeFolds(existingFolds.folds);
+  }
   let value = editor.session.getLine(line);
   let matchInfo = value.match(/\[[0-9 ]+\]/);
   let index = 0;

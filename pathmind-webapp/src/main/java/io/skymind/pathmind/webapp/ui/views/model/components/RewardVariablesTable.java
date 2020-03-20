@@ -19,10 +19,10 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> {
 
 	private List<TextField> rewardVariableNameFields = new ArrayList<>();
 	private VerticalLayout container;
-	private List<RewardVariable> rewardVariables;
+
+	private long modelId = 0;
 	
 	public RewardVariablesTable() {
-		rewardVariables = new ArrayList<RewardVariable>();
 		container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
 		container.setClassName("reward-variables-table");
 
@@ -59,29 +59,20 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> {
 		return row;
 	}
 
-	public List<RewardVariable> getRewardVariableNames() {
-		return rewardVariables;
-	}
-
 	@Override
 	protected List<RewardVariable> generateModelValue() {
+		List<RewardVariable> modelValue = new ArrayList<>();
 		for (int i = 0; i < rewardVariableNameFields.size(); i++) {
-			if (rewardVariables.size() <= i) {
-				rewardVariables.add(new RewardVariable());
-			}
-			rewardVariables.get(i).setName(rewardVariableNameFields.get(i).getValue());
-			rewardVariables.get(i).setArrayIndex(i);
+			modelValue.add(new RewardVariable(modelId, rewardVariableNameFields.get(i).getValue(), i));
 		}
-		return rewardVariables;
+		return modelValue;
 	}
 
 	@Override
 	public void setPresentationValue(
 			List<RewardVariable> newPresentationValue) {
-		rewardVariables = newPresentationValue;
-		setVariableSize(rewardVariables.size());
-		for (int i = 0; i < rewardVariables.size(); i++) {
-			rewardVariableNameFields.get(i).setValue(rewardVariables.get(i).getName());
-		}
+		modelId = !newPresentationValue.isEmpty() ? newPresentationValue.get(0).getModelId() : 0;
+		setVariableSize(newPresentationValue.size());
+		newPresentationValue.forEach(rv -> rewardVariableNameFields.get(rv.getArrayIndex()).setValue(rv.getName()));
 	}
 }
