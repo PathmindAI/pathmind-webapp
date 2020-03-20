@@ -8,9 +8,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>io.skymind</groupId>
     <artifactId>pathmind-shared</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>Pathmind Shared</name>
 
     <dependencies>
