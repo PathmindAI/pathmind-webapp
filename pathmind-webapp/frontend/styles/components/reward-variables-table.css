@@ -14,6 +14,9 @@
   border-top: 1px solid var(--pm-gray-color);
   z-index: 1;
 }
+.code-editor-mode .header-row {
+  border-top: unset;
+}
 
 .reward-variables-table vaadin-horizontal-layout {
   height: 32px;
@@ -25,6 +28,11 @@
 .reward-variables-table .header-row {
   color: var(--pm-secondary-text-color);
   background-color: white;
+}
+.code-editor-mode .header-row {
+  background-color: transparent;
+  border-left: unset;
+  border-right: unset;
 }
 
 .reward-variables-table span {
@@ -39,9 +47,15 @@
   text-align: center;
   border-right: 1px solid var(--pm-gray-color);
 }
+.code-editor-mode span:first-child {
+  border-right: none !important;
+}
 
 .reward-variables-table :not(.header-row) span:first-child {
   background-color: var(--pm-gray-color-lighter);
+}
+.code-editor-mode :not(.header-row) span:first-child {
+  background-color: transparent !important;
 }
 
 .reward-variables-table vaadin-text-field {

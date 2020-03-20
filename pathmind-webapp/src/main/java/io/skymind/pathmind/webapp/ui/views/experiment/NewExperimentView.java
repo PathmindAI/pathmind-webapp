@@ -16,7 +16,6 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -59,7 +58,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private RewardFunctionEditor rewardFunctionEditor;
 	private TextArea notesFieldTextArea;
 	private RewardVariablesTable rewardVariablesTable;
-	
+	private Span unsavedChanges;
+
 	private Button startRunButton;
 
 	@Autowired
@@ -89,9 +89,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	@Override
 	protected Component getMainContent() {
-		VerticalLayout mainContent = WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()), 
-				createMainPanel());
+		VerticalLayout mainContent = WrapperUtils.wrapSizeFullVertical(WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()), createMainPanel());
 		binder = new Binder<>(Experiment.class);
 		setupBinder();
 		return mainContent;
@@ -101,22 +99,32 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		startRunButton = new Button("Train Policy", VaadinIcon.PLAY.create(), click -> handleStartRunButtonClicked());
 		startRunButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		startRunButton.setEnabled(false);
-		
+
 		VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-		VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-				LabelFactory.createLabel("Write your reward function", CssMindPathStyles.SECTION_TITLE_LABEL),
-				LabelFactory.createLabel("To judge if an action is a good one, we calculate a reward score. "
-						+ "The reward score is based on the reward function.", CssMindPathStyles.SECTION_SUBTITLE_LABEL));
+		mainPanel.setSpacing(true);
+		VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Write your reward function", CssMindPathStyles.SECTION_TITLE_LABEL),
+				LabelFactory.createLabel("To judge if an action is a good one, we calculate a reward score. " + "The reward score is based on the reward function.", CssMindPathStyles.SECTION_SUBTITLE_LABEL));
 		panelTitle.setClassName("panel-title");
-		
-		SplitLayout rewardFunctionWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(getRewardFnEditorPanel(), 
-				WrapperUtils.wrapSizeFullCenterHorizontal(getRewardVariableNamesPanel(), getNotesPanel()));
+
+		unsavedChanges = LabelFactory.createLabel("Unsaved Draft!", "unsaved-draft-label");
+		unsavedChanges.setVisible(false);
+		HorizontalLayout header = WrapperUtils.wrapWidthFullBetweenHorizontal(LabelFactory.createLabel("Reward Function", CssMindPathStyles.BOLD_LABEL), unsavedChanges, getActionButton());
+		header.getStyle().set("align-items", "center");
+
+		HorizontalLayout rewardFunctionWrapper = WrapperUtils.wrapSizeFullBetweenHorizontal(getRewardFnEditorPanel(), getRewardVariableNamesPanel());
 		rewardFunctionWrapper.setClassName("reward-function-wrapper");
-		
-		mainPanel.add(
-				WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, startRunButton),
-				rewardFunctionWrapper,
-				getErrorsPanel());
+		rewardFunctionWrapper.setSpacing(true);
+		rewardFunctionWrapper.setPadding(true);
+
+		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(header, rewardFunctionWrapper);
+		rewardFnEditorPanel.addClassName("reward-fn-panel-container");
+		rewardFnEditorPanel.setPadding(false);
+		rewardFnEditorPanel.setSpacing(false);
+
+		HorizontalLayout errorAndNotesContaner = WrapperUtils.wrapWidthFullHorizontal(getErrorsPanel(), getNotesPanel());
+		errorAndNotesContaner.setClassName("error-and-notes-container");
+
+		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, startRunButton), rewardFnEditorPanel, errorAndNotesContaner);
 		mainPanel.setClassName("view-section");
 		return mainPanel;
 	}
@@ -124,6 +132,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private VerticalLayout getRewardFnEditorPanel() {
 		rewardFunctionEditor = new RewardFunctionEditor();
 		rewardFunctionEditor.addValueChangeListener(changeEvent -> {
+			unsavedChanges.setVisible(true);
 			final List<String> errors = rewardValidationService.validateRewardFunction(changeEvent.getValue());
 			final String errorText = String.join("\n", errors);
 			final String wrapperClassName = (errorText.length() == 0) ? "noError" : "hasError";
@@ -140,9 +149,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			errorMessageWrapper.addClassName(wrapperClassName);
 		});
 
-		HorizontalLayout header = WrapperUtils.wrapWidthFullBetweenHorizontal(LabelFactory.createLabel("Reward Function", CssMindPathStyles.BOLD_LABEL), getActionButton());
-		header.getStyle().set("align-items", "center");
-		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(header, rewardFunctionEditor);
+		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(rewardFunctionEditor);
 		rewardFnEditorPanel.addClassName("reward-fn-editor-panel");
 		rewardFnEditorPanel.setPadding(false);
 		return rewardFnEditorPanel;
@@ -165,19 +172,20 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		notesFieldTextArea.setSizeFull();
 		notesFieldTextArea.addThemeName("notes");
 		VerticalLayout wrapper = WrapperUtils.wrapSizeFullVertical(LabelFactory.createLabel("Experiment Notes", CssMindPathStyles.BOLD_LABEL), notesFieldTextArea);
+		wrapper.addClassName("notes-wrapper");
 		wrapper.setPadding(false);
 		return wrapper;
 	}
-	private VerticalLayout getRewardVariableNamesPanel() {
+	private RewardVariablesTable getRewardVariableNamesPanel() {
 		rewardVariablesTable = new RewardVariablesTable();
+		rewardVariablesTable.setCodeEditorMode();
 		rewardVariablesTable.setSizeFull();
 		rewardVariablesTable.addValueChangeListener(evt -> handleRewardVariableNameChanged(evt.getValue()));
-		VerticalLayout wrapper = WrapperUtils.wrapSizeFullVertical(LabelFactory.createLabel("Reward variable names", CssMindPathStyles.BOLD_LABEL), rewardVariablesTable);
-		wrapper.setPadding(false);
-		return wrapper;
+		return rewardVariablesTable;
 	}
 
 	private void handleRewardVariableNameChanged(List<RewardVariable> updatedRewardVariables) {
+		unsavedChanges.setVisible(true);
 		rewardFunctionEditor.setVariableNames(updatedRewardVariables);
 	}
 
@@ -208,6 +216,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		rewardVariableDAO.saveRewardVariables(rewardVariablesTable.getValue());
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.draftSaved();
+		unsavedChanges.setVisible(false);
 		NotificationUtils.showSuccess("Draft successfully saved");
 	}
 
@@ -238,5 +247,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		binder.setBean(experiment);
 		rewardFunctionEditor.setVariableNames(rewardVariables);
 		rewardVariablesTable.setValue(rewardVariables);
+		unsavedChanges.setVisible(false);
 	}
 }
