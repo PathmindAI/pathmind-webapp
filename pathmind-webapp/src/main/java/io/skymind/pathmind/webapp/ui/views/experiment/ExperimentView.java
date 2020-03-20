@@ -144,7 +144,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		getRightPanel(),
 		DEFAULT_SPLIT_PANE_RATIO);
 	  // TODO -> Charts do not re-flow automatically: https://vaadin.com/forum/thread/17878341/resizable-charts (https://github.com/vaadin/vaadin-charts/issues/457)
-	  mainSplitLayout.addSplitterDragendListener(evt -> getUI().ifPresent(ui -> ui.getPage().executeJs("Array.from(window.document.getElementsByTagName('vaadin-chart')).forEach( el => el.__reflow());")));
+	  mainSplitLayout.addSplitterDragendListener(evt -> getUI().ifPresent(ui -> {
+//		  ui.getPage().executeJs("Array.from(window.document.getElementsByTagName('vaadin-chart')).forEach( el => el.__reflow());");
+		  ui.getPage().executeJs("window.dispatchEvent(new Event('resize'));");
+	  }));
 
 	  pageBreadcrumbs = createBreadcrumbs();
 
