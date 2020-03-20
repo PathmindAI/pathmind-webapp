@@ -43,11 +43,7 @@ function pushTokensForPlaceholder(renderTokens, placeholder) {
     renderTokens.push(
       {
         type: "constant ace_numeric",
-        value: "" + variableIndex
-      },
-      {
-        type: "text",
-        value: " "
+        value: variableIndex + " "
       },
       {
         type: "reward_variable variable-color-" + variableIndex,
