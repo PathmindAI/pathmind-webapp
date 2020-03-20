@@ -66,6 +66,16 @@ spec:
                 secretKeyRef:
                   name: segmentserversitekey
                   key: SEGMENT_SERVER_KEY
+            - name: GITHUB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: githubuser
+                  key: GITHUB_USER
+            - name: GITHUB_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: githubsecret
+                  key: GITHUB_SECRET
           volumeMounts:
             - name: jenkins-storage
               mountPath: /var/jenkins_home
@@ -81,4 +91,10 @@ spec:
           volumeMounts:
           - name: docker-graph-storage
             mountPath: /var/lib/docker
-
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "jenkins-node"
+          effect: "NoSchedule"
+      nodeSelector:
+        dedicated: jenkins-node

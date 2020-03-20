@@ -27,4 +27,18 @@ do
 	sleep 30
 done
 
+#Create Jenkins spot instance
+cp ../../k8s/spot_ig_jenkins.yaml /tmp/spot_ig_jenkins.yaml
+sed -i "s/{{ CLUSTER_NAME }}/${NAME}/g" /tmp/spot_ig_jenkins.yaml
+kops create -f /tmp/spot_ig_jenkins.yaml
+kops update cluster $NAME --yes
 
+while true
+do
+        kops validate cluster $NAME > /dev/null
+        if [ $? == 0 ]
+        then
+                exit 0
+        fi
+        sleep 30
+done
