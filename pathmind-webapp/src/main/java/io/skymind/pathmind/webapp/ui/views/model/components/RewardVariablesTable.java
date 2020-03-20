@@ -59,6 +59,10 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> {
 		return row;
 	}
 
+	public List<RewardVariable> getRewardVariableNames() {
+		return rewardVariables;
+	}
+
 	@Override
 	protected List<RewardVariable> generateModelValue() {
 		for (int i = 0; i < rewardVariableNameFields.size(); i++) {

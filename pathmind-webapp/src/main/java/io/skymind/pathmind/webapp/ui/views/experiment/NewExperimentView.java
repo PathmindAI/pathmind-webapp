@@ -163,6 +163,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private VerticalLayout getNotesPanel() {
 		notesFieldTextArea = new TextArea("", "", "Add Notes (Optional)");
 		notesFieldTextArea.setSizeFull();
+		notesFieldTextArea.addThemeName("notes");
 		VerticalLayout wrapper = WrapperUtils.wrapSizeFullVertical(LabelFactory.createLabel("Experiment Notes", CssMindPathStyles.BOLD_LABEL), notesFieldTextArea);
 		wrapper.setPadding(false);
 		return wrapper;
@@ -170,7 +171,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private VerticalLayout getRewardVariableNamesPanel() {
 		rewardVariablesTable = new RewardVariablesTable();
 		rewardVariablesTable.setSizeFull();
-		// rewardVariablesTable.addValueChangeListener(event -> handleRewardVariableNameChanged(event.getValue()));
+		rewardVariablesTable.addValueChangeListener(event -> System.out.println("Reward Variable Names: "+rewardVariablesTable.getRewardVariableNames()));
 		VerticalLayout wrapper = WrapperUtils.wrapSizeFullVertical(LabelFactory.createLabel("Reward variable names", CssMindPathStyles.BOLD_LABEL), rewardVariablesTable);
 		wrapper.setPadding(false);
 		return wrapper;
