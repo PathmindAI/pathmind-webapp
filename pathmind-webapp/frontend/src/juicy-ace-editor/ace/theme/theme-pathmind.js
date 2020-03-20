@@ -100,6 +100,9 @@ background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZg
 }\
 .ace-eclipse .ace_reward_variable{\
   font-style: italic;\
+  font-size: var(--lumo-font-size-xs);\
+  padding: 2px 4px;\
+  border-radius: 4px;\
 }\
 .variable-color-0 {\
   color: #000 !important;\

@@ -16,6 +16,7 @@ juicy-ace-editor {
 .errors-wrapper {
   display: flex;
   flex-direction: column;
+  width: 100%;
   min-height: 100px;
 }
 
@@ -24,8 +25,11 @@ juicy-ace-editor {
   box-sizing: border-box;
   width: 100%;
   white-space: pre;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro",
+    monospace;
   background-color: white;
   padding: var(--lumo-space-s) var(--lumo-space-m);
+  border: 1px solid var(--lumo-contrast-20pct);
   border-radius: var(--lumo-border-radius);
   overflow: auto;
 }

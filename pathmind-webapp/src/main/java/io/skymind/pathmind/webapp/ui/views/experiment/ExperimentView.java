@@ -45,12 +45,14 @@ import io.skymind.pathmind.shared.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.TrainingError;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -73,6 +75,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private long experimentId = -1;
 	private long modelId = -1;
+	private List<RewardVariable> rewardVariables;
 	private Policy policy;
 	private Experiment experiment;
 	private List<Experiment> experiments;
@@ -90,6 +93,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Autowired
 	private ExperimentDAO experimentDAO;
+	@Autowired
+	private RewardVariableDAO rewardVariableDAO;
 	@Autowired
 	private PolicyDAO policyDAO;
 	@Autowired
@@ -250,6 +255,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		loadExperimentData();
 		// The logic below is a bit odd in that this is almost a model view but as a result it needs to be done after the experiment is loaded.
+		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(experimentId);
 	}
 
 	private void loadExperimentData() {
@@ -264,6 +270,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		updateScreenComponents();
+		rewardFunctionEditor.setVariableNames(rewardVariables);
 	}
 
 	private void updateScreenComponents() {

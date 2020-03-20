@@ -51,8 +51,6 @@ import lombok.extern.slf4j.Slf4j;
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
 @Slf4j
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
-	private static final double DEFAULT_SPLIT_PANE_RATIO = 60;
-
 	private long experimentId = -1;
 	private Experiment experiment;
 	private List<RewardVariable> rewardVariables;
