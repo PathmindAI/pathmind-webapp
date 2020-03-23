@@ -101,7 +101,7 @@ background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZg
 }\
 .ace-eclipse .ace_reward_variable{\
   font-style: italic;\
-  padding: 2px 3px;\
+  padding: 2px 0;\
   border-radius: 4px;\
 }\
 .variable-color-0 {\
