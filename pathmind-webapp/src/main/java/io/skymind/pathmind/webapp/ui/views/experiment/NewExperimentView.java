@@ -37,6 +37,7 @@ import io.skymind.pathmind.webapp.security.Feature;
 import io.skymind.pathmind.webapp.security.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
@@ -125,7 +126,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		rewardFnEditorPanel.setPadding(false);
 		rewardFnEditorPanel.setSpacing(false);
 
-		HorizontalLayout errorAndNotesContaner = WrapperUtils.wrapWidthFullHorizontal(getErrorsPanel(), getNotesPanel());
+		HorizontalLayout errorAndNotesContaner = WrapperUtils.wrapWidthFullHorizontal(getErrorsPanel(), createNotesField());
 		errorAndNotesContaner.setClassName("error-and-notes-container");
 
 		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, startRunButton), rewardFnEditorPanel, errorAndNotesContaner);
@@ -168,18 +169,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private void setupBinder() {
 		binder.forField(rewardFunctionEditor).asRequired().bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
-		binder.forField(notesFieldTextArea).bind(Experiment::getUserNotes, Experiment::setUserNotes);
+		// binder.forField(notesFieldTextArea).bind(Experiment::getUserNotes, Experiment::setUserNotes);
 	}
 
-	private VerticalLayout getNotesPanel() {
-		notesFieldTextArea = new TextArea("", "", "Add Notes (Optional)");
-		notesFieldTextArea.setSizeFull();
-		notesFieldTextArea.addThemeName("notes");
-		VerticalLayout wrapper = WrapperUtils.wrapSizeFullVertical(LabelFactory.createLabel("Experiment Notes", CssMindPathStyles.BOLD_LABEL), notesFieldTextArea);
-		wrapper.addClassName("notes-wrapper");
-		wrapper.setPadding(false);
-		return wrapper;
-	}
 	private RewardVariablesTable getRewardVariableNamesPanel() {
 		rewardVariablesTable = new RewardVariablesTable();
 		rewardVariablesTable.setCodeEditorMode();
@@ -232,6 +224,20 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Breadcrumbs createBreadcrumbs() {
 		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
+	}
+
+	private NotesField createNotesField() {
+		NotesField notesField = new NotesField(
+			"Experiment Notes",
+			experiment.getUserNotes(),
+			updatedNotes -> {
+				experimentDAO.updateUserNotes(experimentId, updatedNotes);
+				NotificationUtils.showSuccess("Notes saved");
+				segmentIntegrator.updatedNotesExperimentView();
+			}
+		);
+		notesField.setPlaceholder("Add Notes (optional)");
+		return notesField;
 	}
 
 	@Override

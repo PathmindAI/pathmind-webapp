@@ -13,7 +13,7 @@
   line-height: 1.5em;
   height: 12em;
   background-color: white;
-  padding: var(--lumo-space-l);
+  padding: var(--lumo-space-s) var(--lumo-space-m);
 }
 
 :host([theme~="notes"]:hover:not([readonly]):not([focused]))
