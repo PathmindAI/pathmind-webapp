@@ -88,6 +88,10 @@ public class RewardVariablesPanel extends VerticalLayout
 	}
 	
 	public List<RewardVariable> getRewardVariables(){
-		return rewardVariablesTable.getValue();
+		if (rewardVariablesTable == null) {
+			return null;
+		} else {
+			return rewardVariablesTable.getValue();
+		}
 	}
 }

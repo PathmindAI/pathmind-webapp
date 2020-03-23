@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 public class FeatureManager {
     public boolean isEnabled(Feature feature) {
         switch (feature) {
+        case REWARD_VARIABLES_FEATURE:
+        	return false;
         case TEST_FEATURE:
             return false;
         default:

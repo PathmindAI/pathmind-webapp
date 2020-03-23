@@ -31,6 +31,8 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ModelUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.security.Feature;
+import io.skymind.pathmind.webapp.security.FeatureManager;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
@@ -62,6 +64,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
+	
+	@Autowired
+	private FeatureManager featureManager;
 
 	private Model model;
 
@@ -135,16 +140,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	private void handleRewardVariablesClicked() {
-		experimentId = modelService.addModelToProject(model, project.getId(), modelNotes);
-
-		List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
-		if (rewardVariableList != null) {
-			rewardVariableList.forEach(rv -> rv.setModelId(model.getId()));
-			rewardVariableDAO.saveRewardVariables(rewardVariableList);
-		}
-
-
-		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
+		saveAndNavigateToNewExperiment();
 	}
 
 	private void handleMoreDetailsClicked()
@@ -158,9 +154,26 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		if (!modelNotes.isEmpty()) {
 			segmentIntegrator.addedNotesUploadModelView();
 		}
+		
+		if (!featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
+			saveAndNavigateToNewExperiment();
+		} else {
+			rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount());
+			setVisibleWizardPanel(rewardVariablesPanel);
+		}
+	}
+	
+	private void saveAndNavigateToNewExperiment() {
+		experimentId = modelService.addModelToProject(model, project.getId(), modelNotes);
 
-		rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount());
-		setVisibleWizardPanel(rewardVariablesPanel);
+		List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
+		if (rewardVariableList != null) {
+			rewardVariableList.forEach(rv -> rv.setModelId(model.getId()));
+			rewardVariableDAO.saveRewardVariables(rewardVariableList);
+		}
+
+
+		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 	}
 
 	private void handleUploadWizardClicked() {

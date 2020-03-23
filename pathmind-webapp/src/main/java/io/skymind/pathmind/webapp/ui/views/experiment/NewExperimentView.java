@@ -33,6 +33,8 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.mock.MockDefaultValues;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.security.Feature;
+import io.skymind.pathmind.webapp.security.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
@@ -74,6 +76,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private SegmentIntegrator segmentIntegrator;
 	@Autowired
 	private RewardValidationService rewardValidationService;
+	@Autowired
+	private FeatureManager featureManager;
 
 	private Binder<Experiment> binder;
 
@@ -197,8 +201,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		if (!notesFieldTextArea.isEmpty()) {
 			segmentIntegrator.addedNotesNewExperimentView();
 		}
-
-		rewardVariableDAO.saveRewardVariables(rewardVariablesTable.getValue());
+		
+		if (rewardVariablesTable.getValue() != null) {
+			rewardVariableDAO.saveRewardVariables(rewardVariablesTable.getValue());
+		}
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.rewardFuntionCreated();
 
@@ -250,11 +256,15 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		binder.setBean(experiment);
-		if (!rewardVariables.isEmpty()) {
-			rewardFunctionEditor.setVariableNames(rewardVariables);
-			rewardVariablesTable.setValue(rewardVariables);
+		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
+			if (!rewardVariables.isEmpty()) {
+				rewardFunctionEditor.setVariableNames(rewardVariables);
+				rewardVariablesTable.setValue(rewardVariables);
+			} else {
+				rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
+			}
 		} else {
-			rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
+			rewardVariablesTable.setVisible(false);
 		}
 		unsavedChanges.setVisible(false);
 	}

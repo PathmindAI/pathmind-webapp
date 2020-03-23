@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.security;
 
 public enum Feature {
-    TEST_FEATURE;
+    REWARD_VARIABLES_FEATURE,
+	TEST_FEATURE;
 }
