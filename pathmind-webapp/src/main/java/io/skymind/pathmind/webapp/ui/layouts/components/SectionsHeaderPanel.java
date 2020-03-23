@@ -21,6 +21,7 @@ public class SectionsHeaderPanel extends HorizontalLayout
 				return event.getLocation().getPath().startsWith("projects") ||
 						event.getLocation().getPath().startsWith("project") ||
 						event.getLocation().getPath().startsWith("model") ||
+						event.getLocation().getPath().startsWith("guide") ||
 						event.getLocation().getPath().startsWith("experiment");
 				}
 			);
