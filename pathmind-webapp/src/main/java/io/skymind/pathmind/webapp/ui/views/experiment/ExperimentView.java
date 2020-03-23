@@ -5,6 +5,8 @@ import java.util.List;
 
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.security.Feature;
+import io.skymind.pathmind.webapp.security.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.TabPanel;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
@@ -109,6 +111,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private UserDAO userDAO;
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
+	@Autowired
+	private FeatureManager featureManager;
 
 	private Breadcrumbs pageBreadcrumbs;
 	private Button restartTraining;
@@ -262,7 +266,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void loadExperimentData() {
 		modelId = experiment.getModelId();
 		experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
-		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
+		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
+			rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
+		}
 		policy = selectBestPolicy(experiment.getPolicies());
 		experiments = experimentDAO.getExperimentsForModel(modelId);
 		// Quick and temporary solution to fix some the runs not being loaded for the individual experiment.
@@ -277,7 +283,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void updateScreenComponents() {
 		setPolicyChartVisibility();
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
-		rewardFunctionEditor.setVariableNames(rewardVariables);
+		if (rewardVariables != null) {
+			rewardFunctionEditor.setVariableNames(rewardVariables);
+		}
 		policyChartPanel.setExperiment(experiment);
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 		processSelectedPolicy(policy);
