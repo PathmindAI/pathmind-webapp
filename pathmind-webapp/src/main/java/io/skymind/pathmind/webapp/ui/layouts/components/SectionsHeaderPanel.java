@@ -15,9 +15,19 @@ public class SectionsHeaderPanel extends HorizontalLayout
 		HorizontalLayout sectionsHorizontalLayout = new HorizontalLayout();
 		sectionsHorizontalLayout.add(linkedLogo());
 		if (hasLoginUser) {
+			RouterLink dashboardLink = new RouterLink("Dashboard", DashboardView.class);
+			RouterLink projectsLink = new RouterLink("Projects", ProjectsView.class);
+			projectsLink.setHighlightCondition((link, event) -> {
+				return event.getLocation().getPath().startsWith("projects") ||
+						event.getLocation().getPath().startsWith("project") ||
+						event.getLocation().getPath().startsWith("model") ||
+						event.getLocation().getPath().startsWith("experiment");
+				}
+			);
+
 			sectionsHorizontalLayout.add(
-					new RouterLink("Dashboard", DashboardView.class),
-					new RouterLink("Projects", ProjectsView.class),
+					dashboardLink,
+					projectsLink,
 					getLearnAnchor());
 		}
 		add(sectionsHorizontalLayout);
