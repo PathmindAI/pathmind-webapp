@@ -118,13 +118,6 @@ hr {
   font-weight: bold;
   color: #999;
 }
-
-.page-title {
-  color: var(--lumo-body-text-color);
-  font-weight: bold;
-  margin-top: var(--lumo-space-m);
-}
-
 .light-text-label {
   font-size: var(--lumo-font-size-m);
   color: var(--pm-orange-color);
@@ -250,6 +243,20 @@ account-view {
   flex-direction: column;
   box-sizing: border-box;
   align-items: center;
+}
+
+/* Title bar */
+.page-title {
+  color: var(--lumo-body-text-color);
+  margin-top: var(--lumo-space-m);
+}
+
+.page-title a {
+  color: var(--lumo-body-text-color);
+}
+
+.page-title :last-child {
+  font-weight: bold;
 }
 
 .action-button iron-icon {

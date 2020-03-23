@@ -15,7 +15,6 @@ import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;

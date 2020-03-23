@@ -28,7 +28,7 @@ public class UpgradeDoneView extends PathMindDefaultView
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("Upgrade Subscription Plans");
+		return new ScreenTitlePanel("Account", "Upgrade Subscription Plans", AccountView.class);
 	}
 
 	@Override
