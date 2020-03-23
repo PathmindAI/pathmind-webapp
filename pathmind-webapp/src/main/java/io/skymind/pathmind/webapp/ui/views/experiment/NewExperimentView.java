@@ -59,7 +59,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Div errorMessageWrapper;
 	private RewardFunctionEditor rewardFunctionEditor;
-	private TextArea notesFieldTextArea;
+	private NotesField notesField;
 	private RewardVariablesTable rewardVariablesTable;
 	private Span unsavedChanges;
 
@@ -169,7 +169,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private void setupBinder() {
 		binder.forField(rewardFunctionEditor).asRequired().bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
-		// binder.forField(notesFieldTextArea).bind(Experiment::getUserNotes, Experiment::setUserNotes);
 	}
 
 	private RewardVariablesTable getRewardVariableNamesPanel() {
@@ -190,10 +189,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			return;
 		}
 
-		if (!notesFieldTextArea.isEmpty()) {
-			segmentIntegrator.addedNotesNewExperimentView();
-		}
-		
 		if (rewardVariablesTable.getValue() != null) {
 			rewardVariableDAO.saveRewardVariables(rewardVariablesTable.getValue());
 		}
@@ -227,13 +222,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private NotesField createNotesField() {
-		NotesField notesField = new NotesField(
+		notesField = new NotesField(
 			"Experiment Notes",
 			experiment.getUserNotes(),
 			updatedNotes -> {
 				experimentDAO.updateUserNotes(experimentId, updatedNotes);
 				NotificationUtils.showSuccess("Notes saved");
-				segmentIntegrator.updatedNotesExperimentView();
+				segmentIntegrator.addedNotesNewExperimentView();
 			}
 		);
 		notesField.setPlaceholder("Add Notes (optional)");
