@@ -37,6 +37,8 @@ ingress:
       paths: [/:5601:kibana-kb-http]
     - host: pgadmin.dev.devpathmind.com
       paths: [/:80:pgadmin]
+    - host: admin.dev.devpathmind.com
+      paths: [/:3000:pathmind-admin-client]
 
   tls: 
     - secretName: letsencrypt-dev
@@ -47,6 +49,7 @@ ingress:
         - grafana.dev.devpathmind.com
         - kibana.dev.devpathmind.com
         - jenkins.dev.devpathmind.com
+        - admin.dev.devpathmind.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

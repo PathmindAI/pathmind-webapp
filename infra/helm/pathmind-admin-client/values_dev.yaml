@@ -5,20 +5,18 @@
 replicaCount: 1
 
 image:
-  repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind-admin-server
-  tag: prod
+  repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind-admin-client
+  tag: dev
   pullPolicy: Always
 
 service:
   type: NodePort
-  port: 9091
+  port: 3000
 
 env:
-  APP_URL_DEV: "https://dev.devpathmind.com/" 
-  APP_URL_TEST: "https://test.devpathmind.com/"
-  APP_URL_PROD: "https://devpathmind.com/"
+  REACT_APP_API_ENDPOINT: "http://pathmind-admin-server:9091/" 
 
-name: pathmind-admin-server
+name: pathmind-admin-client
 
 namespace: default
 

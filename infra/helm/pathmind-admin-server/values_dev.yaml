@@ -11,7 +11,7 @@ image:
 
 service:
   type: NodePort
-  port: 8080
+  port: 9091
 
 env:
   APP_URL_DEV: "https://dev.devpathmind.com/" 
