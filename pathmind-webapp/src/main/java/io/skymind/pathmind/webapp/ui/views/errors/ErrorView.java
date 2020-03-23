@@ -39,13 +39,13 @@ public class ErrorView extends PathMindDefaultView implements HasErrorParameter<
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("Please contact Skymind for assistance.");
+		return new ScreenTitlePanel("Please contact Pathmind for assistance.");
 	}
 
 	@Override
 	protected Component getMainContent() {
 		return WrapperUtils.wrapWidthFullCenterVertical(
-				LabelFactory.createLabel(String.format("An unexpected error occurred. Please contact Skymind for assistance (#%s).", errorId)));
+				LabelFactory.createLabel(String.format("An unexpected error occurred. Please contact Pathmind for assistance (#%s).", errorId)));
 	}
 
 	@Override
