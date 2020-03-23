@@ -138,9 +138,11 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		experimentId = modelService.addModelToProject(model, project.getId(), modelNotes);
 
 		List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
-		rewardVariableList.forEach(rv -> rv.setModelId(model.getId()));
+		if (rewardVariableList != null) {
+			rewardVariableList.forEach(rv -> rv.setModelId(model.getId()));
+			rewardVariableDAO.saveRewardVariables(rewardVariableList);
+		}
 
-		rewardVariableDAO.saveRewardVariables(rewardVariableList);
 
 		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 	}

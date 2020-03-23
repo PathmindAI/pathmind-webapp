@@ -213,7 +213,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private void handleSaveDraftClicked() {
-		rewardVariableDAO.saveRewardVariables(rewardVariablesTable.getValue());
+		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();
+		if (rewardVariables != null) {
+			rewardVariables.forEach(rv -> rv.setModelId(experiment.getModelId()));
+			rewardVariableDAO.saveRewardVariables(rewardVariablesTable.getValue());
+		}
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.draftSaved();
 		unsavedChanges.setVisible(false);
@@ -238,15 +242,20 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	protected void initLoadData() {
 		experiment = experimentDAO.getExperiment(experimentId).orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(experiment.getModelId());
-		if (MockDefaultValues.isDebugAccelerate() && StringUtils.isEmpty(experiment.getRewardFunction()))
+		if (MockDefaultValues.isDebugAccelerate() && StringUtils.isEmpty(experiment.getRewardFunction())) {
 			experiment.setRewardFunction(MockDefaultValues.NEW_EXPERIMENT_REWARD_FUNCTION);
+		}
 	}
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		binder.setBean(experiment);
-		rewardFunctionEditor.setVariableNames(rewardVariables);
-		rewardVariablesTable.setValue(rewardVariables);
+		if (!rewardVariables.isEmpty()) {
+			rewardFunctionEditor.setVariableNames(rewardVariables);
+			rewardVariablesTable.setValue(rewardVariables);
+		} else {
+			rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
+		}
 		unsavedChanges.setVisible(false);
 	}
 }
