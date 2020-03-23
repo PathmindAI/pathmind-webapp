@@ -14,12 +14,13 @@ service:
   port: 8080
 
 env:
-  ENVIRONMENT: prod
-  S3BUCKET: prod-model-analyzer-static-files.pathmind.com
+  APP_URL_DEV: "https://dev.devpathmind.com/" 
+  APP_URL_TEST: "https://test.devpathmind.com/"
+  APP_URL_PROD: "https://devpathmind.com/"
 
 name: pathmind-admin-server
 
-namespace: prod
+namespace: default
 
 ingress:
   enabled: false

@@ -31,23 +31,30 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
-#          livenessProbe:
-#            httpGet:
-#              path: /
-#              port: 80
-#            initialDelaySeconds: 30
-#            periodSeconds: 5
-#          readinessProbe:
-#            httpGet:
-#              path: /
-#              port: 80
-#            initialDelaySeconds: 8
-#            periodSeconds: 5
           env:
-            - name: ENVIRONMENT
-              value: "{{ .Values.env.ENVIRONMENT }}"
+            - name: APP_URL_PROD
+              value: "{{ .Values.env.APP_URL_PROD }}"
+            - name: APP_URL_DEV
+              value: "{{ .Values.env.APP_URL_DEV }}"
+            - name: APP_URL_TEST
+              value: "{{ .Values.env.APP_URL_TEST }}"
             - name: AWS_DEFAULT_REGION
               value: "us-east-1"
+            - name: DB_URL_PROD
+              valueFrom:
+                secretKeyRef:
+                  name: dburlprod
+                  key: DB_URL_PROD
+            - name: DB_URL_DEV
+              valueFrom:
+                secretKeyRef:
+                  name: dburldev
+                  key: DB_URL_DEV
+            - name: DB_URL_TEST
+              valueFrom:
+                secretKeyRef:
+                  name: dburltest
+                  key: DB_URL_TEST
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
@@ -58,5 +65,3 @@ spec:
                 secretKeyRef:
                   name: awssecretaccesskey
                   key: AWS_SECRET_ACCESS_KEY
-            - name: S3BUCKET
-              value: "{{ .Values.env.S3BUCKET }}"
