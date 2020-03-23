@@ -7,8 +7,9 @@ ace.define(
     exports.isDark = false;
     exports.cssText =
       '.ace-eclipse .ace_gutter {\
-background: transparent;\
+background: var(--pm-app-bg-color);\
 color: rgb(136, 136, 136);\
+border-right: 1px solid var(--pm-gray-color-dark);\
 border-top-left-radius: var(--lumo-border-radius);\
 }\
 .ace-eclipse .ace_fold {\
@@ -56,7 +57,7 @@ color: rgb(63, 95, 191);\
 color: rgb(127, 159, 191);\
 }\
 .ace-eclipse .ace_constant.ace_numeric {\
-color: darkblue;\
+color: #1900ff;\
 }\
 .ace-eclipse .ace_tag {\
 color: rgb(25, 118, 116);\
@@ -100,7 +101,7 @@ background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZg
 }\
 .ace-eclipse .ace_reward_variable{\
   font-style: italic;\
-  padding: 2px 0;\
+  padding: 2px 3px;\
   border-radius: 4px;\
 }\
 .variable-color-0 {\

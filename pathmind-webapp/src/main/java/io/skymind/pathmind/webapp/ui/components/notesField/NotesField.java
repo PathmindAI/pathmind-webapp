@@ -3,13 +3,14 @@ package io.skymind.pathmind.webapp.ui.components.notesField;
 import java.util.function.Consumer;
 
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import org.apache.commons.lang3.StringUtils;
+
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 
 @CssImport("./styles/components/notes-field.css")
 public class NotesField extends HorizontalLayout {
@@ -19,12 +20,15 @@ public class NotesField extends HorizontalLayout {
 	private Boolean isEditting = false;
 	private Button saveButton;
 	private TextArea blockEditableField;
+	private Span hintWrapper;
 	private Consumer<String> saveConsumer;
 
 	public NotesField(String title, String notesText, Consumer<String> saveConsumer) {
 		this.notesText = notesText;
 		this.title = title;
 		this.saveConsumer = saveConsumer;
+		hintWrapper = LabelFactory.createLabel("Unsaved Notes!", "unsaved-draft-label");
+		hintWrapper.setVisible(false);
 		add(editableFieldWrapper());
 		setSpacing(false);
 		addClassName("notes-field-wrapper");
@@ -36,12 +40,13 @@ public class NotesField extends HorizontalLayout {
 		blockEditableField.addKeyUpListener(event -> {
 			if (isEditting == false) {
 				toggleIsEditting();
-				saveButton.setEnabled(isEditting);
+				hintWrapper.setVisible(true);
 			}
 		});
 		blockEditableField.addValueChangeListener(event -> {
 			if (isEditting && event.getValue() != notesText) {
 				saveButton.click();
+				hintWrapper.setVisible(false);
 			}
 		});
 	}
@@ -49,6 +54,7 @@ public class NotesField extends HorizontalLayout {
 	private VerticalLayout editableFieldWrapper() {
 		HorizontalLayout headerRow = new HorizontalLayout(
 			new Span(title),
+			hintWrapper,
 			buttonsWrapper()
 		);
 		headerRow.setSpacing(false);
@@ -75,8 +81,6 @@ public class NotesField extends HorizontalLayout {
 
 	private Button createButton(String label, Boolean isEnabled) {
 		Button button = new Button(label);
-		button.setEnabled(isEnabled);
-		button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
 		return button;
 	}
 
@@ -84,7 +88,6 @@ public class NotesField extends HorizontalLayout {
 		saveButton = createButton("Save", isEditting);
 		saveButton.addClickListener(e -> {
 			toggleIsEditting();
-			saveButton.setEnabled(isEditting);
 			saveButtonOnClick();
 		});
 	}
@@ -96,6 +99,10 @@ public class NotesField extends HorizontalLayout {
 	public void setNotesText(String notesText) {
 		this.notesText = notesText;
 		blockEditableField.setValue(notesText);
+	}
+
+	public void setPlaceholder(String placeholderText) {
+		blockEditableField.setPlaceholder(placeholderText);
 	}
 
 	public void saveButtonOnClick() {
