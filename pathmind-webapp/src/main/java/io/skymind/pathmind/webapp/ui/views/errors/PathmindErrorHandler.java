@@ -17,7 +17,7 @@ public class PathmindErrorHandler implements ErrorHandler {
 		String errorId = generateUniqueErrorId();
 		
 		log.error(String.format("Error #%s: %s", errorId, event.getThrowable().getMessage()), event.getThrowable());
-		String errorMessage = String.format("<b>An unexpected error occurred</b><br>Please contact Skymind for assistance.<br>#%s", errorId);
+		String errorMessage = String.format("<b>An unexpected error occurred</b><br>Please contact Pathmind for assistance.<br>#%s", errorId);
 		
 		NotificationUtils.showError(errorMessage);
 	}
