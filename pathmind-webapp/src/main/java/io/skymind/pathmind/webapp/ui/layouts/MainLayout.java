@@ -52,7 +52,7 @@ public class MainLayout extends AppLayout implements PageConfigurator
 		}
 
 		// Added a message just in case there's ever a failure.
-		setContent(new Span("Error. Please contact Skymind for assistance"));
+		setContent(new Span("Error. Please contact Pathmind for assistance"));
 	}
 
 	@Override
