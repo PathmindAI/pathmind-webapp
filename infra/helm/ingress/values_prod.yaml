@@ -41,7 +41,7 @@ ingress:
     - host: pgadmin.devpathmind.com
       paths: [/:80:pgadmin]
     - host: admin.devpathmind.com
-      paths: [/:3000:pathmind-admin-client]
+      paths: [/:80:pathmind-admin-client]
 
   tls: 
     - secretName: letsencrypt-prod
