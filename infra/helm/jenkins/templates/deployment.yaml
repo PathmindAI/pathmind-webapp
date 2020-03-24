@@ -91,6 +91,8 @@ spec:
           volumeMounts:
           - name: docker-graph-storage
             mountPath: /var/lib/docker
+          - name: jenkins-storage
+            mountPath: /var/jenkins_home
       tolerations:
         - key: "dedicated"
           operator: "Equal"
