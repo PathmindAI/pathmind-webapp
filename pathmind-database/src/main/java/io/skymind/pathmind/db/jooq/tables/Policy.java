@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = -820203920;
+    private static final long serialVersionUID = -606637243;
 
     /**
      * The reference instance of <code>public.policy</code>

@@ -28,7 +28,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ExecutionProviderMetaDataRecord extends UpdatableRecordImpl<ExecutionProviderMetaDataRecord> implements Record5<Long, Integer, Integer, String, String> {
 
-    private static final long serialVersionUID = 1622758593;
+    private static final long serialVersionUID = 621000673;
 
     /**
      * Setter for <code>public.execution_provider_meta_data.id</code>.
