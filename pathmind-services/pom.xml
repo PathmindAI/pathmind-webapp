@@ -10,26 +10,25 @@
 
     <groupId>io.skymind</groupId>
     <artifactId>pathmind-services</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>Pathmind Services</name>
 
     <dependencies>
         <dependency>
             <groupId>io.skymind</groupId>
             <artifactId>pathmind-database</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.skymind</groupId>
             <artifactId>pathmind-shared</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.skymind</groupId>
             <artifactId>pathmind-database</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
