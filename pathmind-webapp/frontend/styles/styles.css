@@ -113,30 +113,11 @@ hr {
   width: 100%;
 }
 
-.section-label-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: white;
-}
-
-.section-label-subtitle {
-  font-size: 1.2rem;
-  color: white;
-}
-
 .project-title-label {
   font-size: 18px;
   font-weight: bold;
   color: #999;
 }
-
-.action-menu {
-  position: sticky;
-  top: 0;
-  background-color: var(--pm-primary-color);
-  z-index: 1;
-}
-
 .light-text-label {
   font-size: var(--lumo-font-size-m);
   color: var(--pm-orange-color);
@@ -192,6 +173,16 @@ hr {
   height: 100%;
 }
 
+.default-view.guide {
+  background: white;
+}
+
+@media (min-width: 720px) {
+  .default-view.guide {
+    padding-top: var(--lumo-space-m);
+  }
+}
+
 .view-section {
   width: 100%;
   background: white;
@@ -209,19 +200,26 @@ hr {
   align-self: center;
 }
 
-.projects-view .content {
-  flex: 1;
+.projects-view .page-content {
   max-width: 1480px;
   align-self: center;
   padding: 0;
-  margin-top: var(--lumo-space-m);
 }
 
 .projects-view .view-section,
 .project-view .view-section,
-.model-view .view-section {
+.model-view .view-section,
+.projects-view .page-content,
+.project-view .page-content,
+.model-view .page-content {
   flex: 1;
   margin-top: 0;
+}
+
+.experiment-view .page-content {
+  /* To make the white panels on Experiment page to be 
+     at the same position as the Projects, Project, and Model pages */
+  margin-top: var(--lumo-space-xl);
 }
 
 .guide-view-wrapper {
@@ -245,6 +243,20 @@ account-view {
   flex-direction: column;
   box-sizing: border-box;
   align-items: center;
+}
+
+/* Title bar */
+.page-title {
+  color: var(--lumo-body-text-color);
+  margin-top: var(--lumo-space-m);
+}
+
+.page-title a {
+  color: var(--lumo-body-text-color);
+}
+
+.page-title :last-child {
+  font-weight: bold;
 }
 
 .action-button iron-icon {
