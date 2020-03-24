@@ -10,24 +10,17 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import io.skymind.pathmind.bus.EventBus;
-import io.skymind.pathmind.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.bus.subscribers.RunUpdateSubscriber;
-import io.skymind.pathmind.constants.RunStatus;
-import io.skymind.pathmind.data.Experiment;
-import io.skymind.pathmind.data.Run;
-import io.skymind.pathmind.data.utils.ExperimentUtils;
-
+import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.shared.bus.EventBus;
+import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.ui.components.buttons.NewExperimentButton;
-import io.skymind.pathmind.ui.utils.PushUtils;
-import io.skymind.pathmind.utils.DateAndTimeUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
+import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import java.util.ArrayList;
@@ -75,6 +68,11 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 	@Override
 	protected void onDetach(DetachEvent detachEvent) {
 		EventBus.unsubscribe(this);
+	}
+
+	@Override
+	public boolean isAttached() {
+		return getUI().isPresent();
 	}
 
 	@Override
