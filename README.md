@@ -25,6 +25,7 @@ The quickest way to get up and running is with the Vagrant file:
 ```
 vagrant up
 vagrant ssh
+cd /Vagrant/pathmind-webapp
 mvn spring-boot:run
 ```
 

@@ -1,0 +1,29 @@
+.breadcrumb {
+  position: relative;
+  color: var(--lumo-body-text-color);
+}
+
+.breadcrumb:last-child {
+  font-weight: bold;
+}
+
+.breadcrumb ~ span {
+  color: var(--lumo-body-text-color);
+  cursor: default;
+}
+
+/* Keep old styles for dashboard */
+.dashboard-view .breadcrumb {
+  color: var(--lumo-secondary-text-color);
+}
+
+.dashboard-view .breadcrumb:hover,
+.dashboard-view .breadcrumb:last-child {
+  color: var(--lumo-primary-text-color);
+  font-weight: normal;
+}
+
+.dashboard-view .breadcrumb ~ span {
+  color: var(--lumo-secondary-text-color);
+  cursor: default;
+}

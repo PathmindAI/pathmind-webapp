@@ -1,0 +1,1089 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS"
+        logicalFilePath="db.initial.xml">
+
+    <changeSet author="paul.dubs@skymind.io" id="20190918">
+        <createTable tableName="PATHMIND_USER">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EMAIL" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PASSWORD" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ACCOUNT_TYPE" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FIRSTNAME" type="VARCHAR(255)" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LASTNAME" type="VARCHAR(255)" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ADDRESS" type="VARCHAR(255)" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CITY" type="VARCHAR(255)" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STATE" type="VARCHAR(255)" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COUNTRY" type="VARCHAR(255)" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZIP" type="VARCHAR(255)" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="PROJECT">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="PATHMIND_USER_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_PROJECT_PATHMIND_USER" references="PATHMIND_USER(ID)"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_CREATED" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_ACTIVITY_DATE" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="MODEL">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="PROJECT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_MODEL_PROJECT" references="PROJECT(ID)"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)" defaultValue="Initial Model Revision">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="DATE_CREATED" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_ACTIVITY_DATE" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="NUMBER_OF_OBSERVATIONS" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NUMBER_OF_POSSIBLE_ACTIONS" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FILE" type="bytea"/>
+        </createTable>
+
+        <createTable tableName="EXPERIMENT">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="MODEL_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_EXPERIMENT_MODEL" references="MODEL(ID)"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+             </column>
+            <column name="REWARD_FUNCTION" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_CREATED" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_ACTIVITY_DATE" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="RUN">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="EXPERIMENT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_RUN_EXPERIMENT" references="EXPERIMENT(ID)"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RUN_TYPE" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STARTED_AT" type="DATETIME"/>
+            <column name="STOPPED_AT" type="DATETIME"/>
+            <column name="STATUS" type="integer" defaultValueNumeric="0">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="POLICY">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="RUN_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_POLICY_RUN" references="RUN(ID)"/>
+            </column>
+            <column name="EXTERNAL_ID" type="NVARCHAR">
+                <constraints nullable="false" />
+            </column>
+            <column name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROGRESS" type="JSONB" />
+            <column name="FILE" type="bytea"/>
+        </createTable>
+        <addUniqueConstraint tableName="POLICY" columnNames="RUN_ID, EXTERNAL_ID" />
+
+        <createTable tableName="EXECUTION_PROVIDER_META_DATA">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="PROVIDER_CLASS" type="NVARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="KEY" type="NVARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALUE" type="JSON">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="EXECUTION_PROVIDER_META_DATA" columnNames="PROVIDER_CLASS, KEY" />
+    </changeSet>
+
+    <changeSet id="20190918-2" author="paul.dubs@skymind.io">
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Steph"/>
+            <column name="EMAIL" value="steph@followsteph.com"/>
+            <column name="PASSWORD" value="password"/>
+        </insert>
+
+        <!-- Coffee Shop project -->
+        <insert tableName="PROJECT">
+            <column name="PATHMIND_USER_ID" valueComputed="currval('pathmind_user_id_seq')"/>
+            <column name="NAME" value="Coffee Shop"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-09-03"/>
+        </insert>
+
+        <insert tableName="MODEL">
+            <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-23"/>
+            <column name="NUMBER_OF_OBSERVATIONS" valueNumeric="3"/>
+            <column name="NUMBER_OF_POSSIBLE_ACTIONS" valueNumeric="5"/>
+            <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" value=""/>
+        </insert>
+
+        <insert tableName="EXPERIMENT">
+            <column name="MODEL_ID" valueComputed="currval('model_id_seq')"/>
+            <column name="NAME" value="Experiment 1"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-23"/>
+            <column name="REWARD_FUNCTION" value="function = some value 3"/>
+        </insert>
+
+        <insert tableName="MODEL">
+            <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
+            <column name="NAME" value="Model #2"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-23"/>
+            <column name="NUMBER_OF_OBSERVATIONS" valueNumeric="7"/>
+            <column name="NUMBER_OF_POSSIBLE_ACTIONS" valueNumeric="8"/>
+            <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" value=""/>
+        </insert>
+
+        <insert tableName="EXPERIMENT">
+            <column name="MODEL_ID" valueComputed="currval('model_id_seq')"/>
+            <column name="NAME" value="Experiment 1"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-23"/>
+            <column name="REWARD_FUNCTION" value="function = some value 3"/>
+        </insert>
+
+        <insert tableName="MODEL">
+            <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
+            <column name="NAME" value="Model #3"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-23"/>
+            <column name="NUMBER_OF_OBSERVATIONS" valueNumeric="7"/>
+            <column name="NUMBER_OF_POSSIBLE_ACTIONS" valueNumeric="8"/>
+            <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" value=""/>
+        </insert>
+
+        <insert tableName="EXPERIMENT">
+            <column name="MODEL_ID" valueComputed="currval('model_id_seq')"/>
+            <column name="NAME" value="Experiment 1"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-23"/>
+            <column name="REWARD_FUNCTION" value="function = some value 3"/>
+        </insert>
+
+        <!-- Traffic Simulation project -->
+        <insert tableName="PROJECT">
+            <column name="PATHMIND_USER_ID" valueComputed="currval('pathmind_user_id_seq')"/>
+            <column name="NAME" value="Traffic Simulation"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-09-03"/>
+        </insert>
+
+        <insert tableName="MODEL">
+            <column name="PROJECT_ID" valueComputed="currval('project_id_seq')"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-23"/>
+            <column name="NUMBER_OF_OBSERVATIONS" valueNumeric="3"/>
+            <column name="NUMBER_OF_POSSIBLE_ACTIONS" valueNumeric="5"/>
+            <column name="GET_OBSERVATION_FOR_REWARD_FUNCTION" value=""/>
+        </insert>
+
+        <insert tableName="EXPERIMENT">
+            <column name="MODEL_ID" valueComputed="currval('model_id_seq')"/>
+            <column name="NAME" value="Experiment 1"/>
+            <column name="DATE_CREATED" valueDate="2019-08-23"/>
+            <column name="LAST_ACTIVITY_DATE" valueDate="2019-08-23"/>
+            <column name="REWARD_FUNCTION" value="function = some value 3"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Bob"/>
+            <column name="EMAIL" value="bob@skymind.io"/>
+            <column name="PASSWORD" value="password"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20190919" author="pdubs">
+        <insert tableName="RUN">
+            <column name="EXPERIMENT_ID" valueComputed="(SELECT max(id) FROM experiment)"/>
+            <column name="NAME" value="RUN 1"/>
+            <column name="RUN_TYPE" valueNumeric="2"/>
+            <column name="STARTED_AT" valueDate="2019-08-23"/>
+            <column name="STOPPED_AT" valueDate="2019-08-24"/>
+            <column name="STATUS" valueNumeric="1"/>
+        </insert>
+        <sql>
+            INSERT INTO "policy" (RUN_ID, NAME, EXTERNAL_ID, PROGRESS) VALUES ((SELECT MAX(id) from RUN), 'Policy 1', 'SoMeExTeRnAlID', '{"id":"PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128_2019-08-05_13-56-455cdir_3f","algorithm":"PPO","hyperParameters":{"sgd_minibatch_size":"128","lr":"5e-05","gamma":"0.99"},"startedAt":{"year":2019,"monthValue":8,"dayOfMonth":5,"hour":13,"minute":56,"second":45,"nano":0,"month":"AUGUST","dayOfWeek":"MONDAY","dayOfYear":217,"chronology":{"id":"ISO","calendarType":"iso8601"}},"rewardProgression":[{"max":"NaN","min":"NaN","mean":"NaN","iteration":1},{"max":73.55000030994415,"min":-16.550001453608274,"mean":42.721428357596906,"iteration":2},{"max":73.55000030994415,"min":-57.94999961927533,"mean":41.59230767792234,"iteration":3},{"max":73.55000030994415,"min":-142.84999971091747,"mean":33.600000112503764,"iteration":4},{"max":73.55000030994415,"min":-142.84999971091747,"mean":39.36600016742945,"iteration":5},{"max":73.55000030994415,"min":-142.84999971091747,"mean":43.10483891865419,"iteration":6},{"max":73.55000030994415,"min":-142.84999971091747,"mean":44.954166890121996,"iteration":7},{"max":73.55000030994415,"min":-142.84999971091747,"mean":43.730488053273135,"iteration":8},{"max":73.55000030994415,"min":-142.84999971091747,"mean":44.49456547840458,"iteration":9},{"max":73.55000030994415,"min":-142.84999971091747,"mean":47.37870398446642,"iteration":10},{"max":73.55000030994415,"min":-142.84999971091747,"mean":48.631034767383646,"iteration":11},{"max":76.00000045448542,"min":-142.84999971091747,"mean":50.40873045438812,"iteration":12},{"max":76.00000045448542,"min":-142.84999971091747,"mean":51.67173943560624,"iteration":13},{"max":76.00000045448542,"min":-142.84999971091747,"mean":52.001370168814105,"iteration":14},{"max":76.00000045448542,"min":-142.84999971091747,"mean":51.65925957515468,"iteration":15},{"max":76.00000045448542,"min":-142.84999971091747,"mean":52.052907296478054,"iteration":16},{"max":76.00000045448542,"min":-142.84999971091747,"mean":52.31141336509229,"iteration":17}]}');
+        </sql>
+    </changeSet>
+
+    <changeSet id="20190930" author="daehyun@skymind.io">
+        <update tableName="RUN">
+            <column name="STATUS" valueNumeric="0"/>
+            <where>NAME='RUN 1'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="20191001-1" author="daehyun@skymind.io">
+        <createProcedure>
+            CREATE FUNCTION public.update_model_activity_date()
+            RETURNS trigger
+            LANGUAGE 'plpgsql'
+            COST 100
+            VOLATILE NOT LEAKPROOF
+            AS $BODY$BEGIN
+            IF NEW.LAST_ACTIVITY_DATE != OLD.LAST_ACTIVITY_DATE THEN
+            UPDATE MODEL SET LAST_ACTIVITY_DATE = NEW.LAST_ACTIVITY_DATE
+            WHERE id = NEW.MODEL_ID;
+            END IF;
+
+            RETURN NEW;
+            END;$BODY$;
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="20191001-2" author="daehyun@skymind.io">
+        <createProcedure>
+            CREATE TRIGGER update_model
+            AFTER UPDATE OF last_activity_date
+            ON public.experiment
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.update_model_activity_date();
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="20191001-3" author="daehyun@skymind.io">
+        <createProcedure>
+            CREATE FUNCTION public.update_project_activity_date()
+            RETURNS trigger
+            LANGUAGE 'plpgsql'
+            COST 100
+            VOLATILE NOT LEAKPROOF
+            AS $BODY$BEGIN
+            IF NEW.LAST_ACTIVITY_DATE != OLD.LAST_ACTIVITY_DATE THEN
+            UPDATE PROJECT SET LAST_ACTIVITY_DATE = NEW.LAST_ACTIVITY_DATE
+            WHERE id = NEW.PROJECT_ID;
+            END IF;
+
+            RETURN NEW;
+            END;$BODY$;
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="20191001-4" author="daehyun@skymind.io">
+        <createProcedure>
+            CREATE TRIGGER update_project
+            AFTER UPDATE OF last_activity_date
+            ON public.model
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.update_project_activity_date();
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="20191002" author="vesa@vaadin.com">
+        <addUniqueConstraint columnNames="EMAIL"
+                             tableName="PATHMIND_USER"
+        />
+
+        <addColumn tableName="PATHMIND_USER">
+            <column name="DELETE_AT" type="DATETIME"/>
+            <column name="EMAIL_VERIFIED_AT" type="DATETIME"/>
+            <column name="EMAIL_VERIFICATION_TOKEN" type="UUID"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20191003-1" author="daehyun@skymind.io">
+        <update tableName="PATHMIND_USER">
+            <!-- literally "pw!skymind19" -->
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+            <where>EMAIL='steph@followsteph.com'</where>
+        </update>
+        <update tableName="PATHMIND_USER">
+            <!-- literally "pw!skymind19" -->
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+            <where>EMAIL='bob@skymind.io'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="20191003-2" author="daehyun@skymind.io">
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Deborah Lentle"/>
+            <column name="EMAIL" value="deborah.lentle@decisionlab.co.uk"/>
+            <column name="PASSWORD" value="$2a$10$AwwRO2OuIYnHlcw/wsFq.e8Z8nMMXIDS2jUSEQb/qtKktuAeOwYoi"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Kelvin Yeung"/>
+            <column name="EMAIL" value="kelvin.yeung@decisionlab.co.uk"/>
+            <column name="PASSWORD" value="$2a$10$F7GTC2XqZJqwFdVyZLPV6uM7yhqr5zRQ5xiFSQ3i8575hsSgw3z9y"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Roberto Grugni"/>
+            <column name="EMAIL" value="roberto.grugni@eng.it"/>
+            <column name="PASSWORD" value="$2a$10$Egd0u307wnc2DeppFhQhfOXqFMC4vHXuQEKPeqydHt11CUJ90Ihla"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Luigi Manca"/>
+            <column name="EMAIL" value="luigi.manca@eng.it"/>
+            <column name="PASSWORD" value="$2a$10$clJqjNE/brUFYK7J5auq1.e5/wwFu5fsXZ0V15HBnJdtGJGEQoEaK"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Mahdavi"/>
+            <column name="EMAIL" value="mahdavi@anylogic.com"/>
+            <column name="PASSWORD" value="$2a$10$5ge6QQ.Qv9AY1atSIHTV/.J4r2xrR67lm73.bLqmrH9es2CdNbS/K"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Stefan Hauers"/>
+            <column name="EMAIL" value="stefan.hauers@cnx-consulting.de"/>
+            <column name="PASSWORD" value="$2a$10$r2r5ZkIcd/p.N3NB0BI54O50uhfqb3z0zNE1F4KIOYvcRSsswS6.C"/>
+        </insert>
+
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="T Wolfeadam"/>
+            <column name="EMAIL" value="t.wolfeadam@anylogic.com"/>
+            <column name="PASSWORD" value="$2a$10$f84hlX0MNDYZ5vlavVT1BerXyVO0OPe1ambxUTh2OQAEyReuuJjf."/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20191004-1" author="steph@followsteph.com">
+        <addColumn tableName="PROJECT">
+            <column name="ARCHIVED" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+        <addColumn tableName="MODEL">
+            <column name="ARCHIVED" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+        <addColumn tableName="EXPERIMENT">
+            <column name="ARCHIVED" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20191008-1" author="daehyun@skymind.io">
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Edward Junprung"/>
+            <column name="EMAIL" value="edward@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Mohammed Farhan"/>
+            <column name="EMAIL" value="mohammed@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Slin Lee"/>
+            <column name="EMAIL" value="slin@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Dev Pathmind"/>
+            <column name="EMAIL" value="dev_pathmind@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Test Pathmind"/>
+            <column name="EMAIL" value="test_pathmind@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20191008-2" author="daehyun@skymind.io">
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Ty Wang"/>
+            <column name="EMAIL" value="ty@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20191015-1" author="daehyun@skymind.io">
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Chris Nicholson"/>
+            <column name="EMAIL" value="chris@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Brett Göhre"/>
+            <column name="EMAIL" value="brett@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20191015-2" author="daehyun@skymind.io">
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Goldratt Research"/>
+            <column name="EMAIL" value="jacoben@goldrattresearchlabs.com"/>
+            <column name="PASSWORD" value="$2a$10$284EPT.cBlTiYxREgj/pvemJg0h8NeVSfyWxX8D9KQwzO2b1KffCG"/>
+        </insert>
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Princeton Consultants"/>
+            <column name="EMAIL" value="PRandall@princeton.com"/>
+            <column name="PASSWORD" value="$2a$10$bf.xVNwIWCox8FLGnbZDvO.X7i2E3Gv21SYsro2p6VaR5ncLyPQk2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20191016" author="vladyslav@vaadin.com">
+        <addColumn tableName="PATHMIND_USER">
+            <column name="PASSWORD_RESET_SEND_AT" type="DATETIME"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20191021-1" author="daehyun@skymind.io">
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Michael Tsay"/>
+            <column name="EMAIL" value="michael@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+        <insert tableName="PATHMIND_USER">
+            <column name="NAME" value="Evegeniy Ivanchenko"/>
+            <column name="EMAIL" value="evegeniy@skymind.io"/>
+            <column name="PASSWORD" value="$2a$10$SebgaX8DjHllrGYDKTnMI.We1eYp4tNq6V8Mc9R3IbCPmPdNT46OG"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20191022-1" author="steph@followsteph.com">
+        <comment>Updating the sample coffee example to the new JSON progress structure.</comment>
+        <sql>
+            UPDATE policy SET progress='{"id":"PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128_2019-08-05_13-56-455cdir_3f","algorithm":"PPO","startedAt":"2019-10-22T20:25:43","hyperParameters":{"lr":"5e-05","gamma":"0.99","sgd_minibatch_size":"128"},"rewardProgression":[{"max":"NaN","min":"NaN","mean":"NaN","iteration":1},{"max":73.55000030994415,"min":-16.550001453608274,"mean":42.721428357596906,"iteration":2},{"max":73.55000030994415,"min":-57.94999961927533,"mean":41.59230767792234,"iteration":3},{"max":73.55000030994415,"min":-142.84999971091747,"mean":33.600000112503764,"iteration":4},{"max":73.55000030994415,"min":-142.84999971091747,"mean":39.36600016742945,"iteration":5},{"max":73.55000030994415,"min":-142.84999971091747,"mean":43.10483891865419,"iteration":6},{"max":73.55000030994415,"min":-142.84999971091747,"mean":44.954166890121996,"iteration":7},{"max":73.55000030994415,"min":-142.84999971091747,"mean":43.730488053273135,"iteration":8},{"max":73.55000030994415,"min":-142.84999971091747,"mean":44.49456547840458,"iteration":9},{"max":73.55000030994415,"min":-142.84999971091747,"mean":47.37870398446642,"iteration":10},{"max":73.55000030994415,"min":-142.84999971091747,"mean":48.631034767383646,"iteration":11},{"max":76.00000045448542,"min":-142.84999971091747,"mean":50.40873045438812,"iteration":12},{"max":76.00000045448542,"min":-142.84999971091747,"mean":51.67173943560624,"iteration":13},{"max":76.00000045448542,"min":-142.84999971091747,"mean":52.001370168814105,"iteration":14},{"max":76.00000045448542,"min":-142.84999971091747,"mean":51.65925957515468,"iteration":15},{"max":76.00000045448542,"min":-142.84999971091747,"mean":52.052907296478054,"iteration":16},{"max":76.00000045448542,"min":-142.84999971091747,"mean":52.31141336509229,"iteration":17}]}' WHERE progress = '{"id":"PPO_CoffeeEnvironment_0_gamma=0.99,lr=5e-05,sgd_minibatch_size=128_2019-08-05_13-56-455cdir_3f","algorithm":"PPO","hyperParameters":{"sgd_minibatch_size":"128","lr":"5e-05","gamma":"0.99"},"startedAt":{"year":2019,"monthValue":8,"dayOfMonth":5,"hour":13,"minute":56,"second":45,"nano":0,"month":"AUGUST","dayOfWeek":"MONDAY","dayOfYear":217,"chronology":{"id":"ISO","calendarType":"iso8601"}},"rewardProgression":[{"max":"NaN","min":"NaN","mean":"NaN","iteration":1},{"max":73.55000030994415,"min":-16.550001453608274,"mean":42.721428357596906,"iteration":2},{"max":73.55000030994415,"min":-57.94999961927533,"mean":41.59230767792234,"iteration":3},{"max":73.55000030994415,"min":-142.84999971091747,"mean":33.600000112503764,"iteration":4},{"max":73.55000030994415,"min":-142.84999971091747,"mean":39.36600016742945,"iteration":5},{"max":73.55000030994415,"min":-142.84999971091747,"mean":43.10483891865419,"iteration":6},{"max":73.55000030994415,"min":-142.84999971091747,"mean":44.954166890121996,"iteration":7},{"max":73.55000030994415,"min":-142.84999971091747,"mean":43.730488053273135,"iteration":8},{"max":73.55000030994415,"min":-142.84999971091747,"mean":44.49456547840458,"iteration":9},{"max":73.55000030994415,"min":-142.84999971091747,"mean":47.37870398446642,"iteration":10},{"max":73.55000030994415,"min":-142.84999971091747,"mean":48.631034767383646,"iteration":11},{"max":76.00000045448542,"min":-142.84999971091747,"mean":50.40873045438812,"iteration":12},{"max":76.00000045448542,"min":-142.84999971091747,"mean":51.67173943560624,"iteration":13},{"max":76.00000045448542,"min":-142.84999971091747,"mean":52.001370168814105,"iteration":14},{"max":76.00000045448542,"min":-142.84999971091747,"mean":51.65925957515468,"iteration":15},{"max":76.00000045448542,"min":-142.84999971091747,"mean":52.052907296478054,"iteration":16},{"max":76.00000045448542,"min":-142.84999971091747,"mean":52.31141336509229,"iteration":17}]}';
+        </sql>
+    </changeSet>
+    <changeSet id="20191022-2" author="steph@followsteph.com">
+        <comment>Convert some key policy json values to database values.</comment>
+        <addColumn tableName="POLICY">
+            <column name="STARTEDAT" type="DATETIME"></column>
+            <column name="STOPPEDAT" type="DATETIME"></column>
+            <column name="ALGORITHM" type="VARCHAR(3)"></column>
+        </addColumn>
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20191022_2"/>
+    </changeSet>
+
+    <!-- #370 Since all the existing users are hardcoded in the DB, let's mark their accounts as validated. -->
+    <changeSet id="20191030" author="vesa@vaadin.com">
+        <update tableName="PATHMIND_USER">
+            <column name="EMAIL_VERIFIED_AT" value="NOW()"/>
+        </update>
+    </changeSet>
+
+    <changeSet id="20191031-1" author="vesa@vaadin.com">
+        <addColumn tableName="PATHMIND_USER">
+            <column name="STRIPE_CUSTOMER_ID" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <!-- #456 Remove the default projects from the initial development from the database as they are no longer working with all the changes since
+    Now technically I should just be able to do DELETE FROM POLICY since there is only sample data but to avoid any accidental errors I'm forcing
+    a massive left join with a WHERE pathmind_user.email="steph@followsteph.com" so even if there is an error it can only delete the data from the
+    test account. -->
+    <changeSet id="20191117-1" author="steph@followsteph.com">
+        <sql>
+            DELETE FROM POLICY WHERE ID IN
+                (SELECT POLICY.ID FROM POLICY LEFT JOIN RUN ON RUN.ID = POLICY.RUN_ID LEFT JOIN EXPERIMENT ON EXPERIMENT.ID = RUN.EXPERIMENT_ID LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            DELETE FROM RUN WHERE ID IN
+                (SELECT RUN.ID FROM RUN LEFT JOIN EXPERIMENT ON EXPERIMENT.ID = RUN.EXPERIMENT_ID LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            DELETE FROM EXPERIMENT WHERE ID IN
+                (SELECT EXPERIMENT.ID FROM EXPERIMENT LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            DELETE FROM MODEL WHERE ID IN
+                (SELECT MODEL.ID FROM MODEL LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            DELETE FROM PROJECT WHERE ID IN
+                (SELECT PROJECT.ID FROM PROJECT LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+        </sql>
+    </changeSet>
+
+    <changeSet id="20191125-1" author="daehyun@skymind.io">
+        <comment>Add snapshot file column</comment>
+        <addColumn tableName="POLICY">
+            <column name="SNAPSHOT" type="bytea"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20191209-1" author="onur@vaadin.com">
+        <update tableName="PATHMIND_USER">
+            <column name="STRIPE_CUSTOMER_ID" value="cus_GKPM6sw8wTtgjg"/>
+            <where>EMAIL='test_pathmind@skymind.io'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="20191210-1" author="steph@followsteph.com">
+        <comment>Convert the EXECUTION_PROVIDER_META_DATA to be more efficient and easier to use and maintain</comment>
+        <addColumn tableName="EXECUTION_PROVIDER_META_DATA">
+            <column name="PROVIDER_CLASS_TEMP" type="INT" defaultValue="1"/>
+            <column name="TYPE_TEMP" type="INT"/>
+            <column name="KEY_TEMP" type="BIGINT"/>
+            <column name="VALUE_TEMP" type="varchar(36)"/>
+        </addColumn>
+        <comment>Convert the data to the new column formats - this is a bit complex but it can be done in SQL.</comment>
+        <sql>
+            UPDATE EXECUTION_PROVIDER_META_DATA SET TYPE_TEMP = (CASE WHEN (SUBSTRING(KEY FROM 0 FOR POSITION(':' IN KEY)) = 'modelFileId') THEN 0 ELSE 1 END);
+            UPDATE EXECUTION_PROVIDER_META_DATA SET KEY_TEMP = CAST(SUBSTRING(KEY FROM POSITION(':' IN KEY) + 1) AS BIGINT);
+            UPDATE EXECUTION_PROVIDER_META_DATA SET VALUE_TEMP = value #>> '{}';
+        </sql>
+        <dropColumn tableName="EXECUTION_PROVIDER_META_DATA" columnName="PROVIDER_CLASS"/>
+        <dropColumn tableName="EXECUTION_PROVIDER_META_DATA" columnName="KEY"/>
+        <dropColumn tableName="EXECUTION_PROVIDER_META_DATA" columnName="VALUE"/>
+        <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="PROVIDER_CLASS" oldColumnName="PROVIDER_CLASS_TEMP"/>
+        <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="TYPE" oldColumnName="TYPE_TEMP"/>
+        <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="KEY" oldColumnName="KEY_TEMP"/>
+        <renameColumn tableName="EXECUTION_PROVIDER_META_DATA" newColumnName="VALUE" oldColumnName="VALUE_TEMP"/>
+        <addUniqueConstraint tableName="EXECUTION_PROVIDER_META_DATA" constraintName="UNIQUE_PROVIDER_CLASS_TYPE_KEY" columnNames="PROVIDER_CLASS, TYPE, KEY" />
+    </changeSet>
+
+    <changeSet id="20191212-1" author="daehyun@skymind.io">
+        <modifyDataType tableName="EXECUTION_PROVIDER_META_DATA" columnName="KEY" newDataType="NVARCHAR"></modifyDataType>
+    </changeSet>
+
+    <!-- #446 - Separate out bytea columns in database to separate tables (Policy and Model) -->
+    <!-- IMPORTANT -> This is part of a later PR but it had to be inserted before as the larger database set caused
+         massive performance issues. -->
+    <changeSet id="20200128_01" author="steph@followsteph.com">
+        <createTable tableName="POLICY_FILE">
+            <column name="POLICY_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_POLICY_FILE_POLICY" references="POLICY(ID)"/>
+            </column>
+            <column name="FILE" type="bytea"/>
+        </createTable>
+        <createTable tableName="POLICY_SNAPSHOT">
+            <column name="POLICY_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_POLICY_SNAPSHOT_POLICY" references="POLICY(ID)"/>
+            </column>
+            <column name="SNAPSHOT" type="bytea"/>
+        </createTable>
+        <createTable tableName="MODEL_FILE">
+            <column name="MODEL_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_MODEL_FILE_MODEL" references="MODEL(ID)"/>
+            </column>
+            <column name="FILE" type="bytea"/>
+        </createTable>
+        <sql>
+            INSERT INTO POLICY_FILE (POLICY_ID, FILE) SELECT ID, FILE FROM POLICY;
+            INSERT INTO POLICY_SNAPSHOT (POLICY_ID, SNAPSHOT) SELECT ID, SNAPSHOT FROM POLICY;
+            INSERT INTO MODEL_FILE (MODEL_ID, FILE) SELECT ID, FILE FROM MODEL;
+        </sql>
+        <createIndex tableName="POLICY_SNAPSHOT" indexName="POLICY_SNAPSHOT_POLICY_ID_INDEX">
+            <column name="POLICY_ID"/>
+        </createIndex>
+        <createIndex tableName="POLICY_FILE" indexName="POLICY_FILE_POLICY_ID_INDEX">
+            <column name="POLICY_ID"/>
+        </createIndex>
+        <createIndex tableName="MODEL_FILE" indexName="MODEL_FILE_MODEL_ID_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+        <dropColumn tableName="POLICY" columnName="FILE"/>
+        <dropColumn tableName="POLICY" columnName="SNAPSHOT"/>
+        <dropColumn tableName="MODEL" columnName="FILE"/>
+    </changeSet>
+
+    <!-- #388 - Policy scores should be stored in their own table rather than in a json column -->
+    <!-- IMPORTANT -> This is part of a later PR but it had to be inserted before as the larger database set caused
+         massive performance issues. -->
+    <changeSet id="20200128_02" author="steph@followsteph.com">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="REWARD_SCORE"/>
+            </not>
+        </preConditions>
+        <createTable tableName="REWARD_SCORE">
+            <column name="POLICY_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_REWARD_SCORE_POLICY" references="POLICY(ID)"/>
+            </column>
+            <!-- We have to allow NULL to be able to represent NaN as JOOQ uses BigDecimal which does not accept NaN as a value -->
+            <column name="MIN" type="DECIMAL(27,17)"/>
+            <column name="MEAN" type="DECIMAL(27,17)"/>
+            <column name="MAX" type="DECIMAL(27,17)"/>
+            <column name="ITERATION" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <!-- The POLICY.PROGRESS column will be removed as a new changeset in a follow-up PR as a safety precaution. -->
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200128_02"/>
+        <!-- Must be done after to improve the performance due to the size of the dataset -->
+        <createIndex tableName="REWARD_SCORE" indexName="REWARD_SCORE_POLICY_ID_INDEX">
+            <column name="POLICY_ID"/>
+        </createIndex>
+        <dropColumn tableName="POLICY" columnName="PROGRESS"/>
+        <rollback>
+            <!-- We cannot rollback the progress column once it's deleted. -->
+            <dropIndex tableName="REWARD_SCORE" indexName="REWARD_SCORE_POLICY_ID_INDEX"/>
+            <dropTable tableName="REWARD_SCORE"/>
+        </rollback>
+    </changeSet>
+
+    <!-- IMPORTANT -> Needed to reclaim the space to prevent performance issues from upcoming changesets. Not this is NOT transactional. -->
+    <changeSet id="20200128-03" author="steph@followsteph.com" runInTransaction="false">
+        <sql>
+            VACUUM FULL;
+        </sql>
+    </changeSet>
+
+    <!-- #472 - Add hyperparameters as their own database columns as part of reducing our reliance on storing data in json -->
+    <changeSet id="20200128_04" author="steph@followsteph.com">
+        <addColumn tableName="POLICY">
+            <column name="LEARNING_RATE" type="DOUBLE" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="GAMMA" type="DOUBLE" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BATCH_SIZE" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200128_04"/>
+    </changeSet>
+
+    <!-- #387 - Policy.notes and Policy.name should be in the database -->
+    <changeSet id="20200128_05" author="steph@followsteph.com">
+        <addColumn tableName="POLICY">
+            <column name="NOTES" type="VARCHAR"/>
+        </addColumn>
+        <sql>
+            UPDATE POLICY SET name=SPLIT_PART(external_id, '_', 3);
+<!--        The following line fails in liquibase but works in postgres directly. Therefore this code has been implemented in the Java changeset code -->
+<!--        UPDATE POLICY SET NOTES=concat('sgd_minibatch_size=', batch_size, ', lr=', learning_rate, ', gamma=', gamma);-->
+        </sql>
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200128_05"/>
+        <rollback>
+            <dropColumn tableName="POLICY" columnName="NOTES"/>
+            <sql>UPDATE POLICY SET name=external_Id</sql>
+        </rollback>
+    </changeSet>
+
+    <!-- #501 - Add DB constraint for unique project name -->
+    <changeSet id="20200128_06" author="onur@vaadin.com">
+        <comment>If there are duplicated project names, update them before adding db constraint</comment>
+        <sql>
+            UPDATE PROJECT SET NAME = NAME || '-' || ID where (PATHMIND_USER_ID, NAME) IN (SELECT PATHMIND_USER_ID, NAME FROM PROJECT GROUP BY PATHMIND_USER_ID, NAME HAVING COUNT(NAME) > 1);
+        </sql>
+        <addUniqueConstraint tableName="PROJECT" constraintName="UNIQUE_PROJECT_NAME_PATHMIND_USER_ID" columnNames="PATHMIND_USER_ID, NAME" />
+    </changeSet>
+
+    <changeSet id="20200128_07" author="onur@vaadin.com">
+        <addColumn tableName="RUN">
+         	<column name="NOTIFICATION_SENT_AT" type="DATETIME"/>
+        </addColumn>
+    </changeSet>
+
+    <!-- #681 and #682 - Need to name the StartedAt and StoppedAt columns with an underscore -->
+    <changeSet id="20200128_08" author="steph@followsteph.com">
+        <renameColumn tableName="POLICY" oldColumnName="STARTEDAT" newColumnName="STARTED_AT"/>
+        <renameColumn tableName="POLICY" oldColumnName="STOPPEDAT" newColumnName="STOPPED_AT"/>
+        <rollback>
+            <renameColumn tableName="POLICY" oldColumnName="STARTED_AT" newColumnName="STARTEDAT"/>
+            <renameColumn tableName="POLICY" oldColumnName="STOPPED_AT" newColumnName="STOPPEDAT"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200128_09" author="krystian.walaszczyk@ext.vaadin.com">
+        <comment>Delete PATHMIND_USER.NAME column</comment>
+        <dropColumn tableName="PATHMIND_USER" columnName="NAME"/>
+        <rollback>
+            <addColumn tableName="PATHMIND_USER">
+                <column name="NAME" type="VARCHAR(255)"/>
+            </addColumn>
+        </rollback>
+    </changeSet>
+
+    <!-- #641 Add EXPORTED_AT column to track if policy was exported -->
+    <changeSet id="20200129-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <addColumn tableName="POLICY">
+            <column name="EXPORTED_AT" type="DATETIME"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="POLICY" columnName="EXPORTED_AT"/>
+        </rollback>
+    </changeSet>
+
+    <!-- #770 Create indexes on foreign keys as they are often used in joins/where -->
+    <changeSet id="20200202-01" author="steph@followsteph.com">
+        <createIndex tableName="PROJECT" indexName="PROJECT_PATHMIND_USER_FK_INDEX">
+            <column name="PATHMIND_USER_ID"/>
+        </createIndex>
+        <createIndex tableName="MODEL" indexName="MODEL_PROJECT_FK_INDEX">
+            <column name="PROJECT_ID"/>
+        </createIndex>
+        <createIndex tableName="EXPERIMENT" indexName="EXPERIMENT_MODEL_FK_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+        <createIndex tableName="RUN" indexName="RUN_EXPERIMENT_FK_INDEX">
+            <column name="EXPERIMENT_ID"/>
+        </createIndex>
+        <createIndex tableName="POLICY" indexName="POLICY_RUN_FK_INDEX">
+            <column name="RUN_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="20200202-02" author="daniel@pathmind.com">
+        <createTable tableName="TRAINER_JOB">
+            <column name="JOB_ID" type="VARCHAR(255)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="SQS_URL" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="S3PATH" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="S3BUCKET" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RECEIPTHANDLE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EC2_INSTANCE_TYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EC2_MAX_PRICE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATE_DATE" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EC2_CREATE_DATE" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>
+            <column name="EC2_END_DATE" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>
+            <column name="STATUS" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20200202-03" author="daniel@pathmind.com">
+        <modifyDataType tableName="TRAINER_JOB" columnName="RECEIPTHANDLE" newDataType="VARCHAR(1000)"></modifyDataType>
+    </changeSet>
+
+    <changeSet id="20200202-04" author="daniel.jaramillo@toptal.com">
+        <addColumn tableName="TRAINER_JOB">
+            <column name="UPDATE_DATE" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200202-05" author="steph@followsteph.com">
+        <addUniqueConstraint tableName="POLICY_FILE" columnNames="POLICY_ID" constraintName="POLICY_FILE_UNIQUE_POLICY_ID"/>
+        <addUniqueConstraint tableName="POLICY_SNAPSHOT" columnNames="POLICY_ID" constraintName="POLICY_SNAPSHOT_UNIQUE_POLICY_ID"/>
+        <rollback>
+            <dropUniqueConstraint tableName="POLICY_FILE" uniqueColumns="POLICY_ID" constraintName="POLICY_FILE_UNIQUE_POLICY_ID"/>
+            <dropUniqueConstraint tableName="POLICY_SNAPSHOT" uniqueColumns="POLICY_ID" constraintName="POLICY_SNAPSHOT_UNIQUE_POLICY_ID"/>
+        </rollback>
+    </changeSet>
+
+    <!-- #702 Create UI for guided walkthrough of setting up simulation helper with Pathmind functions -->
+    <changeSet id="20200205-01" author="steph@followsteph.com">
+        <createTable tableName="GUIDE">
+            <column name="PROJECT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_MODEL_PROJECT" references="PROJECT(ID)"/>
+            </column>
+            <column name="STEP" type="INT" defaultValue="0"/>
+        </createTable>
+        <createIndex tableName="GUIDE" indexName="GUIDE_PROJECT_FK_INDEX">
+            <column name="PROJECT_ID"/>
+        </createIndex>
+        <rollback>
+            <dropTable tableName="GUIDE"/>
+            <dropIndex tableName="GUIDE" indexName="GUIDE_PROJECT_FK_INDEX"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200211-01" author="steph@followsteph.com">
+        <addColumn tableName="PROJECT">
+            <column name="USER_NOTES" type="VARCHAR" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="MODEL">
+            <column name="USER_NOTES" type="VARCHAR" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="EXPERIMENT">
+            <column name="USER_NOTES" type="VARCHAR" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="PROJECT" columnName="USER_NOTES"/>
+            <dropColumn tableName="MODEL" columnName="USER_NOTES"/>
+            <dropColumn tableName="EXPERIMENT" columnName="USER_NOTES"/>
+        </rollback>
+    </changeSet>
+
+    <!-- #873 Error when clicking 'upload model' -->
+    <changeSet id="20200217-01" author="steph@followsteph.com">
+        <sql>
+            INSERT INTO guide (project_id, step) (SELECT project.id, 0 FROM project LEFT JOIN guide ON project.id=guide.project_id WHERE guide.project_id IS NULL);
+        </sql>
+    </changeSet>
+
+    <changeSet id="20200218-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <createTable tableName="TRAINING_ERROR">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="KEYWORD" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR" />
+            <column name="RESTARTABLE" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <insert tableName="TRAINING_ERROR">
+            <column name="id" value="0"/>
+            <column name="KEYWORD" value="Not an error"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="python3: can't open file 'rllibtrain.py'"/>
+            <column name="RESTARTABLE" value="true"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="SyntaxError: invalid syntax"/>
+            <column name="DESCRIPTION" value="Please fix the reward function."/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="Fatal Python error: Segmentation fault"/>
+            <column name="DESCRIPTION" value="Please restart your training."/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="Worker crashed during call to train()"/>
+            <column name="RESTARTABLE" value="true"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="java.lang.ArrayIndexOutOfBoundsException"/>
+            <column name="DESCRIPTION" value="Please try again."/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="unknown error"/>
+            <column name="DESCRIPTION" value="Unrecognized error. Please contact Pathmind team."/>
+        </insert>
+        <rollback>
+            <dropTable tableName="TRAINING_ERROR"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200218-02" author="krystian.walaszczyk@ext.vaadin.com">
+        <addColumn tableName="RUN">
+            <column name="TRAINING_ERROR_ID" type="BIGINT">
+                <constraints nullable="true" foreignKeyName="PM_FK_TRAINING_ERROR" references="TRAINING_ERROR(ID)"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200224-01" author="onur@vaadin.com">
+        <update tableName="TRAINING_ERROR">
+            <column name="DESCRIPTION" value="Training failed to initialize. Please contact the Pathmind team."/>
+            <column name="RESTARTABLE" value="false"/>
+            <where>ID = 1</where>
+        </update>
+        <update tableName="TRAINING_ERROR">
+            <column name="DESCRIPTION" value="Invalid reward function syntax. Create a new experiment to update your reward function."/>
+            <where>ID = 2</where>
+        </update>
+        <update tableName="TRAINING_ERROR">
+            <column name="DESCRIPTION" value="Runtime error. Please contact the Pathmind team."/>
+            <where>ID = 3</where>
+        </update>
+        <update tableName="TRAINING_ERROR">
+            <column name="DESCRIPTION" value="Runtime error. Please contact the Pathmind team."/>
+            <column name="RESTARTABLE" value="false"/>
+            <where>ID = 4</where>
+        </update>
+        <update tableName="TRAINING_ERROR">
+            <column name="DESCRIPTION" value="Incorrect number of actions or observations detected. Please double check the size of your actions or observations array and re-upload your model."/>
+            <where>ID = 5</where>
+        </update>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="RuntimeError: java.lang.NoSuchMethodError"/>
+            <column name="DESCRIPTION" value="Unsupported version of AnyLogic detected. Please contact support@pathmind.com."/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="unzip: cannot find or open model.jar, model.jar.zip or model.jar.ZIP"/>
+            <column name="DESCRIPTION" value="Import error. Invalid zip file."/>
+        </insert>
+    </changeSet>
+
+    <!-- #829 Flag that binaries lives in s3 already -->
+    <changeSet id="20200213-01" author="alexander.makarov@toptal.com">
+        <addColumn tableName="MODEL">
+            <column name="MODEL_FILE_MOVED_TO_S3" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="POLICY">
+            <column name="POLICY_FILE_MOVED_TO_S3" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="POLICY">
+            <column name="POLICY_SNAPSHOT_MOVED_TO_S3" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="MODEL" columnName="MODEL_FILE_MOVED_TO_S3" />
+            <dropColumn tableName="POLICY" columnName="POLICY_FILE_MOVED_TO_S3" />
+            <dropColumn tableName="POLICY" columnName="POLICY_SNAPSHOT_MOVED_TO_S3" />
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200213-02" author="alexander.makarov@toptal.com">
+        <addColumn tableName="POLICY">
+            <column name="HAS_FILE" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <sql>
+            UPDATE POLICY SET HAS_FILE = TRUE
+            WHERE EXISTS( SELECT POLICY_ID FROM POLICY_FILE WHERE POLICY_ID = ID AND FILE IS NOT NULL );
+        </sql>
+    </changeSet>
+
+    <changeSet id="20200228_01" author="krystian.walaszczyk@ext.vaadin.com">
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="ray.memory_monitor.RayOutOfMemoryError"/>
+            <column name="DESCRIPTION" value="Run terminated. Server is out of memory. Please contact Pathmind support."/>
+            <column name="RESTARTABLE" value="true"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="FileNotFoundError: [Errno 2] No such file or directory: 'database/db.properties'"/>
+            <column name="DESCRIPTION" value="Missing database. Please re-upload your model and try again."/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20200215-01" author="alexander.makarov@toptal.com">
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM MODEL_FILE, MODEL WHERE ID=MODEL_ID AND MODEL_FILE_MOVED_TO_S3=FALSE AND FILE IS NOT NULL;
+            </sqlCheck>
+        </preConditions>
+        <dropTable tableName="MODEL_FILE" />
+        <dropColumn tableName="MODEL" columnName="MODEL_FILE_MOVED_TO_S3" />
+    </changeSet>
+    <changeSet id="20200215-02" author="alexander.makarov@toptal.com">
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM POLICY_FILE, POLICY WHERE ID=POLICY_ID AND POLICY_FILE_MOVED_TO_S3=FALSE AND FILE IS NOT NULL;
+            </sqlCheck>
+        </preConditions>
+        <dropTable tableName="POLICY_FILE" />
+        <dropColumn tableName="POLICY" columnName="POLICY_FILE_MOVED_TO_S3" />
+    </changeSet>
+    <changeSet id="20200215-03" author="alexander.makarov@toptal.com">
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM POLICY_SNAPSHOT, POLICY WHERE ID=POLICY_ID AND POLICY_SNAPSHOT_MOVED_TO_S3=FALSE AND SNAPSHOT IS NOT NULL;
+            </sqlCheck>
+        </preConditions>
+        <dropTable tableName="POLICY_SNAPSHOT" />
+        <dropColumn tableName="POLICY" columnName="POLICY_SNAPSHOT_MOVED_TO_S3" />
+    </changeSet>
+    <!-- Please be aware, vacuum might take few minutes to complete -->
+    <changeSet id="20200215-04" author="alexander.makarov@toptal.com" runInTransaction="false">
+        <sql>
+            VACUUM FULL;
+        </sql>
+    </changeSet>
+
+    <changeSet id="20200303-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <addColumn tableName="REWARD_SCORE">
+            <column name="EPISODE_COUNT" type="INT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200303-02" author="krystian.walaszczyk@ext.vaadin.com">
+        <dropColumn tableName="POLICY" columnName="ALGORITHM" />
+        <dropColumn tableName="POLICY" columnName="LEARNING_RATE" />
+        <dropColumn tableName="POLICY" columnName="GAMMA" />
+        <dropColumn tableName="POLICY" columnName="BATCH_SIZE" />
+    </changeSet>
+
+    <changeSet id="20200303-03" author="krystian.walaszczyk@ext.vaadin.com">
+        <dropColumn tableName="MODEL" columnName="GET_OBSERVATION_FOR_REWARD_FUNCTION"/>
+    </changeSet>
+
+    <changeSet id="20200303-04" author="krystian.walaszczyk@ext.vaadin.com">
+        <dropColumn tableName="POLICY" columnName="NOTES" />
+    </changeSet>
+
+    <changeSet id="20200324-01" author="daehyun@skymind.io">
+        <modifyDataType tableName="REWARD_SCORE" columnName="MIN" newDataType="DECIMAL(32,17)"></modifyDataType>
+        <modifyDataType tableName="REWARD_SCORE" columnName="MEAN" newDataType="DECIMAL(32,17)"></modifyDataType>
+        <modifyDataType tableName="REWARD_SCORE" columnName="MAX" newDataType="DECIMAL(32,17)"></modifyDataType>
+    </changeSet>
+
+</databaseChangeLog>
