@@ -29,7 +29,7 @@ import org.jooq.impl.TableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RewardScoreRecord extends TableRecordImpl<RewardScoreRecord> implements Record6<Long, BigDecimal, BigDecimal, BigDecimal, Integer, Integer> {
 
-    private static final long serialVersionUID = 1732734137;
+    private static final long serialVersionUID = -1520875559;
 
     /**
      * Setter for <code>public.reward_score.policy_id</code>.

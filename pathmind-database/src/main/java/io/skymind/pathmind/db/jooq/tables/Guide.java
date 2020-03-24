@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Guide extends TableImpl<GuideRecord> {
 
-    private static final long serialVersionUID = 1780693050;
+    private static final long serialVersionUID = -376418235;
 
     /**
      * The reference instance of <code>public.guide</code>
