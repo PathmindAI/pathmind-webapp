@@ -44,10 +44,10 @@ p {
 }
 a {
   color: var(--lumo-primary-color);
-  text-decoration: none;
+  text-decoration: underline;
 }
 a:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 img {
   width: 100%;

@@ -20,7 +20,7 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 @JsModule("./src/guide/install-pathmind-helper-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class InstallPathmindHelperViewContent extends DefaultPageContent<InstallPathmindHelperViewContent.Model> {
+public class InstallPathmindHelperViewContent extends DefaultPageContent<TemplateModel> {
 
     @Id("backBtn")
     private Button backBtn;
@@ -42,10 +42,7 @@ public class InstallPathmindHelperViewContent extends DefaultPageContent<Install
 				guideDAO.updateGuideStep(projectId, guideStep.nextStep());
 				segmentIntegrator.completedGuideInstall();
 			}
-			UI.getCurrent().navigate(ObservationView.class, projectId);
+			UI.getCurrent().navigate(ActionSpaceView.class, projectId);
 		});
     }
-
-	public interface Model extends TemplateModel {
-	}
 }

@@ -21,7 +21,7 @@ import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 @JsModule("./src/guide/guide-overview-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class GuideOverviewContent extends DefaultPageContent<GuideOverviewContent.Model> {
+public class GuideOverviewContent extends DefaultPageContent<TemplateModel> {
 	@Id("nextBtn")
 	private Button nextBtn;
 
@@ -44,8 +44,5 @@ public class GuideOverviewContent extends DefaultPageContent<GuideOverviewConten
 			segmentIntegrator.skippedGuideToUploadModel();
 			UI.getCurrent().navigate(UploadModelView.class, projectId);
 		});
-	}
-
-	public interface Model extends TemplateModel {
 	}
 }

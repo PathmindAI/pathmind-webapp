@@ -6,28 +6,27 @@ class DoneConditionViewContent extends PolymerElement {
     return html`
       <style include="pathmind-dialog-view guide-view"></style>
       <div class="content">
-        <h1>Define "Done" Condition</h1>
+        <h1>isDone</h1>
         <p>
-          You need to define the length of your simulation’s run and when it
-          finishes. That length is known as an episode. Some episodes are
-          defined in terms of time spent (e.g. end the episode after a “day”),
-          while others end when the simulation meets a certain condition. In the
-          Pathmind Helper in AnyLogic, <b>isDone</b> sets the length of your
-          simulation.
+          A simulation has reached the end when isDone occurs. Some models will
+          complete after a specified amount of time while others will end only
+          when certain conditions are met. Determine what elements should
+          trigger your model to end, and update the Done field.
         </p>
-        <p>
-          <a href$="[[readMoreLink]]" target="_blank"
-            >Learn more about defining "Done" Condition</a
-          >
+        <h4>Example from Finding the Cheese Tutorial</h4>
+        <p class="screenshot-description">
+          The simulation uses a checkIfGoalReach function to end at the moment
+          that the mouse finds the cheese.
         </p>
         <div class="screenshot-wrapper">
-          <img src="frontend/images/guide/PathmindHelperDone.png" />
+          <img src="frontend/images/guide/isDone_code.png" />
         </div>
+        <a href$="[[readMoreLink]]" target="_blank">Learn more about isDone</a>
         <vaadin-button id="nextBtn" theme="secondary">
-          “Done” Condition Defined
+          Mark Step 5 as complete
         </vaadin-button>
         <vaadin-button id="backBtn" theme="tertiary">
-          Back to Triggering Actions
+          Back
         </vaadin-button>
       </div>
     `;

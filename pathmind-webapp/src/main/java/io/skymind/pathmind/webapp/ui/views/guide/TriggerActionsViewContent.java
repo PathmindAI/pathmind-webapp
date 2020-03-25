@@ -20,7 +20,7 @@ import io.skymind.pathmind.webapp.ui.views.guide.template.DefaultPageContent;
 @JsModule("./src/guide/trigger-actions-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class TriggerActionsViewContent extends DefaultPageContent<TriggerActionsViewContent.Model> {
+public class TriggerActionsViewContent extends DefaultPageContent<TemplateModel> {
 
     @Id("backBtn")
     private Button backBtn;
@@ -42,10 +42,7 @@ public class TriggerActionsViewContent extends DefaultPageContent<TriggerActions
                 guideDAO.updateGuideStep(projectId, guideStep.nextStep());
                 segmentIntegrator.completedGuideTriggerActions();
             }
-            UI.getCurrent().navigate(DoneConditionView.class, projectId);
+            UI.getCurrent().navigate(ObservationView.class, projectId);
         });
-    }
-
-    public interface Model extends TemplateModel {
     }
 }

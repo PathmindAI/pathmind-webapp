@@ -20,7 +20,7 @@ import io.skymind.pathmind.webapp.ui.views.guide.template.DefaultPageContent;
 @JsModule("./src/guide/reward-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class RewardViewContent extends DefaultPageContent<RewardViewContent.Model> {
+public class RewardViewContent extends DefaultPageContent<TemplateModel> {
 	@Id("backBtn")
 	private Button backBtn;
 
@@ -33,7 +33,7 @@ public class RewardViewContent extends DefaultPageContent<RewardViewContent.Mode
 	@Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {
 		backBtn.addClickListener(e -> {
-			UI.getCurrent().navigate(DoneConditionView.class, projectId);
+			UI.getCurrent().navigate(ObservationView.class, projectId);
 		});
 
 		nextBtn.addClickListener(e -> {
@@ -41,10 +41,7 @@ public class RewardViewContent extends DefaultPageContent<RewardViewContent.Mode
 				guideDAO.updateGuideStep(projectId, guideStep.nextStep());
 				segmentIntegrator.completedGuideReward();
 			}
-			UI.getCurrent().navigate(RecapView.class, projectId);
+			UI.getCurrent().navigate(DoneConditionView.class, projectId);
 		});
     }
-
-	public interface Model extends TemplateModel {
-	}
 }

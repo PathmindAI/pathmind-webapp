@@ -4,12 +4,13 @@ public enum GuideStep {
 
     Overview("Overview", "overview"),
     InstallPathmindHelper("Install Pathmind Helper", "install"),
-    BuildObservationSpace("Build Observation Space", "observation"),
-    BuildActionSpace("Build Action Space", "action-space"),
-    TriggerAction("Triggering Actions", "trigger-actions"),
-    DefineDoneCondition("Define \"Done\" Condition", "done-condition"),
-    DefineRewardVariable("Define Reward Variables", "reward"),
-    Recap("Conclusion / Re-cap", "recap"),
+    BuildActionSpace("Actions", "action-space"),
+    TriggerAction("Event Trigger", "trigger-actions"),
+    BuildObservationSpace("Observations", "observation"),
+    DefineRewardVariable("Reward Variables", "reward"),
+    DefineDoneCondition("isDone", "done-condition"),
+    RunTest("Run a Test", "test-simulation"),
+    Recap("Export as a Standalone Java App", "recap"),
     Completed("", "recap");
 
 	private String name;

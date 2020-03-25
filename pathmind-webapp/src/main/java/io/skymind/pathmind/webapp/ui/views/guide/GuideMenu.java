@@ -39,12 +39,13 @@ public class GuideMenu extends VerticalLayout {
         
         guideLinksWrapper.add(createChecklistItem("Overview", GuideOverview.class, 0));
         guideLinksWrapper.add(createChecklistItem("Install Pathmind Helper", InstallPathmindHelperView.class, 1));
-        guideLinksWrapper.add(createChecklistItem("Build Observation Space", ObservationView.class, 2));
-        guideLinksWrapper.add(createChecklistItem("Build Action Space", ActionSpaceView.class, 3));
-        guideLinksWrapper.add(createChecklistItem("Triggering Actions", TriggerActionsView.class, 4));
-        guideLinksWrapper.add(createChecklistItem("Define \"Done\" Condition", DoneConditionView.class, 5));
-        guideLinksWrapper.add(createChecklistItem("Define Reward Variables", RewardView.class, 6));
-        guideLinksWrapper.add(createChecklistItem("Conclusion / Re-cap", RecapView.class, 7));
+        guideLinksWrapper.add(createChecklistItem("Actions", ActionSpaceView.class, 2));
+        guideLinksWrapper.add(createChecklistItem("Event Trigger", TriggerActionsView.class, 3));
+        guideLinksWrapper.add(createChecklistItem("Observations", ObservationView.class, 4));
+        guideLinksWrapper.add(createChecklistItem("Reward Variables", RewardView.class, 5));
+        guideLinksWrapper.add(createChecklistItem("isDone", DoneConditionView.class, 6));
+        guideLinksWrapper.add(createChecklistItem("Run a Test", RunTestView.class, 7));
+        guideLinksWrapper.add(createChecklistItem("Export", RecapView.class, 8));
 
         add(guideLinksWrapper);
         add(createSkipToUploadModelButton());

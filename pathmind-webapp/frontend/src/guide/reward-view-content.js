@@ -6,29 +6,29 @@ class RewardViewContent extends PolymerElement {
     return html`
       <style include="pathmind-dialog-view guide-view"></style>
       <div class="content">
-        <h1>Define Reward Variables</h1>
+        <h1>Reward Variables</h1>
         <p>
-          Reward variables are the building blocks for the reward function.
-          Reward variables can embody important simulation metrics such as
-          revenue and cost. These metrics are likely what you directly seek to
-          optimize. In the AnyLogic palette, create a new function and name it
-          rewardVariables. Inspect its properties. Set the return value to a
-          two-dimensional array of doubles. Define your reward variables. Add
-          rewardVariables to the Pathmind Helper.
+          Reward Variables help determine how well an agent performed by giving
+          a reward, point, or score based on the agent’s actions. Pathmind
+          trains the agent to earn as many points as possible.
         </p>
+        <h4>Example from Finding the Cheese Tutorial</h4>
         <p>
-          <a href$="[[readMoreLink]]" target="_blank"
-            >Learn more about Reward Variables</a
-          >
+          The goal of this tutorial is simple: find the cheese. The mouse
+          receives one reward when it reaches that goal.
         </p>
-        <div class="screenshot-wrapper">
-          <img src="frontend/images/guide/RewardVariables1.png" />
-        </div>
+        <a
+          href="https://help.pathmind.com/en/articles/3640175-6-define-reward-variables"
+          rel="nofollow noopener noreferrer"
+          target="_blank"
+        >
+          Learn more about Reward Variables
+        </a>
         <vaadin-button id="nextBtn" theme="secondary">
-          Reward Variables Defined
+          Mark Step 4 as complete
         </vaadin-button>
         <vaadin-button id="backBtn" theme="tertiary">
-          Back to Define “Done” Condition
+          Back
         </vaadin-button>
       </div>
     `;
@@ -39,13 +39,7 @@ class RewardViewContent extends PolymerElement {
   }
 
   static get properties() {
-    return {
-      readMoreLink: {
-        value() {
-          return "https://help.pathmind.com/en/articles/3640175-6-define-reward-variables";
-        }
-      }
-    };
+    return {};
   }
 }
 

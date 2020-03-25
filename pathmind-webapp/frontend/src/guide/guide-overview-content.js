@@ -13,6 +13,14 @@ class GuideOverviewContent extends PolymerElement {
           main steps in that preparation process. At each step, we link to more
           detailed instructions.
         </p>
+        <p>
+          <em
+            >Note: Examples in this checklist are taken from the
+            <a href$="[[findingTheCheeseTutorial]]" target="_blank">
+              Finding the Cheese tutorial</a
+            >.
+          </em>
+        </p>
         <vaadin-button id="nextBtn" theme="secondary">
           I've read the overview
         </vaadin-button>
@@ -28,7 +36,13 @@ class GuideOverviewContent extends PolymerElement {
   }
 
   static get properties() {
-    return {};
+    return {
+      findingTheCheeseTutorial: {
+        value() {
+          return "https://help.pathmind.com/en/articles/3750911-2-finding-the-cheese";
+        }
+      }
+    };
   }
 }
 

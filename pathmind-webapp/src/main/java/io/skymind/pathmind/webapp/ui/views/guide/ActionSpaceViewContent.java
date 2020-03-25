@@ -20,7 +20,7 @@ import io.skymind.pathmind.webapp.ui.views.guide.template.DefaultPageContent;
 @JsModule("./src/guide/action-space-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class ActionSpaceViewContent extends DefaultPageContent<ActionSpaceViewContent.Model> {
+public class ActionSpaceViewContent extends DefaultPageContent<TemplateModel> {
 
     @Id("backBtn")
     private Button backBtn;
@@ -34,7 +34,7 @@ public class ActionSpaceViewContent extends DefaultPageContent<ActionSpaceViewCo
     @Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {        
 		backBtn.addClickListener(e -> {
-            UI.getCurrent().navigate(ObservationView.class, projectId);
+            UI.getCurrent().navigate(InstallPathmindHelperView.class, projectId);
         });
 
 		nextBtn.addClickListener(e -> {
@@ -44,8 +44,5 @@ public class ActionSpaceViewContent extends DefaultPageContent<ActionSpaceViewCo
             }
             UI.getCurrent().navigate(TriggerActionsView.class, projectId);
         });
-    }
-
-    public interface Model extends TemplateModel {
     }
 }

@@ -46,12 +46,13 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	private static final String EVENT_CANCEL_SUBSCRIPTION = "Cancel Subscription";
 	private static final String EVENT_COMPLETED_GUIDE_OVERVIEW = "Completed Guide Overview";
 	private static final String EVENT_COMPLETED_GUIDE_INSTALL = "Completed Guide Install Pathmind Helper";
-	private static final String EVENT_COMPLETED_GUIDE_OBSERVATION = "Completed Guide Build Observation Space";
-	private static final String EVENT_COMPLETED_GUIDE_ACTION_SPACE = "Completed Guide Build Action Space";
-	private static final String EVENT_COMPLETED_GUIDE_TRIGGER_ACTIONS = "Completed Guide Triggering Actions";
-	private static final String EVENT_COMPLETED_GUIDE_DONE = "Completed Guide Define Done Condition";
-	private static final String EVENT_COMPLETED_GUIDE_REWARD = "Completed Guide Define Reward Variables";
-	private static final String EVENT_COMPLETED_GUIDE_RECAP = "Completed Guide Conclusion / Recap";
+	private static final String EVENT_COMPLETED_GUIDE_ACTION_SPACE = "Completed Guide Actions";
+	private static final String EVENT_COMPLETED_GUIDE_TRIGGER_ACTIONS = "Completed Guide Event Trigger";
+	private static final String EVENT_COMPLETED_GUIDE_OBSERVATION = "Completed Guide Observations";
+	private static final String EVENT_COMPLETED_GUIDE_REWARD = "Completed Guide Reward Variables";
+	private static final String EVENT_COMPLETED_GUIDE_DONE = "Completed Guide isDone";
+	private static final String EVENT_COMPLETED_GUIDE_RUN_TEST = "Completed Guide Run a Test";
+	private static final String EVENT_COMPLETED_GUIDE_RECAP = "Completed Guide Export";
 	private static final String EVENT_SKIP_TO_UPLOAD_MODEL = "Skipped Guide to Upload Model";
 	private static final String EVENT_UPDATED_NOTES_MODELS_VIEW = "Updated Notes on Models View";
 	private static final String EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW = "Updated Notes on Experiments View";
@@ -145,6 +146,10 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 
 	public void completedGuideReward() {
 		track(EVENT_COMPLETED_GUIDE_REWARD);
+	}
+
+	public void completedGuideTest() {
+		track(EVENT_COMPLETED_GUIDE_RUN_TEST);
 	}
 
 	public void completedGuideRecap() {

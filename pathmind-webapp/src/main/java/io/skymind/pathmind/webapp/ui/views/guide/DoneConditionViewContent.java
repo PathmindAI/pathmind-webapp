@@ -20,7 +20,7 @@ import io.skymind.pathmind.webapp.ui.views.guide.template.DefaultPageContent;
 @JsModule("./src/guide/done-condition-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class DoneConditionViewContent extends DefaultPageContent<DoneConditionViewContent.Model> {
+public class DoneConditionViewContent extends DefaultPageContent<TemplateModel> {
     @Id("backBtn")
     private Button backBtn;
 
@@ -33,7 +33,7 @@ public class DoneConditionViewContent extends DefaultPageContent<DoneConditionVi
     @Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {
         backBtn.addClickListener(e -> {
-            UI.getCurrent().navigate(TriggerActionsView.class, projectId);
+            UI.getCurrent().navigate(RewardView.class, projectId);
         });
 
 		nextBtn.addClickListener(e -> {
@@ -41,10 +41,7 @@ public class DoneConditionViewContent extends DefaultPageContent<DoneConditionVi
                 guideDAO.updateGuideStep(projectId, guideStep.nextStep());
                 segmentIntegrator.completedGuideDone();
             }
-            UI.getCurrent().navigate(RewardView.class, projectId);
+            UI.getCurrent().navigate(RunTestView.class, projectId);
         });
-    }
-
-    public interface Model extends TemplateModel {
     }
 }

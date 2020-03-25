@@ -38,11 +38,12 @@ public class Routes {
 
     public static final String GUIDE_URL = "guide/overview";
     public static final String GUIDE_INSTALL_URL = "guide/install";
-    public static final String GUIDE_OBSERVATION_URL = "guide/observation";
     public static final String GUIDE_ACTION_SPACE_URL = "guide/action-space";
     public static final String GUIDE_TRIGGER_ACTIONS_URL = "guide/trigger-actions";
-    public static final String GUIDE_DONE_URL = "guide/done-condition";
+    public static final String GUIDE_OBSERVATION_URL = "guide/observation";
     public static final String GUIDE_REWARD_URL = "guide/reward";
+    public static final String GUIDE_DONE_URL = "guide/done-condition";
+    public static final String GUIDE_RUN_TEST_URL = "guide/run-test";
     public static final String GUIDE_RECAP_URL = "guide/recap";
 
     public static final String CONSOLE_URL = "console";

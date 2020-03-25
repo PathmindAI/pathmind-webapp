@@ -15,34 +15,33 @@ import io.skymind.pathmind.shared.constants.GuideStep;
 import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.guide.template.DefaultPageContent;
-import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 
-@Tag("recap-view-content")
-@JsModule("./src/guide/recap-view-content.js")
+@Tag("run-test-view-content")
+@JsModule("./src/guide/run-test-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class RecapViewContent extends DefaultPageContent<TemplateModel> {
+public class RunTestViewContent extends DefaultPageContent<TemplateModel> {
+    @Id("backBtn")
+    private Button backBtn;
 
-	@Id("backBtn")
-	private Button backBtn;
+    @Id("nextBtn")
+    private Button nextBtn;
 
-	@Id("nextBtn")
-	private Button nextBtn;
-	
-	public RecapViewContent() {
+    public RunTestViewContent() {
 	}
 
-	@Override
+    @Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {
-		backBtn.addClickListener(e -> {
-			UI.getCurrent().navigate(DoneConditionView.class, projectId);
-		});
+        backBtn.addClickListener(e -> {
+            UI.getCurrent().navigate(DoneConditionView.class, projectId);
+        });
+
 		nextBtn.addClickListener(e -> {
-			if (guideStep == GuideStep.Recap) {
-				guideDAO.updateGuideStep(projectId, guideStep.nextStep());
-				segmentIntegrator.completedGuideRecap();
-			}
-			UI.getCurrent().navigate(UploadModelView.class, projectId);
-		});
-	}
+            if (guideStep == GuideStep.RunTest) {
+                guideDAO.updateGuideStep(projectId, guideStep.nextStep());
+                segmentIntegrator.completedGuideTest();
+            }
+            UI.getCurrent().navigate(RecapView.class, projectId);
+        });
+    }
 }

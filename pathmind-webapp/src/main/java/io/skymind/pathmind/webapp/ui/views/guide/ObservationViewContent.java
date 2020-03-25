@@ -20,7 +20,7 @@ import io.skymind.pathmind.webapp.ui.views.guide.template.DefaultPageContent;
 @JsModule("./src/guide/observation-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class ObservationViewContent extends DefaultPageContent<ObservationViewContent.Model> {
+public class ObservationViewContent extends DefaultPageContent<TemplateModel> {
     @Id("backBtn")
     private Button backBtn;
 
@@ -33,7 +33,7 @@ public class ObservationViewContent extends DefaultPageContent<ObservationViewCo
     @Override
 	protected void initBtns(GuideDAO guideDAO, GuideStep guideStep, long projectId, SegmentIntegrator segmentIntegrator) {
         backBtn.addClickListener(e -> {
-            UI.getCurrent().navigate(InstallPathmindHelperView.class, projectId);
+            UI.getCurrent().navigate(TriggerActionsView.class, projectId);
         });
 
 		nextBtn.addClickListener(e -> {
@@ -41,10 +41,7 @@ public class ObservationViewContent extends DefaultPageContent<ObservationViewCo
                 guideDAO.updateGuideStep(projectId, guideStep.nextStep());
                 segmentIntegrator.completedGuideObservation();
             }
-            UI.getCurrent().navigate(ActionSpaceView.class, projectId);
+            UI.getCurrent().navigate(RewardView.class, projectId);
         });
-    }
-
-    public interface Model extends TemplateModel {
     }
 }
