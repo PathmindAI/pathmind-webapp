@@ -32,6 +32,7 @@ import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.shared.constants.GuideStep;
 import io.skymind.pathmind.shared.data.DashboardItem;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.shared.security.Routes;
@@ -39,7 +40,6 @@ import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
-
 
 @Route(value= Routes.DASHBOARD_URL, layout = MainLayout.class)
 public class DashboardView extends PathMindDefaultView implements RunUpdateSubscriber
@@ -116,7 +116,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("DASHBOARD");
+		return new ScreenTitlePanel("Dashboard");
 	}
 
 	@Override

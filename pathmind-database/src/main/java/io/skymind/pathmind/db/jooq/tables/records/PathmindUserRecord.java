@@ -31,7 +31,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PathmindUserRecord extends UpdatableRecordImpl<PathmindUserRecord> implements Record16<Long, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime, String> {
 
-    private static final long serialVersionUID = 1752708228;
+    private static final long serialVersionUID = 347321700;
 
     /**
      * Setter for <code>public.pathmind_user.id</code>.

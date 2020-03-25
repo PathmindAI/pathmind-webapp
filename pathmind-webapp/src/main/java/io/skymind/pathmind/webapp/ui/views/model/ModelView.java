@@ -50,7 +50,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	private long modelId;
 	private Model model;
-	private String projectName;
 	private List<Experiment> experiments;
 
 	private ArchivesTabPanel<Experiment> archivesTabPanel;
@@ -58,27 +57,32 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	public ModelView() {
 		super();
-		addClassName("model-view");
 	}
 
 	protected Component getMainContent() {
 		setupExperimentListPanel();
 		setupArchivesTabPanel();
-		projectName = getProjectName();
+
+		addClassName("model-view");
 
 		VerticalLayout leftPanel = WrapperUtils.wrapSizeFullVertical(
 			archivesTabPanel,
 			new ViewSection(experimentGrid)
 		);
 		leftPanel.setPadding(false);
+		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
+			WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+				leftPanel,
+				createViewNotesField(),
+			70),
+			WrapperUtils.wrapWidthFullCenterHorizontal(new NewExperimentButton(experimentDAO, modelId))
+		);
+		gridWrapper.addClassName("page-content");
+		gridWrapper.setPadding(false);
 
 		return WrapperUtils.wrapSizeFullVertical(
 				WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
-				WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-						leftPanel,
-						createViewNotesField(),
-						70),
-				WrapperUtils.wrapWidthFullCenterHorizontal(new NewExperimentButton(experimentDAO, modelId)));
+				gridWrapper);
 	}
 
 	/**
@@ -135,12 +139,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	public List<Experiment> getExperiments() {
 		return experiments;
-	}
-
-	// It's either get the project name from the first experiment (which has to exist for the page to load) or
-	// we need to do a separate database call.
-	private String getProjectName() {
-		return ExperimentUtils.getProjectName(experiments.get(0));
 	}
 
 	@Override

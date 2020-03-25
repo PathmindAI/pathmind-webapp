@@ -59,7 +59,7 @@ public class ProjectsView extends PathMindDefaultView
 				archivesTabPanel,
 				new ViewSection(projectGrid)
 		);
-		gridWrapper.addClassName("content");
+		gridWrapper.addClassName("page-content");
 		gridWrapper.setPadding(false);
 		
 		return WrapperUtils.wrapSizeFullVertical(

@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ExecutionProviderMetaData extends TableImpl<ExecutionProviderMetaDataRecord> {
 
-    private static final long serialVersionUID = -54610691;
+    private static final long serialVersionUID = -1427221358;
 
     /**
      * The reference instance of <code>public.execution_provider_meta_data</code>

@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
@@ -86,18 +87,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private NotesField notesField;
 
 	private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
-    private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
+	private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
 
 	@Autowired
 	private ExperimentDAO experimentDAO;
 	@Autowired
 	private PolicyDAO policyDAO;
 	@Autowired
-	private RunDAO runDAO;
-	@Autowired
 	private TrainingErrorDAO trainingErrorDAO;
-	@Autowired
-	private PolicyFileService policyFileService;
 	@Autowired
 	private TrainingService trainingService;
 	@Autowired
@@ -134,19 +131,20 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected Component getMainContent() {
-	  SplitLayout mainSplitLayout = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-		getLeftPanel(),
-		getRightPanel(),
-		DEFAULT_SPLIT_PANE_RATIO);
-	  // TODO -> Charts do not re-flow automatically: https://vaadin.com/forum/thread/17878341/resizable-charts (https://github.com/vaadin/vaadin-charts/issues/457)
-	  mainSplitLayout.addSplitterDragendListener(evt -> getUI().ifPresent(ui -> ui.getPage().executeJs("Array.from(window.document.getElementsByTagName('vaadin-chart')).forEach( el => el.__reflow());")));
+		SplitLayout mainSplitLayout = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+				getLeftPanel(),
+				getRightPanel(),
+				DEFAULT_SPLIT_PANE_RATIO);
+		// TODO -> Charts do not re-flow automatically: https://vaadin.com/forum/thread/17878341/resizable-charts (https://github.com/vaadin/vaadin-charts/issues/457)
+		mainSplitLayout.addSplitterDragendListener(evt -> getUI().ifPresent(ui -> ui.getPage().executeJs("Array.from(window.document.getElementsByTagName('vaadin-chart')).forEach( el => el.__reflow());")));
+		mainSplitLayout.addClassName("page-content");
 
-	  pageBreadcrumbs = createBreadcrumbs();
+		pageBreadcrumbs = createBreadcrumbs();
 
-	  VerticalLayout mainLayout = WrapperUtils.wrapSizeFullVertical(
+		VerticalLayout mainLayout = WrapperUtils.wrapSizeFullVertical(
 			WrapperUtils.wrapWidthFullCenterHorizontal(pageBreadcrumbs),
-		  	mainSplitLayout
-	  );
+				mainSplitLayout
+			);
 
 	  return mainLayout;
 	}
@@ -291,7 +289,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void processSelectedPolicy(Policy selectedPolicy) {
 		policyHighlightPanel.update(selectedPolicy);
 		if (selectedPolicy != null) {
-	  		policyChartPanel.highlightPolicy(selectedPolicy);
+			  policyChartPanel.highlightPolicy(selectedPolicy);
 			updateButtonEnablement();
 			updateRightPanelForExperiment();
 		}
@@ -348,12 +346,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private void updatedRunForPolicies(Run run) {
 		experiment.getPolicies().stream()
-        	.filter(policy -> policy.getRunId() == run.getId())
-        	.forEach(policy -> policy.setRun(run));
+			.filter(policy -> policy.getRunId() == run.getId())
+			.forEach(policy -> policy.setRun(run));
 	}
 
 	class ExperimentViewPolicyUpdateSubscriber implements PolicyUpdateSubscriber
-    {
+	{
 		@Override
 		public void handleBusEvent(PolicyUpdateBusEvent event) {
 			synchronized (experimentLock) {

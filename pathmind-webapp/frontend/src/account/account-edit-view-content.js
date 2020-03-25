@@ -10,12 +10,6 @@ class AccountEditViewContent extends PolymerElement {
     return html`
       <style include="shared-styles pathmind-dialog-view"></style>
       <div class="content">
-        <vaadin-tabs class="tabs">
-          <vaadin-tab>
-            Edit Account Information
-          </vaadin-tab>
-        </vaadin-tabs>
-
         <vaadin-vertical-layout style="width: 100%;" class="inner-content">
           <vaadin-vertical-layout style="width: 100%; height: 100%;">
             <vaadin-text-field id="email" label="Email"></vaadin-text-field>
@@ -28,11 +22,7 @@ class AccountEditViewContent extends PolymerElement {
               label="Last Name"
             ></vaadin-text-field>
             <vaadin-vertical-layout id="buttonsCont">
-              <vaadin-button
-                id="updateBtn"
-                theme="primary"
-                class="positive-action-btn"
-              >
+              <vaadin-button id="updateBtn" theme="primary">
                 Update
               </vaadin-button>
               <vaadin-button id="cancelBtn" theme="tertiary"

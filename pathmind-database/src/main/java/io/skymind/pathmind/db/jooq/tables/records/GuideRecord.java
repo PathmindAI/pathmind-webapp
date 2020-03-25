@@ -27,7 +27,7 @@ import org.jooq.impl.TableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class GuideRecord extends TableRecordImpl<GuideRecord> implements Record2<Long, Integer> {
 
-    private static final long serialVersionUID = -818674795;
+    private static final long serialVersionUID = -2118740875;
 
     /**
      * Setter for <code>public.guide.project_id</code>.
