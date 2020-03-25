@@ -267,6 +267,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_7_6:
             case VERSION_0_7_6_PBT:
             case VERSION_0_7_6_RESUME:
+            case VERSION_1_0_1:
                 instructions.addAll(Arrays.asList(
                         // Setup NativeRL
                         "mkdir work",
@@ -352,6 +353,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_0_24:
             case VERSION_0_0_25:
             case VERSION_0_0_25_Multi:
+            case VERSION_1_0_1:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));

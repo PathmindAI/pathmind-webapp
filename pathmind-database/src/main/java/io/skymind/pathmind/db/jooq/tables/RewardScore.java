@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RewardScore extends TableImpl<RewardScoreRecord> {
 
-    private static final long serialVersionUID = 306416440;
+    private static final long serialVersionUID = 1691411485;
 
     /**
      * The reference instance of <code>public.reward_score</code>
@@ -64,17 +64,17 @@ public class RewardScore extends TableImpl<RewardScoreRecord> {
     /**
      * The column <code>public.reward_score.min</code>.
      */
-    public final TableField<RewardScoreRecord, BigDecimal> MIN = createField(DSL.name("min"), org.jooq.impl.SQLDataType.NUMERIC(27, 17), this, "");
+    public final TableField<RewardScoreRecord, BigDecimal> MIN = createField(DSL.name("min"), org.jooq.impl.SQLDataType.NUMERIC(32, 17), this, "");
 
     /**
      * The column <code>public.reward_score.mean</code>.
      */
-    public final TableField<RewardScoreRecord, BigDecimal> MEAN = createField(DSL.name("mean"), org.jooq.impl.SQLDataType.NUMERIC(27, 17), this, "");
+    public final TableField<RewardScoreRecord, BigDecimal> MEAN = createField(DSL.name("mean"), org.jooq.impl.SQLDataType.NUMERIC(32, 17), this, "");
 
     /**
      * The column <code>public.reward_score.max</code>.
      */
-    public final TableField<RewardScoreRecord, BigDecimal> MAX = createField(DSL.name("max"), org.jooq.impl.SQLDataType.NUMERIC(27, 17), this, "");
+    public final TableField<RewardScoreRecord, BigDecimal> MAX = createField(DSL.name("max"), org.jooq.impl.SQLDataType.NUMERIC(32, 17), this, "");
 
     /**
      * The column <code>public.reward_score.iteration</code>.
