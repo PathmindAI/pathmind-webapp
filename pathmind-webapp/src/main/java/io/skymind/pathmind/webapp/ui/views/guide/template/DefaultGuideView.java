@@ -66,13 +66,13 @@ public abstract class DefaultGuideView extends PathMindDefaultView
 
 		HorizontalLayout contentWrapper = WrapperUtils
 				.wrapWidthFullBetweenHorizontal(new GuideMenu(guideStep, projectId, segmentIntegrator), 
-				pageContent);
+				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+					WrapperUtils.wrapWidthFullCenterHorizontal(new Breadcrumbs(project)),
+					pageContent)
+				);
 		contentWrapper.addClassName("guide-view-wrapper");
 
-		return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-			WrapperUtils.wrapWidthFullCenterHorizontal(new Breadcrumbs(project)),
-			contentWrapper
-		);
+		return contentWrapper;
 	}
 
 	@Override

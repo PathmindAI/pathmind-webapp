@@ -3,7 +3,7 @@
   flex: 0 0 auto;
   position: sticky;
   width: auto !important;
-  top: 32px;
+  top: 3.2rem;
   padding: var(--lumo-space-xl);
   padding-left: var(--lumo-space-xxl);
 }
@@ -80,6 +80,7 @@
     background: white;
     padding: var(--lumo-space-s);
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.05);
+    z-index: 1;
   }
   .guide-links-wrapper {
     display: block;

@@ -232,6 +232,10 @@ hr {
 @media (max-width: 720px) {
   .guide-view-wrapper {
     flex-direction: column;
+    justify-content: flex-start !important;
+  }
+  .guide-view-wrapper .guide-menu + vaadin-vertical-layout {
+    padding-top: var(--lumo-space-s);
   }
 }
 
