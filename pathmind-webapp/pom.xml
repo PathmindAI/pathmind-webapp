@@ -8,9 +8,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>io.skymind</groupId>
     <artifactId>pathmind-webapp</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>Pathmind Web App</name>
 
     <repositories>
@@ -41,12 +39,12 @@
         <dependency>
             <groupId>io.skymind</groupId>
             <artifactId>pathmind-services</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.skymind</groupId>
             <artifactId>pathmind-updater</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
@@ -116,16 +114,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <version>3.8.0</version>
-                <configuration>
-                    <changeLogFile>src/main/resources/db/changelog/changelog-master.xml</changeLogFile>
-                    <driver>org.postgresql.Driver</driver>
-                    <url>${DB_URL}</url>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

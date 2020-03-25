@@ -87,11 +87,6 @@ class UpgradeDoneViewContent extends PolymerElement {
         
       </style>
       <div class="content">
-        <vaadin-tabs>
-          <vaadin-tab>
-            Upgrade
-          </vaadin-tab>
-        </vaadin-tabs>
         <vaadin-vertical-layout
           style="width: 100%; height: 600px;"
           class="inner-content"
@@ -107,7 +102,6 @@ class UpgradeDoneViewContent extends PolymerElement {
             <vaadin-button
               id="done"
               theme="primary"
-              class="positive-action-btn"
               >Done</vaadin-button
             >
           </vaadin-vertical-layout>

@@ -12,10 +12,6 @@
   cursor: default;
 }
 
-.breadcrumb ~ .breadcrumb-separator {
-  margin: 0 var(--lumo-space-s);
-}
-
 /* Keep old styles for dashboard */
 .dashboard-view .breadcrumb {
   color: var(--lumo-secondary-text-color);

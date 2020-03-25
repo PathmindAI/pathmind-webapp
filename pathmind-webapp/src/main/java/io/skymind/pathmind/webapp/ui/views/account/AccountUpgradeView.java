@@ -14,7 +14,6 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.services.billing.StripeService;
 
-
 @Route(value=ACCOUNT_UPGRADE_URL, layout = MainLayout.class)
 public class AccountUpgradeView extends PathMindDefaultView
 {
@@ -46,7 +45,7 @@ public class AccountUpgradeView extends PathMindDefaultView
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("UPGRADE", "Subscription Plans");
+		return new ScreenTitlePanel("Account", "Upgrade Subscription Plans", AccountView.class);
 	}
 
 	@Override
