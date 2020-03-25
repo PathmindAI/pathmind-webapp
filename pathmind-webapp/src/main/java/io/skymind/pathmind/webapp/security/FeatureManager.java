@@ -7,7 +7,7 @@ public class FeatureManager {
     public boolean isEnabled(Feature feature) {
         switch (feature) {
         case REWARD_VARIABLES_FEATURE:
-        	return false;
+        	return true;
         case TEST_FEATURE:
             return false;
         default:
