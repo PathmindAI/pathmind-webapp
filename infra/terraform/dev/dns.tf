@@ -64,20 +64,6 @@ resource "aws_route53_record" "jenkins_alias" {
   }
 }
 
-resource "aws_route53_record" "model_analyzer_alias" {
-  zone_id    = "${data.aws_route53_zone.zone.id}"
-  name       = "ma.${var.subdomain}${var.domain_name}"
-  type       = "A"
-
-  alias {
-    name                   = "a621ea157326545e89154154abbb8cf4-158616531.us-east-1.elb.amazonaws.com",
-    zone_id                = "Z35SXDOTRQ7X7K"
-    evaluate_target_health = true
-  }
-}
-
-
-
 resource "aws_route53_record" "app_alias_test" {
   zone_id    = "${data.aws_route53_zone.zone.id}"
   name       = "test.${var.domain_name}"
@@ -90,9 +76,9 @@ resource "aws_route53_record" "app_alias_test" {
   }
 }
 
-resource "aws_route53_record" "model_analyzer_alias_test" {
+resource "aws_route53_record" "admin_alias" {
   zone_id    = "${data.aws_route53_zone.zone.id}"
-  name       = "ma.test.${var.domain_name}"
+  name       = "admin.dev.${var.domain_name}"
   type       = "A"
 
   alias {
@@ -102,3 +88,14 @@ resource "aws_route53_record" "model_analyzer_alias_test" {
   }
 }
 
+resource "aws_route53_record" "admin_server_alias" {
+  zone_id    = "${data.aws_route53_zone.zone.id}"
+  name       = "admin-server.dev.${var.domain_name}"
+  type       = "A"
+
+  alias {
+    name                   = "a621ea157326545e89154154abbb8cf4-158616531.us-east-1.elb.amazonaws.com",
+    zone_id                = "Z35SXDOTRQ7X7K"
+    evaluate_target_health = true
+  }
+}

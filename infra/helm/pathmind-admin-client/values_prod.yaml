@@ -11,10 +11,10 @@ image:
 
 service:
   type: NodePort
-  port: 3000
+  port: 80
 
 env:
-  REACT_APP_API_ENDPOINT: "http://pathmind-admin-server:9091/"
+  REACT_APP_API_ENDPOINT: "https://admin-server.devpathmind.com/"
 
 name: pathmind-admin-client
 
