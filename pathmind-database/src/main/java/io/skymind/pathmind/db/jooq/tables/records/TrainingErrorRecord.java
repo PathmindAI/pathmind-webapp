@@ -28,7 +28,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrainingErrorRecord extends UpdatableRecordImpl<TrainingErrorRecord> implements Record4<Long, String, String, Boolean> {
 
-    private static final long serialVersionUID = -8109274;
+    private static final long serialVersionUID = -165690362;
 
     /**
      * Setter for <code>public.training_error.id</code>.

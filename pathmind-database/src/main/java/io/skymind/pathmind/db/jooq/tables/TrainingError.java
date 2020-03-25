@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrainingError extends TableImpl<TrainingErrorRecord> {
 
-    private static final long serialVersionUID = -801041010;
+    private static final long serialVersionUID = -880234717;
 
     /**
      * The reference instance of <code>public.training_error</code>

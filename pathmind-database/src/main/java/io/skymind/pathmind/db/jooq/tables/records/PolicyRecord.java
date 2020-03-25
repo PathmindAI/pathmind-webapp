@@ -30,7 +30,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements Record8<Long, Long, String, String, LocalDateTime, LocalDateTime, LocalDateTime, Boolean> {
 
-    private static final long serialVersionUID = -998155541;
+    private static final long serialVersionUID = 2134240779;
 
     /**
      * Setter for <code>public.policy.id</code>.
