@@ -1,20 +1,13 @@
 package io.skymind.pathmind.webapp.ui.layouts.components;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
 
-import io.skymind.pathmind.webapp.security.Feature;
 import io.skymind.pathmind.webapp.security.FeatureManager;
 import io.skymind.pathmind.webapp.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
-import io.skymind.pathmind.webapp.ui.views.testfeature.TestFeatureView;
 
 public class SectionsHeaderPanel extends HorizontalLayout
 {
@@ -23,34 +16,21 @@ public class SectionsHeaderPanel extends HorizontalLayout
 		HorizontalLayout sectionsHorizontalLayout = new HorizontalLayout();
 		sectionsHorizontalLayout.add(linkedLogo());
 		if (hasLoginUser) {
-			// TODO: 25.03.2020 to resolve
-//<<<<<<< HEAD
-			List<Component> components = new ArrayList<>(Arrays.asList(
-					new RouterLink("Dashboard", DashboardView.class),
-					new RouterLink("Projects", ProjectsView.class)
-			));
-			if (featureManager.isEnabled(Feature.TEST_FEATURE)) {
-				components.add(new RouterLink("Test feature", TestFeatureView.class));
-			}
-			components.add(getLearnAnchor());
-			sectionsHorizontalLayout.add(components.toArray(new Component[0]));
-//=======
-//			RouterLink dashboardLink = new RouterLink("Dashboard", DashboardView.class);
-//			RouterLink projectsLink = new RouterLink("Projects", ProjectsView.class);
-//			projectsLink.setHighlightCondition((link, event) -> {
-//				return event.getLocation().getPath().startsWith("projects") ||
-//						event.getLocation().getPath().startsWith("project") ||
-//						event.getLocation().getPath().startsWith("model") ||
-//						event.getLocation().getPath().startsWith("guide") ||
-//						event.getLocation().getPath().startsWith("experiment");
-//				}
-//			);
-//
-//			sectionsHorizontalLayout.add(
-//					dashboardLink,
-//					projectsLink,
-//					getLearnAnchor());
-//>>>>>>> dev
+			RouterLink dashboardLink = new RouterLink("Dashboard", DashboardView.class);
+			RouterLink projectsLink = new RouterLink("Projects", ProjectsView.class);
+			projectsLink.setHighlightCondition((link, event) -> {
+				return event.getLocation().getPath().startsWith("projects") ||
+						event.getLocation().getPath().startsWith("project") ||
+						event.getLocation().getPath().startsWith("model") ||
+						event.getLocation().getPath().startsWith("guide") ||
+						event.getLocation().getPath().startsWith("experiment");
+				}
+			);
+
+			sectionsHorizontalLayout.add(
+					dashboardLink,
+					projectsLink,
+					getLearnAnchor());
 		}
 		add(sectionsHorizontalLayout);
 
