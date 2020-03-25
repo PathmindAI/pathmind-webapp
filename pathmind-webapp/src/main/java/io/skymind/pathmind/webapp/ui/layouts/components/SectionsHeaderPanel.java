@@ -23,6 +23,8 @@ public class SectionsHeaderPanel extends HorizontalLayout
 		HorizontalLayout sectionsHorizontalLayout = new HorizontalLayout();
 		sectionsHorizontalLayout.add(linkedLogo());
 		if (hasLoginUser) {
+			// TODO: 25.03.2020 to resolve
+//<<<<<<< HEAD
 			List<Component> components = new ArrayList<>(Arrays.asList(
 					new RouterLink("Dashboard", DashboardView.class),
 					new RouterLink("Projects", ProjectsView.class)
@@ -32,6 +34,23 @@ public class SectionsHeaderPanel extends HorizontalLayout
 			}
 			components.add(getLearnAnchor());
 			sectionsHorizontalLayout.add(components.toArray(new Component[0]));
+//=======
+//			RouterLink dashboardLink = new RouterLink("Dashboard", DashboardView.class);
+//			RouterLink projectsLink = new RouterLink("Projects", ProjectsView.class);
+//			projectsLink.setHighlightCondition((link, event) -> {
+//				return event.getLocation().getPath().startsWith("projects") ||
+//						event.getLocation().getPath().startsWith("project") ||
+//						event.getLocation().getPath().startsWith("model") ||
+//						event.getLocation().getPath().startsWith("guide") ||
+//						event.getLocation().getPath().startsWith("experiment");
+//				}
+//			);
+//
+//			sectionsHorizontalLayout.add(
+//					dashboardLink,
+//					projectsLink,
+//					getLearnAnchor());
+//>>>>>>> dev
 		}
 		add(sectionsHorizontalLayout);
 

@@ -17,12 +17,6 @@ class AccountViewContent extends PolymerElement {
         }
       </style>
       <div class="content">
-        <vaadin-tabs>
-          <vaadin-tab>
-            Account Information
-          </vaadin-tab>
-        </vaadin-tabs>
-
         <vaadin-vertical-layout style="width: 100%;" class="inner-content">
           <vaadin-horizontal-layout style="width: 100%;" class="block">
             <vaadin-vertical-layout class="info">

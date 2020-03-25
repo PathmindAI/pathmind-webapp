@@ -97,11 +97,6 @@ class PaymentViewContent extends PolymerElement {
     </style>
 
     <div class="content">
-      <vaadin-tabs>
-        <vaadin-tab>
-          Payment
-        </vaadin-tab>
-      </vaadin-tabs>
       <vaadin-vertical-layout
         style="width: 100%;"
         class="inner-content"
@@ -167,7 +162,6 @@ class PaymentViewContent extends PolymerElement {
           <vaadin-button
             id="signUp"
             theme="primary"
-            class="positive-action-btn"
             disabled="[[!and(isStripeComplete, isFormComplete)]]"
              on-click="submit"
             >Sign Up</vaadin-button

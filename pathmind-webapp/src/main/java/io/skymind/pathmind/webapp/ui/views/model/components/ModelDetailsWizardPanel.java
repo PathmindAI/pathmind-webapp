@@ -17,7 +17,6 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.data.binder.Binder;
 
 import io.skymind.pathmind.shared.data.Model;
@@ -25,7 +24,6 @@ import io.skymind.pathmind.webapp.ui.binders.ModelBinders;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTextArea;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
-import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 
@@ -35,8 +33,6 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private Div sectionTitleWrapper;
 	private Span projectNameLabel;
-	private NumberField numberOfObservationsNumberField;
-	private NumberField numberOfPossibleActionsNumberField;
 	public PathmindTextArea notesFieldTextArea;
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
@@ -65,8 +61,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 				WrapperUtils.wrapWidthFullHorizontal(
 						checkmarkIcon,
 						WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-							LabelFactory.createLabel("Your model was successfully uploaded!", BOLD_LABEL),
-							LabelFactory.createLabel("Let's add a few details."))
+							LabelFactory.createLabel("Your model was successfully uploaded!", BOLD_LABEL))
 				),
 				formPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
@@ -79,23 +74,11 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private void setupFields()
 	{
-	 	numberOfObservationsNumberField = VaadinUtils.generateNumberField(
-	 			Model.MIN_NUMBER_OF_OBSERVATIONS,
-				Model.MAX_NUMBER_OF_OBSERVATIONS,
-				Model.DEFAULT_NUMBER_OF_OBSERVATIONS);
-
-		numberOfPossibleActionsNumberField = VaadinUtils.generateNumberField(
-				Model.MIN_NUMBER_OF_POSSIBLE_ACTIONS,
-				Model.MAX_NUMBER_OF_POSSIBLE_ACTIONS,
-				Model.DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS);
-
 		notesFieldTextArea = new PathmindTextArea();
 		notesFieldTextArea.setPlaceholder("Add your notes here");
 	}
 
 	private void bindFields(Binder<Model> binder) {
-		ModelBinders.bindNumberOfObservations(binder, numberOfObservationsNumberField);
-		ModelBinders.bindNumberOfPossibleActions(binder, numberOfPossibleActionsNumberField);
 		ModelBinders.bindNotesFieldTextArea(binder, notesFieldTextArea);
 	}
 
@@ -113,35 +96,15 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 	}
 
 	private void setupForm() {
-		formPanel.add(getNumberOfObservationsPanel(),
-				getNumberOfPossibleActionsPanel(),
-				getNotesFieldPanel());
+		formPanel.add(getNotesFieldPanel());
 		formPanel.setPadding(false);
 	}
 
 	private Component getNotesFieldPanel() {
 		VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
-				LabelFactory.createLabel("Model Notes", CssMindPathStyles.BOLD_LABEL),
+				LabelFactory.createLabel("Notes", CssMindPathStyles.BOLD_LABEL),
 				LabelFactory.createLabel("Add any notes for yourself about the model you're uploading."),
 				notesFieldTextArea);
-		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
-		return wrapper;
-	}
-
-	private VerticalLayout getNumberOfObservationsPanel() {
-		VerticalLayout wrapper = new VerticalLayout(
-				LabelFactory.createLabel("Number of Observations", CssMindPathStyles.BOLD_LABEL),
-				LabelFactory.createLabel("Enter the number of observations in your observations array."),
-				numberOfObservationsNumberField);
-		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
-		return wrapper;
-	}
-
-	private VerticalLayout getNumberOfPossibleActionsPanel() {
-		VerticalLayout wrapper = new VerticalLayout(
-				LabelFactory.createLabel("Number of Actions", CssMindPathStyles.BOLD_LABEL),
-				LabelFactory.createLabel("This is the total number of possible actions."),
-				numberOfPossibleActionsNumberField);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
 	}

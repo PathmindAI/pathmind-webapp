@@ -114,30 +114,11 @@ hr {
   width: 100%;
 }
 
-.section-label-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: white;
-}
-
-.section-label-subtitle {
-  font-size: 1.2rem;
-  color: white;
-}
-
 .project-title-label {
   font-size: 18px;
   font-weight: bold;
   color: #999;
 }
-
-.action-menu {
-  position: sticky;
-  top: 0;
-  background-color: var(--pm-primary-color);
-  z-index: 1;
-}
-
 .light-text-label {
   font-size: var(--lumo-font-size-m);
   color: var(--pm-orange-color);
@@ -200,6 +181,16 @@ hr {
   height: 100%;
 }
 
+.default-view.guide {
+  background: white;
+}
+
+@media (min-width: 720px) {
+  .default-view.guide {
+    padding-top: var(--lumo-space-m);
+  }
+}
+
 .view-section {
   width: 100%;
   background: white;
@@ -217,17 +208,18 @@ hr {
   align-self: center;
 }
 
-.projects-view .content {
-  flex: 1;
+.projects-view .page-content {
   max-width: 1480px;
   align-self: center;
   padding: 0;
-  margin-top: var(--lumo-space-m);
 }
 
 .projects-view .view-section,
 .project-view .view-section,
-.model-view .view-section {
+.model-view .view-section,
+.projects-view .page-content,
+.project-view .page-content,
+.model-view .page-content {
   flex: 1;
   margin-top: 0;
 }
@@ -245,6 +237,12 @@ hr {
 .reward-function-wrapper vaadin-custom-field {
   margin-top: var(--lumo-space-l);
   overflow-y: auto;
+}
+
+.experiment-view .page-content {
+  /* To make the white panels on Experiment page to be 
+     at the same position as the Projects, Project, and Model pages */
+  margin-top: var(--lumo-space-xl);
 }
 
 .guide-view-wrapper {
@@ -268,6 +266,20 @@ account-view {
   flex-direction: column;
   box-sizing: border-box;
   align-items: center;
+}
+
+/* Title bar */
+.page-title {
+  color: var(--lumo-body-text-color);
+  margin-top: var(--lumo-space-m);
+}
+
+.page-title a {
+  color: var(--lumo-body-text-color);
+}
+
+.page-title :last-child {
+  font-weight: bold;
 }
 
 .action-button iron-icon {
@@ -361,14 +373,46 @@ h4 {
   align-items: center;
 }
 .navigate-icon {
-  display: none;
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
+  opacity: 0;
 }
 .dashboard-placeholder {
   margin-top: 90px;
 }
 
 .dashboard-line:hover > .navigate-icon {
-  display: inline-flex;
+  opacity: 1;
+}
+.dashboard-item-main {
+  flex: 0 0 66%;
+}
+.dashboard-item-notes {
+  justify-content: space-between;
+  align-self: stretch;
+  padding: 0 0 0 var(--lumo-space-m);
+  border-left: 1px solid var(--pm-gray-color-light);
+}
+.dashboard-item-notes span {
+  line-height: 1;
+}
+.dashboard-item-notes p {
+  position: relative;
+  height: 5rem;
+  line-height: 1.29rem;
+  white-space: normal;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+.dashboard-item-notes p::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 1rem;
+  left: 0;
+  bottom: 0;
+  background: linear-gradient(transparent, white);
 }
 
 .stages-container {

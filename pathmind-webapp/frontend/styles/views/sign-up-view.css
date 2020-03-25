@@ -117,7 +117,7 @@ h3 + vaadin-password-field {
 }
 
 .support {
-  margin-top: var(--lumo-size-xl);
+  margin: var(--lumo-size-xl) auto;
   text-decoration: underline;
 }
 

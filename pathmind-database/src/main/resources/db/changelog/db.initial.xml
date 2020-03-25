@@ -1080,6 +1080,12 @@
         <dropColumn tableName="POLICY" columnName="NOTES" />
     </changeSet>
 
+    <changeSet id="20200324-01" author="daehyun@skymind.io">
+        <modifyDataType tableName="REWARD_SCORE" columnName="MIN" newDataType="DECIMAL(32,17)"></modifyDataType>
+        <modifyDataType tableName="REWARD_SCORE" columnName="MEAN" newDataType="DECIMAL(32,17)"></modifyDataType>
+        <modifyDataType tableName="REWARD_SCORE" columnName="MAX" newDataType="DECIMAL(32,17)"></modifyDataType>
+    </changeSet>
+
     <changeSet id="20200312-01" author="krystian.walaszczyk@ext.vaadin.com">
         <addColumn tableName="MODEL">
             <column name="REWARD_VARIABLES_COUNT" type="INT" defaultValue="0">

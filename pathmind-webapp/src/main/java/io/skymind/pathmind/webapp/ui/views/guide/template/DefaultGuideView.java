@@ -10,10 +10,12 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.shared.constants.GuideStep;
+import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.db.dao.GuideDAO;
+import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -29,6 +31,8 @@ public abstract class DefaultGuideView extends PathMindDefaultView
 	protected abstract DefaultPageContent initPageContent();
 
 	@Autowired
+	private ProjectDAO projectDAO;
+	@Autowired
 	private GuideDAO guideDAO;
 
 	@Autowired
@@ -38,8 +42,11 @@ public abstract class DefaultGuideView extends PathMindDefaultView
 
 	protected GuideStep guideStep;
 
+	private Project project;
+
 	public DefaultGuideView() {
 		super();
+		addClassName("guide");
 	}
 
 	@Override
@@ -49,7 +56,7 @@ public abstract class DefaultGuideView extends PathMindDefaultView
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("PATHMIND GUIDE", "");
+		return null;
 	}
 
 	@Override
@@ -57,14 +64,21 @@ public abstract class DefaultGuideView extends PathMindDefaultView
 		DefaultPageContent pageContent = initPageContent();
 		pageContent.initBtns(guideDAO, guideStep, projectId, segmentIntegrator);
 
-		HorizontalLayout gridWrapper = WrapperUtils
-				.wrapWidthFullBetweenHorizontal(new GuideMenu(guideStep, projectId, segmentIntegrator), pageContent);
-		gridWrapper.addClassName("guide-view-wrapper");
-		return gridWrapper;
+		HorizontalLayout contentWrapper = WrapperUtils
+				.wrapWidthFullBetweenHorizontal(new GuideMenu(guideStep, projectId, segmentIntegrator), 
+				pageContent);
+		contentWrapper.addClassName("guide-view-wrapper");
+
+		return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+			WrapperUtils.wrapWidthFullCenterHorizontal(new Breadcrumbs(project)),
+			contentWrapper
+		);
 	}
 
 	@Override
-	protected void initLoadData() throws InvalidDataException {
+	protected void initLoadData() {
+		project = projectDAO.getProject(projectId)
+				.orElseThrow(() -> new InvalidDataException("Attempted to access Pathmind Guide for Project: " + projectId));
 		guideStep = guideDAO.getGuideStep(projectId);
 	}
 
