@@ -40,7 +40,7 @@ class ActionSpaceViewContent extends PolymerElement {
           </a>
         </p>
         <vaadin-button id="nextBtn" theme="secondary">
-          Mark Step 1 as complete
+          Mark Step 3 as complete
         </vaadin-button>
         <vaadin-button id="backBtn" theme="tertiary">
           Back

@@ -25,7 +25,7 @@ class RewardViewContent extends PolymerElement {
           Learn more about Reward Variables
         </a>
         <vaadin-button id="nextBtn" theme="secondary">
-          Mark Step 4 as complete
+          Mark Step 6 as complete
         </vaadin-button>
         <vaadin-button id="backBtn" theme="tertiary">
           Back

@@ -50,7 +50,7 @@ class TriggerActionsViewContent extends PolymerElement {
           >
         </p>
         <vaadin-button id="nextBtn" theme="secondary">
-          Mark Step 2 as complete
+          Mark Step 4 as complete
         </vaadin-button>
         <vaadin-button id="backBtn" theme="tertiary">
           Back

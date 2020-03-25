@@ -23,7 +23,7 @@ class DoneConditionViewContent extends PolymerElement {
         </div>
         <a href$="[[readMoreLink]]" target="_blank">Learn more about isDone</a>
         <vaadin-button id="nextBtn" theme="secondary">
-          Mark Step 5 as complete
+          Mark Step 7 as complete
         </vaadin-button>
         <vaadin-button id="backBtn" theme="tertiary">
           Back

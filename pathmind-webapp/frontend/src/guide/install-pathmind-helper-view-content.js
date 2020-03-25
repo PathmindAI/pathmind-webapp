@@ -56,7 +56,7 @@ class InstallPathmindHelperViewContent extends PolymerElement {
           >[[arrayItem(links.*, 1, 'text')]]</a
         >
         <vaadin-button id="nextBtn" theme="secondary">
-          Pathmind Helper Installed
+          Mark Step 2 as complete
         </vaadin-button>
         <vaadin-button id="backBtn" theme="tertiary">
           Back
