@@ -12,7 +12,7 @@ import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
 import io.skymind.pathmind.webapp.security.CurrentUser;
-import io.skymind.pathmind.webapp.security.FeatureManager;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.layouts.components.AccountHeaderPanel;
 import io.skymind.pathmind.webapp.ui.layouts.components.SectionsHeaderPanel;
 import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;

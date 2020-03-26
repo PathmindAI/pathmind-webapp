@@ -5,7 +5,7 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
 
-import io.skymind.pathmind.webapp.security.FeatureManager;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
 
