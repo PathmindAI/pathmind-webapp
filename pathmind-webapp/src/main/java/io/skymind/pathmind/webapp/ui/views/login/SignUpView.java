@@ -35,7 +35,7 @@ import io.skymind.pathmind.services.notificationservice.EmailNotificationService
 @Route(value = Routes.SIGN_UP_URL)
 public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView
 {
-	private static final String EMAIL_IS_USED = "This email is already used.";
+	private static final String EMAIL_IS_USED = "This email is already used";
 
 	@Id("lastName")
 	private TextField lastName;
@@ -115,10 +115,17 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 
 		forgotPasswordBtn.addClickListener(e ->UI.getCurrent().navigate(ResetPasswordView.class));
 
+		email.addValueChangeListener(event -> {
+			if (userService.findByEmailIgnoreCase(email.getValue()) == null) {
+				getModel().setIsEmailUsed(false);
+			}
+		});
+
 		signUp.addClickListener(e -> {
 			if (binder.validate().isOk()) {
 				if (userService.findByEmailIgnoreCase(email.getValue()) != null) {
-					getModel().setMessage(EMAIL_IS_USED);
+					getModel().setIsEmailUsed(true);
+					email.setErrorMessage(EMAIL_IS_USED);
 					email.setInvalid(true);
 				} else {
 					showPassword(true);
@@ -163,7 +170,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 
 	public interface Model extends TemplateModel {
 		void setTitle(String title);
-		void setMessage(String message);
+		void setIsEmailUsed(Boolean isEmailUsed);
 		void setContactLink(String contactLink);
 	}
 }

@@ -13,11 +13,6 @@ class ChangePasswordViewContent extends PolymerElement {
     return html`
       <style include="shared-styles pathmind-dialog-view"></style>
       <div class="content">
-        <vaadin-tabs>
-          <vaadin-tab>
-            Change Password
-          </vaadin-tab>
-        </vaadin-tabs>
         <vaadin-vertical-layout style="width: 100%;" class="inner-content">
           <div style="width: 100%;">
             <vaadin-password-field
@@ -49,10 +44,7 @@ class ChangePasswordViewContent extends PolymerElement {
             label="Confirm New Password"
           ></vaadin-password-field>
           <vaadin-vertical-layout id="buttonsCont">
-            <vaadin-button
-              id="updateBtn"
-              theme="primary"
-              class="positive-action-btn"
+            <vaadin-button id="updateBtn" theme="primary"
               >Change Password</vaadin-button
             >
             <vaadin-button id="cancelBtn" theme="tertiary"

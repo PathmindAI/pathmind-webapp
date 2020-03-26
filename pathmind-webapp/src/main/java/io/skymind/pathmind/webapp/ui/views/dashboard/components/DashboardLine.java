@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.dashboard.components;
 
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -10,6 +11,7 @@ import com.vaadin.flow.function.SerializableConsumer;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
 import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.DashboardUtils;
@@ -26,6 +28,7 @@ public class DashboardLine extends HorizontalLayout {
 	private DashboardItem dashboardItem;
 	
 	private static String INPROGRESS_INDICATOR = "...";
+	private String experimentNotes = "—";
 	
 	public DashboardLine(DashboardItem item, SerializableConsumer<DashboardItem> clickHandler) {
 		this.dashboardItem = item;
@@ -39,9 +42,20 @@ public class DashboardLine extends HorizontalLayout {
 		stages = createStages();
 		VerticalLayout wrapper = new VerticalLayout(timestamp, breadcrumb, stages);
 		wrapper.setPadding(false);
+		wrapper.addClassName("dashboard-item-main");
 		Span navigateIcon = new Span(VaadinIcon.CHEVRON_RIGHT.create());
 		navigateIcon.setClassName("navigate-icon");
-		add(wrapper, navigateIcon);
+
+		if (item.getExperiment() != null) {
+			if (!item.getExperiment().getUserNotes().isEmpty()) {
+				experimentNotes = item.getExperiment().getUserNotes();
+			}
+			VerticalLayout notes = new VerticalLayout(LabelFactory.createLabel("Experiment notes", "bold-label"), new Paragraph(experimentNotes));
+			notes.addClassName("dashboard-item-notes");
+			add(wrapper, notes, navigateIcon);
+		} else {
+			add(wrapper, navigateIcon);
+		}
 
 		// When a link in breadcrumb is clicked, the same click event is also triggered for DashboardLine
 		// We cannot stop propagation yet (see issue: https://github.com/vaadin/flow/issues/1363)
