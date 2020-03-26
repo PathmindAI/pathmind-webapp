@@ -76,3 +76,26 @@ resource "aws_route53_record" "model_analyzer_alias" {
   }
 }
 
+resource "aws_route53_record" "admin_alias" {
+  zone_id    = "${data.aws_route53_zone.zone.id}"
+  name       = "admin.${var.subdomain}${var.domain_name}"
+  type       = "A"
+
+  alias {
+    name                   = "ab83b977a9d7649f9b9de041d61466ca-1024113486.us-east-1.elb.amazonaws.com",
+    zone_id                = "Z35SXDOTRQ7X7K"
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "admin_server_alias" {
+  zone_id    = "${data.aws_route53_zone.zone.id}"
+  name       = "admin-server.${var.subdomain}${var.domain_name}"
+  type       = "A"
+
+  alias {
+    name                   = "ab83b977a9d7649f9b9de041d61466ca-1024113486.us-east-1.elb.amazonaws.com",
+    zone_id                = "Z35SXDOTRQ7X7K"
+    evaluate_target_health = true
+  }
+}

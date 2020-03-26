@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+  labels:
+{{ include "pathmind-admin-server.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        timestamp: "{{ date "20060102150405" .Release.Time }}"
+      labels:
+        app.kubernetes.io/name: {{ .Values.name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 9091
+              protocol: TCP
+          env:
+            - name: PROD_APP_URL
+              value: "{{ .Values.env.PROD_APP_URL }}"
+            - name: DEV_APP_URL
+              value: "{{ .Values.env.DEV_APP_URL }}"
+            - name: TEST_APP_URL
+              value: "{{ .Values.env.TEST_APP_URL }}"
+            - name: AWS_DEFAULT_REGION
+              value: "us-east-1"
+            - name: DB_URL_PROD
+              valueFrom:
+                secretKeyRef:
+                  name: dburlprod
+                  key: DB_URL_PROD
+            - name: DB_URL_DEV
+              valueFrom:
+                secretKeyRef:
+                  name: dburldev
+                  key: DB_URL_DEV
+            - name: DB_URL_TEST
+              valueFrom:
+                secretKeyRef:
+                  name: dburltest
+                  key: DB_URL_TEST
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: awsaccesskey
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: awssecretaccesskey
+                  key: AWS_SECRET_ACCESS_KEY

@@ -1,0 +1,56 @@
+# Default values for pathmind.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind-admin-server
+  tag: prod
+  pullPolicy: Always
+
+service:
+  type: NodePort
+  port: 9091
+
+env:
+  DEV_APP_URL: "https://dev.devpathmind.com/"
+  TEST_APP_URL: "https://test.devpathmind.com/"
+  PROD_APP_URL: "https://devpathmind.com/"
+
+name: pathmind-admin-server
+
+namespace: default
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
