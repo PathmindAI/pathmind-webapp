@@ -45,18 +45,14 @@ public class DateAndTimeUtils
 				(minutes > 0 ? (minutes + " min ") : "") +
 				(seconds > 0 ? (seconds + " sec") : "");
 	}
-
+	
 	public static String formatETA(long totalSeconds)
 	{
-		if(totalSeconds == 0)
-			return "0 sec";
+		long hours = Math.round(totalSeconds / 3600d);
+		long minutes = Math.round((totalSeconds % 3600) / 60d);
 
-		long hours = totalSeconds / 3600;
-		long minutes = (totalSeconds % 3600) / 60;
-		long seconds = totalSeconds % 60;
-
-		if(hours > 10) 
-			return "10+ hr";
+		if(hours >= 12) 
+			return "1 day";
 		else if (hours > 0)
 			return hours + " hr";
 		else if (minutes > 0)
