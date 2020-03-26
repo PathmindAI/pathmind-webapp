@@ -2,23 +2,19 @@ package io.skymind.pathmind.services.training.cloud.aws;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
-import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
-import io.skymind.pathmind.shared.services.training.ExecutionProvider;
-import io.skymind.pathmind.shared.services.training.ExecutionProviderClass;
-import io.skymind.pathmind.shared.services.training.JobSpec;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.CheckPoint;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.ExperimentState;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
-import io.skymind.pathmind.services.training.versions.*;
-import io.skymind.pathmind.shared.services.training.versions.AnyLogic;
-import io.skymind.pathmind.shared.services.training.versions.Conda;
-import io.skymind.pathmind.shared.services.training.versions.JDK;
-import io.skymind.pathmind.shared.services.training.versions.NativeRL;
-import io.skymind.pathmind.shared.services.training.versions.PathmindHelper;
+import io.skymind.pathmind.services.training.versions.AWSFileManager;
+import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.data.ProviderJobStatus;
+import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
+import io.skymind.pathmind.shared.services.training.ExecutionProvider;
+import io.skymind.pathmind.shared.services.training.ExecutionProviderClass;
+import io.skymind.pathmind.shared.services.training.JobSpec;
+import io.skymind.pathmind.shared.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
@@ -73,12 +69,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
         // Set up instructions to run that specific type of job
         runTraining(instructions);
-
-        // Clean up working directory, so only the required files stay around for automatic saving by rescale
-//        cleanup(instructions);
-
-        // Check errors
-        checkErrors(instructions);
 
         // Start actual execution of the job
         return startTrainingRun(job, instructions, files);
@@ -438,25 +428,26 @@ public class AWSExecutionProvider implements ExecutionProvider {
         ));
     }
 
-    private void cleanup(List<String> instructions) {
-        instructions.addAll(Arrays.asList(
-                "cd ..",
-                "rm -rf work conda jdk8u222-b10"
-        ));
-    }
-
     private String startTrainingRun(JobSpec job, List<String> instructions, List<String> files) {
         File script = null;
+        File errChecker = null;
         try {
             script = File.createTempFile("pathmind", UUID.randomUUID().toString());
+            errChecker = File.createTempFile("pathmind", UUID.randomUUID().toString());
+
+            // generate script.sh
             files.addAll(instructions);
             String scriptStr = String.join(" ;\n", files);
-
             FileUtils.writeStringToFile(script, scriptStr, Charset.defaultCharset());
+
+            // generate errorCheck.sh
+            scriptStr = String.join(" ;\n", checkErrors());
+            FileUtils.writeStringToFile(errChecker, scriptStr, Charset.defaultCharset());
 
             String jobId = buildJobId(job.getRunId());
 
             client.fileUpload(jobId + "/script.sh", script);
+            client.fileUpload(jobId + "/errorCheck.sh", errChecker);
             return client.jobSubmit(jobId, job.getType());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -465,14 +456,20 @@ public class AWSExecutionProvider implements ExecutionProvider {
             if (script != null) {
                 script.delete();
             }
+
+            if (errChecker != null) {
+                errChecker.delete();
+            }
         }
     }
 
-    private void checkErrors(List<String> instructions) {
-        instructions.add("cd ..");
+    private List<String> checkErrors() {
+        List<String> instructions = new ArrayList<>();
         instructions.addAll(trainingErrorDAO.getAllKnownErrorsKeywords().stream()
-                .map(msg -> "grep -m 2 \"" + msg + "\" " + TrainingFile.SCRIPT_LOG + " >> " + TrainingFile.KNOWN_ERROR)
+                .map(msg -> "grep -m 1 \"" + msg + "\" " + TrainingFile.SCRIPT_LOG + " >> " + TrainingFile.KNOWN_ERROR)
                 .collect(Collectors.toList()));
+
+        return instructions;
     }
 
     private String buildJobId(long runId) {
