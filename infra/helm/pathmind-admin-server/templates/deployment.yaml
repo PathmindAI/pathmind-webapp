@@ -32,12 +32,12 @@ spec:
               containerPort: 9091
               protocol: TCP
           env:
-            - name: APP_URL_PROD
-              value: "{{ .Values.env.APP_URL_PROD }}"
-            - name: APP_URL_DEV
-              value: "{{ .Values.env.APP_URL_DEV }}"
-            - name: APP_URL_TEST
-              value: "{{ .Values.env.APP_URL_TEST }}"
+            - name: PROD_APP_URL
+              value: "{{ .Values.env.PROD_APP_URL }}"
+            - name: DEV_APP_URL
+              value: "{{ .Values.env.DEV_APP_URL }}"
+            - name: TEST_APP_URL
+              value: "{{ .Values.env.TEST_APP_URL }}"
             - name: AWS_DEFAULT_REGION
               value: "us-east-1"
             - name: DB_URL_PROD
