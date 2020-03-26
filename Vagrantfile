@@ -33,8 +33,6 @@ Vagrant.configure("2") do |config|
     echo "-------------------- Setting up .bash_profile"
     sudo echo "cd /vagrant" > /home/vagrant/.bash_profile
 
-    echo "-------------------- Now Run `mvn -Pproduction spring-boot:run` to start Pathmind
-
 SHELL
     
 end
