@@ -9,6 +9,7 @@ public abstract class TrainingFile {
 
     public static final String SCRIPT_LOG = "process_output.log";
 
+    public static final String STOPPING = "stopping";
     public static final String KILLED = "killed";
 
     public static final String RESTARTING = "restarting";

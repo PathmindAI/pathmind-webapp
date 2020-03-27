@@ -1,10 +1,19 @@
 package io.skymind.pathmind.services;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.data.Data;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.ProviderJobStatus;
+import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
@@ -52,4 +61,29 @@ public abstract class TrainingService {
     }
 
     protected abstract void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSampes, Policy basePolicy);
+
+    public void stopRun(Experiment experiment)  {
+        List<Run> runs = experiment.getRuns().stream()
+                .filter(r -> isCanBeStopped(r.getStatusEnum()))
+                .collect(Collectors.toList());
+        List<Long> runsIds = runs.stream().map(Data::getId).collect(Collectors.toList());
+        Map<Long, String> runJobIds = executionProviderMetaDataDAO.getProviderRunJobIds(runsIds);
+        for (String jobId: runJobIds.values()) {
+            executionProvider.stop(jobId);
+        }
+        // immediately mark the job as stopping so that the user don't have to wait the updater to update the run
+        // status
+        runs.forEach(run -> {
+            // the 3 lines below are there just to avoid an exception after the status is updated
+            run.setExperiment(experiment);
+            run.setModel(experiment.getModel());
+            run.setProject(experiment.getProject());
+            runDAO.updateRun(run, ProviderJobStatus.STOPPING, experiment.getPolicies());
+        });
+    }
+
+    private boolean isCanBeStopped(RunStatus status) {
+        return status == RunStatus.Starting || status == RunStatus.Running
+                || status == RunStatus.Restarting;
+    }
 }

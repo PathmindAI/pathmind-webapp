@@ -3,6 +3,24 @@ package io.skymind.pathmind.webapp.ui.views.experiment;
 import java.util.Comparator;
 import java.util.List;
 
+import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.ui.components.TabPanel;
+import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
+import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
+import io.skymind.pathmind.webapp.ui.utils.PushUtils;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavbar;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyHighlightPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -37,27 +55,11 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.TrainingError;
-import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.security.Feature;
 import io.skymind.pathmind.webapp.security.FeatureManager;
-import io.skymind.pathmind.webapp.ui.components.TabPanel;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
-import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
-import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
-import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
-import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavbar;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyHighlightPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 
 @CssImport("./styles/styles.css")
@@ -71,6 +73,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private Object experimentLock = new Object();
 
 	private Button exportPolicyButton;
+	private Button stopTrainingButton;
 
 	private long experimentId = -1;
 	private long modelId = -1;
@@ -193,7 +196,27 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		exportPolicyButton = new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()));
 		exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportPolicyButton.addClassName("half-width");
-		exportPolicyButton.setEnabled(false);
+		exportPolicyButton.setVisible(false);
+
+		ConfirmDialog confirmDialog = new ConfirmDialog();
+		confirmDialog.setHeader("Stop Training");
+		confirmDialog.setText(new Html(
+				"<div>"
+						+ "<p>Are you sure you want to stop training?</p>"
+						+ "<p>If you stop the traning before it completes, you won't be able to download the policy.</p>"
+						+ "</div>"));
+		confirmDialog.setConfirmText("Stop Training");
+		confirmDialog.addConfirmListener((e) -> {
+			trainingService.stopRun(experiment);
+		});
+		confirmDialog.setCancelText("Cancel");
+		confirmDialog.setCancelable(true);
+
+		stopTrainingButton = new Button("Stop Training", click -> {
+			confirmDialog.open();
+		});
+		stopTrainingButton.addClassName("half-width");
+		stopTrainingButton.setVisible(true);
 
 		notesField = createViewNotesField();
 
@@ -201,6 +224,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				WrapperUtils.wrapWidthFullCenterHorizontal(restartTraining),
 				policyHighlightPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton),
+				WrapperUtils.wrapWidthFullCenterHorizontal(stopTrainingButton),
 				trainingStatusDetailsPanel,
 				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
 					rewardFunctionEditorHeader, rewardFunctionEditor
@@ -351,9 +375,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private void updateButtonEnablement() {
-		boolean isCompleted = ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed;
-		exportPolicyButton.setEnabled(isCompleted && policy != null && policy.hasFile());
+		RunStatus trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
+		boolean isCompleted = trainingStatus == RunStatus.Completed;
+		exportPolicyButton.setVisible(isCompleted && policy != null && policy.hasFile());
+		boolean canBeStopped = isCanBeStopped(trainingStatus);
+		stopTrainingButton.setVisible(canBeStopped);
 		restartTraining.setVisible(false);
+	}
+
+	private boolean isCanBeStopped(RunStatus trainingStatus) {
+		return trainingStatus == RunStatus.Starting || trainingStatus == RunStatus.Running
+				|| trainingStatus == RunStatus.Restarting;
 	}
 
 	private void updatedRunForPolicies(Run run) {

@@ -10,7 +10,8 @@ public enum RunStatus
 	Completed(3, "Completed"),
 	Error(4, "Error"),
 	Killed(5, "Stopped"),
-	Restarting(6, "Restarting");
+	Restarting(6, "Restarting"),
+	Stopping(7, "Stopping");
 
 	private int id;
 	private String name;
