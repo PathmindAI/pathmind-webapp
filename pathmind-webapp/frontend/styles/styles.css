@@ -489,4 +489,7 @@ h4 {
   .dashboard-item-notes p {
     height: 11rem;
   }
+  .dashboard-item-main vaadin-horizontal-layout:not(.stages-container) {
+    flex-wrap: wrap;
+  }
 }
