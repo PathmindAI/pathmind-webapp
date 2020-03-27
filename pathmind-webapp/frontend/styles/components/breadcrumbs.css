@@ -20,10 +20,9 @@
 .dashboard .breadcrumb:hover,
 .dashboard .breadcrumb:last-child {
   color: var(--lumo-primary-text-color);
-  font-weight: normal;
 }
 
+.dashboard .breadcrumb:not(:first-child),
 .dashboard .breadcrumb ~ span {
-  color: var(--lumo-secondary-text-color);
-  cursor: default;
+  margin-left: var(--lumo-space-s);
 }
