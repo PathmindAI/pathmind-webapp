@@ -27,6 +27,6 @@ public class PathmindTrainingProgress extends VerticalLayout {
 	 * Example output: <code>44 % (ETA: 54 min)</code>
 	 */
 	private String formatProgressLabel(double progress, String formattedEstimatedTime) {
-		return String.format("%.0f %% (ETA: %s)", progress, formattedEstimatedTime);
+		return String.format("%.0f%% (ETA: %s)", progress, formattedEstimatedTime);
 	}
 }
