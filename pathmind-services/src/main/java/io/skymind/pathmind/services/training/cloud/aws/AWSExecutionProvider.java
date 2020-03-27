@@ -262,7 +262,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         // Setup NativeRL
                         "mkdir work",
                         "cd work",
-                        "unzip ../nativerl-1.0.0-SNAPSHOT-bin.zip",
+                        "unzip ../nativerl-1.0.0-SNAPSHOT-bin.zip > /dev/null",
                         "rm ../nativerl-1.0.0-SNAPSHOT-bin.zip",
                         "mv nativerl-bin/* .",
                         "mv examples/train.sh .",
@@ -281,7 +281,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_8_5_1:
             case VERSION_8_5_2:
                 instructions.addAll(Arrays.asList(
-                        "unzip baseEnv.zip",
+                        "unzip baseEnv.zip > /dev/null",
                         "rm baseEnv.zip",
                         "mv baseEnv/* work/",
                         "rm -r baseEnv"
@@ -299,7 +299,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_8_222:
                 instructions.addAll(Arrays.asList(
                         // Setup JVM
-                        "tar xf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
+                        "tar xf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz > /dev/null",
                         "rm -rf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz",
                         "export JAVA_HOME=`pwd`/jdk8u222-b10",
                         "export JDK_HOME=$JAVA_HOME",
@@ -324,7 +324,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         // Setup Anaconda
                         "mkdir conda",
                         "cd conda",
-                        "tar xf ../rllibpack.tar.gz",
+                        "tar xf ../rllibpack.tar.gz > /dev/null",
                         "rm ../rllibpack.tar.gz",
                         "source bin/activate",
                         "cd .."
@@ -358,7 +358,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private void installModel(String modelId, List<String> instructions, List<String> files) {
         instructions.addAll(Arrays.asList(
                 "cd work",
-                "unzip ../model.zip",
+                "unzip ../model.zip > /dev/null",
                 "rm ../model.zip"
         ));
     }
@@ -436,8 +436,13 @@ public class AWSExecutionProvider implements ExecutionProvider {
             errChecker = File.createTempFile("pathmind", UUID.randomUUID().toString());
 
             // generate script.sh
-            files.addAll(instructions);
-            String scriptStr = String.join(" ;\n", files);
+            List<String> finalInstruction = new ArrayList<>();
+            finalInstruction.add("set -eo pipefail");
+            finalInstruction.addAll(files);
+            finalInstruction.addAll(instructions);
+            finalInstruction.add("exit $?");
+
+            String scriptStr = String.join(" ;\n", finalInstruction);
             FileUtils.writeStringToFile(script, scriptStr, Charset.defaultCharset());
 
             // generate errorCheck.sh
