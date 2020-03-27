@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.TabPanel;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
@@ -126,7 +127,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected Component getTitlePanel() {
-		return null;
+		pageBreadcrumbs = createBreadcrumbs();
+		return new ScreenTitlePanel(pageBreadcrumbs);
 	}
 
 	@Override
@@ -139,12 +141,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		mainSplitLayout.addSplitterDragendListener(evt -> getUI().ifPresent(ui -> ui.getPage().executeJs("Array.from(window.document.getElementsByTagName('vaadin-chart')).forEach( el => el.__reflow());")));
 		mainSplitLayout.addClassName("page-content");
 
-		pageBreadcrumbs = createBreadcrumbs();
-
-		VerticalLayout mainLayout = WrapperUtils.wrapSizeFullVertical(
-			WrapperUtils.wrapWidthFullCenterHorizontal(pageBreadcrumbs),
-				mainSplitLayout
-			);
+		VerticalLayout mainLayout = WrapperUtils.wrapSizeFullVertical(mainSplitLayout);
 
 	  return mainLayout;
 	}

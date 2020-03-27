@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.PathmindTextArea;
+import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
@@ -78,19 +79,18 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     protected Component getTitlePanel() {
-        return null;
+        return new ScreenTitlePanel(createBreadcrumbs());
     }
 
     @Override
     protected Component getMainContent() {
         binder = new Binder<>(Experiment.class);
         VerticalLayout mainContent = WrapperUtils.wrapWidthFullVertical(
-            WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
-                WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                        getLeftPanel(),
-                        getRightPanel(),
-                        DEFAULT_SPLIT_PANE_RATIO)
-                );
+            WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                    getLeftPanel(),
+                    getRightPanel(),
+                    DEFAULT_SPLIT_PANE_RATIO)
+            );
         setupBinder();
         return mainContent;
     }

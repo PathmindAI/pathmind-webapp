@@ -13,17 +13,17 @@
 }
 
 /* Keep old styles for dashboard */
-.dashboard-view .breadcrumb {
+.dashboard .breadcrumb {
   color: var(--lumo-secondary-text-color);
 }
 
-.dashboard-view .breadcrumb:hover,
-.dashboard-view .breadcrumb:last-child {
+.dashboard .breadcrumb:hover,
+.dashboard .breadcrumb:last-child {
   color: var(--lumo-primary-text-color);
   font-weight: normal;
 }
 
-.dashboard-view .breadcrumb ~ span {
+.dashboard .breadcrumb ~ span {
   color: var(--lumo-secondary-text-color);
   cursor: default;
 }
