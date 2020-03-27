@@ -260,7 +260,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_0_1:
                 instructions.addAll(Arrays.asList(
                         // Setup NativeRL
-                        "mkdir work",
+                        "mkdir -p work",
                         "cd work",
                         "unzip ../nativerl-1.0.0-SNAPSHOT-bin.zip > /dev/null",
                         "rm ../nativerl-1.0.0-SNAPSHOT-bin.zip",
@@ -322,7 +322,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_8_1:
                 instructions.addAll(Arrays.asList(
                         // Setup Anaconda
-                        "mkdir conda",
+                        "mkdir -p conda",
                         "cd conda",
                         "tar xf ../rllibpack.tar.gz > /dev/null",
                         "rm ../rllibpack.tar.gz",
@@ -368,7 +368,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             files.add(fileManager.buildCheckpointCopyCmd(checkpointS3Path, "checkpoint.zip"));
 
             instructions.addAll(Arrays.asList(
-                    "mkdir checkpoint",
+                    "mkdir -p checkpoint",
                     "unzip ../checkpoint.zip -d checkpoint",
                     "rm ../checkpoint.zip"
             ));
