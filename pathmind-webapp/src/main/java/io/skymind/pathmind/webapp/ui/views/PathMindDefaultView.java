@@ -66,7 +66,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		if(!isAccessAllowedForUser()) {
 			throw new InvalidDataException("Item does not exist");
 		}
-		// Next we initialize the data from the database in case there is an issue such as an InvalidDataException
 		initLoadData();
 		// If there is an exception in generating the screens we don't want to display any system related information to the user for security reasons.
 		addScreens();
