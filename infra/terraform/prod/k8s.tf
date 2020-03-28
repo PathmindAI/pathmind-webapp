@@ -153,6 +153,39 @@ resource "null_resource" "db_url_secret" {
   depends_on = ["null_resource.configmap_ingress_nginx"]
 }
 
+resource "null_resource" "db_url_secret_prod" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic dburlprod --from-literal DB_URL_PROD=${var.DB_URL_PROD}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret dburlprod"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}
+
+resource "null_resource" "db_url_secret_dev" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic dburldev --from-literal DB_URL_DEV=${var.DB_URL_DEV}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret dburldev"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}
+
+resource "null_resource" "db_url_secret_test" {
+  provisioner "local-exec" {
+    command = "kubectl create secret generic dburltest --from-literal DB_URL_TEST=${var.DB_URL_TEST}"
+  }
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete secret dburltest"
+  }
+  depends_on = ["null_resource.configmap_ingress_nginx"]
+}
+
 resource "null_resource" "db_url_cli_secret" {
   provisioner "local-exec" {
     command = "kubectl create secret generic dburlcli --from-literal DB_URL_CLI=${var.DB_URL_CLI}"
@@ -224,19 +257,6 @@ resource "null_resource" "pathmind" {
   }
   depends_on =
 ["null_resource.awsaccesskey","null_resource.awssecretaccesskey","null_resource.db_url_secret","null_resource.segment_server_key_secret","null_resource.segment_website_key_secret","null_resource.trainer"]
-}
-
-#install pathmind-ma
-resource "null_resource" "pathmind_ma" {
-  provisioner "local-exec" {
-    command = "helm install pathmind-ma ../../helm/pathmind-ma -f ../../helm/pathmind-ma/values_${var.environment}.yaml"
-  }
-  provisioner "local-exec" {
-    when = "destroy"
-    command = "helm delete pathmind-ma"
-  }
-  depends_on =
-["null_resource.pathmind"]
 }
 
 #install pathmind-slot
