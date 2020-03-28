@@ -46,6 +46,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	
 	private Command fileCheckerCommand;
 
+	private HorizontalLayout checkingModelComponent;
 	private Text errorText;
 	private UploadModeSwitcherButton uploadModeSwitcher;
 	
@@ -106,9 +107,11 @@ public class UploadModelWizardPanel extends VerticalLayout
 
 	private void setupFileCheckPanel() {
 		errorText = new Text("");
+		checkingModelComponent = WrapperUtils
+				.wrapWidthFullCenterHorizontal(LabelFactory.createLabel("Checking your model..."));
 		fileCheckPanel = WrapperUtils.wrapWidthFullCenterVertical(
 				fileCheckProgressBar,
-				WrapperUtils.wrapWidthFullCenterHorizontal(LabelFactory.createLabel("Checking your model...")),
+				checkingModelComponent,
 				errorText);
 	}
 
@@ -218,6 +221,9 @@ public class UploadModelWizardPanel extends VerticalLayout
 
 	public void setError(String error) {
 		fileCheckProgressBar.addThemeVariants(ProgressBarVariant.LUMO_ERROR);
+		if (checkingModelComponent != null) {
+			checkingModelComponent.setVisible(false);
+		}
 		this.errorText.setText(error);
 		upload.setVisible(true);
 	}
