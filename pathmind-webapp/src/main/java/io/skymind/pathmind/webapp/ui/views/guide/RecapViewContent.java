@@ -16,6 +16,7 @@ import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.guide.template.DefaultPageContent;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
+import io.skymind.pathmind.webapp.ui.views.model.utils.UploadModelViewNavigationUtils;
 
 @Tag("recap-view-content")
 @JsModule("./src/guide/recap-view-content.js")
@@ -42,7 +43,7 @@ public class RecapViewContent extends DefaultPageContent<RecapViewContent.Model>
 				guideDAO.updateGuideStep(projectId, guideStep.nextStep());
 				segmentIntegrator.completedGuideRecap();
 			}
-			UI.getCurrent().navigate(UploadModelView.class, projectId);
+			UI.getCurrent().navigate(UploadModelView.class, UploadModelViewNavigationUtils.getUploadModelParameters(projectId));
 		});
 	}
 

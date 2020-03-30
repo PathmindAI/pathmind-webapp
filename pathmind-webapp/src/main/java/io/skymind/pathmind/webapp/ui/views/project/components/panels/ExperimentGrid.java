@@ -13,9 +13,6 @@ import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import java.util.Arrays;
 import java.util.Comparator;
 
-/**
- * This is a class because it's expected to be re-used in the ConsoleView when it's brought back.
- */
 public class ExperimentGrid extends Grid<Experiment>
 {
 	public ExperimentGrid()
