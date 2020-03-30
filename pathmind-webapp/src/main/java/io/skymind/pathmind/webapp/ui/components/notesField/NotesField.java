@@ -106,7 +106,10 @@ public class NotesField extends HorizontalLayout {
 	}
 
 	public void saveButtonOnClick() {
-		notesText = blockEditableField.getValue();
-		saveConsumer.accept(notesText);
+		String updatedNotesText = blockEditableField.getValue();
+		if (notesText != updatedNotesText) {
+			notesText = updatedNotesText;
+			saveConsumer.accept(notesText);
+		}
 	}
 }

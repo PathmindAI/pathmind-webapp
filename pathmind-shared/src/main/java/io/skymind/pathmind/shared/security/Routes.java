@@ -45,7 +45,6 @@ public class Routes {
     public static final String GUIDE_REWARD_URL = "guide/reward";
     public static final String GUIDE_RECAP_URL = "guide/recap";
 
-    public static final String CONSOLE_URL = "console";
     public static final String EXPORT_POLICY_URL = "exportPolicy";
     public static final String PROJECT_URL = "project";
     public static final String PROJECTS_URL = "projects";

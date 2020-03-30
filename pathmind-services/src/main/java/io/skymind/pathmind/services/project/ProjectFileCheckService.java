@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
@@ -35,8 +36,18 @@ public class ProjectFileCheckService {
                     final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
 
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
-                        setHyperparams(result, client.analyze(tempFile));
-                        statusUpdater.fileSuccessfullyVerified(result);
+                        HyperparametersDTO analysisResult = client.analyze(tempFile);
+                        Optional<String> optionalError = verifyAnalysisResult(analysisResult);
+                        if (optionalError.isPresent()) {
+                            statusUpdater.updateError(optionalError.get());
+                        }
+                        else {
+                            setHyperparams(result, analysisResult);
+                            statusUpdater.fileSuccessfullyVerified(result);
+                        }
+                    }
+                    else {
+                        statusUpdater.updateError("The uploaded file is invalid, check it and upload again.");
                     }
                 } finally {
                     tempFile.delete();
@@ -50,6 +61,19 @@ public class ProjectFileCheckService {
             }
         };
         checkerExecutorService.submit(runnable);
+    }
+
+    private Optional<String> verifyAnalysisResult(HyperparametersDTO analysisResult) {
+        if (analysisResult == null) {
+            return Optional.of("It wasn't possible to analyze the model.");
+        }
+        else if (analysisResult.getActions() != null && Integer.parseInt(analysisResult.getActions()) == 0) {
+            return Optional.of("Number of actions found to be zero.");
+        }
+        else if (analysisResult.getObservations() != null && Integer.parseInt(analysisResult.getObservations()) == 0) {
+            return Optional.of("Number of observations found to be zero.");
+        }
+        return Optional.empty();
     }
 
     private void setHyperparams(FileCheckResult result, HyperparametersDTO params) {
