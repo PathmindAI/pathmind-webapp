@@ -30,9 +30,11 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.shared.bus.EventBus;
 import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.shared.constants.GuideStep;
 import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
@@ -48,6 +50,9 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
 	@Autowired
 	private ExperimentDAO experimentDAO;
+	
+	@Autowired
+	private GuideDAO guideDAO;
 	
 	private Grid<DashboardItem> dashboardGrid;
 	
@@ -96,7 +101,8 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 		Stage stage = DashboardUtils.calculateStage(item);
 		switch (stage) {
 			case SetUpSimulation :
-				getUI().ifPresent(ui -> ui.navigate(UploadModelView.class, UploadModelViewNavigationUtils.getUploadModelParameters(item.getProject().getId())));
+				GuideStep step = guideDAO.getGuideStep(item.getProject().getId());
+				getUI().ifPresent(ui -> ui.navigate(step.getPath() + "/" + item.getProject().getId()));
 				break;
 			case WriteRewardFunction:
 				var experimentId = item.getExperiment() == null ?
