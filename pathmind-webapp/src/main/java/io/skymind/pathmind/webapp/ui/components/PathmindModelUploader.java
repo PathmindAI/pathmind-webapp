@@ -23,6 +23,7 @@ import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.server.Command;
 
 import elemental.json.Json;
+import io.skymind.pathmind.webapp.ui.views.model.UploadMode;
 
 /**
  * Basically <code>vaadin-upload</code> component, but some changes are done to
@@ -49,13 +50,13 @@ public class PathmindModelUploader extends Upload {
 	private List<Command> allFilesCompletedListeners = new ArrayList<>();
 
 	private Boolean isFolderUploadSupported;
-	private Boolean isFolderUploadMode;
-
-	public PathmindModelUploader(boolean isFolderUploadMode) {
+	private UploadMode uploadMode;
+ 	
+ 	public PathmindModelUploader(UploadMode mode) {
 		super();
 		checkIfFolderUploadSupported(isFolderUploadSupported -> {
-			this.isFolderUploadMode = isFolderUploadMode && isFolderUploadSupported;
-			if (this.isFolderUploadMode) {
+			this.uploadMode = isFolderUploadSupported ? mode : UploadMode.ZIP;
+ 			if (uploadMode == UploadMode.FOLDER) {
 				setReceiver(new MultiFileMemoryBufferWithFileStructure());
 				setupFolderUpload();
 				addNoFilesToUploadListener(evt -> triggerAllFilesCompletedListeners());
@@ -82,7 +83,7 @@ public class PathmindModelUploader extends Upload {
 	private Button createUploadButton() {
 		Button uploadButton = new Button(VaadinIcon.UPLOAD.create());
 		uploadButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		uploadButton.setText(this.isFolderUploadMode ? "Upload exported folder" : "Upload zip file");
+		uploadButton.setText(uploadMode == UploadMode.FOLDER ? "Upload exported folder" : "Upload zip file");
 		return uploadButton;
 	}
 	/**
@@ -116,7 +117,7 @@ public class PathmindModelUploader extends Upload {
 
 	private void uploadStarted(UploadStartEvent<Upload> evt) {
 		numOfFilesUploaded++;
-		if (isFolderUploadMode) {
+		if (uploadMode == UploadMode.FOLDER) {
 			String filePath = evt.getDetailFile().getString("filePath");
 			String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
 			MultiFileMemoryBufferWithFileStructure.class.cast(getReceiver()).addFilePath(filePath, fileName);
