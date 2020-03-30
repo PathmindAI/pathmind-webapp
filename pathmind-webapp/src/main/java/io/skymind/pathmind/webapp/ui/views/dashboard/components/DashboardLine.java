@@ -7,6 +7,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializableConsumer;
+import com.vaadin.flow.router.RouterLink;
 
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
 import io.skymind.pathmind.shared.data.DashboardItem;
@@ -62,7 +63,9 @@ public class DashboardLine extends HorizontalLayout {
 		// When a link in breadcrumb is clicked, the same click event is also triggered for DashboardLine
 		// We cannot stop propagation yet (see issue: https://github.com/vaadin/flow/issues/1363)
 		// but applied the workaround suggested in the issue
-		breadcrumb.getElement().addEventListener("click", evt -> {}).addEventData("event.stopPropagation()");
+		breadcrumb.getChildren()
+			.filter(comp -> RouterLink.class.isInstance(comp))
+			.forEach(comp -> comp.getElement().addEventListener("click", evt -> {}).addEventData("event.stopPropagation()"));
 		addClickListener(evt -> clickHandler.accept(item));
 	}
 
