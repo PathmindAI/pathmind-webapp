@@ -66,25 +66,21 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		if(!isAccessAllowedForUser()) {
 			throw new InvalidDataException("Item does not exist");
 		}
-		// Next we initialize the data from the database in case there is an issue such as an InvalidDataException
 		initLoadData();
 		// If there is an exception in generating the screens we don't want to display any system related information to the user for security reasons.
-		if(!isGenerated) {
-			addScreens();
-		}
+		addScreens();
 		// Update the screen based on the parameters if need be.
 		initScreen(event);
 		// Segment plugin added
 		add(segmentIntegrator);
-		isGenerated = true;
 	}
 
 	protected void initLoadData() throws InvalidDataException{
 		// Do nothing by default.
 	}
 
-	private void addScreens()
-	{
+	private void addScreens(){
+		removeAll();
 		final Component titlePanel = getTitlePanel();
 		if(titlePanel != null) add(titlePanel);
 		final Component mainContent = getMainContent();
