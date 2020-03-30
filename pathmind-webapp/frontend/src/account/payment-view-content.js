@@ -169,10 +169,7 @@ class PaymentViewContent extends PolymerElement {
           <vaadin-button id="cancelSignUpBtn" theme="tertiary" on-click="cancelButtonClicked"
             >Cancel</vaadin-button
           >
-          
         </vaadin-vertical-layout>
-
-        <span class="payment-notes">Month-to-month @ $500 / month</span>
       </vaadin-vertical-layout>
 
       </vaadin-vertical-layout>
