@@ -3,6 +3,7 @@ package io.skymind.pathmind.webapp.ui.views.model;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
@@ -15,6 +16,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.WildcardParameter;
 
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
@@ -48,8 +50,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
 @Slf4j
-public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<Long> {
+public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<String> {
 
+	private static final int PROJECT_ID_SEGMENT = 0;
+ 	private static final int UPLOAD_MODE_SEGMENT = 1;
+ 	
 	@Autowired
 	private ProjectDAO projectDAO;
 
@@ -80,26 +85,27 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private List<Component> wizardPanels;
 
-	private PathmindUserDetails user;
 	private long projectId;
 	private long experimentId;
 	private String modelNotes;
 	private Project project;
+	
+	private UploadMode uploadMode;
 
 	public UploadModelView()
 	{
 		super();
 		this.ui = UI.getCurrent();
-		this.user = SecurityUtils.getUser();
 	}
 
 	protected Component getMainContent()
 	{
 		this.model = ModelUtils.generateNewDefaultModel();
+		model.setProjectId(projectId);
 
 		modelBinder = new Binder<>(Model.class);
 
-		uploadModelWizardPanel = new UploadModelWizardPanel(model);
+		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode);
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
 		rewardVariablesPanel = new RewardVariablesPanel();
 
@@ -238,7 +244,15 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	@Override
-	public void setParameter(BeforeEvent event, Long projectId) {
-		this.projectId = projectId;
+	public void setParameter(BeforeEvent event, @WildcardParameter String parameter) {
+ 		String[] segments = parameter.split("/");
+ 		uploadMode = UploadMode.FOLDER;
+
+ 		if (NumberUtils.isDigits(segments[PROJECT_ID_SEGMENT])) {
+ 			this.projectId = Long.parseLong(segments[PROJECT_ID_SEGMENT]);
+ 		}
+ 		if (segments.length > 1) {
+ 			uploadMode = UploadMode.getEnumFromValue(segments[UPLOAD_MODE_SEGMENT]).orElse(UploadMode.FOLDER);
+ 		}
 	}
 }
