@@ -84,12 +84,6 @@ class PaymentViewContent extends PolymerElement {
           color: #878787;
         }
 
-        .payment-notes {
-          margin: 15px auto 0;
-          color: #878787;
-          font-size: 0.8em;
-        }
-        
         #buttonsCont {
             margin-top: 0;
         }
@@ -194,16 +188,16 @@ class PaymentViewContent extends PolymerElement {
       errorMessage: Object,
       isStripeComplete: {
         type: Boolean,
-        value: false
+        value: false,
       },
       isFormComplete: {
         type: Boolean,
-        value: false
+        value: false,
       },
       showValidationError: {
         type: Boolean,
-        value: false
-      }
+        value: false,
+      },
     };
   }
 
@@ -216,11 +210,11 @@ class PaymentViewContent extends PolymerElement {
         iconColor: "#666EE8",
         color: "#31325F",
         lineHeight: "40px",
-        fontWeight: 300
+        fontWeight: 300,
         //'::placeholder': {
         //    color: '#CFD7E0',
         //},
-      }
+      },
     };
 
     // Initialize Stripe with the key that is gotten from the backend
@@ -231,7 +225,7 @@ class PaymentViewContent extends PolymerElement {
     // Also override the styles
     this.cardElement = elements.create("card", {
       hidePostalCode: true,
-      style: style
+      style: style,
     });
     // Find an element with #card-element id and mount that with the new Stripe credit card element
     // This creates an iFrame to Stripe services.
@@ -239,7 +233,7 @@ class PaymentViewContent extends PolymerElement {
     // Add a listener to the card element to know when it's ready.
     this.cardElement.addEventListener(
       "change",
-      event => (this.isStripeComplete = event.complete)
+      (event) => (this.isStripeComplete = event.complete)
     );
     // If there's an error coming from Stripe set it visible
     this.cardElement.addEventListener(
@@ -265,11 +259,11 @@ class PaymentViewContent extends PolymerElement {
               line1: this.address,
               city: this.city,
               state: this.state,
-              postal_code: this.postal_code
-            }
-          }
+              postal_code: this.postal_code,
+            },
+          },
         })
-        .then(result => {
+        .then((result) => {
           if (result.error) {
             this.errorMessage = result.error.message;
           } else {
@@ -294,9 +288,9 @@ class PaymentViewContent extends PolymerElement {
           line1: this.address,
           city: this.city,
           state: this.state,
-          postal_code: this.postal_code
-        }
-      }
+          postal_code: this.postal_code,
+        },
+      },
     });
   }
 }
