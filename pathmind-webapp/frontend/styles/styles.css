@@ -234,8 +234,11 @@ hr {
   line-height: 1;
 }
 
-.reward-function-wrapper vaadin-custom-field {
+.upload-model-view .reward-function-wrapper vaadin-custom-field {
   margin-top: var(--lumo-space-l);
+}
+
+.reward-function-wrapper vaadin-custom-field {
   overflow-y: auto;
 }
 
