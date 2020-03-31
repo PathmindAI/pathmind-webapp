@@ -30,7 +30,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ExperimentRecord extends UpdatableRecordImpl<ExperimentRecord> implements Record8<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String> {
 
-    private static final long serialVersionUID = 1974250105;
+    private static final long serialVersionUID = 791328153;
 
     /**
      * Setter for <code>public.experiment.id</code>.

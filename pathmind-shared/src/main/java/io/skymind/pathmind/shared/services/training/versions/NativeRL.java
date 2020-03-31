@@ -9,7 +9,8 @@ public enum NativeRL implements VersionEnum{
     VERSION_0_7_6,
     VERSION_0_7_6_PBT,
     VERSION_0_7_6_RESUME,
-    VERSION_0_8_1;
+    VERSION_0_8_1,
+    VERSION_1_0_1;
 
     @Override
     public List<String> fileNames() {

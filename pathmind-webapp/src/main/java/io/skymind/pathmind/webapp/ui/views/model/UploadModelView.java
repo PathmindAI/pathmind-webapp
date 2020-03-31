@@ -11,6 +11,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.WildcardParameter;
+
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.webapp.data.utils.ModelUtils;
@@ -35,6 +37,8 @@ import io.skymind.pathmind.webapp.ui.views.guide.GuideOverview;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
@@ -43,8 +47,11 @@ import java.util.List;
 @CssImport("./styles/styles.css")
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
 @Slf4j
-public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<Long> {
+public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<String> {
 
+	private static final int PROJECT_ID_SEGMENT = 0;
+ 	private static final int UPLOAD_MODE_SEGMENT = 1;
+ 	
 	@Autowired
 	private ProjectDAO projectDAO;
 
@@ -71,6 +78,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private PathmindUserDetails user;
 	private long projectId;
 	private Project project;
+	
+	private UploadMode uploadMode;
 
 	public UploadModelView()
 	{
@@ -82,10 +91,11 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	protected Component getMainContent()
 	{
 		this.model = ModelUtils.generateNewDefaultModel();
+		model.setProjectId(projectId);
 
 		modelBinder = new Binder<>(Model.class);
 
-		uploadModelWizardPanel = new UploadModelWizardPanel(model);
+		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode);
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
 
 		wizardPanels = Arrays.asList(
@@ -196,7 +206,15 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	@Override
-	public void setParameter(BeforeEvent event, Long projectId) {
-		this.projectId = projectId;
+	public void setParameter(BeforeEvent event, @WildcardParameter String parameter) {
+ 		String[] segments = parameter.split("/");
+ 		uploadMode = UploadMode.FOLDER;
+
+ 		if (NumberUtils.isDigits(segments[PROJECT_ID_SEGMENT])) {
+ 			this.projectId = Long.parseLong(segments[PROJECT_ID_SEGMENT]);
+ 		}
+ 		if (segments.length > 1) {
+ 			uploadMode = UploadMode.getEnumFromValue(segments[UPLOAD_MODE_SEGMENT]).orElse(UploadMode.FOLDER);
+ 		}
 	}
 }

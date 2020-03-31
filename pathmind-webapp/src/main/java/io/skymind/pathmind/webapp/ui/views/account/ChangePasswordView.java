@@ -27,7 +27,7 @@ public class ChangePasswordView extends PathMindDefaultView {
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("CHANGE PASSWORD");
+		return new ScreenTitlePanel("Account", "Change Password", AccountView.class);
 	}
 
 	@Override
