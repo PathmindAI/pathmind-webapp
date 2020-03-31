@@ -1,11 +1,13 @@
 #!/bin/bash
-
 sleep_time=60
 training_update_timeout=3600
 s3_url="s3://${S3BUCKET}/${S3PATH}"
 s3_url_link="${S3BUCKET}/${S3PATH}"
 log_file="process_output.log"
-aws s3 sync ${s3_url} ./
+aws s3 sync ${s3_url} ./ > /dev/null
+
+#remove existing folders
+find . -mindepth 1 -maxdepth 1 -type d | xargs -I {} rm -rf {}
 
 #Get the user
 ID=`echo ${S3PATH} | sed "s/id//g"`
@@ -30,18 +32,18 @@ if [ "${output_files}" -ge 1 ]
 then
 	description="Training is resumed"
 	curl -X POST -H 'Content-type: application/json' \
-		--data "{'text':'Resuming Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
+		--data "{'text':':heavy_plus_sign:Resuming Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
 		https://hooks.slack.com/services/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
 	echo "Resuming Training"
 	export RESUME=true
 	rm -rf /app/work/PPO/*
 	touch restarting
-	aws s3 cp restarting ${s3_url}/output/
-	aws s3 sync ${s3_url}/output/ /app/work/PPO/
-	aws s3 cp ${s3_url}/output/ ${s3_url}/output_backup_`date '+%Y%m%d%H%M'`/ --recursive
-	aws s3 rm ${s3_url}/output/ --recursive
+	aws s3 cp restarting ${s3_url}/output/ > /dev/null
+	aws s3 sync ${s3_url}/output/ /app/work/PPO/ > /dev/null
+	aws s3 cp ${s3_url}/output/ ${s3_url}/output_backup_`date '+%Y%m%d%H%M'`/ --recursive > /dev/null
+	aws s3 rm ${s3_url}/output/ --recursive > /dev/null
 	touch restarted
-	aws s3 cp restarted ${s3_url}/output/
+	aws s3 cp restarted ${s3_url}/output/ > /dev/null
 fi
 
 bash script.sh > ${log_file} 2>&1 &
@@ -60,14 +62,14 @@ do
                 break
         fi
         #Upload files
-        aws s3 sync ./work/PPO ${s3_url}/output/
+        aws s3 sync ./work/PPO ${s3_url}/output/ > /dev/null
         #Check the training response timeout
         last_modification=`echo $(( $(date +%s) - $(stat -c %Y -- "${log_file}") ))`
         if [ ${last_modification} -ge ${training_update_timeout} ]
         then
                 description="No update in the log file ${log_file} for more than ${last_modification} seconds, training is not killed"
                 curl -X POST -H 'Content-type: application/json' \
-                --data "{'text':'Killing Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
+                --data "{'text':':x:Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
                 https://hooks.slack.com/services/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
                 echo "Killing on timeout"
                 #Set the status in trainer_job
@@ -83,6 +85,19 @@ EOF
 done
 
 wait $pid
+script_exit=$?
+status=4
+description="Job finishsed"
+if [ ${script_exit} != 0 ]
+then
+	description=`tail -c 254 ${log_file} | tr '\n' ' ' | sed "s/'//g"`
+	curl -X POST -H 'Content-type: application/json' \
+		--data "{'text':':x:Training ${S3PATH} Job Crashed\nError: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
+		https://hooks.slack.com/services/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
+	echo "Training crashed"
+	tail -1  ${log_file} >> errors.log
+	status=5
+fi
 
 #Generate final files
 cd work
@@ -95,21 +110,23 @@ for DIR in `find . -iname model -type d`; do
         zip -r $OLDPWD/../result/policy_$(basename `dirname $DIR`).zip .
         S3_DIR=`echo $DIR | cut -f3 -d'/'`
         aws s3 cp $OLDPWD/../result/policy_$(basename `dirname $DIR`).zip \
-                ${s3_url}/output/${S3_DIR}/
+                ${s3_url}/output/${S3_DIR}/ > /dev/null
         cd $OLDPWD
         cd `find "$DIR"/.. -iname checkpoint_* -type d | sort -V | tail -1`
         zip $OLDPWD/../result/$(basename `dirname $DIR`)/checkpoint.zip ./*
         aws s3 cp $OLDPWD/../result/$(basename `dirname $DIR`)/checkpoint.zip \
-                ${s3_url}/output/${S3_DIR}/
+                ${s3_url}/output/${S3_DIR}/ > /dev/null
         cd $OLDPWD
 done
 
 cd ..
 
+#Check errors
+bash errorCheck.sh
 #Upload the final files only after policy and checkpoint are uploaded
-aws s3 sync ./work/PPO ${s3_url}/output/
-aws s3 cp ${log_file} ${s3_url}/output/${log_file}
-aws s3 cp errors.log ${s3_url}/output/errors.log
+aws s3 sync ./work/PPO ${s3_url}/output/ > /dev/null
+aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
+aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null
 
 #delete old state files
 if [ "${RESUME}" == true ]
@@ -121,20 +138,18 @@ then
 		rm ${file}
 		#Delete from s3
 		file=`basename ${file}`
-		aws s3 rm ${s3_url}/output/${file}
+		aws s3 rm ${s3_url}/output/${file} > /dev/null
 	done
 fi
 
 #Validate that the training was successful
 NUM_SAMPLES=`grep NUM_SAMPLES script.sh | grep export | cut -f2 -d"'" | sed "s/ //g"`
 SUCCESS=`grep '"status": "TERMINATED",' work/PPO/experiment_state-* | wc -l | sed "s/ //g"`
-status=4
-description="Job finishsed"
 if [ "${SUCCESS}" != "${NUM_SAMPLES}" ]
 then
         description="Only ${SUCCESS} trials were successful out of ${NUM_SAMPLES}"
         curl -X POST -H 'Content-type: application/json' \
-        --data "{'text':'Job Failed ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
+        --data "{'text':':x:Job Failed ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
         https://hooks.slack.com/services/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
         echo "Error on training"
         status=5
