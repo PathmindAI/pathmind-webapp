@@ -169,6 +169,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private VerticalLayout getRightPanel() {
 		TabPanel rewardFunctionEditorHeader = new TabPanel("Reward Function");
+		rewardFunctionEditorHeader.setEnabled(false);
 		rewardFunctionEditor = new RewardFunctionEditor();
 		rewardFunctionEditor.setReadonly(true);
 		rewardFunctionEditor.setSizeFull();

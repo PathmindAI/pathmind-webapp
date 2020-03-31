@@ -1,5 +1,5 @@
 .new-experiment-view {
-  height: 100%;
+  min-height: 760px;
 }
 
 .panel-title {
