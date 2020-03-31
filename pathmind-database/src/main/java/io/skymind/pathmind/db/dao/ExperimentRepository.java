@@ -40,8 +40,8 @@ class ExperimentRepository
 	protected static Experiment getExperiment(DSLContext ctx, long experimentId) {
 		Record record = ctx
 				.select(EXPERIMENT.asterisk())
-				.select(MODEL.ID, MODEL.NAME)
-				.select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
+				.select(MODEL.asterisk())
+				.select(PROJECT.asterisk())
 				.from(EXPERIMENT)
 				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
 				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
