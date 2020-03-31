@@ -11,7 +11,7 @@ public class FeatureManager {
         case TEST_FEATURE:
             return false;
         default:
-            return true;
+            return false;
         }
     }
 }
