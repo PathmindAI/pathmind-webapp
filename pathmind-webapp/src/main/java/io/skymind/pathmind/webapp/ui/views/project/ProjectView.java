@@ -90,6 +90,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 			70),
 			WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
 		);
+		gridWrapper.addClassName("page-content");
 		gridWrapper.setPadding(false);
 		
 		return WrapperUtils.wrapSizeFullVertical(

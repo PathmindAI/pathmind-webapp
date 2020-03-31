@@ -67,6 +67,7 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
     private void setupChart() {
         XAxis xAxis = new XAxis();
         xAxis.setTitle("Iterations");
+        xAxis.setAllowDecimals(false);
 
         YAxis yAxis = new YAxis();
         yAxis.setTitle("Mean Reward Score over All Episodes");

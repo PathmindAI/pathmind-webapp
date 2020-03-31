@@ -28,21 +28,16 @@ class SignUpView extends PolymerElement {
             label="Last Name"
           ></vaadin-text-field>
           <vaadin-text-field id="email" label="Work Email"></vaadin-text-field>
-          <p class="form-hints">
+          <p class="form-hints" hidden$="{{isEmailUsed}}">
             The email will be used as the User Email during sign in
           </p>
-          <vaadin-horizontal-layout id="errorCont">
-            <div class="error-message">
-              {{message}}
-            </div>
-            <vaadin-button
-              id="forgotPasswordBtn"
-              theme="tertiary"
-              hidden$="{{!message}}"
-            >
-              Want to reset password?
-            </vaadin-button>
-          </vaadin-horizontal-layout>
+          <vaadin-button
+            id="forgotPasswordBtn"
+            theme="tertiary"
+            hidden$="{{!isEmailUsed}}"
+          >
+            Want to reset password?
+          </vaadin-button>
           <vaadin-vertical-layout id="buttonsCont">
             <vaadin-button id="signUp" theme="primary">
               Sign up

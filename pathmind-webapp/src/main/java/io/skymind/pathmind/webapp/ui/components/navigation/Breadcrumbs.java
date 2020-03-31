@@ -77,14 +77,11 @@ public class Breadcrumbs extends HorizontalLayout
 			add(item.createComponent());
 		});
 
-		setSpacing(false);
 		setAlignItems(Alignment.START);
 	}
 
 	private Span createSeparator() {
-		Span separator = new Span(">");
-		separator.addClassName("breadcrumb-separator");
-		return separator;
+		return new Span(">");
 	}
 
 	public void setText(int index, String newText) {

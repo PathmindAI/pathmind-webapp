@@ -64,21 +64,7 @@ resource "aws_route53_record" "jenkins_alias" {
   }
 }
 
-resource "aws_route53_record" "model_analyzer_alias" {
-  zone_id    = "${data.aws_route53_zone.zone.id}"
-  name       = "ma.${var.subdomain}${var.domain_name}"
-  type       = "A"
-
-  alias {
-    name                   = {{ELB_NAME}}
-    zone_id                = {{ZONE_ID}}
-    evaluate_target_health = true
-  }
-}
-
-
-
-resource "aws_route53_record" "app_alias" {
+resource "aws_route53_record" "app_alias_test" {
   zone_id    = "${data.aws_route53_zone.zone.id}"
   name       = "test.${var.domain_name}"
   type       = "A"
@@ -90,9 +76,9 @@ resource "aws_route53_record" "app_alias" {
   }
 }
 
-resource "aws_route53_record" "model_analyzer_alias" {
+resource "aws_route53_record" "admin_alias" {
   zone_id    = "${data.aws_route53_zone.zone.id}"
-  name       = "ma.test.${var.domain_name}"
+  name       = "admin.dev.${var.domain_name}"
   type       = "A"
 
   alias {
@@ -102,3 +88,14 @@ resource "aws_route53_record" "model_analyzer_alias" {
   }
 }
 
+resource "aws_route53_record" "admin_server_alias" {
+  zone_id    = "${data.aws_route53_zone.zone.id}"
+  name       = "admin-server.dev.${var.domain_name}"
+  type       = "A"
+
+  alias {
+    name                   = {{ELB_NAME}}
+    zone_id                = {{ZONE_ID}}
+    evaluate_target_health = true
+  }
+}

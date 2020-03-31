@@ -8,16 +8,14 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>io.skymind</groupId>
     <artifactId>pathmind-updater</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>Pathmind Updater</name>
 
     <dependencies>
         <dependency>
             <groupId>io.skymind</groupId>
             <artifactId>pathmind-services</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->

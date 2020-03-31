@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrainerJob extends TableImpl<TrainerJobRecord> {
 
-    private static final long serialVersionUID = 459708144;
+    private static final long serialVersionUID = -1084242373;
 
     /**
      * The reference instance of <code>public.trainer_job</code>

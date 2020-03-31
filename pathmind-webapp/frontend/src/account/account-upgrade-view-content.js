@@ -12,7 +12,7 @@ class AccountUpgradeViewContent extends PolymerElement {
 
         .content {
           max-width: 100%;
-          padding: 60px 0;
+          padding: var(--lumo-space-xl) 0;
         }
 
         .cards-holder {
@@ -135,10 +135,7 @@ class AccountUpgradeViewContent extends PolymerElement {
               Details coming soon.
             </div>
 
-            <vaadin-button
-              id="proBtn"
-              theme="primary"
-              class="positive-action-btn"
+            <vaadin-button id="proBtn" theme="primary"
               >Choose Pro</vaadin-button
             >
           </vaadin-vertical-layout>
@@ -157,10 +154,7 @@ class AccountUpgradeViewContent extends PolymerElement {
             </div>
 
             <a href="{{contactLink}}">
-              <vaadin-button
-                id="enterpriseBtn"
-                theme="primary"
-                class="positive-action-btn"
+              <vaadin-button id="enterpriseBtn" theme="primary"
                 >Contact Us</vaadin-button
               >
             </a>

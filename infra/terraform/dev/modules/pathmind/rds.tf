@@ -32,6 +32,7 @@ resource "aws_db_instance" "rds" {
   password               = "${var.database_password}"
   db_subnet_group_name   = "${aws_db_subnet_group.rds_subnet_group.id}"
   vpc_security_group_ids = ["${aws_security_group.rds_sg.id}"]
+  deletion_protection    = true
   skip_final_snapshot    = true
   backup_retention_period = 7
   backup_window      = "03:00-06:00"
