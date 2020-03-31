@@ -71,7 +71,7 @@ public class AWSFileManager {
     }
 
     private String buildS3CopyCmd(String bucket, String filePath, String fileName) {
-        return S3_COPY + bucket + "/" + filePath + " " + new File(fileName).getName();
+        return S3_COPY + bucket + "/" + filePath + " " + new File(fileName).getName() + " > /dev/null";
     }
 
     public String buildCheckpointCopyCmd(String checkpointPath, String fileName) {
