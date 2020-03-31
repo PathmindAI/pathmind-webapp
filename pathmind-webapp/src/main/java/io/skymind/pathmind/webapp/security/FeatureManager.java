@@ -8,8 +8,6 @@ public class FeatureManager {
         switch (feature) {
         case REWARD_VARIABLES_FEATURE:
         	return false;
-        case TEST_FEATURE:
-            return false;
         default:
             return false;
         }

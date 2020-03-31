@@ -5,13 +5,12 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
 
-import io.skymind.pathmind.webapp.security.FeatureManager;
 import io.skymind.pathmind.webapp.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
 
 public class SectionsHeaderPanel extends HorizontalLayout
 {
-	public SectionsHeaderPanel(boolean hasLoginUser, FeatureManager featureManager)
+	public SectionsHeaderPanel(boolean hasLoginUser)
 	{
 		HorizontalLayout sectionsHorizontalLayout = new HorizontalLayout();
 		sectionsHorizontalLayout.add(linkedLogo());

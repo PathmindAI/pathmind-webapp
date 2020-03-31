@@ -12,7 +12,6 @@ import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
 import io.skymind.pathmind.webapp.security.CurrentUser;
-import io.skymind.pathmind.webapp.security.FeatureManager;
 import io.skymind.pathmind.webapp.ui.layouts.components.AccountHeaderPanel;
 import io.skymind.pathmind.webapp.ui.layouts.components.SectionsHeaderPanel;
 import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
@@ -43,11 +42,11 @@ import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
 public class MainLayout extends AppLayout implements PageConfigurator
 {
 
-	public MainLayout(CurrentUser user, FeatureManager featureManager)
+	public MainLayout(CurrentUser user)
 	{
 		setId("pathmind-app-layout");
 		boolean hasLoginUser = user != null && user.getUser() != null;
-		addToNavbar(new SectionsHeaderPanel(hasLoginUser, featureManager));
+		addToNavbar(new SectionsHeaderPanel(hasLoginUser));
 		if (hasLoginUser) {
 			addToNavbar(new AccountHeaderPanel(user.getUser()));
 		}
