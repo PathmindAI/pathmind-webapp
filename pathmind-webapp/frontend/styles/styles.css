@@ -425,7 +425,7 @@ h4 {
   height: 1rem;
   left: 0;
   bottom: 0;
-  background: linear-gradient(transparent, white);
+  background: linear-gradient(rgba(255, 255, 255, 0), white);
 }
 
 .stages-container {
