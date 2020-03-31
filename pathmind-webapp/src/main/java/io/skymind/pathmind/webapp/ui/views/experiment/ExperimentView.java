@@ -276,7 +276,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void updateScreenComponents() {
 		setPolicyChartVisibility();
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
-		if (rewardVariables != null) {
+		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
 			rewardFunctionEditor.setVariableNames(rewardVariables);
 		}
 		policyChartPanel.setExperiment(experiment);
