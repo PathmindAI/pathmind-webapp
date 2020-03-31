@@ -31,8 +31,10 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
-            - name: ADMIN_USER
-              value: admin
+            - name: TESTS_USERNAME
+              value: evegeniy@skymind.io
+            - name: TESTS_PASSWORD
+              value: pw!skymind19
             - name: ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
