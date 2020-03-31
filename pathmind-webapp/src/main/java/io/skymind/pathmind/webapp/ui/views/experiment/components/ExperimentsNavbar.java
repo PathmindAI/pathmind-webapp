@@ -101,7 +101,7 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 
 		ExperimentsNavBarItem(Experiment experiment, Consumer<Experiment> selectExperimentConsumer) {
 			this.experiment = experiment;
-			RunStatus overallExperimentStatus = getRunsStatus(experiment);
+			RunStatus overallExperimentStatus = ExperimentUtils.getTrainingStatus(experiment);
 			statusComponent = createStatusIcon(overallExperimentStatus);
 			add(statusComponent);
 			VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
@@ -121,12 +121,6 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 				return new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE);
 			}
 			return new Icon(VaadinIcon.EXCLAMATION_CIRCLE_O);
-		}
-
-		private RunStatus getRunsStatus(Experiment experiment) {
-			// Discovery Run and Full Run will be combined,
-			// so there's no need to distinguish between them
-			return Collections.max(experiment.getRuns(), Comparator.comparingInt(Run::getStatus)).getStatusEnum();
 		}
 
 		private Div createExperimentText(String experimentNumber, String experimentDateCreated) {
