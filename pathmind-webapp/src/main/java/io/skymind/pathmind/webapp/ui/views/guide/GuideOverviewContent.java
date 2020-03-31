@@ -16,6 +16,7 @@ import io.skymind.pathmind.shared.constants.GuideStep;
 import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
+import io.skymind.pathmind.webapp.ui.views.model.utils.UploadModelViewNavigationUtils;
 
 @Tag("guide-overview-content")
 @JsModule("./src/guide/guide-overview-content.js")
@@ -42,7 +43,7 @@ public class GuideOverviewContent extends DefaultPageContent<GuideOverviewConten
 		});
 		skipToUploadModelBtn.addClickListener(e -> {
 			segmentIntegrator.skippedGuideToUploadModel();
-			UI.getCurrent().navigate(UploadModelView.class, projectId);
+			UI.getCurrent().navigate(UploadModelView.class, UploadModelViewNavigationUtils.getUploadModelParameters(projectId));
 		});
 	}
 

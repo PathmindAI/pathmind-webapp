@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import io.skymind.pathmind.shared.constants.GuideStep;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
+import io.skymind.pathmind.webapp.ui.views.model.utils.UploadModelViewNavigationUtils;
 
 @CssImport("./styles/components/guide-menu.css")
 public class GuideMenu extends VerticalLayout {
@@ -74,7 +75,7 @@ public class GuideMenu extends VerticalLayout {
         skipToUploadModelButton.addThemeName("tertiary-inline");
         skipToUploadModelButton.addClickListener(e -> {
             segmentIntegrator.skippedGuideToUploadModel();
-            UI.getCurrent().navigate(UploadModelView.class, projectId);
+            UI.getCurrent().navigate(UploadModelView.class, UploadModelViewNavigationUtils.getUploadModelParameters(projectId));
         });
         return skipToUploadModelButton;
     }
