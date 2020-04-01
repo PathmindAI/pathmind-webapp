@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 @Repository
 public class TrainingErrorDAO {
+	public static final String KILLED_TRAINING_KEYWORD = "killed training";
 	public static final String UNKNOWN_ERROR_KEYWORD = "unknown error";
 	static final String NOT_AN_ERROR = "Not an error";
 	private final DSLContext ctx;

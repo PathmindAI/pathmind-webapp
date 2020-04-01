@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.db.dao.TrainingErrorDAO.UNKNOWN_ERROR_KEYWORD;
+import static io.skymind.pathmind.db.dao.TrainingErrorDAO.KILLED_TRAINING_KEYWORD;
 
 @Service
 @Slf4j
@@ -188,6 +189,10 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
             foundError.ifPresent(
                     e -> run.setTrainingErrorId(e.getId())
             );
+        } else if (status == RunStatus.Killed) {
+        	trainingErrorDAO.getErrorByKeyword(KILLED_TRAINING_KEYWORD).ifPresent(error -> {
+        		run.setTrainingErrorId(error.getId());
+        	});
         }
     }
 }

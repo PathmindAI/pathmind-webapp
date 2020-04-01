@@ -1121,4 +1121,10 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="20200401_01" author="onur@vaadin.com">
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="killed training"/>
+            <column name="DESCRIPTION" value="An error occurred. Please contact the Pathmind team"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
