@@ -17,6 +17,7 @@ import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.amazonaws.util.IOUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
 import lombok.extern.slf4j.Slf4j;
@@ -135,6 +136,7 @@ public class AWSApiClient {
     public String jobSubmit(String jobId, RunType type) throws JsonProcessingException {
         final String mockType = type == null ? null : type.toString();
         Job job = new Job(bucketName, jobId, mockCycle, mockType);
+        job.setEc2InstanceType(EC2InstanceType.M5_2XL);
 
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
