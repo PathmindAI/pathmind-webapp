@@ -1086,4 +1086,39 @@
         <modifyDataType tableName="REWARD_SCORE" columnName="MAX" newDataType="DECIMAL(32,17)"></modifyDataType>
     </changeSet>
 
+    <changeSet id="20200312-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <addColumn tableName="MODEL">
+            <column name="REWARD_VARIABLES_COUNT" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200316-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <createTable tableName="REWARD_VARIABLE">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="MODEL_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_REWARD_VARIABLE_MODEL" references="MODEL(ID)"/>
+            </column>
+            <column name="NAME" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ARRAY_INDEX" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="REWARD_VARIABLE" columnNames="MODEL_ID, ARRAY_INDEX"/>
+        <rollback>
+            <dropTable tableName="REWARD_VARIABLE"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200319-01" author="krystian.walaszczyk@ext.vaadin.com">
+        <createIndex tableName="REWARD_VARIABLE" indexName="REWARD_VARIABLE_MODEL_FK_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
