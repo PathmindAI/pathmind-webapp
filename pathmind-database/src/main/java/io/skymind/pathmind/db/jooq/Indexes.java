@@ -57,6 +57,7 @@ public class Indexes {
     public static final Index PROJECT_PKEY = Indexes0.PROJECT_PKEY;
     public static final Index UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = Indexes0.UNIQUE_PROJECT_NAME_PATHMIND_USER_ID;
     public static final Index REWARD_SCORE_POLICY_ID_INDEX = Indexes0.REWARD_SCORE_POLICY_ID_INDEX;
+    public static final Index REWARD_VARIABLE_MODEL_FK_INDEX = Indexes0.REWARD_VARIABLE_MODEL_FK_INDEX;
     public static final Index REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY = Indexes0.REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY;
     public static final Index REWARD_VARIABLE_PKEY = Indexes0.REWARD_VARIABLE_PKEY;
     public static final Index RUN_EXPERIMENT_FK_INDEX = Indexes0.RUN_EXPERIMENT_FK_INDEX;
@@ -85,6 +86,7 @@ public class Indexes {
         public static Index PROJECT_PKEY = Internal.createIndex("project_pkey", Project.PROJECT, new OrderField[] { Project.PROJECT.ID }, true);
         public static Index UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = Internal.createIndex("unique_project_name_pathmind_user_id", Project.PROJECT, new OrderField[] { Project.PROJECT.PATHMIND_USER_ID, Project.PROJECT.NAME }, true);
         public static Index REWARD_SCORE_POLICY_ID_INDEX = Internal.createIndex("reward_score_policy_id_index", RewardScore.REWARD_SCORE, new OrderField[] { RewardScore.REWARD_SCORE.POLICY_ID }, false);
+        public static Index REWARD_VARIABLE_MODEL_FK_INDEX = Internal.createIndex("reward_variable_model_fk_index", RewardVariable.REWARD_VARIABLE, new OrderField[] { RewardVariable.REWARD_VARIABLE.MODEL_ID }, false);
         public static Index REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY = Internal.createIndex("reward_variable_model_id_array_index_key", RewardVariable.REWARD_VARIABLE, new OrderField[] { RewardVariable.REWARD_VARIABLE.MODEL_ID, RewardVariable.REWARD_VARIABLE.ARRAY_INDEX }, true);
         public static Index REWARD_VARIABLE_PKEY = Internal.createIndex("reward_variable_pkey", RewardVariable.REWARD_VARIABLE, new OrderField[] { RewardVariable.REWARD_VARIABLE.ID }, true);
         public static Index RUN_EXPERIMENT_FK_INDEX = Internal.createIndex("run_experiment_fk_index", Run.RUN, new OrderField[] { Run.RUN.EXPERIMENT_ID }, false);
