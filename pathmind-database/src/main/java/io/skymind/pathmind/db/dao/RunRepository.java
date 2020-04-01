@@ -85,7 +85,7 @@ class RunRepository
     			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
     			.and(Tables.RUN.RUN_TYPE.eq(runType))
     			.and(
-    					Tables.RUN.STATUS.notIn(Arrays.asList(RunStatus.Completed.getValue(), RunStatus.Error.getValue()))
+    					Tables.RUN.STATUS.notIn(Arrays.asList(RunStatus.Completed.getValue(), RunStatus.Error.getValue(), RunStatus.Killed.getValue()))
     				.or(Tables.RUN.NOTIFICATION_SENT_AT.isNotNull())
     			)
     			.fetch(Tables.RUN.ID);

@@ -95,16 +95,13 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
      * and if the Run type is discovery or full run
      */
     private void sendNotificationMail(RunStatus jobStatus, Run run) {
-        if (jobStatus == RunStatus.Completed || jobStatus == RunStatus.Error) {
-            if (run.getRunTypeEnum() == RunType.DiscoveryRun || run.getRunTypeEnum() == RunType.FullRun) {
-
-                // Do not send notification if there is another run with same run type still executing or the notification is already been sent
-                if (runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
-                    boolean isSuccessful = jobStatus == RunStatus.Completed;
-                    PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
-                    emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);
-                    runDAO.markAsNotificationSent(run.getId());
-                }
+        if (RunStatus.isFinished(jobStatus)) {
+            // Do not send notification if there is another run with same run type still executing or the notification is already been sent
+            if (runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
+                boolean isSuccessful = jobStatus == RunStatus.Completed;
+                PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
+                emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);
+                runDAO.markAsNotificationSent(run.getId());
             }
         }
     }

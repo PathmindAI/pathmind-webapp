@@ -38,4 +38,7 @@ public enum RunStatus
 	public static boolean isRunning(RunStatus status){
 		return status == RunStatus.Starting || status == RunStatus.Running;
 	}
+	public static boolean isFinished(RunStatus status){
+		return status == RunStatus.Completed || status == RunStatus.Error || status == RunStatus.Killed;
+	}
 }
