@@ -40,6 +40,8 @@ spec:
               value: "{{ .Values.env.TEST_APP_URL }}"
             - name: AWS_DEFAULT_REGION
               value: "us-east-1"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "{{ .Values.env.SPRING_PROFILES_ACTIVE }}"
             - name: DB_URL_PROD
               valueFrom:
                 secretKeyRef:
