@@ -198,22 +198,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		exportPolicyButton.addClassName("half-width");
 		exportPolicyButton.setVisible(false);
 
-		ConfirmDialog confirmDialog = new ConfirmDialog();
-		confirmDialog.setHeader("Stop Training");
-		confirmDialog.setText(new Html(
-				"<div>"
-						+ "<p>Are you sure you want to stop training?</p>"
-						+ "<p>If you stop the traning before it completes, you won't be able to download the policy.</p>"
-						+ "</div>"));
-		confirmDialog.setConfirmText("Stop Training");
-		confirmDialog.addConfirmListener((e) -> {
-			trainingService.stopRun(experiment);
-		});
-		confirmDialog.setCancelText("Cancel");
-		confirmDialog.setCancelable(true);
-
 		stopTrainingButton = new Button("Stop Training", click -> {
-			confirmDialog.open();
+			showConfirmationDialog();
 		});
 		stopTrainingButton.addClassName("half-width");
 		stopTrainingButton.setVisible(true);
@@ -230,6 +216,28 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 					rewardFunctionEditorHeader, rewardFunctionEditor
 				),
 				notesField);
+	}
+
+	private void showConfirmationDialog() {
+		ConfirmDialog confirmDialog = new ConfirmDialog();
+		confirmDialog.setHeader("Stop Training");
+		confirmDialog.setText(new Html(
+				"<div>"
+						+ "<p>Are you sure you want to stop training?</p>"
+						+ "<p>If you stop the traning before it completes, you won't be able to download the policy.</p>"
+						+ "</div>"));
+		Button confirmButton = new Button("Stop Training", (e) -> {
+			trainingService.stopRun(experiment);
+			confirmDialog.close();
+		});
+		confirmButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+		confirmDialog.setConfirmButton(confirmButton);
+		confirmDialog.addConfirmListener((e) -> {
+			trainingService.stopRun(experiment);
+		});
+		confirmDialog.setCancelText("Cancel");
+		confirmDialog.setCancelable(true);
+		confirmDialog.open();
 	}
 
 	private Breadcrumbs createBreadcrumbs() {        
