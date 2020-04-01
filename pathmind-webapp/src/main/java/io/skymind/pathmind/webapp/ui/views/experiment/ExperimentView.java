@@ -386,14 +386,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		RunStatus trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
 		boolean isCompleted = trainingStatus == RunStatus.Completed;
 		exportPolicyButton.setVisible(isCompleted && policy != null && policy.hasFile());
-		boolean canBeStopped = isCanBeStopped(trainingStatus);
+		boolean canBeStopped = RunStatus.isRunning(trainingStatus);
 		stopTrainingButton.setVisible(canBeStopped);
 		restartTraining.setVisible(false);
-	}
-
-	private boolean isCanBeStopped(RunStatus trainingStatus) {
-		return trainingStatus == RunStatus.Starting || trainingStatus == RunStatus.Running
-				|| trainingStatus == RunStatus.Restarting;
 	}
 
 	private void updatedRunForPolicies(Run run) {

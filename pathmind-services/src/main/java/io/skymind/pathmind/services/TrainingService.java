@@ -64,7 +64,7 @@ public abstract class TrainingService {
 
     public void stopRun(Experiment experiment)  {
         List<Run> runs = experiment.getRuns().stream()
-                .filter(r -> isCanBeStopped(r.getStatusEnum()))
+                .filter(r -> RunStatus.isRunning(r.getStatusEnum()))
                 .collect(Collectors.toList());
         List<Long> runsIds = runs.stream().map(Data::getId).collect(Collectors.toList());
         Map<Long, String> runJobIds = executionProviderMetaDataDAO.getProviderRunJobIds(runsIds);
@@ -80,10 +80,5 @@ public abstract class TrainingService {
             run.setProject(experiment.getProject());
             runDAO.updateRun(run, ProviderJobStatus.STOPPING, experiment.getPolicies());
         });
-    }
-
-    private boolean isCanBeStopped(RunStatus status) {
-        return status == RunStatus.Starting || status == RunStatus.Running
-                || status == RunStatus.Restarting;
     }
 }

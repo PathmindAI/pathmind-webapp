@@ -37,6 +37,6 @@ public enum RunStatus
 	}
 
 	public static boolean isRunning(RunStatus status){
-		return status == RunStatus.Starting || status == RunStatus.Running;
+		return status == RunStatus.Starting || status == RunStatus.Running || status == RunStatus.Restarting;
 	}
 }
