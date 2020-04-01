@@ -1,9 +1,0 @@
-:host [part="splitter"] {
-    background: transparent;
-    min-width: var(--lumo-space-m);
-    min-height: var(--lumo-space-m);
-}
-
-:host [part="handle"]::after {
-    background: transparent;
-}

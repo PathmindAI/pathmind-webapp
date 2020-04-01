@@ -25,10 +25,15 @@ The quickest way to get up and running is with the Vagrant file:
 ```
 vagrant up
 vagrant ssh
+mvn clean install
+cd /Vagrant/pathmind-webapp
 mvn spring-boot:run
 ```
 
 Your local env will be running at 127.0.0.1:8080
+
+The first `mvn clean install` is to build the required shared libraries. Make sure you have AWS env variables set up too.
+[Details can be found here](https://github.com/SkymindIO/pathmind-webapp/wiki/Setting-up-your-dev-environment). 
 
 Here are instructions for how you can try out the app and the files you can upload to train:
 https://help.pathmind.com/en/articles/3329544-getting-started

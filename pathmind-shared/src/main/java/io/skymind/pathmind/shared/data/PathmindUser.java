@@ -1,0 +1,180 @@
+package io.skymind.pathmind.shared.data;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+public class PathmindUser
+{
+	private long id;
+	private String email;
+	private String password;
+	private int accountType;
+	private String firstname;
+	private String lastname;
+	private String address;
+	private String city;
+	private String state;
+	private String country;
+	private String zip;
+	private LocalDateTime deleteAt;
+	private LocalDateTime emailVerifiedAt;
+	private UUID emailVerificationToken;
+	private LocalDateTime passwordResetSendAt;
+	private String stripeCustomerId;
+
+	private List<Project> projects;
+
+	public PathmindUser()
+	{
+	}
+
+	public long getId()
+	{
+		return id;
+	}
+
+	public void setId(long id)
+	{
+		this.id = id;
+	}
+
+	public String getEmail()
+	{
+		return email;
+	}
+
+	public void setEmail(String email)
+	{
+		this.email = email;
+	}
+
+	public String getPassword()
+	{
+		return password;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+
+	public List<Project> getProjects() {
+		return projects;
+	}
+
+	public void setProjects(List<Project> projects) {
+		this.projects = projects;
+	}
+
+	public int getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(int accountType) {
+		this.accountType = accountType;
+	}
+
+	public String getFirstname() {
+		return firstname;
+	}
+
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
+
+	public String getLastname() {
+		return lastname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getZip() {
+		return zip;
+	}
+
+	public void setZip(String zip) {
+		this.zip = zip;
+	}
+
+	public String getName() {
+		return firstname + " " + lastname;
+	}
+
+	public LocalDateTime getDeleteAt() {
+		return deleteAt;
+	}
+
+	public void setDeleteAt(LocalDateTime deleteAt) {
+		this.deleteAt = deleteAt;
+	}
+
+	public LocalDateTime getEmailVerifiedAt() {
+		return emailVerifiedAt;
+	}
+
+	public void setEmailVerifiedAt(LocalDateTime emailVerifiedAt) {
+		this.emailVerifiedAt = emailVerifiedAt;
+	}
+
+	public UUID getEmailVerificationToken() {
+		return emailVerificationToken;
+	}
+
+	public void setEmailVerificationToken(UUID emailVerificationToken) {
+		this.emailVerificationToken = emailVerificationToken;
+	}
+
+	public LocalDateTime getPasswordResetSendAt() {
+		return passwordResetSendAt;
+	}
+
+	public void setPasswordResetSendAt(LocalDateTime passwordResetSendAt) {
+		this.passwordResetSendAt = passwordResetSendAt;
+	}
+
+	public String getStripeCustomerId()
+	{
+		return stripeCustomerId;
+	}
+
+	public void setStripeCustomerId(String stripeCustomerId)
+	{
+		this.stripeCustomerId = stripeCustomerId;
+	}
+}
+

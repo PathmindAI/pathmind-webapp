@@ -15,8 +15,7 @@ RUN chmod 600 id_rsa && \
     	ssh-keyscan -H github.com >> /etc/ssh/ssh_known_hosts
 
 # Jenkins init scripts
-COPY security.groovy /usr/share/jenkins/ref/init.groovy.d/
-COPY executors.groovy /usr/share/jenkins/ref/init.groovy.d/
+COPY *groovy /usr/share/jenkins/ref/init.groovy.d/
 
 #Install python packages
 RUN apt update && \
@@ -36,8 +35,6 @@ RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-ke
 	unzip chromedriver_linux64.zip && \
 	mv chromedriver /usr/bin/chromedriver && \
 	chmod +x /usr/bin/chromedriver
-
-
 
 # Install plugins at Docker image build time
 COPY plugins.txt /usr/share/jenkins/plugins.txt

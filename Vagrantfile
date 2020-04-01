@@ -12,10 +12,14 @@ Vagrant.configure("2") do |config|
 
     # Add backports to install OpenJDK11
     sudo echo "deb http://ftp.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/backports.list
-    apt-get update
+   
+    # Add node sources
+    wget https://deb.nodesource.com/setup_13.x && \
+    bash ./setup_13.x && \
+    apt-get update -y
 
     # Install postgresql, maven, node and java
-    apt-get install -y postgresql openjdk-11-jdk maven
+    apt-get install -y nodejs postgresql openjdk-11-jdk maven
 
     # Create User and login
     echo "-------------------- Setting up DB"
@@ -28,8 +32,6 @@ Vagrant.configure("2") do |config|
 
     echo "-------------------- Setting up .bash_profile"
     sudo echo "cd /vagrant" > /home/vagrant/.bash_profile
-
-    echo "-------------------- Now Run `mvn -Pproduction spring-boot:run` to start Pathmind
 
 SHELL
     

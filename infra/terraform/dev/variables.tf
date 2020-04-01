@@ -8,6 +8,7 @@ variable "DB_URL_DEV" {}
 variable "DB_URL_CLI_DEV" {}
 variable "DB_URL_TEST" {}
 variable "DB_URL_CLI_TEST" {}
+variable "DB_URL_PROD" {}
 variable "SEGMENT_WEBSITE_KEY" {}
 variable "SEGMENT_SERVER_KEY" {}
 variable "environment" { }
@@ -32,3 +33,5 @@ variable "cidr_block" {  }
 variable "apipassword" {  }
 variable "jenkinspassword" {  }
 variable "pgadminpassword" {  }
+variable "githubuser" {  }
+variable "githubsecret" {  }
