@@ -17,8 +17,12 @@ function matchesFilter(filePath) {
   }
   return false;
 }
-window.Pathmind = {
-  ModelUploader: {
+
+if (!window.Pathmind){
+	window.Pathmind = {};
+}
+
+window.Pathmind.ModelUploader = {
     addClientSideFiltering: function(upload) {
       upload._addFiles = function(files) {
         files = filter(files);
@@ -39,5 +43,4 @@ window.Pathmind = {
       if ("webkitdirectory" in tmpInput) return true;
       return false;
     }
-  }
 };

@@ -54,6 +54,7 @@ class ModelRepository
 		mod.setProjectId(projectId);
 		mod.setNumberOfPossibleActions(model.getNumberOfPossibleActions());
 		mod.setNumberOfObservations(model.getNumberOfObservations());
+		mod.setRewardVariablesCount(model.getRewardVariablesCount());
 		mod.store();
 		return mod.key().get(MODEL.ID);
 	}
