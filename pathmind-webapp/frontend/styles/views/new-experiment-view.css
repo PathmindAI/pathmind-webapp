@@ -1,27 +1,61 @@
 .new-experiment-view {
-  height: 100%;
+  min-height: 760px;
 }
 
-.new-experiment-view vaadin-split-layout > vaadin-vertical-layout,
-.new-experiment-view vaadin-split-layout > vaadin-horizontal-layout {
-  width: 100%;
-  background: white;
+.panel-title {
+  max-width: 460px;
+}
+
+.new-experiment-view .bold-label {
+  /* --lumo-font-size-l is 1.25rem now
+    we may want to change it to 1.125rem later */
+  font-size: 1.125rem;
+}
+
+.reward-function-wrapper {
+  border: 1px solid var(--lumo-contrast-40pct);
   border-radius: var(--lumo-border-radius);
-  padding: var(--lumo-space-m);
-  box-sizing: border-box;
+}
+
+.reward-function-wrapper .reward-fn-editor-panel {
+  flex: 2;
+}
+.reward-function-wrapper vaadin-custom-field {
+  margin-top: unset;
+  flex: 1;
+}
+
+.reward-fn-panel-container {
+  flex: 2;
+}
+
+.error-and-notes-container {
+  flex: 1;
 }
 
 .errors-wrapper {
   display: flex;
   flex-direction: column;
+  flex: 2;
+}
+
+.notes-wrapper {
+  flex: 1;
+}
+
+.errors-wrapper .bold-label {
+  height: 33px;
 }
 
 .error-message-wrapper {
-  flex: 1 0 calc(100% - 26px);
+  flex: 1;
+  margin-top: var(--lumo-space-xs);
   box-sizing: border-box;
   width: 100%;
   white-space: pre;
-  background-color: white;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro",
+    monospace;
+  background-color: var(--pm-app-bg-color);
   padding: var(--lumo-space-s) var(--lumo-space-m);
   border-radius: var(--lumo-border-radius);
   overflow: auto;
@@ -40,6 +74,10 @@
   margin-right: var(--lumo-space-xs);
 }
 
-vaadin-button {
-  cursor: pointer;
+.reward-fn-panel-container vaadin-button,
+.error-and-notes-container vaadin-button {
+  min-width: calc(var(--lumo-button-size) * 1.625);
+  height: 1.4rem;
+  font-size: var(--lumo-font-size-s);
+  padding: 0 var(--lumo-space-s);
 }

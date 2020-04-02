@@ -12,6 +12,7 @@ public class AnylogicFileCheckResult implements FileCheckResult {
     private int numAction;
     private int numObservation;
     private String rewardVariableFunction;
+    private int rewardVariablesCount;
 
     @Override
     public boolean isFileCheckComplete() {
@@ -110,5 +111,13 @@ public class AnylogicFileCheckResult implements FileCheckResult {
 
     public void setRewardVariableFunction(String rewardVariableFunction) {
         this.rewardVariableFunction = rewardVariableFunction;
+    }
+
+    public int getRewardVariablesCount() {
+        return rewardVariablesCount;
+    }
+
+    public void setRewardVariablesCount(int rewardVariablesCount) {
+        this.rewardVariablesCount = rewardVariablesCount;
     }
 }
