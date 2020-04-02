@@ -18,6 +18,7 @@ env:
   TEST_APP_URL: "https://test.devpathmind.com/"
   PROD_APP_URL: "https://app.pathmind.com/"
   SPRING_PROFILES_ACTIVE: prod
+  APP_DOMAIN: .devpathmind.com
 
 name: pathmind-admin-server
 

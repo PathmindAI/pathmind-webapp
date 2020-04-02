@@ -42,6 +42,8 @@ spec:
               value: "us-east-1"
             - name: SPRING_PROFILES_ACTIVE
               value: "{{ .Values.env.SPRING_PROFILES_ACTIVE }}"
+            - name: APP_DOMAIN
+              value: "{{ .Values.env.APP_DOMAIN }}"
             - name: DB_URL_PROD
               valueFrom:
                 secretKeyRef:
