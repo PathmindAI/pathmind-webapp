@@ -39,6 +39,7 @@ public class ExperimentsNavbar extends VerticalLayout
 
 		experiments.stream()
 				.filter(experiment -> !ExperimentUtils.isDraftRunType(experiment))
+				.filter(experiment -> !experiment.isArchived())
 				.forEach(experiment -> {
 					Boolean isCurrentExperiment = (experiment.getId() == currentExperiment.getId());
 					RunStatus overallExperimentStatus = getRunsStatus(experiment);
