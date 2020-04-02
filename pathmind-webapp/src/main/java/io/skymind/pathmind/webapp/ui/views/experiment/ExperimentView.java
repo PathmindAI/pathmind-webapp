@@ -11,8 +11,10 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -58,6 +60,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyHighlight
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 
 @CssImport("./styles/styles.css")
@@ -71,6 +74,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private Object experimentLock = new Object();
 
 	private Button exportPolicyButton;
+	private Button archiveExperimentButton;
 
 	private long experimentId = -1;
 	private long modelId = -1;
@@ -195,17 +199,34 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		exportPolicyButton.addClassName("half-width");
 		exportPolicyButton.setEnabled(false);
 
+		archiveExperimentButton = new Button("Archive", VaadinIcon.ARCHIVE.create(), click -> archiveExperiment());
+		archiveExperimentButton.addClassName("half-width");
+
 		notesField = createViewNotesField();
 
 		return WrapperUtils.wrapSizeFullVertical(
 				WrapperUtils.wrapWidthFullCenterHorizontal(restartTraining),
 				policyHighlightPanel,
-				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton),
+				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton, archiveExperimentButton),
 				trainingStatusDetailsPanel,
 				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
 					rewardFunctionEditorHeader, rewardFunctionEditor
 				),
 				notesField);
+	}
+
+	private void archiveExperiment() {
+		ConfirmDialog dialog = new ConfirmDialog("Archive this experiment?", "This hides it from your main workspaces so you can stay organized. You can always unarchive experiments.", 
+				"Archive Experiment", evt -> {
+			experimentDAO.archive(experiment.getId(), true);
+			experiments.remove(experiment);
+			if (experiments.isEmpty()) {
+				getUI().ifPresent(ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+			} else {
+				selectExperiment(experiments.get(0));
+			}
+		});
+		dialog.open();
 	}
 
 	private Breadcrumbs createBreadcrumbs() {        
