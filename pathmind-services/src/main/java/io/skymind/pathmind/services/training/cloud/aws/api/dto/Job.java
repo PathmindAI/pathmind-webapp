@@ -27,7 +27,7 @@ public class Job {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String mockupCycle;
 
-    @JsonProperty("ec_instance_type")
+    @JsonProperty("hw_type")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private EC2InstanceType ec2InstanceType;
 
