@@ -16,7 +16,6 @@ spec:
       - c5.2xlarge
       - c5d.2xlarge
       - c5n.2xlarge
-      - inf1.2xlarge
       - m3.2xlarge
     onDemandAboveBase: 0
     spotInstancePools: 5

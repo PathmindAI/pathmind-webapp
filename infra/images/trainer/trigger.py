@@ -166,6 +166,7 @@ def process_message(message):
 
         #replace values in template an dcreate spot ig yaml file
         IG_TEMPLATE="spot_ig_template-{hw_type}.yaml".format(hw_type=hw_type)
+        IG_FILE=IG_TEMPLATE.replace('_template','')
         mem_ig_template=load_ig_template(IG_TEMPLATE)
         JOB_IG_FILE=job_id+"_"+IG_FILE
         with open(JOB_IG_FILE,'w') as file:
@@ -334,7 +335,6 @@ if __name__ == "__main__":
     ENVIRONMENT=os.environ['ENVIRONMENT']
     RL_IMAGE=os.environ['RL_IMAGE']
     DEPLOYMENT_TEMPLATE="rl_training_deployment.yaml"
-    IG_FILE=IG_TEMPLATE.replace('_template','')
     DEPLOYMENT_FILE=DEPLOYMENT_TEMPLATE.replace('_template','')
     psql_con_details={}
     mockup_status={}
