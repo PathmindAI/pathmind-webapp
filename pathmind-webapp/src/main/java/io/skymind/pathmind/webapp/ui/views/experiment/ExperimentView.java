@@ -1,7 +1,9 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,6 +27,7 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.TrainingService;
@@ -75,13 +78,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private Button exportPolicyButton;
 	private Button archiveExperimentButton;
+	private Button unarchiveExperimentButton;
 
 	private long experimentId = -1;
 	private long modelId = -1;
 	private List<RewardVariable> rewardVariables;
 	private Policy policy;
 	private Experiment experiment;
-	private List<Experiment> experiments;
+	private List<Experiment> experiments = new ArrayList<>();
 
 	private PolicyHighlightPanel policyHighlightPanel;
 	private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
@@ -106,6 +110,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private TrainingService trainingService;
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private RunDAO runDAO;
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 	@Autowired
@@ -202,12 +208,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		archiveExperimentButton = new Button("Archive", VaadinIcon.ARCHIVE.create(), click -> archiveExperiment());
 		archiveExperimentButton.addClassName("half-width");
 
+		unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
+		unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		unarchiveExperimentButton.addClassName("half-width");
+
 		notesField = createViewNotesField();
 
 		return WrapperUtils.wrapSizeFullVertical(
 				WrapperUtils.wrapWidthFullCenterHorizontal(restartTraining),
 				policyHighlightPanel,
-				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton, archiveExperimentButton),
+				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton),
+				WrapperUtils.wrapWidthFullCenterHorizontal(archiveExperimentButton, unarchiveExperimentButton),
 				trainingStatusDetailsPanel,
 				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
 					rewardFunctionEditorHeader, rewardFunctionEditor
@@ -223,9 +234,21 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			if (experiments.isEmpty()) {
 				getUI().ifPresent(ui -> ui.navigate(ModelView.class, experiment.getModelId()));
 			} else {
-				selectExperiment(experiments.get(0));
+				Experiment currentExperiment = experiments.get(0);
+				selectExperiment(currentExperiment);
+				experimentsNavbar.setExperiments(experiments, currentExperiment);
 			}
 		});
+		dialog.setCancelButton("Cancel", evt -> dialog.close());
+		dialog.open();
+	}
+	private void unarchiveExperiment() {
+		ConfirmDialog dialog = new ConfirmDialog("Confirm Unarchive", "Are you sure you want to unarchive this experiment?", 
+				"Unarchive Experiment", evt -> {
+					experimentDAO.archive(experiment.getId(), false);
+					getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
+				});
+		dialog.setCancelButton("Cancel", evt -> dialog.close());
 		dialog.open();
 	}
 
@@ -284,9 +307,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
 		}
 		policy = selectBestPolicy(experiment.getPolicies());
-		experiments = experimentDAO.getExperimentsForModel(modelId);
-		// Quick and temporary solution to fix some the runs not being loaded for the individual experiment.
-		experiment.setRuns(experiments.stream().filter(exp -> exp.getId() == experimentId).findFirst().get().getRuns());
+		experiment.setRuns(runDAO.getRunsForExperiment(experiment));
+		if (!experiment.isArchived()) {
+			experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+		}
 	}
 
 	@Override
@@ -296,6 +320,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private void updateScreenComponents() {
 		setPolicyChartVisibility();
+		experimentsNavbar.setVisible(!experiment.isArchived());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
 			rewardFunctionEditor.setVariableNames(rewardVariables);
@@ -373,6 +398,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private void updateButtonEnablement() {
 		boolean isCompleted = ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed;
+		archiveExperimentButton.setVisible(!experiment.isArchived());
+		unarchiveExperimentButton.setVisible(experiment.isArchived());
 		exportPolicyButton.setEnabled(isCompleted && policy != null && policy.hasFile());
 		restartTraining.setVisible(false);
 	}
