@@ -51,7 +51,7 @@ public class Job {
     }
 
     public void setEc2InstanceType(EC2InstanceType instanceType) {
-        this.ec2InstanceType = ec2InstanceType;
+        this.ec2InstanceType = instanceType;
     }
 
 }
