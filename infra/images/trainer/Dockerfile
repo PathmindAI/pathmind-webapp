@@ -4,7 +4,7 @@ FROM ubuntu
 WORKDIR /app
 
 #Copy files
-COPY spot_ig_template.yaml .
+COPY spot_ig_template*.yaml .
 COPY trigger.py .
 COPY LoggerInit.py .
 COPY requirements.txt .
