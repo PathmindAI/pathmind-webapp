@@ -188,8 +188,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			return;
 		}
 
-		if (rewardVariablesTable.getValue() != null) {
-			rewardVariableDAO.saveRewardVariables(rewardVariablesTable.getValue());
+		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();
+		if (rewardVariables != null) {
+			rewardVariables.forEach(rv -> rv.setModelId(experiment.getModelId()));
+			rewardVariableDAO.saveRewardVariables(rewardVariables);
 		}
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.rewardFuntionCreated();
@@ -208,7 +210,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();
 		if (rewardVariables != null) {
 			rewardVariables.forEach(rv -> rv.setModelId(experiment.getModelId()));
-			rewardVariableDAO.saveRewardVariables(rewardVariablesTable.getValue());
+			rewardVariableDAO.saveRewardVariables(rewardVariables);
 		}
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.draftSaved();
