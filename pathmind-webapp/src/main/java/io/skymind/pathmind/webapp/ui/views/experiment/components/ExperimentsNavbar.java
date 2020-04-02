@@ -35,30 +35,39 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 	private static final String CURRENT = "current";
 
 	private List<ExperimentsNavBarItem> experimentsNavBarItems = new ArrayList<>();
+	private VerticalLayout rowsWrapper;
+	private Consumer<Experiment> selectExperimentConsumer;
 
 	public ExperimentsNavbar(ExperimentDAO experimentDAO, List<Experiment> experiments, Experiment currentExperiment, long modelId, Consumer<Experiment> selectExperimentConsumer)
 	{
-		VerticalLayout rowsWrapper = new VerticalLayout();
+		this.selectExperimentConsumer = selectExperimentConsumer;
+		rowsWrapper = new VerticalLayout();
 		rowsWrapper.addClassName("experiments-navbar-items");
 		rowsWrapper.setPadding(false);
 		rowsWrapper.setSpacing(false);
-
-		experiments.stream()
-				.filter(experiment -> !ExperimentUtils.isDraftRunType(experiment))
-				.filter(experiment -> !experiment.isArchived())
-				.forEach(experiment -> {
-					ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(experiment, selectExperimentConsumer);
-					experimentsNavBarItems.add(navBarItem);
-					if(experiment.getId() == currentExperiment.getId())
-						navBarItem.setAsCurrent();
-					rowsWrapper.add(navBarItem);
-				});
 
 		setPadding(false);
 		setSpacing(false);
 		add(new NewExperimentButton(experimentDAO, modelId));
 		add(rowsWrapper);
 		addClassName("experiments-navbar");
+		setExperiments(experiments, currentExperiment);
+	}
+
+	public void setExperiments(List<Experiment> experiments, Experiment currentExperiment) {
+		rowsWrapper.removeAll();
+		experimentsNavBarItems.clear();
+		
+		experiments.stream()
+			.filter(experiment -> !ExperimentUtils.isDraftRunType(experiment))
+			.forEach(experiment -> {
+				ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(experiment, selectExperimentConsumer);
+				experimentsNavBarItems.add(navBarItem);
+				if(experiment.getId() == currentExperiment.getId()) {
+					navBarItem.setAsCurrent();
+				}
+				rowsWrapper.add(navBarItem);
+		});
 	}
 
 	@Override
