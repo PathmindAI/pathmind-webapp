@@ -2,7 +2,6 @@ package io.skymind.pathmind.updater.aws;
 
 import io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
@@ -95,14 +94,12 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
      * and if the Run type is discovery or full run
      */
     private void sendNotificationMail(RunStatus jobStatus, Run run) {
-        if (RunStatus.isFinished(jobStatus)) {
-            // Do not send notification if there is another run with same run type still executing or the notification is already been sent
-            if (runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
-                boolean isSuccessful = jobStatus == RunStatus.Completed;
-                PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
-                emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);
-                runDAO.markAsNotificationSent(run.getId());
-            }
+        // Do not send notification if there is another run with same run type still executing or the notification is already been sent
+        if (RunStatus.isFinished(jobStatus) && runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
+            boolean isSuccessful = jobStatus == RunStatus.Completed;
+            PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
+            emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);
+            runDAO.markAsNotificationSent(run.getId());
         }
     }
 
