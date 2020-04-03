@@ -1,12 +1,55 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.Route;
+
+import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.RewardVariableDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.TrainingErrorDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.services.TrainingService;
+import io.skymind.pathmind.shared.bus.EventBus;
+import io.skymind.pathmind.shared.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.shared.bus.subscribers.PolicyUpdateSubscriber;
+import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.TrainingError;
+import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.shared.featureflag.Feature;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.TabPanel;
+import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
@@ -20,44 +63,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyHighlight
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import io.skymind.pathmind.services.PolicyFileService;
-
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.splitlayout.SplitLayout;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.Route;
-
-import io.skymind.pathmind.shared.bus.EventBus;
-import io.skymind.pathmind.shared.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.shared.bus.subscribers.PolicyUpdateSubscriber;
-import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
-import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.data.TrainingError;
-import io.skymind.pathmind.shared.utils.PolicyUtils;
-import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
-import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.db.dao.TrainingErrorDAO;
-import io.skymind.pathmind.db.dao.UserDAO;
-import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 
 @CssImport("./styles/styles.css")
@@ -71,12 +77,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private Object experimentLock = new Object();
 
 	private Button exportPolicyButton;
+	private Button archiveExperimentButton;
+	private Button unarchiveExperimentButton;
 
 	private long experimentId = -1;
 	private long modelId = -1;
+	private List<RewardVariable> rewardVariables;
 	private Policy policy;
 	private Experiment experiment;
-	private List<Experiment> experiments;
+	private List<Experiment> experiments = new ArrayList<>();
 
 	private PolicyHighlightPanel policyHighlightPanel;
 	private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
@@ -92,6 +101,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Autowired
 	private ExperimentDAO experimentDAO;
 	@Autowired
+	private RewardVariableDAO rewardVariableDAO;
+	@Autowired
 	private PolicyDAO policyDAO;
 	@Autowired
 	private TrainingErrorDAO trainingErrorDAO;
@@ -100,7 +111,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Autowired
 	private UserDAO userDAO;
 	@Autowired
+	private RunDAO runDAO;
+	@Autowired
 	private SegmentIntegrator segmentIntegrator;
+	@Autowired
+	private FeatureManager featureManager;
 
 	private Breadcrumbs pageBreadcrumbs;
 	private Button restartTraining;
@@ -136,9 +151,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				getRightPanel(),
 				DEFAULT_SPLIT_PANE_RATIO);
 		// TODO -> Charts do not re-flow automatically: https://vaadin.com/forum/thread/17878341/resizable-charts (https://github.com/vaadin/vaadin-charts/issues/457)
-		mainSplitLayout.addSplitterDragendListener(evt -> getUI().ifPresent(ui -> ui.getPage().executeJs("Array.from(window.document.getElementsByTagName('vaadin-chart')).forEach( el => el.__reflow());")));
+		mainSplitLayout.addSplitterDragendListener(evt -> getUI().ifPresent(ui -> {
+			ui.getPage().executeJs("window.dispatchEvent(new Event('resize'));");
+		}));
 		mainSplitLayout.addClassName("page-content");
-
 		pageBreadcrumbs = createBreadcrumbs();
 
 		VerticalLayout mainLayout = WrapperUtils.wrapSizeFullVertical(
@@ -163,6 +179,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private VerticalLayout getRightPanel() {
 		TabPanel rewardFunctionEditorHeader = new TabPanel("Reward Function");
+		rewardFunctionEditorHeader.setEnabled(false);
 		rewardFunctionEditor = new RewardFunctionEditor();
 		rewardFunctionEditor.setReadonly(true);
 		rewardFunctionEditor.setSizeFull();
@@ -188,17 +205,51 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		exportPolicyButton.addClassName("half-width");
 		exportPolicyButton.setEnabled(false);
 
+		archiveExperimentButton = new Button("Archive", VaadinIcon.ARCHIVE.create(), click -> archiveExperiment());
+		archiveExperimentButton.addClassName("half-width");
+
+		unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
+		unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		unarchiveExperimentButton.addClassName("half-width");
+
 		notesField = createViewNotesField();
 
 		return WrapperUtils.wrapSizeFullVertical(
 				WrapperUtils.wrapWidthFullCenterHorizontal(restartTraining),
 				policyHighlightPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton),
+				WrapperUtils.wrapWidthFullCenterHorizontal(archiveExperimentButton, unarchiveExperimentButton),
 				trainingStatusDetailsPanel,
 				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
 					rewardFunctionEditorHeader, rewardFunctionEditor
 				),
 				notesField);
+	}
+
+	private void archiveExperiment() {
+		ConfirmDialog dialog = new ConfirmDialog("Archive this experiment?", "This hides it from your main workspaces so you can stay organized. You can always unarchive experiments.", 
+				"Archive Experiment", evt -> {
+			experimentDAO.archive(experiment.getId(), true);
+			experiments.remove(experiment);
+			if (experiments.isEmpty()) {
+				getUI().ifPresent(ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+			} else {
+				Experiment currentExperiment = experiments.get(0);
+				selectExperiment(currentExperiment);
+				experimentsNavbar.setExperiments(experiments, currentExperiment);
+			}
+		});
+		dialog.setCancelButton("Cancel", evt -> dialog.close());
+		dialog.open();
+	}
+	private void unarchiveExperiment() {
+		ConfirmDialog dialog = new ConfirmDialog("Confirm Unarchive", "Are you sure you want to unarchive this experiment?", 
+				"Unarchive Experiment", evt -> {
+					experimentDAO.archive(experiment.getId(), false);
+					getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
+				});
+		dialog.setCancelButton("Cancel", evt -> dialog.close());
+		dialog.open();
 	}
 
 	private Breadcrumbs createBreadcrumbs() {        
@@ -247,16 +298,19 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		experiment = experimentDAO.getExperiment(experimentId)
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		loadExperimentData();
-		// The logic below is a bit odd in that this is almost a model view but as a result it needs to be done after the experiment is loaded.
 	}
 
 	private void loadExperimentData() {
 		modelId = experiment.getModelId();
 		experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
+		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
+			rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
+		}
 		policy = selectBestPolicy(experiment.getPolicies());
-		experiments = experimentDAO.getExperimentsForModel(modelId);
-		// Quick and temporary solution to fix some the runs not being loaded for the individual experiment.
-		experiment.setRuns(experiments.stream().filter(exp -> exp.getId() == experimentId).findFirst().get().getRuns());
+		experiment.setRuns(runDAO.getRunsForExperiment(experiment));
+		if (!experiment.isArchived()) {
+			experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+		}
 	}
 
 	@Override
@@ -266,7 +320,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private void updateScreenComponents() {
 		setPolicyChartVisibility();
+		experimentsNavbar.setVisible(!experiment.isArchived());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
+		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
+			rewardFunctionEditor.setVariableNames(rewardVariables);
+		}
 		policyChartPanel.setExperiment(experiment);
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 		processSelectedPolicy(policy);
@@ -340,6 +398,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private void updateButtonEnablement() {
 		boolean isCompleted = ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Completed;
+		archiveExperimentButton.setVisible(!experiment.isArchived());
+		unarchiveExperimentButton.setVisible(experiment.isArchived());
 		exportPolicyButton.setEnabled(isCompleted && policy != null && policy.hasFile());
 		restartTraining.setVisible(false);
 	}

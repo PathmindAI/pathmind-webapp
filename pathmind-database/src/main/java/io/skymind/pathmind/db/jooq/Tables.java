@@ -12,6 +12,7 @@ import io.skymind.pathmind.db.jooq.tables.PathmindUser;
 import io.skymind.pathmind.db.jooq.tables.Policy;
 import io.skymind.pathmind.db.jooq.tables.Project;
 import io.skymind.pathmind.db.jooq.tables.RewardScore;
+import io.skymind.pathmind.db.jooq.tables.RewardVariable;
 import io.skymind.pathmind.db.jooq.tables.Run;
 import io.skymind.pathmind.db.jooq.tables.TrainerJob;
 import io.skymind.pathmind.db.jooq.tables.TrainingError;
@@ -71,6 +72,11 @@ public class Tables {
      * The table <code>public.reward_score</code>.
      */
     public static final RewardScore REWARD_SCORE = RewardScore.REWARD_SCORE;
+
+    /**
+     * The table <code>public.reward_variable</code>.
+     */
+    public static final RewardVariable REWARD_VARIABLE = RewardVariable.REWARD_VARIABLE;
 
     /**
      * The table <code>public.run</code>.

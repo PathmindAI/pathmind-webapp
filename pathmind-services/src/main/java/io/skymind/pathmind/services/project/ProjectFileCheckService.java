@@ -86,6 +86,10 @@ public class ProjectFileCheckService {
                 ((AnylogicFileCheckResult)(result)).setNumObservation(Integer.parseInt(params.getObservations()));
             }
 
+            if (params.getRewardVariablesCount() != null) {
+                ((AnylogicFileCheckResult) result).setRewardVariablesCount(Integer.parseInt(params.getRewardVariablesCount()));
+            }
+
             ((AnylogicFileCheckResult)(result)).setRewardVariableFunction(params.getRewardFunction());
         } else {
             log.info("Model Analyzer returns null for the given model");
