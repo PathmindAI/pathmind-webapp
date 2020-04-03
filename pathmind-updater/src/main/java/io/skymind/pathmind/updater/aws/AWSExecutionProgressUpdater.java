@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.db.dao.TrainingErrorDAO.UNKNOWN_ERROR_KEYWORD;
-import static io.skymind.pathmind.db.dao.TrainingErrorDAO.KILLED_TRAINING_KEYWORD;
+import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.UNKNOWN_ERROR_KEYWORD;
+import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.KILLED_TRAINING_KEYWORD;
 
 @Service
 @Slf4j
