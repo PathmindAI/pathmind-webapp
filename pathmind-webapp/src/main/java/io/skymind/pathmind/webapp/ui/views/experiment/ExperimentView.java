@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyHighlight
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -61,25 +63,9 @@ import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.TrainingError;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
-import io.skymind.pathmind.webapp.ui.components.TabPanel;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
-import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
-import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
-import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
-import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavbar;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyHighlightPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 
@@ -224,7 +210,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		exportPolicyButton.setVisible(false);
 
 		stopTrainingButton = new Button("Stop Training", click -> {
-			showConfirmationDialog();
+			showStopTrainingConfirmationDialog();
 		});
 		stopTrainingButton.addClassName("half-width");
 		stopTrainingButton.setVisible(true);
@@ -251,23 +237,27 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				notesField);
 	}
 
-	private void showConfirmationDialog() {
+	private void showStopTrainingConfirmationDialog() {
 		ConfirmDialog confirmDialog = new ConfirmDialog();
 		confirmDialog.setHeader("Stop Training");
 		confirmDialog.setText(new Html(
 				"<div>"
 						+ "<p>Are you sure you want to stop training?</p>"
-						+ "<p>If you stop the traning before it completes, you won't be able to download the policy.</p>"
+						+ "<p>If you stop the training before it completes, you won't be able to download the policy. "
+						+ "<b>If you decide you want to start the training again, you can start a new experiment and "
+						+ "use the same reward function.</b>"
+						+ "</p>"
 						+ "</div>"));
-		Button confirmButton = new Button("Stop Training", (e) -> {
-			trainingService.stopRun(experiment);
-			confirmDialog.close();
-		});
-		confirmButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-		confirmDialog.setConfirmButton(confirmButton);
-		confirmDialog.addConfirmListener((e) -> {
-			trainingService.stopRun(experiment);
-		});
+		confirmDialog.setConfirmButton(
+				"Stop Training",
+				(e) -> {
+					trainingService.stopRun(experiment);
+					confirmDialog.close();
+				},
+				StringUtils.join(
+						Arrays.asList(ButtonVariant.LUMO_ERROR.getVariantName(), ButtonVariant.LUMO_PRIMARY.getVariantName()),
+						" ")
+		);
 		confirmDialog.setCancelText("Cancel");
 		confirmDialog.setCancelable(true);
 		confirmDialog.open();
