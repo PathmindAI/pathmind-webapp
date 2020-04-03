@@ -46,6 +46,7 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.TabPanel;
@@ -141,7 +142,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected Component getTitlePanel() {
-		return null;
+		pageBreadcrumbs = createBreadcrumbs();
+		return new ScreenTitlePanel(pageBreadcrumbs);
 	}
 
 	@Override
@@ -155,14 +157,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			ui.getPage().executeJs("window.dispatchEvent(new Event('resize'));");
 		}));
 		mainSplitLayout.addClassName("page-content");
-		pageBreadcrumbs = createBreadcrumbs();
 
-		VerticalLayout mainLayout = WrapperUtils.wrapSizeFullVertical(
-			WrapperUtils.wrapWidthFullCenterHorizontal(pageBreadcrumbs),
-				mainSplitLayout
-			);
-
-	  return mainLayout;
+		return WrapperUtils.wrapSizeFullVertical(mainSplitLayout);
 	}
 
 	private Component getLeftPanel() {
