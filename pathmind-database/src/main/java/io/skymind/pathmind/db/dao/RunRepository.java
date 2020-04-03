@@ -78,6 +78,13 @@ class RunRepository
                 .where(Tables.RUN.EXPERIMENT_ID.in(experimentIds))
                 .fetchGroups(RUN.EXPERIMENT_ID, Run.class);
     }
+    
+    protected static List<Run> getRunsForExperiment(DSLContext ctx, Long experimentId) {
+    	return ctx.select(Tables.RUN.asterisk())
+    			.from(RUN)
+    			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
+    			.fetchInto(Run.class);
+    }
 
     protected static List<Long> getAlreadyNotifiedOrStillExecutingRunsWithType(DSLContext ctx, long experimentId, int runType) {
     	return ctx.select(Tables.RUN.ID)
