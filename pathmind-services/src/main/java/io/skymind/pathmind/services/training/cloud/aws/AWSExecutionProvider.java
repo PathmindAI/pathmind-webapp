@@ -1,6 +1,7 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
@@ -98,7 +99,19 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public void stop(String jobHandle) {
-        throw new UnsupportedOperationException("Not currently supported");
+        File emptyFile = null;
+        try {
+            emptyFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
+            client.fileUpload(jobHandle + "/output/" + TrainingFile.STOPPING, emptyFile);
+            client.jobStop(jobHandle);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return;
+        } finally {
+            if (emptyFile != null) {
+                emptyFile.delete();
+            }
+        }
     }
 
     @Override
@@ -107,6 +120,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
             boolean killed = getFile(jobHandle, TrainingFile.KILLED).isPresent();
             if (killed) {
                 return ProviderJobStatus.KILLED;
+            }
+            boolean stopping = getFile(jobHandle, TrainingFile.STOPPING).isPresent();
+            if (stopping) {
+                return ProviderJobStatus.STOPPING;
             }
 
             boolean restarting = getFile(jobHandle, TrainingFile.RESTARTING).isPresent();
@@ -200,7 +217,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     public boolean outputExist(String jobHandle) {
-        return client.listObjects(jobHandle + "/output").getObjectSummaries().size() > 0 ? true : false;
+        return client.listObjects(jobHandle + "/output").getObjectSummaries().size() > 0;
     }
 
     public List<String> getTrialStatus(String jobHandle, String fileName) {
