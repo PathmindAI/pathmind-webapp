@@ -319,6 +319,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private void updateScreenComponents() {
+		clearErrorState();
 		setPolicyChartVisibility();
 		experimentsNavbar.setVisible(!experiment.isArchived());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
@@ -347,7 +348,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void processSelectedPolicy(Policy selectedPolicy) {
 		policyHighlightPanel.update(selectedPolicy);
 		if (selectedPolicy != null) {
-			  policyChartPanel.highlightPolicy(selectedPolicy);
+			policyChartPanel.highlightPolicy(selectedPolicy);
 			updateButtonEnablement();
 			updateRightPanelForExperiment();
 		}
