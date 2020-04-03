@@ -2,6 +2,8 @@ package io.skymind.pathmind.services.project.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
+import io.skymind.pathmind.shared.featureflag.Feature;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -19,7 +21,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
@@ -30,19 +31,19 @@ public class ModelAnalyzerApiClient {
     private final String token;
     private final ObjectMapper objectMapper;
     private final WebClient client;
-    private final boolean multiAgent;
+    private final FeatureManager featureManager;
 
     public ModelAnalyzerApiClient(
             @Value("${skymind.model.analyzer.base-url}") String url,
             @Value("${skymind.model.analyzer.token}") String token,
-            @Value("${pathmind.training.multiagent:false}") boolean multiAgent,
+            FeatureManager featureManager,
             ObjectMapper objectMapper,
             WebClient.Builder webClientBuilder
     ) {
         this.url = url;
         this.token = token;
         this.objectMapper = objectMapper;
-        this.multiAgent = multiAgent;
+        this.featureManager = featureManager;
 
         client = webClientBuilder
                 .baseUrl(this.url)
@@ -68,8 +69,8 @@ public class ModelAnalyzerApiClient {
         return result;
     }
 
-    public HyperparametersDTO analyze(File file) throws IOException {
-        if (multiAgent) {
+    public HyperparametersDTO analyze(File file) {
+        if (featureManager.isEnabled(Feature.MULTI_AGENT_TRAINING)) {
             log.warn("Skip model analysis in multi-agent mode");
             return null;
         }

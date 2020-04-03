@@ -12,6 +12,7 @@ import io.skymind.pathmind.db.jooq.tables.PathmindUser;
 import io.skymind.pathmind.db.jooq.tables.Policy;
 import io.skymind.pathmind.db.jooq.tables.Project;
 import io.skymind.pathmind.db.jooq.tables.RewardScore;
+import io.skymind.pathmind.db.jooq.tables.RewardVariable;
 import io.skymind.pathmind.db.jooq.tables.Run;
 import io.skymind.pathmind.db.jooq.tables.TrainerJob;
 import io.skymind.pathmind.db.jooq.tables.TrainingError;
@@ -23,6 +24,7 @@ import io.skymind.pathmind.db.jooq.tables.records.PathmindUserRecord;
 import io.skymind.pathmind.db.jooq.tables.records.PolicyRecord;
 import io.skymind.pathmind.db.jooq.tables.records.ProjectRecord;
 import io.skymind.pathmind.db.jooq.tables.records.RewardScoreRecord;
+import io.skymind.pathmind.db.jooq.tables.records.RewardVariableRecord;
 import io.skymind.pathmind.db.jooq.tables.records.RunRecord;
 import io.skymind.pathmind.db.jooq.tables.records.TrainerJobRecord;
 import io.skymind.pathmind.db.jooq.tables.records.TrainingErrorRecord;
@@ -30,7 +32,6 @@ import io.skymind.pathmind.db.jooq.tables.records.TrainingErrorRecord;
 import javax.annotation.processing.Generated;
 
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.UniqueKey;
 import org.jooq.impl.Internal;
 
@@ -53,14 +54,6 @@ public class Keys {
     // IDENTITY definitions
     // -------------------------------------------------------------------------
 
-    public static final Identity<ExecutionProviderMetaDataRecord, Long> IDENTITY_EXECUTION_PROVIDER_META_DATA = Identities0.IDENTITY_EXECUTION_PROVIDER_META_DATA;
-    public static final Identity<ExperimentRecord, Long> IDENTITY_EXPERIMENT = Identities0.IDENTITY_EXPERIMENT;
-    public static final Identity<ModelRecord, Long> IDENTITY_MODEL = Identities0.IDENTITY_MODEL;
-    public static final Identity<PathmindUserRecord, Long> IDENTITY_PATHMIND_USER = Identities0.IDENTITY_PATHMIND_USER;
-    public static final Identity<PolicyRecord, Long> IDENTITY_POLICY = Identities0.IDENTITY_POLICY;
-    public static final Identity<ProjectRecord, Long> IDENTITY_PROJECT = Identities0.IDENTITY_PROJECT;
-    public static final Identity<RunRecord, Long> IDENTITY_RUN = Identities0.IDENTITY_RUN;
-    public static final Identity<TrainingErrorRecord, Long> IDENTITY_TRAINING_ERROR = Identities0.IDENTITY_TRAINING_ERROR;
 
     // -------------------------------------------------------------------------
     // UNIQUE and PRIMARY KEY definitions
@@ -76,6 +69,8 @@ public class Keys {
     public static final UniqueKey<PolicyRecord> POLICY_RUN_ID_EXTERNAL_ID_KEY = UniqueKeys0.POLICY_RUN_ID_EXTERNAL_ID_KEY;
     public static final UniqueKey<ProjectRecord> PROJECT_PKEY = UniqueKeys0.PROJECT_PKEY;
     public static final UniqueKey<ProjectRecord> UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = UniqueKeys0.UNIQUE_PROJECT_NAME_PATHMIND_USER_ID;
+    public static final UniqueKey<RewardVariableRecord> REWARD_VARIABLE_PKEY = UniqueKeys0.REWARD_VARIABLE_PKEY;
+    public static final UniqueKey<RewardVariableRecord> REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY = UniqueKeys0.REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY;
     public static final UniqueKey<RunRecord> RUN_PKEY = UniqueKeys0.RUN_PKEY;
     public static final UniqueKey<TrainerJobRecord> TRAINER_JOB_PKEY = UniqueKeys0.TRAINER_JOB_PKEY;
     public static final UniqueKey<TrainingErrorRecord> TRAINING_ERROR_PKEY = UniqueKeys0.TRAINING_ERROR_PKEY;
@@ -90,23 +85,13 @@ public class Keys {
     public static final ForeignKey<PolicyRecord, RunRecord> POLICY__PM_FK_POLICY_RUN = ForeignKeys0.POLICY__PM_FK_POLICY_RUN;
     public static final ForeignKey<ProjectRecord, PathmindUserRecord> PROJECT__PM_FK_PROJECT_PATHMIND_USER = ForeignKeys0.PROJECT__PM_FK_PROJECT_PATHMIND_USER;
     public static final ForeignKey<RewardScoreRecord, PolicyRecord> REWARD_SCORE__PM_FK_REWARD_SCORE_POLICY = ForeignKeys0.REWARD_SCORE__PM_FK_REWARD_SCORE_POLICY;
+    public static final ForeignKey<RewardVariableRecord, ModelRecord> REWARD_VARIABLE__PM_FK_REWARD_VARIABLE_MODEL = ForeignKeys0.REWARD_VARIABLE__PM_FK_REWARD_VARIABLE_MODEL;
     public static final ForeignKey<RunRecord, ExperimentRecord> RUN__PM_FK_RUN_EXPERIMENT = ForeignKeys0.RUN__PM_FK_RUN_EXPERIMENT;
     public static final ForeignKey<RunRecord, TrainingErrorRecord> RUN__PM_FK_TRAINING_ERROR = ForeignKeys0.RUN__PM_FK_TRAINING_ERROR;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
     // -------------------------------------------------------------------------
-
-    private static class Identities0 {
-        public static Identity<ExecutionProviderMetaDataRecord, Long> IDENTITY_EXECUTION_PROVIDER_META_DATA = Internal.createIdentity(ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.ID);
-        public static Identity<ExperimentRecord, Long> IDENTITY_EXPERIMENT = Internal.createIdentity(Experiment.EXPERIMENT, Experiment.EXPERIMENT.ID);
-        public static Identity<ModelRecord, Long> IDENTITY_MODEL = Internal.createIdentity(Model.MODEL, Model.MODEL.ID);
-        public static Identity<PathmindUserRecord, Long> IDENTITY_PATHMIND_USER = Internal.createIdentity(PathmindUser.PATHMIND_USER, PathmindUser.PATHMIND_USER.ID);
-        public static Identity<PolicyRecord, Long> IDENTITY_POLICY = Internal.createIdentity(Policy.POLICY, Policy.POLICY.ID);
-        public static Identity<ProjectRecord, Long> IDENTITY_PROJECT = Internal.createIdentity(Project.PROJECT, Project.PROJECT.ID);
-        public static Identity<RunRecord, Long> IDENTITY_RUN = Internal.createIdentity(Run.RUN, Run.RUN.ID);
-        public static Identity<TrainingErrorRecord, Long> IDENTITY_TRAINING_ERROR = Internal.createIdentity(TrainingError.TRAINING_ERROR, TrainingError.TRAINING_ERROR.ID);
-    }
 
     private static class UniqueKeys0 {
         public static final UniqueKey<ExecutionProviderMetaDataRecord> EXECUTION_PROVIDER_META_DATA_PKEY = Internal.createUniqueKey(ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, "execution_provider_meta_data_pkey", ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.ID);
@@ -119,6 +104,8 @@ public class Keys {
         public static final UniqueKey<PolicyRecord> POLICY_RUN_ID_EXTERNAL_ID_KEY = Internal.createUniqueKey(Policy.POLICY, "policy_run_id_external_id_key", Policy.POLICY.RUN_ID, Policy.POLICY.EXTERNAL_ID);
         public static final UniqueKey<ProjectRecord> PROJECT_PKEY = Internal.createUniqueKey(Project.PROJECT, "project_pkey", Project.PROJECT.ID);
         public static final UniqueKey<ProjectRecord> UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = Internal.createUniqueKey(Project.PROJECT, "unique_project_name_pathmind_user_id", Project.PROJECT.PATHMIND_USER_ID, Project.PROJECT.NAME);
+        public static final UniqueKey<RewardVariableRecord> REWARD_VARIABLE_PKEY = Internal.createUniqueKey(RewardVariable.REWARD_VARIABLE, "reward_variable_pkey", RewardVariable.REWARD_VARIABLE.ID);
+        public static final UniqueKey<RewardVariableRecord> REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY = Internal.createUniqueKey(RewardVariable.REWARD_VARIABLE, "reward_variable_model_id_array_index_key", RewardVariable.REWARD_VARIABLE.MODEL_ID, RewardVariable.REWARD_VARIABLE.ARRAY_INDEX);
         public static final UniqueKey<RunRecord> RUN_PKEY = Internal.createUniqueKey(Run.RUN, "run_pkey", Run.RUN.ID);
         public static final UniqueKey<TrainerJobRecord> TRAINER_JOB_PKEY = Internal.createUniqueKey(TrainerJob.TRAINER_JOB, "trainer_job_pkey", TrainerJob.TRAINER_JOB.JOB_ID);
         public static final UniqueKey<TrainingErrorRecord> TRAINING_ERROR_PKEY = Internal.createUniqueKey(TrainingError.TRAINING_ERROR, "training_error_pkey", TrainingError.TRAINING_ERROR.ID);
@@ -131,6 +118,7 @@ public class Keys {
         public static final ForeignKey<PolicyRecord, RunRecord> POLICY__PM_FK_POLICY_RUN = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.RUN_PKEY, Policy.POLICY, "policy__pm_fk_policy_run", Policy.POLICY.RUN_ID);
         public static final ForeignKey<ProjectRecord, PathmindUserRecord> PROJECT__PM_FK_PROJECT_PATHMIND_USER = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.PATHMIND_USER_PKEY, Project.PROJECT, "project__pm_fk_project_pathmind_user", Project.PROJECT.PATHMIND_USER_ID);
         public static final ForeignKey<RewardScoreRecord, PolicyRecord> REWARD_SCORE__PM_FK_REWARD_SCORE_POLICY = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.POLICY_PKEY, RewardScore.REWARD_SCORE, "reward_score__pm_fk_reward_score_policy", RewardScore.REWARD_SCORE.POLICY_ID);
+        public static final ForeignKey<RewardVariableRecord, ModelRecord> REWARD_VARIABLE__PM_FK_REWARD_VARIABLE_MODEL = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.MODEL_PKEY, RewardVariable.REWARD_VARIABLE, "reward_variable__pm_fk_reward_variable_model", RewardVariable.REWARD_VARIABLE.MODEL_ID);
         public static final ForeignKey<RunRecord, ExperimentRecord> RUN__PM_FK_RUN_EXPERIMENT = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.EXPERIMENT_PKEY, Run.RUN, "run__pm_fk_run_experiment", Run.RUN.EXPERIMENT_ID);
         public static final ForeignKey<RunRecord, TrainingErrorRecord> RUN__PM_FK_TRAINING_ERROR = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.TRAINING_ERROR_PKEY, Run.RUN, "run__pm_fk_training_error", Run.RUN.TRAINING_ERROR_ID);
     }

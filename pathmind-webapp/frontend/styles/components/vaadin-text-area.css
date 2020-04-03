@@ -1,9 +1,11 @@
 :host([theme~="notes"]) {
+  box-sizing: border-box;
   width: 100%;
   line-height: 1.5em;
   background-color: white;
   padding: 0;
   border-radius: var(--lumo-border-radius);
+  border: 1px solid var(--lumo-contrast-20pct);
 }
 
 :host([theme~="notes"]) [part="input-field"],
@@ -11,7 +13,12 @@
   line-height: 1.5em;
   height: 12em;
   background-color: white;
-  padding: var(--lumo-space-l);
+  padding: var(--lumo-space-s) var(--lumo-space-m);
+}
+
+:host([theme~="notes"]:hover:not([readonly]):not([focused]))
+  [part="input-field"] {
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
 :host([theme~="notes"]) [part="input-field"] [part="value"],

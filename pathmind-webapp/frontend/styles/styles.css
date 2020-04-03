@@ -17,6 +17,7 @@ html {
   --pm-gray-color-dark: #888888;
   --pm-gray-color: #b3b6c2;
   --pm-gray-color-light: #d0d0d0;
+  --pm-gray-color-lighter: #dee3ed;
   --pm-blue-color-darkest: #1a2949;
   --pm-blue-color-darkest-50pct: rgba(26, 41, 73, 0.5);
   --pm-blue-color-darkest-25pct: rgba(26, 41, 73, 0.25);
@@ -168,6 +169,13 @@ hr {
   text-overflow: ellipsis;
 }
 
+.unsaved-draft-label {
+  font-size: var(--lumo-font-size-s);
+  color: var(--pm-primary-color);
+  margin-left: auto;
+  margin-right: var(--lumo-space-m);
+}
+
 .default-view {
   background: var(--pm-app-bg-color);
   height: 100%;
@@ -214,6 +222,24 @@ hr {
 .model-view .page-content {
   flex: 1;
   margin-top: 0;
+}
+
+.upload-model-view .view-section {
+  max-width: 540px;
+}
+
+/* Upload Model View Reward Variable Names */
+.upload-model-view vaadin-custom-field {
+  width: 100%;
+  line-height: 1;
+}
+
+.upload-model-view .reward-function-wrapper vaadin-custom-field {
+  margin-top: var(--lumo-space-l);
+}
+
+.reward-function-wrapper vaadin-custom-field {
+  overflow-y: auto;
 }
 
 .experiment-view .page-content {

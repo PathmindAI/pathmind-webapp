@@ -37,7 +37,6 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
-
 	public ModelDetailsWizardPanel(Binder<Model> binder)
 	{
 		setupFields();
@@ -47,7 +46,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
 		sectionTitleWrapper = new Div();
-		Span projectText = new Span("Project : ");
+		Span projectText = new Span("Project: ");
 		projectText.addClassName(SECTION_TITLE_LABEL);
 		projectNameLabel = LabelFactory.createLabel("", SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT, SECTION_SUBTITLE_LABEL);
 		sectionTitleWrapper.add(projectText, projectNameLabel);
