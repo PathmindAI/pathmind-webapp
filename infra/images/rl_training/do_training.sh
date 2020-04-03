@@ -32,7 +32,7 @@ if [ "${output_files}" -ge 1 ]
 then
 	description="Training is resumed"
 	curl -X POST -H 'Content-type: application/json' \
-		--data "{'text':':heavy_plus_sign:Resuming Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
+		--data "{'text':':heavy_plus_sign:Resuming Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
 		https://hooks.slack.com/services/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
 	echo "Resuming Training"
 	export RESUME=true
@@ -69,7 +69,7 @@ do
         then
                 description="No update in the log file ${log_file} for more than ${last_modification} seconds, training is not killed"
                 curl -X POST -H 'Content-type: application/json' \
-                --data "{'text':':x:Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
+                --data "{'text':':x:Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
                 https://hooks.slack.com/services/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
                 echo "Killing on timeout"
                 #Set the status in trainer_job
@@ -92,7 +92,7 @@ if [ ${script_exit} != 0 ]
 then
 	description=`tail -c 254 ${log_file} | tr '\n' ' ' | sed "s/'//g"`
 	curl -X POST -H 'Content-type: application/json' \
-		--data "{'text':':x:Training ${S3PATH} Job Crashed\nError: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
+		--data "{'text':':x:Training ${S3PATH} Job Crashed\nError: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
 		https://hooks.slack.com/services/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
 	echo "Training crashed"
 	tail -1  ${log_file} >> errors.log
@@ -149,7 +149,7 @@ if [ "${SUCCESS}" != "${NUM_SAMPLES}" ]
 then
         description="Only ${SUCCESS} trials were successful out of ${NUM_SAMPLES}"
         curl -X POST -H 'Content-type: application/json' \
-        --data "{'text':':x:Job Failed ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
+        --data "{'text':':x:Job Failed ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
         https://hooks.slack.com/services/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
         echo "Error on training"
         status=5
