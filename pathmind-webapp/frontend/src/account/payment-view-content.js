@@ -84,12 +84,6 @@ class PaymentViewContent extends PolymerElement {
           color: #878787;
         }
 
-        .payment-notes {
-          margin: 15px auto 0;
-          color: #878787;
-          font-size: 0.8em;
-        }
-        
         #buttonsCont {
             margin-top: 0;
         }
@@ -169,10 +163,7 @@ class PaymentViewContent extends PolymerElement {
           <vaadin-button id="cancelSignUpBtn" theme="tertiary" on-click="cancelButtonClicked"
             >Cancel</vaadin-button
           >
-          
         </vaadin-vertical-layout>
-
-        <span class="payment-notes">Month-to-month @ $500 / month</span>
       </vaadin-vertical-layout>
 
       </vaadin-vertical-layout>
