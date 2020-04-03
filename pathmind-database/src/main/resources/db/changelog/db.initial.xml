@@ -1121,4 +1121,16 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="20200401-01" author="alexander.makarov@toptal.com">
+        <createTable tableName="RUN_ADMIN_NOTE">
+            <column name="RUN_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_RUN_ADMIN_NOTES" references="RUN(ID)"
+                             unique="true" uniqueConstraintName="PM_RUN_ADMIN_NOTES_RUN_ID_UNQ"/>
+            </column>
+            <column name="NOTE" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
