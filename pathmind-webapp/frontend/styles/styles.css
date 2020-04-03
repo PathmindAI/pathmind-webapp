@@ -277,14 +277,6 @@ account-view {
   margin-top: var(--lumo-space-m);
 }
 
-.page-title a {
-  color: var(--lumo-body-text-color);
-}
-
-.page-title :last-child {
-  font-weight: bold;
-}
-
 .action-button iron-icon {
   width: 32px;
   height: 32px;

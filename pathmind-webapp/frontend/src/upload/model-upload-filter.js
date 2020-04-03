@@ -18,29 +18,29 @@ function matchesFilter(filePath) {
   return false;
 }
 
-if (!window.Pathmind){
-	window.Pathmind = {};
+if (!window.Pathmind) {
+  window.Pathmind = {};
 }
 
 window.Pathmind.ModelUploader = {
-    addClientSideFiltering: function(upload) {
-      upload._addFiles = function(files) {
-        files = filter(files);
-        if (files.length > 0) {
-          Array.prototype.forEach.call(files, upload._addFile.bind(upload));
-        } else {
-          upload.dispatchEvent(
-            new CustomEvent("no-file-to-upload", {
-              bubbles: true,
-              composed: true
-            })
-          );
-        }
-      };
-    },
-    isInputDirSupported: function() {
-      var tmpInput = document.createElement("input");
-      if ("webkitdirectory" in tmpInput) return true;
-      return false;
-    }
+  addClientSideFiltering: function(upload) {
+    upload._addFiles = function(files) {
+      files = filter(files);
+      if (files.length > 0) {
+        Array.prototype.forEach.call(files, upload._addFile.bind(upload));
+      } else {
+        upload.dispatchEvent(
+          new CustomEvent("no-file-to-upload", {
+            bubbles: true,
+            composed: true
+          })
+        );
+      }
+    };
+  },
+  isInputDirSupported: function() {
+    var tmpInput = document.createElement("input");
+    if ("webkitdirectory" in tmpInput) return true;
+    return false;
+  }
 };

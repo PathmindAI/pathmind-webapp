@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
@@ -63,7 +64,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
 	@Override
 	protected Component getTitlePanel() {
-		return null;
+		return new ScreenTitlePanel(createBreadcrumbs());
 	}
 
 	@Override
@@ -99,7 +100,6 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 						exportLink);
 		wrapperContent.setClassName("view-section");
 		return WrapperUtils.wrapCenterVertical("100%", 
-				WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
 				wrapperContent,
 				cancelButton);
 	}

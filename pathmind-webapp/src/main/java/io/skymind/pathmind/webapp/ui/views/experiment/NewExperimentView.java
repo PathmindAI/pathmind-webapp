@@ -2,6 +2,15 @@ package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.List;
 
+import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.FormUtils;
+import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,26 +40,16 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.mock.MockDefaultValues;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
-import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
-import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.utils.FormUtils;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
-import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
-import lombok.extern.slf4j.Slf4j;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
-@Slf4j
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
 	private long experimentId = -1;
 	private Experiment experiment;
@@ -81,19 +80,19 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Binder<Experiment> binder;
 
-	public NewExperimentView() {
-		super();
-		addClassName("new-experiment-view");
-	}
+    public NewExperimentView() {
+        super();
+        addClassName("new-experiment-view");
+    }
 
-	@Override
-	protected Component getTitlePanel() {
-		return null;
-	}
+    @Override
+    protected Component getTitlePanel() {
+        return new ScreenTitlePanel(createBreadcrumbs());
+    }
 
 	@Override
 	protected Component getMainContent() {
-		VerticalLayout mainContent = WrapperUtils.wrapSizeFullVertical(WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()), createMainPanel());
+		VerticalLayout mainContent = WrapperUtils.wrapSizeFullVertical(createMainPanel());
 		binder = new Binder<>(Experiment.class);
 		setupBinder();
 		return mainContent;

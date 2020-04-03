@@ -26,7 +26,7 @@ public class Breadcrumbs extends HorizontalLayout
 	private List<BreadcrumbItem> items = new ArrayList<>();
 
 	public Breadcrumbs() {
-		this(null, null, null);
+		this(null, null, null, true);
 	}
 
 	public Breadcrumbs(Project project) {
@@ -46,6 +46,20 @@ public class Breadcrumbs extends HorizontalLayout
 	
 	public Breadcrumbs(Project project, Model model, Experiment experiment, String stepName) {
 		this(project, model, experiment, stepName, true);
+	}
+	public Breadcrumbs(String title) {
+		this(title, null, null);
+	}
+	
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public Breadcrumbs(String title, String subtitle, Class<? extends Component> rootNavigationTarget) {
+		BreadcrumbItem titleBreadcrumbItem = rootNavigationTarget != null ? new BreadcrumbItem(title, rootNavigationTarget, null) : new BreadcrumbItem(title);
+		items.add(titleBreadcrumbItem);
+		if (subtitle != null) {
+			items.add(new BreadcrumbItem(subtitle));
+		}
+		items.get(items.size() - 1).asCurrentStep();
+		generateLayout();
 	}
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -70,6 +84,10 @@ public class Breadcrumbs extends HorizontalLayout
 		}
 		
 		items.get(items.size() - 1).asCurrentStep();
+		generateLayout();
+	}
+
+	private void generateLayout() {
 		items.forEach(item -> {
 			if (getComponentCount() > 0) {
 				add(createSeparator());

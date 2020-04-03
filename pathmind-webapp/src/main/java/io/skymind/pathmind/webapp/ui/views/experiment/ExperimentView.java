@@ -63,6 +63,7 @@ import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.TrainingError;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
@@ -145,7 +146,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected Component getTitlePanel() {
-		return null;
+		pageBreadcrumbs = createBreadcrumbs();
+		return new ScreenTitlePanel(pageBreadcrumbs);
 	}
 
 	@Override
@@ -159,14 +161,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			ui.getPage().executeJs("window.dispatchEvent(new Event('resize'));");
 		}));
 		mainSplitLayout.addClassName("page-content");
-		pageBreadcrumbs = createBreadcrumbs();
 
-		VerticalLayout mainLayout = WrapperUtils.wrapSizeFullVertical(
-			WrapperUtils.wrapWidthFullCenterHorizontal(pageBreadcrumbs),
-				mainSplitLayout
-			);
-
-	  return mainLayout;
+		return WrapperUtils.wrapSizeFullVertical(mainSplitLayout);
 	}
 
 	private Component getLeftPanel() {
@@ -356,6 +352,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private void updateScreenComponents() {
+		clearErrorState();
 		setPolicyChartVisibility();
 		experimentsNavbar.setVisible(!experiment.isArchived());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
@@ -384,7 +381,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void processSelectedPolicy(Policy selectedPolicy) {
 		policyHighlightPanel.update(selectedPolicy);
 		if (selectedPolicy != null) {
-			  policyChartPanel.highlightPolicy(selectedPolicy);
+			policyChartPanel.highlightPolicy(selectedPolicy);
 			updateButtonEnablement();
 			updateRightPanelForExperiment();
 		}
