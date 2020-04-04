@@ -1,20 +1,12 @@
 package io.skymind.pathmind.db.dao;
 
-import io.skymind.pathmind.shared.bus.EventBus;
-import io.skymind.pathmind.shared.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.ProviderJobStatus;
-import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.data.RewardScore;
+import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -22,10 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Repository
-public class RunDAO
-{
-    private static Logger log = LoggerFactory.getLogger(RunDAO.class);
+public class RunDAO {
 
     private final DSLContext ctx;
 
@@ -92,19 +83,6 @@ public class RunDAO
             updateExperiment(run, transactionCtx);
             updatePolicies(run, policies, transactionCtx);
         });
-
-        // The EventBus updates have to be done AFTER the transaction is completed and NOT during in case the transaction fails.
-        fireEventBusUpdates(run, policies);
-    }
-
-    private void fireEventBusUpdates(Run run, List<Policy> policies) {
-        // An event for each policy since we only need to update some of the policies in a run.
-    	if (!policies.isEmpty()) {
-    		EventBus.post(new PolicyUpdateBusEvent(policies));
-    	}
-        // Send run updated event, meaning that all policies under the run is updated.
-        // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
-        EventBus.post(new RunUpdateBusEvent(run));
     }
 
     private void updateExperiment(Run run, DSLContext transactionCtx) {
@@ -121,8 +99,7 @@ public class RunDAO
         RunRepository.updateStatus(transactionCtx, run);
     }
 
-    private void updatePolicies(Run run, List<Policy> policies, DSLContext transactionCtx)
-    {
+    private void updatePolicies(Run run, List<Policy> policies, DSLContext transactionCtx) {
         for (Policy policy : policies) {
             // We need this line because the policies are generated from the progress string from the backend and are NOT retrieved from the database.
             policy.setRunId(run.getId());
@@ -137,7 +114,7 @@ public class RunDAO
 
             // Only insert new RewardScores
             int maxRewardScoreIteration = RewardScoreRepository.getMaxRewardScoreIteration(transactionCtx, policy.getId());
-            if(maxRewardScoreIteration >= 0) {
+            if (maxRewardScoreIteration >= 0) {
                 List<RewardScore> newRewardScores = policy.getScores().stream()
                         .filter(score -> score.getIteration() > maxRewardScoreIteration)
                         .collect(Collectors.toList());

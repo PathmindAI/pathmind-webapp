@@ -4,8 +4,6 @@ import org.jooq.DSLContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
-import io.skymind.pathmind.shared.bus.EventBus;
-import io.skymind.pathmind.shared.bus.events.UserUpdateBusEvent;
 import io.skymind.pathmind.shared.data.PathmindUser;
 
 @Repository
@@ -27,7 +25,6 @@ public class UserDAO
 
 	public void update(PathmindUser pathmindUser) {
 		UserRepository.update(ctx, pathmindUser);
-		EventBus.post(new UserUpdateBusEvent(pathmindUser));
 	}
 
 	public void delete(long id) {

@@ -1,7 +1,9 @@
-package io.skymind.pathmind.services;
+package io.skymind.pathmind.webapp.security;
 
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.UserUpdateBusEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
@@ -85,6 +87,7 @@ public class UserService
 
     public void update(PathmindUser user) {
         userDAO.update(user);
+        EventBus.post(new UserUpdateBusEvent(user));
     }
 
     public List<String> validatePassword(String password, String confirm) {
