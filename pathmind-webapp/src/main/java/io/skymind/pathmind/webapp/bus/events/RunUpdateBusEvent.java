@@ -1,7 +1,7 @@
-package io.skymind.pathmind.shared.bus.events;
+package io.skymind.pathmind.webapp.bus.events;
 
-import io.skymind.pathmind.shared.bus.BusEventType;
-import io.skymind.pathmind.shared.bus.PathmindBusEvent;
+import io.skymind.pathmind.webapp.bus.BusEventType;
+import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 import io.skymind.pathmind.shared.data.Run;
 
 public class RunUpdateBusEvent implements PathmindBusEvent
@@ -11,11 +11,11 @@ public class RunUpdateBusEvent implements PathmindBusEvent
 	public RunUpdateBusEvent(Run run)
 	{
 		if(run.getExperiment() == null)
-			throw new RuntimeException("Experiment is null");
+			throw new IllegalStateException("Experiment is null");
 		if(run.getModel() == null)
-			throw new RuntimeException("Model is null");
+			throw new IllegalStateException("Model is null");
 		if(run.getProject() == null)
-			throw new RuntimeException("Project is null");
+			throw new IllegalStateException("Project is null");
 
 		this.run = run;
 	}
