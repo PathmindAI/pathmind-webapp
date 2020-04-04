@@ -1,54 +1,57 @@
 package io.skymind.pathmind.updater.aws;
 
-import io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider;
-import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.PathmindUser;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.ProviderJobStatus;
-import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.utils.RunUtils;
-import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
-import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
+import io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider;
+import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent;
+import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.utils.RunUtils;
 import io.skymind.pathmind.updater.ExecutionProgressUpdater;
 import io.skymind.pathmind.updater.ProgressInterpreter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.UNKNOWN_ERROR_KEYWORD;
+import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.TYPE_POLICY;
+import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.TYPE_RUN;
 import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.KILLED_TRAINING_KEYWORD;
+import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.UNKNOWN_ERROR_KEYWORD;
 
 @Service
 @Slf4j
 public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
 
     private final AWSExecutionProvider provider;
+    private final AWSApiClient awsApiClient;
     private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RunDAO runDAO;
     private final PolicyFileService policyFileService;
-    private final UserDAO userDAO;
     private final TrainingErrorDAO trainingErrorDAO;
     private EmailNotificationService emailNotificationService;
 
-    public AWSExecutionProgressUpdater(AWSExecutionProvider provider, PolicyFileService policyFileService, RunDAO runDAO,
-                                       UserDAO userDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO,
+    public AWSExecutionProgressUpdater(AWSExecutionProvider provider, AWSApiClient awsApiClient,
+                                       PolicyFileService policyFileService,
+                                       RunDAO runDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO,
                                        EmailNotificationService emailNotificationService, TrainingErrorDAO trainingErrorDAO) {
         this.provider = provider;
+        this.awsApiClient = awsApiClient;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.runDAO = runDAO;
         this.policyFileService = policyFileService;
-        this.userDAO = userDAO;
         this.trainingErrorDAO = trainingErrorDAO;
         this.emailNotificationService = emailNotificationService;
     }
@@ -72,6 +75,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                 setRunError(run, providerJobStatus);
 
                 runDAO.updateRun(run, providerJobStatus, policies);
+                fireEventUpdates(run, policies);
 
                 // STEPH -> REFACTOR -> QUESTION -> Does this need to be transactional with runDAO.updateRun and put
                 // into updateRun()? For now I left it here, it's no worse than what's in production today. I mainly kept it out
@@ -98,8 +102,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         // Do not send notification if there is another run with same run type still executing or the notification is already been sent
         if (RunStatus.isFinished(jobStatus) && !RunUtils.isStoppedByUser(run) && runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
             boolean isSuccessful = jobStatus == RunStatus.Completed;
-            PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
-            emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);
+            emailNotificationService.sendTrainingCompletedEmail(run.getProject().getPathmindUserId(), run.getExperiment(), run.getProject(), isSuccessful);
             runDAO.markAsNotificationSent(run.getId());
         }
     }
@@ -127,7 +130,8 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                     return;
                 }
 
-                policyFileService.savePolicyFile(runId, finishPolicyName, policyFile);
+                Policy policy = policyFileService.savePolicyFile(runId, finishPolicyName, policyFile);
+                fireEventUpdates(null, Collections.singletonList(policy));
 
                 // save the last checkpoint
                 Map.Entry<String, byte[]> entry = provider.snapshot(jobHandle, finishPolicyName);
@@ -189,6 +193,38 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         	trainingErrorDAO.getErrorByKeyword(KILLED_TRAINING_KEYWORD).ifPresent(error -> {
         		run.setTrainingErrorId(error.getId());
         	});
+        }
+    }
+
+    private void fireEventUpdates(Run run, List<Policy> policies) {
+        for (Policy policy : CollectionUtils.emptyIfNull(policies)) {
+            serializeAndFireEvent(policy, TYPE_POLICY);
+        }
+        serializeAndFireEvent(run, TYPE_RUN);
+    }
+
+    private <T extends Data> void serializeAndFireEvent(T data, String type) {
+        if (data == null) {
+            return;
+        }
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+             ObjectOutputStream out = new ObjectOutputStream(bos)) {
+            out.writeObject(data);
+            out.flush();
+            byte[] bytes = bos.toByteArray();
+            fireEventUpdate(type, data.getId(), bytes);
+        } catch (IOException e) {
+            log.error("Failed to file event: {} {}", type, data.getId(), e);
+        }
+    }
+
+    private void fireEventUpdate(String type, Long id, byte[] cargo) {
+        try {
+            final UpdateEvent event = new UpdateEvent(id, type, cargo.length);
+            awsApiClient.sendUpdaterMessage(event, cargo);
+            log.debug("fired update event [{}]", event);
+        } catch (Exception e) {
+            log.error("Failed to submit update request to SQS", e);
         }
     }
 }

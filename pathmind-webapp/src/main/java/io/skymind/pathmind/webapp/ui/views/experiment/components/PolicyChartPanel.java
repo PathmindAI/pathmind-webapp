@@ -5,8 +5,8 @@ import static io.skymind.pathmind.webapp.utils.ChartUtils.createPassiveSeriesPlo
 
 import java.util.List;
 
-import io.skymind.pathmind.shared.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.shared.bus.subscribers.PolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
@@ -21,7 +21,7 @@ import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import io.skymind.pathmind.shared.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.EventBus;
 
 
 import java.util.stream.Collectors;
