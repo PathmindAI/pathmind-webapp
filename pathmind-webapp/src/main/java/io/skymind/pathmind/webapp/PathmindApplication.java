@@ -2,6 +2,8 @@ package io.skymind.pathmind.webapp;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.services.project.ProjectFileCheckService;
+import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.SpringApplication;
@@ -40,14 +42,6 @@ public class PathmindApplication
 		return Executors.newFixedThreadPool(poolSize);
 	}
 
-	/**
-	 * The password encoder to use when encrypting passwords.
-	 */
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-
 	@Bean
 	ActiveSessionsRegistry activeSessionsRegistry() {
 		return new ActiveSessionsRegistry();
@@ -65,6 +59,11 @@ public class PathmindApplication
 		objectMapper.configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
 
 		return objectMapper;
+	}
+
+	@Bean
+	public ProjectFileCheckService projectFileCheckService(ExecutorService executorService, ModelAnalyzerApiClient modelAnalyzerApiClient) {
+		return new ProjectFileCheckService(executorService, modelAnalyzerApiClient);
 	}
 
 	@EventListener(ApplicationReadyEvent.class)
