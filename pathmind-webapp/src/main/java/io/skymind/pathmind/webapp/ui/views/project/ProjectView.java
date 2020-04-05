@@ -19,6 +19,7 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
@@ -89,9 +90,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		gridWrapper.addClassName("page-content");
 		gridWrapper.setPadding(false);
 		
-		return WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
-				gridWrapper);
+		return WrapperUtils.wrapSizeFullVertical(gridWrapper);
 	}
 
 	private void setupArchivesTabPanel() {
@@ -162,7 +161,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
 	@Override
 	protected Component getTitlePanel() {
-		return null;
+		return new ScreenTitlePanel(createBreadcrumbs());
 	}
 
 	@Override
