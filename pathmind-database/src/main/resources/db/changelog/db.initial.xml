@@ -1121,4 +1121,12 @@
         </createIndex>
     </changeSet>
 
+    <!-- #1320 Remove the checklist feature from the app -->
+    <changeSet id="20200304-01" author="steph@followsteph.com">
+        <dropTable tableName="GUIDE"/>
+        <rollback>
+            <comment>It's not possible to rollback dropping a table.</comment>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
