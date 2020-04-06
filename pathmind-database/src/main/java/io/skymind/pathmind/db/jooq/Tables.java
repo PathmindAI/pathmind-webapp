@@ -14,6 +14,7 @@ import io.skymind.pathmind.db.jooq.tables.Project;
 import io.skymind.pathmind.db.jooq.tables.RewardScore;
 import io.skymind.pathmind.db.jooq.tables.RewardVariable;
 import io.skymind.pathmind.db.jooq.tables.Run;
+import io.skymind.pathmind.db.jooq.tables.RunAdminNote;
 import io.skymind.pathmind.db.jooq.tables.TrainerJob;
 import io.skymind.pathmind.db.jooq.tables.TrainingError;
 
@@ -82,6 +83,11 @@ public class Tables {
      * The table <code>public.run</code>.
      */
     public static final Run RUN = Run.RUN;
+
+    /**
+     * The table <code>public.run_admin_note</code>.
+     */
+    public static final RunAdminNote RUN_ADMIN_NOTE = RunAdminNote.RUN_ADMIN_NOTE;
 
     /**
      * The table <code>public.trainer_job</code>.
