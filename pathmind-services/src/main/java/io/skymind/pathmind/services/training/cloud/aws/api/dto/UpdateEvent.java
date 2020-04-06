@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateEven {
+public class UpdateEvent {
     @JsonProperty("run")
     private Long run;
     @JsonProperty("policies")

@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
-import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEven;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent;
 import io.skymind.pathmind.shared.constants.RunType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -170,7 +170,7 @@ public class AWSApiClient {
         return result.getMessageId();
     }
 
-    public String sendUpdaterMessage(UpdateEven event) throws JsonProcessingException {
+    public String sendUpdaterMessage(UpdateEvent event) throws JsonProcessingException {
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withMessageDeduplicationId(UUID.randomUUID().toString()) // we might expect similar content based
                 .withQueueUrl(updaterQueueUrl)
