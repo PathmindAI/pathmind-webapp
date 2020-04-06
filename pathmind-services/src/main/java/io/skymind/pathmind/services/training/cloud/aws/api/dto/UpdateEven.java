@@ -12,8 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 public class UpdateEven {
     @JsonProperty("run")
-    Long run;
+    private Long run;
     @JsonProperty("policies")
-    List<Long> policies;
+    private List<Long> policies;
 }
 
