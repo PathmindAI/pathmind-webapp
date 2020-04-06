@@ -4,12 +4,6 @@ import java.time.LocalDateTime;
 
 public class Model extends ArchivableData
 {
-	public static final int MIN_NUMBER_OF_OBSERVATIONS = 1;
-	public static final int MAX_NUMBER_OF_OBSERVATIONS = 10000; // a 100*100 field doesn't seem that outlandish
-
-	public static final int MIN_NUMBER_OF_POSSIBLE_ACTIONS = 1;
-	public static final int MAX_NUMBER_OF_POSSIBLE_ACTIONS = 1000;
-
 	public static final int DEFAULT_NUMBER_OF_OBSERVATIONS = 1;
 	public static final int DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS = 1;
 
