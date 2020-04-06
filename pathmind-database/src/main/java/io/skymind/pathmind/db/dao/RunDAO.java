@@ -42,6 +42,10 @@ public class RunDAO
         return RunRepository.getRuns(ctx, runIds);
     }
 
+    public List<Run> getRunsForExperiment(Experiment experiment) {
+    	return RunRepository.getRunsForExperiment(ctx, experiment.getId());
+    }
+
     public Run createRun(Experiment experiment, RunType runType){
         return RunRepository.createRun(ctx, experiment, runType);
     }

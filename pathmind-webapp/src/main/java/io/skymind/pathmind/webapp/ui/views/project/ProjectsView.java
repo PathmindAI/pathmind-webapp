@@ -21,10 +21,10 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
-import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -63,7 +63,6 @@ public class ProjectsView extends PathMindDefaultView
 		gridWrapper.setPadding(false);
 		
 		return WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
 				gridWrapper,
 				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
 	}
@@ -121,13 +120,9 @@ public class ProjectsView extends PathMindDefaultView
 		return projects;
 	}
 
-	private Breadcrumbs createBreadcrumbs() {        
-		return new Breadcrumbs(null, null, null);
-	}
-
 	@Override
 	protected Component getTitlePanel() {
-		return null;
+		return new ScreenTitlePanel("Projects");
 	}
 
 	@Override
