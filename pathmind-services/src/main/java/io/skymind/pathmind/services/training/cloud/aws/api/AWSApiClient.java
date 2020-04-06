@@ -7,12 +7,10 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.amazonaws.util.IOUtils;
@@ -24,6 +22,8 @@ import io.skymind.pathmind.shared.constants.RunType;
 import lombok.Getter;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEven;
+import io.skymind.pathmind.shared.constants.RunType;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,19 +33,20 @@ import org.springframework.util.StringUtils;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
 public class AWSApiClient {
 
     private final AmazonS3 s3Client;
+    @Getter
     private final AmazonSQS sqsClient;
     private final ObjectMapper objectMapper;
 
     private final String bucketName;
     private final String queueUrl;
+    @Getter
     private final String updaterQueueUrl;
     private final int mockCycle;
 
@@ -88,19 +89,10 @@ public class AWSApiClient {
             Assert.isTrue(mockCycle > 0, "Mock Cycle should be greater than zero");
             log.warn("Running with mock cycle {}", mockCycle);
         }
-    }
 
-    private <S extends AwsClientBuilder<S, T>, T> S buildAwsClient(
-            S builder, Regions regions, AWSCredentials credentials,
-            AwsClientBuilder.EndpointConfiguration endpointConfiguration, boolean mocked)
-    {
-        builder.withCredentials(new AWSStaticCredentialsProvider(credentials));
-        if (endpointConfiguration != null && mocked) {
-            builder.withEndpointConfiguration(endpointConfiguration);
-        } else {
-            builder.withRegion(regions);
+        if (endpointConfiguration != null) {
+            initMocks(mockS3, mockSQS);
         }
-        return builder;
     }
 
     public List<Bucket> listBuckets() {
@@ -189,5 +181,45 @@ public class AWSApiClient {
 
         SendMessageResult result = sqsClient.sendMessage(send_msg_request);
         return result.getMessageId();
+    }
+
+    private void initMocks(boolean mockS3, boolean mockSQS) {
+        if (mockS3) {
+            Optional<Bucket> bucket = s3Client.listBuckets().stream().filter(b -> b.getName().equalsIgnoreCase(bucketName)).findFirst();
+            if (bucket.isEmpty()) {
+                s3Client.createBucket(new CreateBucketRequest(bucketName));
+            }
+        }
+        if (mockSQS) {
+            List<String> existingQueues = sqsClient.listQueues().getQueueUrls();
+            if (!existingQueues.contains(queueUrl)) {
+                Map<String, String> attributes = new HashMap<>();
+                attributes.put("FifoQueue", "true");
+                attributes.put("ContentBasedDeduplication", "true");
+                sqsClient.createQueue(new CreateQueueRequest()
+                        .withAttributes(attributes).withQueueName(queueUrl.substring(queueUrl.lastIndexOf("/")+1))
+                );
+            }
+            if (!existingQueues.contains(updaterQueueUrl)) {
+                Map<String, String> attributes = new HashMap<>();
+                attributes.put("FifoQueue", "true");
+                // attributes.put("ContentBasedDeduplication", "true"); // this queue should not have dedup based on content
+                sqsClient.createQueue(new CreateQueueRequest()
+                        .withAttributes(attributes).withQueueName(updaterQueueUrl.substring(updaterQueueUrl.lastIndexOf("/")+1))
+                );
+            }
+        }
+    }
+
+    private <S extends AwsClientBuilder<S, T>, T> S buildAwsClient(
+            S builder, Regions regions, AWSCredentials credentials,
+            AwsClientBuilder.EndpointConfiguration endpointConfiguration, boolean mocked) {
+        builder.withCredentials(new AWSStaticCredentialsProvider(credentials));
+        if (endpointConfiguration != null && mocked) {
+            builder.withEndpointConfiguration(endpointConfiguration);
+        } else {
+            builder.withRegion(regions);
+        }
+        return builder;
     }
 }
