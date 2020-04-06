@@ -4,7 +4,6 @@ import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -38,9 +37,7 @@ public class RenameProjectDialog extends Dialog {
 		HorizontalLayout footer = new HorizontalLayout(cancel, rename);
 		footer.setClassName("dialog-footer");
 		
-		Span errorMsg = new Span();
-				
-		add(LabelFactory.createLabel("Rename project", CssMindPathStyles.SECTION_TITLE_LABEL), projectName, errorMsg, footer);
+		add(LabelFactory.createLabel("Rename project", CssMindPathStyles.SECTION_TITLE_LABEL), projectName, footer);
 
 		projectName.focus();
 		ProjectBinders.bindProjectName(binder, projectDao, projectName, project.getId());
