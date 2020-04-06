@@ -17,9 +17,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +30,7 @@ import java.util.stream.Stream;
 @SpringBootApplication(scanBasePackages = "io.skymind.pathmind")
 @PropertySource({"application.properties", "shared.properties"})
 @EnableCaching
+@EnableScheduling
 public class PathmindApplication
 {
 	public static void main(String[] args) {

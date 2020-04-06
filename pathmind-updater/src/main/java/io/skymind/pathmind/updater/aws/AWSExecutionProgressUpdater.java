@@ -14,7 +14,7 @@ import io.skymind.pathmind.shared.data.rllib.ExperimentState;
 import io.skymind.pathmind.shared.utils.RunUtils;
 import io.skymind.pathmind.updater.ExecutionProgressUpdater;
 import io.skymind.pathmind.updater.ProgressInterpreter;
-import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEven;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
