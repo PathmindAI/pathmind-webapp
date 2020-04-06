@@ -23,6 +23,33 @@ vaadin-chart {
   min-height: 400px;
 }
 
-juicy-ace-editor {
+.experiment-view juicy-ace-editor {
   min-height: 80px;
+}
+
+.experiment-view .bold-label {
+  font-size: 1.125rem;
+}
+
+.experiment-view .score {
+  font-size: var(--lumo-font-size-xl);
+  font-weight: bold;
+  color: var(--lumo-primary-text-color);
+  line-height: 1;
+}
+
+.experiment-view vaadin-form-layout vaadin-vertical-layout {
+  padding: 0 var(--lumo-space-l);
+}
+
+.experiment-view vaadin-form-layout span,
+.experiment-view elapsed-timer {
+  font-size: var(--lumo-font-size-s);
+  text-align: right;
+  margin-top: 0;
+}
+
+.experiment-view vaadin-form-layout span:first-child {
+  color: var(--lumo-primary-text-color);
+  font-weight: bold;
 }
