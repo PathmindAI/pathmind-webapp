@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrainerJob extends TableImpl<TrainerJobRecord> {
 
-    private static final long serialVersionUID = -1827274023;
+    private static final long serialVersionUID = -1084242373;
 
     /**
      * The reference instance of <code>public.trainer_job</code>
@@ -162,7 +162,7 @@ public class TrainerJob extends TableImpl<TrainerJobRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.TRAINER_JOB_PKEY, Indexes.UNIQUE_JOB_ID_S3BUCKET);
+        return Arrays.<Index>asList(Indexes.TRAINER_JOB_PKEY);
     }
 
     @Override
@@ -172,7 +172,7 @@ public class TrainerJob extends TableImpl<TrainerJobRecord> {
 
     @Override
     public List<UniqueKey<TrainerJobRecord>> getKeys() {
-        return Arrays.<UniqueKey<TrainerJobRecord>>asList(Keys.TRAINER_JOB_PKEY, Keys.UNIQUE_JOB_ID_S3BUCKET);
+        return Arrays.<UniqueKey<TrainerJobRecord>>asList(Keys.TRAINER_JOB_PKEY);
     }
 
     @Override
