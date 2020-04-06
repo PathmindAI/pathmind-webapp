@@ -32,8 +32,8 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 		FormLayout formLayout = new FormLayout();
 		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("1px", 1, FormLayout.ResponsiveStep.LabelsPosition.ASIDE));
 		VerticalLayout statusRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(statusLabel, trainingProgress, completedTimeLabel);
-		formLayout.addFormItem(statusRow, "Status :").setClassName("training-status");
-		formLayout.addFormItem(elapsedTimeLabel, "Elapsed :").setClassName("training-status");
+		formLayout.addFormItem(statusRow, "Status:").setClassName("training-status");
+		formLayout.addFormItem(elapsedTimeLabel, "Elapsed:").setClassName("training-status");
 		formLayout.setSizeFull();
 		add(formLayout);
 	}
