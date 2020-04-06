@@ -2,6 +2,7 @@ package io.skymind.pathmind.services.training.cloud.aws.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -26,6 +27,10 @@ public class Job {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String mockupCycle;
 
+    @JsonProperty("hw_type")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private EC2InstanceType ec2InstanceType;
+
     public Job(String s3Bucket, String s3Path) {
         this(s3Bucket, s3Path, false);
     }
@@ -43,6 +48,10 @@ public class Job {
             this.mockupCycle = String.valueOf(mockCycle);
             this.mockupType = mockType;
         }
+    }
+
+    public void setEc2InstanceType(EC2InstanceType instanceType) {
+        this.ec2InstanceType = instanceType;
     }
 
 }

@@ -35,8 +35,9 @@ public class JobSpec {
     private final boolean multiAgent;
     private final boolean resume;
     private final int checkpointFrequency;
+    private final boolean userLog;
 
-    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent, boolean resume, int checkpointFrequency) {
+    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent, boolean resume, int checkpointFrequency, boolean userLog) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
@@ -55,5 +56,6 @@ public class JobSpec {
         this.multiAgent = multiAgent;
         this.resume = resume;
         this.checkpointFrequency = checkpointFrequency;
+        this.userLog = userLog;
     }
 }
