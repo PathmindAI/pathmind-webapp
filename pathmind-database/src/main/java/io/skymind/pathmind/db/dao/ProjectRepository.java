@@ -49,4 +49,11 @@ class ProjectRepository
 				.where(PROJECT.ID.eq(projectId))
 				.execute();
 	}
+	
+	protected static void updateProjectName(DSLContext ctx, long projectId, String projectName) {
+		ctx.update(PROJECT)
+				.set(PROJECT.NAME, projectName)
+				.where(PROJECT.ID.eq(projectId))
+				.execute();
+	}
 }
