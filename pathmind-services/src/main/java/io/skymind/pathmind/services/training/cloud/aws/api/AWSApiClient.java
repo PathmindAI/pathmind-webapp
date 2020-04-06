@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.training.cloud.aws.api;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -21,28 +22,31 @@ import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.RunType;
 import lombok.Getter;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEven;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
 public class AWSApiClient {
-    private final AWSCredentials credentials;
+
     private final AmazonS3 s3Client;
     private final AmazonSQS sqsClient;
     private final ObjectMapper objectMapper;
 
-    private final Regions regions;
-    @Getter
     private final String bucketName;
     private final String queueUrl;
+    private final String updaterQueueUrl;
     private final int mockCycle;
 
     public AWSApiClient(
@@ -51,29 +55,31 @@ public class AWSApiClient {
             @Value("${pathmind.aws.secret_key}") String secretAccessKey,
             @Value("${pathmind.aws.s3.bucket}") String bucketName,
             @Value("${pathmind.aws.sqs_url}") String queueUrl,
+            @Value("${pathmind.aws.sqs_updater_url}") String updaterQueueUrl,
             @Value("${pathmind.aws.mock_cycle:0}") int mockCycle,
+            @Value("${pathmind.aws.mock-endpoint-url:}") String awsEndpointUrl,
+            @Value("${pathmind.aws.mock-s3:true}") boolean mockS3,
+            @Value("${pathmind.aws.mock-sqs:true}") boolean mockSQS,
             ObjectMapper objectMapper) {
 
-        this.regions = Regions.fromName(region);
-        this.credentials = new BasicAWSCredentials(
-                keyId,
-                secretAccessKey
-        );
+        Regions regions = Regions.fromName(region);
+        AWSCredentials credentials = new BasicAWSCredentials(keyId, secretAccessKey);
+        AwsClientBuilder.EndpointConfiguration endpointConfiguration = null;
+        if (!StringUtils.isEmpty(awsEndpointUrl)) {
+            endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(awsEndpointUrl, region);
+        }
 
-        this.s3Client = AmazonS3ClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(regions)
-                .build();
-
-        this.sqsClient = AmazonSQSClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(regions)
-                .build();
+        AmazonS3ClientBuilder s3ClientBuilder =
+                this.buildAwsClient(AmazonS3ClientBuilder.standard(), regions, credentials, endpointConfiguration, mockS3);
+        if (endpointConfiguration != null && mockS3) {
+            s3ClientBuilder.withPathStyleAccessEnabled(true);
+        }
+        this.s3Client = s3ClientBuilder.build();
+        this.sqsClient = buildAwsClient(AmazonSQSClientBuilder.standard(), regions, credentials, endpointConfiguration, mockSQS).build();
 
         this.bucketName = bucketName;
         this.queueUrl = queueUrl;
+        this.updaterQueueUrl = updaterQueueUrl;
 
         this.objectMapper = objectMapper;
 
@@ -82,6 +88,19 @@ public class AWSApiClient {
             Assert.isTrue(mockCycle > 0, "Mock Cycle should be greater than zero");
             log.warn("Running with mock cycle {}", mockCycle);
         }
+    }
+
+    private <S extends AwsClientBuilder<S, T>, T> S buildAwsClient(
+            S builder, Regions regions, AWSCredentials credentials,
+            AwsClientBuilder.EndpointConfiguration endpointConfiguration, boolean mocked)
+    {
+        builder.withCredentials(new AWSStaticCredentialsProvider(credentials));
+        if (endpointConfiguration != null && mocked) {
+            builder.withEndpointConfiguration(endpointConfiguration);
+        } else {
+            builder.withRegion(regions);
+        }
+        return builder;
     }
 
     public List<Bucket> listBuckets() {
@@ -156,6 +175,17 @@ public class AWSApiClient {
                 .withQueueUrl(queueUrl)
                 .withMessageGroupId("training")
                 .withMessageBody(objectMapper.writeValueAsString(job));
+
+        SendMessageResult result = sqsClient.sendMessage(send_msg_request);
+        return result.getMessageId();
+    }
+
+    public String sendUpdaterMessage(UpdateEven event) throws JsonProcessingException {
+        SendMessageRequest send_msg_request = new SendMessageRequest()
+                .withMessageDeduplicationId(UUID.randomUUID().toString()) // we might expect similar content based
+                .withQueueUrl(updaterQueueUrl)
+                .withMessageGroupId("updater")
+                .withMessageBody(objectMapper.writeValueAsString(event));
 
         SendMessageResult result = sqsClient.sendMessage(send_msg_request);
         return result.getMessageId();

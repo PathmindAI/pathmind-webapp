@@ -37,9 +37,10 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
     }
 
     @Override
-    public void savePolicyFile(Long runId, String finishPolicyName, byte[] policyFile) {
+    public Long savePolicyFile(Long runId, String finishPolicyName, byte[] policyFile) {
         Long policyId = policyDAO.assurePolicyId(runId, finishPolicyName);
         savePolicyFile(policyId, policyFile);
+        return policyId;
     }
 
     @Override
