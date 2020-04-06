@@ -14,6 +14,7 @@ import io.skymind.pathmind.db.jooq.tables.Project;
 import io.skymind.pathmind.db.jooq.tables.RewardScore;
 import io.skymind.pathmind.db.jooq.tables.RewardVariable;
 import io.skymind.pathmind.db.jooq.tables.Run;
+import io.skymind.pathmind.db.jooq.tables.RunAdminNote;
 import io.skymind.pathmind.db.jooq.tables.TrainerJob;
 import io.skymind.pathmind.db.jooq.tables.TrainingError;
 
@@ -24,6 +25,7 @@ import java.util.List;
 import javax.annotation.processing.Generated;
 
 import org.jooq.Catalog;
+import org.jooq.Sequence;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
 
@@ -41,7 +43,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 1915260371;
+    private static final long serialVersionUID = 1566874383;
 
     /**
      * The reference instance of <code>public</code>
@@ -99,6 +101,11 @@ public class Public extends SchemaImpl {
     public final Run RUN = io.skymind.pathmind.db.jooq.tables.Run.RUN;
 
     /**
+     * The table <code>public.run_admin_note</code>.
+     */
+    public final RunAdminNote RUN_ADMIN_NOTE = io.skymind.pathmind.db.jooq.tables.RunAdminNote.RUN_ADMIN_NOTE;
+
+    /**
      * The table <code>public.trainer_job</code>.
      */
     public final TrainerJob TRAINER_JOB = io.skymind.pathmind.db.jooq.tables.TrainerJob.TRAINER_JOB;
@@ -122,6 +129,26 @@ public class Public extends SchemaImpl {
     }
 
     @Override
+    public final List<Sequence<?>> getSequences() {
+        List result = new ArrayList();
+        result.addAll(getSequences0());
+        return result;
+    }
+
+    private final List<Sequence<?>> getSequences0() {
+        return Arrays.<Sequence<?>>asList(
+            Sequences.EXECUTION_PROVIDER_META_DATA_ID_SEQ,
+            Sequences.EXPERIMENT_ID_SEQ,
+            Sequences.MODEL_ID_SEQ,
+            Sequences.PATHMIND_USER_ID_SEQ,
+            Sequences.POLICY_ID_SEQ,
+            Sequences.PROJECT_ID_SEQ,
+            Sequences.REWARD_VARIABLE_ID_SEQ,
+            Sequences.RUN_ID_SEQ,
+            Sequences.TRAINING_ERROR_ID_SEQ);
+    }
+
+    @Override
     public final List<Table<?>> getTables() {
         List result = new ArrayList();
         result.addAll(getTables0());
@@ -140,6 +167,7 @@ public class Public extends SchemaImpl {
             RewardScore.REWARD_SCORE,
             RewardVariable.REWARD_VARIABLE,
             Run.RUN,
+            RunAdminNote.RUN_ADMIN_NOTE,
             TrainerJob.TRAINER_JOB,
             TrainingError.TRAINING_ERROR);
     }
