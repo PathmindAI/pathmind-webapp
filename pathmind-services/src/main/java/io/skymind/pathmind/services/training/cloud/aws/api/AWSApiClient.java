@@ -136,7 +136,7 @@ public class AWSApiClient {
     public String jobSubmit(String jobId, RunType type) throws JsonProcessingException {
         final String mockType = type == null ? null : type.toString();
         Job job = new Job(bucketName, jobId, mockCycle, mockType);
-        job.setEc2InstanceType(EC2InstanceType.DEFAULT);
+        job.setEc2InstanceType(EC2InstanceType.IT_16CPU_32GB);
 
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
