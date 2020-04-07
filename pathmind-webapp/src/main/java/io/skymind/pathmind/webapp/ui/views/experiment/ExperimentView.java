@@ -363,9 +363,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
 			rewardFunctionEditor.setVariableNames(rewardVariables);
 		}
-		policyChartPanel.setExperiment(experiment);
+		policyChartPanel.setExperiment(experiment, policy);
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
-		processSelectedPolicy(policy);
+		policyHighlightPanel.update(policy);
 		updateRightPanelForExperiment();
 	}
 
@@ -380,15 +380,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				.filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
 				.max(Comparator.comparing(PolicyUtils::getLastScore))
 				.orElse(null);
-	}
-
-	private void processSelectedPolicy(Policy selectedPolicy) {
-		policyHighlightPanel.update(selectedPolicy);
-		if (selectedPolicy != null) {
-			policyChartPanel.highlightPolicy(selectedPolicy);
-			updateButtonEnablement();
-			updateRightPanelForExperiment();
-		}
 	}
 
 	private void updateUIForError(TrainingError error) {
@@ -466,7 +457,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				// Calculate the best policy again
 				policy = selectBestPolicy(experiment.getPolicies());
 				PushUtils.push(getUI(), () -> {
-					processSelectedPolicy(policy);
+					if (policy != null) {
+						policyChartPanel.highlightPolicy(policy);
+					}
 					updateRightPanelForExperiment();
 				});
 			}
