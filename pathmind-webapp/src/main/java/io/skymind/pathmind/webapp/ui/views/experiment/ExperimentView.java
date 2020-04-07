@@ -231,7 +231,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		);
 		buttonsWrapper.setPadding(false);
 
-		return WrapperUtils.wrapSizeFullVertical(
+		VerticalLayout rightPanel = WrapperUtils.wrapSizeFullVertical(
 				buttonsWrapper,
 				trainingStatusDetailsPanel,
 				policyHighlightPanel,
@@ -239,6 +239,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 					LabelFactory.createLabel("Reward Function", BOLD_LABEL), rewardFunctionEditor
 				),
 				notesField);
+		rightPanel.addClassName("right-panel");
+		return rightPanel;
 	}
 
 	private void showStopTrainingConfirmationDialog() {
