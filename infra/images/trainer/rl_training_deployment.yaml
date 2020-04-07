@@ -17,6 +17,10 @@ spec:
       - name: {{JOB_ID}}
         image: {{IMAGE}}
         imagePullPolicy: Always
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/bash","-c","aws s3 cp /app/process_output.log s3://${S3BUCKET}/${S3PATH}/output/"]
         env:
         - name: SQS_URL
           value: {{SQS_URL}}
