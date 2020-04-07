@@ -97,7 +97,14 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 		Stage stage = DashboardUtils.calculateStage(item);
 		switch (stage) {
 			case SetUpSimulation :
-				getUI().ifPresent(ui -> ui.navigate(UploadModelView.class, ""+item.getProject().getId()));
+				getUI().ifPresent(ui -> {
+					if (item.getModel() != null && item.getModel().isDraft()) {
+						ui.navigate(UploadModelView.class, UploadModelView.createResumeUploadTarget(item.getProject(), item.getModel()));
+					}
+					else {
+						ui.navigate(UploadModelView.class, String.valueOf(item.getProject().getId()));
+					}
+				});
 				break;
 			case WriteRewardFunction:
 				var experimentId = item.getExperiment() == null ?

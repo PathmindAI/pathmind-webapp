@@ -7,7 +7,7 @@ import io.skymind.pathmind.shared.data.Run;
 public class DashboardUtils {
 
 	public static Stage calculateStage(DashboardItem item) {
-		if (item.getModel() == null) {
+		if (item.getModel() == null || item.getModel().isDraft()) {
 			return Stage.SetUpSimulation;
 		} else if (item.getLatestRun() == null) {
 			return Stage.WriteRewardFunction;

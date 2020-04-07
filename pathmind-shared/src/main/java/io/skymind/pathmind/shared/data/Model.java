@@ -22,6 +22,7 @@ public class Model extends ArchivableData
 	private byte[] file;
 	private long projectId;
 	private String userNotes;
+	private boolean draft;
 	private int rewardVariablesCount;
 
 	public Model() {
@@ -81,6 +82,14 @@ public class Model extends ArchivableData
 
 	public void setUserNotes(String userNotes) {
 		this.userNotes = userNotes;
+	}
+
+	public boolean isDraft() {
+		return draft;
+	}
+
+	public void setDraft(boolean draft) {
+		this.draft = draft;
 	}
 
 	public int getRewardVariablesCount() {

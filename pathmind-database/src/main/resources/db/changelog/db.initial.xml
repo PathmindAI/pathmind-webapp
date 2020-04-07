@@ -1086,6 +1086,17 @@
         <modifyDataType tableName="REWARD_SCORE" columnName="MAX" newDataType="DECIMAL(32,17)"></modifyDataType>
     </changeSet>
 
+    <changeSet id="20200323-01" author="bruno.rezende@ext.vaadin.com">
+        <addColumn tableName="MODEL">
+            <column name="DRAFT" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <update tableName="MODEL">
+            <column name="DRAFT" valueBoolean="false"/>
+        </update>
+    </changeSet>
+
     <changeSet id="20200312-01" author="krystian.walaszczyk@ext.vaadin.com">
         <addColumn tableName="MODEL">
             <column name="REWARD_VARIABLES_COUNT" type="INT" defaultValue="0">
