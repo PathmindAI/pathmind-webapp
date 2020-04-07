@@ -1,6 +1,7 @@
 .notes-field-wrapper,
 .notes-block {
   flex: 1;
+  width: 100%;
 }
 
 .notes-block .header {
