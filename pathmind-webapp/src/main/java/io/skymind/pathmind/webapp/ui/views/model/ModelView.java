@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -37,7 +37,6 @@ import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.project.components.panels.ExperimentGrid;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
-@CssImport("./styles/styles.css")
 @Route(value = Routes.MODEL_URL, layout = MainLayout.class)
 public class ModelView extends PathMindDefaultView implements HasUrlParameter<Long> {
 	@Autowired
@@ -66,22 +65,18 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 		addClassName("model-view");
 
-		VerticalLayout leftPanel = WrapperUtils.wrapSizeFullVertical(
-			archivesTabPanel,
-			new ViewSection(experimentGrid)
-		);
-		leftPanel.setPadding(false);
-		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-			WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-				leftPanel,
-				createViewNotesField(),
-			70),
-			WrapperUtils.wrapWidthFullCenterHorizontal(new NewExperimentButton(experimentDAO, modelId))
-		);
-		gridWrapper.addClassName("page-content");
-		gridWrapper.setPadding(false);
+		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullCenterHorizontal(archivesTabPanel, new NewExperimentButton(experimentDAO, modelId));
+		headerWrapper.addClassName("page-content-header");
 
-		return WrapperUtils.wrapSizeFullVertical(gridWrapper);
+		FlexLayout leftPanel = new ViewSection(headerWrapper, experimentGrid);
+
+		SplitLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+			leftPanel,
+			new ViewSection(createViewNotesField()),
+		70);
+		gridWrapper.addClassName("page-content");
+
+		return gridWrapper;
 	}
 
 	/**

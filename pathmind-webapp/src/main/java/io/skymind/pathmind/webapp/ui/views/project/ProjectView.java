@@ -2,11 +2,11 @@ package io.skymind.pathmind.webapp.ui.views.project;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -42,7 +42,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-@CssImport("./styles/styles.css")
 @Route(value= Routes.PROJECT_URL, layout = MainLayout.class)
 public class ProjectView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
@@ -63,38 +62,28 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	private ArchivesTabPanel archivesTabPanel;
 	private Grid<Model> modelGrid;
 
-	public ProjectView()
-	{
+	public ProjectView() {
 		super();
 	}
 
-	protected Component getMainContent()
-	{
+	protected Component getMainContent() {
 		setupGrid();
 		setupArchivesTabPanel();
 		
 		addClassName("project-view");
 
-		// BUG -> I didn't have to really investigate but it looks like we may need
-		// to do something special to get the full size content in the AppLayout component which
-		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
-		// Hence the workaround below:
-		VerticalLayout leftPanel = WrapperUtils.wrapSizeFullVertical(
-			archivesTabPanel,
-			new ViewSection(modelGrid)
-		);
-		leftPanel.setPadding(false);
-		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-			WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-				leftPanel,
-				createViewNotesField(),
-			70),
-			WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
-		);
+		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullCenterHorizontal(archivesTabPanel, new UploadModelButton(projectId));
+		headerWrapper.addClassName("page-content-header");
+
+		FlexLayout leftPanel = new ViewSection(headerWrapper, modelGrid);
+
+		SplitLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+			leftPanel,
+			new ViewSection(createViewNotesField()),
+		70);
 		gridWrapper.addClassName("page-content");
-		gridWrapper.setPadding(false);
 		
-		return WrapperUtils.wrapSizeFullVertical(gridWrapper);
+		return gridWrapper;
 	}
 
 	private void setupArchivesTabPanel() {
