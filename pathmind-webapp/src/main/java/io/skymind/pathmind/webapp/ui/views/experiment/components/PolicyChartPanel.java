@@ -84,33 +84,32 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
         chart.setSizeFull();
     }
 
-    public void setExperiment(Experiment experiment) {
+    public void setExperiment(Experiment experiment, Policy bestPolicy) {
         synchronized (experimentLock) {
             this.experiment = experiment;
-            updateChart(experiment.getPolicies());
+            updateChart(experiment.getPolicies(), bestPolicy);
         }
     }
 
-    private void updateChart(List<Policy> policies) {
+    private void updateChart(List<Policy> policies, Policy bestPolicy) {
         // As we cannot clear the chart's ListSeries we need to do things a bit differently.
         chart.getConfiguration().setSeries(
                 policies.stream()
-                        .map(policy -> createDataSeriesForPolicy(policy))
+                        .map(policy -> createDataSeriesForPolicy(policy, policy.equals(bestPolicy)))
                         .collect(Collectors.toList()));
         chart.drawChart(true);
     }
 
     private void addPolicyToChart(Policy policy) {
-        DataSeries dataSeries = createDataSeriesForPolicy(policy);
+        DataSeries dataSeries = createDataSeriesForPolicy(policy, false);
         chart.getConfiguration().addSeries(dataSeries);
     }
     
-    private DataSeries createDataSeriesForPolicy(Policy policy) {
+    private DataSeries createDataSeriesForPolicy(Policy policy, boolean isBestPolicy) {
     	DataSeries dataSeries = new DataSeries(policy.getName());
         dataSeries.setData(ChartUtils.getRewardScoreSeriesItems(policy));
         dataSeries.setId(Long.toString(policy.getId()));
-        // Insert the series as passive by default, they will be highlighted after best policy calculation
-        dataSeries.setPlotOptions(createPassiveSeriesPlotOptions());
+        dataSeries.setPlotOptions(isBestPolicy ? createActiveSeriesPlotOptions() : createPassiveSeriesPlotOptions());
         return dataSeries;
     }
 
