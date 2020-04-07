@@ -164,7 +164,7 @@ pipeline {
 				sh "sleep 120"
 				sh "if [ -d pathmind-bdd-tests ]; then rm -rf pathmind-bdd-tests; fi"
 				sh "git clone git@github.com:SkymindIO/pathmind-bdd-tests.git"
-				sh "cd pathmind-bdd-tests; mvn clean verify -Dheadless=true -Denvironment=pathmind-dev"
+				sh "cd pathmind-bdd-tests; mvn clean verify -Dheadless=true -Denvironment=pathmind-dev -Dhttp.keepAlive=false"
 			} catch (err) {
 			} finally {
 				publishHTML (target: [
