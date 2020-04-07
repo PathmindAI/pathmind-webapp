@@ -341,6 +341,31 @@ account-view {
   color: var(--lumo-error-color);
 }
 
+/* Primary Button Styles */
+.button-link {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 200px;
+  height: 40px;
+  font-weight: bold;
+  color: white;
+  background-color: var(--pm-primary-color);
+  border-radius: var(--lumo-border-radius);
+}
+
+.button-link:hover {
+  color: var(--pm-primary-color);
+  background-color: white;
+  text-decoration: none;
+  border: 1px solid var(--pm-primary-color);
+}
+
+.button-link:hover::before {
+  opacity: 0;
+}
+
 /* Typography Styles */
 h1 {
   font-size: var(--lumo-font-size-xxl);
@@ -374,7 +399,15 @@ h4 {
   opacity: 0;
 }
 .dashboard-placeholder {
-  margin-top: 90px;
+  width: auto !important;
+  margin: 90px auto 0;
+}
+.dashboard-placeholder vaadin-horizontal-layout {
+  flex-wrap: wrap;
+}
+
+.dashboard-placeholder vaadin-horizontal-layout .button-link {
+  margin: var(--lumo-space-m);
 }
 
 .dashboard-line:hover > .navigate-icon {

@@ -32,7 +32,6 @@ import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.shared.constants.GuideStep;
 import io.skymind.pathmind.shared.data.DashboardItem;
-import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.shared.security.Routes;
@@ -57,6 +56,8 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 	private Grid<DashboardItem> dashboardGrid;
 	
 	private EmptyDashboardPlaceholder placeholder;
+
+	private ScreenTitlePanel titlePanel = new ScreenTitlePanel("Dashboard");
 	
 	private long loggedUserId;
 
@@ -117,7 +118,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("Dashboard");
+		return titlePanel;
 	}
 
 	@Override
@@ -129,6 +130,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 	protected void initScreen(BeforeEnterEvent event) {
 		boolean emptyDashboard = dataProvider.isEmpty();
 		placeholder.setVisible(emptyDashboard);
+		titlePanel.setVisible(!emptyDashboard);
 		dashboardGrid.setVisible(!emptyDashboard);
 		VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
 			// dashboardGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting data provider
