@@ -23,6 +23,42 @@ vaadin-chart {
   min-height: 400px;
 }
 
-juicy-ace-editor {
+.experiment-view juicy-ace-editor {
   min-height: 80px;
+}
+
+.right-panel > vaadin-vertical-layout {
+  margin: var(--lumo-space-m) 0;
+}
+
+.experiment-view .bold-label {
+  font-size: 1.125rem;
+}
+
+.experiment-view .score {
+  font-size: var(--lumo-font-size-xl);
+  font-weight: bold;
+  color: var(--lumo-primary-text-color);
+  line-height: 1;
+}
+
+.training-status-details-panel vaadin-horizontal-layout vaadin-vertical-layout {
+  padding: 0 var(--lumo-space-l);
+}
+
+.training-status-details-panel span,
+.experiment-view elapsed-timer {
+  font-size: var(--lumo-font-size-s);
+  line-height: 1.3;
+  text-align: right;
+  margin-top: 0;
+}
+
+.training-status-details-panel span:first-child {
+  color: var(--lumo-primary-text-color);
+  font-weight: bold;
+}
+
+.experiment-view vaadin-progress-bar {
+  margin: var(--lumo-space-xs) 0;
 }
