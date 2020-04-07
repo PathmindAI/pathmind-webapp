@@ -1121,4 +1121,24 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="20200401-01" author="alexander.makarov@toptal.com">
+        <createTable tableName="RUN_ADMIN_NOTE">
+            <column name="RUN_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_RUN_ADMIN_NOTES" references="RUN(ID)"
+                             unique="true" uniqueConstraintName="PM_RUN_ADMIN_NOTES_RUN_ID_UNQ"/>
+            </column>
+            <column name="NOTE" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- #1320 Remove the checklist feature from the app -->
+    <changeSet id="20200304-01" author="steph@followsteph.com">
+        <dropTable tableName="GUIDE"/>
+        <rollback>
+            <comment>It's not possible to rollback dropping a table.</comment>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
