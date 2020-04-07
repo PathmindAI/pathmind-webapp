@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RewardScore extends TableImpl<RewardScoreRecord> {
 
-    private static final long serialVersionUID = -236383293;
+    private static final long serialVersionUID = 1691411485;
 
     /**
      * The reference instance of <code>public.reward_score</code>
