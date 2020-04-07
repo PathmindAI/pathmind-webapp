@@ -1,8 +1,0 @@
-:host(.training-status) [part="label"] {
-  color: var(--lumo-body-text-color);
-  font-size: inherit;
-  font-weight: bold;
-  text-align: right;
-  width: 50% !important;
-  margin-top: 0;
-}

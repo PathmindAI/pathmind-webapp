@@ -19,6 +19,8 @@
   */
   margin-bottom: var(--lumo-space-xs);
 }
+
+.experiment-view .header,
 .new-experiment-view .header {
   border-bottom: none;
 }
@@ -33,6 +35,7 @@
   padding: 0.5rem 0;
   margin-left: var(--lumo-space-s);
 }
+.experiment-view .header span:first-child,
 .new-experiment-view .header span:first-child {
   font-size: 1.125rem;
   color: var(--pm-text-color);
@@ -49,6 +52,7 @@
   background-color: var(--pm-primary-color);
   border-radius: var(--lumo-border-radius) var(--lumo-border-radius) 0 0;
 }
+.experiment-view .header span:first-child::after,
 .new-experiment-view .header span:first-child::after {
   content: none;
 }
