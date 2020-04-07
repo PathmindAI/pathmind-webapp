@@ -12,12 +12,17 @@
   cursor: default;
 }
 
-.dashboard-view .breadcrumb:hover,
-.dashboard-view .breadcrumb:last-child {
+/* Keep old styles for dashboard */
+.dashboard .breadcrumb {
+  color: var(--lumo-secondary-text-color);
+}
+
+.dashboard .breadcrumb:hover,
+.dashboard .breadcrumb:last-child {
   color: var(--lumo-primary-text-color);
 }
 
-.dashboard-view .breadcrumb:not(:first-child),
-.dashboard-view .breadcrumb ~ span {
+.dashboard .breadcrumb:not(:first-child),
+.dashboard .breadcrumb ~ span {
   margin-left: var(--lumo-space-s);
 }
