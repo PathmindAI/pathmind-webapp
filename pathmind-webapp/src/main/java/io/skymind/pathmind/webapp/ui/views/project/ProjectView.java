@@ -13,10 +13,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.shared.constants.GuideStep;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
-import io.skymind.pathmind.db.dao.GuideDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -57,8 +55,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	private ProjectDAO projectDAO;
 	@Autowired
 	private UserDAO userDAO;
-	@Autowired
-	private GuideDAO guideDAO;
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 
@@ -216,8 +212,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	protected void initScreen(BeforeEnterEvent event) {
 		projectName.setText(project.getName());
 		if (project.getModels().isEmpty()) {
-			GuideStep guideStep = guideDAO.getGuideStep(projectId);
-			event.forwardTo(guideStep.getPath(), projectId);
+			event.forwardTo(Routes.UPLOAD_MODEL, ""+projectId);
 		}
 		VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
 			// modelGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items

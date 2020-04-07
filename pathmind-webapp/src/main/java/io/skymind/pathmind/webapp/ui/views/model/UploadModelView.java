@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -30,7 +28,6 @@ import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.security.PathmindUserDetails;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ModelUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.featureflag.Feature;
@@ -42,7 +39,6 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
-import io.skymind.pathmind.webapp.ui.views.guide.GuideOverview;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
@@ -123,8 +119,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		VerticalLayout wrapper = WrapperUtils.wrapFormCenterVertical(
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel,
-				rewardVariablesPanel,
-				createBacktoGuideButton());
+				rewardVariablesPanel);
 
 		wrapper.getStyle().set("width", "auto");
 		wrapper.getStyle().set("padding-top", "var(--lumo-space-xxl)");
@@ -190,13 +185,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private void setVisibleWizardPanel(Component wizardPanel) {
 		wizardPanels.stream()
 				.forEach(panel -> panel.setVisible(panel.equals(wizardPanel)));
-	}
-
-	private Button createBacktoGuideButton() {
-		Button backToGuideButton = new Button("Back to Pathmind Guide", click -> UI.getCurrent().navigate(GuideOverview.class, projectId));
-		backToGuideButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-		backToGuideButton.getStyle().set("margin-top", "var(--lumo-space-xxl)");
-		return backToGuideButton;
 	}
 
 	/**

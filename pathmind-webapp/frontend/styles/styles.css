@@ -181,16 +181,6 @@ hr {
   height: 100%;
 }
 
-.default-view.guide {
-  background: white;
-}
-
-@media (min-width: 720px) {
-  .default-view.guide {
-    padding-top: var(--lumo-space-m);
-  }
-}
-
 .view-section {
   width: 100%;
   background: white;
@@ -259,19 +249,6 @@ hr {
   /* To make the white panels on Experiment page to be 
      at the same position as the Projects, Project, and Model pages */
   margin-top: var(--lumo-space-xl);
-}
-
-.guide-view-wrapper {
-  flex-grow: 1;
-  background: white;
-}
-
-/* The side menu goes to the top for smaller screens 
-   Using 50% screen width of 1440px */
-@media (max-width: 720px) {
-  .guide-view-wrapper {
-    flex-direction: column;
-  }
 }
 
 account-view {
