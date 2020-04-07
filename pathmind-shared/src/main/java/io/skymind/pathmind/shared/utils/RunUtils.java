@@ -1,5 +1,6 @@
 package io.skymind.pathmind.shared.utils;
 
+import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Run;
 
 import java.time.Duration;
@@ -28,5 +29,12 @@ public class RunUtils
 				.mapToInt(List::size)
 				.reduce(Math::multiplyExact)
 				.orElse(0);
+	}
+	
+	/**
+	 * When a run is stopped by user, it still gets to killed status, but trainingErrorId is not assigned in this case
+	 */
+	public static boolean isStoppedByUser(Run run) {
+		return run.getStatusEnum() == RunStatus.Killed && run.getTrainingErrorId() == 0;
 	}
 }

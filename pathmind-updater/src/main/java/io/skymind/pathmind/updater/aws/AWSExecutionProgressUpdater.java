@@ -6,6 +6,7 @@ import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.utils.RunUtils;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
@@ -95,7 +96,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
      */
     private void sendNotificationMail(RunStatus jobStatus, Run run) {
         // Do not send notification if there is another run with same run type still executing or the notification is already been sent
-        if (RunStatus.isFinished(jobStatus) && runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
+        if (RunStatus.isFinished(jobStatus) && !RunUtils.isStoppedByUser(run) && runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
             boolean isSuccessful = jobStatus == RunStatus.Completed;
             PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
             emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);
@@ -183,7 +184,8 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
             foundError.ifPresent(
                     e -> run.setTrainingErrorId(e.getId())
             );
-        } else if (status == RunStatus.Killed) {
+        } else if (status == RunStatus.Killed && run.getStatusEnum() != RunStatus.Stopping) {
+        	// Stopping status is set, when user wants to stop training. So, don't assign an error in this case
         	trainingErrorDAO.getErrorByKeyword(KILLED_TRAINING_KEYWORD).ifPresent(error -> {
         		run.setTrainingErrorId(error.getId());
         	});
