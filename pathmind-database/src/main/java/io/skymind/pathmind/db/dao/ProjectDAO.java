@@ -41,6 +41,10 @@ public class ProjectDAO
 	public void archive(long projectId, boolean isArchive) {
 		ProjectRepository.archive(ctx, projectId, isArchive);
 	}
+	
+	public void updateProjectName(long projectId, String projectName) {
+		ProjectRepository.updateProjectName(ctx, projectId, projectName);
+	}
 
 	public Optional<Project> getProject(long projectId) {
 		return Optional.ofNullable(ProjectRepository.getProject(ctx, projectId));
