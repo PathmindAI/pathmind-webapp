@@ -54,7 +54,8 @@ public class AWSTrainingService extends TrainingService {
                 numSamples,
                 multiAgent,
                 false,
-                50
+                50,
+                false
         );
 
         if (basePolicy != null) {
