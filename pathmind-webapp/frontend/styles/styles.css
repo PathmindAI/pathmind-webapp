@@ -276,7 +276,9 @@ account-view {
 
 /* Title bar */
 .page-title {
+  justify-content: center;
   color: var(--lumo-body-text-color);
+  padding: 0 var(--lumo-space-m);
   margin-top: var(--lumo-space-m);
 }
 
