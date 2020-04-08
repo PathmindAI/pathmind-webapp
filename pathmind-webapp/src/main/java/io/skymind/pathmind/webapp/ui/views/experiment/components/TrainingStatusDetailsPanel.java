@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.constants.RunStatus;
@@ -29,13 +28,13 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 	private Span completedTimeLabel = LabelFactory.createLabel("");
 	
 	public TrainingStatusDetailsPanel() {
-		FormLayout formLayout = new FormLayout();
-		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("1px", 1, FormLayout.ResponsiveStep.LabelsPosition.ASIDE));
-		VerticalLayout statusRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(statusLabel, trainingProgress, completedTimeLabel);
-		formLayout.addFormItem(statusRow, "Status :").setClassName("training-status");
-		formLayout.addFormItem(elapsedTimeLabel, "Elapsed :").setClassName("training-status");
-		formLayout.setSizeFull();
-		add(formLayout);
+		add(trainingProgress);
+		add(WrapperUtils.wrapWidthFullBetweenHorizontal(
+			WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(new Span("Status"), statusLabel, completedTimeLabel),
+			WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(new Span("Elapsed"), elapsedTimeLabel)
+		));
+		addClassName("training-status-details-panel");
+		setPadding(false);
 	}
 
 	public void updateTrainingDetailsPanel(Experiment experiment) {
