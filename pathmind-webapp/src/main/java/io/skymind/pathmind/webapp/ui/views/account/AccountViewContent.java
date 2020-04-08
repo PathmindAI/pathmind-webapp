@@ -1,5 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.account;
 
+import io.skymind.pathmind.shared.featureflag.Feature;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
@@ -31,6 +33,8 @@ import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model> {
 
+	private final FeatureManager featureManager;
+
 	@Id("editInfoBtn")
 	private Button editInfoBtn;
 
@@ -53,11 +57,16 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 	private PathmindUser user;
 
 	@Autowired
-	public AccountViewContent(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink, StripeService stripeService, SegmentIntegrator segmentIntegrator) {
+	public AccountViewContent(
+			CurrentUser currentUser,
+			@Value("${pathmind.contact-support.address}") String contactLink,
+			StripeService stripeService,
+			SegmentIntegrator segmentIntegrator, FeatureManager featureManager) {
         this.stripeService = stripeService;
         this.segmentIntegrator = segmentIntegrator;
 		getModel().setContactLink(contactLink);
 		user = currentUser.getUser();
+		this.featureManager= featureManager;
 	}
 
 	@PostConstruct
@@ -71,7 +80,7 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 		editInfoBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountEditView.class)));
 		changePasswordBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(ChangePasswordView.class)));
 		editPaymentBtn.setEnabled(false);
-		upgradeBtn.setVisible(subscription == null);
+		upgradeBtn.setVisible(featureManager.isEnabled(Feature.ACCOUNT_UPGRADE) && subscription == null);
 		cancelSubscriptionBtn.setVisible(subscription != null);
 		cancelSubscriptionBtn.setEnabled(subscription != null && !subscription.getCancelAtPeriodEnd());
 		
