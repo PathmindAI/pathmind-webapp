@@ -1133,4 +1133,16 @@
         </createTable>
     </changeSet>
 
+    <!-- #1320 Remove the checklist feature from the app -->
+    <changeSet id="20200304-01" author="steph@followsteph.com">
+        <dropTable tableName="GUIDE"/>
+        <rollback>
+            <comment>It's not possible to rollback dropping a table.</comment>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200406-01" author="daehyun@skymind.io">
+        <addUniqueConstraint tableName="TRAINER_JOB" constraintName="UNIQUE_JOB_ID_S3BUCKET" columnNames="JOB_ID, S3BUCKET" />
+    </changeSet>
+
 </databaseChangeLog>

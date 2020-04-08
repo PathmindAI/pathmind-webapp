@@ -10,7 +10,6 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
-import io.skymind.pathmind.webapp.ui.components.TabPanel;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
@@ -33,7 +32,6 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -63,12 +61,15 @@ import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.TrainingError;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
+
+import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
@@ -177,8 +178,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private VerticalLayout getRightPanel() {
-		TabPanel rewardFunctionEditorHeader = new TabPanel("Reward Function");
-		rewardFunctionEditorHeader.setEnabled(false);
 		rewardFunctionEditor = new RewardFunctionEditor();
 		rewardFunctionEditor.setReadonly(true);
 		rewardFunctionEditor.setSizeFull();
@@ -207,10 +206,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		stopTrainingButton = new Button("Stop Training", click -> {
 			showStopTrainingConfirmationDialog();
 		});
+		stopTrainingButton.addThemeName("secondary");
 		stopTrainingButton.addClassName("half-width");
 		stopTrainingButton.setVisible(true);
 
 		archiveExperimentButton = new Button("Archive", VaadinIcon.ARCHIVE.create(), click -> archiveExperiment());
+		archiveExperimentButton.addThemeName("secondary");
 		archiveExperimentButton.addClassName("half-width");
 
 		unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
@@ -219,17 +220,25 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 		notesField = createViewNotesField();
 
-		return WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullCenterHorizontal(restartTraining),
-				policyHighlightPanel,
-				WrapperUtils.wrapWidthFullCenterHorizontal(exportPolicyButton),
-				WrapperUtils.wrapWidthFullCenterHorizontal(stopTrainingButton),
-				WrapperUtils.wrapWidthFullCenterHorizontal(archiveExperimentButton, unarchiveExperimentButton),
+		VerticalLayout buttonsWrapper = WrapperUtils.wrapWidthFullCenterVertical(
+			exportPolicyButton,
+			restartTraining,
+			stopTrainingButton,
+			archiveExperimentButton,
+			unarchiveExperimentButton
+		);
+		buttonsWrapper.setPadding(false);
+
+		VerticalLayout rightPanel = WrapperUtils.wrapSizeFullVertical(
+				buttonsWrapper,
 				trainingStatusDetailsPanel,
+				policyHighlightPanel,
 				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-					rewardFunctionEditorHeader, rewardFunctionEditor
+					LabelFactory.createLabel("Reward Function", BOLD_LABEL), rewardFunctionEditor
 				),
 				notesField);
+		rightPanel.addClassName("right-panel");
+		return rightPanel;
 	}
 
 	private void showStopTrainingConfirmationDialog() {
