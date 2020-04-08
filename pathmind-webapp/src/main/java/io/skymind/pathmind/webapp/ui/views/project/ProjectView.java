@@ -8,7 +8,6 @@ import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -85,8 +84,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		headerWrapper.addClassName("page-content-header");
 
 		FlexLayout leftPanel = new ViewSection(headerWrapper, modelGrid);
-		VerticalLayout rightPanel = createRightPanel();
-		rightPanel.setPadding(false);
+		FlexLayout rightPanel = createRightPanel();
 
 		SplitLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 			leftPanel,
@@ -97,7 +95,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		return gridWrapper;
 	}
 
-	private VerticalLayout createRightPanel() {
+	private FlexLayout createRightPanel() {
 		projectName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
 		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
 		Button edit = new Button("Rename", evt -> renameProject());
@@ -111,10 +109,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 						segmentIntegrator.updatedNotesModelsView();
 				}
 			);
-		return WrapperUtils.wrapSizeFullVertical(
-				new TabPanel("Details"),
-				new ViewSection(WrapperUtils.wrapLeftAndRightAligned(projectName, edit), createdDate, notesField)
-			);
+		TabPanel panelHeader = new TabPanel("Details");
+		panelHeader.setEnabled(false);
+		return new ViewSection(panelHeader, WrapperUtils.wrapLeftAndRightAligned(projectName, edit), createdDate, notesField);
 	}
 
 	private void renameProject() {
