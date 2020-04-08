@@ -384,7 +384,7 @@ h4 {
 }
 .navigate-icon {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
   flex-grow: 1;
   opacity: 0;
 }
@@ -400,7 +400,7 @@ h4 {
   margin: var(--lumo-space-m);
 }
 
-.dashboard-line:hover > .navigate-icon {
+.dashboard-line:hover .navigate-icon {
   opacity: 1;
 }
 .dashboard-item-main {
@@ -425,6 +425,9 @@ h4 {
   border-left: 1px solid var(--pm-gray-color-light);
   margin-top: 1.8rem;
 }
+.dashboard-item-notes:empty {
+  border-left: none;
+}
 .dashboard-item-notes span {
   line-height: 1;
 }
@@ -444,6 +447,11 @@ h4 {
   left: 0;
   bottom: 0;
   background: linear-gradient(rgba(255, 255, 255, 0), white);
+}
+
+.dashboard-item-icons {
+  flex-grow: 0;
+  align-self: stretch;
 }
 
 .stages-container {
