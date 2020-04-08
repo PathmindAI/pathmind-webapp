@@ -13,6 +13,7 @@ import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -270,8 +271,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 	
 	private void archiveExperiment() {
-		ConfirmDialog dialog = new ConfirmDialog("Archive this experiment?", "This hides it from your main workspaces so you can stay organized. You can always unarchive experiments.", 
-				"Archive Experiment", evt -> {
+		ConfirmationUtils.archive("experiment", () -> {
 			experimentDAO.archive(experiment.getId(), true);
 			experiments.remove(experiment);
 			if (experiments.isEmpty()) {
@@ -282,17 +282,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				experimentsNavbar.setExperiments(experiments, currentExperiment);
 			}
 		});
-		dialog.setCancelButton("Cancel", evt -> dialog.close());
-		dialog.open();
 	}
+	
 	private void unarchiveExperiment() {
-		ConfirmDialog dialog = new ConfirmDialog("Confirm Unarchive", "Are you sure you want to unarchive this experiment?", 
-				"Unarchive Experiment", evt -> {
-					experimentDAO.archive(experiment.getId(), false);
-					getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
-				});
-		dialog.setCancelButton("Cancel", evt -> dialog.close());
-		dialog.open();
+		ConfirmationUtils.unarchive("experiment", () -> {
+			experimentDAO.archive(experiment.getId(), false);
+			getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
+		});
 	}
 
 	private Breadcrumbs createBreadcrumbs() {        

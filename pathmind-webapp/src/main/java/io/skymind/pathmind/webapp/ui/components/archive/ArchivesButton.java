@@ -5,13 +5,13 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 
 import io.skymind.pathmind.shared.data.ArchivableData;
 import io.skymind.pathmind.webapp.ui.components.PathmindButton;
+import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 
 /**
  * Button is used because if we directly use the Icon then when we click on the icon it also results in
@@ -23,19 +23,17 @@ public class ArchivesButton<T> extends PathmindButton
 	{
 		super();
 
-		String archiveConfirmationText = data.isArchived() ? "Unarchive" : "Archive";
+		String entityName = data.getClass().getSimpleName().toLowerCase();
 
 		setupButton(data);
 
-		ConfirmDialog confirmDialog = new ConfirmDialog(
-				"Confirm " + archiveConfirmationText,
-				"Are you sure you want to " + archiveConfirmationText.toLowerCase() + " this " + data.getClass().getSimpleName() + "?",
-				archiveConfirmationText,
-				confirmEvent -> changeArchiveStatus(grid, data, getFilteredData, archiveDAO),
-				"Cancel",
-				cancelEvent -> {});
-
-		addClickListener(click -> confirmDialog.open());
+		addClickListener(click -> {
+			if (data.isArchived()) {
+				ConfirmationUtils.unarchive(entityName, () -> changeArchiveStatus(grid, data, getFilteredData, archiveDAO));
+			} else {
+				ConfirmationUtils.archive(entityName, () -> changeArchiveStatus(grid, data, getFilteredData, archiveDAO));
+			}
+		});
 	}
 
 	private void setupButton(ArchivableData data) {
