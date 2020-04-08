@@ -181,16 +181,6 @@ hr {
   height: 100%;
 }
 
-.default-view.guide {
-  background: white;
-}
-
-@media (min-width: 720px) {
-  .default-view.guide {
-    padding-top: var(--lumo-space-m);
-  }
-}
-
 .view-section {
   width: 100%;
   background: white;
@@ -224,6 +214,19 @@ hr {
   margin-top: 0;
 }
 
+.project-view .view-section {
+  min-width: unset;
+}
+
+.project-view .notes-field-wrapper {
+  margin-top: var(--lumo-space-m);
+  flex: 1 1 auto;
+}
+
+.no-shrink {
+  flex-shrink: 0;
+}
+
 .upload-model-view .view-section {
   max-width: 540px;
 }
@@ -246,19 +249,6 @@ hr {
   /* To make the white panels on Experiment page to be 
      at the same position as the Projects, Project, and Model pages */
   margin-top: var(--lumo-space-xl);
-}
-
-.guide-view-wrapper {
-  flex-grow: 1;
-  background: white;
-}
-
-/* The side menu goes to the top for smaller screens 
-   Using 50% screen width of 1440px */
-@media (max-width: 720px) {
-  .guide-view-wrapper {
-    flex-direction: column;
-  }
 }
 
 account-view {
@@ -341,6 +331,31 @@ account-view {
   color: var(--lumo-error-color);
 }
 
+/* Primary Button Styles */
+.button-link {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 200px;
+  height: 40px;
+  font-weight: bold;
+  color: white;
+  background-color: var(--pm-primary-color);
+  border-radius: var(--lumo-border-radius);
+}
+
+.button-link:hover {
+  color: var(--pm-primary-color);
+  background-color: white;
+  text-decoration: none;
+  border: 1px solid var(--pm-primary-color);
+}
+
+.button-link:hover::before {
+  opacity: 0;
+}
+
 /* Typography Styles */
 h1 {
   font-size: var(--lumo-font-size-xxl);
@@ -374,7 +389,15 @@ h4 {
   opacity: 0;
 }
 .dashboard-placeholder {
-  margin-top: 90px;
+  width: auto !important;
+  margin: 90px auto 0;
+}
+.dashboard-placeholder vaadin-horizontal-layout {
+  flex-wrap: wrap;
+}
+
+.dashboard-placeholder vaadin-horizontal-layout .button-link {
+  margin: var(--lumo-space-m);
 }
 
 .dashboard-line:hover > .navigate-icon {
@@ -510,4 +533,19 @@ h4 {
   .dashboard-item-main vaadin-horizontal-layout:not(.stages-container) {
     flex-wrap: wrap;
   }
+}
+
+.dialog-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin: calc(var(--lumo-space-l) * -1);
+  margin-top: var(--lumo-space-l);
+  padding: var(--lumo-space-xs) var(--lumo-space-l);
+  background-color: var(--lumo-contrast-5pct);
+}
+.dialog-footer .cancel-button {
+  margin-right: auto;
+  margin-left: var(--lumo-space-s);
+  align-self: center;
 }

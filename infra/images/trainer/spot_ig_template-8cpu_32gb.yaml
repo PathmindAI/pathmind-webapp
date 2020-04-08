@@ -8,24 +8,25 @@ metadata:
 spec:
   image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2019-09-26
   machineType: {{INSTANCE_TYPE}}
-#  maxPrice: "{{MAX_PRICE}}"
   maxSize: 1
   minSize: 1
   mixedInstancesPolicy:
     instances:
-      - m5a.2xlarge
-      - t2.2xlarge
-      - h1.2xlarge
-      - t3.2xlarge
       - m4.2xlarge
-      - t3a.2xlarge
       - m5.2xlarge
+      - m5a.2xlarge
+      - m5ad.2xlarge
       - m5d.2xlarge
+      - m5dn.2xlarge
+      - m5n.2xlarge
+      - t2.2xlarge
+      - t3.2xlarge
+      - t3a.2xlarge
+      - h1.2xlarge
     onDemandAboveBase: 0
     spotInstancePools: 5
   nodeLabels:
     kops.k8s.io/instancegroup: "{{IG_NAME}}"
-#    on-demand: "false"
     dedicated: {{IG_NAME}}
   role: Node
   taints:
