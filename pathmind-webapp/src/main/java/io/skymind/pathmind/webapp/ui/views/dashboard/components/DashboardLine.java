@@ -1,6 +1,9 @@
 package io.skymind.pathmind.webapp.ui.views.dashboard.components;
 
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -15,6 +18,7 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
@@ -24,6 +28,8 @@ public class DashboardLine extends HorizontalLayout {
 	private Span timestamp;
 	private Breadcrumbs breadcrumb;
 	private HorizontalLayout stages;
+	private Button menuButton;
+	private ContextMenu contextMenu;
 	
 	private Stage currentStage;
 	private DashboardItem dashboardItem;
@@ -31,7 +37,7 @@ public class DashboardLine extends HorizontalLayout {
 	private static String INPROGRESS_INDICATOR = "...";
 	private String experimentNotes = "—";
 	
-	public DashboardLine(DashboardItem item, SerializableConsumer<DashboardItem> clickHandler) {
+	public DashboardLine(DashboardItem item, SerializableConsumer<DashboardItem> clickHandler, SerializableConsumer<DashboardItem> archiveAction) {
 		this.dashboardItem = item;
 		setClassName("dashboard-line");
 		breadcrumb = new Breadcrumbs(item.getProject(), item.getModel(), item.getExperiment(), false);
@@ -41,6 +47,12 @@ public class DashboardLine extends HorizontalLayout {
 		Span projectTitle = new Span(item.getProject().getName());
 		projectTitle.addClassName("project-title");
 		
+		menuButton = new Button(VaadinIcon.ELLIPSIS_DOTS_H.create());
+		menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+		contextMenu = new ContextMenu(menuButton);
+		contextMenu.addItem("Archive", evt -> archiveAction.accept(item));
+		contextMenu.setOpenOnClick(true);
+		
 		currentStage = DashboardUtils.calculateStage(item);
 		stages = createStages();
 		VerticalLayout wrapper = new VerticalLayout(projectTitle, timestamp, breadcrumb, stages);
@@ -48,17 +60,19 @@ public class DashboardLine extends HorizontalLayout {
 		wrapper.addClassName("dashboard-item-main");
 		Span navigateIcon = new Span(VaadinIcon.CHEVRON_RIGHT.create());
 		navigateIcon.setClassName("navigate-icon");
+		VerticalLayout iconContainer = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(menuButton, navigateIcon);
+		iconContainer.setWidth(null);
+		iconContainer.setClassName("dashboard-item-icons");
 
+		VerticalLayout notesWrapper = new VerticalLayout();
+		notesWrapper.addClassName("dashboard-item-notes");
 		if (item.getExperiment() != null) {
 			if (!item.getExperiment().getUserNotes().isEmpty()) {
 				experimentNotes = item.getExperiment().getUserNotes();
 			}
-			VerticalLayout notes = new VerticalLayout(LabelFactory.createLabel("Experiment notes", "bold-label"), new Paragraph(experimentNotes));
-			notes.addClassName("dashboard-item-notes");
-			add(wrapper, notes, navigateIcon);
-		} else {
-			add(wrapper, navigateIcon);
-		}
+			notesWrapper.add(LabelFactory.createLabel("Experiment notes", "bold-label"), new Paragraph(experimentNotes));
+		} 
+		add(wrapper, notesWrapper, iconContainer);
 
 		// When a link in breadcrumb is clicked, the same click event is also triggered for DashboardLine
 		// We cannot stop propagation yet (see issue: https://github.com/vaadin/flow/issues/1363)
@@ -66,6 +80,7 @@ public class DashboardLine extends HorizontalLayout {
 		breadcrumb.getChildren()
 			.filter(comp -> RouterLink.class.isInstance(comp))
 			.forEach(comp -> comp.getElement().addEventListener("click", evt -> {}).addEventData("event.stopPropagation()"));
+		menuButton.getElement().addEventListener("click", evt -> {}).addEventData("event.stopPropagation()");
 		addClickListener(evt -> clickHandler.accept(item));
 	}
 
