@@ -1,7 +1,7 @@
 #Validate k8s cluster
 resource "null_resource" "validate_k8s" {
   provisioner "local-exec" {
-    command = "../scripts/validate_cluster.sh '${var.cluster_name}' '${var.kops_bucket}'"
+    command = "../scripts/validate_cluster.sh '${var.cluster_name}' '${var.kops_bucket}' 'yes'"
   }
   provisioner "local-exec" {
     when    = "destroy"
