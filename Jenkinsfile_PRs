@@ -64,15 +64,9 @@ pipeline {
 
     }
 
-    //Build from Dockerfile
-    agent { 
-        docker { 
-            image "jenkins_agent:dev"
-            alwaysPull true
-            registryUrl "http://839270835622.dkr.ecr.us-east-1.amazonaws.com/"
-            registryCredentialsId "ecr:us-east-1:AWS"
-        }
-    }
+    //all is built and run from the master
+    agent { node { label 'master' } }
+
 
     // Pipeline stages
     stages {
@@ -90,13 +84,8 @@ pipeline {
                     	RELEASE_ID = "${IMAGE_NAME}-${env.BUILD_NUMBER}"
                     	echo "Global pathmind Id set to ${RELEASE_ID}"
 		}
-                echo "Running on docker"
                 echo "Check out code"
 		checkout scm
-
-                echo "Forward Docker daemon"
-                sh "kubectl port-forward service/dind 2375 &"
-                sh "sleep 30"
             }
         }
 
@@ -189,7 +178,7 @@ pipeline {
 				sh "git clone git@github.com:SkymindIO/pathmind-bdd-tests.git"
 				//Check if there is abranch with the same name in the bdd repository
 				EXIT_CODE = sh( returnStatus: true, script: "cd pathmind-bdd-tests && git checkout ${env.ghprbSourceBranch}")
-				TEST_STATUS = sh( returnStatus: true, script: "cd pathmind-bdd-tests && mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234 -Dhttp.keepAlive=false")
+				TEST_STATUS = sh( returnStatus: true, script: "cd pathmind-bdd-tests && mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234 -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -f pom.xml")
 			} catch (err) {
 			} finally {
 				publishHTML (target: [
