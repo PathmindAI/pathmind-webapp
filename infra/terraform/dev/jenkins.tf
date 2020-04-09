@@ -10,3 +10,17 @@ resource "null_resource" "jenkins" {
   depends_on =
 ["null_resource.awsaccesskey","null_resource.awssecretaccesskey","null_resource.segment_server_key_secret","null_resource.segment_website_key_secret"]
 }
+
+#Install zalenium
+resource "null_resource" "zalenium" {
+  provisioner "local-exec" {
+    command = "helm install zalenium ../../helm/zalenium"
+  }
+  provisioner "local-exec" {
+    when = "destroy"
+    command = "helm delete zalenium"
+  }
+  depends_on =
+["null_resource.awsaccesskey","null_resource.awssecretaccesskey","null_resource.segment_server_key_secret","null_resource.segment_website_key_secret"]
+}
+

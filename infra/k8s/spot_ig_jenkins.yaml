@@ -13,14 +13,11 @@ spec:
   minSize: 1
   mixedInstancesPolicy:
     instances:
-      - m5a.2xlarge
-      - t2.2xlarge
-      - h1.2xlarge
-      - t3.2xlarge
-      - m4.2xlarge
-      - t3a.2xlarge
-      - m5.2xlarge
-      - m5d.2xlarge
+      - a1.4xlarge
+      - a1.metal
+      - c5.4xlarge
+      - c5d.4xlarge
+      - c5n.4xlarge
     onDemandAboveBase: 0
     spotInstancePools: 5
   nodeLabels:
