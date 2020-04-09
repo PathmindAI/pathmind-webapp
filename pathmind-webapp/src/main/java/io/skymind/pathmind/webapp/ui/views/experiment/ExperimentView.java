@@ -430,9 +430,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void updateRightPanelForExperiment() {
 		updateButtonEnablement();
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
-		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Error) {
+		RunStatus status = ExperimentUtils.getTrainingStatus(experiment);
+		if (status == RunStatus.Error || status == RunStatus.Killed) {
 			experiment.getRuns().stream()
-					.filter(r -> r.getStatusEnum() == RunStatus.Error)
+					.filter(r -> r.getStatusEnum() == RunStatus.Error || r.getStatusEnum() == RunStatus.Killed)
 					.findAny()
 					.map(Run::getTrainingErrorId)
 					.flatMap(trainingErrorDAO::getErrorById)
