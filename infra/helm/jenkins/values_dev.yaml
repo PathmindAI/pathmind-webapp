@@ -21,6 +21,7 @@ fullnameOverride: ""
 env:
   S3BUCKET: dev-model-analyzer-static-files.pathmind.com
 
+node: jenkins-node
 
 service:
   type: NodePort
