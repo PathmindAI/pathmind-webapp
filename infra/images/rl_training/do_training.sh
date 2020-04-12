@@ -18,10 +18,15 @@ where id= (select project_id from model
 where id= (select model_id from experiment where id=(select experiment_id from run where id=${ID}))))
 EOF`
 
+#Get the instance type and cost
+instanceid=`aws ec2 describe-instances --filters "Name=tag:Name,Values=${S3PATH}.${NAME}"  | jq -r '.[] | .[] | .Instances | .[] | select(.State.Name == "running").InstanceId'`
+instance_type=`aws ec2 describe-spot-instance-requests | jq -r ".SpotInstanceRequests | .[] | select (.InstanceId ==\"${instanceid}\").LaunchSpecification.InstanceType"`
+instance_price=`aws ec2 describe-spot-instance-requests | jq -r ".SpotInstanceRequests | .[] | select (.InstanceId ==\"${instanceid}\").SpotPrice"`
+
 #Set the status in trainer_job
 psql "$DB_URL_CLI" << EOF
 update public.trainer_job
-set status=3,ec2_create_date=now(),update_date=NOW()
+set status=3,ec2_create_date=now(),update_date=NOW(),ec2_instance_type='${instance_type}',ec2_max_price='${instance_price}'
 where job_id='${S3PATH}';
 commit;
 EOF

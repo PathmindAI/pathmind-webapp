@@ -288,11 +288,11 @@ resource "null_resource" "trainer" {
 #pgadmin
 resource "null_resource" "pgadmin" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../../k8s/pgadmin.yaml"
+    command = "helm install pgadmin  ../../helm/pgadmin"
   }
   provisioner "local-exec" {
     when    = "destroy"
-    command = "kubectl delete deployment pgadmin; kubectl delete svc pgadmin"
+    command = "helm delete pgadmin"
   }
   depends_on = ["aws_db_instance.rds", "null_resource.validate_k8s"]
 }

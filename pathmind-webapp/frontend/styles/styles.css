@@ -181,16 +181,6 @@ hr {
   height: 100%;
 }
 
-.default-view.guide {
-  background: white;
-}
-
-@media (min-width: 720px) {
-  .default-view.guide {
-    padding-top: var(--lumo-space-m);
-  }
-}
-
 .view-section {
   width: 100%;
   background: white;
@@ -224,6 +214,19 @@ hr {
   margin-top: 0;
 }
 
+.project-view .view-section {
+  min-width: unset;
+}
+
+.project-view .notes-field-wrapper {
+  margin-top: var(--lumo-space-m);
+  flex: 1 1 auto;
+}
+
+.no-shrink {
+  flex-shrink: 0;
+}
+
 .upload-model-view .view-section {
   max-width: 540px;
 }
@@ -246,19 +249,6 @@ hr {
   /* To make the white panels on Experiment page to be 
      at the same position as the Projects, Project, and Model pages */
   margin-top: var(--lumo-space-xl);
-}
-
-.guide-view-wrapper {
-  flex-grow: 1;
-  background: white;
-}
-
-/* The side menu goes to the top for smaller screens 
-   Using 50% screen width of 1440px */
-@media (max-width: 720px) {
-  .guide-view-wrapper {
-    flex-direction: column;
-  }
 }
 
 account-view {
@@ -543,4 +533,19 @@ h4 {
   .dashboard-item-main vaadin-horizontal-layout:not(.stages-container) {
     flex-wrap: wrap;
   }
+}
+
+.dialog-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin: calc(var(--lumo-space-l) * -1);
+  margin-top: var(--lumo-space-l);
+  padding: var(--lumo-space-xs) var(--lumo-space-l);
+  background-color: var(--lumo-contrast-5pct);
+}
+.dialog-footer .cancel-button {
+  margin-right: auto;
+  margin-left: var(--lumo-space-s);
+  align-self: center;
 }

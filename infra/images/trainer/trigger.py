@@ -191,6 +191,7 @@ def process_message(message):
                 line=line.replace('{{NAMESPACE}}',NAMESPACE)
                 line=line.replace('{{ENVIRONMENT}}',ENVIRONMENT)
                 line=line.replace('{{SQS_URL}}',SQS_URL)
+                line=line.replace('{{NAME}}',NAME)
                 file.write(line+'\n')
 
         if 'retry' in body:
@@ -220,8 +221,8 @@ def process_message(message):
                 '{s3path}',
                 '{s3bucket}',
                 '{ReceiptHandle}',
-                '{ec2_instance_type}',
-                '{ec2_max_price}',
+                'N/A',
+                'N/A',
                 {status},
                 'pathmind training job')
             """.format(

@@ -6,7 +6,6 @@ package io.skymind.pathmind.db.jooq;
 
 import io.skymind.pathmind.db.jooq.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
-import io.skymind.pathmind.db.jooq.tables.Guide;
 import io.skymind.pathmind.db.jooq.tables.Model;
 import io.skymind.pathmind.db.jooq.tables.PathmindUser;
 import io.skymind.pathmind.db.jooq.tables.Policy;
@@ -14,6 +13,7 @@ import io.skymind.pathmind.db.jooq.tables.Project;
 import io.skymind.pathmind.db.jooq.tables.RewardScore;
 import io.skymind.pathmind.db.jooq.tables.RewardVariable;
 import io.skymind.pathmind.db.jooq.tables.Run;
+import io.skymind.pathmind.db.jooq.tables.RunAdminNote;
 import io.skymind.pathmind.db.jooq.tables.TrainerJob;
 import io.skymind.pathmind.db.jooq.tables.TrainingError;
 
@@ -45,7 +45,6 @@ public class Indexes {
     public static final Index UNIQUE_PROVIDER_CLASS_TYPE_KEY = Indexes0.UNIQUE_PROVIDER_CLASS_TYPE_KEY;
     public static final Index EXPERIMENT_MODEL_FK_INDEX = Indexes0.EXPERIMENT_MODEL_FK_INDEX;
     public static final Index EXPERIMENT_PKEY = Indexes0.EXPERIMENT_PKEY;
-    public static final Index GUIDE_PROJECT_FK_INDEX = Indexes0.GUIDE_PROJECT_FK_INDEX;
     public static final Index MODEL_PKEY = Indexes0.MODEL_PKEY;
     public static final Index MODEL_PROJECT_FK_INDEX = Indexes0.MODEL_PROJECT_FK_INDEX;
     public static final Index PATHMIND_USER_EMAIL_KEY = Indexes0.PATHMIND_USER_EMAIL_KEY;
@@ -57,11 +56,14 @@ public class Indexes {
     public static final Index PROJECT_PKEY = Indexes0.PROJECT_PKEY;
     public static final Index UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = Indexes0.UNIQUE_PROJECT_NAME_PATHMIND_USER_ID;
     public static final Index REWARD_SCORE_POLICY_ID_INDEX = Indexes0.REWARD_SCORE_POLICY_ID_INDEX;
+    public static final Index REWARD_VARIABLE_MODEL_FK_INDEX = Indexes0.REWARD_VARIABLE_MODEL_FK_INDEX;
     public static final Index REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY = Indexes0.REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY;
     public static final Index REWARD_VARIABLE_PKEY = Indexes0.REWARD_VARIABLE_PKEY;
     public static final Index RUN_EXPERIMENT_FK_INDEX = Indexes0.RUN_EXPERIMENT_FK_INDEX;
     public static final Index RUN_PKEY = Indexes0.RUN_PKEY;
+    public static final Index PM_RUN_ADMIN_NOTES_RUN_ID_UNQ = Indexes0.PM_RUN_ADMIN_NOTES_RUN_ID_UNQ;
     public static final Index TRAINER_JOB_PKEY = Indexes0.TRAINER_JOB_PKEY;
+    public static final Index UNIQUE_JOB_ID_S3BUCKET = Indexes0.UNIQUE_JOB_ID_S3BUCKET;
     public static final Index TRAINING_ERROR_PKEY = Indexes0.TRAINING_ERROR_PKEY;
 
     // -------------------------------------------------------------------------
@@ -73,7 +75,6 @@ public class Indexes {
         public static Index UNIQUE_PROVIDER_CLASS_TYPE_KEY = Internal.createIndex("unique_provider_class_type_key", ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, new OrderField[] { ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.PROVIDER_CLASS, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.TYPE, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.KEY }, true);
         public static Index EXPERIMENT_MODEL_FK_INDEX = Internal.createIndex("experiment_model_fk_index", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.MODEL_ID }, false);
         public static Index EXPERIMENT_PKEY = Internal.createIndex("experiment_pkey", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.ID }, true);
-        public static Index GUIDE_PROJECT_FK_INDEX = Internal.createIndex("guide_project_fk_index", Guide.GUIDE, new OrderField[] { Guide.GUIDE.PROJECT_ID }, false);
         public static Index MODEL_PKEY = Internal.createIndex("model_pkey", Model.MODEL, new OrderField[] { Model.MODEL.ID }, true);
         public static Index MODEL_PROJECT_FK_INDEX = Internal.createIndex("model_project_fk_index", Model.MODEL, new OrderField[] { Model.MODEL.PROJECT_ID }, false);
         public static Index PATHMIND_USER_EMAIL_KEY = Internal.createIndex("pathmind_user_email_key", PathmindUser.PATHMIND_USER, new OrderField[] { PathmindUser.PATHMIND_USER.EMAIL }, true);
@@ -85,11 +86,14 @@ public class Indexes {
         public static Index PROJECT_PKEY = Internal.createIndex("project_pkey", Project.PROJECT, new OrderField[] { Project.PROJECT.ID }, true);
         public static Index UNIQUE_PROJECT_NAME_PATHMIND_USER_ID = Internal.createIndex("unique_project_name_pathmind_user_id", Project.PROJECT, new OrderField[] { Project.PROJECT.PATHMIND_USER_ID, Project.PROJECT.NAME }, true);
         public static Index REWARD_SCORE_POLICY_ID_INDEX = Internal.createIndex("reward_score_policy_id_index", RewardScore.REWARD_SCORE, new OrderField[] { RewardScore.REWARD_SCORE.POLICY_ID }, false);
+        public static Index REWARD_VARIABLE_MODEL_FK_INDEX = Internal.createIndex("reward_variable_model_fk_index", RewardVariable.REWARD_VARIABLE, new OrderField[] { RewardVariable.REWARD_VARIABLE.MODEL_ID }, false);
         public static Index REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY = Internal.createIndex("reward_variable_model_id_array_index_key", RewardVariable.REWARD_VARIABLE, new OrderField[] { RewardVariable.REWARD_VARIABLE.MODEL_ID, RewardVariable.REWARD_VARIABLE.ARRAY_INDEX }, true);
         public static Index REWARD_VARIABLE_PKEY = Internal.createIndex("reward_variable_pkey", RewardVariable.REWARD_VARIABLE, new OrderField[] { RewardVariable.REWARD_VARIABLE.ID }, true);
         public static Index RUN_EXPERIMENT_FK_INDEX = Internal.createIndex("run_experiment_fk_index", Run.RUN, new OrderField[] { Run.RUN.EXPERIMENT_ID }, false);
         public static Index RUN_PKEY = Internal.createIndex("run_pkey", Run.RUN, new OrderField[] { Run.RUN.ID }, true);
+        public static Index PM_RUN_ADMIN_NOTES_RUN_ID_UNQ = Internal.createIndex("pm_run_admin_notes_run_id_unq", RunAdminNote.RUN_ADMIN_NOTE, new OrderField[] { RunAdminNote.RUN_ADMIN_NOTE.RUN_ID }, true);
         public static Index TRAINER_JOB_PKEY = Internal.createIndex("trainer_job_pkey", TrainerJob.TRAINER_JOB, new OrderField[] { TrainerJob.TRAINER_JOB.JOB_ID }, true);
+        public static Index UNIQUE_JOB_ID_S3BUCKET = Internal.createIndex("unique_job_id_s3bucket", TrainerJob.TRAINER_JOB, new OrderField[] { TrainerJob.TRAINER_JOB.JOB_ID, TrainerJob.TRAINER_JOB.S3BUCKET }, true);
         public static Index TRAINING_ERROR_PKEY = Internal.createIndex("training_error_pkey", TrainingError.TRAINING_ERROR, new OrderField[] { TrainingError.TRAINING_ERROR.ID }, true);
     }
 }
