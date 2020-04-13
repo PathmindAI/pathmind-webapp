@@ -33,6 +33,6 @@ public class DashboardUtils {
 	}
 	
 	public static boolean isTrainingInFailed(Stage stage, Run run) {
-		return isTrainingStage(stage) && run.getStatusEnum() == RunStatus.Error;
+		return isTrainingStage(stage) && (run.getStatusEnum() == RunStatus.Error || run.getStatusEnum() == RunStatus.Killed);
 	}
 }

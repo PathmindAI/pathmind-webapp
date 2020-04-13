@@ -95,10 +95,12 @@ spec:
             mountPath: /var/lib/docker
           - name: jenkins-storage
             mountPath: /var/jenkins_home
+{{- if .Values.node }}
       tolerations:
         - key: "dedicated"
           operator: "Equal"
-          value: "jenkins-node"
+          value: "{{ .Values.node }}"
           effect: "NoSchedule"
       nodeSelector:
-        dedicated: jenkins-node
+        dedicated: {{ .Values.node }}
+{{- end }}

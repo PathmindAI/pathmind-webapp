@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.UNKNOWN_ERROR_KEYWORD;
+import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.NOT_AN_ERROR;;
+
 @Repository
 public class TrainingErrorDAO {
-	public static final String UNKNOWN_ERROR_KEYWORD = "unknown error";
-	static final String NOT_AN_ERROR = "Not an error";
 	private final DSLContext ctx;
 
 	public TrainingErrorDAO(DSLContext ctx) {

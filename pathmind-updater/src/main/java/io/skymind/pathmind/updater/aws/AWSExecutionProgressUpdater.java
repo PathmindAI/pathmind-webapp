@@ -2,11 +2,11 @@ package io.skymind.pathmind.updater.aws;
 
 import io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.utils.RunUtils;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
@@ -26,7 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.db.dao.TrainingErrorDAO.UNKNOWN_ERROR_KEYWORD;
+import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.UNKNOWN_ERROR_KEYWORD;
+import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.KILLED_TRAINING_KEYWORD;
 
 @Service
 @Slf4j
@@ -94,17 +95,12 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
      * and if the Run type is discovery or full run
      */
     private void sendNotificationMail(RunStatus jobStatus, Run run) {
-        if (jobStatus == RunStatus.Completed || jobStatus == RunStatus.Error) {
-            if (run.getRunTypeEnum() == RunType.DiscoveryRun || run.getRunTypeEnum() == RunType.FullRun) {
-
-                // Do not send notification if there is another run with same run type still executing or the notification is already been sent
-                if (runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
-                    boolean isSuccessful = jobStatus == RunStatus.Completed;
-                    PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
-                    emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);
-                    runDAO.markAsNotificationSent(run.getId());
-                }
-            }
+        // Do not send notification if there is another run with same run type still executing or the notification is already been sent
+        if (RunStatus.isFinished(jobStatus) && !RunUtils.isStoppedByUser(run) && runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
+            boolean isSuccessful = jobStatus == RunStatus.Completed;
+            PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
+            emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);
+            runDAO.markAsNotificationSent(run.getId());
         }
     }
 
@@ -188,6 +184,11 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
             foundError.ifPresent(
                     e -> run.setTrainingErrorId(e.getId())
             );
+        } else if (status == RunStatus.Killed && run.getStatusEnum() != RunStatus.Stopping) {
+        	// Stopping status is set, when user wants to stop training. So, don't assign an error in this case
+        	trainingErrorDAO.getErrorByKeyword(KILLED_TRAINING_KEYWORD).ifPresent(error -> {
+        		run.setTrainingErrorId(error.getId());
+        	});
         }
     }
 }
