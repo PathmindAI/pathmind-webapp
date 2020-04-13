@@ -88,7 +88,7 @@ public class LoginView extends HorizontalLayout
 		badCredentials.setVisible(false);
 
 		sessionExpired.add(new Span("Your session expired"));
-		sessionExpired.setClassName("error-message");
+		sessionExpired.setClassName("info-message");
 		sessionExpired.setVisible(false);
 
 		updateEmailNotVerified();
