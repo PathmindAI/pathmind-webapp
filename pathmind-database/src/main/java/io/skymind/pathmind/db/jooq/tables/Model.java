@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = 1606576941;
+    private static final long serialVersionUID = 6899905;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -104,14 +104,14 @@ public class Model extends TableImpl<ModelRecord> {
     public final TableField<ModelRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
-     * The column <code>public.model.draft</code>.
-     */
-    public final TableField<ModelRecord, Boolean> DRAFT = createField(DSL.name("draft"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("true", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
-
-    /**
      * The column <code>public.model.reward_variables_count</code>.
      */
     public final TableField<ModelRecord, Integer> REWARD_VARIABLES_COUNT = createField(DSL.name("reward_variables_count"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.model.draft</code>.
+     */
+    public final TableField<ModelRecord, Boolean> DRAFT = createField(DSL.name("draft"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("true", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * Create a <code>public.model</code> table reference
@@ -211,7 +211,7 @@ public class Model extends TableImpl<ModelRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Integer, Boolean, String, Boolean, Integer> fieldsRow() {
+    public Row11<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Integer, Boolean, String, Integer, Boolean> fieldsRow() {
         return (Row11) super.fieldsRow();
     }
 }

@@ -1086,17 +1086,6 @@
         <modifyDataType tableName="REWARD_SCORE" columnName="MAX" newDataType="DECIMAL(32,17)"></modifyDataType>
     </changeSet>
 
-    <changeSet id="20200323-01" author="bruno.rezende@ext.vaadin.com">
-        <addColumn tableName="MODEL">
-            <column name="DRAFT" type="BOOLEAN" defaultValueBoolean="true">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-        <update tableName="MODEL">
-            <column name="DRAFT" valueBoolean="false"/>
-        </update>
-    </changeSet>
-
     <changeSet id="20200312-01" author="krystian.walaszczyk@ext.vaadin.com">
         <addColumn tableName="MODEL">
             <column name="REWARD_VARIABLES_COUNT" type="INT" defaultValue="0">
@@ -1154,6 +1143,17 @@
 
     <changeSet id="20200406-01" author="daehyun@skymind.io">
         <addUniqueConstraint tableName="TRAINER_JOB" constraintName="UNIQUE_JOB_ID_S3BUCKET" columnNames="JOB_ID, S3BUCKET" />
+    </changeSet>
+
+    <changeSet id="20200413-01" author="bruno.rezende@ext.vaadin.com">
+        <addColumn tableName="MODEL">
+            <column name="DRAFT" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <update tableName="MODEL">
+            <column name="DRAFT" valueBoolean="false"/>
+        </update>
     </changeSet>
 
 </databaseChangeLog>
