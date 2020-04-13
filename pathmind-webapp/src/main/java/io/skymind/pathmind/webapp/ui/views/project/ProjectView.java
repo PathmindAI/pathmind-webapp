@@ -3,11 +3,12 @@ package io.skymind.pathmind.webapp.ui.views.project;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -45,7 +46,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-@CssImport("./styles/styles.css")
 @Route(value= Routes.PROJECT_URL, layout = MainLayout.class)
 public class ProjectView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
@@ -70,43 +70,32 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	private ScreenTitlePanel titlePanel;
 	
 
-	public ProjectView()
-	{
+	public ProjectView() {
 		super();
 	}
 
-	protected Component getMainContent()
-	{
+	protected Component getMainContent() {
 		setupGrid();
 		setupArchivesTabPanel();
 		
 		addClassName("project-view");
 
-		// BUG -> I didn't have to really investigate but it looks like we may need
-		// to do something special to get the full size content in the AppLayout component which
-		// is why the table is centered vertically: https://github.com/vaadin/vaadin-app-layout/issues/51
-		// Hence the workaround below:
-		VerticalLayout leftPanel = WrapperUtils.wrapSizeFullVertical(
-			archivesTabPanel,
-			new ViewSection(modelGrid)
-		);
-		VerticalLayout rightPanel = createRightPanel();
-		leftPanel.setPadding(false);
-		rightPanel.setPadding(false);
-		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-			WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-				leftPanel,
-				rightPanel,
-			70),
-			WrapperUtils.wrapWidthFullCenterHorizontal(new UploadModelButton(projectId))
-		);
+		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullCenterHorizontal(archivesTabPanel, new UploadModelButton(projectId));
+		headerWrapper.addClassName("page-content-header");
+
+		FlexLayout leftPanel = new ViewSection(headerWrapper, modelGrid);
+		FlexLayout rightPanel = createRightPanel();
+
+		SplitLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+			leftPanel,
+			rightPanel,
+		70);
 		gridWrapper.addClassName("page-content");
-		gridWrapper.setPadding(false);
 		
-		return WrapperUtils.wrapSizeFullVertical(gridWrapper);
+		return gridWrapper;
 	}
 
-	private VerticalLayout createRightPanel() {
+	private FlexLayout createRightPanel() {
 		projectName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
 		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
 		Button edit = new Button("Rename", evt -> renameProject());
@@ -120,10 +109,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 						segmentIntegrator.updatedNotesModelsView();
 				}
 			);
-		return WrapperUtils.wrapSizeFullVertical(
-				new TabPanel("Details"),
-				new ViewSection(WrapperUtils.wrapLeftAndRightAligned(projectName, edit), createdDate, notesField)
-			);
+		TabPanel panelHeader = new TabPanel("Details");
+		panelHeader.setEnabled(false);
+		return new ViewSection(panelHeader, WrapperUtils.wrapLeftAndRightAligned(projectName, edit), createdDate, notesField);
 	}
 
 	private void renameProject() {

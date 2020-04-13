@@ -44,12 +44,11 @@
 }
 
 .errors-wrapper .bold-label {
-  height: 33px;
+  height: 2.15rem;
 }
 
 .error-message-wrapper {
   flex: 1;
-  margin-top: var(--lumo-space-xs);
   box-sizing: border-box;
   width: 100%;
   white-space: pre;
