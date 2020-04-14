@@ -198,10 +198,18 @@ hr {
   align-self: center;
 }
 
-.projects-view .page-content {
+.page-content-header {
+  align-items: flex-end;
+  margin-bottom: var(--lumo-space-m);
+}
+
+.page-content-header vaadin-button {
+  margin: 0 0 var(--lumo-space-xs) 0;
+}
+
+.projects-view .view-section {
   max-width: 1480px;
-  align-self: center;
-  padding: 0;
+  margin-top: var(--lumo-space-m);
 }
 
 .projects-view .view-section,
@@ -210,8 +218,9 @@ hr {
 .projects-view .page-content,
 .project-view .page-content,
 .model-view .page-content {
-  flex: 1;
-  margin-top: 0;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  padding: var(--lumo-space-m);
 }
 
 .project-view .view-section {
@@ -245,12 +254,6 @@ hr {
   overflow-y: auto;
 }
 
-.experiment-view .page-content {
-  /* To make the white panels on Experiment page to be 
-     at the same position as the Projects, Project, and Model pages */
-  margin-top: var(--lumo-space-xl);
-}
-
 account-view {
   background: var(--pm-app-bg-color);
   height: 100%;
@@ -263,7 +266,9 @@ account-view {
 
 /* Title bar */
 .page-title {
+  justify-content: center;
   color: var(--lumo-body-text-color);
+  padding: 0 var(--lumo-space-m);
   margin-top: var(--lumo-space-m);
 }
 
@@ -384,7 +389,7 @@ h4 {
 }
 .navigate-icon {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
   flex-grow: 1;
   opacity: 0;
 }
@@ -400,7 +405,7 @@ h4 {
   margin: var(--lumo-space-m);
 }
 
-.dashboard-line:hover > .navigate-icon {
+.dashboard-line:hover .navigate-icon {
   opacity: 1;
 }
 .dashboard-item-main {
@@ -425,6 +430,9 @@ h4 {
   border-left: 1px solid var(--pm-gray-color-light);
   margin-top: 1.8rem;
 }
+.dashboard-item-notes:empty {
+  border-left: none;
+}
 .dashboard-item-notes span {
   line-height: 1;
 }
@@ -444,6 +452,11 @@ h4 {
   left: 0;
   bottom: 0;
   background: linear-gradient(rgba(255, 255, 255, 0), white);
+}
+
+.dashboard-item-icons {
+  flex-grow: 0;
+  align-self: stretch;
 }
 
 .stages-container {
