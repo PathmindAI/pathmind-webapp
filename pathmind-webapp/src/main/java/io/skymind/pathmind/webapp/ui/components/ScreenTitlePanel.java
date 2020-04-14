@@ -24,7 +24,6 @@ public class ScreenTitlePanel extends HorizontalLayout
 	
 	public ScreenTitlePanel(Breadcrumbs breadcrumbs) {
 		setWidthFull();
-		setJustifyContentMode(JustifyContentMode.CENTER);
 		addClassName("page-title");
 		add(breadcrumbs);
 	}

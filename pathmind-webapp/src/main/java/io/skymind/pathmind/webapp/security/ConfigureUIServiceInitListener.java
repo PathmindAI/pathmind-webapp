@@ -2,10 +2,13 @@ package io.skymind.pathmind.webapp.security;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.server.CustomizedSystemMessages;
 import com.vaadin.flow.server.ServiceInitEvent;
+import com.vaadin.flow.server.SystemMessagesProvider;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 
+import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.ui.exceptions.AccessDeniedException;
 import io.skymind.pathmind.webapp.ui.views.errors.PathmindErrorHandler;
@@ -17,13 +20,18 @@ import io.skymind.pathmind.webapp.ui.views.login.LoginView;
  */
 @SpringComponent
 public class ConfigureUIServiceInitListener implements VaadinServiceInitListener {
-
 	@Override
 	public void serviceInit(ServiceInitEvent event) {
 		event.getSource().addUIInitListener(uiEvent -> {
 			final UI ui = uiEvent.getUI();
 			ui.addBeforeEnterListener(this::beforeEnter);
 			ui.getSession().setErrorHandler(new PathmindErrorHandler());
+		});
+		event.getSource().setSystemMessagesProvider(systemMessagesInfo -> {
+			CustomizedSystemMessages msgs = new CustomizedSystemMessages();
+			msgs.setSessionExpiredNotificationEnabled(false);
+			msgs.setSessionExpiredURL(String.format("/%s/%s", Routes.LOGIN_URL, Routes.SESSION_EXPIRED));
+			return msgs;
 		});
 	}
 

@@ -19,6 +19,8 @@ public class FeatureManager {
                 return true;
             case MULTI_AGENT_TRAINING:
                 return multiAgentEnabled;
+            case ACCOUNT_UPGRADE:
+                return false;
             default:
                 return true;
         }

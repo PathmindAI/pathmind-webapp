@@ -1,3 +1,7 @@
 [part="items"] ::slotted(.vaadin-menu-item) {
   cursor: pointer;
 }
+
+[part="items"] ::slotted([focus-ring]:not([disabled])) {
+  box-shadow: none;
+}
