@@ -71,7 +71,6 @@ pipeline {
             alwaysPull true
             registryUrl "http://839270835622.dkr.ecr.us-east-1.amazonaws.com/"
             registryCredentialsId "ecr:us-east-1:AWS"
-            args  '--net="host"'
         }
     }
 
@@ -91,14 +90,13 @@ pipeline {
                     	RELEASE_ID = "${IMAGE_NAME}-${env.BUILD_NUMBER}"
                     	echo "Global pathmind Id set to ${RELEASE_ID}"
 		}
+                echo "Running on docker"
                 echo "Check out code"
 		checkout scm
 
-                // Validate kubectl
-                //sh "kubectl cluster-info"
-
-                // Helm version
-                //sh "helm version"
+                echo "Forward Docker daemon"
+                sh "kubectl port-forward service/dind 2375 &"
+                sh "sleep 30"
             }
         }
 

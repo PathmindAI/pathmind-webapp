@@ -22,6 +22,8 @@ spec:
             exec:
               command: ["/bin/bash","-c","aws s3 cp /app/process_output.log s3://${S3BUCKET}/${S3PATH}/output/"]
         env:
+        - name: NAME
+          value: {{NAME}}
         - name: SQS_URL
           value: {{SQS_URL}}
         - name: S3BUCKET
