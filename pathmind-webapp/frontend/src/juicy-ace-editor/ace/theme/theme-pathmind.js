@@ -6,7 +6,10 @@ ace.define(
 
     exports.isDark = false;
     exports.cssText =
-      '.ace-eclipse .ace_gutter {\
+      '.ace-eclipse .ace_gutter-layer {\
+contain: none;\
+}\
+.ace-eclipse .ace_gutter {\
 background: var(--pm-app-bg-color);\
 color: rgb(136, 136, 136);\
 border-right: 1px solid var(--pm-gray-color-dark);\

@@ -13,6 +13,7 @@ import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -32,7 +33,6 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -72,7 +72,6 @@ import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
 
-@CssImport("./styles/styles.css")
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
@@ -270,8 +269,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 	
 	private void archiveExperiment() {
-		ConfirmDialog dialog = new ConfirmDialog("Archive this experiment?", "This hides it from your main workspaces so you can stay organized. You can always unarchive experiments.", 
-				"Archive Experiment", evt -> {
+		ConfirmationUtils.archive("experiment", () -> {
 			experimentDAO.archive(experiment.getId(), true);
 			experiments.remove(experiment);
 			if (experiments.isEmpty()) {
@@ -282,17 +280,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				experimentsNavbar.setExperiments(experiments, currentExperiment);
 			}
 		});
-		dialog.setCancelButton("Cancel", evt -> dialog.close());
-		dialog.open();
 	}
+	
 	private void unarchiveExperiment() {
-		ConfirmDialog dialog = new ConfirmDialog("Confirm Unarchive", "Are you sure you want to unarchive this experiment?", 
-				"Unarchive Experiment", evt -> {
-					experimentDAO.archive(experiment.getId(), false);
-					getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
-				});
-		dialog.setCancelButton("Cancel", evt -> dialog.close());
-		dialog.open();
+		ConfirmationUtils.unarchive("experiment", () -> {
+			experimentDAO.archive(experiment.getId(), false);
+			getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
+		});
 	}
 
 	private Breadcrumbs createBreadcrumbs() {        
@@ -369,9 +363,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
 			rewardFunctionEditor.setVariableNames(rewardVariables);
 		}
-		policyChartPanel.setExperiment(experiment);
+		policyChartPanel.setExperiment(experiment, policy);
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
-		processSelectedPolicy(policy);
+		policyHighlightPanel.update(policy);
 		updateRightPanelForExperiment();
 	}
 
@@ -386,15 +380,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				.filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
 				.max(Comparator.comparing(PolicyUtils::getLastScore))
 				.orElse(null);
-	}
-
-	private void processSelectedPolicy(Policy selectedPolicy) {
-		policyHighlightPanel.update(selectedPolicy);
-		if (selectedPolicy != null) {
-			policyChartPanel.highlightPolicy(selectedPolicy);
-			updateButtonEnablement();
-			updateRightPanelForExperiment();
-		}
 	}
 
 	private void updateUIForError(TrainingError error) {
@@ -430,9 +415,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void updateRightPanelForExperiment() {
 		updateButtonEnablement();
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
-		if (ExperimentUtils.getTrainingStatus(experiment) == RunStatus.Error) {
+		RunStatus status = ExperimentUtils.getTrainingStatus(experiment);
+		if (status == RunStatus.Error || status == RunStatus.Killed) {
 			experiment.getRuns().stream()
-					.filter(r -> r.getStatusEnum() == RunStatus.Error)
+					.filter(r -> r.getStatusEnum() == RunStatus.Error || r.getStatusEnum() == RunStatus.Killed)
 					.findAny()
 					.map(Run::getTrainingErrorId)
 					.flatMap(trainingErrorDAO::getErrorById)
@@ -471,7 +457,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				// Calculate the best policy again
 				policy = selectBestPolicy(experiment.getPolicies());
 				PushUtils.push(getUI(), () -> {
-					processSelectedPolicy(policy);
+					if (policy != null) {
+						policyChartPanel.highlightPolicy(policy);
+					}
 					updateRightPanelForExperiment();
 				});
 			}
