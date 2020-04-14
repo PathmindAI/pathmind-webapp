@@ -207,6 +207,10 @@ hr {
   margin: 0 0 var(--lumo-space-xs) 0;
 }
 
+.projects-view {
+  padding: 0 var(--lumo-space-m) var(--lumo-space-m);
+}
+
 .projects-view .view-section {
   max-width: 1480px;
   margin-top: var(--lumo-space-m);
