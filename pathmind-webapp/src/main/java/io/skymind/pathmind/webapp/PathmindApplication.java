@@ -3,19 +3,25 @@ package io.skymind.pathmind.webapp;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 
 @SpringBootApplication(scanBasePackages = "io.skymind.pathmind")
 @PropertySource({"application.properties", "shared.properties"})
@@ -58,4 +64,23 @@ public class PathmindApplication
 		return objectMapper;
 	}
 
+	@EventListener(ApplicationReadyEvent.class)
+	public void lookForTransactionalAnnotations() {
+		try {
+			ClassPathScanningCandidateComponentProvider provider
+					= new ClassPathScanningCandidateComponentProvider(true);
+			for (BeanDefinition beanDefinition : provider.findCandidateComponents("io.skymind.pathmind")) {
+				Class<?> clazz = Class.forName(beanDefinition.getBeanClassName());
+				if (Stream.of(clazz.getDeclaredMethods())
+						.anyMatch(m -> m.getAnnotation(Transactional.class) != null)) {
+					throw new RuntimeException(
+							"WE DON'T SUPPORT THE @Transactional ANNOTATION. FOR MORE DETAILS, SEE: " +
+									"https://github.com/SkymindIO/pathmind-webapp/issues/531"
+					);
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 }
