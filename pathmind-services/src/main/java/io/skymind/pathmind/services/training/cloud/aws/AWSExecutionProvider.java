@@ -275,6 +275,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_7_6_PBT:
             case VERSION_0_7_6_RESUME:
             case VERSION_1_0_1:
+            case VERSION_1_0_1_ENVS:
                 instructions.addAll(Arrays.asList(
                         // Setup NativeRL
                         "mkdir -p work",
@@ -360,6 +361,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_0_24:
             case VERSION_0_0_25:
             case VERSION_0_0_25_Multi:
+            case VERSION_0_0_25_ENVS:
             case VERSION_1_0_1:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
@@ -430,7 +432,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("MULTIAGENT", String.valueOf(job.isMultiAgent())),
                 varCondition("RESUME", String.valueOf(job.isResume())),
                 var("CHECKPOINT_FREQUENCY", String.valueOf(job.getCheckpointFrequency())),
-                var("USER_LOG", String.valueOf(job.isUserLog()))
+                var("USER_LOG", String.valueOf(job.isUserLog())),
+                var("NUM_ENVS", "1"),
+                var("RAY_OVERWRITE", "true")
         ));
     }
 

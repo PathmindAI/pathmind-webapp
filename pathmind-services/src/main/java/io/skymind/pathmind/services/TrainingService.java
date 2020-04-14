@@ -39,13 +39,13 @@ public abstract class TrainingService {
         this.policyDAO = policyDAO;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
 
-        PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_1_0_1;
+        PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_ENVS;
         if (multiAgent) {
             pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
         }
 
 //        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
-        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_1_0_1, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
+        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_1_0_1_ENVS, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
     }
     public void startRun(Experiment exp){
         startRun(exp,
