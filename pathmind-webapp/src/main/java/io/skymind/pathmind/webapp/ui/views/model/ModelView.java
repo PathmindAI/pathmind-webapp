@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import io.skymind.pathmind.shared.data.Experiment;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
@@ -23,16 +25,20 @@ import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.webapp.ui.components.TabPanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
+import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.project.components.panels.ExperimentGrid;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
@@ -55,6 +61,14 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 	private ArchivesTabPanel<Experiment> archivesTabPanel;
 	private ExperimentGrid experimentGrid;
 
+	private Span modelName;
+	private Span createdDate;
+	private Span fileName;
+	private Span actionsText;
+	private Span observationsText;
+	private Span rewardVariableNamesText;
+	private Span rewardVariablesCountText;
+
 	public ModelView() {
 		super();
 	}
@@ -69,14 +83,30 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 		headerWrapper.addClassName("page-content-header");
 
 		FlexLayout leftPanel = new ViewSection(headerWrapper, experimentGrid);
+		FlexLayout rightPanel = createRightPanel();
 
 		SplitLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 			leftPanel,
-			new ViewSection(createViewNotesField()),
+			rightPanel,
 		70);
 		gridWrapper.addClassName("page-content");
 
 		return gridWrapper;
+	}
+
+	private FlexLayout createRightPanel() {
+		modelName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
+		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+		fileName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+		actionsText = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+		observationsText = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+		rewardVariableNamesText = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+		rewardVariablesCountText = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+		
+		NotesField notesField = createViewNotesField();
+		TabPanel panelHeader = new TabPanel("Details");
+		panelHeader.setEnabled(false);
+		return new ViewSection(panelHeader, modelName, createdDate, fileName, actionsText, observationsText, rewardVariablesCountText, notesField);
 	}
 
 	/**
@@ -101,9 +131,9 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 		experimentGrid.addItemClickListener(event -> handleExperimentClick(event.getItem()));
 	}
 
-	private HorizontalLayout createViewNotesField() {
+	private NotesField createViewNotesField() {
 		return new NotesField(
-			"Model Notes",
+			"Notes",
 			model.getUserNotes(),
 			updatedNotes -> {
 				modelDAO.updateUserNotes(modelId, updatedNotes);
@@ -146,9 +176,22 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
+		modelName.setText("Model #"+model.getName());
 		VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
 			// experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
+			LocalDateTime dateCreatedData = model.getDateCreated();
+			int rewardVariablesCountData = model.getRewardVariablesCount();
 			experimentGrid.setItems(experiments);
+			createdDate.setText(String.format("Uploaded on %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(dateCreatedData, timeZoneId)));
+			actionsText.setText("Actions: "+model.getNumberOfPossibleActions());
+			observationsText.setText("Observations: "+model.getNumberOfObservations());
+			rewardVariablesCountText.setText("Reward Variables Count: "+rewardVariablesCountData);
+			if (dateCreatedData == null) {
+				createdDate.setVisible(false);
+			}
+			if (rewardVariablesCountData == 0) {
+				rewardVariablesCountText.setVisible(false);
+			}
 		});
 		archivesTabPanel.initData();
 	}

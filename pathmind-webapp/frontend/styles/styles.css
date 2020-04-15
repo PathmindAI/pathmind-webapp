@@ -223,11 +223,13 @@ hr {
   padding: var(--lumo-space-m);
 }
 
-.project-view .view-section {
+.project-view .view-section,
+.model-view .view-section {
   min-width: unset;
 }
 
-.project-view .notes-field-wrapper {
+.project-view .notes-field-wrapper,
+.model-view .notes-field-wrapper {
   margin-top: var(--lumo-space-m);
   flex: 1 1 auto;
 }
