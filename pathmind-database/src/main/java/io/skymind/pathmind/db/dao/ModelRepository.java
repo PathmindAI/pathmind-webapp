@@ -13,7 +13,7 @@ class ModelRepository
 {
     protected static List<Model> getModelsForProject(DSLContext ctx, long projectId) {
         return ctx
-				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.ARCHIVED, MODEL.USER_NOTES)
+				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.ARCHIVED, MODEL.USER_NOTES, MODEL.DRAFT)
 				.from(MODEL)
 				.where(MODEL.PROJECT_ID.eq(projectId))
 				.fetchInto(Model.class);
@@ -39,13 +39,14 @@ class ModelRepository
 	 * @return Model - beware, not all fields are initialized
 	 */
 	protected static Model getModel(DSLContext ctx, long modelId) {
-		return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.USER_NOTES)
+		return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.NUMBER_OF_OBSERVATIONS,
+				MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.USER_NOTES, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT)
 				.from(MODEL)
 				.where(MODEL.ID.eq(modelId))
 				.fetchOneInto(Model.class);
 	}
 
-	protected static long insertModel(DSLContext ctx, Model model, String name, LocalDateTime dateCreated, long projectId) {
+	protected static long insertModel(DSLContext ctx, Model model, String name, String userNotes, LocalDateTime dateCreated, long projectId) {
 		final ModelRecord mod = MODEL.newRecord();
 		mod.attach(ctx.configuration());
 		mod.setName(name);
@@ -54,13 +55,23 @@ class ModelRepository
 		mod.setProjectId(projectId);
 		mod.setNumberOfPossibleActions(model.getNumberOfPossibleActions());
 		mod.setNumberOfObservations(model.getNumberOfObservations());
+		mod.setDraft(model.isDraft());
 		mod.setRewardVariablesCount(model.getRewardVariablesCount());
+		mod.setUserNotes(userNotes);
 		mod.store();
 		return mod.key().get(MODEL.ID);
 	}
 
 	protected static void updateUserNotes(DSLContext ctx, long modelId, String userNotes) {
 		ctx.update(MODEL)
+				.set(MODEL.USER_NOTES, userNotes)
+				.where(MODEL.ID.eq(modelId))
+				.execute();
+	}
+
+	protected static void updateModel(DSLContext ctx,long modelId, boolean draft, String userNotes) {
+		ctx.update(MODEL)
+				.set(MODEL.DRAFT, draft)
 				.set(MODEL.USER_NOTES, userNotes)
 				.where(MODEL.ID.eq(modelId))
 				.execute();

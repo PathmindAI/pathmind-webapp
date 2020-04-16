@@ -202,6 +202,8 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 			}
 		});
 		archivesTabPanel.initData();
+
+		recalculateGridColumnWidth(UI.getCurrent().getPage(), experimentGrid);		
 	}
 
 	@Override

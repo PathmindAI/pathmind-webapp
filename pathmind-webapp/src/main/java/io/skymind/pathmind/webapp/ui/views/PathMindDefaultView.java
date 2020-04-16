@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
@@ -27,13 +29,14 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 {
 	private static String COOKIE_CONSENT_LINK = "https://pathmind.com/privacy";
 
-	private boolean isGenerated = false;
-
     @Value("${skymind.debug.accelerate}")
     private boolean isDebugAccelerate;
     
     @Autowired
     private SegmentIntegrator segmentIntegrator;
+
+	private int previousWindowWidth = 0;
+	private boolean allowRecalculateGridColumnWidth = true;
 
 	public PathMindDefaultView()
 	{
@@ -73,6 +76,21 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		initScreen(event);
 		// Segment plugin added
 		add(segmentIntegrator);
+	}
+
+	public void recalculateGridColumnWidth(Page page, Grid grid) {
+		page.addBrowserWindowResizeListener(resizeEvent -> {
+			int windowWidth = resizeEvent.getWidth();
+			if (allowRecalculateGridColumnWidth &&
+					((windowWidth > 1024 && previousWindowWidth <= 1024) ||
+					(windowWidth > 1280 && previousWindowWidth <= 1280))) {
+				grid.recalculateColumnWidths();
+			}
+			previousWindowWidth = windowWidth;
+			if (windowWidth > 1280) {
+				allowRecalculateGridColumnWidth = false;
+			}
+		});
 	}
 
 	protected void initLoadData() throws InvalidDataException{
