@@ -11,6 +11,7 @@ import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AWSFileManager;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
+import io.skymind.pathmind.shared.exception.PathMindException;
 import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.ExecutionProviderClass;
@@ -89,7 +90,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             return client.fileUpload(buildJobId(runId)+ "/model.zip", model);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return null;
+            throw new PathMindException("Failed to upload model");
         } finally {
             if (model != null) {
                 model.delete();
@@ -474,7 +475,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             return client.jobSubmit(jobId, job.getType());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return null;
+            throw new PathMindException("Failed to start training");
         } finally {
             if (script != null) {
                 script.delete();
