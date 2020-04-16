@@ -225,6 +225,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		});
 
 		archivesTabPanel.initData();
+
+		recalculateGridColumnWidth(UI.getCurrent().getPage(), modelGrid);		
 	}
 
 	@Override
