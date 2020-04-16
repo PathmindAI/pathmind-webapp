@@ -1139,7 +1139,7 @@
             <column name="DESCRIPTION" value="An error occurred. Please contact the Pathmind team"/>
         </insert>
     </changeSet>
-
+    
     <!-- #1320 Remove the checklist feature from the app -->
     <changeSet id="20200304-01" author="steph@followsteph.com">
         <dropTable tableName="GUIDE"/>
@@ -1161,6 +1161,17 @@
         <rollback>
             <comment>It's not possible to rollback dropping a table.</comment>
         </rollback>
+    </changeSet>
+
+    <changeSet id="20200413-01" author="bruno.rezende@ext.vaadin.com">
+        <addColumn tableName="MODEL">
+            <column name="DRAFT" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <update tableName="MODEL">
+            <column name="DRAFT" valueBoolean="false"/>
+        </update>
     </changeSet>
 
 </databaseChangeLog>

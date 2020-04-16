@@ -203,7 +203,7 @@ class ExperimentRepository
 				DSL.greatest(MODEL.LAST_ACTIVITY_DATE,PROJECT.LAST_ACTIVITY_DATE));
 
 		final Result<?> result = ctx.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.USER_NOTES,
-				MODEL.ID, MODEL.NAME,
+				MODEL.ID, MODEL.NAME, MODEL.DRAFT,
 				PROJECT.ID, PROJECT.NAME,
 				latestRun.asterisk(),
 				itemLastActivityDate.as("ITEM_LAST_ACTIVITY_DATE"),

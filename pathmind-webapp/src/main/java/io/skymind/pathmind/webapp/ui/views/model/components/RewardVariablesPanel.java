@@ -19,6 +19,7 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.shared.data.RewardVariable;
@@ -36,6 +37,8 @@ public class RewardVariablesPanel extends VerticalLayout
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
+	private Button draftButton = new Button("Save Draft", new Icon(VaadinIcon.FILE));
+
 	public RewardVariablesPanel()
 	{
 		setupForm();
@@ -49,8 +52,15 @@ public class RewardVariablesPanel extends VerticalLayout
 		sectionTitleWrapper.add(projectText, projectNameLabel);
 		sectionTitleWrapper.addClassName(TRUNCATED_LABEL);
 
-		add(sectionTitleWrapper,
+		draftButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+
+		HorizontalLayout rewardVariablesNameLine = WrapperUtils.wrapWidthFullBetweenHorizontal(
 				LabelFactory.createLabel("Reward Variable Names", NO_TOP_MARGIN_LABEL),
+				draftButton);
+		rewardVariablesNameLine.getStyle().set("align-items", "center");
+
+		add(sectionTitleWrapper,
+				rewardVariablesNameLine,
 				GuiUtils.getFullWidthHr(),
 				formPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
@@ -63,6 +73,10 @@ public class RewardVariablesPanel extends VerticalLayout
 		nextStepButton.addClickListener(listener);
 	}
 
+	public void addSaveDraftClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
+		draftButton.addClickListener(listener);
+	}
+
 	public void setProjectName(String name) {
 		projectNameLabel.setText(name);
 	}
@@ -73,9 +87,12 @@ public class RewardVariablesPanel extends VerticalLayout
 		formPanel.setPadding(false);
 	}
 
-	public void setupRewardVariablesTable(int rewardVariablesCount) {
+	public void setupRewardVariablesTable(int rewardVariablesCount, List<RewardVariable> rewardVariables) {
 		rewardVariablesTable = new RewardVariablesTable();
-		rewardVariablesTable.setVariableSize(rewardVariablesCount);
+		rewardVariablesTable.setVariableSize(Math.max(rewardVariablesCount, rewardVariables.size()));
+		if (!rewardVariables.isEmpty()) {
+			rewardVariablesTable.setValue(rewardVariables);
+		}
 		formPanel.add(rewardVariablesTable);
 	}
 
