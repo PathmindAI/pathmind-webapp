@@ -1,27 +1,16 @@
 package io.skymind.pathmind.shared.data;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Serializable;
 import java.util.Objects;
 
-public abstract class Data
-{
+@Getter
+@Setter
+public abstract class Data implements Serializable {
 	private long id = -1;
 	private String name;
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 
 	@Override
 	public boolean equals(Object o) {

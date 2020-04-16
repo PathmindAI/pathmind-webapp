@@ -11,6 +11,7 @@ import com.amazonaws.services.s3.model.*;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
+import com.amazonaws.services.sqs.model.MessageAttributeValue;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.amazonaws.util.IOUtils;
@@ -31,6 +32,7 @@ import org.springframework.util.StringUtils;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 @Slf4j
@@ -170,14 +172,19 @@ public class AWSApiClient {
         return result.getMessageId();
     }
 
-    public String sendUpdaterMessage(UpdateEvent event) throws JsonProcessingException {
-        SendMessageRequest send_msg_request = new SendMessageRequest()
+    public String sendUpdaterMessage(UpdateEvent event, byte[] cargo) throws JsonProcessingException {
+
+        SendMessageRequest sendMessageRequest = new SendMessageRequest()
                 .withMessageDeduplicationId(UUID.randomUUID().toString()) // we might expect similar content based
                 .withQueueUrl(updaterQueueUrl)
                 .withMessageGroupId("updater")
+                .withMessageAttributes(Map.of(
+                        "cargo", new MessageAttributeValue()
+                                .withBinaryValue(ByteBuffer.wrap(cargo)).withDataType("Binary")
+                ))
                 .withMessageBody(objectMapper.writeValueAsString(event));
 
-        SendMessageResult result = sqsClient.sendMessage(send_msg_request);
+        SendMessageResult result = sqsClient.sendMessage(sendMessageRequest);
         return result.getMessageId();
     }
 
@@ -195,7 +202,7 @@ public class AWSApiClient {
                 attributes.put("FifoQueue", "true");
                 attributes.put("ContentBasedDeduplication", "true");
                 sqsClient.createQueue(new CreateQueueRequest()
-                        .withAttributes(attributes).withQueueName(queueUrl.substring(queueUrl.lastIndexOf("/")+1))
+                        .withAttributes(attributes).withQueueName(queueUrl.substring(queueUrl.lastIndexOf("/") + 1))
                 );
             }
             if (!existingQueues.contains(updaterQueueUrl)) {
@@ -203,7 +210,7 @@ public class AWSApiClient {
                 attributes.put("FifoQueue", "true");
                 // attributes.put("ContentBasedDeduplication", "true"); // this queue should not have dedup based on content
                 sqsClient.createQueue(new CreateQueueRequest()
-                        .withAttributes(attributes).withQueueName(updaterQueueUrl.substring(updaterQueueUrl.lastIndexOf("/")+1))
+                        .withAttributes(attributes).withQueueName(updaterQueueUrl.substring(updaterQueueUrl.lastIndexOf("/") + 1))
                 );
             }
         }
