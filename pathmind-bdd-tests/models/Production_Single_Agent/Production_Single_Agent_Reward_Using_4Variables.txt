@@ -1,0 +1,4 @@
+reward += after[0] - before[0];
+reward += after[1] - before[1];
+reward += after[2] - before[2];
+reward += after[3] - before[3];

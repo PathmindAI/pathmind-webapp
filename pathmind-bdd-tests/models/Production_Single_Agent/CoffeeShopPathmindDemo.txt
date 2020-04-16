@@ -1,0 +1,4 @@
+reward += after[0] - before[0]; // Maximize kitchen cleanliness
+reward += after[1] - before[1]; // Maximize successful exits
+reward -= after[2] - before[2]; // Minimize balked customers
+reward -= after[3] - before[3]; // Minimize average service time

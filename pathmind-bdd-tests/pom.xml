@@ -53,7 +53,8 @@
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
+            <artifactId>hamcrest-library</artifactId>
+            <version>2.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -83,6 +84,8 @@
                     <includes>
                         <include>**/*Feature.java</include>
                     </includes>
+                    <forkCount>${forkNumber}</forkCount>
+                    <reuseForks>true</reuseForks>
                 </configuration>
                 <executions>
                     <execution>
