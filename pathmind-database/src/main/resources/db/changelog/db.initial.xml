@@ -1152,6 +1152,17 @@
         <addUniqueConstraint tableName="TRAINER_JOB" constraintName="UNIQUE_JOB_ID_S3BUCKET" columnNames="JOB_ID, S3BUCKET" />
     </changeSet>
 
+    <!-- #1372 Adjust the changeset ID to the checklist UI removal -->
+    <changeSet id="20200411-01" author="steph@followsteph.com">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="GUIDE"/>
+        </preConditions>
+        <dropTable tableName="GUIDE"/>
+        <rollback>
+            <comment>It's not possible to rollback dropping a table.</comment>
+        </rollback>
+    </changeSet>
+
     <changeSet id="20200413-01" author="bruno.rezende@ext.vaadin.com">
         <addColumn tableName="MODEL">
             <column name="DRAFT" type="BOOLEAN" defaultValueBoolean="true">
