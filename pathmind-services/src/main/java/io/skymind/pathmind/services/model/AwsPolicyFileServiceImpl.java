@@ -53,7 +53,6 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
     @Override
     public void savePolicyFile(Long policyId, byte[] policyFile) {
         awsApiClient.fileUpload(POLICY_FILE + policyId, policyFile);
-        policyDAO.setHasFile(policyId, true);
     }
 
     @Override
