@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -22,6 +24,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.security.Routes;
@@ -50,6 +53,8 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 	@Autowired
 	private ModelDAO modelDAO;
 	@Autowired
+	private RewardVariableDAO rewardVariableDAO;
+	@Autowired
 	private UserDAO userDAO;
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
@@ -57,17 +62,16 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 	private long modelId;
 	private Model model;
 	private List<Experiment> experiments;
+	private List<RewardVariable> rewardVariableNames;
 
 	private ArchivesTabPanel<Experiment> archivesTabPanel;
 	private ExperimentGrid experimentGrid;
 
 	private Span modelName;
 	private Span createdDate;
-	private Span fileName;
-	private Span actionsText;
-	private Span observationsText;
-	private Span rewardVariableNamesText;
-	private Span rewardVariablesCountText;
+	private Paragraph actionsText;
+	private Paragraph observationsText;
+	private Paragraph rewardVariableNamesText;
 
 	public ModelView() {
 		super();
@@ -95,18 +99,16 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 	}
 
 	private FlexLayout createRightPanel() {
-		modelName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
+		modelName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL);
 		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
-		fileName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
-		actionsText = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
-		observationsText = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
-		rewardVariableNamesText = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
-		rewardVariablesCountText = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+		actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssMindPathStyles.BOLD_LABEL));
+		observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssMindPathStyles.BOLD_LABEL));
+		rewardVariableNamesText = new Paragraph(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL));
 		
 		NotesField notesField = createViewNotesField();
 		TabPanel panelHeader = new TabPanel("Details");
 		panelHeader.setEnabled(false);
-		return new ViewSection(panelHeader, modelName, createdDate, fileName, actionsText, observationsText, rewardVariablesCountText, notesField);
+		return new ViewSection(panelHeader, modelName, createdDate, actionsText, observationsText, rewardVariableNamesText, notesField);
 	}
 
 	/**
@@ -172,6 +174,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 		experiments = experimentDAO.getExperimentsForModel(modelId);
 		if (experiments == null || experiments.isEmpty())
 			throw new InvalidDataException("Attempted to access Experiments for Model: " + modelId);
+		rewardVariableNames = rewardVariableDAO.getRewardVariablesForModel(modelId);
 	}
 
 	@Override
@@ -180,17 +183,22 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 		VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
 			// experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			LocalDateTime dateCreatedData = model.getDateCreated();
-			int rewardVariablesCountData = model.getRewardVariablesCount();
 			experimentGrid.setItems(experiments);
 			createdDate.setText(String.format("Uploaded on %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(dateCreatedData, timeZoneId)));
-			actionsText.setText("Actions: "+model.getNumberOfPossibleActions());
-			observationsText.setText("Observations: "+model.getNumberOfObservations());
-			rewardVariablesCountText.setText("Reward Variables Count: "+rewardVariablesCountData);
-			if (dateCreatedData == null) {
-				createdDate.setVisible(false);
-			}
-			if (rewardVariablesCountData == 0) {
-				rewardVariablesCountText.setVisible(false);
+			actionsText.add(""+model.getNumberOfPossibleActions());
+			observationsText.add(""+model.getNumberOfObservations());
+			if (rewardVariableNames.size() > 0) {
+				rewardVariableNames.forEach(rv -> {
+					String rvName = rv.getName();
+					if (rvName != null && rvName.length() > 0) {
+						if (rv.getArrayIndex() > 0) {
+							rewardVariableNamesText.add(", ");
+						}
+						rewardVariableNamesText.add(rvName);
+					}
+				});
+			} else {
+				rewardVariableNamesText.add("All reward variables are unnamed. You can name them when you create a new experiment for this model.");
 			}
 		});
 		archivesTabPanel.initData();
