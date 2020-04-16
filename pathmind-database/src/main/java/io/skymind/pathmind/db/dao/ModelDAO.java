@@ -4,7 +4,6 @@ import io.skymind.pathmind.shared.data.Model;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +30,6 @@ public class ModelDAO
     	return Optional.ofNullable(ModelRepository.getModel(ctx, modelId));
 	}
 
-	@Transactional
 	public long addModelToProject(Model model, long projectId, String userNotes)
 	{
 		return ctx.transactionResult(configuration ->
