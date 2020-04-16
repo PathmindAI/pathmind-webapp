@@ -69,20 +69,32 @@ public class ExecutionProviderMetaDataDAO {
         delete(this.providerClass, IdType.Run, String.valueOf(modelId));
     }
 
-    public void putCheckPointFileKey(String policyExternalId, String value) {
-        put(this.providerClass, IdType.CheckPointFile, policyExternalId, value);
+    public void putCheckPointFileKey(DSLContext transactionCtx, String policyExternalId, String value) {
+        put(transactionCtx, this.providerClass, IdType.CheckPointFile, policyExternalId, value);
     }
 
     public String getCheckPointFileKey(String policyExternalId) {
         return get(this.providerClass, IdType.CheckPointFile, policyExternalId);
     }
 
+    public String getCheckPointFileKey(DSLContext transactionCtx, String policyExternalId) {
+        return get(transactionCtx, providerClass, IdType.CheckPointFile,  policyExternalId);
+    }
+
     private void put(ExecutionProviderClass providerClass, IdType type, String key, String value) {
-        ExecutionProviderMetaDataRepository.put(ctx, providerClass.getId(), type.getId(), key, value);
+        put(ctx, providerClass, type, key, value);
+    }
+
+    private void put(DSLContext transactionCtx, ExecutionProviderClass providerClass, IdType type, String key, String value) {
+        ExecutionProviderMetaDataRepository.put(transactionCtx, providerClass.getId(), type.getId(), key, value);
     }
 
     private String get(ExecutionProviderClass providerClass, IdType type, String key) {
-        return ExecutionProviderMetaDataRepository.get(ctx, providerClass.getId(), type.getId(), key);
+        return get(ctx, providerClass, type, key);
+    }
+
+    private String get(DSLContext transactionCtx, ExecutionProviderClass providerClass, IdType type, String key) {
+        return ExecutionProviderMetaDataRepository.get(transactionCtx, providerClass.getId(), type.getId(), key);
     }
 
     private Map<String, String> get(ExecutionProviderClass providerClass, IdType type, Collection<?> keys) {

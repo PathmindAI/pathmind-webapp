@@ -73,16 +73,19 @@ public class RunDAO {
         return RunRepository.getStoppedPolicyNamesForRuns(ctx, runIds);
     }
 
-    public void updateRun(Run run, ProviderJobStatus status, List<Policy> policies)
-    {
+    public void updateRun(Run run, ProviderJobStatus status, List<Policy> policies) {
         ctx.transaction(configuration ->
         {
             DSLContext transactionCtx = DSL.using(configuration);
-
-            updateRun(run, status, transactionCtx);
-            updateExperiment(run, transactionCtx);
-            updatePolicies(run, policies, transactionCtx);
+            updateRun(transactionCtx, run, status, policies);
         });
+    }
+
+    public void updateRun(DSLContext transactionCtx, Run run, ProviderJobStatus status, List<Policy> policies)
+    {
+        updateRun(run, status, transactionCtx);
+        updateExperiment(run, transactionCtx);
+        updatePolicies(run, policies, transactionCtx);
     }
 
     private void updateExperiment(Run run, DSLContext transactionCtx) {
