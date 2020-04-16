@@ -39,6 +39,7 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	private static final String EVENT_START_DISCOVERY_RUN = "Start Discovery Run";
 	private static final String EVENT_START_FULL_RUN = "Start Full Run";
 	private static final String EVENT_EXPORT_POLICY = "Export Policy";
+	private static final String EVENT_SAVE_MODEL_DRAFT = "Save Model Draft";
 	private static final String EVENT_SAVE_DRAFT = "Save Draft";
 	private static final String EVENT_CHANGE_PW = "Change Password";
 	private static final String EVENT_EDIT_INFO = "Edit Info";
@@ -92,6 +93,10 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 
 	public void draftSaved() {
 		track(EVENT_SAVE_DRAFT);
+	}
+
+	public void modelDraftSaved() {
+		track(EVENT_SAVE_MODEL_DRAFT);
 	}
 
 	public void passwordChanged() {

@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,6 +36,7 @@ import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
+import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -50,12 +52,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private static final int PROJECT_ID_SEGMENT = 0;
  	private static final int UPLOAD_MODE_SEGMENT = 1;
- 	
-	@Autowired
-	private ProjectDAO projectDAO;
+	private static final int MODEL_ID_SEGMENT = 2;
 
 	@Autowired
-	private RewardVariableDAO rewardVariableDAO;
+	private ProjectDAO projectDAO;
 
 	@Autowired
 	private ModelService modelService;
@@ -71,6 +71,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private Model model;
 
+	private List<RewardVariable> rewardVariables = new ArrayList<>();
+
 	private Binder<Model> modelBinder;
 
 	private UI ui;
@@ -82,6 +84,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private List<Component> wizardPanels;
 
 	private long projectId;
+	private long modelId = -1;
 	private long experimentId;
 	private String modelNotes;
 	private Project project;
@@ -96,25 +99,31 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	protected Component getMainContent()
 	{
-		this.model = ModelUtils.generateNewDefaultModel();
-		model.setProjectId(projectId);
-
 		modelBinder = new Binder<>(Model.class);
 
 		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode);
-		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
+		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload());
 		rewardVariablesPanel = new RewardVariablesPanel();
+
+		modelBinder.readBean(model);
 
 		wizardPanels = Arrays.asList(
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel,
 				rewardVariablesPanel);
 
-		setVisibleWizardPanel(uploadModelWizardPanel);
+		if (isResumeUpload()) {
+			setVisibleWizardPanel(modelDetailsWizardPanel);
+		}
+		else {
+			setVisibleWizardPanel(uploadModelWizardPanel);
+		}
 
 		uploadModelWizardPanel.addFileUploadCompletedListener(() -> handleUploadWizardClicked());
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked());
+		modelDetailsWizardPanel.addSaveDraftClickListener(click -> handleSaveDraftClicked());
 		rewardVariablesPanel.addButtonClickListener(click -> handleRewardVariablesClicked());
+		rewardVariablesPanel.addSaveDraftClickListener(click -> handleRewardVariablesSaveDraftClicked());
 
 		VerticalLayout wrapper = WrapperUtils.wrapFormCenterVertical(
 				uploadModelWizardPanel,
@@ -127,11 +136,43 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		return wrapper;
 	}
 
-    @Override
+	private void handleRewardVariablesSaveDraftClicked() {
+		segmentIntegrator.modelDraftSaved();
+		List<RewardVariable> rewardVariables = rewardVariablesPanel.getRewardVariables();
+		modelService.updateModelRewardVariables(model, rewardVariables);
+		NotificationUtils.showSuccess("Draft successfully saved");
+	}
+
+	private void handleSaveDraftClicked() {
+		segmentIntegrator.modelDraftSaved();
+		final String modelNotes = modelDetailsWizardPanel.getModelNotes();
+		if (model.getId() == -1) {
+			modelService.addDraftModelToProject(model, project.getId(), modelNotes);
+		}
+		else {
+			modelService.updateDraftModel(model, modelNotes);
+		}
+		NotificationUtils.showSuccess("Draft successfully saved");
+	}
+
+	@Override
     protected void initLoadData() throws InvalidDataException {
+		if (isResumeUpload()) {
+			this.model = modelService.getModel(modelId)
+					.orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
+			this.rewardVariables = modelService.getModelRewardVariables(modelId);
+		}
+		else {
+			this.model = ModelUtils.generateNewDefaultModel();
+			model.setProjectId(projectId);
+		}
 		project = projectDAO.getProject(projectId)
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + projectId));
     }
+
+	private boolean isResumeUpload() {
+		return modelId != -1;
+	}
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
@@ -150,8 +191,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			return;
 		}
 
-		modelNotes = modelDetailsWizardPanel.notesFieldTextArea.getValue();
-		
+		model.setDraft(false);
+		modelNotes = modelDetailsWizardPanel.getModelNotes();
+
 		if (!modelNotes.isEmpty()) {
 			segmentIntegrator.addedNotesUploadModelView();
 		}
@@ -159,20 +201,17 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		if (!featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
 			saveAndNavigateToNewExperiment();
 		} else {
-			rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount());
+			modelService.updateDraftModel(model, modelNotes);
+			rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount(), rewardVariables);
 			setVisibleWizardPanel(rewardVariablesPanel);
 		}
 	}
 	
 	private void saveAndNavigateToNewExperiment() {
-		experimentId = modelService.addModelToProject(model, project.getId(), modelNotes);
+		experimentId = modelService.resumeModelCreation(model, modelNotes);
 
 		List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
-		if (rewardVariableList != null) {
-			rewardVariableList.forEach(rv -> rv.setModelId(model.getId()));
-			rewardVariableDAO.saveRewardVariables(rewardVariableList);
-		}
-
+		modelService.updateModelRewardVariables(model, rewardVariableList);
 
 		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
 	}
@@ -183,7 +222,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	private void setVisibleWizardPanel(Component wizardPanel) {
-		wizardPanels.stream()
+		wizardPanels
 				.forEach(panel -> panel.setVisible(panel.equals(wizardPanel)));
 	}
 
@@ -222,6 +261,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			}
 
 			modelBinder.readBean(model);
+			modelService.addDraftModelToProject(model, project.getId(), "");
 			segmentIntegrator.modelImported(true);
 		});
 	}
@@ -241,6 +281,13 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
  		}
  		if (segments.length > 1) {
  			uploadMode = UploadMode.getEnumFromValue(segments[UPLOAD_MODE_SEGMENT]).orElse(UploadMode.FOLDER);
+			if (uploadMode == UploadMode.RESUME) {
+				modelId = Long.parseLong(segments[MODEL_ID_SEGMENT]);
+			}
  		}
+	}
+
+	public static String createResumeUploadTarget(Project project, Model model) {
+		return String.format("%s/%s/%s", project.getId(), UploadMode.RESUME, model.getId());
 	}
 }
