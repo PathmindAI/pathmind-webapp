@@ -43,7 +43,6 @@ public class ModelDAO
 		});
 	}
 
-	@Transactional
 	public void addDraftModelToProject(Model model, long projectId, String userNotes)
 	{
 		ctx.transaction(configuration ->
