@@ -9,7 +9,6 @@ import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import javax.servlet.http.HttpServletResponse;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.ErrorParameter;
 import com.vaadin.flow.router.HasErrorParameter;
