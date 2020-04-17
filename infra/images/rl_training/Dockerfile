@@ -6,6 +6,7 @@ WORKDIR /app
 #Copy files
 COPY requirements.txt .
 COPY do_training.sh .
+COPY check_spot.sh .
 
 #basic packages
 RUN apt-get update && \
