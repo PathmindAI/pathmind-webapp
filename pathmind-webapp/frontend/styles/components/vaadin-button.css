@@ -52,7 +52,7 @@
 :host([theme~="primary"]) {
   font-weight: bold;
   min-width: 225px;
-  height: 40px;
+  height: var(--lumo-size-l);
 }
 
 :host([theme~="primary"]:hover) {
@@ -69,7 +69,7 @@
 :host([theme~="secondary"]) {
   font-weight: bold;
   min-width: 225px;
-  height: 40px;
+  height: var(--lumo-size-l);
   border: 1px solid var(--pm-primary-color);
 }
 

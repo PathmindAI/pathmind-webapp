@@ -2,6 +2,8 @@ package io.skymind.pathmind.webapp.ui.views.account;
 
 import static io.skymind.pathmind.shared.security.Routes.ACCOUNT_UPGRADE_URL;
 
+import io.skymind.pathmind.shared.featureflag.Feature;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -18,13 +20,17 @@ import io.skymind.pathmind.services.billing.StripeService;
 public class AccountUpgradeView extends PathMindDefaultView
 {
 	private final AccountUpgradeViewContent accountUpgradeViewContent;
+
+	private final FeatureManager featureManager;
 	
 	private StripeService stripeService;
 	
 	@Autowired
-	public AccountUpgradeView(AccountUpgradeViewContent accountUpgradeViewContent, StripeService stripeService)
+	public AccountUpgradeView(AccountUpgradeViewContent accountUpgradeViewContent,
+			FeatureManager featureManager, StripeService stripeService)
 	{
 		this.accountUpgradeViewContent = accountUpgradeViewContent;
+		this.featureManager = featureManager;
 		this.stripeService = stripeService;
 	}
 
@@ -35,12 +41,13 @@ public class AccountUpgradeView extends PathMindDefaultView
 		if (stripeService.userHasActiveProfessionalSubscription(SecurityUtils.getUser().getEmail())) {
 			event.rerouteTo(AccountView.class);
 		}
+
 		super.beforeEnter(event);
 	}
 
 	@Override
 	protected boolean isAccessAllowedForUser() {
-		return true;
+		return featureManager.isEnabled(Feature.ACCOUNT_UPGRADE);
 	}
 
 	@Override

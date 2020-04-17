@@ -90,6 +90,11 @@ vaadin-password-field {
   padding: 0 0px 10px;
 }
 
+.info-message {
+  color: var(--lumo-primary-color);
+  padding: 0 0px 10px;
+}
+
 .notes {
   font-size: 0.9em;
   font-weight: 700;

@@ -55,6 +55,7 @@ public class LoginView extends HorizontalLayout
 {
 	private Div badCredentials = new Div();
 	private HorizontalLayout emailNotVerified = WrapperUtils.wrapWidthFullHorizontal();
+	private Div sessionExpired = new Div();
 
 	@Autowired
 	private ProjectDAO projectDAO;
@@ -86,13 +87,17 @@ public class LoginView extends HorizontalLayout
 		badCredentials.setClassName("error-message");
 		badCredentials.setVisible(false);
 
+		sessionExpired.add(new Span("Your session expired"));
+		sessionExpired.setClassName("info-message");
+		sessionExpired.setVisible(false);
+
 		updateEmailNotVerified();
 
 		Div innerContent = new Div();
 		innerContent.setClassName("inner-content");
 		// Temporarily block new signups for public beta - issue https://github.com/SkymindIO/pathmind-webapp/issues/356
 		// innerContent.add(title, badCredentials, emailNotVerified, createLoginForm(), createSignUp());
-		innerContent.add(title, badCredentials, emailNotVerified, createLoginForm());
+		innerContent.add(title, badCredentials, emailNotVerified, sessionExpired, createLoginForm());
 
 		Anchor termsLink = new Anchor(termsOfUseUrl, "Terms of Use");
 		termsLink.setTarget("_blank");
@@ -205,6 +210,9 @@ public class LoginView extends HorizontalLayout
 			}
 
 			emailNotVerified.setVisible(true);
+		}
+		else if (Routes.SESSION_EXPIRED.equals(errorMessage)) {
+			sessionExpired.setVisible(true);
 		}
 	}
 }

@@ -15,6 +15,7 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
+import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
 
@@ -73,7 +74,14 @@ public class Breadcrumbs extends HorizontalLayout
 			items.add(new BreadcrumbItem(project.getName(), ProjectView.class, project.getId()));
 		}
 		if (model != null) {
-			items.add(new BreadcrumbItem("Model #" + model.getName(), ModelView.class, model.getId()));
+			if (model.isDraft()) {
+				assert project != null;
+				String target = UploadModelView.createResumeUploadTarget(project, model);
+				items.add(new BreadcrumbItem("Model #" + model.getName(), UploadModelView.class, target));
+			}
+			else {
+				items.add(new BreadcrumbItem("Model #" + model.getName(), ModelView.class, model.getId()));
+			}
 		}
 		if (experiment != null) {
 			items.add(new BreadcrumbItem("Experiment #" + experiment.getName(), ExperimentView.class, experiment.getId()));
