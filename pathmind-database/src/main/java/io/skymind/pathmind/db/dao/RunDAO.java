@@ -11,6 +11,8 @@ import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
+
+import org.jooq.Configuration;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
@@ -50,8 +52,9 @@ public class RunDAO
         return RunRepository.createRun(ctx, experiment, runType);
     }
 
-    public void markAsStarting(long runId){
-        RunRepository.markAsStarting(ctx, runId);
+    public void markAsStarting(Configuration conf, long runId){
+    	DSLContext transactionCtx = DSL.using(conf);
+        RunRepository.markAsStarting(transactionCtx, runId);
     }
 
     /**
@@ -71,8 +74,9 @@ public class RunDAO
      * This is used in case a run is restarted, so that Notification Sent value is cleared
      * and a notification can be sent again after the training is completed
      */
-    public void clearNotificationSentInfo(long experimentId) {
-    	RunRepository.clearNotificationSentInfo(ctx, experimentId);
+    public void clearNotificationSentInfo(Configuration conf, long experimentId) {
+    	DSLContext transactionCtx = DSL.using(conf);
+    	RunRepository.clearNotificationSentInfo(transactionCtx, experimentId);
     }
 
     public List<Long> getExecutingRuns() {
