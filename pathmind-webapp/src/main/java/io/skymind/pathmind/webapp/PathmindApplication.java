@@ -19,8 +19,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SpringBootApplication(scanBasePackages = "io.skymind.pathmind")
@@ -69,15 +72,29 @@ public class PathmindApplication
 		try {
 			ClassPathScanningCandidateComponentProvider provider
 					= new ClassPathScanningCandidateComponentProvider(true);
+			List<String> allProblems = new ArrayList<>();
 			for (BeanDefinition beanDefinition : provider.findCandidateComponents("io.skymind.pathmind")) {
 				Class<?> clazz = Class.forName(beanDefinition.getBeanClassName());
-				if (Stream.of(clazz.getDeclaredMethods())
-						.anyMatch(m -> m.getAnnotation(Transactional.class) != null)) {
-					throw new RuntimeException(
-							"WE DON'T SUPPORT THE @Transactional ANNOTATION. FOR MORE DETAILS, SEE: " +
-									"https://github.com/SkymindIO/pathmind-webapp/issues/531"
-					);
+				if (clazz.getAnnotation(Transactional.class) != null) {
+					allProblems.add(clazz.getName());
 				}
+				allProblems.addAll(
+						Stream.of(clazz.getDeclaredMethods())
+								.filter(m -> m.getAnnotation(Transactional.class) != null)
+								.map(m ->
+										String.format("%s.%s(...)", clazz.getName(), m.getName())
+								)
+								.collect(Collectors.toList())
+				);
+			}
+			if (!allProblems.isEmpty()) {
+				throw new RuntimeException(
+						"WE DON'T SUPPORT THE @Transactional ANNOTATION. FOR MORE DETAILS, SEE: " +
+								"https://github.com/SkymindIO/pathmind-webapp/issues/531.\n"
+								+ "Places using @Transactional:\n"
+								+ String.join("\n", allProblems)
+
+				);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
