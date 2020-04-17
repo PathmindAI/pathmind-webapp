@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * TODO -> Implement correctly, this is just a quick stub.
  */
-@CssImport("./styles/styles.css")
 @ParentLayout(MainLayout.class)
 @Slf4j
 public class InvalidDataView extends PathMindDefaultView implements HasErrorParameter<InvalidDataException>

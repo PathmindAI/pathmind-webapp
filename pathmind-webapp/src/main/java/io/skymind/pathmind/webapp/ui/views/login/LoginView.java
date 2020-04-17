@@ -46,6 +46,7 @@ import io.skymind.pathmind.webapp.ui.views.project.NewProjectView;
 
 @Route(Routes.LOGIN_URL)
 @Theme(Lumo.class)
+@CssImport(value = "./styles/styles.css")
 @CssImport(value = "./styles/components/vaadin-button.css", themeFor = "vaadin-button")
 @CssImport(value = "./styles/views/pathmind-dialog-view.css")
 @CssImport(value = "./styles/views/login-view-styles.css")

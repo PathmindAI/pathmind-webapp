@@ -19,7 +19,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
@@ -37,7 +36,6 @@ import io.skymind.pathmind.shared.security.Routes;
 
 import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
 
-@CssImport("./styles/styles.css")
 @Route(value = Routes.EXPORT_POLICY_URL, layout = MainLayout.class)
 public class ExportPolicyView extends PathMindDefaultView implements HasUrlParameter<Long>
 {

@@ -2,7 +2,6 @@ package io.skymind.pathmind.webapp.ui.views.project;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
@@ -20,7 +19,6 @@ import io.skymind.pathmind.webapp.ui.views.project.components.panels.CreateANewP
 import io.skymind.pathmind.webapp.ui.views.project.components.panels.NewProjectLogoWizardPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@CssImport("./styles/styles.css")
 @Route(value = Routes.NEW_PROJECT, layout = MainLayout.class)
 public class NewProjectView extends PathMindDefaultView
 {

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -41,6 +42,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
+@CssImport(value = "./styles/views/dashboard-view.css")
 @Route(value= Routes.DASHBOARD_URL, layout = MainLayout.class)
 public class DashboardView extends PathMindDefaultView implements RunUpdateSubscriber
 {

@@ -15,7 +15,6 @@ import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.NotFoundException;
 import com.vaadin.flow.router.ParentLayout;
 
-@CssImport("./styles/styles.css")
 @ParentLayout(MainLayout.class)
 public class PageNotFoundView extends PathMindDefaultView implements HasErrorParameter<NotFoundException>
 {
