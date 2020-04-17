@@ -55,13 +55,15 @@
   text-align: center;
 }
 
-.support {
+.support,
+.support-cont a {
   display: inline-block;
   color: var(--lumo-secondary-text-color);
   margin: 10px var(--lumo-space-s) 0;
 }
 
-.support:hover {
+.support:hover,
+.support-cont a:hover {
   text-decoration: none;
 }
 
