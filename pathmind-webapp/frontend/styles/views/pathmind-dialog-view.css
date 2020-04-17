@@ -58,7 +58,11 @@
 .support {
   display: inline-block;
   color: var(--lumo-secondary-text-color);
-  margin: 10px auto 0;
+  margin: 10px var(--lumo-space-s) 0;
+}
+
+.support:hover {
+  text-decoration: none;
 }
 
 vaadin-tabs,
