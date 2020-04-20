@@ -62,7 +62,7 @@ public class ProjectsPage extends PageObject {
     private WebElement startDiscoveryRunBtn;
     @FindBy(xpath = "//vaadin-dialog-overlay")
     private WebElement dialogShadow;
-    @FindBy(xpath = "//vaadin-form-item[@class='training-status']/descendant::span[1]")
+    @FindBy(xpath = "//span[text()='Status']/following-sibling::span[1]")
     private WebElement experimentStatusCompleted;
     @FindBy(xpath = "//vaadin-text-field[@tabindex='0']")
     private WebElement searchFieldShadow;
@@ -529,7 +529,8 @@ public class ProjectsPage extends PageObject {
 	public void checkExperimentStatusCompletedWithLimitHours(int limit) {
     	System.out.println("!Waiting for training completed with limit " + limit + " hours!");
 		for (int i=0; i < limit*60; i++) {
-			if (getDriver().findElements(By.xpath("//span[text()='Completed']")).size() != 0) {
+		    String status = getDriver().findElement(By.xpath("//span[text()='Status']/following-sibling::span[1]")).getText();
+			if (getDriver().findElements(By.xpath("//span[text()='Completed']")).size() != 0 || status.equals("Error") || status.equals("Stopped")) {
 				break;
 			} else {
 				waitABit(60000);

@@ -386,6 +386,10 @@ public class ProjectsPageStepDefinitions {
 	public void clickWizardModelDetailsNextBtn() {
 		projectsPageSteps.clickWizardModelDetailsNextBtn();
 	}
+    @When("^Click wizard reward variables next btn$")
+    public void clickWizardRewardVariablesNextBtn() {
+        projectsPageSteps.clickWizardRewardVariableNamesNextBtn();
+    }
 
 	@Then("^Check experiment score greater than (.*)$")
 	public void checkExperimentScoreGreaterThan(double value) {

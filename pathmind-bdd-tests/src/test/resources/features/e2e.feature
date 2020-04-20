@@ -7,6 +7,7 @@ Feature: E2E
     When Input name of the new project <project name> and click Create project button
     When Upload model <model>
     When Click wizard model details next btn
+    When Click wizard reward variables next btn
     Then Check that experiment <project name> page is opened
     Then Input from file reward function <reward function file>
     Then Click project start run button
