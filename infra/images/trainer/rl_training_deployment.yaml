@@ -13,10 +13,16 @@ spec:
       labels:
         app: {{JOB_ID}}
     spec:
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
       containers:
       - name: {{JOB_ID}}
+        volumeMounts:
+        - mountPath: /dev/shm
+          name: dshm
         image: {{IMAGE}}
-        args: ["--shm-size", "8gb"]
         imagePullPolicy: Always
         lifecycle:
           preStop:
