@@ -64,11 +64,9 @@ public abstract class TrainingService {
 
     private void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSamples) {
     	ctx.transaction(conf -> {
-    		runDAO.clearNotificationSentInfo(conf, exp.getId());
-    		Run run = runDAO.createRun(exp, DiscoveryRun);
+    		Run run = runDAO.createRun(conf, exp, DiscoveryRun);
     		String executionId = startRun(exp.getModel(), exp, run, iterations, maxTimeInSec, numSamples);
-    		executionProviderMetaDataDAO.putProviderRunJobId(conf, run.getId(), executionId);
-    		runDAO.markAsStarting(conf, run.getId());
+    		runDAO.markAsStarting(conf, run.getId(), executionProvider.executionProviderClass(), executionId);
             log.info("Started {} training job with id {}", DiscoveryRun, executionId);
     	});
     }
