@@ -75,7 +75,7 @@ do
         last_modification=`echo $(( $(date +%s) - $(stat -c %Y -- "${log_file}") ))`
         if [ ${last_modification} -ge ${training_update_timeout} ]
         then
-                description="No update in the log file ${log_file} for more than ${last_modification} seconds, training is not killed"
+                description="No update in the log file ${log_file} for more than ${last_modification} seconds, job is killed"
                 curl -X POST -H 'Content-type: application/json' \
                 --data "{'text':':x:Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
                 https://hooks.slack.com/services/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
@@ -87,6 +87,13 @@ set status=5,ec2_end_date=now(),update_date=NOW(),description='${description}'
 where job_id='${S3PATH}';
 commit;
 EOF
+		aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
+		echo ${description} > errors.log
+		aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null
+		aws sqs send-message \
+			--queue-url ${SQS_URL} \
+			--message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
+			--message-group-id training
                 sleep 12h
         fi
         sleep $sleep_time
