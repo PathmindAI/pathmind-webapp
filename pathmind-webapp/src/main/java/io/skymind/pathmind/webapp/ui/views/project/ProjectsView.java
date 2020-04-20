@@ -10,8 +10,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
@@ -54,12 +54,15 @@ public class ProjectsView extends PathMindDefaultView
 
 		addClassName("projects-view");
 
-		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullCenterHorizontal(archivesTabPanel, new NewProjectButton());
+		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullRightHorizontal(new NewProjectButton());
 		headerWrapper.addClassName("page-content-header");
 
-		FlexLayout gridWrapper = new ViewSection(
-			headerWrapper, 
-			projectGrid
+		VerticalLayout gridWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+			archivesTabPanel,
+			new ViewSection(
+				headerWrapper, 
+				projectGrid
+			)
 		);
 		gridWrapper.addClassName("page-content");
 
@@ -79,7 +82,7 @@ public class ProjectsView extends PathMindDefaultView
 		projectGrid = new Grid<Project>();
 
 		projectGrid.addColumn(Project::getName)
-				.setHeader("Name")
+				.setHeader("Project")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true)

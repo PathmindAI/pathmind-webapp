@@ -10,8 +10,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
@@ -83,11 +83,14 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		
 		addClassName("project-view");
 
-		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullCenterHorizontal(archivesTabPanel, new UploadModelButton(projectId));
+		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullRightHorizontal(new UploadModelButton(projectId));
 		headerWrapper.addClassName("page-content-header");
 
-		FlexLayout leftPanel = new ViewSection(headerWrapper, modelGrid);
-		FlexLayout rightPanel = createRightPanel();
+		VerticalLayout leftPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+			archivesTabPanel,
+			new ViewSection(headerWrapper, modelGrid)
+		);
+		VerticalLayout rightPanel = createRightPanel();
 
 		SplitLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 			leftPanel,
@@ -98,7 +101,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		return gridWrapper;
 	}
 
-	private FlexLayout createRightPanel() {
+	private VerticalLayout createRightPanel() {
 		projectName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
 		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
 		Button edit = new Button("Rename", evt -> renameProject());
@@ -114,7 +117,10 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 			);
 		TabPanel panelHeader = new TabPanel("Details");
 		panelHeader.setEnabled(false);
-		return new ViewSection(panelHeader, WrapperUtils.wrapLeftAndRightAligned(projectName, edit), createdDate, notesField);
+		return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+			panelHeader,
+			new ViewSection(WrapperUtils.wrapWidthFullHorizontal(projectName, edit), createdDate, notesField)
+		);
 	}
 
 	private void renameProject() {

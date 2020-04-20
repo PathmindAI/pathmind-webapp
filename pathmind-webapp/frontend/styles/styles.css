@@ -213,24 +213,27 @@ hr {
 
 .projects-view .view-section {
   max-width: 1480px;
-  margin-top: var(--lumo-space-m);
+  margin-top: 2px;
 }
 
 .projects-view .view-section,
 .project-view .view-section,
-.model-view .view-section,
+.model-view .view-section {
+  padding: var(--lumo-space-m);
+}
+
 .projects-view .page-content,
 .project-view .page-content,
 .model-view .page-content {
   box-sizing: border-box;
   flex: 1 1 auto;
-  padding: var(--lumo-space-m);
+  padding: 0 var(--lumo-space-m) var(--lumo-space-m);
 }
 
 .project-view .view-section,
 .model-view .view-section {
   min-width: unset;
-  line-height: 1.5em;
+  line-height: 1.6em;
   overflow: auto;
 }
 
@@ -242,8 +245,42 @@ hr {
   margin-top: 0.625rem;
 }
 
-.model-view p {
+.model-view p,
+.model-view p + div {
   margin: var(--lumo-space-m) 0 0;
+}
+
+.project-view .section-subtitle-label,
+.model-view .section-subtitle-label {
+  color: var(--lumo-secondary-text-color);
+}
+
+.project-view .truncated-label {
+  max-width: 100%;
+  width: auto;
+}
+
+.project-view .section-title-label + vaadin-button {
+  min-width: var(--lumo-button-size);
+  height: 1.4rem;
+  font-size: var(--lumo-font-size-s);
+  padding: 0 var(--lumo-space-xs);
+  margin: 0 0 0 var(--lumo-space-m);
+}
+
+.model-view .model-reward-variables span {
+  font-size: var(--lumo-font-size-s);
+}
+
+.model-view .model-reward-variables span:first-child {
+  display: inline-block;
+  width: 30px;
+  color: var(--lumo-secondary-text-color);
+}
+
+.model-view .model-reward-variables span:last-child {
+  padding: 0 2px;
+  border-radius: 3px;
 }
 
 .project-view .notes-field-wrapper,
@@ -293,7 +330,7 @@ account-view {
   justify-content: center;
   color: var(--lumo-body-text-color);
   padding: 0 var(--lumo-space-m);
-  margin-top: var(--lumo-space-m);
+  margin-top: 1.75rem;
 }
 
 .action-button iron-icon {

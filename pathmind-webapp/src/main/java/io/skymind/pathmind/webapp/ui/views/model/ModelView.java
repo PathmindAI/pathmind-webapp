@@ -13,10 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -71,7 +72,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 	private Span createdDate;
 	private Paragraph actionsText;
 	private Paragraph observationsText;
-	private Paragraph rewardVariableNamesText;
+	private Div rewardVariableNamesText;
 
 	public ModelView() {
 		super();
@@ -83,11 +84,14 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 		addClassName("model-view");
 
-		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullCenterHorizontal(archivesTabPanel, new NewExperimentButton(experimentDAO, modelId));
+		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullRightHorizontal(new NewExperimentButton(experimentDAO, modelId));
 		headerWrapper.addClassName("page-content-header");
 
-		FlexLayout leftPanel = new ViewSection(headerWrapper, experimentGrid);
-		FlexLayout rightPanel = createRightPanel();
+		VerticalLayout leftPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+			archivesTabPanel,
+			new ViewSection(headerWrapper, experimentGrid)
+		);
+		VerticalLayout rightPanel = createRightPanel();
 
 		SplitLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 			leftPanel,
@@ -98,17 +102,27 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 		return gridWrapper;
 	}
 
-	private FlexLayout createRightPanel() {
+	private VerticalLayout createRightPanel() {
 		modelName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL);
 		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
 		actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssMindPathStyles.BOLD_LABEL));
 		observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssMindPathStyles.BOLD_LABEL));
-		rewardVariableNamesText = new Paragraph(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL));
-		
+		rewardVariableNamesText = new Div();
+		rewardVariableNamesText.addClassName("model-reward-variables");
+
 		NotesField notesField = createViewNotesField();
 		TabPanel panelHeader = new TabPanel("Details");
 		panelHeader.setEnabled(false);
-		return new ViewSection(panelHeader, modelName, createdDate, actionsText, observationsText, rewardVariableNamesText, notesField);
+		return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+			panelHeader,
+			new ViewSection(
+					modelName,
+					createdDate,
+					actionsText,
+					observationsText,
+					new Div(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), rewardVariableNamesText),
+					notesField)
+		);
 	}
 
 	/**
@@ -190,12 +204,17 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 			if (rewardVariableNames.size() > 0) {
 				rewardVariableNames.forEach(rv -> {
 					String rvName = rv.getName();
-					if (rvName != null && rvName.length() > 0) {
-						if (rv.getArrayIndex() > 0) {
-							rewardVariableNamesText.add(", ");
-						}
-						rewardVariableNamesText.add(rvName);
+					if (rvName == null || rvName.length() == 0) {
+						rvName = "—";
 					}
+					Span rvSpan = new Span(rvName);
+					rvSpan.addClassName("variable-color-"+rv.getArrayIndex());
+					rewardVariableNamesText.add(
+						new Div(
+							new Span(""+rv.getArrayIndex()),
+							rvSpan
+						)
+					);
 				});
 			} else {
 				rewardVariableNamesText.add("All reward variables are unnamed. You can name them when you create a new experiment for this model.");
