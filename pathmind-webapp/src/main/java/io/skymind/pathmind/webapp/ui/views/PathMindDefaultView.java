@@ -1,9 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views;
 
-import io.skymind.pathmind.webapp.utils.PathmindUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
@@ -14,11 +10,12 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.shared.communication.PushMode;
-
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
+import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Do NOT implement any default methods for this interface because a large part of it's goal is to remind
@@ -29,9 +26,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 {
 	private static String COOKIE_CONSENT_LINK = "https://pathmind.com/privacy";
 
-    @Value("${skymind.debug.accelerate}")
-    private boolean isDebugAccelerate;
-    
     @Autowired
     private SegmentIntegrator segmentIntegrator;
 
@@ -53,10 +47,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		// IMPORTANT -> Needed so that Push works consistently on every page/view.
 		UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 	}
-
-    public boolean isDebugAccelerate() {
-        return isDebugAccelerate;
-    }
 
 	public void beforeEnter(BeforeEnterEvent event)
 	{

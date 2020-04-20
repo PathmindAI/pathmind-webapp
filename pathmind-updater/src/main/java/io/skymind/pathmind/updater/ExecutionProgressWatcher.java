@@ -1,6 +1,5 @@
 package io.skymind.pathmind.updater;
 
-import io.skymind.pathmind.shared.mock.MockDefaultValues;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
@@ -37,7 +36,7 @@ public class ExecutionProgressWatcher implements ApplicationListener<ContextRefr
     }
 
     private class Runner implements Runnable {
-        private final long UPDATE_INTERVAL = (MockDefaultValues.isDebugAccelerate() ? MockDefaultValues.DEBUG_ACCELERATE_UPDATE_INTERVAL : 60) * 1000;
+        private final long UPDATE_INTERVAL = 60 * 1000;
 
         private boolean stop = false;
 
