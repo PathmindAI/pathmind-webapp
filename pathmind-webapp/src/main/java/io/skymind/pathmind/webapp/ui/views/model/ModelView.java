@@ -208,7 +208,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 						rvName = "—";
 					}
 					Span rvSpan = new Span(rvName);
-					rvSpan.addClassName("variable-color-"+rv.getArrayIndex());
+					rvSpan.addClassName("variable-color-"+rv.getArrayIndex()%10);
 					rewardVariableNamesText.add(
 						new Div(
 							new Span(""+rv.getArrayIndex()),
