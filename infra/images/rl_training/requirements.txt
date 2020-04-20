@@ -1,4 +1,4 @@
 awscli==1.16.314
 boto3==1.10.50
 sh==1.12.14
-ray[debug]
+ray[debug]==0.7.6

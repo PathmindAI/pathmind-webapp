@@ -16,6 +16,7 @@ spec:
       containers:
       - name: {{JOB_ID}}
         image: {{IMAGE}}
+        args: ["--shm-size", "8gb"]
         imagePullPolicy: Always
         lifecycle:
           preStop:
