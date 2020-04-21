@@ -38,6 +38,7 @@ EOF
 output_files=`aws s3 ls  ${s3_url}/output/ | wc -l`
 if [ "${output_files}" -ge 1 ]
 then
+	set -e
 	description="Training is resumed"
 	curl -X POST -H 'Content-type: application/json' \
 		--data "{'text':':heavy_plus_sign:Resuming Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
@@ -46,12 +47,14 @@ then
 	export RESUME=true
 	rm -rf /app/work/PPO/*
 	touch restarting
-	aws s3 cp restarting ${s3_url}/output/ > /dev/null
-	aws s3 sync ${s3_url}/output/ /app/work/PPO/ > /dev/null
-	aws s3 cp ${s3_url}/output/ ${s3_url}/output_backup_`date '+%Y%m%d%H%M'`/ --recursive > /dev/null
-	aws s3 rm ${s3_url}/output/ --recursive > /dev/null
+	aws s3 cp restarting ${s3_url}/output/
+	aws s3 sync ${s3_url}/output/ /app/work/PPO/
+	echo `ls -1 /app/work/PPO/ | wc -l`" files were downloaded from ${s3_url}/output/"
+	aws s3 cp ${s3_url}/output/ ${s3_url}/output_backup_`date '+%Y%m%d%H%M'`/ --recursive
+	aws s3 rm ${s3_url}/output/ --recursive
 	touch restarted
-	aws s3 cp restarted ${s3_url}/output/ > /dev/null
+	aws s3 cp restarted ${s3_url}/output/
+	set +e
 fi
 
 bash script.sh > ${log_file} 2>&1 &
