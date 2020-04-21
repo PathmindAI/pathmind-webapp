@@ -44,6 +44,8 @@ spec:
               value: "{{ .Values.env.SPRING_PROFILES_ACTIVE }}"
             - name: APP_DOMAIN
               value: "{{ .Values.env.APP_DOMAIN }}"
+            - name: AWS_ADMIN_USERS_TABLE
+              value: "{{ .Values.env.AWS_ADMIN_USERS_TABLE }}"
             - name: DB_URL_PROD
               valueFrom:
                 secretKeyRef:
