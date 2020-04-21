@@ -35,7 +35,8 @@ commit;
 EOF
 
 #Check if we need to resume the training
-output_files=`aws s3 ls  ${s3_url}/output/ | wc -l`
+aws s3 sync ${s3_url}/output/ /tmp/PPO/
+output_files=`ls  /tmp/PPO/experiment_state*json | wc -l`
 if [ "${output_files}" -ge 1 ]
 then
 	set -e
