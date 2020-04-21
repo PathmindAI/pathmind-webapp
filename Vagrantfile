@@ -3,23 +3,20 @@
 
 Vagrant.configure("2") do |config|
 
-  # This image was chosen because it supports Virtualbox and lxc
-  config.vm.box = "debian/stretch64"
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 4096
+  end
+
+  config.vm.box = "hashicorp/bionic64"
 
   config.vm.network "forwarded_port", guest: 8080, host: 8080
 
   config.vm.provision "shell", inline: <<-SHELL
 
-    # Add backports to install OpenJDK11
-    sudo echo "deb http://ftp.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/backports.list
-   
-    # Add node sources
-    wget https://deb.nodesource.com/setup_13.x && \
-    bash ./setup_13.x && \
     apt-get update -y
 
     # Install postgresql, maven, node and java
-    apt-get install -y nodejs postgresql openjdk-11-jdk maven
+    apt-get install -y postgresql maven npm
 
     # Create User and login
     echo "-------------------- Setting up DB"
