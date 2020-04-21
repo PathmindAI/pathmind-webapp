@@ -50,7 +50,7 @@ function pushTokensForPlaceholder(renderTokens, placeholder) {
         value: variableIndex + " "
       },
       {
-        type: "reward_variable variable-color-" + variableIndex,
+        type: "reward_variable variable-color-" + (variableIndex % 10),
         value: variableName
       }
     );
