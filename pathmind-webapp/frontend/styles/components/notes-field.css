@@ -8,9 +8,11 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  margin-bottom: var(--lumo-space-xs);
 }
 
 .notes-block .header span:first-child {
+  font-size: var(--lumo-font-size-xl);
   font-weight: bold;
   color: var(--pm-text-color);
   margin-left: 0;
@@ -25,6 +27,7 @@
   height: 1.4rem;
   font-size: var(--lumo-font-size-s);
   padding: 0 var(--lumo-space-xs);
+  margin: 0;
 }
 
 .notes-block vaadin-text-area {

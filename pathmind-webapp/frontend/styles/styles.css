@@ -181,6 +181,12 @@ hr {
   height: 100%;
 }
 
+.default-view.project-view,
+.default-view.model-view {
+  height: auto;
+  min-height: 100%;
+}
+
 .view-section {
   width: 100%;
   background: white;
@@ -199,12 +205,11 @@ hr {
 }
 
 .page-content-header {
-  align-items: flex-end;
   margin-bottom: var(--lumo-space-m);
 }
 
 .page-content-header vaadin-button {
-  margin: 0 0 var(--lumo-space-xs) 0;
+  margin: 0;
 }
 
 .projects-view {
@@ -213,21 +218,22 @@ hr {
 
 .projects-view .view-section {
   max-width: 1480px;
-  margin-top: 2px;
+  margin-top: var(--lumo-space-m);
+}
+
+.projects-view .page-content-header {
+  margin-bottom: 0;
 }
 
 .projects-view .view-section,
 .project-view .view-section,
-.model-view .view-section {
-  padding: var(--lumo-space-m);
-}
-
+.model-view .view-section,
 .projects-view .page-content,
 .project-view .page-content,
 .model-view .page-content {
   box-sizing: border-box;
   flex: 1 1 auto;
-  padding: 0 var(--lumo-space-m) var(--lumo-space-m);
+  padding: var(--lumo-space-m);
 }
 
 .project-view .view-section,
@@ -237,17 +243,22 @@ hr {
   overflow: auto;
 }
 
-.project-view .section-title-label {
-  align-self: center;
-}
-
-.model-view .section-title-label {
-  margin-top: 0.625rem;
+.model-view .view-section + vaadin-vertical-layout {
+  height: auto !important;
 }
 
 .model-view p,
 .model-view p + div {
   margin: var(--lumo-space-m) 0 0;
+}
+
+.model-view p {
+  font-weight: bold;
+  color: var(--lumo-secondary-text-color);
+}
+
+.model-view p span {
+  color: var(--lumo-body-text-color);
 }
 
 .project-view .section-subtitle-label,
@@ -268,6 +279,11 @@ hr {
   margin: 0 0 0 var(--lumo-space-m);
 }
 
+.model-view .model-reward-variables {
+  color: var(--lumo-secondary-text-color);
+  line-height: 1.3em;
+}
+
 .model-view .model-reward-variables span {
   font-size: var(--lumo-font-size-s);
 }
@@ -285,7 +301,6 @@ hr {
 
 .project-view .notes-field-wrapper,
 .model-view .notes-field-wrapper {
-  margin-top: var(--lumo-space-m);
   flex: 1 1 auto;
 }
 
@@ -330,7 +345,7 @@ account-view {
   justify-content: center;
   color: var(--lumo-body-text-color);
   padding: 0 var(--lumo-space-m);
-  margin-top: 1.75rem;
+  margin-top: var(--lumo-space-m);
 }
 
 .action-button iron-icon {

@@ -10,8 +10,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
@@ -30,7 +30,6 @@ import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.webapp.ui.components.TabPanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
@@ -71,7 +70,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	private Span createdDate;
 	
 	private ScreenTitlePanel titlePanel;
-	
 
 	public ProjectView() {
 		super();
@@ -83,14 +81,20 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		
 		addClassName("project-view");
 
-		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullRightHorizontal(new UploadModelButton(projectId));
+		projectName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
+		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+		Button edit = new Button("Rename", evt -> renameProject());
+		edit.setClassName("no-shrink");
+
+		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullRightHorizontal(
+			WrapperUtils.wrapVerticalWithNoPaddingOrSpacing
+					(WrapperUtils.wrapWidthFullHorizontal(projectName, edit), createdDate),
+			new UploadModelButton(projectId)
+		);
 		headerWrapper.addClassName("page-content-header");
 
-		VerticalLayout leftPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-			archivesTabPanel,
-			new ViewSection(headerWrapper, modelGrid)
-		);
-		VerticalLayout rightPanel = createRightPanel();
+		FlexLayout leftPanel = new ViewSection(headerWrapper, archivesTabPanel, modelGrid);
+		FlexLayout rightPanel = createRightPanel();
 
 		SplitLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 			leftPanel,
@@ -101,11 +105,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		return gridWrapper;
 	}
 
-	private VerticalLayout createRightPanel() {
-		projectName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
-		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
-		Button edit = new Button("Rename", evt -> renameProject());
-		edit.setClassName("no-shrink");
+	private FlexLayout createRightPanel() {
 		NotesField notesField = new NotesField(
 				"Project Notes",
 				project.getUserNotes(),
@@ -115,12 +115,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 						segmentIntegrator.updatedNotesModelsView();
 				}
 			);
-		TabPanel panelHeader = new TabPanel("Details");
-		panelHeader.setEnabled(false);
-		return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-			panelHeader,
-			new ViewSection(WrapperUtils.wrapWidthFullHorizontal(projectName, edit), createdDate, notesField)
-		);
+
+		return new ViewSection(notesField);
 	}
 
 	private void renameProject() {

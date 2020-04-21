@@ -16,6 +16,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
@@ -31,7 +32,6 @@ import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.webapp.ui.components.TabPanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
@@ -84,13 +84,15 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 		addClassName("model-view");
 
-		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullRightHorizontal(new NewExperimentButton(experimentDAO, modelId));
+		modelName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL);
+		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+
+		HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(
+			WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(modelName, createdDate),
+			new NewExperimentButton(experimentDAO, modelId));
 		headerWrapper.addClassName("page-content-header");
 
-		VerticalLayout leftPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-			archivesTabPanel,
-			new ViewSection(headerWrapper, experimentGrid)
-		);
+		FlexLayout leftPanel = new ViewSection(headerWrapper, archivesTabPanel, experimentGrid);
 		VerticalLayout rightPanel = createRightPanel();
 
 		SplitLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
@@ -103,26 +105,23 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 	}
 
 	private VerticalLayout createRightPanel() {
-		modelName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL);
-		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+		Span panelTitle = LabelFactory.createLabel("Model Details", CssMindPathStyles.SECTION_TITLE_LABEL);
 		actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssMindPathStyles.BOLD_LABEL));
 		observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssMindPathStyles.BOLD_LABEL));
 		rewardVariableNamesText = new Div();
 		rewardVariableNamesText.addClassName("model-reward-variables");
 
 		NotesField notesField = createViewNotesField();
-		TabPanel panelHeader = new TabPanel("Details");
-		panelHeader.setEnabled(false);
-		return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-			panelHeader,
-			new ViewSection(
-					modelName,
-					createdDate,
-					actionsText,
-					observationsText,
-					new Div(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), rewardVariableNamesText),
-					notesField)
-		);
+		VerticalLayout rightPanelWrapper = WrapperUtils.wrapSizeFullVertical(
+					new ViewSection(
+							panelTitle,
+							actionsText,
+							observationsText,
+							new Div(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), rewardVariableNamesText)),
+					new ViewSection(notesField));
+		rightPanelWrapper.setPadding(false);
+
+		return rightPanelWrapper;
 	}
 
 	/**
@@ -149,7 +148,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	private NotesField createViewNotesField() {
 		return new NotesField(
-			"Notes",
+			"Model Notes",
 			model.getUserNotes(),
 			updatedNotes -> {
 				modelDAO.updateUserNotes(modelId, updatedNotes);

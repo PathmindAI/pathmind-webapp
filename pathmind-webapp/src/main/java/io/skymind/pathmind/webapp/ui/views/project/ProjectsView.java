@@ -10,8 +10,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
@@ -57,13 +57,10 @@ public class ProjectsView extends PathMindDefaultView
 		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullRightHorizontal(new NewProjectButton());
 		headerWrapper.addClassName("page-content-header");
 
-		VerticalLayout gridWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-			archivesTabPanel,
-			new ViewSection(
+		FlexLayout gridWrapper = new ViewSection(
 				headerWrapper, 
-				projectGrid
-			)
-		);
+				archivesTabPanel,
+				projectGrid);
 		gridWrapper.addClassName("page-content");
 
 		return gridWrapper;
