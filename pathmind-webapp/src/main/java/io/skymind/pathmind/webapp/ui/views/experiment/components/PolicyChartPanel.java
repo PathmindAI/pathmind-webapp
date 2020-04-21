@@ -4,27 +4,26 @@ import static io.skymind.pathmind.webapp.utils.ChartUtils.createActiveSeriesPlot
 import static io.skymind.pathmind.webapp.utils.ChartUtils.createPassiveSeriesPlotOptions;
 
 import java.util.List;
-
-import io.skymind.pathmind.shared.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.shared.bus.subscribers.PolicyUpdateSubscriber;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
-import io.skymind.pathmind.webapp.utils.ChartUtils;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.DataSeries;
+import com.vaadin.flow.component.charts.model.Marker;
+import com.vaadin.flow.component.charts.model.PlotOptionsSeries;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.shared.bus.EventBus;
-
-
-import java.util.stream.Collectors;
+import io.skymind.pathmind.shared.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.shared.bus.subscribers.PolicyUpdateSubscriber;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.webapp.ui.utils.PushUtils;
+import io.skymind.pathmind.webapp.utils.ChartUtils;
 
 public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubscriber
 {
@@ -109,7 +108,12 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
     	DataSeries dataSeries = new DataSeries(policy.getName());
         dataSeries.setData(ChartUtils.getRewardScoreSeriesItems(policy));
         dataSeries.setId(Long.toString(policy.getId()));
-        dataSeries.setPlotOptions(isBestPolicy ? createActiveSeriesPlotOptions() : createPassiveSeriesPlotOptions());
+        PlotOptionsSeries plotOptions = isBestPolicy ? createActiveSeriesPlotOptions() : createPassiveSeriesPlotOptions();
+        // Disable marker and animation in order to render the chart faster 
+        plotOptions.setMarker(new Marker(false));
+        plotOptions.setAnimation(false);
+        dataSeries.setPlotOptions(plotOptions);
+        
         return dataSeries;
     }
 
