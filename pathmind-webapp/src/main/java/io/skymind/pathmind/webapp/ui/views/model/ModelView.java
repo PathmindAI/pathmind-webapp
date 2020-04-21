@@ -198,27 +198,28 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 			LocalDateTime dateCreatedData = model.getDateCreated();
 			experimentGrid.setItems(experiments);
 			createdDate.setText(String.format("Uploaded on %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(dateCreatedData, timeZoneId)));
-			actionsText.add(""+model.getNumberOfPossibleActions());
-			observationsText.add(""+model.getNumberOfObservations());
-			if (rewardVariableNames.size() > 0) {
-				rewardVariableNames.forEach(rv -> {
-					String rvName = rv.getName();
-					if (rvName == null || rvName.length() == 0) {
-						rvName = "—";
-					}
-					Span rvSpan = new Span(rvName);
-					rvSpan.addClassName("variable-color-"+rv.getArrayIndex()%10);
-					rewardVariableNamesText.add(
-						new Div(
-							new Span(""+rv.getArrayIndex()),
-							rvSpan
-						)
-					);
-				});
-			} else {
-				rewardVariableNamesText.add("All reward variables are unnamed. You can name them when you create a new experiment for this model.");
-			}
 		});
+
+		actionsText.add(""+model.getNumberOfPossibleActions());
+		observationsText.add(""+model.getNumberOfObservations());
+		if (rewardVariableNames.size() > 0) {
+			rewardVariableNames.forEach(rv -> {
+				String rvName = rv.getName();
+				if (rvName == null || rvName.length() == 0) {
+					rvName = "—";
+				}
+				Span rvSpan = new Span(rvName);
+				rvSpan.addClassName("variable-color-"+rv.getArrayIndex()%10);
+				rewardVariableNamesText.add(
+					new Div(
+						new Span(""+rv.getArrayIndex()),
+						rvSpan
+					)
+				);
+			});
+		} else {
+			rewardVariableNamesText.add("All reward variables are unnamed. You can name them when you create a new experiment for this model.");
+		}
 		archivesTabPanel.initData();
 
 		recalculateGridColumnWidth(UI.getCurrent().getPage(), experimentGrid);		
