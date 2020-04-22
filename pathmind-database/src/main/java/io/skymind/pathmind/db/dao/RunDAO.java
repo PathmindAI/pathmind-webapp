@@ -2,7 +2,12 @@ package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.PolicyUpdateInfo;
+import io.skymind.pathmind.shared.data.ProviderJobStatus;
+import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
@@ -10,8 +15,10 @@ import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -20,8 +27,11 @@ public class RunDAO {
 
     private final DSLContext ctx;
 
-    public RunDAO(DSLContext ctx) {
+    private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
+
+    public RunDAO(DSLContext ctx, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
         this.ctx = ctx;
+        this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
     }
 
     public Run getRun(long runId) {
@@ -33,14 +43,14 @@ public class RunDAO {
     }
 
     public List<Run> getRunsForExperiment(Experiment experiment) {
-    	return RunRepository.getRunsForExperiment(ctx, experiment.getId());
+        return RunRepository.getRunsForExperiment(ctx, experiment.getId());
     }
 
-    public Run createRun(Experiment experiment, RunType runType){
+    public Run createRun(Experiment experiment, RunType runType) {
         return RunRepository.createRun(ctx, experiment, runType);
     }
 
-    public void markAsStarting(long runId){
+    public void markAsStarting(long runId) {
         RunRepository.markAsStarting(ctx, runId);
     }
 
@@ -50,19 +60,19 @@ public class RunDAO {
      * - notification is not sent yet for any other run
      */
     public boolean shouldSendNotification(long experimentId, int runType) {
-		return RunRepository.getAlreadyNotifiedOrStillExecutingRunsWithType(ctx, experimentId, runType).isEmpty();
-	}
-
-    public void markAsNotificationSent(long runId){
-    	RunRepository.markAsNotificationSent(ctx, runId);
+        return RunRepository.getAlreadyNotifiedOrStillExecutingRunsWithType(ctx, experimentId, runType).isEmpty();
     }
-    
+
+    public void markAsNotificationSent(long runId) {
+        RunRepository.markAsNotificationSent(ctx, runId);
+    }
+
     /**
      * This is used in case a run is restarted, so that Notification Sent value is cleared
      * and a notification can be sent again after the training is completed
      */
     public void clearNotificationSentInfo(long experimentId) {
-    	RunRepository.clearNotificationSentInfo(ctx, experimentId);
+        RunRepository.clearNotificationSentInfo(ctx, experimentId);
     }
 
     public List<Long> getExecutingRuns() {
@@ -81,8 +91,7 @@ public class RunDAO {
         });
     }
 
-    public void updateRun(DSLContext transactionCtx, Run run, ProviderJobStatus status, List<Policy> policies)
-    {
+    private void updateRun(DSLContext transactionCtx, Run run, ProviderJobStatus status, List<Policy> policies) {
         updateRun(run, status, transactionCtx);
         updateExperiment(run, transactionCtx);
         updatePolicies(run, policies, transactionCtx);
@@ -116,7 +125,8 @@ public class RunDAO {
             PolicyUtils.loadPolicyDataModel(policy, policyId, run);
 
             // Only insert new RewardScores
-            int maxRewardScoreIteration = RewardScoreRepository.getMaxRewardScoreIteration(transactionCtx, policy.getId());
+            int maxRewardScoreIteration = RewardScoreRepository
+                    .getMaxRewardScoreIteration(transactionCtx, policy.getId());
             if (maxRewardScoreIteration >= 0) {
                 List<RewardScore> newRewardScores = policy.getScores().stream()
                         .filter(score -> score.getIteration() > maxRewardScoreIteration)
@@ -127,7 +137,7 @@ public class RunDAO {
     }
 
     public List<RewardScore> getScores(long runId, String policyExtId) {
-        Policy policy =  PolicyRepository.getPolicy(ctx, runId, policyExtId);
+        Policy policy = PolicyRepository.getPolicy(ctx, runId, policyExtId);
 
         if (policy == null) {
             return null;
@@ -143,12 +153,51 @@ public class RunDAO {
                 .collect(Collectors.toList());
     }
 
-    public void cleanUpInvalidPolicies(long runId, List<String> validExternalIds) {
+    private void cleanUpInvalidPolicies(DSLContext transactionCtx, long runId, List<String> validExternalIds) {
         PolicyRepository.getPoliciesForRun(ctx, runId).stream()
                 .filter(p -> !validExternalIds.contains(p.getExternalId()))
                 .forEach(p -> {
                     PolicyRepository.setIsValid(ctx, p.getId(), false);
                     log.info(p.getExternalId() + " is marked as invalid");
                 });
+    }
+
+    public List<Policy> updateRun(Run run, ProviderJobStatus providerJobStatus, List<Policy> policies,
+            List<PolicyUpdateInfo> policiesUpdateInfo, List<String> validExternalIds) {
+        return ctx.transactionResult(configuration -> {
+            List<Policy> policiesToRaiseUpdateEvent = new ArrayList<>();
+            DSLContext transactionCtx = DSL.using(configuration);
+            updateRun(transactionCtx, run, providerJobStatus, policies);
+
+            policiesUpdateInfo.forEach(policyInfo -> {
+                Long policyId = PolicyRepository
+                        .getPolicyIdByRunIdAndExternalId(transactionCtx, run.getId(), policyInfo.getName());
+                PolicyRepository.setHasFile(transactionCtx, policyId, true);
+
+                Optional.ofNullable(getPolicy(transactionCtx, policyId))
+                        .ifPresent(policy -> {
+                            policy.setHasFile(true);
+                            policiesToRaiseUpdateEvent.add(policy);
+                        });
+
+                if (policyInfo.getCheckpointFile() != null) {
+                    // save meta data for checkpoint
+                    if (executionProviderMetaDataDAO.getCheckPointFileKey(transactionCtx, policyInfo.getName())
+                            == null) {
+                        executionProviderMetaDataDAO
+                                .putCheckPointFileKey(transactionCtx, policyInfo.getName(),
+                                        policyInfo.getCheckpointFileKey());
+                    }
+                }
+                cleanUpInvalidPolicies(transactionCtx, run.getId(), validExternalIds);
+            });
+            return policiesToRaiseUpdateEvent;
+        });
+    }
+
+    private Policy getPolicy(DSLContext transactionCtx, long policyId) {
+        Policy policy = PolicyRepository.getPolicy(transactionCtx, policyId);
+        policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(transactionCtx, policyId));
+        return policy;
     }
 }
