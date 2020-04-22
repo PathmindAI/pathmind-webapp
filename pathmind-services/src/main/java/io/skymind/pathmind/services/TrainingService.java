@@ -78,7 +78,7 @@ public abstract class TrainingService {
             run.setExperiment(experiment);
             run.setModel(experiment.getModel());
             run.setProject(experiment.getProject());
-            runDAO.updateRun(run, ProviderJobStatus.STOPPING, experiment.getPolicies());
+            runDAO.markAsStopping(run);
         });
     }
 }
