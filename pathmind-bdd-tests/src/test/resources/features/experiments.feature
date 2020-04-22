@@ -32,6 +32,20 @@ Feature: Experiments page
     When Click model breadcrumb btn
     Then Check that models page opened
 
+  Scenario: Click new experiment btn from running experiment page
+    Given Login to the pathmind
+    When Create new CoffeeShop project
+    When Click project start run button
+    When Click in 'New Experiment' button
+    Then Check that newExperiment page opened
+    When Open projects page
+    When Open project AutotestProject on projects page
+    Then Click the model name 1
+    Then Click the experiment name 1
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
+
   Scenario: Edit exist experiment
     Given Login to the pathmind
     When Create new CoffeeShop project
