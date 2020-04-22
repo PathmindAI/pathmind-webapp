@@ -15,6 +15,7 @@ def icon=":heavy_check_mark:"
 */
 def buildDockerImage(image_name, image_id) {
         echo "Building the pathmind Docker Image"
+        sh "docker build -t base -f ${WORKSPACE}/Dockerfile-cache ${WORKSPACE}/"
         sh "docker build -t ${image_name} -f ${WORKSPACE}/Dockerfile ${WORKSPACE}/"
 }
 
