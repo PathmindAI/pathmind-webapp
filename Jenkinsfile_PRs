@@ -66,14 +66,7 @@ pipeline {
     }
 
     //Build from Dockerfile
-    agent { 
-        docker { 
-            image "jenkins_agent:dev"
-            alwaysPull true
-            registryUrl "http://839270835622.dkr.ecr.us-east-1.amazonaws.com/"
-            registryCredentialsId "ecr:us-east-1:AWS"
-        }
-    }
+    agent { node { label 'master' } }
 
     // Pipeline stages
     stages {
