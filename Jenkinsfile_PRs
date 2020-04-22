@@ -84,13 +84,8 @@ pipeline {
                     	RELEASE_ID = "${IMAGE_NAME}-${env.BUILD_NUMBER}"
                     	echo "Global pathmind Id set to ${RELEASE_ID}"
 		}
-                echo "Running on docker"
                 echo "Check out code"
 		checkout scm
-
-                echo "Forward Docker daemon"
-                sh "kubectl port-forward service/dind 2375 &"
-                sh "sleep 30"
             }
         }
 
