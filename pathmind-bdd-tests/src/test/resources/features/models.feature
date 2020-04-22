@@ -68,25 +68,6 @@ Feature: Models page
     When Open projects archived tab
     When Check that model NOT exist in archived tab
 
-  Scenario: Check running experiment page archive btn, move model to archived
-    Given Login to the pathmind
-    When Create new CoffeeShop project
-    Then Click project start run button
-    Then Click in 'Archive' button
-    When In confirmation dialog click in 'Archive Experiment' button
-    When Open projects page
-    When Open project AutotestProject on projects page
-    Then Click the model name 1
-    When Open projects archived tab
-    Then Check that model name 1 exist in archived tab
-    When Open projects archived tab
-    When Check that model NOT exist in archived tab
-    When Open projects archived tab
-    Then Click the experiment name 1
-    When Click in 'Stop Training' button
-    Then Check that the 'Stop Training' confirmation dialog is shown
-    When In confirmation dialog click in 'Stop Training' button
-
   Scenario: Check experiment page Unarchive btn
     Given Login to the pathmind
     When Create new CoffeeShop project
