@@ -144,12 +144,13 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 						.withProperty("name", Data::getName)
 						.withProperty("draft", model -> model.isDraft() ? "Draft" : ""))
 				.setHeader("#")
-				.setComparator(Comparator.comparing(Model::getName))
+				.setComparator(Comparator.comparingLong(model -> Long.parseLong(model.getName())))
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true)
 				.setSortable(true);
-		modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+		Grid.Column<Model> createdColumn = modelGrid
+				.addColumn(new ZonedDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getDateCreated))
 				.setHeader("Created")
 				.setAutoWidth(true)
@@ -182,8 +183,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 			}
 		}));
 
-		// Sort by name by default
-		modelGrid.sort(Arrays.asList(new GridSortOrder<>(nameColumn, SortDirection.DESCENDING)));
+		// Sort by created by default
+		modelGrid.sort(Arrays.asList(new GridSortOrder<>(createdColumn, SortDirection.DESCENDING)));
 	}
 
 	public List<Model> getModels() {
