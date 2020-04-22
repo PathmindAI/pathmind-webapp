@@ -221,10 +221,6 @@ hr {
   margin-top: var(--lumo-space-m);
 }
 
-.projects-view .page-content-header {
-  margin-bottom: 0;
-}
-
 .projects-view .view-section,
 .project-view .view-section,
 .model-view .view-section,
