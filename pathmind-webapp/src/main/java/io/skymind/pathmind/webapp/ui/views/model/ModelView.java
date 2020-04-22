@@ -18,7 +18,6 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -93,7 +92,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 		headerWrapper.addClassName("page-content-header");
 
 		FlexLayout leftPanel = new ViewSection(headerWrapper, archivesTabPanel, experimentGrid);
-		VerticalLayout rightPanel = createRightPanel();
+		FlexLayout rightPanel = createRightPanel();
 
 		SplitLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
 			leftPanel,
@@ -104,7 +103,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 		return gridWrapper;
 	}
 
-	private VerticalLayout createRightPanel() {
+	private FlexLayout createRightPanel() {
 		Span panelTitle = LabelFactory.createLabel("Model Details", CssMindPathStyles.SECTION_TITLE_LABEL);
 		actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssMindPathStyles.BOLD_LABEL));
 		observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssMindPathStyles.BOLD_LABEL));
@@ -112,16 +111,12 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 		rewardVariableNamesText.addClassName("model-reward-variables");
 
 		NotesField notesField = createViewNotesField();
-		VerticalLayout rightPanelWrapper = WrapperUtils.wrapSizeFullVertical(
-					new ViewSection(
-							panelTitle,
-							actionsText,
-							observationsText,
-							new Div(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), rewardVariableNamesText)),
-					new ViewSection(notesField));
-		rightPanelWrapper.setPadding(false);
-
-		return rightPanelWrapper;
+		return new ViewSection(
+				panelTitle,
+				actionsText,
+				observationsText,
+				new Div(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), rewardVariableNamesText),
+				notesField);
 	}
 
 	/**

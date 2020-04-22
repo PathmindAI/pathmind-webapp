@@ -239,14 +239,6 @@ hr {
   overflow: auto;
 }
 
-.model-view .view-section + vaadin-vertical-layout {
-  height: auto !important;
-}
-
-.model-view .view-section + vaadin-vertical-layout > .view-section:first-child {
-  flex: 0 0 auto;
-}
-
 .model-view p,
 .model-view p + div {
   margin: var(--lumo-space-m) 0 0;
@@ -304,6 +296,10 @@ hr {
 .project-view .notes-field-wrapper,
 .model-view .notes-field-wrapper {
   flex: 1 1 auto;
+}
+
+.model-view .notes-field-wrapper {
+  margin-top: var(--lumo-space-m);
 }
 
 .model-view .bold-label {

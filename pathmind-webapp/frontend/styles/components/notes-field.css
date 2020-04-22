@@ -12,7 +12,6 @@
 }
 
 .notes-block .header span:first-child {
-  font-size: var(--lumo-font-size-xl);
   font-weight: bold;
   color: var(--pm-text-color);
   margin-left: 0;
