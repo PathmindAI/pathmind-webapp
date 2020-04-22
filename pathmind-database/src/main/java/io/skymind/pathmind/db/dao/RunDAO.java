@@ -19,8 +19,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Repository
@@ -83,6 +85,10 @@ public class RunDAO
         return RunRepository.getStoppedPolicyNamesForRuns(ctx, runIds);
     }
 
+    public void markAsStopping(Run run) {
+    	updateRun(run, ProviderJobStatus.STOPPING, Collections.emptyList());
+    }
+    
     @Transactional
     public void updateRun(Run run, ProviderJobStatus status, List<Policy> policies)
     {
@@ -92,7 +98,9 @@ public class RunDAO
 
             updateRun(run, status, transactionCtx);
             updateExperiment(run, transactionCtx);
-            updatePolicies(run, policies, transactionCtx);
+            if (!policies.isEmpty()) {
+            	updatePolicies(run, policies, transactionCtx);
+            }
         });
 
         // The EventBus updates have to be done AFTER the transaction is completed and NOT during in case the transaction fails.
@@ -125,18 +133,14 @@ public class RunDAO
 
     private void updatePolicies(Run run, List<Policy> policies, DSLContext transactionCtx)
     {
+    	// We need this line because the policies are generated from the progress string from the backend and are NOT retrieved from the database.
+    	policies.forEach(policy -> policy.setRunId(run.getId()));
+    	
+    	PolicyRepository.updateOrInsertPolicies(transactionCtx, policies);
+    	loadPersistedPolicies(transactionCtx, policies, run);
+    	
         for (Policy policy : policies) {
-            // We need this line because the policies are generated from the progress string from the backend and are NOT retrieved from the database.
-            policy.setRunId(run.getId());
-
-            // STEPH -> REFACTOR -> If there are multiple policies why don't we just update the last policy in the list. This is no worse
-            // than what we have now. Plus this is a loop within a loop of database inserts and other database calls. We should instead
-            // update ONLY the most recent policy and ignore the others since really all we're doing is updating to get the progress.
-            // IMPORTANT -> The most recent policy may NOT be the last policy in the list.
-            long policyId = PolicyRepository.updateOrInsertPolicy(transactionCtx, policy);
-            // Load up the Policy object so that we can push it to the GUI for the event. We may not need everything in here any more...
-            PolicyUtils.loadPolicyDataModel(policy, policyId, run);
-
+            
             // Only insert new RewardScores
             int maxRewardScoreIteration = RewardScoreRepository.getMaxRewardScoreIteration(transactionCtx, policy.getId());
             if(maxRewardScoreIteration >= 0) {
@@ -148,7 +152,21 @@ public class RunDAO
         }
     }
 
-    public List<RewardScore> getScores(long runId, String policyExtId) {
+    private void loadPersistedPolicies(DSLContext transactionCtx, List<Policy> policies, Run run) {
+    	List<String> externalIds = policies.stream().map(Policy::getExternalId).collect(Collectors.toList());
+		List<Policy> persistedPolicies = PolicyRepository.getPoliciesForRunAndExternalIds(transactionCtx, run.getId(), externalIds);
+		policies.forEach(policy -> {
+			persistedPolicies.stream()
+				.filter(pp -> pp.getRunId() == policy.getRunId() && Objects.equals(pp.getExternalId(), policy.getExternalId()))
+				.findAny()
+				.ifPresent(pp -> {
+					PolicyUtils.loadPolicyDataModel(policy, pp.getId(), run);
+				});
+		});
+		
+	}
+
+	public List<RewardScore> getScores(long runId, String policyExtId) {
         Policy policy =  PolicyRepository.getPolicy(ctx, runId, policyExtId);
 
         if (policy == null) {

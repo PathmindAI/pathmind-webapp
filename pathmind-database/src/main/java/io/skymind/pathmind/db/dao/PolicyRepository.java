@@ -6,6 +6,7 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.Run;
 import org.jooq.DSLContext;
+import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Result;
 
@@ -107,6 +108,17 @@ class PolicyRepository {
 
 		return policies;
 	}
+	
+	protected static List<Policy> getPoliciesForRunAndExternalIds(DSLContext ctx, long runId, List<String> externalIdList) {
+		final List<Policy> policies = ctx.select(POLICY.ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.RUN_ID, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.HAS_FILE)
+				.from(POLICY)
+				.where(POLICY.RUN_ID.eq(runId))
+				.and(POLICY.EXTERNAL_ID.in(externalIdList))
+				.orderBy(POLICY.ID)
+				.fetch(record -> record.into(POLICY).into(Policy.class));
+		
+		return policies;
+	}
 
 	protected static void updatePolicyExternalId(DSLContext ctx, long runId, String newExternalId, String oldExternalId) {
 		ctx.update(POLICY)
@@ -115,18 +127,19 @@ class PolicyRepository {
 				.execute();
 	}
 
-	// STEPH -> Still passing progressJSon as a temporary solution until I have the time to completely replace it and put the data in the database.
-	protected static long updateOrInsertPolicy(DSLContext ctx, Policy policy) {
-		return ctx.insertInto(POLICY)
-				.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.STARTED_AT, POLICY.STOPPED_AT)
-				.values(policy.getName(), policy.getRunId(), policy.getExternalId(), policy.getStartedAt(), policy.getStoppedAt())
-				.onConflict(POLICY.RUN_ID, POLICY.EXTERNAL_ID)
-				.doUpdate()
-				.set(POLICY.STARTED_AT, policy.getStartedAt())
-				.set(POLICY.STOPPED_AT, policy.getStoppedAt())
-				.returning(POLICY.ID)
-				.fetchOne()
-				.getValue(POLICY.ID);
+	protected static void updateOrInsertPolicies(DSLContext ctx, List<Policy> policies) {
+		final List<Query> saveQueries = policies.stream()
+                .map(policy ->
+                		ctx.insertInto(POLICY)
+                			.columns(POLICY.NAME, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.STARTED_AT, POLICY.STOPPED_AT)
+                			.values(policy.getName(), policy.getRunId(), policy.getExternalId(), policy.getStartedAt(), policy.getStoppedAt())
+                			.onConflict(POLICY.RUN_ID, POLICY.EXTERNAL_ID)
+                			.doUpdate()
+                			.set(POLICY.STARTED_AT, policy.getStartedAt())
+                			.set(POLICY.STOPPED_AT, policy.getStoppedAt()))
+                .collect(Collectors.toList());
+
+        ctx.batch(saveQueries).execute();
 	}
 
 	public static List<Policy> getExportedPoliciesByRunId(DSLContext ctx, long runId) {
