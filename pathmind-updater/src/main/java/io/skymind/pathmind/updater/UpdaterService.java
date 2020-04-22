@@ -17,8 +17,6 @@ import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.model.PublishResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.PolicyFileService;
@@ -28,13 +26,12 @@ import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Data;
 import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.PolicyUpdateInfo;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -48,17 +45,11 @@ import static io.skymind.pathmind.shared.services.training.constant.ErrorConstan
 @Service
 @Slf4j
 public class UpdaterService {
-    private final DSLContext ctx;
-
     private final AWSExecutionProvider provider;
-
-    private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
 
     private final RunDAO runDAO;
 
     private final PolicyFileService policyFileService;
-
-    private final PolicyDAO policyDAO;
 
     private final TrainingErrorDAO trainingErrorDAO;
 
@@ -69,17 +60,14 @@ public class UpdaterService {
     private final AwsApiClientSNS snsClient;
 
     @Autowired
-    public UpdaterService(DSLContext ctx, AWSExecutionProvider provider,
-            ExecutionProviderMetaDataDAO executionProviderMetaDataDAO, RunDAO runDAO,
-            PolicyFileService policyFileService, PolicyDAO policyDAO, TrainingErrorDAO trainingErrorDAO,
+    public UpdaterService(AWSExecutionProvider provider,
+            RunDAO runDAO,
+            PolicyFileService policyFileService, TrainingErrorDAO trainingErrorDAO,
             ObjectMapper objectMapper, @Value("${pathmind.aws.sns.updater_topic_arn}") String updaterTopicArn,
             AwsApiClientSNS snsClient) {
-        this.ctx = ctx;
         this.provider = provider;
-        this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.runDAO = runDAO;
         this.policyFileService = policyFileService;
-        this.policyDAO = policyDAO;
         this.trainingErrorDAO = trainingErrorDAO;
         this.objectMapper = objectMapper;
         this.updaterTopicArn = updaterTopicArn;
@@ -115,30 +103,7 @@ public class UpdaterService {
 
     private void updateInfoInDB(Run run, ProviderJobStatus providerJobStatus, List<Policy> policies,
             List<PolicyUpdateInfo> policiesUpdateInfo) {
-        List<Policy> policiesToRaiseUpdateEvent = new ArrayList<>();
-        ctx.transaction(configuration -> {
-            DSLContext transactionCtx = DSL.using(configuration);
-            runDAO.updateRun(transactionCtx, run, providerJobStatus, policies);
-
-            policiesUpdateInfo.forEach(policyInfo -> {
-                Long policyId = policyDAO.assurePolicyId(transactionCtx, run.getId(), policyInfo.name);
-                policyDAO.setHasFile(transactionCtx, policyId, true);
-
-                Optional.ofNullable(policyDAO.getPolicy(transactionCtx, policyId))
-                        .ifPresent(policy -> {
-                            policy.setHasFile(true);
-                            policiesToRaiseUpdateEvent.add(policy);
-                        });
-
-                if (policyInfo.checkpointFile != null) {
-                    // save meta data for checkpoint
-                    if (executionProviderMetaDataDAO.getCheckPointFileKey(transactionCtx, policyInfo.name) == null) {
-                        executionProviderMetaDataDAO
-                                .putCheckPointFileKey(transactionCtx, policyInfo.name, policyInfo.checkpointFileKey);
-                    }
-                }
-            });
-        });
+        List<Policy> policiesToRaiseUpdateEvent =  runDAO.updateRun(run, providerJobStatus, policies, policiesUpdateInfo);
         // The EventBus updates have to be done AFTER the transaction is completed and NOT during in case the transaction fails.
         fireEventUpdates(run, policies);
         policiesToRaiseUpdateEvent
@@ -147,11 +112,11 @@ public class UpdaterService {
 
     private void updateInfoInAWS(Run run, List<PolicyUpdateInfo> policiesUpdateInfo) {
         policiesUpdateInfo.forEach(policyInfo -> {
-            policyFileService.savePolicyFile(run.getId(), policyInfo.name, policyInfo.policyFile);
-            if (policyInfo.checkpointFile != null) {
-                policyFileService.saveCheckpointFile(run.getId(), policyInfo.name,
-                        policyInfo.checkpointFile); // only update aws
-                log.debug("checkpoint saved for " + policyInfo.name);
+            policyFileService.savePolicyFile(run.getId(), policyInfo.getName(), policyInfo.getPolicyFile());
+            if (policyInfo.getCheckpointFile() != null) {
+                policyFileService.saveCheckpointFile(run.getId(), policyInfo.getName(),
+                        policyInfo.getCheckpointFile()); // only update aws
+                log.debug("checkpoint saved for " + policyInfo.getName());
             }
         });
     }
@@ -262,13 +227,13 @@ public class UpdaterService {
                                     return Optional.<PolicyUpdateInfo>empty();
                                 }
                                 PolicyUpdateInfo policyUpdateInfo = new PolicyUpdateInfo();
-                                policyUpdateInfo.name = finishPolicyName;
-                                policyUpdateInfo.policyFile = policyFile;
+                                policyUpdateInfo.setName(finishPolicyName);
+                                policyUpdateInfo.setPolicyFile(policyFile);
                                 Map.Entry<String, byte[]> checkpointInfo = provider
                                         .snapshot(jobHandle, finishPolicyName);
                                 if (checkpointInfo != null) {
-                                    policyUpdateInfo.checkpointFileKey = checkpointInfo.getKey();
-                                    policyUpdateInfo.checkpointFile = checkpointInfo.getValue();
+                                    policyUpdateInfo.setCheckpointFileKey(checkpointInfo.getKey());
+                                    policyUpdateInfo.setCheckpointFile(checkpointInfo.getValue());
                                 }
                                 return Optional.of(policyUpdateInfo);
                             })
@@ -278,16 +243,5 @@ public class UpdaterService {
             );
         }
         return policiesInfo;
-    }
-
-    private static class PolicyUpdateInfo {
-
-        public byte[] policyFile;
-
-        public String name;
-
-        public String checkpointFileKey;
-
-        public byte[] checkpointFile;
     }
 }

@@ -56,10 +56,6 @@ public class PolicyDAO {
         return PolicyRepository.getPolicyIdByRunIdAndExternalId(transactionCtx, runId, externalId);
     }
 
-    public void setHasFile(DSLContext transactionCtx, Long policyId, boolean value) {
-        PolicyRepository.setHasFile(transactionCtx, policyId, value);
-    }
-
     public Long assurePolicyId(DSLContext transactionCtx, Long runId, String finishPolicyName) {
         Assert.notNull(runId, "runId should be provided");
         Assert.hasText(finishPolicyName, "finalPolicyName should be provided");
