@@ -2,7 +2,12 @@ package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.PolicyUpdateInfo;
+import io.skymind.pathmind.shared.data.ProviderJobStatus;
+import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
@@ -10,8 +15,10 @@ import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -20,8 +27,11 @@ public class RunDAO {
 
     private final DSLContext ctx;
 
-    public RunDAO(DSLContext ctx) {
+    private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
+
+    public RunDAO(DSLContext ctx, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
         this.ctx = ctx;
+        this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
     }
 
     public Run getRun(long runId) {
@@ -81,7 +91,7 @@ public class RunDAO {
         });
     }
 
-    public void updateRun(DSLContext transactionCtx, Run run, ProviderJobStatus status, List<Policy> policies)
+    private void updateRun(DSLContext transactionCtx, Run run, ProviderJobStatus status, List<Policy> policies)
     {
         updateRun(run, status, transactionCtx);
         updateExperiment(run, transactionCtx);
@@ -135,4 +145,39 @@ public class RunDAO {
 
         return RewardScoreRepository.getRewardScoresForPolicy(ctx, policy.getId());
     }
+
+    public List<Policy> updateRun(Run run, ProviderJobStatus providerJobStatus, List<Policy> policies, List<PolicyUpdateInfo> policiesUpdateInfo) {
+        return ctx.transactionResult(configuration -> {
+            List<Policy> policiesToRaiseUpdateEvent = new ArrayList<>();
+            DSLContext transactionCtx = DSL.using(configuration);
+            updateRun(transactionCtx, run, providerJobStatus, policies);
+
+            policiesUpdateInfo.forEach(policyInfo -> {
+                Long policyId = PolicyRepository.getPolicyIdByRunIdAndExternalId(transactionCtx, run.getId(), policyInfo.getName());
+                PolicyRepository.setHasFile(transactionCtx, policyId, true);
+
+                Optional.ofNullable(getPolicy(transactionCtx, policyId))
+                        .ifPresent(policy -> {
+                            policy.setHasFile(true);
+                            policiesToRaiseUpdateEvent.add(policy);
+                        });
+
+                if (policyInfo.getCheckpointFile() != null) {
+                    // save meta data for checkpoint
+                    if (executionProviderMetaDataDAO.getCheckPointFileKey(transactionCtx, policyInfo.getName()) == null) {
+                        executionProviderMetaDataDAO
+                                .putCheckPointFileKey(transactionCtx, policyInfo.getName(), policyInfo.getCheckpointFileKey());
+                    }
+                }
+            });
+            return policiesToRaiseUpdateEvent;
+        });
+    }
+
+    private Policy getPolicy(DSLContext transactionCtx, long policyId) {
+        Policy policy = PolicyRepository.getPolicy(transactionCtx, policyId);
+        policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(transactionCtx, policyId));
+        return policy;
+    }
+
 }
