@@ -16,7 +16,7 @@ public final class RunConstants {
 	 */
 	public static final int PBT_RUN_ITERATIONS = 250;
 	public static final int PBT_MAX_TIME_IN_SEC = 12 * HOUR;
-	public static final int PBT_NUM_SAMPLES = 8;
+	public static final int PBT_NUM_SAMPLES = 4;
 
 	public static final String DISCOVERY_RUN_LEARNING_RATES = "DISCOVERY_RUN_LEARNING_RATES";
 	public static final String DISCOVERY_RUN_GAMMAS = "DISCOVERY_RUN_GAMMAS";
