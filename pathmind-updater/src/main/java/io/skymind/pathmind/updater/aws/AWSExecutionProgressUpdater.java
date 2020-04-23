@@ -1,12 +1,19 @@
 package io.skymind.pathmind.updater.aws;
 
+//import com.amazonaws.services.sns.model.MessageAttributeValue;
+
+import com.amazonaws.services.sns.model.MessageAttributeValue;
+import com.amazonaws.services.sns.model.PublishRequest;
+import com.amazonaws.services.sns.model.PublishResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider;
-import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientSNS;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.*;
@@ -15,19 +22,20 @@ import io.skymind.pathmind.updater.ExecutionProgressUpdater;
 import io.skymind.pathmind.updater.ProgressInterpreter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.TYPE_POLICY;
-import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.TYPE_RUN;
+import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.*;
 import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.KILLED_TRAINING_KEYWORD;
 import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.UNKNOWN_ERROR_KEYWORD;
 
@@ -36,24 +44,29 @@ import static io.skymind.pathmind.shared.services.training.constant.ErrorConstan
 public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
 
     private final AWSExecutionProvider provider;
-    private final AWSApiClient awsApiClient;
+    private final AwsApiClientSNS snsClient;
     private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RunDAO runDAO;
     private final PolicyFileService policyFileService;
     private final TrainingErrorDAO trainingErrorDAO;
+    private final ObjectMapper objectMapper;
+    private final String updaterTopicArn;
     private EmailNotificationService emailNotificationService;
 
-    public AWSExecutionProgressUpdater(AWSExecutionProvider provider, AWSApiClient awsApiClient,
-                                       PolicyFileService policyFileService,
+    public AWSExecutionProgressUpdater(AWSExecutionProvider provider, AwsApiClientSNS snsClient,
+                                       @Value("${pathmind.aws.sns.updater_topic_arn}") String topicArn,
+                                       PolicyFileService policyFileService, ObjectMapper objectMapper,
                                        RunDAO runDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO,
                                        EmailNotificationService emailNotificationService, TrainingErrorDAO trainingErrorDAO) {
         this.provider = provider;
-        this.awsApiClient = awsApiClient;
+        this.snsClient = snsClient;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.runDAO = runDAO;
         this.policyFileService = policyFileService;
         this.trainingErrorDAO = trainingErrorDAO;
         this.emailNotificationService = emailNotificationService;
+        this.objectMapper = objectMapper;
+        this.updaterTopicArn = topicArn;
     }
 
     @Override
@@ -221,10 +234,25 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     private void fireEventUpdate(String type, Long id, byte[] cargo) {
         try {
             final UpdateEvent event = new UpdateEvent(id, type, cargo.length);
-            awsApiClient.sendUpdaterMessage(event, cargo);
+            sendUpdaterMessage(event, cargo);
             log.debug("fired update event [{}]", event);
         } catch (Exception e) {
-            log.error("Failed to submit update request to SQS", e);
+            log.error("Failed to submit update request to SNS", e);
         }
     }
+
+    public String sendUpdaterMessage(UpdateEvent event, byte[] cargo) throws JsonProcessingException {
+
+        PublishRequest publishRequest = new PublishRequest()
+                .withTopicArn(updaterTopicArn)
+                .withMessage(objectMapper.writeValueAsString(event))
+                .withMessageAttributes(Map.of(
+                        CARGO_ATTRIBUTE, new MessageAttributeValue()
+                                .withBinaryValue(ByteBuffer.wrap(cargo)).withDataType("Binary")
+                ));
+
+        PublishResult result = snsClient.getSnsClient().publish(publishRequest);
+        return result.getMessageId();
+    }
+
 }
