@@ -64,6 +64,7 @@
     <build>
         <plugins>
             <plugin>
+                <!-- Disable unit tests in this module -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.20</version>
@@ -72,48 +73,68 @@
                 </configuration>
             </plugin>
             <plugin>
+                <!-- Disable integration (BDD) tests in this module. See 'bdd-tests' profile below. -->
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
-                    <includes>
-                        <include>**/*Feature.java</include>
-                    </includes>
-                    <forkCount>${forkNumber}</forkCount>
-                    <reuseForks>true</reuseForks>
+                    <skip>true</skip>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>net.serenity-bdd.maven.plugins</groupId>
-                <artifactId>serenity-maven-plugin</artifactId>
-                <version>${serenity.version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>net.serenity-bdd</groupId>
-                        <artifactId>serenity-emailer</artifactId>
-                        <version>${serenity.version}</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <reports>email</reports>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>serenity-reports</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>aggregate</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <!-- Enable BDD tests only when this profile is enabled -->
+            <id>bdd-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.22.2</version>
+                        <configuration>
+                            <skip>false</skip>
+                            <includes>
+                                <include>**/*Feature.java</include>
+                            </includes>
+                            <forkCount>${forkNumber}</forkCount>
+                            <reuseForks>true</reuseForks>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>net.serenity-bdd.maven.plugins</groupId>
+                        <artifactId>serenity-maven-plugin</artifactId>
+                        <version>${serenity.version}</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>net.serenity-bdd</groupId>
+                                <artifactId>serenity-emailer</artifactId>
+                                <version>${serenity.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <reports>email</reports>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>serenity-reports</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
