@@ -60,6 +60,10 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-sqs</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-sns</artifactId>
+        </dependency>
         <!-- for WebClient, as RestTemplate is deprecated -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
