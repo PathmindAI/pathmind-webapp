@@ -417,8 +417,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("DISCRETE_ACTIONS", String.valueOf(job.getActions())),
                 var("CONTINUOUS_OBSERVATIONS", String.valueOf(job.getObservations())),
                 var("MAX_ITERATIONS", String.valueOf(job.getIterations())),
-                var("RANDOM_SEED", "1"),
-                var("MAX_REWARD_MEAN", String.valueOf(Integer.MAX_VALUE)), // disabled for now
                 var("TEST_ITERATIONS", "0"), // disabled for now
 
                 // Still has to be set, but doesn't actually do something, needs to be removed from train.sh
