@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -125,19 +126,23 @@ public class RunDAO {
     	
     	PolicyRepository.updateOrInsertPolicies(transactionCtx, policies);
     	loadPersistedPolicies(transactionCtx, policies, run);
+
+    	// Find max reward score iterations in DB, and calculate new reward scores to be inserted into db
+    	List<Long> policyIds = policies.stream().mapToLong(Policy::getId).boxed().collect(Collectors.toList());
+    	Map<Long, Integer> maxRewardScoreIterations = RewardScoreRepository.getMaxRewardScoreIterationForPolicies(transactionCtx, policyIds);
+    	Map<Long, List<RewardScore>> rewardScoresMap = new HashMap<>();
+    	policies.forEach(policy -> {
+    		Integer maxRewardScoreIteration = maxRewardScoreIterations.containsKey(policy.getId()) ? maxRewardScoreIterations.get(policy.getId()) : 0;
+    		List<RewardScore> newRewardScores = policy.getScores().stream()
+					.filter(score -> score.getIteration() > maxRewardScoreIteration)
+					.collect(Collectors.toList());
+			rewardScoresMap.put(policy.getId(), newRewardScores);
+    	});
     	
-        for (Policy policy : policies) {
-            
-            // Only insert new RewardScores
-            int maxRewardScoreIteration = RewardScoreRepository
-                    .getMaxRewardScoreIteration(transactionCtx, policy.getId());
-            if (maxRewardScoreIteration >= 0) {
-                List<RewardScore> newRewardScores = policy.getScores().stream()
-                        .filter(score -> score.getIteration() > maxRewardScoreIteration)
-                        .collect(Collectors.toList());
-                RewardScoreRepository.insertRewardScores(transactionCtx, policy.getId(), newRewardScores);
-            }
-        }
+    	// Insert all new reward scores in a single batch
+    	if (!rewardScoresMap.isEmpty()) {
+    		RewardScoreRepository.insertRewardScores(transactionCtx, rewardScoresMap);
+    	}
     }
 
     public List<RewardScore> getScores(long runId, String policyExtId) {
