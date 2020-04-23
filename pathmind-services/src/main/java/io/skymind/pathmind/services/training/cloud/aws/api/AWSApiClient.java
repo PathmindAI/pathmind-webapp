@@ -1,84 +1,61 @@
 package io.skymind.pathmind.services.training.cloud.aws.api;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
-import com.amazonaws.services.sqs.model.CreateQueueRequest;
-import com.amazonaws.services.sqs.model.MessageAttributeValue;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.amazonaws.util.IOUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.skymind.pathmind.shared.constants.EC2InstanceType;
-import io.skymind.pathmind.shared.constants.RunType;
+import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientS3;
+import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientSQS;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
-import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent;
+import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.RunType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.List;
 
 @Slf4j
 @Service
+@Getter
 public class AWSApiClient {
 
     private final AmazonS3 s3Client;
-    @Getter
+    private final String bucketName;
+
     private final AmazonSQS sqsClient;
+    private final String queueUrl;
+    private final String updaterQueueUrl;
+
     private final ObjectMapper objectMapper;
 
-    private final String bucketName;
-    private final String queueUrl;
-    @Getter
-    private final String updaterQueueUrl;
     private final int mockCycle;
 
     public AWSApiClient(
-            @Value("${pathmind.aws.region}") String region,
-            @Value("${pathmind.aws.key.id}") String keyId,
-            @Value("${pathmind.aws.secret_key}") String secretAccessKey,
+            AwsApiClientS3 s3,
             @Value("${pathmind.aws.s3.bucket}") String bucketName,
-            @Value("${pathmind.aws.sqs_url}") String queueUrl,
-            @Value("${pathmind.aws.sqs_updater_url}") String updaterQueueUrl,
-            @Value("${pathmind.aws.mock_cycle:0}") int mockCycle,
-            @Value("${pathmind.aws.mock-endpoint-url:}") String awsEndpointUrl,
-            @Value("${pathmind.aws.mock-s3:true}") boolean mockS3,
-            @Value("${pathmind.aws.mock-sqs:true}") boolean mockSQS,
-            ObjectMapper objectMapper) {
+            AwsApiClientSQS sqs,
+            @Value("${pathmind.aws.sqs.url}") String queueUrl,
+            @Value("${pathmind.aws.sqs.updater_url}") String updaterQueueUrl,
+            ObjectMapper objectMapper,
+            @Value("${pathmind.aws.mock_cycle:0}") int mockCycle) {
 
-        Regions regions = Regions.fromName(region);
-        AWSCredentials credentials = new BasicAWSCredentials(keyId, secretAccessKey);
-        AwsClientBuilder.EndpointConfiguration endpointConfiguration = null;
-        if (!StringUtils.isEmpty(awsEndpointUrl)) {
-            endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(awsEndpointUrl, region);
-        }
-
-        AmazonS3ClientBuilder s3ClientBuilder =
-                this.buildAwsClient(AmazonS3ClientBuilder.standard(), regions, credentials, endpointConfiguration, mockS3);
-        if (endpointConfiguration != null && mockS3) {
-            s3ClientBuilder.withPathStyleAccessEnabled(true);
-        }
-        this.s3Client = s3ClientBuilder.build();
-        this.sqsClient = buildAwsClient(AmazonSQSClientBuilder.standard(), regions, credentials, endpointConfiguration, mockSQS).build();
-
+        this.s3Client = s3.getS3Client();
         this.bucketName = bucketName;
+
+        this.sqsClient = sqs.getSqsClient();
         this.queueUrl = queueUrl;
         this.updaterQueueUrl = updaterQueueUrl;
 
@@ -90,9 +67,6 @@ public class AWSApiClient {
             log.warn("Running with mock cycle {}", mockCycle);
         }
 
-        if (endpointConfiguration != null) {
-            initMocks(mockS3, mockSQS);
-        }
     }
 
     public List<Bucket> listBuckets() {
@@ -172,59 +146,4 @@ public class AWSApiClient {
         return result.getMessageId();
     }
 
-    public String sendUpdaterMessage(UpdateEvent event, byte[] cargo) throws JsonProcessingException {
-
-        SendMessageRequest sendMessageRequest = new SendMessageRequest()
-                .withMessageDeduplicationId(UUID.randomUUID().toString()) // we might expect similar content based
-                .withQueueUrl(updaterQueueUrl)
-                .withMessageGroupId("updater")
-                .withMessageAttributes(Map.of(
-                        "cargo", new MessageAttributeValue()
-                                .withBinaryValue(ByteBuffer.wrap(cargo)).withDataType("Binary")
-                ))
-                .withMessageBody(objectMapper.writeValueAsString(event));
-
-        SendMessageResult result = sqsClient.sendMessage(sendMessageRequest);
-        return result.getMessageId();
-    }
-
-    private void initMocks(boolean mockS3, boolean mockSQS) {
-        if (mockS3) {
-            Optional<Bucket> bucket = s3Client.listBuckets().stream().filter(b -> b.getName().equalsIgnoreCase(bucketName)).findFirst();
-            if (bucket.isEmpty()) {
-                s3Client.createBucket(new CreateBucketRequest(bucketName));
-            }
-        }
-        if (mockSQS) {
-            List<String> existingQueues = sqsClient.listQueues().getQueueUrls();
-            if (!existingQueues.contains(queueUrl)) {
-                Map<String, String> attributes = new HashMap<>();
-                attributes.put("FifoQueue", "true");
-                attributes.put("ContentBasedDeduplication", "true");
-                sqsClient.createQueue(new CreateQueueRequest()
-                        .withAttributes(attributes).withQueueName(queueUrl.substring(queueUrl.lastIndexOf("/") + 1))
-                );
-            }
-            if (!existingQueues.contains(updaterQueueUrl)) {
-                Map<String, String> attributes = new HashMap<>();
-                attributes.put("FifoQueue", "true");
-                // attributes.put("ContentBasedDeduplication", "true"); // this queue should not have dedup based on content
-                sqsClient.createQueue(new CreateQueueRequest()
-                        .withAttributes(attributes).withQueueName(updaterQueueUrl.substring(updaterQueueUrl.lastIndexOf("/") + 1))
-                );
-            }
-        }
-    }
-
-    private <S extends AwsClientBuilder<S, T>, T> S buildAwsClient(
-            S builder, Regions regions, AWSCredentials credentials,
-            AwsClientBuilder.EndpointConfiguration endpointConfiguration, boolean mocked) {
-        builder.withCredentials(new AWSStaticCredentialsProvider(credentials));
-        if (endpointConfiguration != null && mocked) {
-            builder.withEndpointConfiguration(endpointConfiguration);
-        } else {
-            builder.withRegion(regions);
-        }
-        return builder;
-    }
 }
