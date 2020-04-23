@@ -9,3 +9,12 @@ resource "aws_sqs_queue" "training_queue" {
   }
 }
 
+resource "aws_sqs_queue" "test_updater_queue" {
+  name                      = "test-updater-queue.fifo"
+  fifo_queue                  = true
+
+  tags = {
+    Environment = "pathmind"
+  }
+}
+
