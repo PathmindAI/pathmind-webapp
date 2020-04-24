@@ -30,7 +30,6 @@ import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.webapp.ui.components.TabPanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
@@ -71,7 +70,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	private Span createdDate;
 	
 	private ScreenTitlePanel titlePanel;
-	
 
 	public ProjectView() {
 		super();
@@ -83,10 +81,19 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		
 		addClassName("project-view");
 
-		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullCenterHorizontal(archivesTabPanel, new UploadModelButton(projectId));
+		projectName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
+		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+		Button edit = new Button("Rename", evt -> renameProject());
+		edit.setClassName("no-shrink");
+
+		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullRightHorizontal(
+			WrapperUtils.wrapVerticalWithNoPaddingOrSpacing
+					(WrapperUtils.wrapWidthFullHorizontal(projectName, edit), createdDate),
+			new UploadModelButton(projectId)
+		);
 		headerWrapper.addClassName("page-content-header");
 
-		FlexLayout leftPanel = new ViewSection(headerWrapper, modelGrid);
+		FlexLayout leftPanel = new ViewSection(headerWrapper, archivesTabPanel, modelGrid);
 		FlexLayout rightPanel = createRightPanel();
 
 		SplitLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
@@ -99,10 +106,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	}
 
 	private FlexLayout createRightPanel() {
-		projectName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
-		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
-		Button edit = new Button("Rename", evt -> renameProject());
-		edit.setClassName("no-shrink");
 		NotesField notesField = new NotesField(
 				"Project Notes",
 				project.getUserNotes(),
@@ -112,9 +115,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 						segmentIntegrator.updatedNotesModelsView();
 				}
 			);
-		TabPanel panelHeader = new TabPanel("Details");
-		panelHeader.setEnabled(false);
-		return new ViewSection(panelHeader, WrapperUtils.wrapLeftAndRightAligned(projectName, edit), createdDate, notesField);
+
+		return new ViewSection(notesField);
 	}
 
 	private void renameProject() {
@@ -144,12 +146,13 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 						.withProperty("name", Data::getName)
 						.withProperty("draft", model -> model.isDraft() ? "Draft" : ""))
 				.setHeader("#")
-				.setComparator(Comparator.comparing(Model::getName))
+				.setComparator(Comparator.comparingLong(model -> Long.parseLong(model.getName())))
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true)
 				.setSortable(true);
-		modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+		Grid.Column<Model> createdColumn = modelGrid
+				.addColumn(new ZonedDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getDateCreated))
 				.setHeader("Created")
 				.setAutoWidth(true)
@@ -182,8 +185,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 			}
 		}));
 
-		// Sort by name by default
-		modelGrid.sort(Arrays.asList(new GridSortOrder<>(nameColumn, SortDirection.DESCENDING)));
+		// Sort by created by default
+		modelGrid.sort(Arrays.asList(new GridSortOrder<>(createdColumn, SortDirection.DESCENDING)));
 	}
 
 	public List<Model> getModels() {

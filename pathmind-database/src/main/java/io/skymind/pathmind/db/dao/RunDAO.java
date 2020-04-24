@@ -16,7 +16,6 @@ import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -83,7 +82,6 @@ public class RunDAO
         return RunRepository.getStoppedPolicyNamesForRuns(ctx, runIds);
     }
 
-    @Transactional
     public void updateRun(Run run, ProviderJobStatus status, List<Policy> policies)
     {
         ctx.transaction(configuration ->

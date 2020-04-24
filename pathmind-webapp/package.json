@@ -13,13 +13,14 @@
     "lint-staged": "^9.4.2",
     "prettier": "1.18.2",
     "raw-loader": "3.0.0",
-    "webpack": "4.30.0",
+    "webpack": "4.42.0",
     "webpack-babel-multi-target-plugin": "2.3.3",
     "webpack-cli": "3.3.10",
     "webpack-dev-server": "3.9.0",
-    "webpack-merge": "4.2.2"
+    "webpack-merge": "4.2.2",
+    "terser": "4.6.7"
   },
-  "vaadinAppPackageHash": "2f19b0c95a7d837400091fa5e154a47a62489d7d15a5dd2a51792a3dee88daa5",
+  "vaadinAppPackageHash": "184bee0e7bc523af862fadc923752f9a5cc593c6436ec3c63b7e33c2a4adc339",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
