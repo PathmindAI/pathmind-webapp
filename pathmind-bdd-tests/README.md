@@ -33,13 +33,12 @@ There are two E2E tests with full training `features/e2e.feature`. Tests separat
 1. CheeseChasing_6Observations_4Actions.zip Reward function: `reward = after[0] - before[0];` Expected reward score: > 0.9
 2. CoffeeShopPathmindDemo.zip Expected reward score: > 120
 
-    `reward += after[0] - before[0]; // Maximize kitchen cleanliness`
-    
-    `reward += after[1] - before[1]; // Maximize successful exits`
-     
-    `reward -= after[2] - before[2]; // Minimize balked customers`
-    
-    `reward -= after[3] - before[3]; // Minimize average service time`
+    ````java
+    reward += after[0] - before[0]; // Maximize kitchen cleanliness
+    reward += after[1] - before[1]; // Maximize successful exits
+    reward -= after[2] - before[2]; // Minimize balked customers
+    reward -= after[3] - before[3]; // Minimize average service time
+    ````
 
 ##### Resources
 
