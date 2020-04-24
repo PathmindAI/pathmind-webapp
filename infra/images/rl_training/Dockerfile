@@ -8,10 +8,14 @@ COPY requirements.txt .
 COPY do_training.sh .
 COPY check_spot.sh .
 
+#env
+ENV DEBIAN_FRONTEND=noninteractive
+
 #basic packages
 RUN apt-get update && \
+        apt-get install build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev -y && \
         apt-get install postgresql -y && \
-	apt-get install rsync -y && \
+        apt-get install rsync -y && \
         apt-get install python -y && \
         apt-get install curl -y && \
         apt-get install vim -y && \
@@ -19,6 +23,7 @@ RUN apt-get update && \
         apt-get install bsdtar -y && \
         apt-get install unzip -y && \
         apt-get install zip -y && \
+        apt-get install python-dev -y && \
         apt-get install libsm-dev -y && \
         apt-get install libxrender-dev -y && \
         apt-get install libxext-dev -y && \
@@ -40,4 +45,3 @@ RUN chmod +x /app/do_training.sh
 
 CMD ["bash","-c","/app/do_training.sh"]
 #CMD ["bash","-c","sleep 300000000"]
-

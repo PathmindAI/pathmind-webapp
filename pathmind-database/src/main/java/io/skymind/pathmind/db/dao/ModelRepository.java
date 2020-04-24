@@ -39,7 +39,7 @@ class ModelRepository
 	 * @return Model - beware, not all fields are initialized
 	 */
 	protected static Model getModel(DSLContext ctx, long modelId) {
-		return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.NUMBER_OF_OBSERVATIONS,
+		return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.NUMBER_OF_OBSERVATIONS,
 				MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.USER_NOTES, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT)
 				.from(MODEL)
 				.where(MODEL.ID.eq(modelId))

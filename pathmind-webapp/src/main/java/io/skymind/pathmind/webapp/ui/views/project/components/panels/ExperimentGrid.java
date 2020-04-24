@@ -21,10 +21,18 @@ public class ExperimentGrid extends Grid<Experiment>
 				TemplateRenderer.<Experiment> of("[[item.name]] <span class='tag'>[[item.draft]]</span>")
 					.withProperty("name", Experiment::getName)
 					.withProperty("draft", experiment -> experiment.getRuns() == null || experiment.getRuns().isEmpty() ? "Draft" : ""))
-				.setComparator(Comparator.comparing(Experiment::getName))
+				.setComparator(Comparator.comparingLong(experiment -> Long.parseLong(experiment.getName())))
 				.setHeader("#")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
+				.setResizable(true)
+				.setSortable(true);
+		Grid.Column<Experiment> createdColumn = addColumn(new ZonedDateTimeRenderer<>(Experiment::getDateCreated, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+				.setComparator(Comparator.comparing(Experiment::getDateCreated))
+				.setHeader("Created")
+				.setAutoWidth(true)
+				.setFlexGrow(0)
+				.setAutoWidth(true)
 				.setResizable(true)
 				.setSortable(true);
 		addColumn(new ZonedDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
@@ -50,8 +58,8 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setResizable(true)
 				.setSortable(false);
 
-		// Sort by name by default
-		sort(Arrays.asList(new GridSortOrder<>(nameColumn, SortDirection.DESCENDING)));
+		// Sort by created by default
+		sort(Arrays.asList(new GridSortOrder<>(createdColumn, SortDirection.DESCENDING)));
 
 		getElement().getStyle().set("padding-top", "20px");
 	}

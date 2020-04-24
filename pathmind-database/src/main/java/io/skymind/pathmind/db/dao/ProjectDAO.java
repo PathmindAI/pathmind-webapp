@@ -4,7 +4,6 @@ import io.skymind.pathmind.shared.data.Project;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +22,6 @@ public class ProjectDAO
 	 * Returns the projectId
 	 * @return The projectId
 	 */
-	@Transactional
 	public long createNewProject(Project project)
 	{
 		return ctx.transactionResult(configuration ->

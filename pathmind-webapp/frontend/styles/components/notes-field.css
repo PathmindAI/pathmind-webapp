@@ -8,21 +8,25 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  font-size: var(--lumo-font-size-s);
+  margin-bottom: var(--lumo-space-xs);
 }
 
 .notes-block .header span:first-child {
-  font-size: 1.125rem;
   font-weight: bold;
   color: var(--pm-text-color);
   margin-left: 0;
 }
 
+.new-experiment-view .notes-block .header span:first-child {
+  font-size: 1.125rem;
+}
+
 .notes-block .header vaadin-button {
-  min-width: calc(var(--lumo-button-size) * 1.625);
+  min-width: var(--lumo-button-size);
   height: 1.4rem;
   font-size: var(--lumo-font-size-s);
-  padding: 0 var(--lumo-space-s);
+  padding: 0 var(--lumo-space-xs);
+  margin: 0;
 }
 
 .notes-block vaadin-text-area {
