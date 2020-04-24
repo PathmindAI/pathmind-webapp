@@ -21,4 +21,8 @@ public class RewardVariableDAO {
     public List<RewardVariable> getRewardVariablesForModel(long modelId) {
         return RewardVariableRepository.getRewardVariablesForModel(ctx, modelId);
     }
+
+    public void deleteModelRewardVariables(long modelId) {
+        RewardVariableRepository.deleteModelRewardsVariables(ctx, modelId);
+    }
 }

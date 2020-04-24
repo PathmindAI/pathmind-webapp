@@ -1,5 +1,9 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.NO_TOP_MARGIN_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
@@ -16,6 +20,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 
@@ -33,11 +38,13 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private Div sectionTitleWrapper;
 	private Span projectNameLabel;
-	public PathmindTextArea notesFieldTextArea;
+	private PathmindTextArea notesFieldTextArea;
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
-	public ModelDetailsWizardPanel(Binder<Model> binder)
+	private Button draftButton = new Button("Save Draft", new Icon(VaadinIcon.FILE));
+
+	public ModelDetailsWizardPanel(Binder<Model> binder, boolean isResumeUpload)
 	{
 		setupFields();
 		setupForm();
@@ -55,16 +62,36 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		Icon checkmarkIcon = new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE);
 		checkmarkIcon.setColor("var(--pm-friendly-color)");
 
-		add(sectionTitleWrapper,
+		draftButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+
+		HorizontalLayout modelDetailsLine = WrapperUtils.wrapWidthFullBetweenHorizontal(
 				LabelFactory.createLabel("Model Details", NO_TOP_MARGIN_LABEL),
-				GuiUtils.getFullWidthHr(),
-				WrapperUtils.wrapWidthFullHorizontal(
-						checkmarkIcon,
-						WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+				draftButton);
+		modelDetailsLine.getStyle().set("align-items", "center");
+
+		List<Component> items = new ArrayList<>(
+				Arrays.asList(
+						sectionTitleWrapper,
+						modelDetailsLine,
+						GuiUtils.getFullWidthHr()
+				)
+		);
+		if (!isResumeUpload) {
+			HorizontalLayout successMessage = WrapperUtils.wrapWidthFullHorizontal(
+					checkmarkIcon,
+					WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
 							LabelFactory.createLabel("Your model was successfully uploaded!", BOLD_LABEL))
-				),
-				formPanel,
-				WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
+			);
+			items.add(successMessage);
+		}
+		items.addAll(
+				Arrays.asList(
+						formPanel,
+						WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton)
+				)
+		);
+
+		add(items.toArray(new Component[0]));
 
 		bindFields(binder);
 
@@ -82,8 +109,16 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		ModelBinders.bindNotesFieldTextArea(binder, notesFieldTextArea);
 	}
 
+	public String getModelNotes() {
+		return notesFieldTextArea.getValue();
+	}
+
 	public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
 		nextStepButton.addClickListener(listener);
+	}
+
+	public void addSaveDraftClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
+		draftButton.addClickListener(listener);
 	}
 
 	public void setProjectName(String name) {

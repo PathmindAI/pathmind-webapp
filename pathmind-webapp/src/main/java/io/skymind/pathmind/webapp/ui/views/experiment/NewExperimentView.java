@@ -1,19 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import java.util.List;
-
-import io.skymind.pathmind.webapp.exception.InvalidDataException;
-import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
-import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.utils.FormUtils;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
-import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -30,7 +16,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -38,15 +23,26 @@ import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.mock.MockDefaultValues;
-import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
+import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.FormUtils;
+import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
@@ -250,9 +246,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	protected void initLoadData() {
 		experiment = experimentDAO.getExperiment(experimentId).orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(experiment.getModelId());
-		if (MockDefaultValues.isDebugAccelerate() && StringUtils.isEmpty(experiment.getRewardFunction())) {
-			experiment.setRewardFunction(MockDefaultValues.NEW_EXPERIMENT_REWARD_FUNCTION);
-		}
 	}
 
 	@Override

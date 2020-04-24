@@ -4,12 +4,6 @@ import java.time.LocalDateTime;
 
 public class Model extends ArchivableData
 {
-	public static final int MIN_NUMBER_OF_OBSERVATIONS = 1;
-	public static final int MAX_NUMBER_OF_OBSERVATIONS = 10000; // a 100*100 field doesn't seem that outlandish
-
-	public static final int MIN_NUMBER_OF_POSSIBLE_ACTIONS = 1;
-	public static final int MAX_NUMBER_OF_POSSIBLE_ACTIONS = 1000;
-
 	public static final int DEFAULT_NUMBER_OF_OBSERVATIONS = 1;
 	public static final int DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS = 1;
 
@@ -22,6 +16,7 @@ public class Model extends ArchivableData
 	private byte[] file;
 	private long projectId;
 	private String userNotes;
+	private boolean draft;
 	private int rewardVariablesCount;
 
 	public Model() {
@@ -81,6 +76,14 @@ public class Model extends ArchivableData
 
 	public void setUserNotes(String userNotes) {
 		this.userNotes = userNotes;
+	}
+
+	public boolean isDraft() {
+		return draft;
+	}
+
+	public void setDraft(boolean draft) {
+		this.draft = draft;
 	}
 
 	public int getRewardVariablesCount() {

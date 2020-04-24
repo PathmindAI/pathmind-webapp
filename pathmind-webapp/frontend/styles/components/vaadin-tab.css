@@ -1,5 +1,6 @@
 :host {
   color: #888888 !important;
+  padding: 0 0.75rem;
 }
 :host([selected]) {
   font-weight: bold;

@@ -13,7 +13,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Ignore
-@Transactional
+@Transactional // is this test ever run?
 public class UserServiceTest extends PathmindApplicationTests
 {
 	@Autowired

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum UploadMode {
-	FOLDER, ZIP;
+	FOLDER, ZIP, RESUME;
 	
 	public static Optional<UploadMode> getEnumFromValue(String name) {
 		return Arrays.stream(values())
