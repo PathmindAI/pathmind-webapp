@@ -38,6 +38,9 @@ The first `mvn clean install` is to build the required shared libraries. Make su
 Here are instructions for how you can try out the app and the files you can upload to train:
 https://help.pathmind.com/en/articles/3329544-getting-started
 
+### Running Automated Tests
+[Check out the readme here](pathmind-bdd-tests/README.md)
+
 #### Details
 
 When working on this project, you will have to set up a PostgreSQL database server locally. And set the credentials for
