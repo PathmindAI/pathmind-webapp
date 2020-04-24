@@ -32,7 +32,7 @@ vaadin-chart {
 }
 
 .experiment-view .bold-label {
-  font-size: 1.125rem;
+  margin-bottom: var(--lumo-space-xs);
 }
 
 .experiment-view .score {
