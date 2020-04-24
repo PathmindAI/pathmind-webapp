@@ -365,7 +365,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		}
 		policyChartPanel.setExperiment(experiment, policy);
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
-		policyHighlightPanel.update(policy);
 		updateRightPanelForExperiment();
 	}
 
