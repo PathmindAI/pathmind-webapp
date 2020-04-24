@@ -241,7 +241,7 @@ public class LoginPage extends PageObject {
         assertThat(password.findElement(By.cssSelector("div label")).getText(), containsString("Password"));
         WebElement login = utils.expandRootElement(lognBtn);
         assertThat(login.findElement(By.cssSelector(".vaadin-button-container")).isDisplayed(), is(true));
-        assertThat(lognBtn.getText(), containsString("Sign in"));
+        assertThat(lognBtn.getText(), containsString("Sign In"));
         WebElement forgotBtnView = utils.expandRootElement(loginFormWraper);
         WebElement forgotPassBtn = utils.expandRootElement(forgotBtnView.findElement(By.cssSelector("#forgotPasswordButton")));
         assertThat(forgotPassBtn.findElement(By.cssSelector(".vaadin-button-container")).isDisplayed(), is(true));
