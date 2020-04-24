@@ -28,7 +28,7 @@ public class ProjectsPage extends PageObject {
 
     private Utils utils;
 
-    @FindBy(xpath = "//vaadin-button[text()='New project']")
+    @FindBy(xpath = "//vaadin-button[text()='New Project']")
     private WebElement createNewProjectBtn;
     @FindBy(xpath = "//vaadin-text-field[@required]")
     private WebElement projectNameInputFieldShadow;

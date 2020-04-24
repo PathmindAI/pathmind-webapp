@@ -9,7 +9,7 @@ import io.skymind.pathmind.webapp.ui.views.project.NewProjectView;
 
 public class NewProjectButton extends Button {
     public NewProjectButton() {
-        super("New project", new Icon(VaadinIcon.PLUS), click ->
+        super("New Project", new Icon(VaadinIcon.PLUS), click ->
                 UI.getCurrent().navigate(NewProjectView.class));
         addThemeVariants(ButtonVariant.LUMO_PRIMARY);
     }
