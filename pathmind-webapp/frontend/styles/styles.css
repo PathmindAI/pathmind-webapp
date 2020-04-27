@@ -233,6 +233,7 @@ hr {
 }
 
 .project-view .view-section,
+.model-view .view-section,
 .card.view-section {
   min-width: unset;
   line-height: 1.6em;
@@ -254,7 +255,7 @@ hr {
 }
 
 .project-view .section-subtitle-label,
-.card .section-subtitle-label {
+.model-view .section-subtitle-label {
   color: var(--lumo-secondary-text-color);
 }
 
