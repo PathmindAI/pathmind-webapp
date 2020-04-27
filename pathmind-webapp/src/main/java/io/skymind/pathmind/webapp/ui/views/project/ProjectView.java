@@ -1,5 +1,9 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -10,6 +14,7 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -19,11 +24,12 @@ import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
-import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.shared.data.Data;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
+import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.webapp.ui.components.TabPanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
@@ -36,15 +42,11 @@ import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
+import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 
 @Route(value= Routes.PROJECT_URL, layout = MainLayout.class)
 public class ProjectView extends PathMindDefaultView implements HasUrlParameter<Long>
@@ -68,7 +70,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	private Span createdDate;
 	
 	private ScreenTitlePanel titlePanel;
-	
 
 	public ProjectView() {
 		super();
@@ -80,10 +81,19 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		
 		addClassName("project-view");
 
-		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullCenterHorizontal(archivesTabPanel, new UploadModelButton(projectId));
+		projectName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
+		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+		Button edit = new Button("Rename", evt -> renameProject());
+		edit.setClassName("no-shrink");
+
+		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullRightHorizontal(
+			WrapperUtils.wrapVerticalWithNoPaddingOrSpacing
+					(WrapperUtils.wrapWidthFullHorizontal(projectName, edit), createdDate),
+			new UploadModelButton(projectId)
+		);
 		headerWrapper.addClassName("page-content-header");
 
-		FlexLayout leftPanel = new ViewSection(headerWrapper, modelGrid);
+		FlexLayout leftPanel = new ViewSection(headerWrapper, archivesTabPanel, modelGrid);
 		FlexLayout rightPanel = createRightPanel();
 
 		SplitLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
@@ -96,10 +106,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	}
 
 	private FlexLayout createRightPanel() {
-		projectName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
-		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
-		Button edit = new Button("Rename", evt -> renameProject());
-		edit.setClassName("no-shrink");
 		NotesField notesField = new NotesField(
 				"Project Notes",
 				project.getUserNotes(),
@@ -109,9 +115,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 						segmentIntegrator.updatedNotesModelsView();
 				}
 			);
-		TabPanel panelHeader = new TabPanel("Details");
-		panelHeader.setEnabled(false);
-		return new ViewSection(panelHeader, WrapperUtils.wrapLeftAndRightAligned(projectName, edit), createdDate, notesField);
+
+		return new ViewSection(notesField);
 	}
 
 	private void renameProject() {
@@ -136,13 +141,18 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	{
 		modelGrid = new Grid<>();
 
-		Grid.Column<Model> nameColumn = modelGrid.addColumn(Model::getName)
+		Grid.Column<Model> nameColumn = modelGrid
+				.addColumn(TemplateRenderer.<Model> of("[[item.name]] <span class='tag'>[[item.draft]]</span>")
+						.withProperty("name", Data::getName)
+						.withProperty("draft", model -> model.isDraft() ? "Draft" : ""))
 				.setHeader("#")
+				.setComparator(Comparator.comparingLong(model -> Long.parseLong(model.getName())))
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true)
 				.setSortable(true);
-		modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+		Grid.Column<Model> createdColumn = modelGrid
+				.addColumn(new ZonedDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getDateCreated))
 				.setHeader("Created")
 				.setAutoWidth(true)
@@ -164,10 +174,19 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 				.setResizable(true)
 				.setSortable(false);
 
-		modelGrid.addItemClickListener(event -> getUI().ifPresent(ui -> UI.getCurrent().navigate(ModelView.class, event.getItem().getId())));
+		modelGrid.addItemClickListener(event -> getUI().ifPresent(ui -> {
+			Model model = event.getItem();
+			if (model.isDraft()) {
+				String target = UploadModelView.createResumeUploadTarget(project, model);
+				UI.getCurrent().navigate(UploadModelView.class, target);
+			}
+			else {
+				UI.getCurrent().navigate(ModelView.class, model.getId());
+			}
+		}));
 
-		// Sort by name by default
-		modelGrid.sort(Arrays.asList(new GridSortOrder<>(nameColumn, SortDirection.DESCENDING)));
+		// Sort by created by default
+		modelGrid.sort(Arrays.asList(new GridSortOrder<>(createdColumn, SortDirection.DESCENDING)));
 	}
 
 	public List<Model> getModels() {
@@ -209,6 +228,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		});
 
 		archivesTabPanel.initData();
+
+		recalculateGridColumnWidth(UI.getCurrent().getPage(), modelGrid);		
 	}
 
 	@Override

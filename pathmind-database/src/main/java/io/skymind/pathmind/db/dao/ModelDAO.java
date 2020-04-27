@@ -4,7 +4,6 @@ import io.skymind.pathmind.shared.data.Model;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +30,6 @@ public class ModelDAO
     	return Optional.ofNullable(ModelRepository.getModel(ctx, modelId));
 	}
 
-	@Transactional
 	public long addModelToProject(Model model, long projectId, String userNotes)
 	{
 		return ctx.transactionResult(configuration ->
@@ -39,14 +37,40 @@ public class ModelDAO
 			DSLContext transactionCtx = DSL.using(configuration);
 			LocalDateTime dateCreated = LocalDateTime.now();
 			String modelName = Integer.toString(ModelRepository.getModelCount(transactionCtx, projectId) + 1);
-			long modelId = ModelRepository.insertModel(transactionCtx, model, modelName, dateCreated, projectId);
+			long modelId = ModelRepository.insertModel(transactionCtx, model, modelName, userNotes, dateCreated, projectId);
 			model.setId(modelId);
-			ModelRepository.updateUserNotes(transactionCtx, modelId, userNotes);
 			return ExperimentRepository.insertExperiment(transactionCtx, modelId, dateCreated);
+		});
+	}
+
+	public void addDraftModelToProject(Model model, long projectId, String userNotes)
+	{
+		ctx.transaction(configuration ->
+		{
+			DSLContext transactionCtx = DSL.using(configuration);
+			LocalDateTime dateCreated = LocalDateTime.now();
+			String modelName = Integer.toString(ModelRepository.getModelCount(transactionCtx, projectId) + 1);
+			long modelId = ModelRepository.insertModel(transactionCtx, model, modelName, userNotes, dateCreated, projectId);
+			model.setId(modelId);
 		});
 	}
 
 	public void updateUserNotes(long modelId, String userNotes) {
 		ModelRepository.updateUserNotes(ctx, modelId, userNotes);
+	}
+
+	public void updateDraftModel(Model model, String modelNotes) {
+		ModelRepository.updateUserNotes(ctx, model.getId(), modelNotes);
+	}
+
+	public long resumeModelCreation(Model model, String modelNotes) {
+		return ctx.transactionResult(configuration ->
+		{
+			DSLContext transactionCtx = DSL.using(configuration);
+			LocalDateTime dateCreated = LocalDateTime.now();
+			model.setDraft(false);
+			ModelRepository.updateModel(transactionCtx, model.getId(), false, modelNotes);
+			return ExperimentRepository.insertExperiment(transactionCtx, model.getId(), dateCreated);
+		});
 	}
 }
