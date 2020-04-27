@@ -184,6 +184,10 @@ public class RunDAO {
         return ctx.transactionResult(configuration -> {
             List<Policy> policiesToRaiseUpdateEvent = new ArrayList<>();
             DSLContext transactionCtx = DSL.using(configuration);
+
+            // let's make sure we don't end up with a deadlock because of the somewhat long running transaction.
+            transactionCtx.execute(" SET LOCAL lock_timeout = '4s'");
+
             updateRun(transactionCtx, run, providerJobStatus, policies);
 
             if (providerJobStatus.getRunStatus() == RunStatus.Completed) {
