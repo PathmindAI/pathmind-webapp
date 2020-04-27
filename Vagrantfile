@@ -4,7 +4,11 @@
 Vagrant.configure("2") do |config|
 
   # This image was chosen because it supports Virtualbox and lxc
-  config.vm.box = "debian/stretch64"
+  config.vm.box = "debian/contrib-stretch64"
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = "4096"
+  end
 
   config.vm.network "forwarded_port", guest: 8080, host: 8080
 
@@ -19,7 +23,13 @@ Vagrant.configure("2") do |config|
     apt-get update -y
 
     # Install postgresql, maven, node and java
+    echo "-------------------- Installing Postgresql, Maven, Node and Java"
     apt-get install -y nodejs postgresql openjdk-11-jdk maven
+
+    # Install Google chrome for headless testing
+    echo "-------------------- Installing Google Chrome for headless testing"
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    sudo apt install -y ./google-chrome-stable_current_amd64.deb
 
     # Create User and login
     echo "-------------------- Setting up DB"

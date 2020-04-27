@@ -72,7 +72,10 @@ class AccountViewContent extends PolymerElement {
             </vaadin-button>
           </vaadin-horizontal-layout>
         </vaadin-vertical-layout>
-        <div class="support-cont"></div>
+        <div class="support-cont">
+          <a href="{{privacyLink}}" target="_blank">Privacy Policy</a>
+          <a href="{{termsOfUseLink}}" target="_blank">Terms of Use</a>
+        </div>
         <a class="support" href="{{contactLink}}">Contact Support</a>
       </div>
     `;

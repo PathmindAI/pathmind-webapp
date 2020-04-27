@@ -60,11 +60,15 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 	public AccountViewContent(
 			CurrentUser currentUser,
 			@Value("${pathmind.contact-support.address}") String contactLink,
+			@Value("${pathmind.privacy-policy.url}") String privacyPolicyLink,
+			@Value("${pathmind.terms-of-use.url}") String termsOfUseLink,
 			StripeService stripeService,
 			SegmentIntegrator segmentIntegrator, FeatureManager featureManager) {
         this.stripeService = stripeService;
         this.segmentIntegrator = segmentIntegrator;
 		getModel().setContactLink(contactLink);
+		getModel().setPrivacyLink(privacyPolicyLink);
+		getModel().setTermsOfUseLink(termsOfUseLink);
 		user = currentUser.getUser();
 		this.featureManager= featureManager;
 	}
@@ -122,5 +126,7 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 		void setSubscriptionCancellationNote(String cancellationNote);
 		void setBillingInfo(String billingInfo);
         void setContactLink(String contactLink);
+        void setPrivacyLink(String privacyPolicyLink);
+        void setTermsOfUseLink(String termsOfUseLink);
 	}
 }
