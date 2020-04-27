@@ -377,7 +377,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private Policy selectBestPolicy(List<Policy> policies) {
 		return policies.stream()
 				.filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
-				.max(Comparator.comparing(PolicyUtils::getLastScore))
+				.max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration))
 				.orElse(null);
 	}
 
