@@ -13,3 +13,6 @@
 :host(:first-child) {
   margin-left: calc(-1 * var(--lumo-space-s));
 }
+:host([focus-ring]) {
+  box-shadow: none;
+}
