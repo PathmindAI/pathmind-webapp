@@ -34,6 +34,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -96,6 +97,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private VerticalLayout middlePanel;
 	private PolicyHighlightPanel policyHighlightPanel;
 	private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
+	private Span panelTitle;
 	private VerticalLayout rewardFunctionGroup;
 	private RewardFunctionEditor rewardFunctionEditor;
 	private TrainingStartingPlaceholder trainingStartingPlaceholder;
@@ -173,6 +175,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private void setupLeftPanel() {
 		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiments, experiment, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
+		panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
 		policyChartPanel = new PolicyChartPanel();
 		policyChartPanel.setPadding(false);
 		rewardFunctionEditor = new RewardFunctionEditor();
@@ -183,7 +186,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		);
 		trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 		middlePanel = WrapperUtils.wrapWidthFullVertical(
-				LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL),
+				panelTitle,
 				rewardFunctionGroup,
 				trainingStartingPlaceholder, 
 				policyChartPanel);
@@ -364,6 +367,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		clearErrorState();
 		setPolicyChartVisibility();
 		experimentsNavbar.setVisible(!experiment.isArchived());
+		panelTitle.setText("Experiment #"+experiment.getName());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
 			rewardFunctionEditor.setVariableNames(rewardVariables);
