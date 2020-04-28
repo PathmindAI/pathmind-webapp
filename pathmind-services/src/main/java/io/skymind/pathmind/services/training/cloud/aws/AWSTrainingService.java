@@ -4,7 +4,6 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
@@ -23,9 +22,8 @@ public class AWSTrainingService extends TrainingService {
     private final boolean multiAgent;
     public AWSTrainingService(@Value("${pathmind.training.multiagent:false}") boolean multiAgent,
                               ExecutionProvider executionProvider, RunDAO runDAO, ModelService modelService,
-                              PolicyDAO policyDAO,
-                              ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
-        super(multiAgent, executionProvider, runDAO, modelService, policyDAO, executionProviderMetaDataDAO);
+                              PolicyDAO policyDAO) {
+        super(multiAgent, executionProvider, runDAO, modelService, policyDAO);
         this.multiAgent = multiAgent;
     }
 
@@ -58,20 +56,10 @@ public class AWSTrainingService extends TrainingService {
                 false
         );
 
-        if (basePolicy != null) {
-            String checkpointFileId = executionProviderMetaDataDAO.getCheckPointFileKey(basePolicy.getExternalId());
-            if (checkpointFileId != null) {
-                // for AWS provider, need to pass s3 path
-                String checkpointS3Path = checkpointFileId + "/output/" + basePolicy.getExternalId() + "/" + "checkpoint.zip";
-                spec.setCheckpointFileId(checkpointS3Path);
-            }
-        }
-
         // IMPORTANT -> There are multiple database calls within executionProvider.execute.
         final String executionId = executionProvider.execute(spec);
-        executionProviderMetaDataDAO.putProviderRunJobId(spec.getRunId(),executionId);
 
-        runDAO.markAsStarting(run.getId());
+        runDAO.markAsStarting(run.getId(), executionId);
         log.info("Started {} training job with id {}", DiscoveryRun, executionId);
     }
 

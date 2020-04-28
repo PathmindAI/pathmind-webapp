@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.jooq.impl.DSL;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
@@ -37,20 +38,6 @@ class RunRepository
                     .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
                 .where(RUN.ID.eq(runId))
                 .fetchOne(record -> fetchRunLeftJoin(record));
-    }
-
-    protected static List<Run> getRuns(DSLContext ctx, List<Long> runIds) {
-        return ctx
-                .select(RUN.asterisk())
-                .select(EXPERIMENT.asterisk())
-                .select(MODEL.ID, MODEL.NAME)
-                .select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
-                .from(RUN)
-                    .leftJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
-                    .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
-                    .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
-                .where(RUN.ID.in(runIds))
-                .fetch(record -> fetchRunLeftJoin(record));
     }
 
     private static Run fetchRunLeftJoin(Record record) {
@@ -98,20 +85,29 @@ class RunRepository
     			.fetch(Tables.RUN.ID);
     }
     
-    protected static List<Long> getExecutingRuns(DSLContext ctx) {
-        return ctx.selectDistinct(Tables.RUN.ID)
-                .from(Tables.RUN)
-                .leftOuterJoin(POLICY)
-                    .on(POLICY.RUN_ID.eq(Tables.RUN.ID))
-                .where(Tables.RUN.STATUS.eq(RunStatus.Starting.getValue())
-                        .or(Tables.RUN.STATUS.eq(RunStatus.Running.getValue()))
-                        .or(Tables.RUN.STATUS.eq(RunStatus.Completed.getValue()))
-                        .or(Tables.RUN.STATUS.eq(RunStatus.Restarting.getValue()))
-                        .or(Tables.RUN.STATUS.eq(RunStatus.Stopping.getValue()))
-                        .and(POLICY.HAS_FILE.isNull().or(POLICY.HAS_FILE.isFalse())))
-                .fetch(Tables.RUN.ID);
+    protected static List<Run> getExecutingRuns(DSLContext ctx) {
+    	return ctx
+    			.select(RUN.asterisk())
+    			.select(EXPERIMENT.asterisk())
+    			.select(MODEL.ID, MODEL.NAME)
+    			.select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
+    			.from(RUN)
+    				.leftJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
+    				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+    				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+    			.where(RUN.STATUS.in(
+    					RunStatus.Starting.getValue(), 
+    					RunStatus.Running.getValue(),
+    					RunStatus.Completed.getValue(),
+    					RunStatus.Restarting.getValue(),
+    					RunStatus.Stopping.getValue()))
+    			.and(RUN.ID.in(
+    					DSL.select(POLICY.RUN_ID)
+    						.from(POLICY)
+    						.where(POLICY.HAS_FILE.isNull().or(POLICY.HAS_FILE.isFalse()))))
+    			.fetch(record -> fetchRunLeftJoin(record));
     }
-
+    
     protected static Map<Long, List<String>> getStoppedPolicyNamesForRuns(DSLContext ctx, List<Long> runIds) {
         return ctx.select(POLICY.EXTERNAL_ID, POLICY.RUN_ID)
                 .from(POLICY)
@@ -119,10 +115,11 @@ class RunRepository
                 .fetchGroups(POLICY.RUN_ID, POLICY.EXTERNAL_ID);
     }
 
-    protected static void markAsStarting(DSLContext ctx, long runId){
+    protected static void markAsStarting(DSLContext ctx, long runId, String jobId){
         ctx.update(Tables.RUN)
                 .set(Tables.RUN.STATUS, RunStatus.Starting.getValue())
                 .set(Tables.RUN.STARTED_AT, LocalDateTime.now())
+                .set(Tables.RUN.JOB_ID, jobId)
                 .where(Tables.RUN.ID.eq(runId)).execute();
     }
 

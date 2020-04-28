@@ -1,6 +1,5 @@
 package io.skymind.pathmind.services;
 
-import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
@@ -21,18 +20,15 @@ public abstract class TrainingService {
     protected final RunDAO runDAO;
     protected final ModelService modelService;
     protected final PolicyDAO policyDAO;
-    protected final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     protected ExecutionEnvironment executionEnvironment;
 
     public TrainingService(boolean multiAgent, ExecutionProvider executionProvider,
                            RunDAO runDAO, ModelService modelService,
-                           PolicyDAO policyDAO,
-                           ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
+                           PolicyDAO policyDAO) {
         this.executionProvider = executionProvider;
         this.runDAO = runDAO;
         this.modelService = modelService;
         this.policyDAO = policyDAO;
-        this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
 
         PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_1_0_1;
         if (multiAgent) {
@@ -61,9 +57,8 @@ public abstract class TrainingService {
         List<Run> runs = experiment.getRuns().stream()
                 .filter(r -> RunStatus.isRunning(r.getStatusEnum()))
                 .collect(Collectors.toList());
-        List<Long> runsIds = runs.stream().map(Data::getId).collect(Collectors.toList());
-
-        executionProviderMetaDataDAO.getProviderRunJobIds(runsIds).values().forEach(executionProvider::stop);
+        
+        runs.stream().map(Run::getJobId).forEach(executionProvider::stop);
 
         // immediately mark the job as stopping so that the user doesn't have to wait the updater to update the run
         // status

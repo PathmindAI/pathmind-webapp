@@ -77,12 +77,11 @@ public class UpdaterService {
     public ProviderJobStatus updateRunInformation(
             Run run,
             Map<Long, List<String>> stoppedPoliciesNamesForRuns,
-            Map<Long, String> awsJobIds
+            String jobHandle
     ) {
         List<String> stoppedPoliciesNames = stoppedPoliciesNamesForRuns
                 .getOrDefault(run.getId(), Collections.emptyList());
 
-        String jobHandle = awsJobIds.get(run.getId());
         ProviderJobStatus providerJobStatus = provider.status(jobHandle);
 
         final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(),

@@ -166,7 +166,10 @@ class PolicyRepository {
 				).fetchOne(POLICY.ID);
 	}
 
-	public static void setHasFile(DSLContext ctx, Long policyId, boolean value) {
-		ctx.update(POLICY).set(POLICY.HAS_FILE, value).where(POLICY.ID.eq(policyId)).execute();
+	public static void setHasFileAndCheckPoint(DSLContext ctx, Long policyId, boolean hasFile, String checkPointFileKey) {
+		ctx.update(POLICY)
+			.set(POLICY.HAS_FILE, hasFile)
+			.set(POLICY.CHECK_POINT_FILE_KEY, checkPointFileKey)
+			.where(POLICY.ID.eq(policyId)).execute();
 	}
 }
