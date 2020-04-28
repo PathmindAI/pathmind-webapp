@@ -610,7 +610,7 @@ public class ProjectsPage extends PageObject {
 	}
 
 	public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
-		assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+" ']/following-sibling::vaadin-grid-cell-content[3]")).getText(), is(note));
+		assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+" ']/following-sibling::vaadin-grid-cell-content[4]")).getText(), is(note));
 	}
 
     public void checkNumberOfProjectsWithDraftTag(int numberOfProjects) {
