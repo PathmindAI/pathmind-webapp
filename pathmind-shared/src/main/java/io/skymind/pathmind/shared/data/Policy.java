@@ -16,11 +16,13 @@ public class Policy extends Data
 
     private LocalDateTime startedAt;
     private LocalDateTime stoppedAt;
+    
 
     // REFACTOR -> Same as Progress which is not saved to the database and is parsed back and forth...
     private List<RewardScore> scores;
 
     private boolean hasFile;
+    private String checkPointFileKey;
 
     // Helper GUI attributes not stored in the database
 	private Project project;
