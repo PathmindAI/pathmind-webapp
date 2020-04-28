@@ -71,6 +71,7 @@ import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
@@ -182,6 +183,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		);
 		trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 		middlePanel = WrapperUtils.wrapWidthFullVertical(
+				LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL),
 				rewardFunctionGroup,
 				trainingStartingPlaceholder, 
 				policyChartPanel);
