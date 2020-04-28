@@ -1,5 +1,6 @@
 .experiments-navbar {
   width: auto !important;
+  height: 100%;
   background: white;
   border-radius: var(--lumo-border-radius);
   padding: var(--lumo-space-m);
