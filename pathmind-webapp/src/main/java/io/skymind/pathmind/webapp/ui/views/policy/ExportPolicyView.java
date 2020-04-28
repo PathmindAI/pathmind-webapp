@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.policy;
 
 import java.io.ByteArrayInputStream;
 
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -120,14 +121,13 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
 	@Override
 	protected boolean isAccessAllowedForUser() {
-		return userDAO.isUserAllowedAccessToPolicy(policyId);
+		return true;
 	}
 
 	@Override
 	protected void initLoadData() {
-		policy = policyDAO.getPolicy(policyId);
-		if(policy == null)
-			throw new InvalidDataException("Attempted to access Policy: " + policyId);
+		policy = policyDAO.getPolicyIfAllowed(policyId, SecurityUtils.getUserId())
+			.orElseThrow(() -> new InvalidDataException("Attempted to access Policy: " + policyId));
 	}
 	
 	private Div createInstructionsDiv() {

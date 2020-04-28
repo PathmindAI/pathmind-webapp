@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
@@ -314,7 +315,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected boolean isAccessAllowedForUser() {
-		return userDAO.isUserAllowedAccessToExperiment(experimentId);
+		return true;
 	}
 
 	private void selectExperiment(Experiment selectedExperiment) {
@@ -334,7 +335,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected void initLoadData() throws InvalidDataException {
-		experiment = experimentDAO.getExperiment(experimentId)
+		experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		loadExperimentData();
 	}
