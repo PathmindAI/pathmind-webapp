@@ -1174,4 +1174,14 @@
         </update>
     </changeSet>
 
+    <changeSet id="20200428-01" author="onur@vaadin.com">
+        <addColumn tableName="RUN">
+        	<column name="JOB_ID" type="varchar(36)"/>
+        </addColumn>
+        <addColumn tableName="POLICY">
+        	<column name="CHECK_POINT_FILE_KEY" type="varchar(36)"/>
+        </addColumn>
+        
+    </changeSet>
+
 </databaseChangeLog>
