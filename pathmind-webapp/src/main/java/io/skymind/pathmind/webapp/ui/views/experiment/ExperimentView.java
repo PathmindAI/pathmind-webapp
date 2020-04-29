@@ -158,19 +158,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Override
 	protected Component getMainContent() {
 		setupLeftPanel();
-		HorizontalLayout mainSplitLayout = WrapperUtils.wrapWidthFullHorizontal(
+		HorizontalLayout pageWrapper = WrapperUtils.wrapWidthFullHorizontal(
 				experimentsNavbar,
 				middlePanel,
 				getRightPanel());
-		// TODO -> Charts do not re-flow automatically: https://vaadin.com/forum/thread/17878341/resizable-charts (https://github.com/vaadin/vaadin-charts/issues/457)
-		getUI().ifPresent(ui -> {
-			ui.getPage().addBrowserWindowResizeListener(evt -> 
-				ui.getPage().executeJs("window.dispatchEvent(new Event('resize'));"));
-		});
-		mainSplitLayout.addClassName("page-content");
-		mainSplitLayout.setPadding(true);
+		pageWrapper.addClassName("page-content");
+		pageWrapper.setPadding(true);
 
-		return mainSplitLayout;
+		return pageWrapper;
 	}
 
 	private void setupLeftPanel() {

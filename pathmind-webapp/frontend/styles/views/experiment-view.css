@@ -1,7 +1,14 @@
 .experiment-view .page-content {
   height: calc(100% - 2.8rem);
   align-items: flex-start;
-  overflow: auto;
+}
+
+.experiment-view .section-title-label {
+  line-height: 1;
+}
+
+.experiment-view .view-section {
+  min-width: auto;
 }
 
 .experiment-view .view-section,
@@ -16,8 +23,8 @@
 }
 
 .experiment-view .policy-chart-panel {
-  height: calc(100vh - 23.2rem);
-  min-height: 400px;
+  height: calc(100vh - 21.6rem);
+  min-height: 25rem;
 }
 
 .experiment-view .right-panel {
@@ -30,16 +37,12 @@
   text-align: left;
 }
 
-.experiment-view vaadin-grid {
-  min-height: 60px;
-}
-
-vaadin-chart {
-  min-height: 400px;
+.experiment-view vaadin-chart {
+  min-height: 25rem;
 }
 
 .experiment-view juicy-ace-editor {
-  min-height: 80px;
+  min-height: 5rem;
 }
 
 .experiment-view .right-panel > vaadin-vertical-layout {
