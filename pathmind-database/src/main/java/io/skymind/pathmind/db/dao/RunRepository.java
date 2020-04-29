@@ -1,10 +1,10 @@
 package io.skymind.pathmind.db.dao;
 
 import static io.skymind.pathmind.db.jooq.Tables.POLICY;
+import static io.skymind.pathmind.db.jooq.Tables.RUN;
 import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
 import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
-import static io.skymind.pathmind.db.jooq.tables.Run.RUN;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -98,13 +98,15 @@ class RunRepository
     			.where(RUN.STATUS.in(
     					RunStatus.Starting.getValue(), 
     					RunStatus.Running.getValue(),
-    					RunStatus.Completed.getValue(),
     					RunStatus.Restarting.getValue(),
-    					RunStatus.Stopping.getValue()))
-    			.and(RUN.ID.in(
+    					RunStatus.Stopping.getValue())
+    			.or(RUN.ID.in(
     					DSL.select(POLICY.RUN_ID)
     						.from(POLICY)
-    						.where(POLICY.HAS_FILE.isNull().or(POLICY.HAS_FILE.isFalse()))))
+    						.leftJoin(RUN).on(RUN.ID.eq(POLICY.RUN_ID))
+    						.where(
+    								RUN.STATUS.eq(RunStatus.Completed.getValue())
+    								.and(POLICY.HAS_FILE.isFalse())))))
     			.fetch(record -> fetchRunLeftJoin(record));
     }
     
