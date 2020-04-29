@@ -1175,13 +1175,58 @@
     </changeSet>
 
     <changeSet id="20200428-01" author="onur@vaadin.com">
+    	<comment>
+    		Created two columns for the data stored in EXECUTION_PROVIDER_META_DATA table. 
+    		The stored procedure will go through the records, and updates these new columns.
+    		Once, the new columns are updated with the values in EXECUTION_PROVIDER_META_DATA table, both the function and the table is dropped.
+    	</comment>
         <addColumn tableName="RUN">
         	<column name="JOB_ID" type="varchar(36)"/>
         </addColumn>
         <addColumn tableName="POLICY">
         	<column name="CHECK_POINT_FILE_KEY" type="varchar(36)"/>
         </addColumn>
-        
+        <createProcedure>
+            CREATE OR REPLACE FUNCTION migrate_exec_prov_meta_data()
+				RETURNS INTEGER
+				LANGUAGE 'plpgsql'
+				AS $BODY$
+				DECLARE 
+	 				meta_data_rec   RECORD;
+	 				meta_data_cursor CURSOR(p_type INTEGER) 
+		 				FOR SELECT KEY, VALUE FROM EXECUTION_PROVIDER_META_DATA WHERE PROVIDER_CLASS = 2 and TYPE = p_type;
+				BEGIN
+				    -- Update Job Ids
+					OPEN meta_data_cursor(1);
+					LOOP
+						FETCH meta_data_cursor INTO meta_data_rec;
+			      		EXIT WHEN NOT FOUND;
+						UPDATE RUN set JOB_ID = meta_data_rec.VALUE where ID = CAST(meta_data_rec.KEY AS BIGINT);			
+		   			END LOOP;
+		   			CLOSE meta_data_cursor;
+					
+				    -- update check point file keys
+					OPEN meta_data_cursor(2);
+					LOOP
+						FETCH meta_data_cursor INTO meta_data_rec;
+			      		EXIT WHEN NOT FOUND;
+						UPDATE POLICY set CHECK_POINT_FILE_KEY = meta_data_rec.VALUE where EXTERNAL_ID = meta_data_rec.KEY;
+		   			END LOOP;
+		   			CLOSE meta_data_cursor;
+					RETURN 0;
+				END;
+				$BODY$;
+        </createProcedure>
+        <sql>
+        	SELECT migrate_exec_prov_meta_data();
+        </sql>
+        <dropProcedure procedureName="migrate_exec_prov_meta_data"/>
+        <dropTable tableName="EXECUTION_PROVIDER_META_DATA"/>
+        <rollback>
+        	<comment>If something goes wrong, just drop the new columns, keep in mind that EXECUTION_PROVIDER_META_DATA table is dropped once everything is completed</comment>
+            <dropColumn tableName="RUN" columnName="JOB_ID"/>
+            <dropColumn tableName="POLICY" columnName="CHECK_POINT_FILE_KEY"/>
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>
