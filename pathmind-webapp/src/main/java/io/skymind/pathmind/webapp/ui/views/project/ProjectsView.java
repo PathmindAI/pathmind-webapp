@@ -138,7 +138,7 @@ public class ProjectsView extends PathMindDefaultView
 	protected void initLoadData() throws InvalidDataException {
 		projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId());
 		if(projects == null || projects.isEmpty()) {
-			UI.getCurrent().navigate(NewProjectView.class);
+			getUI().ifPresent(ui -> ui.navigate(NewProjectView.class));
 			return;
 		}
 	}
@@ -152,6 +152,6 @@ public class ProjectsView extends PathMindDefaultView
 		});
 		archivesTabPanel.initData();
 
-		recalculateGridColumnWidth(UI.getCurrent().getPage(), projectGrid);		
+		recalculateGridColumnWidth(event.getUI().getPage(), projectGrid);		
 	}
 }

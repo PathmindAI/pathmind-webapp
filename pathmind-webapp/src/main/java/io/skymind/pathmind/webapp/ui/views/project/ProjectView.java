@@ -178,10 +178,10 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 			Model model = event.getItem();
 			if (model.isDraft()) {
 				String target = UploadModelView.createResumeUploadTarget(project, model);
-				UI.getCurrent().navigate(UploadModelView.class, target);
+				ui.navigate(UploadModelView.class, target);
 			}
 			else {
-				UI.getCurrent().navigate(ModelView.class, model.getId());
+				ui.navigate(ModelView.class, model.getId());
 			}
 		}));
 
@@ -229,7 +229,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
 		archivesTabPanel.initData();
 
-		recalculateGridColumnWidth(UI.getCurrent().getPage(), modelGrid);		
+		recalculateGridColumnWidth(event.getUI().getPage(), modelGrid);		
 	}
 
 	@Override

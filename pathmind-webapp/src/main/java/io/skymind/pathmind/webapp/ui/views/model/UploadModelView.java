@@ -68,14 +68,14 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	
 	@Autowired
 	private FeatureManager featureManager;
+	
+	private UI ui;
 
 	private Model model;
 
 	private List<RewardVariable> rewardVariables = new ArrayList<>();
 
 	private Binder<Model> modelBinder;
-
-	private UI ui;
 
 	private UploadModelWizardPanel uploadModelWizardPanel;
 	private ModelDetailsWizardPanel modelDetailsWizardPanel;
@@ -94,7 +94,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	public UploadModelView()
 	{
 		super();
-		this.ui = UI.getCurrent();
 	}
 
 	protected Component getMainContent()
@@ -176,6 +175,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
+		ui = event.getUI();
 		uploadModelWizardPanel.setProjectName(project.getName());
 		modelDetailsWizardPanel.setProjectName(project.getName());
 		rewardVariablesPanel.setProjectName(project.getName());
@@ -213,7 +213,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
 		modelService.updateModelRewardVariables(model, rewardVariableList);
 
-		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
+		getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
 	}
 
 	private void handleUploadWizardClicked() {

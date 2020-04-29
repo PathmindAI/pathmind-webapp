@@ -199,7 +199,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		restartTraining.setVisible(false);
 		restartTraining.addClassNames("large-image-btn", "run");
 
-		exportPolicyButton = new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()));
+		exportPolicyButton = new Button("Export Policy", click -> getUI().ifPresent(ui -> ui.navigate(ExportPolicyView.class, policy.getId())));
 		exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportPolicyButton.addClassName("half-width");
 		exportPolicyButton.setVisible(false);
@@ -326,7 +326,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			updateScreenComponents();
 			notesField.setNotesText(experiment.getUserNotes());
 			pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-			UI.getCurrent().getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId());
+			getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
 		}
 	}
 

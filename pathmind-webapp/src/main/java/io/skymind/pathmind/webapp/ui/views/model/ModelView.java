@@ -155,9 +155,9 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	private void handleExperimentClick(Experiment experiment) {
 		if (ExperimentUtils.isDraftRunType(experiment)) {
-			UI.getCurrent().navigate(NewExperimentView.class, experiment.getId());
+			getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
 		} else {
-			UI.getCurrent().navigate(ExperimentView.class, experiment.getId());
+			getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
 		}
 	}
 	
@@ -217,7 +217,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 		}
 		archivesTabPanel.initData();
 
-		recalculateGridColumnWidth(UI.getCurrent().getPage(), experimentGrid);		
+		recalculateGridColumnWidth(event.getUI().getPage(), experimentGrid);		
 	}
 
 	@Override
