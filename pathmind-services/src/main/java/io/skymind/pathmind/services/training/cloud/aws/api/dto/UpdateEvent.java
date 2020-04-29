@@ -14,6 +14,7 @@ import java.util.List;
 public class UpdateEvent implements Serializable {
 
     public static final String CARGO_ATTRIBUTE = "cargo";
+    public static final String FILTER_ATTRIBUTE = "filter";
 
     public static final String TYPE_POLICY = "policy";
     public static final String TYPE_RUN = "run";
