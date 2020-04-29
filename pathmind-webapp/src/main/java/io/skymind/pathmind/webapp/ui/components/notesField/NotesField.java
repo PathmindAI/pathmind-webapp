@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.components.notesField;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.vaadin.flow.component.button.Button;
@@ -21,6 +22,7 @@ public class NotesField extends HorizontalLayout {
 	private Button saveButton;
 	private TextArea blockEditableField;
 	private Span hintWrapper;
+	private Span warningWrapper;
 	private Consumer<String> saveConsumer;
 
 	public NotesField(String title, String notesText, Consumer<String> saveConsumer) {
@@ -29,6 +31,8 @@ public class NotesField extends HorizontalLayout {
 		this.saveConsumer = saveConsumer;
 		hintWrapper = LabelFactory.createLabel("Unsaved Notes!", "unsaved-draft-label");
 		hintWrapper.setVisible(false);
+		warningWrapper = LabelFactory.createLabel("Text too big!", "unsaved-draft-label", "unsaved-and-too-big-text-label");
+		warningWrapper.setVisible(false);
 		add(editableFieldWrapper());
 		setSpacing(false);
 		addClassName("notes-field-wrapper");
@@ -38,13 +42,18 @@ public class NotesField extends HorizontalLayout {
 		blockEditableField = new TextArea("", StringUtils.defaultString(notesText), "Add Notes");
 		blockEditableField.addThemeName("notes");
 		blockEditableField.addKeyUpListener(event -> {
-			if (isEditting == false) {
+			if (!isEditting) {
 				toggleIsEditting();
-				hintWrapper.setVisible(true);
+				if (warningWrapper.isVisible()) {
+					if (blockEditableField.getValue().length() <= 1000) {
+						warningWrapper.setVisible(false);
+					}
+				}
+				hintWrapper.setVisible(!warningWrapper.isVisible());
 			}
 		});
 		blockEditableField.addValueChangeListener(event -> {
-			if (isEditting && event.getValue() != notesText) {
+			if (isEditting && !Objects.equals(event.getValue(), notesText)) {
 				saveButton.click();
 				hintWrapper.setVisible(false);
 			}
@@ -53,9 +62,12 @@ public class NotesField extends HorizontalLayout {
 
 	private VerticalLayout editableFieldWrapper() {
 		initButtons();
+		Span spanTitle = new Span(title);
+		spanTitle.getStyle().set("flex", "1");
 		HorizontalLayout headerRow = new HorizontalLayout(
-			new Span(title),
+			spanTitle,
 			hintWrapper,
+			warningWrapper,
 			saveButton
 		);
 		headerRow.setSpacing(false);
@@ -99,9 +111,17 @@ public class NotesField extends HorizontalLayout {
 
 	public void saveButtonOnClick() {
 		String updatedNotesText = blockEditableField.getValue();
-		if (notesText != updatedNotesText) {
+		if (updatedNotesText.length() > 1000) {
+			hintWrapper.setVisible(false);
+			warningWrapper.setVisible(true);
+		}
+		else if (!Objects.equals(notesText, updatedNotesText)) {
+			warningWrapper.setVisible(false);
 			notesText = updatedNotesText;
 			saveConsumer.accept(notesText);
+		}
+		else {
+			warningWrapper.setVisible(false);
 		}
 	}
 }

@@ -37,3 +37,8 @@
 .unsaved-draft-label {
   align-self: center;
 }
+
+.unsaved-and-too-big-text-label {
+  align-self: center;
+  color: var(--pm-danger-color);
+}
