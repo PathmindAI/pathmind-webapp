@@ -1,7 +1,5 @@
 package io.skymind.pathmind.updater.aws;
 
-//import com.amazonaws.services.sns.model.MessageAttributeValue;
-
 import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.model.PublishResult;
@@ -24,6 +22,7 @@ import io.skymind.pathmind.updater.ExecutionProgressUpdater;
 import io.skymind.pathmind.updater.ProgressInterpreter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -53,10 +52,12 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     private final TrainingErrorDAO trainingErrorDAO;
     private final ObjectMapper objectMapper;
     private final String updaterTopicArn;
+    private final String sqsFilter;
     private EmailNotificationService emailNotificationService;
 
     public AWSExecutionProgressUpdater(AWSExecutionProvider provider, AwsApiClientSNS snsClient,
                                        @Value("${pathmind.aws.sns.updater_topic_arn}") String topicArn,
+                                       @Value("${pathmind.aws.sns.updater_sqs_filter}") String sqsFilter,
                                        PolicyFileService policyFileService, ObjectMapper objectMapper,
                                        RunDAO runDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO,
                                        EmailNotificationService emailNotificationService, TrainingErrorDAO trainingErrorDAO) {
@@ -69,6 +70,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         this.emailNotificationService = emailNotificationService;
         this.objectMapper = objectMapper;
         this.updaterTopicArn = topicArn;
+        this.sqsFilter = sqsFilter;
     }
 
     @Override
@@ -224,10 +226,10 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                     e -> run.setTrainingErrorId(e.getId())
             );
         } else if (status == RunStatus.Killed && run.getStatusEnum() != RunStatus.Stopping) {
-        	// Stopping status is set, when user wants to stop training. So, don't assign an error in this case
-        	trainingErrorDAO.getErrorByKeyword(KILLED_TRAINING_KEYWORD).ifPresent(error -> {
-        		run.setTrainingErrorId(error.getId());
-        	});
+            // Stopping status is set, when user wants to stop training. So, don't assign an error in this case
+            trainingErrorDAO.getErrorByKeyword(KILLED_TRAINING_KEYWORD).ifPresent(error -> {
+                run.setTrainingErrorId(error.getId());
+            });
         }
     }
 
@@ -267,11 +269,17 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
 
         PublishRequest publishRequest = new PublishRequest()
                 .withTopicArn(updaterTopicArn)
-                .withMessage(objectMapper.writeValueAsString(event))
-                .withMessageAttributes(Map.of(
-                        CARGO_ATTRIBUTE, new MessageAttributeValue()
-                                .withBinaryValue(ByteBuffer.wrap(cargo)).withDataType("Binary")
-                ));
+                .withMessage(objectMapper.writeValueAsString(event));
+
+        if (StringUtils.isNotEmpty(sqsFilter)) {
+            publishRequest.addMessageAttributesEntry(
+                    FILTER_ATTRIBUTE, new MessageAttributeValue().withStringValue(sqsFilter).withDataType("String")
+            );
+        }
+
+        publishRequest.addMessageAttributesEntry(CARGO_ATTRIBUTE,
+                new MessageAttributeValue().withBinaryValue(ByteBuffer.wrap(cargo)).withDataType("Binary")
+        );
 
         PublishResult result = snsClient.getSnsClient().publish(publishRequest);
         return result.getMessageId();
