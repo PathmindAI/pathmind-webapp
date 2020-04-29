@@ -299,7 +299,7 @@ public class ProjectsPage extends PageObject {
 		getDriver().findElement(By.xpath("//vaadin-tab[text()='Models']")).click();
 	}
 	public void clickProjectsTab(){
-		getDriver().findElement(By.xpath("//vaadin-tab[text()='Projects']")).click();
+		getDriver().findElement(By.xpath("//vaadin-tab[text()='Active']")).click();
 	}
 
     public void checkThatProjectNotExistInProjectList(String projectName) {
@@ -408,7 +408,10 @@ public class ProjectsPage extends PageObject {
         action.moveToElement(we).build().perform();
         getDriver().findElement(By.xpath("//vaadin-button[text()='Save Draft']")).click();
         try {
-        	getDriver().findElement(By.xpath("//vaadin-button[@theme='icon']")).click();
+            WebElement closePopUp = getDriver().findElement(By.xpath("//vaadin-button[@theme='icon']"));
+            waitFor(ExpectedConditions.visibilityOf(closePopUp));
+            waitFor(ExpectedConditions.elementToBeClickable(closePopUp));
+            closePopUp.click();
 		}catch (Exception e){
         	System.out.println("Button not exist");
 		}
@@ -506,7 +509,8 @@ public class ProjectsPage extends PageObject {
 	}
 
 	public void clickModelArchiveButton(String model) {
-		getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + model + " " + "']/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button")).click();
+        WebElement archiveBtn = getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + model + " " + "']/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button"));
+        archiveBtn.click();
 	}
 
 	public void checkThatModelUploadPageOpened() {
