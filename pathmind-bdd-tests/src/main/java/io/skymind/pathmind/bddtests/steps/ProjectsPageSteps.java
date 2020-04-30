@@ -266,7 +266,6 @@ public class ProjectsPageSteps {
 		for (int i = 0; i < variableNames.length; i++) {
 			projectsPage.inputVariableName(variableNames[i], i);
 		}
-		projectsPage.clickWizardRewardVariableNamesNextBtn();
 	}
 	@Step
 	public void updateVariableNameWithIndex(int variableIndex, String variableName) {
@@ -354,4 +353,12 @@ public class ProjectsPageSteps {
 		projectsPage.checkThatProjectNameDetailsOnProjectPage(name);
 		projectsPage.checkThatProjectNameBreadcrumbOnProjectPage(name);
 	}
+    @Step
+    public void clickWizardRewardVariablesSaveDraftBtn() {
+        projectsPage.clickWizardRewardVariablesSaveDraftBtn();
+    }
+    @Step
+    public void checkThatThereIsAVariableNamed(String variableName) {
+        projectsPage.checkThatThereIsAVariableNamed(variableName);
+    }
 }
