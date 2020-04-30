@@ -666,4 +666,16 @@ public class ProjectsPage extends PageObject {
 	public void checkThatProjectNameBreadcrumbOnProjectPage(String name) {
 		assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='page-title']/descendant::span[@class='breadcrumb']")).getText(), is(name));
 	}
+
+    public void clickWizardRewardVariablesSaveDraftBtn() {
+        getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/following-sibling::vaadin-button[text()='Save Draft']")).click();
+    }
+
+    public void checkThatThereIsAVariableNamed(String variableName) {
+        List<String> variables = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-text-field"))) {
+            variables.add(webElement.getAttribute("value"));
+        }
+        assertThat(variables, hasItem(variableName) );
+    }
 }
