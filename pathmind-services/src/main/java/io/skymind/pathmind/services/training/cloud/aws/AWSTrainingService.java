@@ -1,14 +1,14 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.JobSpec;
 import lombok.extern.slf4j.Slf4j;
@@ -34,14 +34,19 @@ public class AWSTrainingService extends TrainingService {
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final Model model = modelService.getModel(exp.getModelId()).get();
 
-        executionProvider.uploadModel(run.getId(), modelService.getModelFile(model.getId()));
+        // Get model file id, either uploading it if necessary, or just getting it from the metadata table
+        String modelFileId = executionProviderMetaDataDAO.getModelFileKey(model.getId());
+
+        if (modelFileId == null) {
+            executionProvider.uploadModel(run.getId(), modelService.getModelFile(model.getId()));
+        }
 
         final JobSpec spec = new JobSpec(
                 exp.getProject().getPathmindUserId(),
                 model.getId(),
                 exp.getId(),
                 run.getId(),
-                null,
+                modelFileId,
                 "", // not collected via UI yet
                 "",    // not collected via UI yet
                 exp.getRewardFunction(),
@@ -69,7 +74,10 @@ public class AWSTrainingService extends TrainingService {
 
         // IMPORTANT -> There are multiple database calls within executionProvider.execute.
         final String executionId = executionProvider.execute(spec);
-        executionProviderMetaDataDAO.putProviderRunJobId(spec.getRunId(),executionId);
+        executionProviderMetaDataDAO.putProviderRunJobId(spec.getRunId(), executionId);
+        if (modelFileId == null) {
+            executionProviderMetaDataDAO.putModelFileKey(model.getId(), executionId);
+        }
 
         runDAO.markAsStarting(run.getId());
         log.info("Started {} training job with id {}", DiscoveryRun, executionId);
