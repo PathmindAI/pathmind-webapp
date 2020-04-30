@@ -114,12 +114,12 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 			RunStatus overallExperimentStatus = ExperimentUtils.getTrainingStatus(experiment);
 			statusComponent = createStatusIcon(overallExperimentStatus);
 			add(statusComponent);
-			VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+			addClickListener(event -> handleRowClicked(experiment, selectExperimentConsumer));
+			addClassName("experiment-navbar-item");
+			setSpacing(false);
+			getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
 				add(createExperimentText(experiment.getName(), DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId)));
-				addClickListener(event -> getUI().ifPresent(ui -> handleRowClicked(experiment, selectExperimentConsumer)));
-				addClassName("experiment-navbar-item");
-				setSpacing(false);
-			});
+			}));
 		}
 
 		private Component createStatusIcon(RunStatus status) {

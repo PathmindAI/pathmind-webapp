@@ -221,7 +221,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		if (project.getModels().isEmpty()) {
 			event.forwardTo(Routes.UPLOAD_MODEL, ""+projectId);
 		}
-		VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+		VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
 			// modelGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			modelGrid.setItems(project.getModels());
 			createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));

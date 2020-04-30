@@ -79,9 +79,9 @@ public class ArchivesTabPanel<T extends ArchivableData> extends TabPanel
 	 * This needs to be called because there is are no listeners for the grid to know if grid.setItems() has been called.
 	 */
 	public void initData() {
-		VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+		getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
 			// Grid column renderers might be using timeZone to format dates and times. Making sure here that timezone is loaded properly
 			grid.setItems(getFilteredModels(getItems.get(), false));
-		});
+		}));
 	}
 }

@@ -110,10 +110,10 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 		getModel().setLastName(user.getLastname());
 		getModel().setSubscription(subscription != null ? "Professional": "Early Access");
 		if (subscription != null && subscription.getCancelAtPeriodEnd()) {
-			VaadinDateAndTimeUtils.withUserTimeZoneId(userTimeZoneId -> {
+			getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZoneId -> {
 				getModel().setSubscriptionCancellationNote("Subscription will be cancelled on " +
 						DateAndTimeUtils.formatDateAndTimeShortFormatter(DateAndTimeUtils.fromEpoch(subscription.getCurrentPeriodEnd()), userTimeZoneId));
-			});
+			}));
 		}
 		getModel().setBillingInfo("Billing Information");
 	}

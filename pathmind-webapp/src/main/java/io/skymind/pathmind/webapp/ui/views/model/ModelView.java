@@ -188,12 +188,12 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		modelName.setText("Model #"+model.getName());
-		VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+		getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
 			// experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			LocalDateTime dateCreatedData = model.getDateCreated();
 			experimentGrid.setItems(experiments);
 			createdDate.setText(String.format("Uploaded on %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(dateCreatedData, timeZoneId)));
-		});
+		}));
 
 		actionsText.add(""+model.getNumberOfPossibleActions());
 		observationsText.add(""+model.getNumberOfObservations());

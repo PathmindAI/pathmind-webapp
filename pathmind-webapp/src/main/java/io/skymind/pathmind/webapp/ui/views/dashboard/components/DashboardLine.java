@@ -41,9 +41,9 @@ public class DashboardLine extends HorizontalLayout {
 		this.dashboardItem = item;
 		setClassName("dashboard-line");
 		breadcrumb = new Breadcrumbs(item.getProject(), item.getModel(), item.getExperiment(), false);
-		VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+		getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
 			timestamp = new Span(DateAndTimeUtils.formatDateAndTimeShortFormatter(item.getLatestUpdateTime(), timeZoneId));
-		});
+		}));
 		Span projectTitle = new Span(item.getProject().getName());
 		projectTitle.addClassName("project-title");
 		
