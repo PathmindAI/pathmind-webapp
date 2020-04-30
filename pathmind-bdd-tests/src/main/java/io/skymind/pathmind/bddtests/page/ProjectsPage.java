@@ -282,6 +282,7 @@ public class ProjectsPage extends PageObject {
 	}
 
     public void confirmArchivePopup() {
+        waitABit(2500);
         WebElement overlay = utils.expandRootElement(dialogShadow);
         WebElement d = overlay.findElement(By.cssSelector("#content"));
         WebElement dialog = utils.expandRootElement(d);
@@ -411,7 +412,7 @@ public class ProjectsPage extends PageObject {
             WebElement closePopUp = getDriver().findElement(By.xpath("//vaadin-button[@theme='icon']"));
             waitFor(ExpectedConditions.visibilityOf(closePopUp));
             waitFor(ExpectedConditions.elementToBeClickable(closePopUp));
-            closePopUp.click();
+            action.moveToElement(closePopUp).click().perform();
 		}catch (Exception e){
         	System.out.println("Button not exist");
 		}
@@ -509,6 +510,7 @@ public class ProjectsPage extends PageObject {
 	}
 
 	public void clickModelArchiveButton(String model) {
+        waitABit(4000);
         WebElement archiveBtn = getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + model + " " + "']/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button"));
         archiveBtn.click();
 	}
@@ -657,6 +659,7 @@ public class ProjectsPage extends PageObject {
 	}
 
 	public void checkThatProjectNameDetailsOnProjectPage(String name) {
+        waitABit(3500);
 		assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label truncated-label']")).getText(), is(name));
 	}
 
