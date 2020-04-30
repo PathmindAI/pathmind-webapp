@@ -94,14 +94,15 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 	
 	// This part will probably move to a separate view, but for now implementing it as a confirmation dialog
 	private void cancelSubscription(Subscription subscription) {
-		SubscriptionCancelDialog subscriptionCancelDialog = new SubscriptionCancelDialog(subscription.getCurrentPeriodEnd(), () -> {
-			Subscription updatedSubscription = stripeService.cancelSubscription(user.getEmail(), true);
-			segmentIntegrator.subscriptionCancelled();
-			initContent(updatedSubscription);
-			initBtns(updatedSubscription);
+		getUI().ifPresent(ui -> {
+			SubscriptionCancelDialog subscriptionCancelDialog = new SubscriptionCancelDialog(ui, subscription.getCurrentPeriodEnd(), () -> {
+				Subscription updatedSubscription = stripeService.cancelSubscription(user.getEmail(), true);
+				segmentIntegrator.subscriptionCancelled();
+				initContent(updatedSubscription);
+				initBtns(updatedSubscription);
+			});
+			subscriptionCancelDialog.open();
 		});
-		subscriptionCancelDialog.open();
-		
 	}
 
 	private void initContent(Subscription subscription) {
