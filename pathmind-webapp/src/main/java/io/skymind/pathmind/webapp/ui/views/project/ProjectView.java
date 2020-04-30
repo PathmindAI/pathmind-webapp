@@ -227,7 +227,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 			createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
 		});
 
-		archivesTabPanel.initData();
+		archivesTabPanel.initData(event.getUI());
 
 		recalculateGridColumnWidth(event.getUI().getPage(), modelGrid);		
 	}

@@ -167,7 +167,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private Component getLeftPanel() {
-		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiments, experiment, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
+		experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
 		policyChartPanel = new PolicyChartPanel();
 		trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 
@@ -277,7 +277,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			} else {
 				Experiment currentExperiment = experiments.get(0);
 				selectExperiment(currentExperiment);
-				experimentsNavbar.setExperiments(experiments, currentExperiment);
+				getUI().ifPresent(ui -> experimentsNavbar.setExperiments(ui, experiments, currentExperiment));
 			}
 		});
 	}
@@ -353,6 +353,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		updateScreenComponents();
+		experimentsNavbar.setExperiments(event.getUI(), experiments, experiment);
 	}
 
 	private void updateScreenComponents() {

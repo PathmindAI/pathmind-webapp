@@ -5,6 +5,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 
@@ -78,10 +79,10 @@ public class ArchivesTabPanel<T extends ArchivableData> extends TabPanel
 	/**
 	 * This needs to be called because there is are no listeners for the grid to know if grid.setItems() has been called.
 	 */
-	public void initData() {
-		getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
+	public void initData(UI ui) {
+		VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
 			// Grid column renderers might be using timeZone to format dates and times. Making sure here that timezone is loaded properly
 			grid.setItems(getFilteredModels(getItems.get(), false));
-		}));
+		});
 	}
 }

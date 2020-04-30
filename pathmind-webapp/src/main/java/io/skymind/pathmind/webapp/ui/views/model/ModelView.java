@@ -12,7 +12,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
@@ -188,12 +187,13 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		modelName.setText("Model #"+model.getName());
-		getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
+		
+		VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
 			// experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
-			LocalDateTime dateCreatedData = model.getDateCreated();
 			experimentGrid.setItems(experiments);
+			LocalDateTime dateCreatedData = model.getDateCreated();
 			createdDate.setText(String.format("Uploaded on %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(dateCreatedData, timeZoneId)));
-		}));
+		});
 
 		actionsText.add(""+model.getNumberOfPossibleActions());
 		observationsText.add(""+model.getNumberOfObservations());
@@ -215,7 +215,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 		} else {
 			rewardVariableNamesText.add("All reward variables are unnamed. You can name them when you create a new experiment for this model.");
 		}
-		archivesTabPanel.initData();
+		archivesTabPanel.initData(event.getUI());
 
 		recalculateGridColumnWidth(event.getUI().getPage(), experimentGrid);		
 	}

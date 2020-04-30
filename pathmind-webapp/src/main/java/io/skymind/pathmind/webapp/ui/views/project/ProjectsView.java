@@ -146,11 +146,11 @@ public class ProjectsView extends PathMindDefaultView
 	@Override
 	protected void initScreen(BeforeEnterEvent event)
 	{
-		getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
+		VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
 			// projectGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			projectGrid.setItems(projects);
-		}));
-		archivesTabPanel.initData();
+		});
+		archivesTabPanel.initData(event.getUI());
 
 		recalculateGridColumnWidth(event.getUI().getPage(), projectGrid);		
 	}
