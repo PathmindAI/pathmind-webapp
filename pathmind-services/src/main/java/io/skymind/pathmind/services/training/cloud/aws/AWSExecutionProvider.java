@@ -1,16 +1,15 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
-import io.skymind.pathmind.services.training.cloud.aws.api.dto.CheckPoint;
-import io.skymind.pathmind.services.training.cloud.aws.api.dto.ExperimentState;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AWSFileManager;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
+import io.skymind.pathmind.shared.data.rllib.CheckPoint;
+import io.skymind.pathmind.shared.data.rllib.ExperimentState;
 import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.ExecutionProviderClass;
