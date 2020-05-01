@@ -6,6 +6,8 @@ import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.rllib.CheckPoint;
+import io.skymind.pathmind.shared.data.rllib.ExperimentState;
 import io.skymind.pathmind.shared.utils.RunUtils;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
@@ -65,10 +67,11 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
             try {
                 String jobHandle = awsJobIds.get(run.getId());
                 ProviderJobStatus providerJobStatus = provider.status(jobHandle);
+                ExperimentState experimentState = providerJobStatus.getExperimentState();
 
-                final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(), jobHandle);
+                final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(), jobHandle, experimentState);
 
-                setStoppedAtForFinishedPolicies(policies, jobHandle);
+                setStoppedAtForFinishedPolicies(policies, experimentState);
                 setRunError(run, providerJobStatus);
 
                 runDAO.updateRun(run, providerJobStatus, policies);
@@ -146,8 +149,8 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         }
     }
 
-    private void setStoppedAtForFinishedPolicies(List<Policy> policies, String jobHandle) {
-        Map<String, LocalDateTime> terminatedTrials = provider.getTerminatedTrials(jobHandle);
+    private void setStoppedAtForFinishedPolicies(List<Policy> policies, ExperimentState experimentState) {
+        Map<String, LocalDateTime> terminatedTrials = provider.getTerminatedTrials(experimentState);
 
         policies.stream()
                 .filter(policy -> policy.getStoppedAt() == null)
@@ -155,10 +158,21 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                 .forEach(policy -> policy.setStoppedAt(terminatedTrials.get(policy.getExternalId())));
     }
 
-    private List<Policy> getPoliciesFromProgressProvider(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String jobHandle) {
-        final Map<String, String> rawProgress = provider.progress(jobHandle);
+    private List<Policy> getPoliciesFromProgressProvider(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String jobHandle, ExperimentState experimentState) {
+        // maybe need to null check for experimentstate
+        List<String> validExternalIds = experimentState.getCheckpoints().stream()
+                .map(CheckPoint::getId)
+                .collect(Collectors.toList());
+
+        validExternalIds = experimentState.getCheckpoints().stream()
+                .map(CheckPoint::getId)
+                .filter(id -> !stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).contains(id))
+                .collect(Collectors.toList());
+
+
+        final Map<String, String> rawProgress = provider.progress(jobHandle, validExternalIds);
+        log.info("kepricondebug3 : " + rawProgress.keySet());
         return rawProgress.entrySet().stream()
-                .filter(e -> !stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).contains(e.getKey()))
                 .map(e -> {
                     List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
                     return ProgressInterpreter.interpret(e, previousScores);

@@ -6,7 +6,6 @@ import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AWSFileManager;
-import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.rllib.CheckPoint;
 import io.skymind.pathmind.shared.data.rllib.ExperimentState;
@@ -155,10 +154,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
             }
 
             if (experimentState != null && experimentState.getCheckpoints() != null && experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L)) {
-                return ProviderJobStatus.COMPLETED;
+                return ProviderJobStatus.COMPLETED.addExperimentState(experimentState);
             }
 
-            return ProviderJobStatus.RUNNING;
+            return ProviderJobStatus.RUNNING.addExperimentState(experimentState);
         }
 
         return ProviderJobStatus.STARTING;
@@ -177,8 +176,18 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public Map<String, String> progress(String jobHandle, RunStatus runStatus) {
-        throw new UnsupportedOperationException("Not currently supported");
+    public Map<String, String> progress(String jobHandle, List<String> validExtIds) {
+        Map<String, String> progressMap = Collections.emptyMap();
+
+        validExtIds.stream()
+                .forEach(id -> {
+                    byte[] contents = client.fileContents(jobHandle + "/output/" + id + "/progress.csv", true);
+                    if (contents != null) {
+                        progressMap.put(id, new String(contents));
+                    }
+                });
+
+        return progressMap;
     }
 
     @Override
@@ -250,9 +259,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         return expOpt != null && expOpt.isPresent() ? expOpt.get() : null;
     }
 
-    public Map<String, LocalDateTime> getTerminatedTrials(String jobHandle) {
-        ExperimentState experimentState = getExperimentState(jobHandle);
-
+    public Map<String, LocalDateTime> getTerminatedTrials(ExperimentState experimentState) {
         if (experimentState != null) {
             return experimentState.getCheckpoints().stream()
                     .filter(checkPoint -> checkPoint.getStatus().equals("TERMINATED"))
