@@ -100,7 +100,7 @@ public class ProjectsPage extends PageObject {
 
     public void clickCreateNewProjectBtn() {
         waitABit(2000);
-        createNewProjectBtn.click();
+        getDriver().findElement(By.xpath("//vaadin-button[text()='New Project']")).click();
     }
 
     public void inputNameOfTheNewProject(String projectName) {
