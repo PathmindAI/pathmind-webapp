@@ -58,6 +58,7 @@ class ModelRepository
 		mod.setDraft(model.isDraft());
 		mod.setRewardVariablesCount(model.getRewardVariablesCount());
 		mod.setUserNotes(userNotes);
+		mod.setPackageName(model.getPackageName());
 		mod.store();
 		return mod.key().get(MODEL.ID);
 	}
