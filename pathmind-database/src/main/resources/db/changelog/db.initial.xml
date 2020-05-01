@@ -1174,4 +1174,10 @@
         </update>
     </changeSet>
 
+    <changeSet id="20200501-01" author="alexander.makarov@toptal.com">
+        <addColumn tableName="MODEL">
+            <column name="PACKAGE_NAME" type="VARCHAR(1024)" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
