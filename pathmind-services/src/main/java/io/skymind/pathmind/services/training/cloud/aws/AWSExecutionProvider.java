@@ -177,7 +177,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public Map<String, String> progress(String jobHandle, List<String> validExtIds) {
-        Map<String, String> progressMap = Collections.emptyMap();
+        Map<String, String> progressMap = new HashMap<>();
 
         validExtIds.stream()
                 .forEach(id -> {

@@ -1,21 +1,17 @@
 package io.skymind.pathmind.updater.aws;
 
-import io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider;
-import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.PathmindUser;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.ProviderJobStatus;
-import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.data.rllib.CheckPoint;
-import io.skymind.pathmind.shared.data.rllib.ExperimentState;
-import io.skymind.pathmind.shared.utils.RunUtils;
-import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
+import io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider;
+import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.rllib.CheckPoint;
+import io.skymind.pathmind.shared.data.rllib.ExperimentState;
+import io.skymind.pathmind.shared.utils.RunUtils;
 import io.skymind.pathmind.updater.ExecutionProgressUpdater;
 import io.skymind.pathmind.updater.ProgressInterpreter;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.UNKNOWN_ERROR_KEYWORD;
 import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.KILLED_TRAINING_KEYWORD;
+import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.UNKNOWN_ERROR_KEYWORD;
 
 @Service
 @Slf4j
@@ -83,7 +79,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                 // service component so that if there is a policyFile (byte[]) then it's done before the updateRun()
                 // method is called and we can just do a simple isPolicyFile != null check as to whether or not to
                 // also update it in the database.
-                savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), jobHandle, providerJobStatus.getRunStatus());
+                savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), jobHandle, providerJobStatus.getRunStatus(), experimentState);
 
                 sendNotificationMail(providerJobStatus.getRunStatus(), run);
             } catch (Exception e) {
@@ -120,9 +116,13 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         return awsJobIds.get(runId) != null;
     }
 
-    private void savePolicyFilesAndCleanupForCompletedRuns(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String jobHandle, RunStatus jobStatus) {
+    private void savePolicyFilesAndCleanupForCompletedRuns(Map<Long, List<String>> stoppedPoliciesNamesForRuns,
+                                                           Long runId, String jobHandle, RunStatus jobStatus, ExperimentState experimentState) {
         if (jobStatus == RunStatus.Completed) {
-            stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).stream().forEach(finishPolicyName -> {
+            List<String> unfinishedPolicyIds = runDAO.unfinishedPolicyIds(runId);
+            stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).stream()
+                    .filter(id -> unfinishedPolicyIds.contains(id))
+                    .forEach(finishPolicyName -> {
                 // todo make saving to enum or static final variable (currently defined in PolicyDAO).
                 final byte[] policyFile = provider.policy(jobHandle, finishPolicyName);
                 if (policyFile == null) {
@@ -146,6 +146,12 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                     }
                 }
             });
+
+            List<String> validExternalIds = experimentState.getCheckpoints().stream()
+                    .map(CheckPoint::getId)
+                    .collect(Collectors.toList());
+
+            runDAO.cleanUpInvalidPolicies(runId, validExternalIds);
         }
     }
 
@@ -159,19 +165,17 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     }
 
     private List<Policy> getPoliciesFromProgressProvider(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String jobHandle, ExperimentState experimentState) {
-        // maybe need to null check for experimentstate
-        List<String> validExternalIds = experimentState.getCheckpoints().stream()
-                .map(CheckPoint::getId)
-                .collect(Collectors.toList());
+        if (experimentState == null) {
+            return Collections.emptyList();
+        }
 
-        validExternalIds = experimentState.getCheckpoints().stream()
+        List<String> validExternalIds = experimentState.getCheckpoints().stream()
                 .map(CheckPoint::getId)
                 .filter(id -> !stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).contains(id))
                 .collect(Collectors.toList());
 
-
         final Map<String, String> rawProgress = provider.progress(jobHandle, validExternalIds);
-        log.info("kepricondebug3 : " + rawProgress.keySet());
+
         return rawProgress.entrySet().stream()
                 .map(e -> {
                     List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
