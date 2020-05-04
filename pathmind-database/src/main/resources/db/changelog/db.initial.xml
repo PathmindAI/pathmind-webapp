@@ -1205,22 +1205,14 @@
 		   			END LOOP;
 		   			CLOSE meta_data_cursor;
 					
-				    -- update check point file keys
-					OPEN meta_data_cursor(2);
-					LOOP
-						FETCH meta_data_cursor INTO meta_data_rec;
-			      		EXIT WHEN NOT FOUND;
-						UPDATE POLICY set CHECK_POINT_FILE_KEY = meta_data_rec.VALUE where EXTERNAL_ID = meta_data_rec.KEY;
-		   			END LOOP;
-		   			CLOSE meta_data_cursor;
 					RETURN 0;
 				END;
 				$BODY$;
         </createProcedure>
         <sql>
         	SELECT migrate_exec_prov_meta_data();
+        	DROP FUNCTION migrate_exec_prov_meta_data;
         </sql>
-        <dropProcedure procedureName="migrate_exec_prov_meta_data"/>
         <dropTable tableName="EXECUTION_PROVIDER_META_DATA"/>
         <rollback>
         	<comment>If something goes wrong, just drop the new columns, keep in mind that EXECUTION_PROVIDER_META_DATA table is dropped once everything is completed</comment>
