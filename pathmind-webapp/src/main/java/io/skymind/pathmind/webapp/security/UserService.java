@@ -24,6 +24,7 @@ public class UserService
 {
     public static final String NOT_MATCHING = "* New Password doesn't match Confirmation password";
     public static final String TOO_SHORT = "* 6 min characters";
+    public static final String TOO_BIG = "* 50 max characters";
     public static final String UPPERCASE_MISSING = "* 1 uppercase character";
     public static final String LOWERCASE_MISSING = "* 1 lowercase character";
 
@@ -99,6 +100,10 @@ public class UserService
 
         if (password.length() < 6) {
             results.add(TOO_SHORT);
+        }
+
+        if (password.length() > 50) {
+            results.add(TOO_BIG);
         }
 
         if (password.chars().filter(ch -> Character.isUpperCase(ch)).findAny().isEmpty()) {
