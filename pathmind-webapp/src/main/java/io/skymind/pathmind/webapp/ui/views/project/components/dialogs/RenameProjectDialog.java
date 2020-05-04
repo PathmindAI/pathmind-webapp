@@ -50,6 +50,8 @@ public class RenameProjectDialog extends Dialog {
 			projectDao.updateProjectName(project.getId(), project.getName());
 			updatedProjectNameConsumer.accept(project.getName());
 			close();
+		} else {
+			rename.setEnabled(true);
 		}
 	}
 }

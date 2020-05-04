@@ -100,7 +100,7 @@ public class ProjectsPage extends PageObject {
 
     public void clickCreateNewProjectBtn() {
         waitABit(2000);
-        createNewProjectBtn.click();
+        getDriver().findElement(By.xpath("//vaadin-button[text()='New Project']")).click();
     }
 
     public void inputNameOfTheNewProject(String projectName) {
@@ -282,6 +282,7 @@ public class ProjectsPage extends PageObject {
 	}
 
     public void confirmArchivePopup() {
+        waitABit(2500);
         WebElement overlay = utils.expandRootElement(dialogShadow);
         WebElement d = overlay.findElement(By.cssSelector("#content"));
         WebElement dialog = utils.expandRootElement(d);
@@ -299,7 +300,7 @@ public class ProjectsPage extends PageObject {
 		getDriver().findElement(By.xpath("//vaadin-tab[text()='Models']")).click();
 	}
 	public void clickProjectsTab(){
-		getDriver().findElement(By.xpath("//vaadin-tab[text()='Projects']")).click();
+		getDriver().findElement(By.xpath("//vaadin-tab[text()='Active']")).click();
 	}
 
     public void checkThatProjectNotExistInProjectList(String projectName) {
@@ -408,7 +409,10 @@ public class ProjectsPage extends PageObject {
         action.moveToElement(we).build().perform();
         getDriver().findElement(By.xpath("//vaadin-button[text()='Save Draft']")).click();
         try {
-        	getDriver().findElement(By.xpath("//vaadin-button[@theme='icon']")).click();
+            WebElement closePopUp = getDriver().findElement(By.xpath("//vaadin-button[@theme='icon']"));
+            waitFor(ExpectedConditions.visibilityOf(closePopUp));
+            waitFor(ExpectedConditions.elementToBeClickable(closePopUp));
+            action.moveToElement(closePopUp).click().perform();
 		}catch (Exception e){
         	System.out.println("Button not exist");
 		}
@@ -506,7 +510,9 @@ public class ProjectsPage extends PageObject {
 	}
 
 	public void clickModelArchiveButton(String model) {
-		getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + model + " " + "']/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button")).click();
+        waitABit(4000);
+        WebElement archiveBtn = getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + model + " " + "']/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button"));
+        archiveBtn.click();
 	}
 
 	public void checkThatModelUploadPageOpened() {
@@ -610,7 +616,7 @@ public class ProjectsPage extends PageObject {
 	}
 
 	public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
-		assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+" ']/following-sibling::vaadin-grid-cell-content[3]")).getText(), is(note));
+		assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+" ']/following-sibling::vaadin-grid-cell-content[4]")).getText(), is(note));
 	}
 
     public void checkNumberOfProjectsWithDraftTag(int numberOfProjects) {
@@ -653,10 +659,23 @@ public class ProjectsPage extends PageObject {
 	}
 
 	public void checkThatProjectNameDetailsOnProjectPage(String name) {
+        waitABit(3500);
 		assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label truncated-label']")).getText(), is(name));
 	}
 
 	public void checkThatProjectNameBreadcrumbOnProjectPage(String name) {
 		assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='page-title']/descendant::span[@class='breadcrumb']")).getText(), is(name));
 	}
+
+    public void clickWizardRewardVariablesSaveDraftBtn() {
+        getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/following-sibling::vaadin-button[text()='Save Draft']")).click();
+    }
+
+    public void checkThatThereIsAVariableNamed(String variableName) {
+        List<String> variables = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-text-field"))) {
+            variables.add(webElement.getAttribute("value"));
+        }
+        assertThat(variables, hasItem(variableName) );
+    }
 }
