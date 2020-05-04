@@ -78,7 +78,7 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
     }
 
     private static class RowValidator implements Validator<RewardVariable> {
-        private final StringLengthValidator nameValidator = new StringLengthValidator("The variable name must have at most 100 leters.", 0, 100);
+        private final StringLengthValidator nameValidator = new StringLengthValidator("Variable name must not exceed 100 characters", 0, 100);
 
 		@Override
 		public ValidationResult apply(RewardVariable rewardVariable, ValueContext valueContext) {

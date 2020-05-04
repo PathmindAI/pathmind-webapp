@@ -31,7 +31,7 @@ public class NotesField extends HorizontalLayout {
 		this.saveConsumer = saveConsumer;
 		hintWrapper = LabelFactory.createLabel("Unsaved Notes!", "unsaved-draft-label");
 		hintWrapper.setVisible(false);
-		warningWrapper = LabelFactory.createLabel("Text too big!", "unsaved-draft-label", "unsaved-and-too-big-text-label");
+		warningWrapper = LabelFactory.createLabel("Notes must not exceed 1000 characters", "unsaved-draft-label", "unsaved-and-too-big-text-label");
 		warningWrapper.setVisible(false);
 		add(editableFieldWrapper());
 		setSpacing(false);

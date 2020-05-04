@@ -166,11 +166,11 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 				.bind(PathmindUser::getEmail, PathmindUser::setEmail);
 		binder.forField(firstName)
 				.asRequired("First Name is required")
-				.withValidator(new StringLengthValidator("First Name might have at most 250 letters", 0, 255))
+				.withValidator(new StringLengthValidator("First Name must not exceed 250 characters", 0, 255))
 				.bind(PathmindUser::getFirstname, PathmindUser::setFirstname);
 		binder.forField(lastName)
 				.asRequired("Last Name is required")
-				.withValidator(new StringLengthValidator("Last Name might have at most 250 letters", 0, 255))
+				.withValidator(new StringLengthValidator("Last Name must not exceed 250 characters", 0, 255))
 				.bind(PathmindUser::getLastname, PathmindUser::setLastname);
 		binder.setBean(user);
 	}

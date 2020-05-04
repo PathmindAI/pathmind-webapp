@@ -10,7 +10,7 @@ public class ModelBinders
 	public static void bindNotesFieldTextArea(Binder<Model> binder, TextArea notesFieldTextArea)
 	{
 		binder.forField(notesFieldTextArea)
-				.withValidator(new StringLengthValidator("Notes might have at most 1000 characters", 0, 1000))
+				.withValidator(new StringLengthValidator("Notes must not exceed 1000 characters", 0, 1000))
 				.bind(Model::getUserNotes, Model::setUserNotes);
 	}
 }
