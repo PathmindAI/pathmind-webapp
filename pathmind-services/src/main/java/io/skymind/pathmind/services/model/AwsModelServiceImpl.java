@@ -81,13 +81,17 @@ class AwsModelServiceImpl implements ModelService {
     }
 
     @Override
-    public byte[] getModelFile(long id) {
-        return awsApiClient.fileContents(MODEL_FILES + id, true);
+    public byte[] getModelFile(long modelId) {
+        return awsApiClient.fileContents(buildModelPath(modelId), true);
     }
 
     @Override
     public void saveModelFile(long modelId,  byte[] file) {
-        awsApiClient.fileUpload(MODEL_FILES + modelId, file);
+        awsApiClient.fileUpload(buildModelPath(modelId), file);
     }
 
+    @Override
+    public String buildModelPath(long modelId) {
+        return MODEL_FILES + modelId;
+    }
 }
