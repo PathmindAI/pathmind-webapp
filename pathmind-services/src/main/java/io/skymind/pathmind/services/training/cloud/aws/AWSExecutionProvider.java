@@ -373,10 +373,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     private void installModel(String modelFileId, List<String> instructions, List<String> files) {
-        if (modelFileId != null) {
-            String modelPath = modelFileId + "/model.zip";
-            files.add(fileManager.buildS3CopyCmd(client.getBucketName(), modelPath, "model.zip"));
-        }
+        files.add(fileManager.buildS3CopyCmd(client.getBucketName(), modelFileId, "model.zip"));
 
         instructions.addAll(Arrays.asList(
                 "cd work",
