@@ -16,13 +16,6 @@ resource "aws_sns_topic_subscription" "sns_sqs_target_alexander" {
   raw_message_delivery = true
 }
 
-resource "aws_sns_topic_subscription" "sns_sqs_target_ali" {
-  topic_arn = "${aws_sns_topic.updater_topic.arn}"
-  protocol  = "sqs"
-  endpoint  = "${aws_sqs_queue.updater_queue_ali.arn}"
-  raw_message_delivery = true
-}
-
 resource "aws_sns_topic_subscription" "sns_sqs_target_brett" {
   topic_arn = "${aws_sns_topic.updater_topic.arn}"
   protocol  = "sqs"

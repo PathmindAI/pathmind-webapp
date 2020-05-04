@@ -28,15 +28,6 @@ resource "aws_sqs_queue" "updater_queue_alexander" {
   }
 }
 
-resource "aws_sqs_queue" "updater_queue_ali" {
-  name                      = "ali-updater-queue-${var.environment}"
-  message_retention_seconds   = 60
-
-  tags = {
-    Environment = "pathmind"
-  }
-}
-
 resource "aws_sqs_queue" "updater_queue_brett" {
   name                      = "brett-updater-queue-${var.environment}"
   message_retention_seconds   = 60
