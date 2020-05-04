@@ -77,6 +77,11 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
         newPresentationValue.forEach(rv -> rewardVariableNameFields.get(rv.getArrayIndex()).setValue(rv));
     }
 
+    @Override
+    public boolean isInvalid() {
+        return rewardVariableNameFields.stream().anyMatch(f -> f.isInvalid());
+    }
+
     private static class RowValidator implements Validator<RewardVariable> {
         private final StringLengthValidator nameValidator = new StringLengthValidator("Variable name must not exceed 100 characters", 0, 100);
 
