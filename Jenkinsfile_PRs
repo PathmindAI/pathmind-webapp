@@ -65,7 +65,12 @@ pipeline {
     }
 
     //all is built and run from the master
-    agent { node { label 'master' } }
+    agent {
+      node {
+        label 'master'
+        customWorkspace "${env.BUILD_NUMBER}"
+      }
+    }
 
 
     // Pipeline stages
@@ -229,4 +234,10 @@ pipeline {
             }
         }
    }
+   post {
+        always {
+		echo 'Deleting workspace'
+		deleteDir()
+        }
+    }
 }
