@@ -135,7 +135,6 @@ Feature: Models page
 
   @saveModelDraft
   Scenario: Check Save Model Draft with reward variables
-    Given Skip until we have a better idea about how to deal with Features
     Given Login to the pathmind
     When Create new CoffeeShop project
     When Open projects page
@@ -144,12 +143,12 @@ Feature: Models page
     When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
     When Click wizard next step button
     Then Check that button 'Save Draft' exists
-    When Input reward variable "aVariableName"
-    When Click in 'Save Draft' button
+    When Input reward variable names kitchen_cleanliness
+    When Click wizard reward variables save draft btn
     Then Check that the notification 'Draft successfully saved' is shown
     And Check that there are 1 project(s) with 'Draft' tag in AutotestProject project page
     When Click the first draft model
-    Then Check that resumeRewardVariablesNames page is opened
-    And Check that there is a variable named "aVariableName"
+    When Click wizard model details next btn
+    And Check that there is a variable named kitchen_cleanliness
     When Click wizard next step button
     Then Check that there are 0 project(s) with 'Draft' tag in AutotestProject project page
