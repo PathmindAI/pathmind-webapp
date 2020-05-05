@@ -9,3 +9,11 @@ resource "aws_sqs_queue" "training_queue" {
   }
 }
 
+resource "aws_sqs_queue" "updater_queue" {
+  name                      = "${var.environment}-updater-queue"
+  message_retention_seconds   = 60
+
+  tags = {
+    Environment = "pathmind"
+  }
+}
