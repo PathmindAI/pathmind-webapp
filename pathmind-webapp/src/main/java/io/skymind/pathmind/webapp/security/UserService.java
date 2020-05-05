@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,6 +28,7 @@ public class UserService
     public static final String TOO_BIG = "* 50 max characters";
     public static final String UPPERCASE_MISSING = "* 1 uppercase character";
     public static final String LOWERCASE_MISSING = "* 1 lowercase character";
+    public static final String CONFIRMATION_REQUIRED = "Confirmation is required";
 
     private UserDAO userDAO;
     private PasswordEncoder passwordEncoder;
@@ -91,27 +93,30 @@ public class UserService
         EventBus.post(new UserUpdateBusEvent(user));
     }
 
-    public List<String> validatePassword(String password, String confirm) {
-        List<String> results = new ArrayList<>();
+    public PasswordValidationResults validatePassword(String password, String confirm) {
+        PasswordValidationResults results = new PasswordValidationResults();
 
-        if (!password.equals(confirm)) {
-            results.add(NOT_MATCHING);
+        if (confirm.isEmpty()) {
+            results.setConfirmPasswordValidationError(CONFIRMATION_REQUIRED);
+        }
+        else if (!password.equals(confirm)) {
+            results.getPasswordValidationErrors().add(NOT_MATCHING);
         }
 
         if (password.length() < 6) {
-            results.add(TOO_SHORT);
+            results.getPasswordValidationErrors().add(TOO_SHORT);
         }
 
         if (password.length() > 50) {
-            results.add(TOO_BIG);
+            results.getPasswordValidationErrors().add(TOO_BIG);
         }
 
         if (password.chars().filter(ch -> Character.isUpperCase(ch)).findAny().isEmpty()) {
-            results.add(UPPERCASE_MISSING);
+            results.getPasswordValidationErrors().add(UPPERCASE_MISSING);
         }
 
         if (password.chars().filter(ch -> Character.isLowerCase(ch)).findAny().isEmpty()) {
-            results.add(LOWERCASE_MISSING);
+            results.getPasswordValidationErrors().add(LOWERCASE_MISSING);
         }
 
         return results;
@@ -130,5 +135,26 @@ public class UserService
     }
     public PathmindUser findByToken(String value) {
         return userDAO.findByToken(value);
+    }
+
+    public static class PasswordValidationResults {
+        private Collection<String> passwordValidationErrors = new ArrayList<>();
+        private String confirmPasswordValidationError = "";
+
+        public Collection<String> getPasswordValidationErrors() {
+            return passwordValidationErrors;
+        }
+
+        public String getConfirmPasswordValidationError() {
+            return confirmPasswordValidationError;
+        }
+
+        public void setConfirmPasswordValidationError(String confirmPasswordValidationError) {
+            this.confirmPasswordValidationError = confirmPasswordValidationError;
+        }
+
+        public boolean isOk() {
+            return passwordValidationErrors.isEmpty() && confirmPasswordValidationError.isEmpty();
+        }
     }
 }

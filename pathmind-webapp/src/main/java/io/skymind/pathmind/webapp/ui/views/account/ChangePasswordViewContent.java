@@ -91,11 +91,14 @@ public class ChangePasswordViewContent extends PolymerTemplate<ChangePasswordVie
 	}
 
 	private void validateNewPassword() {
-		List<String> validationResults = userService.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
-		if (!validationResults.isEmpty()) {
+		UserService.PasswordValidationResults validationResults = userService
+				.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
+		if (!validationResults.isOk()) {
 			newPassword.setInvalid(true);
 			passwordValidationNotes.removeAll();
-			validationResults.forEach(message -> passwordValidationNotes.add(new Span(message)));
+			validationResults.getPasswordValidationErrors().forEach(message -> passwordValidationNotes.add(new Span(message)));
+			confirmNewPassword.setInvalid(!validationResults.getConfirmPasswordValidationError().isEmpty());
+			confirmNewPassword.setErrorMessage(validationResults.getConfirmPasswordValidationError());
 		}
 	}
 

@@ -135,9 +135,10 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 		});
 
 		signIn.addClickListener(e -> {
-			List<String> validationResults = userService.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
+			UserService.PasswordValidationResults validationResults = userService
+					.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
 
-			if (validationResults.isEmpty()) {
+			if (validationResults.isOk()) {
 				user.setPassword(newPassword.getValue());
 				user = userService.signup(user);
                 emailNotificationService.sendVerificationEmail(user);
@@ -146,7 +147,9 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 			} else {
 				newPassword.setInvalid(true);
 				passwordValidationNotes.removeAll();
-				validationResults.forEach(message -> passwordValidationNotes.add(new Span(message)));
+				validationResults.getPasswordValidationErrors().forEach(message -> passwordValidationNotes.add(new Span(message)));
+				confirmNewPassword.setInvalid(!validationResults.getConfirmPasswordValidationError().isEmpty());
+				confirmNewPassword.setErrorMessage(validationResults.getConfirmPasswordValidationError());
 			}
 		});
 	}

@@ -136,9 +136,10 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 			}
 
 			changePassword.addClickListener(e -> {
-				List<String> validationResults = userService.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
+				UserService.PasswordValidationResults validationResults = userService
+						.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
 
-				if (validationResults.isEmpty()) {
+				if (validationResults.isOk()) {
 					userService.changePassword(user, newPassword.getValue());
 					user.setPasswordResetSendAt(null);
 					userService.update(user);
@@ -147,7 +148,9 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 				} else {
 					newPassword.setInvalid(true);
 					passwordValidationNotes.removeAll();
-					validationResults.forEach(message -> passwordValidationNotes.add(new Span(message)));
+					validationResults.getPasswordValidationErrors().forEach(message -> passwordValidationNotes.add(new Span(message)));
+					confirmNewPassword.setInvalid(!validationResults.getConfirmPasswordValidationError().isEmpty());
+					confirmNewPassword.setErrorMessage(validationResults.getConfirmPasswordValidationError());
 				}
 			});
 		} catch(IllegalArgumentException e) {
