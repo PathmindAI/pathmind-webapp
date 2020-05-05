@@ -16,27 +16,27 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 
 public class RenameProjectDialog extends Dialog {
-
 	private TextField projectName;
 	private Button rename;
 	private Button cancel;
-	
+
 	private Binder<Project> binder;
-	
+
 	public RenameProjectDialog(Project project, ProjectDAO projectDao, SerializableConsumer<String> updatedProjectNameConsumer) {
 		binder = new Binder<>();
 		projectName = new TextField("Project name");
-		
+
 		rename = new Button("Rename Project", evt -> updateProjectName(projectDao, updatedProjectNameConsumer));
+		rename.setDisableOnClick(true);
 		rename.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		rename.addClickShortcut(Key.ENTER);
-		
+
 		cancel = new Button("Cancel", evt -> close());
 		cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 		cancel.setClassName("cancel-button");
 		HorizontalLayout footer = new HorizontalLayout(cancel, rename);
 		footer.setClassName("dialog-footer");
-		
+
 		add(LabelFactory.createLabel("Rename project", CssMindPathStyles.SECTION_TITLE_LABEL), projectName, footer);
 
 		projectName.focus();
@@ -50,6 +50,8 @@ public class RenameProjectDialog extends Dialog {
 			projectDao.updateProjectName(project.getId(), project.getName());
 			updatedProjectNameConsumer.accept(project.getName());
 			close();
+		} else {
+			rename.setEnabled(true);
 		}
 	}
 }

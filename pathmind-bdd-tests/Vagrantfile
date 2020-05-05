@@ -1,0 +1,31 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  # This image was chosen because it supports Virtualbox and lxc
+  config.vm.box = "debian/contrib-stretch64"
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = "4096"
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+
+    # Add backports to install OpenJDK11
+    sudo echo "deb http://ftp.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/backports.list
+    apt-get update
+
+    # Install  maven, chromium and java
+    apt-get install -y openjdk-11-jdk maven
+
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    sudo apt install -y ./google-chrome-stable_current_amd64.deb
+
+
+    # echo "-------------------- upgrading packages to latest"
+    # apt-get upgrade -y
+
+SHELL
+    
+end

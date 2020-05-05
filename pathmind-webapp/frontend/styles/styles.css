@@ -181,6 +181,12 @@ hr {
   height: 100%;
 }
 
+.default-view.project-view,
+.default-view.model-view {
+  height: auto;
+  min-height: 100%;
+}
+
 .view-section {
   width: 100%;
   background: white;
@@ -199,12 +205,11 @@ hr {
 }
 
 .page-content-header {
-  align-items: flex-end;
   margin-bottom: var(--lumo-space-m);
 }
 
 .page-content-header vaadin-button {
-  margin: 0 0 var(--lumo-space-xs) 0;
+  margin: 0;
 }
 
 .projects-view {
@@ -227,13 +232,78 @@ hr {
   padding: var(--lumo-space-m);
 }
 
-.project-view .view-section {
+.project-view .view-section,
+.model-view .view-section {
   min-width: unset;
+  line-height: 1.6em;
+  overflow: auto;
 }
 
-.project-view .notes-field-wrapper {
-  margin-top: var(--lumo-space-m);
+.model-view p,
+.model-view p + div {
+  margin: var(--lumo-space-m) 0 0;
+}
+
+.model-view p {
+  font-weight: bold;
+  color: var(--lumo-secondary-text-color);
+}
+
+.model-view p span {
+  color: var(--lumo-body-text-color);
+}
+
+.project-view .section-subtitle-label,
+.model-view .section-subtitle-label {
+  color: var(--lumo-secondary-text-color);
+}
+
+.project-view .truncated-label {
+  max-width: 100%;
+  width: auto;
+}
+
+.project-view .section-title-label + vaadin-button {
+  min-width: var(--lumo-button-size);
+  height: 1.4rem;
+  font-size: var(--lumo-font-size-s);
+  padding: 0 var(--lumo-space-xs);
+  margin: 0 0 0 var(--lumo-space-m);
+}
+
+.model-view .model-reward-variables {
+  max-height: 180px;
+  color: var(--lumo-secondary-text-color);
+  line-height: 1.3em;
+  overflow-y: auto;
+}
+
+.model-view .model-reward-variables span {
+  font-size: var(--lumo-font-size-s);
+}
+
+.model-view .model-reward-variables span:first-child {
+  display: inline-block;
+  width: 30px;
+  color: var(--lumo-secondary-text-color);
+}
+
+.model-view .model-reward-variables span:last-child {
+  padding: 0 2px;
+  border-radius: 3px;
+}
+
+.project-view .notes-field-wrapper,
+.model-view .notes-field-wrapper {
   flex: 1 1 auto;
+}
+
+.model-view .notes-field-wrapper {
+  margin-top: var(--lumo-space-m);
+}
+
+.model-view .bold-label {
+  display: block;
 }
 
 .no-shrink {

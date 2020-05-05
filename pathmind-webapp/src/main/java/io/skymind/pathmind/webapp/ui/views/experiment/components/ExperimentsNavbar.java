@@ -16,7 +16,6 @@ import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
@@ -60,6 +59,7 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 		
 		experiments.stream()
 			.filter(experiment -> !ExperimentUtils.isDraftRunType(experiment))
+			.sorted(Comparator.comparing(Experiment::getDateCreated).reversed())
 			.forEach(experiment -> {
 				ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(experiment, selectExperimentConsumer);
 				experimentsNavBarItems.add(navBarItem);

@@ -10,6 +10,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -21,10 +22,12 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
+import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -54,13 +57,15 @@ public class ProjectsView extends PathMindDefaultView
 
 		addClassName("projects-view");
 
-		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullCenterHorizontal(archivesTabPanel, new NewProjectButton());
+		Span projectsTitle = LabelFactory.createLabel("Projects", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
+
+		HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle, new NewProjectButton());
 		headerWrapper.addClassName("page-content-header");
 
 		FlexLayout gridWrapper = new ViewSection(
-			headerWrapper, 
-			projectGrid
-		);
+				headerWrapper, 
+				archivesTabPanel,
+				projectGrid);
 		gridWrapper.addClassName("page-content");
 
 		return gridWrapper;
@@ -68,7 +73,7 @@ public class ProjectsView extends PathMindDefaultView
 
 	private void setupTabbedPanel() {
 		archivesTabPanel = new ArchivesTabPanel<>(
-				"Projects",
+				"Active",
 				projectGrid,
 				this::getProjects,
 				(projectId, isArchive) -> projectDAO.archive(projectId, isArchive));

@@ -164,18 +164,16 @@ pipeline {
 			try {
 				echo "Running tests"
 				sh "sleep 120"
-				sh "if [ -d pathmind-bdd-tests ]; then rm -rf pathmind-bdd-tests; fi"
-				sh "git clone git@github.com:SkymindIO/pathmind-bdd-tests.git"
-				sh "cd pathmind-bdd-tests; mvn clean verify -Dheadless=true -Denvironment=pathmind-dev -Dhttp.keepAlive=false"
+				sh "mvn clean verify -Dheadless=true -Denvironment=pathmind-dev -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -f pom.xml -P bdd-tests"
 			} catch (err) {
 			} finally {
 				publishHTML (target: [
 				reportDir: 'pathmind-bdd-tests/target/site/serenity',
 				reportFiles: 'index.html',
 				reportName: "Tests",
-        keepAll:     true,
-        alwaysLinkToLastBuild: true,
-        allowMissing: false
+				keepAll:     true,
+				alwaysLinkToLastBuild: true,
+				allowMissing: false
 				])
 			}
 		}

@@ -1,38 +1,44 @@
-.experiment-view vaadin-split-layout > vaadin-vertical-layout,
-.policy-chart-panel,
-.training-starting-placeholder {
+.experiment-view .section-title-label {
+  line-height: 1;
+}
+
+.experiment-view .view-section {
+  min-width: auto;
+}
+
+.experiment-view .view-section,
+.experiment-view .right-panel {
+  box-sizing: border-box;
   width: 100%;
   background: white;
   border-radius: var(--lumo-border-radius);
   padding: var(--lumo-space-m);
-  box-sizing: border-box;
-  overflow: hidden;
-  overflow-y: auto;
 }
 
-.training-starting-placeholder {
-  justify-content: center;
-  text-align: left;
+.experiment-view .policy-chart-panel {
+  height: calc(100vh - 21.6rem);
+  min-height: 25rem;
 }
 
-.experiment-view vaadin-grid {
-  min-height: 60px;
+.experiment-view .right-panel {
+  height: auto !important;
+  flex: 0 0 25rem;
 }
 
-vaadin-chart {
-  min-height: 400px;
+.experiment-view vaadin-chart {
+  min-height: 25rem;
 }
 
 .experiment-view juicy-ace-editor {
-  min-height: 80px;
+  min-height: 5rem;
 }
 
-.right-panel > vaadin-vertical-layout {
+.experiment-view .right-panel > vaadin-vertical-layout {
   margin: var(--lumo-space-m) 0;
 }
 
 .experiment-view .bold-label {
-  font-size: 1.125rem;
+  margin-bottom: var(--lumo-space-xs);
 }
 
 .experiment-view .score {
@@ -40,6 +46,10 @@ vaadin-chart {
   font-weight: bold;
   color: var(--lumo-primary-text-color);
   line-height: 1;
+}
+
+.training-starting-placeholder {
+  margin-top: var(--lumo-space-xxl);
 }
 
 .training-status-details-panel vaadin-horizontal-layout vaadin-vertical-layout {
