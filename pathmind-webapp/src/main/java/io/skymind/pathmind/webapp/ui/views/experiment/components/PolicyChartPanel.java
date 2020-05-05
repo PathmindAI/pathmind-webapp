@@ -113,7 +113,6 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
         dataSeries.setId(Long.toString(policy.getId()));
         PlotOptionsSeries plotOptions = isBestPolicy ? createActiveSeriesPlotOptions() : createPassiveSeriesPlotOptions();
         plotOptions.setMarker(new Marker(false));
-        plotOptions.setAnimation(false);
         dataSeries.setPlotOptions(plotOptions);
         return dataSeries;
     }
