@@ -1,8 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.login;
 
-import java.util.List;
-
 import com.vaadin.flow.data.validator.StringLengthValidator;
+import io.skymind.pathmind.webapp.ui.converter.TrimmedStringConverter;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -168,10 +167,12 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 				"This doesn't look like a valid email address"))
 				.bind(PathmindUser::getEmail, PathmindUser::setEmail);
 		binder.forField(firstName)
+				.withConverter(new TrimmedStringConverter())
 				.asRequired("First Name is required")
 				.withValidator(new StringLengthValidator("First Name must not exceed 250 characters", 0, 255))
 				.bind(PathmindUser::getFirstname, PathmindUser::setFirstname);
 		binder.forField(lastName)
+				.withConverter(new TrimmedStringConverter())
 				.asRequired("Last Name is required")
 				.withValidator(new StringLengthValidator("Last Name must not exceed 250 characters", 0, 255))
 				.bind(PathmindUser::getLastname, PathmindUser::setLastname);
