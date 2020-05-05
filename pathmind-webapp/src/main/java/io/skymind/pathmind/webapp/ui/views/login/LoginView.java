@@ -158,7 +158,7 @@ public class LoginView extends HorizontalLayout
 		loginI18n.setHeader(new LoginI18n.Header());
 		loginI18n.getHeader().setTitle("");
 		loginI18n.getForm().setUsername("Email");
-		loginI18n.getForm().setSubmit("Sign in");
+		loginI18n.getForm().setSubmit("Sign In");
 		loginI18n.getForm().setForgotPassword("Forgot your password?");
 
 		LoginForm loginForm = new LoginForm();

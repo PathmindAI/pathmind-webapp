@@ -34,9 +34,10 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -71,11 +72,11 @@ import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
-	private static final double DEFAULT_SPLIT_PANE_RATIO = 70;
 
 	// We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
 	// on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
@@ -93,8 +94,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private Experiment experiment;
 	private List<Experiment> experiments = new ArrayList<>();
 
+	private VerticalLayout middlePanel;
 	private PolicyHighlightPanel policyHighlightPanel;
 	private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
+	private Span panelTitle;
+	private VerticalLayout rewardFunctionGroup;
 	private RewardFunctionEditor rewardFunctionEditor;
 	private TrainingStartingPlaceholder trainingStartingPlaceholder;
 	private PolicyChartPanel policyChartPanel;
@@ -153,36 +157,38 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected Component getMainContent() {
-		SplitLayout mainSplitLayout = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-				getLeftPanel(),
-				getRightPanel(),
-				DEFAULT_SPLIT_PANE_RATIO);
-		// TODO -> Charts do not re-flow automatically: https://vaadin.com/forum/thread/17878341/resizable-charts (https://github.com/vaadin/vaadin-charts/issues/457)
-		mainSplitLayout.addSplitterDragendListener(evt -> getUI().ifPresent(ui -> {
-			ui.getPage().executeJs("window.dispatchEvent(new Event('resize'));");
-		}));
-		mainSplitLayout.addClassName("page-content");
+		setupLeftPanel();
+		HorizontalLayout pageWrapper = WrapperUtils.wrapWidthFullHorizontal(
+				experimentsNavbar,
+				middlePanel,
+				getRightPanel());
+		pageWrapper.addClassName("page-content");
+		pageWrapper.setPadding(true);
 
-		return WrapperUtils.wrapSizeFullVertical(mainSplitLayout);
+		return pageWrapper;
 	}
 
-	private Component getLeftPanel() {
+	private void setupLeftPanel() {
 		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiments, experiment, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
+		panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
 		policyChartPanel = new PolicyChartPanel();
-		trainingStartingPlaceholder = new TrainingStartingPlaceholder();
-
-		return WrapperUtils.wrapWidthFullHorizontal(
-			experimentsNavbar,
-			trainingStartingPlaceholder, 
-			policyChartPanel
-		);
-	}
-
-	private VerticalLayout getRightPanel() {
+		policyChartPanel.setPadding(false);
 		rewardFunctionEditor = new RewardFunctionEditor();
 		rewardFunctionEditor.setReadonly(true);
 		rewardFunctionEditor.setSizeFull();
+		rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+			LabelFactory.createLabel("Reward Function", BOLD_LABEL), rewardFunctionEditor
+		);
+		trainingStartingPlaceholder = new TrainingStartingPlaceholder();
+		middlePanel = WrapperUtils.wrapWidthFullVertical(
+				panelTitle,
+				rewardFunctionGroup,
+				trainingStartingPlaceholder, 
+				policyChartPanel);
+		middlePanel.addClassName("view-section");
+	}
 
+	private VerticalLayout getRightPanel() {
 		policyHighlightPanel = new PolicyHighlightPanel();
 		trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
 
@@ -234,9 +240,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				buttonsWrapper,
 				trainingStatusDetailsPanel,
 				policyHighlightPanel,
-				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-					LabelFactory.createLabel("Reward Function", BOLD_LABEL), rewardFunctionEditor
-				),
 				notesField);
 		rightPanel.addClassName("right-panel");
 		return rightPanel;
@@ -359,13 +362,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		clearErrorState();
 		setPolicyChartVisibility();
 		experimentsNavbar.setVisible(!experiment.isArchived());
+		panelTitle.setText("Experiment #"+experiment.getName());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
 			rewardFunctionEditor.setVariableNames(rewardVariables);
 		}
 		policyChartPanel.setExperiment(experiment, policy);
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
-		policyHighlightPanel.update(policy);
 		updateRightPanelForExperiment();
 	}
 
