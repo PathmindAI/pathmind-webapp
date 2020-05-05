@@ -17,6 +17,8 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.DataSeries;
+import com.vaadin.flow.component.charts.model.Marker;
+import com.vaadin.flow.component.charts.model.PlotOptionsSeries;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -109,7 +111,9 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
     	DataSeries dataSeries = new DataSeries(policy.getName());
         dataSeries.setData(ChartUtils.getRewardScoreSeriesItems(policy));
         dataSeries.setId(Long.toString(policy.getId()));
-        dataSeries.setPlotOptions(isBestPolicy ? createActiveSeriesPlotOptions() : createPassiveSeriesPlotOptions());
+        PlotOptionsSeries plotOptions = isBestPolicy ? createActiveSeriesPlotOptions() : createPassiveSeriesPlotOptions();
+        plotOptions.setMarker(new Marker(false));
+        dataSeries.setPlotOptions(plotOptions);
         return dataSeries;
     }
 
