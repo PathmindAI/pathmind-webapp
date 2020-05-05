@@ -58,6 +58,8 @@ Feature: Create new user
 
   Scenario Outline: Check create new user password error message
     Given Open page early-access-sign-up
+    When Fill new user form with first name AutotestFirstName
+    When Fill new user form with last name AutotestLastName
     When Fill new user form with email autotest@autotest.com
     When Create new user click sign up button
     When Fill new user password <Password>
@@ -77,6 +79,8 @@ Feature: Create new user
 
   Scenario: Check create new user email error message
     Given Open page early-access-sign-up
+    When Fill new user form with first name AutotestFirstName
+    When Fill new user form with last name AutotestLastName
     When Fill new user form with exist email evegeniy@skymind.io
     When Create new user click sign up button
     Then Create new user check that error message for email field shown This email is already used
@@ -84,6 +88,8 @@ Feature: Create new user
 
   Scenario: Check create new user email recovery page
     Given Open page early-access-sign-up
+    When Fill new user form with first name AutotestFirstName
+    When Fill new user form with last name AutotestLastName
     When Fill new user form with exist email evegeniy@skymind.io
     When Create new user click sign up button
     When Create new user click reset password btn
