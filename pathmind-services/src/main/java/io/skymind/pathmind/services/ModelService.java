@@ -8,10 +8,11 @@ import java.util.Optional;
 
 public interface ModelService {
     Optional<Model> getModel(long modelId);
-    byte[] getModelFile(long id);
+    byte[] getModelFile(long modelId);
     void addDraftModelToProject(Model model, long id, String modelNotes);
     void updateDraftModel(Model model, String modelNotes);
     long resumeModelCreation(Model model, String modelNotes);
     void updateModelRewardVariables(Model model, List<RewardVariable> rewardVariables);
     List<RewardVariable> getModelRewardVariables(long modelId);
+    String buildModelPath(long modelId);
 }

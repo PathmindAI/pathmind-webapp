@@ -1,7 +1,6 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
@@ -375,7 +374,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
         }
     }
 
-    private void installModel(String modelId, List<String> instructions, List<String> files) {
+    private void installModel(String modelFileId, List<String> instructions, List<String> files) {
+        files.add(fileManager.buildS3CopyCmd(client.getBucketName(), modelFileId, "model.zip"));
+
         instructions.addAll(Arrays.asList(
                 "cd work",
                 "unzip ../model.zip > /dev/null",
@@ -385,7 +386,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private void installCheckpoint(String checkpointS3Path, List<String> instructions, List<String> files) {
         if (checkpointS3Path != null) {
-            files.add(fileManager.buildCheckpointCopyCmd(checkpointS3Path, "checkpoint.zip"));
+            files.add(fileManager.buildS3CopyCmd(client.getBucketName(), checkpointS3Path, "checkpoint.zip"));
 
             instructions.addAll(Arrays.asList(
                     "mkdir -p checkpoint",
