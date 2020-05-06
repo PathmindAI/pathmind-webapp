@@ -30,7 +30,7 @@ env:
   SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/test-updater-queue
   SNS_UPDATER_TOPIC_ARN: arn:aws:sns:us-east-1:839270835622:test-updater-topic
 
-name: pathmind  
+name: pathmind-updater
 
 namespace: test
 
