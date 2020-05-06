@@ -1180,4 +1180,15 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="20200501-02" author="daehyun@skymind.io">
+        <addColumn tableName="POLICY">
+            <column name="IS_VALID" type="BOOLEAN" defaultValue="true">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="POLICY" columnName="IS_VALID" />
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

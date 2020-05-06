@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = -904923435;
+    private static final long serialVersionUID = 417129740;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -116,7 +116,7 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.package_name</code>.
      */
-    public final TableField<ModelRecord, String> PACKAGE_NAME = createField(DSL.name("package_name"), org.jooq.impl.SQLDataType.CLOB, this, "");
+    public final TableField<ModelRecord, String> PACKAGE_NAME = createField(DSL.name("package_name"), org.jooq.impl.SQLDataType.VARCHAR(1024), this, "");
 
     /**
      * Create a <code>public.model</code> table reference
