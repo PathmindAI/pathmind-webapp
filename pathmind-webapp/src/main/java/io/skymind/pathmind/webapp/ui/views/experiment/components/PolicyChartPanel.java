@@ -15,6 +15,7 @@ import io.skymind.pathmind.webapp.utils.ChartUtils;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.charts.Chart;
+import com.vaadin.flow.component.charts.model.Accessibility;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.Marker;
@@ -75,6 +76,7 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
         yAxis.setTitle("Mean Reward Score over All Episodes");
 
         chart.getConfiguration().setTitle("Reward Score");
+        chart.getConfiguration().setAccessibility(new Accessibility(false));
         chart.getConfiguration().getLegend().setEnabled(false);
         chart.getConfiguration().addxAxis(xAxis);
         chart.getConfiguration().addyAxis(yAxis);
