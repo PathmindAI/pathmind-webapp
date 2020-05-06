@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.login;
 
 import com.vaadin.flow.data.validator.StringLengthValidator;
+import io.skymind.pathmind.webapp.ui.binders.PathmindUserBinders;
 import io.skymind.pathmind.webapp.ui.converter.TrimmedStringConverter;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,19 +164,10 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	private void initBinder() {
 		binder = new Binder<>(PathmindUser.class);
 
-		binder.forField(email).asRequired("Email is required").withValidator(new EmailValidator(
-				"This doesn't look like a valid email address"))
-				.bind(PathmindUser::getEmail, PathmindUser::setEmail);
-		binder.forField(firstName)
-				.withConverter(new TrimmedStringConverter())
-				.asRequired("First Name is required")
-				.withValidator(new StringLengthValidator("First Name must not exceed 250 characters", 0, 255))
-				.bind(PathmindUser::getFirstname, PathmindUser::setFirstname);
-		binder.forField(lastName)
-				.withConverter(new TrimmedStringConverter())
-				.asRequired("Last Name is required")
-				.withValidator(new StringLengthValidator("Last Name must not exceed 250 characters", 0, 255))
-				.bind(PathmindUser::getLastname, PathmindUser::setLastname);
+		PathmindUserBinders.bindEmail(binder, email);
+		PathmindUserBinders.bindFirstName(binder, firstName);
+		PathmindUserBinders.bindLastName(binder, lastName);
+
 		binder.setBean(user);
 	}
 
