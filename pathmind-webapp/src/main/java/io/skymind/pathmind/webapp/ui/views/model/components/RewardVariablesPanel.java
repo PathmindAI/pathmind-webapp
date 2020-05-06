@@ -105,8 +105,6 @@ public class RewardVariablesPanel extends VerticalLayout
 	}
 	
 	public List<RewardVariable> getRewardVariables(){
-		// TODO: add validator for reward variables names table. As it is now, when a user inputs more than 100 letters
-		// for a reward variable name, an error is shown in UI, but we allow it to be saved anyway.
 		if (rewardVariablesTable == null) {
 			return null;
 		} else {

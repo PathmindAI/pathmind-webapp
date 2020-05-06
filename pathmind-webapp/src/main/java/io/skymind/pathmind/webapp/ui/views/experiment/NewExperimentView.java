@@ -149,12 +149,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			}
 			errorMessageWrapper.removeClassNames("hasError", "noError");
 			errorMessageWrapper.addClassName(wrapperClassName);
-			if (changeEvent.getValue().length() > 1000) {
-				rewardEditorErrorLabel.setVisible(true);
-			}
-			else {
-				rewardEditorErrorLabel.setVisible(false);
-			}
+			rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > 1000);
 
 			startRunButton.setEnabled(canStartTraining());
 			saveDraftButton.setEnabled(canSaveDataInDB());
