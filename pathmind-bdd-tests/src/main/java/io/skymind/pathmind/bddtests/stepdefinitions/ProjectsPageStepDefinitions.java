@@ -397,11 +397,6 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.clickWizardRewardVariablesSaveDraftBtn();
     }
 
-	@Then("^Check experiment score greater than (.*)$")
-	public void checkExperimentScoreGreaterThan(double value) {
-		projectsPageSteps.checkExperimentScoreGreaterThan(value);
-	}
-
 	@Then("^Check experiment status completed with (.*) hours$")
 	public void checkExperimentStatusCompletedWithLimitHours(int limit) {
 		projectsPageSteps.checkExperimentStatusCompletedWithLimitHours(limit);
