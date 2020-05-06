@@ -431,6 +431,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("MULTIAGENT", String.valueOf(job.isMultiAgent())),
                 varCondition("RESUME", String.valueOf(job.isResume())),
                 var("CHECKPOINT_FREQUENCY", String.valueOf(job.getCheckpointFrequency())),
+                var("EPISODE_REWARD_RANGE", "0.01"),
+                var("ENTROPY_SLOPE", "0.01"),
+                var("VF_LOSS_RANGE", "0.1"),
+                var("VALUE_PRED", "0.01"),
                 var("USER_LOG", String.valueOf(job.isUserLog()))
         ));
     }
