@@ -74,7 +74,7 @@ Feature: Create new user
       |testing     |testing           |* 1 uppercase character                                                                                                      |
       |123456      |123456            |* 1 uppercase character,* 1 lowercase character                                                                              |
       |Testing     |Retesting         |* New Password doesn't match Confirmation password                                                                           |
-      |Test        |                  |* 6 min characters,* New Password doesn't match Confirmation password                                                        |
+      |Test        |                  |* 6 min characters                                                                                                           |
       |            |Testing           |* 6 min characters,* New Password doesn't match Confirmation password,* 1 uppercase character,* 1 lowercase character        |
 
   Scenario: Check create new user email error message
