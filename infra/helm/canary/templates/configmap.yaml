@@ -46,32 +46,24 @@ data:
              local weight = tonumber(os.getenv("CANARY_WEIGHT"))
              local upstream_srv = ngx.var.stable_svc_name .. ngx.var.base_url
              local environ = ""
-             if(weight > 0)
+             if(ngx.var["cookie_Can"])
              then
-               if(ngx.var["cookie_Can"])
+               environ = ngx.var["cookie_Can"]
+             else
+               if(weight == 0)
                then
-                 environ = ngx.var["cookie_Can"]
+                 environ = "stable"
                else
-                 local myrand = math.random()
-                 if(myrand <= weight)
-                 then
-                   environ = "canary"
-                 else
-                   environ = "stable"
-                 end
+                 environ = "canary"
                end
- 
-               if(environ == "canary")
-               then
-                 upstream_srv = ngx.var.canary_svc_name .. ngx.var.base_url
-               else
-                 upstream_srv = ngx.var.stable_svc_name .. ngx.var.base_url
-               end
+             end
+             if(environ == "canary")
+             then
+               upstream_srv = ngx.var.canary_svc_name .. ngx.var.base_url
              else
                upstream_srv = ngx.var.stable_svc_name .. ngx.var.base_url
-               environ = "stable"
              end
- 
+
              ngx.var.upstream_srv = upstream_srv
              ngx.header['Set-Cookie'] = "Can=" .. environ .. ";Path=/;Max-Age=" .. ngx.var.cookie_max_age
            }

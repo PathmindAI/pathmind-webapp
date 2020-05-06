@@ -283,6 +283,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_0_1:
             case VERSION_1_0_3:
             case VERSION_1_0_4:
+            case VERSION_1_0_5:
                 instructions.addAll(Arrays.asList(
                         // Setup NativeRL
                         "mkdir -p work",
@@ -380,7 +381,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
         }
     }
 
-    private void installModel(String modelId, List<String> instructions, List<String> files) {
+    private void installModel(String modelFileId, List<String> instructions, List<String> files) {
+        files.add(fileManager.buildS3CopyCmd(client.getBucketName(), modelFileId, "model.zip"));
+
         instructions.addAll(Arrays.asList(
                 "cd work",
                 "unzip ../model.zip > /dev/null",
@@ -390,7 +393,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private void installCheckpoint(String checkpointS3Path, List<String> instructions, List<String> files) {
         if (checkpointS3Path != null) {
-            files.add(fileManager.buildCheckpointCopyCmd(checkpointS3Path, "checkpoint.zip"));
+            files.add(fileManager.buildS3CopyCmd(client.getBucketName(), checkpointS3Path, "checkpoint.zip"));
 
             instructions.addAll(Arrays.asList(
                     "mkdir -p checkpoint",
@@ -436,6 +439,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("MULTIAGENT", String.valueOf(job.isMultiAgent())),
                 varCondition("RESUME", String.valueOf(job.isResume())),
                 var("CHECKPOINT_FREQUENCY", String.valueOf(job.getCheckpointFrequency())),
+                var("EPISODE_REWARD_RANGE", "0.01"),
+                var("ENTROPY_SLOPE", "0.01"),
+                var("VF_LOSS_RANGE", "0.1"),
+                var("VALUE_PRED", "0.01"),
                 var("USER_LOG", String.valueOf(job.isUserLog()))
         ));
     }

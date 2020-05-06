@@ -1174,7 +1174,13 @@
         </update>
     </changeSet>
 
-    <changeSet id="20200501-01" author="daehyun@skymind.io">
+    <changeSet id="20200501-01" author="alexander.makarov@toptal.com">
+        <addColumn tableName="MODEL">
+            <column name="PACKAGE_NAME" type="VARCHAR(1024)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200501-02" author="daehyun@skymind.io">
         <addColumn tableName="POLICY">
             <column name="IS_VALID" type="BOOLEAN" defaultValue="true">
                 <constraints nullable="false" />

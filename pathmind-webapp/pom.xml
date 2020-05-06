@@ -120,45 +120,6 @@
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>2.7</version>
             </plugin>
-            <plugin>
-                <groupId>org.jooq</groupId>
-                <artifactId>jooq-codegen-maven</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.postgresql</groupId>
-                        <artifactId>postgresql</artifactId>
-                        <scope>runtime</scope>
-                        <version>${postgresql.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.jooq</groupId>
-                        <artifactId>jooq-meta</artifactId>
-                        <version>${jooq.version}</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <jdbc>
-                        <driver>org.postgresql.Driver</driver>
-                        <url>${DB_URL}</url>
-                    </jdbc>
-                    <generator>
-                        <generate>
-                            <javaTimeTypes>true</javaTimeTypes>
-                        </generate>
-                        <database>
-                            <name>org.jooq.meta.postgres.PostgresDatabase</name>
-                            <includes>.*</includes>
-                            <excludes>Databasechangelog.*</excludes>
-                            <inputSchema>public</inputSchema>
-                            <recordTimestampFields>LAST_ACTIVITY_DATE</recordTimestampFields>
-                        </database>
-                        <target>
-                            <packageName>io.skymind.pathmind.db.jooq</packageName>
-                            <directory>../pathmind-database/src/main/java</directory>
-                        </target>
-                    </generator>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
