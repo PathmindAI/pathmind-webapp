@@ -18,6 +18,7 @@ public class Model extends ArchivableData
 	private String userNotes;
 	private boolean draft;
 	private int rewardVariablesCount;
+	private String packageName;
 
 	public Model() {
 	}
@@ -92,5 +93,13 @@ public class Model extends ArchivableData
 
 	public void setRewardVariablesCount(int rewardVariablesCount) {
 		this.rewardVariablesCount = rewardVariablesCount;
+	}
+
+	public String getPackageName() {
+		return packageName;
+	}
+
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
 	}
 }

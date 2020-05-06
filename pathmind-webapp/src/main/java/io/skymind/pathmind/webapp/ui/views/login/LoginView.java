@@ -2,11 +2,13 @@ package io.skymind.pathmind.webapp.ui.views.login;
 
 import java.util.List;
 
+import com.vaadin.flow.component.AttachEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.utils.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -214,5 +216,16 @@ public class LoginView extends HorizontalLayout
 		else if (Routes.SESSION_EXPIRED.equals(errorMessage)) {
 			sessionExpired.setVisible(true);
 		}
+	}
+
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		deleteAWSCanCookie();
+	}
+
+	private void deleteAWSCanCookie() {
+		// Deleting the cookie on the login page load to make sure new user sessions
+		// won't be using old webapp instances in the case of canary deployments.
+		CookieUtils.deleteCookie("Can");
 	}
 }
