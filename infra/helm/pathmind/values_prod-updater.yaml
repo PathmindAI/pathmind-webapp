@@ -28,8 +28,9 @@ env:
   MULTI_AGENT: false
   JOB_MOCK_CYCLE: 0
   SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/prod-updater-queue
+  SNS_UPDATER_TOPIC_ARN: arn:aws:sns:us-east-1:839270835622:prod-updater-topic
   
-name: pathmind
+name: pathmind-updater
 
 namespace: default
 
