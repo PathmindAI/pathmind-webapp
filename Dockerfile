@@ -1,17 +1,9 @@
-FROM azul/zulu-openjdk:11.0.5
+FROM base
 
 WORKDIR /app
 
 COPY . .
 
-RUN apt-get update -y && \
-	apt-get install wget -y && \
-	apt-get install rsync -y && \
-	wget https://deb.nodesource.com/setup_13.x && \
-	bash ./setup_13.x && \
-	apt-get update -y && \ 
-	apt-get install nodejs -y && \
-	apt-get install maven -y 
 RUN mvn package -Pproduction 
 
 EXPOSE 80

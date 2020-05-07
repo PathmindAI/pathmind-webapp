@@ -68,7 +68,7 @@ public class NewProjectView extends PathMindDefaultView
 
 		final long projectId = projectDAO.createNewProject(project);
 		segmentIntegrator.projectCreated();
-		UI.getCurrent().navigate(UploadModelView.class, ""+projectId);
+		getUI().ifPresent(ui -> ui.navigate(UploadModelView.class, ""+projectId));
 	}
 
 	/**

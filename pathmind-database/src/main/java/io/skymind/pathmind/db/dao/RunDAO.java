@@ -15,6 +15,7 @@ import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 
 import org.jooq.Configuration;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Repository
 public class RunDAO
 {
@@ -154,5 +156,21 @@ public class RunDAO
         }
 
         return RewardScoreRepository.getRewardScoresForPolicy(ctx, policy.getId());
+    }
+
+    public List<String> unfinishedPolicyIds(long runId) {
+        return PolicyRepository.getPoliciesForRun(ctx, runId).stream()
+                .filter(p -> !p.hasFile())
+                .map(Policy::getExternalId)
+                .collect(Collectors.toList());
+    }
+
+    public void cleanUpInvalidPolicies(long runId, List<String> validExternalIds) {
+        PolicyRepository.getPoliciesForRun(ctx, runId).stream()
+                .filter(p -> !validExternalIds.contains(p.getExternalId()))
+                .forEach(p -> {
+                    PolicyRepository.setIsValid(ctx, p.getId(), false);
+                    log.info(p.getExternalId() + " is marked as invalid");
+                });
     }
 }

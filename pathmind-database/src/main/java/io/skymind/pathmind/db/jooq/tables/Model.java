@@ -21,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row11;
+import org.jooq.Row12;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = 6899905;
+    private static final long serialVersionUID = 417129740;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -112,6 +112,11 @@ public class Model extends TableImpl<ModelRecord> {
      * The column <code>public.model.draft</code>.
      */
     public final TableField<ModelRecord, Boolean> DRAFT = createField(DSL.name("draft"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("true", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+
+    /**
+     * The column <code>public.model.package_name</code>.
+     */
+    public final TableField<ModelRecord, String> PACKAGE_NAME = createField(DSL.name("package_name"), org.jooq.impl.SQLDataType.VARCHAR(1024), this, "");
 
     /**
      * Create a <code>public.model</code> table reference
@@ -207,11 +212,11 @@ public class Model extends TableImpl<ModelRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row11 type methods
+    // Row12 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Integer, Boolean, String, Integer, Boolean> fieldsRow() {
-        return (Row11) super.fieldsRow();
+    public Row12<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Integer, Boolean, String, Integer, Boolean, String> fieldsRow() {
+        return (Row12) super.fieldsRow();
     }
 }

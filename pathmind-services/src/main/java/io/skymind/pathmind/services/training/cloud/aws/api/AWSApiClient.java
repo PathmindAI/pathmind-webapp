@@ -17,10 +17,11 @@ import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.amazonaws.util.IOUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.exception.PathMindException;
-import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,7 @@ public class AWSApiClient {
     private final ObjectMapper objectMapper;
 
     private final Regions regions;
+    @Getter
     private final String bucketName;
     private final String queueUrl;
     private final int mockCycle;

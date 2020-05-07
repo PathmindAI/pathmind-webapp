@@ -113,7 +113,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 
 		cancelSignInBtn.addClickListener(e -> showPassword(false));
 
-		forgotPasswordBtn.addClickListener(e ->UI.getCurrent().navigate(ResetPasswordView.class));
+		forgotPasswordBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(ResetPasswordView.class)));
 
 		email.addValueChangeListener(event -> {
 			if (userService.findByEmailIgnoreCase(email.getValue()) == null) {

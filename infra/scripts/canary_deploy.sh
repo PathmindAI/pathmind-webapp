@@ -17,11 +17,22 @@ apipassword=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n
 canary_weight=`kubectl get configmap canary -n ${namespace} -o jsonpath='{.data.canary_weight}'`
 deploy_to=`kubectl get configmap canary -n ${namespace} -o jsonpath='{.data.deploy_to}'`
 
+
 #Deploy app
 helm upgrade --install pathmind${deploy_to} \
 	${WORKSPACE}/infra/helm/pathmind \
 	-f ${WORKSPACE}/infra/helm/pathmind/values_${environment}${deploy_to}.yaml \
 	-n ${namespace}
+
+#send messsage to notify about new version
+sleep 30
+if [ "${environment}" == "prod" ]
+then
+	subdomain=""
+else
+	subdomain="${namespace}."
+fi
+curl -X POST -u "${apiuser}:${apipassword}" https://${subdomain}${domain}/api/newVersionAvailable
 
 #Update Canary
 helm upgrade --install canary \
@@ -31,12 +42,12 @@ helm upgrade --install canary \
 	-n ${namespace}
 
 #Update configmap
-if [ "${canary_weight}" == "99" ]
+if [ "${canary_weight}" != "0" ]
 then
-	canary_weight=1
+	canary_weight=0
 	deploy_to=""
 else
-	canary_weight=99
+	canary_weight=100
 	deploy_to="-slot"
 fi
 
@@ -46,15 +57,3 @@ kubectl create configmap canary \
 	-n ${namespace} \
 	-o yaml \
 	--dry-run | kubectl replace -f -
-
-#send messsage to notify about new version
-if [ "${environment}" == "prod" ]
-then
-	subdomain=""
-else
-	subdomain="${namespace}."
-fi
-
-sleep 60
-
-curl -X POST -u "${apiuser}:${apipassword}" https://${subdomain}${domain}/api/newVersionAvailable

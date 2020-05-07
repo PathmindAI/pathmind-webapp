@@ -113,7 +113,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 		emailField.setInvalid(false);
 		emailField.setValueChangeMode(ValueChangeMode.ON_CHANGE);
 
-		cancelBtn.addClickListener(e -> UI.getCurrent().navigate(LoginView.class));
+		cancelBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(LoginView.class)));
 		sendBtn.addClickListener(e -> {
 			if (isValid(emailField.getValue())) {
 				startResetProcess(emailField.getValue());
@@ -143,7 +143,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 					user.setPasswordResetSendAt(null);
 					userService.update(user);
 					NotificationUtils.showSuccess(CHANGED_CONFIRMATION);
-					UI.getCurrent().navigate(LoginView.class);
+					getUI().ifPresent(ui -> ui.navigate(LoginView.class));
 				} else {
 					newPassword.setInvalid(true);
 					passwordValidationNotes.removeAll();

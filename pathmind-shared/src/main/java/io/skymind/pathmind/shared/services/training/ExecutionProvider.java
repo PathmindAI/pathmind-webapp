@@ -4,6 +4,7 @@ import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.constants.RunStatus;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Map;
 
 public interface ExecutionProvider {
@@ -66,14 +67,14 @@ public interface ExecutionProvider {
     Map<String, String> progress(String jobHandle);
 
     /**
-     * Collects the current progress of the training job identified by the given job handle for the given job status
+     * Collects the current progress of the training job identified by the given job handle.
+     * Will ignore policies if it doesn't exist in valid external ids list
      *
      * @param jobHandle Job Handle
-     * @param runStatus Job Status
-     *
+     * @param validExternalIds Valid external Id list
      * @return Map of training run to the contents of its progress file
      */
-    Map<String, String> progress(String jobHandle, RunStatus runStatus);
+    Map<String, String> progress(String jobHandle, List<String> validExternalIds);
 
     /**
      * Download the policy file from the given jobHandle and trainingRun
