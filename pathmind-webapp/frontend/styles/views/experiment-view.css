@@ -30,7 +30,7 @@
 }
 
 .experiment-view juicy-ace-editor {
-  min-height: 5rem;
+  display: block;
 }
 
 .experiment-view .right-panel > vaadin-vertical-layout {

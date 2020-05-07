@@ -175,6 +175,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		rewardFunctionEditor = new RewardFunctionEditor();
 		rewardFunctionEditor.setReadonly(true);
 		rewardFunctionEditor.setSizeFull();
+		rewardFunctionEditor.setMaxLines(20);
 		rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
 			LabelFactory.createLabel("Reward Function", BOLD_LABEL), rewardFunctionEditor
 		);
