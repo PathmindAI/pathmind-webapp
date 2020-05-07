@@ -138,7 +138,9 @@ public class ProjectsView extends PathMindDefaultView
 
 	private void renameProject(Project project) {
 		RenameProjectDialog dialog = new RenameProjectDialog(project, projectDAO, updateProjectName -> {
-			projectGrid.getDataCommunicator().refresh(project);
+			projectGrid.getDataProvider().refreshItem(project);
+			// JS is used because projectGrid.recalculateColumnWidths(); does not work; probably a Vaadin Grid issue
+			projectGrid.getElement().executeJs("setTimeout(() => { this.recalculateColumnWidths() }, 0)");
 		});
 		dialog.open();
 	}
