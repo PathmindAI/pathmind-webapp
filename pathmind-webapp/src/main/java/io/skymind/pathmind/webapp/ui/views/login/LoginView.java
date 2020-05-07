@@ -2,11 +2,13 @@ package io.skymind.pathmind.webapp.ui.views.login;
 
 import java.util.List;
 
+import com.vaadin.flow.component.AttachEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.utils.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -164,7 +166,7 @@ public class LoginView extends HorizontalLayout
 		LoginForm loginForm = new LoginForm();
 		loginForm.setI18n(loginI18n);
 		loginForm.setAction(Routes.LOGIN_URL);
-		loginForm.addForgotPasswordListener(e -> UI.getCurrent().navigate(ResetPasswordView.class));
+		loginForm.addForgotPasswordListener(e -> getUI().ifPresent(ui -> ui.navigate(ResetPasswordView.class)));
 		loginForm.addLoginListener(evt -> segmentIntegrator.userLoggedIn());
 		return loginForm;
 	}
@@ -182,7 +184,7 @@ public class LoginView extends HorizontalLayout
 			event.forwardTo(getRerouteClass());
 			// Make sure automatic push mode is enabled. If we don't do this, automatic push
 			// won't work even we have proper annotations in place.
-			UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
+			event.getUI().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 			return;
 		}
 		add(segmentIntegrator);
@@ -214,5 +216,16 @@ public class LoginView extends HorizontalLayout
 		else if (Routes.SESSION_EXPIRED.equals(errorMessage)) {
 			sessionExpired.setVisible(true);
 		}
+	}
+
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		deleteAWSCanCookie();
+	}
+
+	private void deleteAWSCanCookie() {
+		// Deleting the cookie on the login page load to make sure new user sessions
+		// won't be using old webapp instances in the case of canary deployments.
+		CookieUtils.deleteCookie("Can");
 	}
 }

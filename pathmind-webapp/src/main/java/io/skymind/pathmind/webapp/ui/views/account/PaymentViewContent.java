@@ -92,7 +92,7 @@ public class PaymentViewContent extends PolymerTemplate<PaymentViewContent.Model
 			Customer customer = createOrUpdateCustomer(paymentMethod);
 			final Subscription subscription = stripeService.createSubscription(customer);
 			segmentIntegrator.accountUpgraded();
-			UI.getCurrent().navigate(UpgradeDoneView.class);
+			getUI().ifPresent(ui -> ui.navigate(UpgradeDoneView.class));
 		} catch (StripeException e) {
 			log.warn("There was an error creating a subscription for the customer: " + user.getEmail());
 			getModel().setIsFormComplete(true);
@@ -175,7 +175,7 @@ public class PaymentViewContent extends PolymerTemplate<PaymentViewContent.Model
 	@EventHandler
 	private void cancelButtonClicked()
 	{
-		UI.getCurrent().navigate(AccountUpgradeView.class);
+		getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class));
 	}
 
 	public interface Model extends TemplateModel

@@ -37,7 +37,7 @@ public class EmailVerificationView extends PolymerTemplate<EmailVerificationView
 
 	@Override
 	public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
-		backToApp.addClickListener(e -> UI.getCurrent().navigate(LoginView.class));
+		backToApp.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(LoginView.class)));
 
 		try {
 			PathmindUser user = userService.findByToken(token);

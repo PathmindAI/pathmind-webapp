@@ -165,7 +165,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 		placeholder.setVisible(emptyDashboard);
 		titlePanel.setVisible(!emptyDashboard);
 		dashboardGrid.setVisible(!emptyDashboard);
-		VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+		VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
 			// dashboardGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting data provider
 			dashboardGrid.setDataProvider(dataProvider);
 		});
