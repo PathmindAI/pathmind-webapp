@@ -194,7 +194,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		trainingService.startRun(experiment);
 		segmentIntegrator.discoveryRunStarted();
 
-		UI.getCurrent().navigate(ExperimentView.class, experimentId);
+		getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experimentId));
 	}
 
 	private Button getActionButton() {

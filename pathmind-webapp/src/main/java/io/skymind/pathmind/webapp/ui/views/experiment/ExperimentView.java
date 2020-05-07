@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Image;
@@ -169,7 +168,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private void setupLeftPanel() {
-		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiments, experiment, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
+		experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
 		panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
 		policyChartPanel = new PolicyChartPanel();
 		policyChartPanel.setPadding(false);
@@ -205,7 +204,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		restartTraining.setVisible(false);
 		restartTraining.addClassNames("large-image-btn", "run");
 
-		exportPolicyButton = new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()));
+		exportPolicyButton = new Button("Export Policy", click -> getUI().ifPresent(ui -> ui.navigate(ExportPolicyView.class, policy.getId())));
 		exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportPolicyButton.addClassName("half-width");
 		exportPolicyButton.setVisible(false);
@@ -280,7 +279,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			} else {
 				Experiment currentExperiment = experiments.get(0);
 				selectExperiment(currentExperiment);
-				experimentsNavbar.setExperiments(experiments, currentExperiment);
+				getUI().ifPresent(ui -> experimentsNavbar.setExperiments(ui, experiments, currentExperiment));
 			}
 		});
 	}
@@ -329,7 +328,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			updateScreenComponents();
 			notesField.setNotesText(experiment.getUserNotes());
 			pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-			UI.getCurrent().getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId());
+			getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
 		}
 	}
 
@@ -356,6 +355,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		updateScreenComponents();
+		experimentsNavbar.setExperiments(event.getUI(), experiments, experiment);
 	}
 
 	private void updateScreenComponents() {

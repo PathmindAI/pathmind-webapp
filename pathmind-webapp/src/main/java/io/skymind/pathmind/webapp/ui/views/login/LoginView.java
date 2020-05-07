@@ -166,7 +166,7 @@ public class LoginView extends HorizontalLayout
 		LoginForm loginForm = new LoginForm();
 		loginForm.setI18n(loginI18n);
 		loginForm.setAction(Routes.LOGIN_URL);
-		loginForm.addForgotPasswordListener(e -> UI.getCurrent().navigate(ResetPasswordView.class));
+		loginForm.addForgotPasswordListener(e -> getUI().ifPresent(ui -> ui.navigate(ResetPasswordView.class)));
 		loginForm.addLoginListener(evt -> segmentIntegrator.userLoggedIn());
 		return loginForm;
 	}
@@ -184,7 +184,7 @@ public class LoginView extends HorizontalLayout
 			event.forwardTo(getRerouteClass());
 			// Make sure automatic push mode is enabled. If we don't do this, automatic push
 			// won't work even we have proper annotations in place.
-			UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
+			event.getUI().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 			return;
 		}
 		add(segmentIntegrator);

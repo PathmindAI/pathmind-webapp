@@ -9,7 +9,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -66,14 +65,12 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	
 	@Autowired
 	private FeatureManager featureManager;
-
+	
 	private Model model;
 
 	private List<RewardVariable> rewardVariables = new ArrayList<>();
 
 	private Binder<Model> modelBinder;
-
-	private UI ui;
 
 	private UploadModelWizardPanel uploadModelWizardPanel;
 	private ModelDetailsWizardPanel modelDetailsWizardPanel;
@@ -92,7 +89,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	public UploadModelView()
 	{
 		super();
-		this.ui = UI.getCurrent();
 	}
 
 	protected Component getMainContent()
@@ -211,7 +207,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
 		modelService.updateModelRewardVariables(model, rewardVariableList);
 
-		UI.getCurrent().navigate(NewExperimentView.class, experimentId);
+		getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
 	}
 
 	private void handleUploadWizardClicked() {
@@ -233,22 +229,22 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	@Override
 	public void updateStatus(double percentage) {
-		PushUtils.push(ui, () ->
-			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(percentage));
+		getUI().ifPresent(ui -> PushUtils.push(ui, () -> 
+				uploadModelWizardPanel.setFileCheckStatusProgressBarValue(percentage)));
 	}
 
 	@Override
 	public void updateError(String error) {
-		PushUtils.push(ui, () -> {
+		getUI().ifPresent(ui -> PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
 			uploadModelWizardPanel.setError(error);
 			segmentIntegrator.modelImported(false);
-		});
+		}));
 	}
 
 	@Override
 	public void fileSuccessfullyVerified(FileCheckResult result) {
-		PushUtils.push(ui, () -> {
+		getUI().ifPresent(ui -> PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
 			setVisibleWizardPanel(modelDetailsWizardPanel);
 
@@ -261,7 +257,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");
 			segmentIntegrator.modelImported(true);
-		});
+		}));
 	}
 
 	@Override

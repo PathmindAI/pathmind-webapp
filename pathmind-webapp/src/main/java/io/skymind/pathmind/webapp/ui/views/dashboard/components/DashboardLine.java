@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.dashboard.components;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -41,9 +42,8 @@ public class DashboardLine extends HorizontalLayout {
 		this.dashboardItem = item;
 		setClassName("dashboard-line");
 		breadcrumb = new Breadcrumbs(item.getProject(), item.getModel(), item.getExperiment(), false);
-		VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
-			timestamp = new Span(DateAndTimeUtils.formatDateAndTimeShortFormatter(item.getLatestUpdateTime(), timeZoneId));
-		});
+		timestamp = new Span();
+		
 		Span projectTitle = new Span(item.getProject().getName());
 		projectTitle.addClassName("project-title");
 		
@@ -82,6 +82,13 @@ public class DashboardLine extends HorizontalLayout {
 			.forEach(comp -> comp.getElement().addEventListener("click", evt -> {}).addEventData("event.stopPropagation()"));
 		menuButton.getElement().addEventListener("click", evt -> {}).addEventData("event.stopPropagation()");
 		addClickListener(evt -> clickHandler.accept(item));
+	}
+	
+	@Override
+	protected void onAttach(AttachEvent evt) {
+		VaadinDateAndTimeUtils.withUserTimeZoneId(evt.getUI(), timeZoneId -> {
+			timestamp.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(dashboardItem.getLatestUpdateTime(), timeZoneId));
+		});
 	}
 
 	private HorizontalLayout createStages() {

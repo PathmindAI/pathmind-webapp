@@ -3,6 +3,7 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
@@ -37,7 +38,7 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 	private VerticalLayout rowsWrapper;
 	private Consumer<Experiment> selectExperimentConsumer;
 
-	public ExperimentsNavbar(ExperimentDAO experimentDAO, List<Experiment> experiments, Experiment currentExperiment, long modelId, Consumer<Experiment> selectExperimentConsumer)
+	public ExperimentsNavbar(ExperimentDAO experimentDAO, long modelId, Consumer<Experiment> selectExperimentConsumer)
 	{
 		this.selectExperimentConsumer = selectExperimentConsumer;
 		rowsWrapper = new VerticalLayout();
@@ -50,10 +51,9 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 		add(new NewExperimentButton(experimentDAO, modelId));
 		add(rowsWrapper);
 		addClassName("experiments-navbar");
-		setExperiments(experiments, currentExperiment);
 	}
 
-	public void setExperiments(List<Experiment> experiments, Experiment currentExperiment) {
+	public void setExperiments(UI ui, List<Experiment> experiments, Experiment currentExperiment) {
 		rowsWrapper.removeAll();
 		experimentsNavBarItems.clear();
 		
@@ -61,7 +61,7 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 			.filter(experiment -> !ExperimentUtils.isDraftRunType(experiment))
 			.sorted(Comparator.comparing(Experiment::getDateCreated).reversed())
 			.forEach(experiment -> {
-				ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(experiment, selectExperimentConsumer);
+				ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(ui, experiment, selectExperimentConsumer);
 				experimentsNavBarItems.add(navBarItem);
 				if(experiment.getId() == currentExperiment.getId()) {
 					navBarItem.setAsCurrent();
@@ -109,16 +109,16 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 		private Experiment experiment;
 		private Component statusComponent;
 
-		ExperimentsNavBarItem(Experiment experiment, Consumer<Experiment> selectExperimentConsumer) {
+		ExperimentsNavBarItem(UI ui, Experiment experiment, Consumer<Experiment> selectExperimentConsumer) {
 			this.experiment = experiment;
 			RunStatus overallExperimentStatus = ExperimentUtils.getTrainingStatus(experiment);
 			statusComponent = createStatusIcon(overallExperimentStatus);
 			add(statusComponent);
-			VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+			addClickListener(event -> handleRowClicked(experiment, selectExperimentConsumer));
+			addClassName("experiment-navbar-item");
+			setSpacing(false);
+			VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
 				add(createExperimentText(experiment.getName(), DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId)));
-				addClickListener(event -> getUI().ifPresent(ui -> handleRowClicked(experiment, selectExperimentConsumer)));
-				addClassName("experiment-navbar-item");
-				setSpacing(false);
 			});
 		}
 
