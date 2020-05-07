@@ -1,15 +1,22 @@
 package io.skymind.pathmind.shared.data;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.data.rllib.ExperimentState;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collections;
 import java.util.List;
 
 import static io.skymind.pathmind.shared.constants.RunStatus.*;
 
+@Getter
 public class ProviderJobStatus {
+	@Setter
 	private RunStatus runStatus;
+	@Setter
 	private List<String> description;
+	private ExperimentState experimentState;
 
 	public static ProviderJobStatus KILLED = new ProviderJobStatus(Killed);
 	public static ProviderJobStatus RESTARTING = new ProviderJobStatus(Restarting);
@@ -27,19 +34,8 @@ public class ProviderJobStatus {
 		this.description = description;
 	}
 
-	public RunStatus getRunStatus() {
-		return runStatus;
-	}
-
-	public void setRunStatus(RunStatus runStatus) {
-		this.runStatus = runStatus;
-	}
-
-	public List<String> getDescription() {
-		return description;
-	}
-
-	public void setDescription(List<String> description) {
-		this.description = description;
+	public ProviderJobStatus addExperimentState(ExperimentState experimentState) {
+		this.experimentState = experimentState;
+		return this;
 	}
 }

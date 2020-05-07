@@ -35,7 +35,7 @@ public class AccountUpgradeViewContent extends PolymerTemplate<AccountUpgradeVie
 		getModel().setContactLink(contactLink);
 		user = currentUser.getUser();
 
-		proBtn.addClickListener(e -> UI.getCurrent().navigate(PaymentView.class));
+		proBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(PaymentView.class)));
 	}
 
 	public interface Model extends TemplateModel {
