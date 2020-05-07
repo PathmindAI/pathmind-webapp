@@ -130,6 +130,7 @@ public class ProjectsPage extends PageObject {
         WebElement projectNameInputField = e.findElement(byInput);
 
 		upload(System.getProperty("user.dir") + "/models/" + model).fromLocalMachine().to(projectNameInputField);
+		waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Your model was successfully uploaded!']")));
     }
 
     public void clickCheckModelBtn() {
@@ -168,7 +169,7 @@ public class ProjectsPage extends PageObject {
 
     public void checkThatProjectExistInProjectsList(String projectName) {
         Actions actions = new Actions(getDriver());
-        actions.moveToElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+projectName+"']")));
+        actions.moveToElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content/descendant::span[text()='"+projectName+"']")));
         actions.perform();
         List<String> strings = new ArrayList<>();
         for(WebElement e : projectsNames){
@@ -325,7 +326,7 @@ public class ProjectsPage extends PageObject {
     }
 
     public void openProjectOnProjectsPage(String projectName) {
-		WebElement project = getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+projectName+"']"));
+		WebElement project = getDriver().findElement(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-grid-cell-content"));
 		waitFor(ExpectedConditions.elementToBeClickable(project));
 		JavascriptExecutor executor = (JavascriptExecutor)getDriver();
 		executor.executeScript("arguments[0].click();", project);

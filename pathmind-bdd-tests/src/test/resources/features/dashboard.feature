@@ -98,3 +98,64 @@ Feature: Dashboard page
       | Click action                              |
       | Click in AutotestProject navigation icon  |
       | Click in AutotestProject stage breadcrumb |
+
+  @dashArchiveItem
+  Scenario: Archive empty project from dashboard
+    Given Login to the pathmind
+    When Create new empty project
+    When Open dashboard page
+    When Click archive btn from dashboard
+    When In confirmation dialog click in 'Archive Project' button
+    When Open projects page
+    When Check that project not exist in project list AutotestProject
+    When Open archives tab
+    When Check that project exist in project list AutotestProject
+
+  @dashArchiveItem
+  Scenario: Check stage status for project with draft model
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
+    When Open dashboard page
+    When Click archive btn from dashboard
+    When In confirmation dialog click in 'Archive Model' button
+    When Open projects page
+    When Open project AutotestProject on projects page
+    When Check that model/experiment NOT exist in archived tab
+    When Open projects/model/experiment archived tab
+    Then Check that model/experiment name 1 Draft exist in archived tab
+
+  @dashArchiveItem
+  Scenario: Check stage status for project with draft experiment
+    Given Login to the pathmind
+    When Create new CoffeeShop project
+    When Open dashboard page
+    When Click archive btn from dashboard
+    When In confirmation dialog click in 'Archive Experiment' button
+    When Open projects page
+    When Open project AutotestProject on projects page
+    When Click the model name 1
+    When Check that model/experiment NOT exist in archived tab
+    When Open projects/model/experiment archived tab
+    Then Check that model/experiment name 1 Draft exist in archived tab
+
+  @dashArchiveItem
+  Scenario: Check stage status for project with started experiment
+    Given Login to the pathmind
+    When Create new CoffeeShop project
+    When Click project start run button
+    When Open dashboard page
+    When Click archive btn from dashboard
+    When In confirmation dialog click in 'Archive Experiment' button
+    When Open projects page
+    When Open project AutotestProject on projects page
+    When Click the model name 1
+    When Check that model/experiment NOT exist in archived tab
+    When Open projects/model/experiment archived tab
+    Then Check that model/experiment name 1 exist in archived tab
+    Then Click the experiment name 1
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
