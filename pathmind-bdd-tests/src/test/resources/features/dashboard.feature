@@ -118,6 +118,7 @@ Feature: Dashboard page
     When Click create new project button
     When Input name of the new project AutotestProject and click Create project button
     When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
+    When Check that model successfully uploaded
     When Open dashboard page
     When Click archive btn from dashboard
     When In confirmation dialog click in 'Archive Model' button

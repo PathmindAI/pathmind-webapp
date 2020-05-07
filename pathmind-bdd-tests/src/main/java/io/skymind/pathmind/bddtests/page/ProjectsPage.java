@@ -130,7 +130,6 @@ public class ProjectsPage extends PageObject {
         WebElement projectNameInputField = e.findElement(byInput);
 
 		upload(System.getProperty("user.dir") + "/models/" + model).fromLocalMachine().to(projectNameInputField);
-		waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Your model was successfully uploaded!']")));
     }
 
     public void clickCheckModelBtn() {
@@ -678,5 +677,9 @@ public class ProjectsPage extends PageObject {
             variables.add(webElement.getAttribute("value"));
         }
         assertThat(variables, hasItem(variableName) );
+    }
+
+    public void checkThatModelSuccessfullyUploaded() {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Your model was successfully uploaded!']")));
     }
 }

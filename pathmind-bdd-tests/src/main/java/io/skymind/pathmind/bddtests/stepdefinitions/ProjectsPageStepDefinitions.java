@@ -497,4 +497,9 @@ public class ProjectsPageStepDefinitions {
     public void checkThatThereIsAVariableNamed(String variableName) {
         projectsPageSteps.checkThatThereIsAVariableNamed(variableName);
     }
+
+    @When("^Check that model successfully uploaded$")
+    public void checkThatModelSuccessfullyUploaded() {
+        projectsPageSteps.checkThatModelSuccessfullyUploaded();
+    }
 }
