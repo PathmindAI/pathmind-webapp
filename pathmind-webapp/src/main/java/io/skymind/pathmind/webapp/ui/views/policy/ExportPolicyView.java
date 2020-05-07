@@ -120,11 +120,6 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	}
 
 	@Override
-	protected boolean isAccessAllowedForUser() {
-		return true;
-	}
-
-	@Override
 	protected void initLoadData() {
 		policy = policyDAO.getPolicyIfAllowed(policyId, SecurityUtils.getUserId())
 			.orElseThrow(() -> new InvalidDataException("Attempted to access Policy: " + policyId));

@@ -205,11 +205,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	}
 
 	@Override
-	protected boolean isAccessAllowedForUser() {
-		return true;
-	}
-
-	@Override
 	protected void initLoadData() {
 		project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));

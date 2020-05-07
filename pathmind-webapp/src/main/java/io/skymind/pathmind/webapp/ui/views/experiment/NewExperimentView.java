@@ -234,11 +234,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	@Override
-	protected boolean isAccessAllowedForUser() {
-		return true;
-	}
-
-	@Override
 	public void setParameter(BeforeEvent event, Long experimentId) {
 		this.experimentId = experimentId;
 	}

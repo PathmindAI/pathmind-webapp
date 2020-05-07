@@ -162,11 +162,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 	}
 	
 	@Override
-	protected boolean isAccessAllowedForUser() {
-		return true;
-	}
-
-	@Override
 	protected Component getTitlePanel() {
 		return new ScreenTitlePanel(createBreadcrumbs());
 	}

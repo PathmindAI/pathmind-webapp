@@ -313,11 +313,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		this.experimentId = experimentId;
 	}
 
-	@Override
-	protected boolean isAccessAllowedForUser() {
-		return true;
-	}
-
 	private void selectExperiment(Experiment selectedExperiment) {
 		// The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
 		// same experiment but just because right now loads can take up to several seconds I'm being extra cautious.

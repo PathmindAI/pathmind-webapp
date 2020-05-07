@@ -38,9 +38,4 @@ public class PageNotFoundView extends PathMindDefaultView implements HasErrorPar
 		return WrapperUtils.wrapWidthFullCenterVertical(
 				LabelFactory.createLabel("The page you requested could not be found. Please contact Pathmind for assistance."));
 	}
-
-	@Override
-	protected boolean isAccessAllowedForUser() {
-		return true;
-	}
 }
