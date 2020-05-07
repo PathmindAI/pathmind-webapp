@@ -93,4 +93,8 @@ public class Experiment extends ArchivableData
 	public void setUserNotes(String userNotes) {
 		this.userNotes = userNotes;
 	}
+
+	public boolean isDraft() {
+		return getRuns() == null || getRuns().isEmpty();
+	}
 }
