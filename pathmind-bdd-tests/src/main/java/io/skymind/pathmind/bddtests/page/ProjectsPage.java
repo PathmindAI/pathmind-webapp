@@ -47,6 +47,8 @@ public class ProjectsPage extends PageObject {
     @FindBy(xpath = "//a[text()='Projects' and @href='projects']")
     private WebElement headerProjectsBtn;
     @FindBy(xpath = "//vaadin-grid-cell-content")
+    private List<WebElement> experimentModelsNames;
+    @FindBy(xpath = "//*[@class='project-name-column']/descendant::span")
     private List<WebElement> projectsNames;
     @FindBy(xpath = "(//vaadin-text-area)[1])")
     private WebElement errorsTextFieldShadow;
@@ -168,7 +170,7 @@ public class ProjectsPage extends PageObject {
 
     public void checkThatProjectExistInProjectsList(String projectName) {
         Actions actions = new Actions(getDriver());
-        actions.moveToElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+projectName+"']")));
+        actions.moveToElement(getDriver().findElement(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-grid-cell-content")));
         actions.perform();
         List<String> strings = new ArrayList<>();
         for(WebElement e : projectsNames){
@@ -250,10 +252,6 @@ public class ProjectsPage extends PageObject {
         assertThat(searchInputField.getAttribute("value"), isEmptyString());
     }
 
-    public void clickProjectName(String project) {
-        getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + project + Serenity.sessionVariableCalled("randomNumber") + "']")).click();
-    }
-
     public void clickTheModelName(String modelName) {
         getDriver().findElement(By.xpath("//vaadin-grid-cell-content[normalize-space(text())='"+modelName+"']")).click();
     }
@@ -267,7 +265,7 @@ public class ProjectsPage extends PageObject {
 
     public void clickProjectsArchiveButton(String projectName) {
         waitABit(2000);
-        getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+projectName+"']/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button")).click();
+        getDriver().findElement(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-grid-cell-content/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button")).click();
     }
 
 	public void clickExperimentArchiveButton() {
@@ -368,7 +366,7 @@ public class ProjectsPage extends PageObject {
     public void checkThatModelExistInArchivedTab(String modelName) {
         waitABit(2500);
         List<String> strings = new ArrayList<>();
-        for(WebElement e : projectsNames){
+        for(WebElement e : experimentModelsNames){
             strings.add(e.getText());
         }
         assertThat(strings, hasItem(modelName));
@@ -377,7 +375,7 @@ public class ProjectsPage extends PageObject {
     public void checkThatModelNOTExistInArchivedTab() {
         waitABit(2000);
         List<String> strings = new ArrayList<>();
-        for(WebElement e : projectsNames){
+        for(WebElement e : experimentModelsNames){
             strings.add(e.getText());
         }
         assertThat(strings, not(hasItem("1")));
