@@ -2,8 +2,7 @@ package io.skymind.pathmind.shared.constants;
 
 import java.util.Arrays;
 
-public enum RunStatus
-{
+public enum RunStatus {
 	NotStarted(0, "Not Started"),
 	Starting(1, "Starting Cluster"),
 	Running(2, "Running"),
@@ -16,7 +15,7 @@ public enum RunStatus
 	private int id;
 	private String name;
 
-	private RunStatus(int id, String name) {
+	RunStatus(int id, String name) {
 		this.id = id;
 		this.name = name;
 	}
