@@ -1,4 +1,9 @@
-package io.skymind.pathmind.shared.bus;
+package io.skymind.pathmind.webapp.bus;
+
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -9,10 +14,10 @@ import java.util.concurrent.Executors;
  * For now I've implemented a custom EventBus for several reasons. Should we need to extend the EventBus then we should
  * go with a standard library/framework. In the meantime however this will cover our needs, is very simple, and gives us several big
  * performance advantages as a side effect.
- *
+ * <p>
  * Firstly the EventBus is a singleton. In terms of data structure the EventBus is basically a HashMap of EventTypes which
  * then contain a list of all the Subscribers for each EventType.
- *
+ * <p>
  * To keep things very simple, and based on our expected usage patterns, I specifically selected the data structures to
  * be thread safe. The Map is an UnModifiableMap because once we create a Map entry for each EventType we should never
  * need to modify the Map again. It could be a ConcurrentHashMap but there's no real advantage since it's not
@@ -22,20 +27,19 @@ import java.util.concurrent.Executors;
  * the worse case is fire an event to a screen that has unsubscribed (which is not that bad) but even so it should not be possible
  * since that can only be done on a detach, and if that's the case then the getUI().isPresent() check will fail and
  * the event will NOT be fired.
- *
+ * <p>
  * Since it's a custom EventBus we can then benefit from filtering on the event BEFORE the event is fired, saving us from creating
  * extra threads only to have all the views/components filter after the fact, not to mention saving us from creating a bunch
  * of threads. And since we're creating threads to fire events (so that there is no blocking) we can just stream through
  * the subscriber list. The subscriber list should be short. If it ever becomes a problem we can always parallelStream
  * but for now I didn't think that was worth it.
- *
+ * <p>
  * This type of thread pool is used as recommended by the API: "These pools will typically improve the performance of
  * programs that execute many short-lived asynchronous tasks". The ExecutorService.shutdown() method is not hooked in
  * since there's no point because the only time we'll need this is when the server is shutting down, at which point
  * it's going to be shutting down hard anyways.
  */
-public class EventBus
-{
+public class EventBus {
     private static final EventBus EVENT_BUS = new EventBus();
 
     private Map<BusEventType, List<EventBusSubscriber>> subscribers;
@@ -66,6 +70,16 @@ public class EventBus
 
     public static void unsubscribe(EventBusSubscriber subscriber) {
         EVENT_BUS.subscribers.get(subscriber.getEventType()).remove(subscriber);
+    }
+
+    public static void fireEventBusUpdates(Run run, List<Policy> policies) {
+        // An event for each policy since we only need to update some of the policies in a run.
+        if (!policies.isEmpty()) {
+            EventBus.post(new PolicyUpdateBusEvent(policies));
+        }
+        // Send run updated event, meaning that all policies under the run is updated.
+        // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
+        EventBus.post(new RunUpdateBusEvent(run));
     }
 
 }
