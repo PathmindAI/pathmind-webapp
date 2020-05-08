@@ -168,7 +168,7 @@ public class ProjectsPage extends PageObject {
 
     public void checkThatProjectExistInProjectsList(String projectName) {
         Actions actions = new Actions(getDriver());
-        actions.moveToElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content/descendant::span[text()='"+projectName+"']")));
+        actions.moveToElement(getDriver().findElement(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-grid-cell-content")));
         actions.perform();
         List<String> strings = new ArrayList<>();
         for(WebElement e : projectsNames){
