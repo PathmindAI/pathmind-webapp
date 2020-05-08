@@ -1215,9 +1215,12 @@
         </sql>
         <dropTable tableName="EXECUTION_PROVIDER_META_DATA"/>
         <rollback>
-        	<comment>If something goes wrong, just drop the new columns, keep in mind that EXECUTION_PROVIDER_META_DATA table is dropped once everything is completed</comment>
+        	<comment>If something goes wrong, just drop the new columns and migration procedure, keep in mind that EXECUTION_PROVIDER_META_DATA table is dropped once everything is completed</comment>
             <dropColumn tableName="RUN" columnName="JOB_ID"/>
             <dropColumn tableName="POLICY" columnName="CHECK_POINT_FILE_KEY"/>
+            <sql>
+        		DROP FUNCTION IF EXISTS migrate_exec_prov_meta_data;
+        	</sql>
         </rollback>
     </changeSet>
 
