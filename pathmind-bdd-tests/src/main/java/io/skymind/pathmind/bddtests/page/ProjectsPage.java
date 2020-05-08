@@ -173,8 +173,16 @@ public class ProjectsPage extends PageObject {
         actions.moveToElement(getDriver().findElement(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-grid-cell-content")));
         actions.perform();
         List<String> strings = new ArrayList<>();
-        for(WebElement e : projectsNames){
-            strings.add(e.getText());
+        try {
+            for(WebElement e : projectsNames){
+                strings.add(e.getText());
+            }
+        }
+        catch(org.openqa.selenium.StaleElementReferenceException ex)
+        {
+            for(WebElement e : projectsNames){
+                strings.add(e.getText());
+            }
         }
         assertThat(strings, hasItem(projectName));
     }
@@ -486,7 +494,7 @@ public class ProjectsPage extends PageObject {
 
     public void checkExperimentModelStatusIsStarting(String status) {
         List<String> strings = new ArrayList<>();
-        for(WebElement e : projectsNames){
+        for(WebElement e : experimentModelsNames){
             strings.add(e.getText());
         }
         assertThat(strings, hasItem(status));
@@ -615,7 +623,14 @@ public class ProjectsPage extends PageObject {
 
 	public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
 		assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+" ']/following-sibling::vaadin-grid-cell-content[4]")).getText(), is(note));
-	}
+        try {
+            assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+" ']/following-sibling::vaadin-grid-cell-content[4]")).getText(), is(note));
+        }
+        catch(org.openqa.selenium.StaleElementReferenceException ex)
+        {
+            assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+" ']/following-sibling::vaadin-grid-cell-content[4]")).getText(), is(note));
+        }
+    }
 
     public void checkNumberOfProjectsWithDraftTag(int numberOfProjects) {
     	setImplicitTimeout(5, SECONDS);
@@ -675,5 +690,18 @@ public class ProjectsPage extends PageObject {
             variables.add(webElement.getAttribute("value"));
         }
         assertThat(variables, hasItem(variableName) );
+    }
+
+    public void clickEditProjectIconFromProjectsPage(String projectName) {
+        waitABit(3000);
+        WebElement project = getDriver().findElement(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-grid-cell-content"));
+        Actions actions = new Actions(getDriver());
+        actions.moveToElement(project);
+        actions.perform();
+        WebElement editProjectBtn = getDriver().findElement(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-horizontal-layout/descendant::iron-icon[@icon='vaadin:edit']"));
+        actions.moveToElement(editProjectBtn);
+        actions.click();
+        actions.perform();
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label' and text()='Rename project']")));
     }
 }

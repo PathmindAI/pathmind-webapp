@@ -20,8 +20,15 @@ public class DashboardPage extends PageObject {
 	}
 
 	public void clickModelBreadcrumbFromDashboard(String projectName) {
-		getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='"+projectName+"']/following-sibling::a[text()='Model #1']")).click();
-		waitABit(2500);
+        try {
+            getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='"+projectName+"']/following-sibling::a[text()='Model #1']")).click();
+            waitABit(2500);
+        }
+        catch(org.openqa.selenium.StaleElementReferenceException ex)
+        {
+            getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='"+projectName+"']/following-sibling::a[text()='Model #1']")).click();
+            waitABit(2500);
+        }
 	}
 
 	public void clickExperimentBreadcrumbFromDashboard(String projectName) {
