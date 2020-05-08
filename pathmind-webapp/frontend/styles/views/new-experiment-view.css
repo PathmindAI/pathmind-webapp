@@ -2,8 +2,8 @@
   min-height: 760px;
 }
 
-.new-experiment-view .page-title + vaadin-vertical-layout {
-  height: auto !important;
+.new-experiment-view .view-section {
+  overflow: visible;
 }
 
 .panel-title {
@@ -34,7 +34,8 @@
 }
 
 .error-and-notes-container {
-  flex: 1;
+  flex: 0 0 18rem;
+  overflow: auto;
 }
 
 .errors-wrapper {
