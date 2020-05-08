@@ -79,15 +79,15 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Binder<Experiment> binder;
 
-    public NewExperimentView() {
-        super();
-        addClassName("new-experiment-view");
-    }
+	public NewExperimentView() {
+		super();
+		addClassName("new-experiment-view");
+	}
 
-    @Override
-    protected Component getTitlePanel() {
-        return new ScreenTitlePanel(createBreadcrumbs());
-    }
+	@Override
+	protected Component getTitlePanel() {
+		return new ScreenTitlePanel(createBreadcrumbs());
+	}
 
 	@Override
 	protected Component getMainContent() {
@@ -163,11 +163,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private boolean canStartTraining() {
-    	return errorMessageWrapper.hasClassName("noError") && canSaveDataInDB();
+		return errorMessageWrapper.hasClassName("noError") && canSaveDataInDB();
 	}
 
 	private boolean canSaveDataInDB() {
-    	return rewardFunctionEditor.getValue().length() <= 1000 && !rewardVariablesTable.isInvalid();
+		return rewardFunctionEditor.getValue().length() <= 1000 && !rewardVariablesTable.isInvalid();
 	}
 
 	private Component getErrorsPanel() {
