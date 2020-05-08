@@ -32,10 +32,13 @@ import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.*;
 import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.CARGO_ATTRIBUTE;
 import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.TYPE_POLICY;
 import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.TYPE_RUN;
@@ -59,26 +62,30 @@ public class UpdaterService {
 
     private final AwsApiClientSNS snsClient;
 
+    private final String sqsFilter;
+
     @Autowired
     public UpdaterService(AWSExecutionProvider provider,
             RunDAO runDAO,
             PolicyFileService policyFileService, TrainingErrorDAO trainingErrorDAO,
-            ObjectMapper objectMapper, @Value("${pathmind.aws.sns.updater_topic_arn}") String updaterTopicArn,
-            AwsApiClientSNS snsClient) {
+            AwsApiClientSNS snsClient,
+            @Value("${pathmind.aws.sns.updater_topic_arn}") String topicArn,
+            @Value("${pathmind.aws.sns.updater_sqs_filter}") String sqsFilter,
+            ObjectMapper objectMapper) {
         this.provider = provider;
         this.runDAO = runDAO;
         this.policyFileService = policyFileService;
         this.trainingErrorDAO = trainingErrorDAO;
-        this.objectMapper = objectMapper;
-        this.updaterTopicArn = updaterTopicArn;
         this.snsClient = snsClient;
+        this.objectMapper = objectMapper;
+        this.updaterTopicArn = topicArn;
+        this.sqsFilter = sqsFilter;
     }
 
     public ProviderJobStatus updateRunInformation(
             Run run,
             Map<Long, List<String>> stoppedPoliciesNamesForRuns,
-            String jobHandle
-    ) {
+            String jobHandle) {
         List<String> stoppedPoliciesNames = stoppedPoliciesNamesForRuns
                 .getOrDefault(run.getId(), Collections.emptyList());
 
@@ -142,7 +149,7 @@ public class UpdaterService {
 
     private void setRunError(Run run, ProviderJobStatus jobStatus) {
         final var status = jobStatus.getRunStatus();
-        if (status == RunStatus.Error && !org.apache.commons.collections4.CollectionUtils.isEmpty(jobStatus.getDescription())) {
+        if (status == RunStatus.Error && !CollectionUtils.isEmpty(jobStatus.getDescription())) {
             // TODO (KW): 05.02.2020 gets only first error, refactor if multiple errors scenario is possible
             final var errorMessage = jobStatus.getDescription().get(0);
             final var allErrorsKeywords = trainingErrorDAO.getAllErrorsKeywords();
@@ -202,11 +209,17 @@ public class UpdaterService {
 
         PublishRequest publishRequest = new PublishRequest()
                 .withTopicArn(updaterTopicArn)
-                .withMessage(objectMapper.writeValueAsString(event))
-                .withMessageAttributes(Map.of(
-                        CARGO_ATTRIBUTE, new MessageAttributeValue()
-                                .withBinaryValue(ByteBuffer.wrap(cargo)).withDataType("Binary")
-                ));
+                .withMessage(objectMapper.writeValueAsString(event));
+
+        if (StringUtils.isNotEmpty(sqsFilter)) {
+            publishRequest.addMessageAttributesEntry(
+                    FILTER_ATTRIBUTE, new MessageAttributeValue().withStringValue(sqsFilter).withDataType("String")
+            );
+        }
+
+        publishRequest.addMessageAttributesEntry(CARGO_ATTRIBUTE,
+                new MessageAttributeValue().withBinaryValue(ByteBuffer.wrap(cargo)).withDataType("Binary")
+        );
 
         PublishResult result = snsClient.getSnsClient().publish(publishRequest);
         return result.getMessageId();
