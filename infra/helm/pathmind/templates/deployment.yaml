@@ -88,3 +88,7 @@ spec:
               value: "{{ .Values.env.MULTI_AGENT }}"
             - name: JOB_MOCK_CYCLE
               value: "{{ .Values.env.JOB_MOCK_CYCLE }}"
+            - name: SQS_UPDATER_URL
+              value: "{{ .Values.env.SQS_UPDATER_URL }}"
+            - name: SNS_UPDATER_TOPIC_ARN
+              value: "{{ .Values.env.SNS_UPDATER_TOPIC_ARN }}"

@@ -17,9 +17,9 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.shared.bus.EventBus;
-import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
@@ -52,7 +52,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
 	@Autowired
 	private ProjectDAO projectDAO;
-	
+
 	@Autowired
 	private ModelDAO modelDAO;
 	
@@ -61,7 +61,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 	private EmptyDashboardPlaceholder placeholder;
 
 	private ScreenTitlePanel titlePanel = new ScreenTitlePanel("Dashboard");
-	
+
 	private long loggedUserId;
 
 	@Override
@@ -124,7 +124,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 				break;
 		}
 	}
-	
+
 	private void archiveItem(DashboardItem item) {
 		Stage stage = DashboardUtils.calculateStage(item);
 		switch (stage) {
