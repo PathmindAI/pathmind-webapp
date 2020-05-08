@@ -245,23 +245,24 @@ hr {
 }
 
 .project-view .view-section,
-.model-view .view-section {
+.model-view .view-section,
+.card.view-section {
   min-width: unset;
   line-height: 1.6em;
   overflow: auto;
 }
 
-.model-view p,
-.model-view p + div {
+.card p,
+.card p + div {
   margin: var(--lumo-space-m) 0 0;
 }
 
-.model-view p {
-  font-weight: bold;
+.card p {
   color: var(--lumo-secondary-text-color);
 }
 
-.model-view p span {
+.card .bold-label {
+  display: block;
   color: var(--lumo-body-text-color);
 }
 
@@ -312,10 +313,6 @@ hr {
 
 .model-view .notes-field-wrapper {
   margin-top: var(--lumo-space-m);
-}
-
-.model-view .bold-label {
-  display: block;
 }
 
 .no-shrink {

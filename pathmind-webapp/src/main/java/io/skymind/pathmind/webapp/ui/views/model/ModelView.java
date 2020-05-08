@@ -112,13 +112,16 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 		rewardVariableNamesText.addClassName("model-reward-variables");
 
 		NotesField notesField = createViewNotesField();
-		return new ViewSection(
+		FlexLayout rightPanelCard = new ViewSection(
 				panelTitle,
 				packageNameText,
 				actionsText,
 				observationsText,
 				new Div(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), rewardVariableNamesText),
 				notesField);
+		rightPanelCard.addClassName("card");
+
+		return rightPanelCard;
 	}
 
 	/**
