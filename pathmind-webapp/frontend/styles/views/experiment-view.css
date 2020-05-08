@@ -21,8 +21,9 @@
 }
 
 .experiment-view .right-panel {
+  max-width: 25rem;
   height: auto !important;
-  flex: 0 0 25rem;
+  flex: 0 0 23vw;
 }
 
 .experiment-view vaadin-chart {

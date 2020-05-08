@@ -207,23 +207,19 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 		exportPolicyButton = new Button("Export Policy", click -> getUI().ifPresent(ui -> ui.navigate(ExportPolicyView.class, policy.getId())));
 		exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		exportPolicyButton.addClassName("half-width");
 		exportPolicyButton.setVisible(false);
 
 		stopTrainingButton = new Button("Stop Training", click -> {
 			showStopTrainingConfirmationDialog();
 		});
 		stopTrainingButton.addThemeName("secondary");
-		stopTrainingButton.addClassName("half-width");
 		stopTrainingButton.setVisible(true);
 
 		archiveExperimentButton = new Button("Archive", VaadinIcon.ARCHIVE.create(), click -> archiveExperiment());
 		archiveExperimentButton.addThemeName("secondary");
-		archiveExperimentButton.addClassName("half-width");
 
 		unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
 		unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		unarchiveExperimentButton.addClassName("half-width");
 
 		notesField = createViewNotesField();
 
