@@ -2,6 +2,10 @@
   min-height: 760px;
 }
 
+.new-experiment-view .page-title + vaadin-vertical-layout {
+  height: auto !important;
+}
+
 .panel-title {
   max-width: 460px;
 }
