@@ -30,7 +30,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
     private SegmentIntegrator segmentIntegrator;
 
 	private int previousWindowWidth = 0;
-	private boolean allowRecalculateGridColumnWidth = true;
 
 	public PathMindDefaultView()
 	{
@@ -43,13 +42,13 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		cookieConsent.setPosition(CookieConsent.Position.BOTTOM_LEFT);
 		cookieConsent.setLearnMoreLink(COOKIE_CONSENT_LINK);
 		add(cookieConsent);
-
-		// IMPORTANT -> Needed so that Push works consistently on every page/view.
-		UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 	}
 
 	public void beforeEnter(BeforeEnterEvent event)
 	{
+		// IMPORTANT -> Needed so that Push works consistently on every page/view.
+		event.getUI().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
+		
 		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/217 Implement a security framework on the views.
 		// Before we do anything we need to confirm the user has permission to access the data.
 		// TODO -> This solution is a band-aid solution and although it does implement enough security for now
@@ -71,15 +70,11 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 	public void recalculateGridColumnWidth(Page page, Grid grid) {
 		page.addBrowserWindowResizeListener(resizeEvent -> {
 			int windowWidth = resizeEvent.getWidth();
-			if (allowRecalculateGridColumnWidth &&
-					((windowWidth > 1024 && previousWindowWidth <= 1024) ||
-					(windowWidth > 1280 && previousWindowWidth <= 1280))) {
+			if ((windowWidth > 1024 && previousWindowWidth <= 1024) ||
+				(windowWidth > 1280 && previousWindowWidth <= 1280)) {
 				grid.recalculateColumnWidths();
 			}
 			previousWindowWidth = windowWidth;
-			if (windowWidth > 1280) {
-				allowRecalculateGridColumnWidth = false;
-			}
 		});
 	}
 

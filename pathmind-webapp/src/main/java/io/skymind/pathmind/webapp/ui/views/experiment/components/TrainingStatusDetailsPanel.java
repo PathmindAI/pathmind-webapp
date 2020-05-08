@@ -49,11 +49,11 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 		if(trainingStatus == Running) {
 			updateProgressBar(experiment);
 		} else if (trainingStatus == Completed) {
-			VaadinDateAndTimeUtils.withUserTimeZoneId(userTimeZone -> {
+			getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZone -> {
 				LocalDateTime trainingCompletedTime = ExperimentUtils.getTrainingCompletedTime(experiment);
 				final var formattedTrainingCompletedTime = DateAndTimeUtils.formatDateAndTimeShortFormatter(trainingCompletedTime, userTimeZone);
 				completedTimeLabel.setText(formattedTrainingCompletedTime);
-			});
+			}));
 			completedTimeLabel.setVisible(true);
 			trainingProgress.setVisible(false);
 		} else {

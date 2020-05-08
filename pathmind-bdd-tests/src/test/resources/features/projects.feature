@@ -31,7 +31,7 @@ Feature: Projects page
     When Click wizard next step button
     Then Check that experiment page of the AutotestProject opened
     When Open projects page
-    Then Click project name <project name>
+    When Open project AutotestProject on projects page
     Then Click the model name 1
     Then Click the experiment name 1
     Then Check that experiment page of the AutotestProject opened
