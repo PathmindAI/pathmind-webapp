@@ -93,10 +93,6 @@ public class ProjectsPageSteps {
         projectsPage.checkThatProjectsInputFieldIsEmpty();
     }
     @Step
-    public void clickProjectName(String project) {
-        projectsPage.clickProjectName(project);
-    }
-    @Step
     public void clickTheModelName(String modelName) {
         projectsPage.clickTheModelName(modelName);
     }
