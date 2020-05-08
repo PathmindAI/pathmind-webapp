@@ -2,8 +2,8 @@ package io.skymind.pathmind.services;
 
 import static io.skymind.pathmind.shared.constants.RunType.DiscoveryRun;
 
+import java.util.function.BiConsumer;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.jooq.DSLContext;
@@ -23,6 +23,7 @@ import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import io.skymind.pathmind.shared.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
+
 
 @Slf4j
 public abstract class TrainingService {
@@ -74,16 +75,15 @@ public abstract class TrainingService {
 
     protected abstract String startRun(Model model, Experiment exp, Run run, int iterations, int maxTimeInSec, int numSampes);
 
-    public void stopRun(Experiment experiment)  {
+    public void stopRun(Experiment experiment, BiConsumer<Run, List<Policy>> callback)  {
         List<Run> runs = experiment.getRuns().stream()
                 .filter(r -> RunStatus.isRunning(r.getStatusEnum()))
                 .collect(Collectors.toList());
         List<Long> runsIds = runs.stream().map(Data::getId).collect(Collectors.toList());
-        Map<Long, String> runJobIds = executionProviderMetaDataDAO.getProviderRunJobIds(runsIds);
-        for (String jobId: runJobIds.values()) {
-            executionProvider.stop(jobId);
-        }
-        // immediately mark the job as stopping so that the user don't have to wait the updater to update the run
+
+        executionProviderMetaDataDAO.getProviderRunJobIds(runsIds).values().forEach(executionProvider::stop);
+
+        // immediately mark the job as stopping so that the user doesn't have to wait the updater to update the run
         // status
         runs.forEach(run -> {
             // the 3 lines below are there just to avoid an exception after the status is updated
@@ -91,6 +91,9 @@ public abstract class TrainingService {
             run.setModel(experiment.getModel());
             run.setProject(experiment.getProject());
             runDAO.updateRun(run, ProviderJobStatus.STOPPING, experiment.getPolicies());
+            if (callback != null) {
+                callback.accept(run, experiment.getPolicies());
+            }
         });
     }
 }

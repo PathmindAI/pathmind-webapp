@@ -2,6 +2,8 @@ package io.skymind.pathmind.webapp;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.services.project.ProjectFileCheckService;
+import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.SpringApplication;
@@ -15,9 +17,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.stream.Stream;
 @SpringBootApplication(scanBasePackages = "io.skymind.pathmind")
 @PropertySource({"application.properties", "shared.properties"})
 @EnableCaching
+@EnableScheduling
 public class PathmindApplication
 {
 	public static void main(String[] args) {
@@ -38,14 +40,6 @@ public class PathmindApplication
 	@Bean
 	public ExecutorService checkerExecutorService(@Value("${pathmind.filecheck.poolsize}") int poolSize) {
 		return Executors.newFixedThreadPool(poolSize);
-	}
-
-	/**
-	 * The password encoder to use when encrypting passwords.
-	 */
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
 	}
 
 	@Bean
@@ -65,6 +59,11 @@ public class PathmindApplication
 		objectMapper.configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
 
 		return objectMapper;
+	}
+
+	@Bean
+	public ProjectFileCheckService projectFileCheckService(ExecutorService executorService, ModelAnalyzerApiClient modelAnalyzerApiClient) {
+		return new ProjectFileCheckService(executorService, modelAnalyzerApiClient);
 	}
 
 	@EventListener(ApplicationReadyEvent.class)

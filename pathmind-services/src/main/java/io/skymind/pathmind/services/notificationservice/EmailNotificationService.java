@@ -119,6 +119,10 @@ public class EmailNotificationService
 		return applicationURL + "/" + Routes.RESET_PASSWORD_URL + "/" + pathmindUser.getEmailVerificationToken();
 	}
 
+	public void sendTrainingCompletedEmail(Long userId, Experiment experiment, Project project, boolean isSuccessful) {
+		sendTrainingCompletedEmail(userDAO.findById(userId), experiment, project, isSuccessful);
+	}
+
 	/**
 	 * Sends training completed email to a Pathmind user.
 	 *
