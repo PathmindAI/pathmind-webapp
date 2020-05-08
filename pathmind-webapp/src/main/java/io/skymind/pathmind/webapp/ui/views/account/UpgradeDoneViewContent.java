@@ -39,7 +39,7 @@ public class UpgradeDoneViewContent extends PolymerTemplate<UpgradeDoneViewConte
 		user = currentUser.getUser();
 		getModel().setContactLink(contactLink);
 		getModel().setPlan("Professional");
-		done.addClickListener(e -> UI.getCurrent().navigate(AccountView.class));
+		done.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
 	}
 
 	public interface Model extends TemplateModel

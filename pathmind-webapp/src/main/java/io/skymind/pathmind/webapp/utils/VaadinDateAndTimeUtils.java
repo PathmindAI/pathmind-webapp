@@ -15,8 +15,8 @@ public class VaadinDateAndTimeUtils {
 	 * If userTimeZone is available in cache, executes the timeZoneConsumer immediately,
 	 * otherwise, it's executed after userTimeZone is read from client side
 	 */
-	public static void withUserTimeZoneId(SerializableConsumer<String> timeZoneConsumer) {
-		UI.getCurrent().getPage().retrieveExtendedClientDetails(details -> timeZoneConsumer.accept(details.getTimeZoneId()));
+	public static void withUserTimeZoneId(UI ui, SerializableConsumer<String> timeZoneConsumer) {
+		ui.getPage().retrieveExtendedClientDetails(details -> timeZoneConsumer.accept(details.getTimeZoneId()));
 	}
 
 	/**

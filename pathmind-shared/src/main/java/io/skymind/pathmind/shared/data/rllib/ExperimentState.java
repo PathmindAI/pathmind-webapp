@@ -1,4 +1,4 @@
-package io.skymind.pathmind.services.training.cloud.aws.api.dto;
+package io.skymind.pathmind.shared.data.rllib;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;

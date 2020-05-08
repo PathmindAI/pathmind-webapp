@@ -221,6 +221,18 @@ hr {
   margin-top: var(--lumo-space-m);
 }
 
+.projects-view .project-name-column {
+  align-items: center;
+}
+
+.projects-view .project-name-column vaadin-button {
+  visibility: hidden;
+}
+
+.projects-view .project-name-column:hover vaadin-button {
+  visibility: visible;
+}
+
 .projects-view .view-section,
 .project-view .view-section,
 .model-view .view-section,

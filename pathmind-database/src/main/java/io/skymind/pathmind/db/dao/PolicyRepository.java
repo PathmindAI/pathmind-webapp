@@ -108,6 +108,14 @@ class PolicyRepository {
 		return policies;
 	}
 
+	protected static List<Policy> getPoliciesForRun(DSLContext ctx, long runId) {
+		final List<Policy> policies = ctx.select(POLICY.asterisk())
+				.from(POLICY)
+				.where(POLICY.RUN_ID.eq(runId))
+				.fetch(record -> record.into(POLICY).into(Policy.class));
+		return policies;
+	}
+
 	protected static void updatePolicyExternalId(DSLContext ctx, long runId, String newExternalId, String oldExternalId) {
 		ctx.update(POLICY)
 				.set(POLICY.EXTERNAL_ID, newExternalId)
@@ -156,4 +164,9 @@ class PolicyRepository {
 	public static void setHasFile(DSLContext ctx, Long policyId, boolean value) {
 		ctx.update(POLICY).set(POLICY.HAS_FILE, value).where(POLICY.ID.eq(policyId)).execute();
 	}
+
+	public static void setIsValid(DSLContext ctx, long policyId, boolean value) {
+		ctx.update(POLICY).set(POLICY.IS_VALID, value).where(POLICY.ID.eq(policyId)).execute();
+	}
+
 }
