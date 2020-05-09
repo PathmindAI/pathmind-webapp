@@ -169,6 +169,10 @@ pipeline {
 				echo "CLean s3 bucket for tests"
 				sh "aws s3 rm s3:/dev-training-dynamic-files.pathmind.com/id2 --recursive"
 				sh "aws s3 rm s3:/dev-training-dynamic-files.pathmind.com/id3 --recursive"
+				sh "aws s3 rm s3:/dev-training-dynamic-files.pathmind.com/id4 --recursive"
+				sh "aws s3 rm s3:/dev-training-dynamic-files.pathmind.com/id5 --recursive"
+				sh "aws s3 rm s3:/dev-training-dynamic-files.pathmind.com/id6 --recursive"
+				sh "aws s3 rm s3:/dev-training-dynamic-files.pathmind.com/id7 --recursive"
 				sh "sleep 120"
 				sh "mvn clean verify -Dheadless=true -Denvironment=pathmind-dev -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -f pom.xml -P bdd-tests"
 			} catch (err) {
