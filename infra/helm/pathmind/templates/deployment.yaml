@@ -92,3 +92,5 @@ spec:
               value: "{{ .Values.env.SQS_UPDATER_URL }}"
             - name: SNS_UPDATER_TOPIC_ARN
               value: "{{ .Values.env.SNS_UPDATER_TOPIC_ARN }}"
+            - name: SNS_UPDATER_SQS_FILTER_ATTR
+              value: "{{ .Values.env.SNS_UPDATER_SQS_FILTER_ATTR }}"
