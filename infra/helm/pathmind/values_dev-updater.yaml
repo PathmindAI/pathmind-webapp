@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind
+  repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind-updater
   tag: dev
   pullPolicy: Always
 
