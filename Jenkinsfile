@@ -16,7 +16,8 @@ def icon=":heavy_check_mark:"
 def buildDockerImage(image_name, image_id) {
         echo "Building the pathmind Docker Image"
         sh "docker build -t base -f ${WORKSPACE}/Dockerfile-cache ${WORKSPACE}/"
-        sh "docker build -t ${image_name} -f ${WORKSPACE}/Dockerfile ${WORKSPACE}/"
+        sh "docker build -t ${image_name} -f ${WORKSPACE}/pathmind-webapp/Dockerfile ${WORKSPACE}/"
+        sh "docker build -t ${image_name}-updater -f ${WORKSPACE}/pathmind-updater/Dockerfile ${WORKSPACE}/"
 }
 
 /*
@@ -28,6 +29,8 @@ def publishDockerImage(image_name,DOCKER_TAG) {
 	echo "Tagging and pushing the pathmind Docker Image"                
 	sh "docker tag ${image_name} ${DOCKER_REG}/${image_name}:${DOCKER_TAG}"
 	sh "docker push ${DOCKER_REG}/${image_name}"
+	sh "docker tag ${image_name}-updater ${DOCKER_REG}/${image_name}-updater:${DOCKER_TAG}"
+    sh "docker push ${DOCKER_REG}/${image_name}-updater"
 }
 
 
