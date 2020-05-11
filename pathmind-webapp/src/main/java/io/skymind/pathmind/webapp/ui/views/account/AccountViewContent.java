@@ -88,20 +88,21 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 		cancelSubscriptionBtn.setVisible(subscription != null);
 		cancelSubscriptionBtn.setEnabled(subscription != null && !subscription.getCancelAtPeriodEnd());
 		
-		upgradeBtn.addClickListener(e -> UI.getCurrent().navigate(AccountUpgradeView.class));
+		upgradeBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class)));
 		cancelSubscriptionBtn.addClickListener(evt -> cancelSubscription(subscription));
 	}
 	
 	// This part will probably move to a separate view, but for now implementing it as a confirmation dialog
 	private void cancelSubscription(Subscription subscription) {
-		SubscriptionCancelDialog subscriptionCancelDialog = new SubscriptionCancelDialog(subscription.getCurrentPeriodEnd(), () -> {
-			Subscription updatedSubscription = stripeService.cancelSubscription(user.getEmail(), true);
-			segmentIntegrator.subscriptionCancelled();
-			initContent(updatedSubscription);
-			initBtns(updatedSubscription);
+		getUI().ifPresent(ui -> {
+			SubscriptionCancelDialog subscriptionCancelDialog = new SubscriptionCancelDialog(ui, subscription.getCurrentPeriodEnd(), () -> {
+				Subscription updatedSubscription = stripeService.cancelSubscription(user.getEmail(), true);
+				segmentIntegrator.subscriptionCancelled();
+				initContent(updatedSubscription);
+				initBtns(updatedSubscription);
+			});
+			subscriptionCancelDialog.open();
 		});
-		subscriptionCancelDialog.open();
-		
 	}
 
 	private void initContent(Subscription subscription) {
@@ -110,10 +111,10 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 		getModel().setLastName(user.getLastname());
 		getModel().setSubscription(subscription != null ? "Professional": "Early Access");
 		if (subscription != null && subscription.getCancelAtPeriodEnd()) {
-			VaadinDateAndTimeUtils.withUserTimeZoneId(userTimeZoneId -> {
+			getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZoneId -> {
 				getModel().setSubscriptionCancellationNote("Subscription will be cancelled on " +
 						DateAndTimeUtils.formatDateAndTimeShortFormatter(DateAndTimeUtils.fromEpoch(subscription.getCurrentPeriodEnd()), userTimeZoneId));
-			});
+			}));
 		}
 		getModel().setBillingInfo("Billing Information");
 	}

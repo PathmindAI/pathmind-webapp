@@ -26,7 +26,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.services.UserService;
+import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 
 @Tag("sign-up-view")
@@ -113,7 +113,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 
 		cancelSignInBtn.addClickListener(e -> showPassword(false));
 
-		forgotPasswordBtn.addClickListener(e ->UI.getCurrent().navigate(ResetPasswordView.class));
+		forgotPasswordBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(ResetPasswordView.class)));
 
 		email.addValueChangeListener(event -> {
 			if (userService.findByEmailIgnoreCase(email.getValue()) == null) {
