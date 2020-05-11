@@ -109,11 +109,6 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.checkThatProjectsInputFieldIsEmpty();
     }
 
-    @Then("^Click project name (.*)$")
-    public void clickProjectName(String project) {
-        projectsPageSteps.clickProjectName(project);
-    }
-
     @Then("^Click the model name (.*)$")
     public void clickTheModelName(String modelName) {
         projectsPageSteps.clickTheModelName(modelName);

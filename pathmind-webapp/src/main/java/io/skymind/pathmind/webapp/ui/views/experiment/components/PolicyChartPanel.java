@@ -5,8 +5,8 @@ import static io.skymind.pathmind.webapp.utils.ChartUtils.createPassiveSeriesPlo
 
 import java.util.List;
 
-import io.skymind.pathmind.shared.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.shared.bus.subscribers.PolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
@@ -15,6 +15,7 @@ import io.skymind.pathmind.webapp.utils.ChartUtils;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.charts.Chart;
+import com.vaadin.flow.component.charts.model.Accessibility;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.Marker;
@@ -23,7 +24,7 @@ import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import io.skymind.pathmind.shared.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.EventBus;
 
 
 import java.util.stream.Collectors;
@@ -75,6 +76,7 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
         yAxis.setTitle("Mean Reward Score over All Episodes");
 
         chart.getConfiguration().setTitle("Reward Score");
+        chart.getConfiguration().setAccessibility(new Accessibility(false));
         chart.getConfiguration().getLegend().setEnabled(false);
         chart.getConfiguration().addxAxis(xAxis);
         chart.getConfiguration().addyAxis(yAxis);

@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Image;
@@ -50,11 +49,11 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.shared.bus.EventBus;
-import io.skymind.pathmind.shared.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.shared.bus.subscribers.PolicyUpdateSubscriber;
-import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
@@ -169,7 +168,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	}
 
 	private void setupLeftPanel() {
-		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiments, experiment, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
+		experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
 		panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
 		policyChartPanel = new PolicyChartPanel();
 		policyChartPanel.setPadding(false);
@@ -183,7 +182,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		middlePanel = WrapperUtils.wrapWidthFullVertical(
 				panelTitle,
 				rewardFunctionGroup,
-				trainingStartingPlaceholder, 
+				trainingStartingPlaceholder,
 				policyChartPanel);
 		middlePanel.addClassName("view-section");
 	}
@@ -205,7 +204,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		restartTraining.setVisible(false);
 		restartTraining.addClassNames("large-image-btn", "run");
 
-		exportPolicyButton = new Button("Export Policy", click -> UI.getCurrent().navigate(ExportPolicyView.class, policy.getId()));
+		exportPolicyButton = new Button("Export Policy", click -> getUI().ifPresent(ui -> ui.navigate(ExportPolicyView.class, policy.getId())));
 		exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		exportPolicyButton.addClassName("half-width");
 		exportPolicyButton.setVisible(false);
@@ -259,7 +258,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		confirmDialog.setConfirmButton(
 				"Stop Training",
 				(e) -> {
-					trainingService.stopRun(experiment);
+					trainingService.stopRun(experiment, EventBus::fireEventBusUpdates);
 					confirmDialog.close();
 				},
 				StringUtils.join(
@@ -270,7 +269,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		confirmDialog.setCancelable(true);
 		confirmDialog.open();
 	}
-	
+
 	private void archiveExperiment() {
 		ConfirmationUtils.archive("experiment", () -> {
 			experimentDAO.archive(experiment.getId(), true);
@@ -280,11 +279,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			} else {
 				Experiment currentExperiment = experiments.get(0);
 				selectExperiment(currentExperiment);
-				experimentsNavbar.setExperiments(experiments, currentExperiment);
+				getUI().ifPresent(ui -> experimentsNavbar.setExperiments(ui, experiments, currentExperiment));
 			}
 		});
 	}
-	
+
 	private void unarchiveExperiment() {
 		ConfirmationUtils.unarchive("experiment", () -> {
 			experimentDAO.archive(experiment.getId(), false);
@@ -292,7 +291,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		});
 	}
 
-	private Breadcrumbs createBreadcrumbs() {        
+	private Breadcrumbs createBreadcrumbs() {
 		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
 	}
 
@@ -329,7 +328,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			updateScreenComponents();
 			notesField.setNotesText(experiment.getUserNotes());
 			pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-			UI.getCurrent().getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId());
+			getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
 		}
 	}
 
@@ -356,6 +355,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		updateScreenComponents();
+		experimentsNavbar.setExperiments(event.getUI(), experiments, experiment);
 	}
 
 	private void updateScreenComponents() {
@@ -381,7 +381,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private Policy selectBestPolicy(List<Policy> policies) {
 		return policies.stream()
 				.filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
-				.max(Comparator.comparing(PolicyUtils::getLastScore))
+				.max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration))
 				.orElse(null);
 	}
 
@@ -398,8 +398,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private void addOrUpdatePolicies(List<Policy> updatedPolicies) {
 		updatedPolicies.forEach(updatedPolicy -> {
-			if (experiment.getPolicies().contains(updatedPolicy)) {
-				experiment.getPolicies().set(experiment.getPolicies().indexOf(updatedPolicy), updatedPolicy);
+			int index = experiment.getPolicies().indexOf(updatedPolicy);
+			if (index != -1) {
+				experiment.getPolicies().set(index, updatedPolicy);
 			} else {
 				experiment.getPolicies().add(updatedPolicy);
 			}
@@ -455,8 +456,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				if (event.getExperimentId() != experimentId)
 					return;
 				// Update or insert the policy in experiment.getPolicies
+
 				addOrUpdatePolicies(event.getPolicies());
-				
+
 				// Calculate the best policy again
 				policy = selectBestPolicy(experiment.getPolicies());
 				PushUtils.push(getUI(), () -> {

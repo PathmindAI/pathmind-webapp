@@ -71,8 +71,17 @@ do
         ps ax | grep $pid | grep -v grep > /dev/null
         if [ $? != 0 ]
         then
+                echo "Process has been terminated"
                 break
         fi
+
+        last_line=$(tail -n 1 ${log_file})
+        if [ "${last_line}" = 'Training has been completed' ]
+        then
+                echo $last_line
+                break
+        fi
+
         #Upload files
         aws s3 sync ./work/PPO ${s3_url}/output/ > /dev/null
         #Check the training response timeout
@@ -106,7 +115,7 @@ done
 wait $pid
 script_exit=$?
 status=4
-description="Job finishsed"
+description="Job finished"
 if [ ${script_exit} != 0 ]
 then
 	description=`tail -c 254 ${log_file} | tr '\n' ' ' | sed "s/'//g"`

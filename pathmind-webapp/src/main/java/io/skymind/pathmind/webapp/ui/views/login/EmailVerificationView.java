@@ -10,8 +10,10 @@ import com.vaadin.flow.router.*;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.services.UserService;
+import io.skymind.pathmind.webapp.security.UserService;
 
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.UserUpdateBusEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
@@ -37,7 +39,7 @@ public class EmailVerificationView extends PolymerTemplate<EmailVerificationView
 
 	@Override
 	public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
-		backToApp.addClickListener(e -> UI.getCurrent().navigate(LoginView.class));
+		backToApp.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(LoginView.class)));
 
 		try {
 			PathmindUser user = userService.findByToken(token);
@@ -48,6 +50,7 @@ public class EmailVerificationView extends PolymerTemplate<EmailVerificationView
 
 			user.setEmailVerifiedAt(LocalDateTime.now());
 			userService.update(user);
+			EventBus.post(new UserUpdateBusEvent(user));
 			getModel().setError(false);
 		} catch(IllegalArgumentException e) {
 			getModel().setError(true);

@@ -27,6 +27,11 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: {{ .Values.image.command }}
+          args:
+{{- range .Values.image.args }}
+            - {{ . }}
+{{- end }}
           ports:
             - name: http
               containerPort: 80
@@ -88,3 +93,9 @@ spec:
               value: "{{ .Values.env.MULTI_AGENT }}"
             - name: JOB_MOCK_CYCLE
               value: "{{ .Values.env.JOB_MOCK_CYCLE }}"
+            - name: SQS_UPDATER_URL
+              value: "{{ .Values.env.SQS_UPDATER_URL }}"
+            - name: SNS_UPDATER_TOPIC_ARN
+              value: "{{ .Values.env.SNS_UPDATER_TOPIC_ARN }}"
+            - name: SNS_UPDATER_SQS_FILTER_ATTR
+              value: "{{ .Values.env.SNS_UPDATER_SQS_FILTER_ATTR }}"

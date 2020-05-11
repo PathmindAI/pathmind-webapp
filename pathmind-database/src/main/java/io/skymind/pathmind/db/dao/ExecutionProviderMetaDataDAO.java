@@ -15,6 +15,7 @@ public class ExecutionProviderMetaDataDAO {
 
     public enum IdType {
         // These numeric ids are stored to the database so if changed, database migrations are needed
+        @Deprecated
         ModelFile(0),
         Run(1),
         CheckPointFile(2);
@@ -53,10 +54,12 @@ public class ExecutionProviderMetaDataDAO {
         delete(this.providerClass, IdType.Run, String.valueOf(runId));
     }
 
+    @Deprecated
     public void putModelFileKey(long modelId, String value) {
         put(this.providerClass, IdType.ModelFile, String.valueOf(modelId), value);
     }
 
+    @Deprecated
     public String getModelFileKey(long modelId) {
         return get(this.providerClass, IdType.ModelFile, String.valueOf(modelId));
     }

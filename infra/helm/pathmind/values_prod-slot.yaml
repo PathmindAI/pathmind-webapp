@@ -8,6 +8,14 @@ image:
   repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind
   tag: prod
   pullPolicy: Always
+  command: ["java"]
+  args:
+    - "-Xmx4096m"
+    - "-XX:+UseG1GC"
+    - "-Dvaadin.productionMode"
+    - "-jar"
+    - "/app/pathmind-webapp/target/pathmind-webapp-0.0.1-SNAPSHOT.jar"
+    - "--server.port=80"
 
 service:
   type: NodePort
@@ -27,6 +35,8 @@ env:
   MODEL_ANALYZER_URL: https://ma.devpathmind.com
   MULTI_AGENT: false
   JOB_MOCK_CYCLE: 0
+  SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/prod-updater-queue
+  SNS_UPDATER_SQS_FILTER_ATTR: prod
 
 name: pathmind-slot  
 
