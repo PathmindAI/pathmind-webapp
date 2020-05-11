@@ -52,22 +52,14 @@ public class PolicyDAO {
         PolicyRepository.updateExportedDate(ctx, policyId);
     }
 
-    private Long getPolicyId(DSLContext transactionCtx, long runId, String externalId) {
-        return PolicyRepository.getPolicyIdByRunIdAndExternalId(transactionCtx, runId, externalId);
-    }
-
-    public Long assurePolicyId(DSLContext transactionCtx, Long runId, String finishPolicyName) {
+    public Long assurePolicyId(Long runId, String finishPolicyName) {
         Assert.notNull(runId, "runId should be provided");
         Assert.hasText(finishPolicyName, "finalPolicyName should be provided");
-        Long policyId = getPolicyId(transactionCtx, runId, finishPolicyName);
+        Long policyId = PolicyRepository.getPolicyIdByRunIdAndExternalId(ctx, runId, finishPolicyName);
         Assert.state(
                 nonNull(policyId),
                 format("Can not find policyId for run {0} and finishName {1}", runId, finishPolicyName)
         );
         return policyId;
-    }
-
-    public Long assurePolicyId(Long runId, String finishPolicyName) {
-        return assurePolicyId(ctx, runId, finishPolicyName);
     }
 }

@@ -4,7 +4,6 @@
 package io.skymind.pathmind.db.jooq;
 
 
-import io.skymind.pathmind.db.jooq.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
 import io.skymind.pathmind.db.jooq.tables.Model;
 import io.skymind.pathmind.db.jooq.tables.PathmindUser;
@@ -16,7 +15,6 @@ import io.skymind.pathmind.db.jooq.tables.Run;
 import io.skymind.pathmind.db.jooq.tables.RunAdminNote;
 import io.skymind.pathmind.db.jooq.tables.TrainerJob;
 import io.skymind.pathmind.db.jooq.tables.TrainingError;
-import io.skymind.pathmind.db.jooq.tables.records.ExecutionProviderMetaDataRecord;
 import io.skymind.pathmind.db.jooq.tables.records.ExperimentRecord;
 import io.skymind.pathmind.db.jooq.tables.records.ModelRecord;
 import io.skymind.pathmind.db.jooq.tables.records.PathmindUserRecord;
@@ -55,7 +53,6 @@ public class Keys {
     // IDENTITY definitions
     // -------------------------------------------------------------------------
 
-    public static final Identity<ExecutionProviderMetaDataRecord, Long> IDENTITY_EXECUTION_PROVIDER_META_DATA = Identities0.IDENTITY_EXECUTION_PROVIDER_META_DATA;
     public static final Identity<ExperimentRecord, Long> IDENTITY_EXPERIMENT = Identities0.IDENTITY_EXPERIMENT;
     public static final Identity<ModelRecord, Long> IDENTITY_MODEL = Identities0.IDENTITY_MODEL;
     public static final Identity<PathmindUserRecord, Long> IDENTITY_PATHMIND_USER = Identities0.IDENTITY_PATHMIND_USER;
@@ -69,8 +66,6 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final UniqueKey<ExecutionProviderMetaDataRecord> EXECUTION_PROVIDER_META_DATA_PKEY = UniqueKeys0.EXECUTION_PROVIDER_META_DATA_PKEY;
-    public static final UniqueKey<ExecutionProviderMetaDataRecord> UNIQUE_PROVIDER_CLASS_TYPE_KEY = UniqueKeys0.UNIQUE_PROVIDER_CLASS_TYPE_KEY;
     public static final UniqueKey<ExperimentRecord> EXPERIMENT_PKEY = UniqueKeys0.EXPERIMENT_PKEY;
     public static final UniqueKey<ModelRecord> MODEL_PKEY = UniqueKeys0.MODEL_PKEY;
     public static final UniqueKey<PathmindUserRecord> PATHMIND_USER_PKEY = UniqueKeys0.PATHMIND_USER_PKEY;
@@ -106,7 +101,6 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     private static class Identities0 {
-        public static Identity<ExecutionProviderMetaDataRecord, Long> IDENTITY_EXECUTION_PROVIDER_META_DATA = Internal.createIdentity(ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.ID);
         public static Identity<ExperimentRecord, Long> IDENTITY_EXPERIMENT = Internal.createIdentity(Experiment.EXPERIMENT, Experiment.EXPERIMENT.ID);
         public static Identity<ModelRecord, Long> IDENTITY_MODEL = Internal.createIdentity(Model.MODEL, Model.MODEL.ID);
         public static Identity<PathmindUserRecord, Long> IDENTITY_PATHMIND_USER = Internal.createIdentity(PathmindUser.PATHMIND_USER, PathmindUser.PATHMIND_USER.ID);
@@ -118,8 +112,6 @@ public class Keys {
     }
 
     private static class UniqueKeys0 {
-        public static final UniqueKey<ExecutionProviderMetaDataRecord> EXECUTION_PROVIDER_META_DATA_PKEY = Internal.createUniqueKey(ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, "execution_provider_meta_data_pkey", ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.ID);
-        public static final UniqueKey<ExecutionProviderMetaDataRecord> UNIQUE_PROVIDER_CLASS_TYPE_KEY = Internal.createUniqueKey(ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA, "unique_provider_class_type_key", ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.PROVIDER_CLASS, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.TYPE, ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA.KEY);
         public static final UniqueKey<ExperimentRecord> EXPERIMENT_PKEY = Internal.createUniqueKey(Experiment.EXPERIMENT, "experiment_pkey", Experiment.EXPERIMENT.ID);
         public static final UniqueKey<ModelRecord> MODEL_PKEY = Internal.createUniqueKey(Model.MODEL, "model_pkey", Model.MODEL.ID);
         public static final UniqueKey<PathmindUserRecord> PATHMIND_USER_PKEY = Internal.createUniqueKey(PathmindUser.PATHMIND_USER, "pathmind_user_pkey", PathmindUser.PATHMIND_USER.ID);

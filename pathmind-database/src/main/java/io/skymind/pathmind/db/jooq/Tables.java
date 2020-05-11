@@ -4,7 +4,6 @@
 package io.skymind.pathmind.db.jooq;
 
 
-import io.skymind.pathmind.db.jooq.tables.ExecutionProviderMetaData;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
 import io.skymind.pathmind.db.jooq.tables.Model;
 import io.skymind.pathmind.db.jooq.tables.PathmindUser;
@@ -32,11 +31,6 @@ import javax.annotation.processing.Generated;
 )
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
-
-    /**
-     * The table <code>public.execution_provider_meta_data</code>.
-     */
-    public static final ExecutionProviderMetaData EXECUTION_PROVIDER_META_DATA = ExecutionProviderMetaData.EXECUTION_PROVIDER_META_DATA;
 
     /**
      * The table <code>public.experiment</code>.

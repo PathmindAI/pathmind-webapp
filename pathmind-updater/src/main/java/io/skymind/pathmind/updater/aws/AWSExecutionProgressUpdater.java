@@ -1,6 +1,5 @@
 package io.skymind.pathmind.updater.aws;
 
-import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.shared.constants.RunStatus;
@@ -20,16 +19,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
 
-    private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RunDAO runDAO;
     private EmailNotificationService emailNotificationService;
     private final UpdaterService updaterService;
 
-    public AWSExecutionProgressUpdater(RunDAO runDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO,
+    public AWSExecutionProgressUpdater(RunDAO runDAO, 
                                        EmailNotificationService emailNotificationService,
-                                       UpdaterService updaterService
-            ) {
-        this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
+                                       UpdaterService updaterService) {
         this.runDAO = runDAO;
         this.emailNotificationService = emailNotificationService;
         this.updaterService = updaterService;
@@ -42,14 +38,14 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         // This means that errors after the info is saved in AWS but before the info is saved in DB won't cause the
         // system to be in an inconsistent state.
         // Also, completed runs that doesn't have policy file information in the db will be returned by this call.
-        final List<Long> runIds = runDAO.getExecutingRuns();
+    	final List<Run> runs = runDAO.getExecutingRuns();
+        final List<Long> runIds = runs.stream().map(Run::getId).collect(Collectors.toList());
         final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(runIds);
-        final Map<Long, String> awsJobIds = executionProviderMetaDataDAO.getProviderRunJobIds(runIds);
-        final List<Run> runsWithAwsJobs = getRunsWithAwsJobs(runIds, awsJobIds);
+        final List<Run> runsWithAwsJobs = runs.stream().filter(this::hasJobId).collect(Collectors.toList());
 
         runsWithAwsJobs.parallelStream().forEach(run -> {
             try {
-                ProviderJobStatus providerJobStatus = updaterService.updateRunInformation(run, stoppedPoliciesNamesForRuns, awsJobIds);
+            	ProviderJobStatus providerJobStatus = updaterService.updateRunInformation(run, stoppedPoliciesNamesForRuns, run.getJobId());
                 sendNotificationMail(providerJobStatus.getRunStatus(), run);
             } catch (Exception e) {
                 log.error("Error for run: " + run.getId() + " : " + e.getMessage(), e);
@@ -71,17 +67,10 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         }
     }
 
-    private List<Run> getRunsWithAwsJobs(List<Long> runIds, Map<Long, String> awsJobIds) {
-        final List<Long> runIdsWithRecaleJobs = runIds.stream()
-                .filter(runId -> isInAwsRunJobIds(awsJobIds, runId))
-                .collect(Collectors.toList());
-        return runDAO.getRuns(runIdsWithRecaleJobs);
-    }
-
-    private boolean isInAwsRunJobIds(Map<Long, String> awsJobIds, Long runId) {
-        if (awsJobIds.get(runId) == null)
-            log.error("Run {} marked as executing but no aws run id found for it.", runId);
-        return awsJobIds.get(runId) != null;
+    private boolean hasJobId(Run run) {
+        if (run.getJobId() == null)
+            log.error("Run {} marked as executing but no aws run id found for it.", run.getId());
+        return run.getJobId() != null;
     }
 
 }

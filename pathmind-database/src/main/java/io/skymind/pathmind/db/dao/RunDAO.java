@@ -30,19 +30,13 @@ public class RunDAO {
 
     private final DSLContext ctx;
 
-    private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
 
-    public RunDAO(DSLContext ctx, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
+    public RunDAO(DSLContext ctx) {
         this.ctx = ctx;
-        this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
     }
 
     public Run getRun(long runId) {
         return RunRepository.getRun(ctx, runId);
-    }
-
-    public List<Run> getRuns(List<Long> runIds) {
-        return RunRepository.getRuns(ctx, runIds);
     }
 
     public List<Run> getRunsForExperiment(Experiment experiment) {
@@ -53,8 +47,8 @@ public class RunDAO {
         return RunRepository.createRun(ctx, experiment, runType);
     }
 
-    public void markAsStarting(long runId) {
-        RunRepository.markAsStarting(ctx, runId);
+    public void markAsStarting(long runId, String jobId){
+        RunRepository.markAsStarting(ctx, runId, jobId);
     }
 
     /**
@@ -78,7 +72,7 @@ public class RunDAO {
         RunRepository.clearNotificationSentInfo(ctx, experimentId);
     }
 
-    public List<Long> getExecutingRuns() {
+    public List<Run> getExecutingRuns() {
         return RunRepository.getExecutingRuns(ctx);
     }
 
@@ -195,23 +189,14 @@ public class RunDAO {
             policiesUpdateInfo.forEach(policyInfo -> {
                 Long policyId = PolicyRepository
                         .getPolicyIdByRunIdAndExternalId(transactionCtx, run.getId(), policyInfo.getName());
-                PolicyRepository.setHasFile(transactionCtx, policyId, true);
+                PolicyRepository.setHasFileAndCheckPoint(transactionCtx, policyId, true, policyInfo.getCheckpointFileKey());
 
                 Optional.ofNullable(getPolicy(transactionCtx, policyId))
                         .ifPresent(policy -> {
                             policy.setHasFile(true);
                             policiesToRaiseUpdateEvent.add(policy);
                         });
-
-                if (policyInfo.getCheckpointFile() != null) {
-                    // save meta data for checkpoint
-                    if (executionProviderMetaDataDAO.getCheckPointFileKey(transactionCtx, policyInfo.getName())
-                            == null) {
-                        executionProviderMetaDataDAO
-                                .putCheckPointFileKey(transactionCtx, policyInfo.getName(),
-                                        policyInfo.getCheckpointFileKey());
-                    }
-                }
+                
                 cleanUpInvalidPolicies(transactionCtx, run.getId(), validExternalIds);
             });
             return policiesToRaiseUpdateEvent;
