@@ -186,19 +186,20 @@ public class RunDAO {
             DSLContext transactionCtx = DSL.using(configuration);
             updateRun(transactionCtx, run, providerJobStatus, policies);
 
-            policiesUpdateInfo.forEach(policyInfo -> {
-                Long policyId = PolicyRepository
-                        .getPolicyIdByRunIdAndExternalId(transactionCtx, run.getId(), policyInfo.getName());
-                PolicyRepository.setHasFileAndCheckPoint(transactionCtx, policyId, true, policyInfo.getCheckpointFileKey());
-
-                Optional.ofNullable(getPolicy(transactionCtx, policyId))
-                        .ifPresent(policy -> {
-                            policy.setHasFile(true);
-                            policiesToRaiseUpdateEvent.add(policy);
-                        });
-                
-                cleanUpInvalidPolicies(transactionCtx, run.getId(), validExternalIds);
-            });
+            if (providerJobStatus.getRunStatus() == RunStatus.Completed) {
+            	
+            	policiesUpdateInfo.forEach(policyInfo -> {
+            		Long policyId = PolicyRepository.getPolicyIdByRunIdAndExternalId(transactionCtx, run.getId(), policyInfo.getName());
+            		PolicyRepository.setHasFileAndCheckPoint(transactionCtx, policyId, true, policyInfo.getCheckpointFileKey());
+            		
+            		Optional.ofNullable(getPolicy(transactionCtx, policyId)).ifPresent(policy -> {
+            			policy.setHasFile(true);
+            			policiesToRaiseUpdateEvent.add(policy);
+            		});
+            	});
+            	
+            	cleanUpInvalidPolicies(transactionCtx, run.getId(), validExternalIds);
+            }
             return policiesToRaiseUpdateEvent;
         });
     }

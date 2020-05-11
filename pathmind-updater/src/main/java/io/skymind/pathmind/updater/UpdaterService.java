@@ -104,24 +104,31 @@ public class UpdaterService {
 
         updateInfoInAWS(run, policiesUpdateInfo);
 
-        updateInfoInDB(run, providerJobStatus, policies, policiesUpdateInfo, experimentState);
+        updateInfoInDB(run, providerJobStatus, policies, policiesUpdateInfo);
 
         return providerJobStatus;
     }
 
-    private void updateInfoInDB(Run run, ProviderJobStatus providerJobStatus, List<Policy> policies,
-            List<PolicyUpdateInfo> policiesUpdateInfo, ExperimentState experimentState) {
-        List<String> validExternalIds = experimentState.getCheckpoints().stream()
-                .map(CheckPoint::getId)
-                .collect(Collectors.toList());
-        List<Policy> policiesToRaiseUpdateEvent =  runDAO.updateRun(run, providerJobStatus, policies, policiesUpdateInfo, validExternalIds);
+    private void updateInfoInDB(Run run, ProviderJobStatus providerJobStatus, List<Policy> policies, List<PolicyUpdateInfo> policiesUpdateInfo) {
+        
+        List<Policy> policiesToRaiseUpdateEvent =  runDAO.updateRun(run, providerJobStatus, policies, policiesUpdateInfo, getValidExternalIdsIfCompleted(providerJobStatus));
         // The EventBus updates have to be done AFTER the transaction is completed and NOT during in case the transaction fails.
         fireEventUpdates(run, policies);
         policiesToRaiseUpdateEvent
                 .forEach(policy -> fireEventUpdates(null, Collections.singletonList(policy)));
     }
 
-    private void updateInfoInAWS(Run run, List<PolicyUpdateInfo> policiesUpdateInfo) {
+    private List<String> getValidExternalIdsIfCompleted(ProviderJobStatus providerJobStatus) {
+    	if (providerJobStatus.getRunStatus() == RunStatus.Completed) {
+    		return providerJobStatus.getExperimentState().getCheckpoints().stream()
+    				.map(CheckPoint::getId)
+    				.collect(Collectors.toList());
+    	}
+    	
+    	return Collections.emptyList();
+	}
+
+	private void updateInfoInAWS(Run run, List<PolicyUpdateInfo> policiesUpdateInfo) {
         policiesUpdateInfo.forEach(policyInfo -> {
             policyFileService.savePolicyFile(run.getId(), policyInfo.getName(), policyInfo.getPolicyFile());
             if (policyInfo.getCheckpointFile() != null) {
