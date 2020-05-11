@@ -8,9 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -32,6 +36,7 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
@@ -83,7 +88,14 @@ public class ProjectsView extends PathMindDefaultView
 	{
 		projectGrid = new Grid<Project>();
 
-		projectGrid.addColumn(Project::getName)
+		projectGrid.addComponentColumn(project -> {
+				Button renameProjectButton = new Button(new Icon(VaadinIcon.EDIT), evt -> renameProject(project));
+				renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+				HorizontalLayout projectNameColumn = new HorizontalLayout(new Span(project.getName()), renameProjectButton);
+				projectNameColumn.addClassName("project-name-column");
+				projectNameColumn.setSpacing(false);
+				return projectNameColumn;
+		})
 				.setHeader("Name")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
@@ -124,6 +136,15 @@ public class ProjectsView extends PathMindDefaultView
 		return projects;
 	}
 
+	private void renameProject(Project project) {
+		RenameProjectDialog dialog = new RenameProjectDialog(project, projectDAO, updateProjectName -> {
+			projectGrid.getDataProvider().refreshItem(project);
+			// JS is used because projectGrid.recalculateColumnWidths(); does not work; probably a Vaadin Grid issue
+			projectGrid.getElement().executeJs("setTimeout(() => { this.recalculateColumnWidths() }, 0)");
+		});
+		dialog.open();
+	}
+
 	@Override
 	protected Component getTitlePanel() {
 		return new ScreenTitlePanel("Projects");
@@ -138,7 +159,7 @@ public class ProjectsView extends PathMindDefaultView
 	protected void initLoadData() throws InvalidDataException {
 		projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId());
 		if(projects == null || projects.isEmpty()) {
-			UI.getCurrent().navigate(NewProjectView.class);
+			getUI().ifPresent(ui -> ui.navigate(NewProjectView.class));
 			return;
 		}
 	}
@@ -146,12 +167,12 @@ public class ProjectsView extends PathMindDefaultView
 	@Override
 	protected void initScreen(BeforeEnterEvent event)
 	{
-		VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+		VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
 			// projectGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			projectGrid.setItems(projects);
 		});
-		archivesTabPanel.initData();
+		archivesTabPanel.initData(event.getUI());
 
-		recalculateGridColumnWidth(UI.getCurrent().getPage(), projectGrid);		
+		recalculateGridColumnWidth(event.getUI().getPage(), projectGrid);		
 	}
 }
