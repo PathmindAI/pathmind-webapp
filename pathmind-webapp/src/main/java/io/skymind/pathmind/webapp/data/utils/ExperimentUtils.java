@@ -77,6 +77,16 @@ public class ExperimentUtils
 				.orElse(LocalDateTime.now());
 	}
 
+	public static LocalDateTime getEc2CreatedDate(Experiment experiment) {
+		return experiment.getRuns().stream()
+				.map(Run::getEc2CreatedAt)
+				.filter(Objects::nonNull)
+				// experiment can have multiple run, in case of a restart
+				// so we take the latest one
+				.max(LocalDateTime::compareTo)
+				.orElse(LocalDateTime.now());
+	}
+
 	/**
 	 * Searches the most recent stopped_at date of all runs in given experiment.
 	 * Returns null if any policy has not finished yet.
@@ -107,26 +117,17 @@ public class ExperimentUtils
 	}
 
 	public static double getEstimatedTrainingTime(Experiment experiment, double progress){
-		final var earliestRunStartedDate = ExperimentUtils.getTrainingStartedDate(experiment);
-		return calculateTrainingSecondsLeft(earliestRunStartedDate, progress);
+		final var earlistedEc2CreatedDate = ExperimentUtils.getEc2CreatedDate(experiment);
+		return calculateTrainingSecondsLeft(earlistedEc2CreatedDate, progress);
 	}
 
-	public static double getEstimatedTrainingTime(LocalDateTime startedDate, double progress) {
-		return calculateTrainingSecondsLeft(startedDate, progress);
+	public static double getEstimatedTrainingTime(LocalDateTime baseDate, double progress) {
+		return calculateTrainingSecondsLeft(baseDate, progress);
 	}
 
-	private static double calculateTrainingSecondsLeft(LocalDateTime startedDate, double progress) {
-		var difference = Duration.between(startedDate, LocalDateTime.now()).toSeconds();
-		difference = subtractPretrainingTime(difference);
+	private static double calculateTrainingSecondsLeft(LocalDateTime baseDate, double progress) {
+		var difference = Duration.between(baseDate, LocalDateTime.now()).toSeconds();
 		return difference * (100 - progress) / progress;
-	}
-
-	/**
-	 * To make ETA more realistic we subtract 15 minutes as pre-training warm-up time
-	 */
-	private static long subtractPretrainingTime(long difference) {
-		long subtractedTime = difference - TimeUnit.MINUTES.toSeconds(15);
-		return subtractedTime > 0 ? subtractedTime : difference;
 	}
 
 	public static double getEstimatedTrainingTimeForSingleRun(Run run, double progress) {
