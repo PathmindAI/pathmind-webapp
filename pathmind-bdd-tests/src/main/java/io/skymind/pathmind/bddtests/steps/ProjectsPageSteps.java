@@ -357,4 +357,8 @@ public class ProjectsPageSteps {
     public void checkThatThereIsAVariableNamed(String variableName) {
         projectsPage.checkThatThereIsAVariableNamed(variableName);
     }
+    @Step
+    public void clickEditProjectIconFromProjectsPage(String projectName) {
+        projectsPage.clickEditProjectIconFromProjectsPage(projectName);
+    }
 }
