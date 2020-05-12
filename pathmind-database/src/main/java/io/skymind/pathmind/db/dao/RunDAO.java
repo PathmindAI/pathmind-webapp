@@ -171,10 +171,10 @@ public class RunDAO {
     }
 
     private void cleanUpInvalidPolicies(DSLContext transactionCtx, long runId, List<String> validExternalIds) {
-        PolicyRepository.getPoliciesForRun(ctx, runId).stream()
+        PolicyRepository.getPoliciesForRun(transactionCtx, runId).stream()
                 .filter(p -> !validExternalIds.contains(p.getExternalId()))
                 .forEach(p -> {
-                    PolicyRepository.setIsValid(ctx, p.getId(), false);
+                    PolicyRepository.setIsValid(transactionCtx, p.getId(), false);
                     log.info(p.getExternalId() + " is marked as invalid");
                 });
     }
