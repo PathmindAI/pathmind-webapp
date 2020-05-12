@@ -26,6 +26,7 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.data.Data;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -204,13 +205,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	}
 
 	@Override
-	protected boolean isAccessAllowedForUser() {
-		return userDAO.isUserAllowedAccessToProject(projectId);
-	}
-
-	@Override
 	protected void initLoadData() {
-		project = projectDAO.getProject(projectId)
+		project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));
 		project.setModels(modelDAO.getModelsForProject(projectId));
 	}
