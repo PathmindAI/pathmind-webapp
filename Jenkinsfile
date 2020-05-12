@@ -213,6 +213,8 @@ pipeline {
             steps {
 		script {
                 	DEPLOY_PROD = true
+			echo "Deploying updater helm chart"
+                        sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml"
 			echo "Updating helm chart"
 			sh "bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
 		}
