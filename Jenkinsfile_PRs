@@ -236,7 +236,7 @@ pipeline {
 		sh "kubectl delete namespace ${env.BUILD_NUMBER}"
 		sh "aws sqs delete-queue --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_ID}-updater-queue"
 		sh "aws sns unsubscribe --subscription-arn `aws sns list-subscriptions | jq -r \".[] | .[] |  select(.Endpoint ==\\\"arn:aws:sqs:us-east-1:839270835622:${env.BUILD_ID}-updater-queue\\\").SubscriptionArn\"`"
-		sh "/usr/bin/clean_test_s3.sh ${env.BUILD_ID}"
+		//sh "/usr/bin/clean_test_s3.sh ${env.BUILD_ID}"
         }
     }
 }
