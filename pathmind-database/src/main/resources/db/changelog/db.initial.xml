@@ -1121,4 +1121,74 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="20200401-01" author="alexander.makarov@toptal.com">
+        <createTable tableName="RUN_ADMIN_NOTE">
+            <column name="RUN_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_RUN_ADMIN_NOTES" references="RUN(ID)"
+                             unique="true" uniqueConstraintName="PM_RUN_ADMIN_NOTES_RUN_ID_UNQ"/>
+            </column>
+            <column name="NOTE" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet id="20200401_02" author="onur@vaadin.com">
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="killed training"/>
+            <column name="DESCRIPTION" value="An error occurred. Please contact the Pathmind team"/>
+        </insert>
+    </changeSet>
+    
+    <!-- #1320 Remove the checklist feature from the app -->
+    <changeSet id="20200304-01" author="steph@followsteph.com">
+        <dropTable tableName="GUIDE"/>
+        <rollback>
+            <comment>It's not possible to rollback dropping a table.</comment>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200406-01" author="daehyun@skymind.io">
+        <addUniqueConstraint tableName="TRAINER_JOB" constraintName="UNIQUE_JOB_ID_S3BUCKET" columnNames="JOB_ID, S3BUCKET" />
+    </changeSet>
+
+    <!-- #1372 Adjust the changeset ID to the checklist UI removal -->
+    <changeSet id="20200411-01" author="steph@followsteph.com">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="GUIDE"/>
+        </preConditions>
+        <dropTable tableName="GUIDE"/>
+        <rollback>
+            <comment>It's not possible to rollback dropping a table.</comment>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200413-01" author="bruno.rezende@ext.vaadin.com">
+        <addColumn tableName="MODEL">
+            <column name="DRAFT" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <update tableName="MODEL">
+            <column name="DRAFT" valueBoolean="false"/>
+        </update>
+    </changeSet>
+
+    <changeSet id="20200501-01" author="alexander.makarov@toptal.com">
+        <addColumn tableName="MODEL">
+            <column name="PACKAGE_NAME" type="VARCHAR(1024)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200501-02" author="daehyun@skymind.io">
+        <addColumn tableName="POLICY">
+            <column name="IS_VALID" type="BOOLEAN" defaultValue="true">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="POLICY" columnName="IS_VALID" />
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

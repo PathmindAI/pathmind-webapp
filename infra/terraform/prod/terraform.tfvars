@@ -1,4 +1,5 @@
 region="us-east-1"
+vpc_id="vpc-085b560126f4d3051"
 domain_name="devpathmind.com"
 appdomain=""
 subdomain=""

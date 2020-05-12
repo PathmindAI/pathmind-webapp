@@ -50,7 +50,7 @@ function pushTokensForPlaceholder(renderTokens, placeholder) {
         value: variableIndex + " "
       },
       {
-        type: "reward_variable variable-color-" + variableIndex,
+        type: "reward_variable variable-color-" + (variableIndex % 10),
         value: variableName
       }
     );
@@ -63,14 +63,15 @@ function pushTokensForPlaceholder(renderTokens, placeholder) {
 }
 
 function onChange(e) {
-  var changedValue = e.lines[0];
-  if (changedValue.match(/[\[0-9\]]/)) {
-    var row = e.start.row;
-    var existingFolds = editor.session.getFoldLine(row, row);
-    if (existingFolds) {
-      editor.session.removeFolds(existingFolds.folds);
+  for (var i = e.start.row; i <= e.end.row; i++) {
+    var changedValue = e.lines[i - e.start.row];
+    if (changedValue && changedValue.match(/[\[0-9\]]/)) {
+      var existingFolds = editor.session.getFoldLine(i, i);
+      if (existingFolds) {
+        editor.session.removeFolds(existingFolds.folds);
+      }
+      createHintsForLine(i);
     }
-    createHintsForLine(row);
   }
 }
 

@@ -55,10 +55,16 @@
   text-align: center;
 }
 
-.support {
+.support,
+.support-cont a {
   display: inline-block;
   color: var(--lumo-secondary-text-color);
-  margin: 10px auto 0;
+  margin: 10px var(--lumo-space-s) 0;
+}
+
+.support:hover,
+.support-cont a:hover {
+  text-decoration: none;
 }
 
 vaadin-tabs,
@@ -87,6 +93,11 @@ vaadin-password-field {
 
 .error-message {
   color: var(--pm-danger-color);
+  padding: 0 0px 10px;
+}
+
+.info-message {
+  color: var(--lumo-primary-color);
   padding: 0 0px 10px;
 }
 

@@ -4,7 +4,7 @@
 import jenkins.model.Jenkins
 
 // parameter
-Integer numberOfExecutors = 1
+Integer numberOfExecutors = 3
 
 // get Jenkins instance
 Jenkins jenkins = Jenkins.getInstance()

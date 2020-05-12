@@ -7,7 +7,7 @@ import io.skymind.pathmind.shared.data.Run;
 public class DashboardUtils {
 
 	public static Stage calculateStage(DashboardItem item) {
-		if (item.getModel() == null) {
+		if (item.getModel() == null || item.getModel().isDraft()) {
 			return Stage.SetUpSimulation;
 		} else if (item.getLatestRun() == null) {
 			return Stage.WriteRewardFunction;
@@ -33,6 +33,6 @@ public class DashboardUtils {
 	}
 	
 	public static boolean isTrainingInFailed(Stage stage, Run run) {
-		return isTrainingStage(stage) && run.getStatusEnum() == RunStatus.Error;
+		return isTrainingStage(stage) && (run.getStatusEnum() == RunStatus.Error || run.getStatusEnum() == RunStatus.Killed);
 	}
 }

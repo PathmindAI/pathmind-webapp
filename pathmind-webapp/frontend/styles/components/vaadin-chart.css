@@ -15,7 +15,17 @@
 }
 .pm-active-series {
   opacity: 1;
+  fill: var(--pm-text-color);
+  stroke: var(--pm-text-color);
 }
 .pm-passive-series {
   opacity: 0.2;
+}
+.pm-active-series .highcharts-halo {
+  fill: var(--pm-text-color);
+  stroke: var(--pm-text-color);
+}
+
+.highcharts-tooltip-box {
+  stroke: var(--pm-text-color);
 }

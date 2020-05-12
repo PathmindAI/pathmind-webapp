@@ -1,55 +1,76 @@
 package io.skymind.pathmind.updater.aws;
 
-import io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider;
-import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.shared.data.PathmindUser;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.ProviderJobStatus;
-import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.data.RewardScore;
+import com.amazonaws.services.sns.model.MessageAttributeValue;
+import com.amazonaws.services.sns.model.PublishRequest;
+import com.amazonaws.services.sns.model.PublishResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
-import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
+import io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider;
+import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientSNS;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent;
+import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.rllib.CheckPoint;
+import io.skymind.pathmind.shared.data.rllib.ExperimentState;
+import io.skymind.pathmind.shared.utils.RunUtils;
 import io.skymind.pathmind.updater.ExecutionProgressUpdater;
 import io.skymind.pathmind.updater.ProgressInterpreter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.db.dao.TrainingErrorDAO.UNKNOWN_ERROR_KEYWORD;
+import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.*;
+import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.KILLED_TRAINING_KEYWORD;
+import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.UNKNOWN_ERROR_KEYWORD;
 
 @Service
 @Slf4j
 public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
 
     private final AWSExecutionProvider provider;
+    private final AwsApiClientSNS snsClient;
     private final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     private final RunDAO runDAO;
     private final PolicyFileService policyFileService;
-    private final UserDAO userDAO;
     private final TrainingErrorDAO trainingErrorDAO;
+    private final ObjectMapper objectMapper;
+    private final String updaterTopicArn;
+    private final String sqsFilter;
     private EmailNotificationService emailNotificationService;
 
-    public AWSExecutionProgressUpdater(AWSExecutionProvider provider, PolicyFileService policyFileService, RunDAO runDAO,
-                                       UserDAO userDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO,
+    public AWSExecutionProgressUpdater(AWSExecutionProvider provider, AwsApiClientSNS snsClient,
+                                       @Value("${pathmind.aws.sns.updater_topic_arn}") String topicArn,
+                                       @Value("${pathmind.aws.sns.updater_sqs_filter}") String sqsFilter,
+                                       PolicyFileService policyFileService, ObjectMapper objectMapper,
+                                       RunDAO runDAO, ExecutionProviderMetaDataDAO executionProviderMetaDataDAO,
                                        EmailNotificationService emailNotificationService, TrainingErrorDAO trainingErrorDAO) {
         this.provider = provider;
+        this.snsClient = snsClient;
         this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.runDAO = runDAO;
         this.policyFileService = policyFileService;
-        this.userDAO = userDAO;
         this.trainingErrorDAO = trainingErrorDAO;
         this.emailNotificationService = emailNotificationService;
+        this.objectMapper = objectMapper;
+        this.updaterTopicArn = topicArn;
+        this.sqsFilter = sqsFilter;
     }
 
     @Override
@@ -64,13 +85,15 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
             try {
                 String jobHandle = awsJobIds.get(run.getId());
                 ProviderJobStatus providerJobStatus = provider.status(jobHandle);
+                ExperimentState experimentState = providerJobStatus.getExperimentState();
 
-                final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(), jobHandle);
+                final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(), jobHandle, experimentState);
 
-                setStoppedAtForFinishedPolicies(policies, jobHandle);
+                setStoppedAtForFinishedPolicies(policies, experimentState);
                 setRunError(run, providerJobStatus);
 
                 runDAO.updateRun(run, providerJobStatus, policies);
+                fireEventUpdates(run, policies);
 
                 // STEPH -> REFACTOR -> QUESTION -> Does this need to be transactional with runDAO.updateRun and put
                 // into updateRun()? For now I left it here, it's no worse than what's in production today. I mainly kept it out
@@ -79,7 +102,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                 // service component so that if there is a policyFile (byte[]) then it's done before the updateRun()
                 // method is called and we can just do a simple isPolicyFile != null check as to whether or not to
                 // also update it in the database.
-                savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), jobHandle, providerJobStatus.getRunStatus());
+                savePolicyFilesAndCleanupForCompletedRuns(stoppedPoliciesNamesForRuns, run.getId(), jobHandle, providerJobStatus.getRunStatus(), experimentState);
 
                 sendNotificationMail(providerJobStatus.getRunStatus(), run);
             } catch (Exception e) {
@@ -94,17 +117,11 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
      * and if the Run type is discovery or full run
      */
     private void sendNotificationMail(RunStatus jobStatus, Run run) {
-        if (jobStatus == RunStatus.Completed || jobStatus == RunStatus.Error) {
-            if (run.getRunTypeEnum() == RunType.DiscoveryRun || run.getRunTypeEnum() == RunType.FullRun) {
-
-                // Do not send notification if there is another run with same run type still executing or the notification is already been sent
-                if (runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
-                    boolean isSuccessful = jobStatus == RunStatus.Completed;
-                    PathmindUser user = userDAO.findById(run.getProject().getPathmindUserId());
-                    emailNotificationService.sendTrainingCompletedEmail(user, run.getExperiment(), run.getProject(), isSuccessful);
-                    runDAO.markAsNotificationSent(run.getId());
-                }
-            }
+        // Do not send notification if there is another run with same run type still executing or the notification is already been sent
+        if (RunStatus.isFinished(jobStatus) && !RunUtils.isStoppedByUser(run) && runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
+            boolean isSuccessful = jobStatus == RunStatus.Completed;
+            emailNotificationService.sendTrainingCompletedEmail(run.getProject().getPathmindUserId(), run.getExperiment(), run.getProject(), isSuccessful);
+            runDAO.markAsNotificationSent(run.getId());
         }
     }
 
@@ -121,9 +138,13 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         return awsJobIds.get(runId) != null;
     }
 
-    private void savePolicyFilesAndCleanupForCompletedRuns(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String jobHandle, RunStatus jobStatus) {
+    private void savePolicyFilesAndCleanupForCompletedRuns(Map<Long, List<String>> stoppedPoliciesNamesForRuns,
+                                                           Long runId, String jobHandle, RunStatus jobStatus, ExperimentState experimentState) {
         if (jobStatus == RunStatus.Completed) {
-            stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).stream().forEach(finishPolicyName -> {
+            List<String> unfinishedPolicyIds = runDAO.unfinishedPolicyIds(runId);
+            stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).stream()
+                    .filter(id -> unfinishedPolicyIds.contains(id))
+                    .forEach(finishPolicyName -> {
                 // todo make saving to enum or static final variable (currently defined in PolicyDAO).
                 final byte[] policyFile = provider.policy(jobHandle, finishPolicyName);
                 if (policyFile == null) {
@@ -131,7 +152,8 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                     return;
                 }
 
-                policyFileService.savePolicyFile(runId, finishPolicyName, policyFile);
+                Policy policy = policyFileService.savePolicyFile(runId, finishPolicyName, policyFile);
+                fireEventUpdates(null, Collections.singletonList(policy));
 
                 // save the last checkpoint
                 Map.Entry<String, byte[]> entry = provider.snapshot(jobHandle, finishPolicyName);
@@ -147,11 +169,17 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                     }
                 }
             });
+
+            List<String> validExternalIds = experimentState.getCheckpoints().stream()
+                    .map(CheckPoint::getId)
+                    .collect(Collectors.toList());
+
+            runDAO.cleanUpInvalidPolicies(runId, validExternalIds);
         }
     }
 
-    private void setStoppedAtForFinishedPolicies(List<Policy> policies, String jobHandle) {
-        Map<String, LocalDateTime> terminatedTrials = provider.getTerminatedTrials(jobHandle);
+    private void setStoppedAtForFinishedPolicies(List<Policy> policies, ExperimentState experimentState) {
+        Map<String, LocalDateTime> terminatedTrials = provider.getTerminatedTrials(experimentState);
 
         policies.stream()
                 .filter(policy -> policy.getStoppedAt() == null)
@@ -159,10 +187,19 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                 .forEach(policy -> policy.setStoppedAt(terminatedTrials.get(policy.getExternalId())));
     }
 
-    private List<Policy> getPoliciesFromProgressProvider(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String jobHandle) {
-        final Map<String, String> rawProgress = provider.progress(jobHandle);
+    private List<Policy> getPoliciesFromProgressProvider(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String jobHandle, ExperimentState experimentState) {
+        if (experimentState == null) {
+            return Collections.emptyList();
+        }
+
+        List<String> validExternalIds = experimentState.getCheckpoints().stream()
+                .map(CheckPoint::getId)
+                .filter(id -> !stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).contains(id))
+                .collect(Collectors.toList());
+
+        final Map<String, String> rawProgress = provider.progress(jobHandle, validExternalIds);
+
         return rawProgress.entrySet().stream()
-                .filter(e -> !stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).contains(e.getKey()))
                 .map(e -> {
                     List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
                     return ProgressInterpreter.interpret(e, previousScores);
@@ -188,6 +225,64 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
             foundError.ifPresent(
                     e -> run.setTrainingErrorId(e.getId())
             );
+        } else if (status == RunStatus.Killed && run.getStatusEnum() != RunStatus.Stopping) {
+            // Stopping status is set, when user wants to stop training. So, don't assign an error in this case
+            trainingErrorDAO.getErrorByKeyword(KILLED_TRAINING_KEYWORD).ifPresent(error -> {
+                run.setTrainingErrorId(error.getId());
+            });
         }
     }
+
+    private void fireEventUpdates(Run run, List<Policy> policies) {
+        for (Policy policy : CollectionUtils.emptyIfNull(policies)) {
+            serializeAndFireEvent(policy, TYPE_POLICY);
+        }
+        serializeAndFireEvent(run, TYPE_RUN);
+    }
+
+    private <T extends Data> void serializeAndFireEvent(T data, String type) {
+        if (data == null) {
+            return;
+        }
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+             ObjectOutputStream out = new ObjectOutputStream(bos)) {
+            out.writeObject(data);
+            out.flush();
+            byte[] bytes = bos.toByteArray();
+            fireEventUpdate(type, data.getId(), bytes);
+        } catch (IOException e) {
+            log.error("Failed to file event: {} {}", type, data.getId(), e);
+        }
+    }
+
+    private void fireEventUpdate(String type, Long id, byte[] cargo) {
+        try {
+            final UpdateEvent event = new UpdateEvent(id, type, cargo.length);
+            sendUpdaterMessage(event, cargo);
+            log.debug("fired update event [{}]", event);
+        } catch (Exception e) {
+            log.error("Failed to submit update request to SNS", e);
+        }
+    }
+
+    public String sendUpdaterMessage(UpdateEvent event, byte[] cargo) throws JsonProcessingException {
+
+        PublishRequest publishRequest = new PublishRequest()
+                .withTopicArn(updaterTopicArn)
+                .withMessage(objectMapper.writeValueAsString(event));
+
+        if (StringUtils.isNotEmpty(sqsFilter)) {
+            publishRequest.addMessageAttributesEntry(
+                    FILTER_ATTRIBUTE, new MessageAttributeValue().withStringValue(sqsFilter).withDataType("String")
+            );
+        }
+
+        publishRequest.addMessageAttributesEntry(CARGO_ATTRIBUTE,
+                new MessageAttributeValue().withBinaryValue(ByteBuffer.wrap(cargo)).withDataType("Binary")
+        );
+
+        PublishResult result = snsClient.getSnsClient().publish(publishRequest);
+        return result.getMessageId();
+    }
+
 }

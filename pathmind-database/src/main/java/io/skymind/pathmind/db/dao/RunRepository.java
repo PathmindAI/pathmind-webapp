@@ -78,6 +78,13 @@ class RunRepository
                 .where(Tables.RUN.EXPERIMENT_ID.in(experimentIds))
                 .fetchGroups(RUN.EXPERIMENT_ID, Run.class);
     }
+    
+    protected static List<Run> getRunsForExperiment(DSLContext ctx, Long experimentId) {
+    	return ctx.select(Tables.RUN.asterisk())
+    			.from(RUN)
+    			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
+    			.fetchInto(Run.class);
+    }
 
     protected static List<Long> getAlreadyNotifiedOrStillExecutingRunsWithType(DSLContext ctx, long experimentId, int runType) {
     	return ctx.select(Tables.RUN.ID)
@@ -85,7 +92,7 @@ class RunRepository
     			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
     			.and(Tables.RUN.RUN_TYPE.eq(runType))
     			.and(
-    					Tables.RUN.STATUS.notIn(Arrays.asList(RunStatus.Completed.getValue(), RunStatus.Error.getValue()))
+    					Tables.RUN.STATUS.notIn(Arrays.asList(RunStatus.Completed.getValue(), RunStatus.Error.getValue(), RunStatus.Killed.getValue()))
     				.or(Tables.RUN.NOTIFICATION_SENT_AT.isNotNull())
     			)
     			.fetch(Tables.RUN.ID);
@@ -100,7 +107,9 @@ class RunRepository
                         .or(Tables.RUN.STATUS.eq(RunStatus.Running.getValue()))
                         .or(Tables.RUN.STATUS.eq(RunStatus.Completed.getValue()))
                         .or(Tables.RUN.STATUS.eq(RunStatus.Restarting.getValue()))
-                        .and(POLICY.HAS_FILE.isNull().or(POLICY.HAS_FILE.isFalse())))
+                        .or(Tables.RUN.STATUS.eq(RunStatus.Stopping.getValue()))
+                        .and(POLICY.HAS_FILE.isNull().or(POLICY.HAS_FILE.isFalse()))
+                        .and(POLICY.IS_VALID.isNull().or(POLICY.IS_VALID.isTrue())))
                 .fetch(Tables.RUN.ID);
     }
 

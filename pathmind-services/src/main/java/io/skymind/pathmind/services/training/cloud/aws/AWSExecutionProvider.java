@@ -4,12 +4,11 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
-import io.skymind.pathmind.services.training.cloud.aws.api.dto.CheckPoint;
-import io.skymind.pathmind.services.training.cloud.aws.api.dto.ExperimentState;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AWSFileManager;
-import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
+import io.skymind.pathmind.shared.data.rllib.CheckPoint;
+import io.skymind.pathmind.shared.data.rllib.ExperimentState;
 import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.ExecutionProviderClass;
@@ -98,7 +97,19 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public void stop(String jobHandle) {
-        throw new UnsupportedOperationException("Not currently supported");
+        File emptyFile = null;
+        try {
+            emptyFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
+            client.fileUpload(jobHandle + "/output/" + TrainingFile.STOPPING, emptyFile);
+            client.jobStop(jobHandle);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return;
+        } finally {
+            if (emptyFile != null) {
+                emptyFile.delete();
+            }
+        }
     }
 
     @Override
@@ -107,6 +118,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
             boolean killed = getFile(jobHandle, TrainingFile.KILLED).isPresent();
             if (killed) {
                 return ProviderJobStatus.KILLED;
+            }
+            boolean stopping = getFile(jobHandle, TrainingFile.STOPPING).isPresent();
+            if (stopping) {
+                return ProviderJobStatus.STOPPING;
             }
 
             boolean restarting = getFile(jobHandle, TrainingFile.RESTARTING).isPresent();
@@ -139,10 +154,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
             }
 
             if (experimentState != null && experimentState.getCheckpoints() != null && experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L)) {
-                return ProviderJobStatus.COMPLETED;
+                return ProviderJobStatus.COMPLETED.addExperimentState(experimentState);
             }
 
-            return ProviderJobStatus.RUNNING;
+            return ProviderJobStatus.RUNNING.addExperimentState(experimentState);
         }
 
         return ProviderJobStatus.STARTING;
@@ -161,8 +176,18 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public Map<String, String> progress(String jobHandle, RunStatus runStatus) {
-        throw new UnsupportedOperationException("Not currently supported");
+    public Map<String, String> progress(String jobHandle, List<String> validExtIds) {
+        Map<String, String> progressMap = new HashMap<>();
+
+        validExtIds.stream()
+                .forEach(id -> {
+                    byte[] contents = client.fileContents(jobHandle + "/output/" + id + "/progress.csv", true);
+                    if (contents != null) {
+                        progressMap.put(id, new String(contents));
+                    }
+                });
+
+        return progressMap;
     }
 
     @Override
@@ -200,7 +225,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     public boolean outputExist(String jobHandle) {
-        return client.listObjects(jobHandle + "/output").getObjectSummaries().size() > 0 ? true : false;
+        return client.listObjects(jobHandle + "/output").getObjectSummaries().size() > 0;
     }
 
     public List<String> getTrialStatus(String jobHandle, String fileName) {
@@ -234,9 +259,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         return expOpt != null && expOpt.isPresent() ? expOpt.get() : null;
     }
 
-    public Map<String, LocalDateTime> getTerminatedTrials(String jobHandle) {
-        ExperimentState experimentState = getExperimentState(jobHandle);
-
+    public Map<String, LocalDateTime> getTerminatedTrials(ExperimentState experimentState) {
         if (experimentState != null) {
             return experimentState.getCheckpoints().stream()
                     .filter(checkPoint -> checkPoint.getStatus().equals("TERMINATED"))
@@ -258,6 +281,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_7_6_PBT:
             case VERSION_0_7_6_RESUME:
             case VERSION_1_0_1:
+            case VERSION_1_0_3:
+            case VERSION_1_0_4:
+            case VERSION_1_0_5:
                 instructions.addAll(Arrays.asList(
                         // Setup NativeRL
                         "mkdir -p work",
@@ -355,7 +381,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
         }
     }
 
-    private void installModel(String modelId, List<String> instructions, List<String> files) {
+    private void installModel(String modelFileId, List<String> instructions, List<String> files) {
+        files.add(fileManager.buildS3CopyCmd(client.getBucketName(), modelFileId, "model.zip"));
+
         instructions.addAll(Arrays.asList(
                 "cd work",
                 "unzip ../model.zip > /dev/null",
@@ -365,7 +393,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private void installCheckpoint(String checkpointS3Path, List<String> instructions, List<String> files) {
         if (checkpointS3Path != null) {
-            files.add(fileManager.buildCheckpointCopyCmd(checkpointS3Path, "checkpoint.zip"));
+            files.add(fileManager.buildS3CopyCmd(client.getBucketName(), checkpointS3Path, "checkpoint.zip"));
 
             instructions.addAll(Arrays.asList(
                     "mkdir -p checkpoint",
@@ -400,8 +428,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("DISCRETE_ACTIONS", String.valueOf(job.getActions())),
                 var("CONTINUOUS_OBSERVATIONS", String.valueOf(job.getObservations())),
                 var("MAX_ITERATIONS", String.valueOf(job.getIterations())),
-                var("RANDOM_SEED", "1"),
-                var("MAX_REWARD_MEAN", String.valueOf(Integer.MAX_VALUE)), // disabled for now
                 var("TEST_ITERATIONS", "0"), // disabled for now
 
                 // Still has to be set, but doesn't actually do something, needs to be removed from train.sh
@@ -412,7 +438,12 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("NUM_SAMPLES", String.valueOf(job.getNumSamples())),
                 var("MULTIAGENT", String.valueOf(job.isMultiAgent())),
                 varCondition("RESUME", String.valueOf(job.isResume())),
-                var("CHECKPOINT_FREQUENCY", String.valueOf(job.getCheckpointFrequency()))
+                var("CHECKPOINT_FREQUENCY", String.valueOf(job.getCheckpointFrequency())),
+                var("EPISODE_REWARD_RANGE", "0.03"),
+                var("ENTROPY_SLOPE", "0.01"),
+                var("VF_LOSS_RANGE", "0.1"),
+                var("VALUE_PRED", "1"), // disabled for now
+                var("USER_LOG", String.valueOf(job.isUserLog()))
         ));
     }
 

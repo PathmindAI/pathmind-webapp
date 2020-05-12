@@ -2,20 +2,20 @@ package io.skymind.pathmind.shared.constants;
 
 import java.util.Arrays;
 
-public enum RunStatus
-{
+public enum RunStatus {
 	NotStarted(0, "Not Started"),
 	Starting(1, "Starting Cluster"),
 	Running(2, "Running"),
 	Completed(3, "Completed"),
 	Error(4, "Error"),
 	Killed(5, "Stopped"),
-	Restarting(6, "Restarting");
+	Restarting(6, "Restarting"),
+	Stopping(7, "Stopping");
 
 	private int id;
 	private String name;
 
-	private RunStatus(int id, String name) {
+	RunStatus(int id, String name) {
 		this.id = id;
 		this.name = name;
 	}
@@ -36,6 +36,9 @@ public enum RunStatus
 	}
 
 	public static boolean isRunning(RunStatus status){
-		return status == RunStatus.Starting || status == RunStatus.Running;
+		return status == RunStatus.Starting || status == RunStatus.Running || status == RunStatus.Restarting;
+	}
+	public static boolean isFinished(RunStatus status){
+		return status == RunStatus.Completed || status == RunStatus.Error || status == RunStatus.Killed;
 	}
 }

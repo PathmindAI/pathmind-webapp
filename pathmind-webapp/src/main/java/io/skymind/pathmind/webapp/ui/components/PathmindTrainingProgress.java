@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.components;
 
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 
@@ -14,6 +15,7 @@ public class PathmindTrainingProgress extends VerticalLayout {
 		setPadding(false);
 		setSpacing(false);
 		add(progressBar, progressValueLabel);
+		setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
 	}
 	
 	public void setValue(double progress, double estimatedTime) {

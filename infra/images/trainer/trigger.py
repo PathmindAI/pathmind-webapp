@@ -42,13 +42,14 @@ def execute_psql(sql_string):
     psql_connection.close()
 
 
-def load_ig_template():
+def load_ig_template(IG_TEMPLATE):
     """
     loads the spot ig file into memory
     """
     global mem_ig_template
     with open(IG_TEMPLATE,'r') as file:
         mem_ig_template=file.read().split('\n')
+    return mem_ig_template
 
 def load_deployment_template():
     """
@@ -94,10 +95,18 @@ def process_message(message):
         return
     global update_cluster
     global mockup_status
+    hw_type_list=['16cpu_32gb','16cpu_64gb','8cpu_16gb','8cpu_32gb','default']
     app_logger.info('Received {message}'.format(message=message['Body']))
     body=json.loads(message['Body'])
     s3bucket=body['S3Bucket']
     s3path=body['S3Path']
+    hw_type='default'
+    if 'hw_type' in body:
+        hw_type=body['hw_type']
+    if hw_type not in hw_type_list:
+        app_logger.info('hw type {hw_type} not found using default'\
+            .format(hw_type=hw_type))
+        hw_type='default'
     job_id=s3path
     ReceiptHandle=message['ReceiptHandle']
 
@@ -156,13 +165,15 @@ def process_message(message):
                     s3path=s3path))
 
         #replace values in template an dcreate spot ig yaml file
+        IG_TEMPLATE="spot_ig_template-{hw_type}.yaml".format(hw_type=hw_type)
+        IG_FILE=IG_TEMPLATE.replace('_template','')
+        mem_ig_template=load_ig_template(IG_TEMPLATE)
         JOB_IG_FILE=job_id+"_"+IG_FILE
         with open(JOB_IG_FILE,'w') as file:
             for line in mem_ig_template:
                 line=line.replace('{{CLUSTER_NAME}}',NAME)
                 line=line.replace('{{IG_NAME}}',job_id)
                 line=line.replace('{{INSTANCE_TYPE}}',ec2_instance_type)
-                line=line.replace('{{MAX_PRICE}}',ec2_max_price)
                 file.write(line+'\n')
 
         #replace values in template an dcreate deployment yaml file
@@ -180,6 +191,7 @@ def process_message(message):
                 line=line.replace('{{NAMESPACE}}',NAMESPACE)
                 line=line.replace('{{ENVIRONMENT}}',ENVIRONMENT)
                 line=line.replace('{{SQS_URL}}',SQS_URL)
+                line=line.replace('{{NAME}}',NAME)
                 file.write(line+'\n')
 
         if 'retry' in body:
@@ -209,8 +221,8 @@ def process_message(message):
                 '{s3path}',
                 '{s3bucket}',
                 '{ReceiptHandle}',
-                '{ec2_instance_type}',
-                '{ec2_max_price}',
+                'N/A',
+                'N/A',
                 {status},
                 'pathmind training job')
             """.format(
@@ -323,13 +335,10 @@ if __name__ == "__main__":
     NAME=os.environ['NAME']
     ENVIRONMENT=os.environ['ENVIRONMENT']
     RL_IMAGE=os.environ['RL_IMAGE']
-    IG_TEMPLATE="spot_ig_template.yaml"
     DEPLOYMENT_TEMPLATE="rl_training_deployment.yaml"
-    IG_FILE=IG_TEMPLATE.replace('_template','')
     DEPLOYMENT_FILE=DEPLOYMENT_TEMPLATE.replace('_template','')
     psql_con_details={}
     mockup_status={}
-    mem_ig_template=[]
     mem_deployment_template=[]
     update_cluster=False
     logger=LoggerInit()
@@ -337,7 +346,6 @@ if __name__ == "__main__":
     #Init kubectl
     sh.kops('export','kubecfg','--name',NAME)
     #Main thread
-    load_ig_template()
     load_deployment_template()
     parse_dburl()
     worker1 = Thread(target=main, args=())

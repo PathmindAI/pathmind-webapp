@@ -1,10 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -21,7 +16,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -29,12 +23,12 @@ import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.mock.MockDefaultValues;
+import io.skymind.pathmind.shared.featureflag.Feature;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
-import io.skymind.pathmind.webapp.security.Feature;
-import io.skymind.pathmind.webapp.security.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
@@ -46,11 +40,12 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
-@Slf4j
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
 	private long experimentId = -1;
 	private Experiment experiment;
@@ -81,19 +76,19 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Binder<Experiment> binder;
 
-	public NewExperimentView() {
-		super();
-		addClassName("new-experiment-view");
-	}
+    public NewExperimentView() {
+        super();
+        addClassName("new-experiment-view");
+    }
 
-	@Override
-	protected Component getTitlePanel() {
-		return null;
-	}
+    @Override
+    protected Component getTitlePanel() {
+        return new ScreenTitlePanel(createBreadcrumbs());
+    }
 
 	@Override
 	protected Component getMainContent() {
-		VerticalLayout mainContent = WrapperUtils.wrapSizeFullVertical(WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()), createMainPanel());
+		VerticalLayout mainContent = WrapperUtils.wrapSizeFullVertical(createMainPanel());
 		binder = new Binder<>(Experiment.class);
 		setupBinder();
 		return mainContent;
@@ -188,8 +183,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			return;
 		}
 
-		if (rewardVariablesTable.getValue() != null) {
-			rewardVariableDAO.saveRewardVariables(rewardVariablesTable.getValue());
+		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();
+		if (rewardVariables != null) {
+			rewardVariables.forEach(rv -> rv.setModelId(experiment.getModelId()));
+			rewardVariableDAO.saveRewardVariables(rewardVariables);
 		}
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.rewardFuntionCreated();
@@ -197,7 +194,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		trainingService.startRun(experiment);
 		segmentIntegrator.discoveryRunStarted();
 
-		UI.getCurrent().navigate(ExperimentView.class, experimentId);
+		getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experimentId));
 	}
 
 	private Button getActionButton() {
@@ -208,7 +205,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();
 		if (rewardVariables != null) {
 			rewardVariables.forEach(rv -> rv.setModelId(experiment.getModelId()));
-			rewardVariableDAO.saveRewardVariables(rewardVariablesTable.getValue());
+			rewardVariableDAO.saveRewardVariables(rewardVariables);
 		}
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.draftSaved();
@@ -225,6 +222,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			"Experiment Notes",
 			experiment.getUserNotes(),
 			updatedNotes -> {
+				experiment.setUserNotes(updatedNotes);
 				experimentDAO.updateUserNotes(experimentId, updatedNotes);
 				NotificationUtils.showSuccess("Notes saved");
 				segmentIntegrator.addedNotesNewExperimentView();
@@ -248,9 +246,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	protected void initLoadData() {
 		experiment = experimentDAO.getExperiment(experimentId).orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(experiment.getModelId());
-		if (MockDefaultValues.isDebugAccelerate() && StringUtils.isEmpty(experiment.getRewardFunction())) {
-			experiment.setRewardFunction(MockDefaultValues.NEW_EXPERIMENT_REWARD_FUNCTION);
-		}
 	}
 
 	@Override

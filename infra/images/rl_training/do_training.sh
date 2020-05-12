@@ -18,32 +18,44 @@ where id= (select project_id from model
 where id= (select model_id from experiment where id=(select experiment_id from run where id=${ID}))))
 EOF`
 
+#Monitor spot instance
+bash check_spot.sh "${S3PATH}" "${ENVIRONMENT}" "${EMAIL}" "${s3_url_link}" &
+
+#Get the instance type and cost
+instanceid=`aws ec2 describe-instances --filters "Name=tag:Name,Values=${S3PATH}.${NAME}"  | jq -r '.[] | .[] | .Instances | .[] | select(.State.Name == "running").InstanceId'`
+instance_type=`aws ec2 describe-spot-instance-requests | jq -r ".SpotInstanceRequests | .[] | select (.InstanceId ==\"${instanceid}\").LaunchSpecification.InstanceType"`
+instance_price=`aws ec2 describe-spot-instance-requests | jq -r ".SpotInstanceRequests | .[] | select (.InstanceId ==\"${instanceid}\").SpotPrice"`
+
 #Set the status in trainer_job
 psql "$DB_URL_CLI" << EOF
 update public.trainer_job
-set status=3,ec2_create_date=now(),update_date=NOW()
+set status=3,ec2_create_date=now(),update_date=NOW(),ec2_instance_type='${instance_type}',ec2_max_price='${instance_price}'
 where job_id='${S3PATH}';
 commit;
 EOF
 
 #Check if we need to resume the training
-output_files=`aws s3 ls  ${s3_url}/output/ | wc -l`
+aws s3 sync ${s3_url}/output/ /tmp/PPO/
+output_files=`ls  /tmp/PPO/experiment_state*json | wc -l`
 if [ "${output_files}" -ge 1 ]
 then
+	set -e
 	description="Training is resumed"
 	curl -X POST -H 'Content-type: application/json' \
-		--data "{'text':':heavy_plus_sign:Resuming Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
+		--data "{'text':':heavy_plus_sign:Resuming Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
 		https://hooks.slack.com/services/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
 	echo "Resuming Training"
 	export RESUME=true
 	rm -rf /app/work/PPO/*
 	touch restarting
-	aws s3 cp restarting ${s3_url}/output/ > /dev/null
-	aws s3 sync ${s3_url}/output/ /app/work/PPO/ > /dev/null
-	aws s3 cp ${s3_url}/output/ ${s3_url}/output_backup_`date '+%Y%m%d%H%M'`/ --recursive > /dev/null
-	aws s3 rm ${s3_url}/output/ --recursive > /dev/null
+	aws s3 cp restarting ${s3_url}/output/
+	aws s3 sync ${s3_url}/output/ /app/work/PPO/
+	echo `ls -1 /app/work/PPO/ | wc -l`" files were downloaded from ${s3_url}/output/"
+	aws s3 cp ${s3_url}/output/ ${s3_url}/output_backup_`date '+%Y%m%d%H%M'`/ --recursive
+	aws s3 rm ${s3_url}/output/ --recursive
 	touch restarted
-	aws s3 cp restarted ${s3_url}/output/ > /dev/null
+	aws s3 cp restarted ${s3_url}/output/
+	set +e
 fi
 
 bash script.sh > ${log_file} 2>&1 &
@@ -59,17 +71,26 @@ do
         ps ax | grep $pid | grep -v grep > /dev/null
         if [ $? != 0 ]
         then
+                echo "Process has been terminated"
                 break
         fi
+
+        last_line=$(tail -n 1 ${log_file})
+        if [ "${last_line}" = 'Training has been completed' ]
+        then
+                echo $last_line
+                break
+        fi
+
         #Upload files
         aws s3 sync ./work/PPO ${s3_url}/output/ > /dev/null
         #Check the training response timeout
         last_modification=`echo $(( $(date +%s) - $(stat -c %Y -- "${log_file}") ))`
         if [ ${last_modification} -ge ${training_update_timeout} ]
         then
-                description="No update in the log file ${log_file} for more than ${last_modification} seconds, training is not killed"
+                description="No update in the log file ${log_file} for more than ${last_modification} seconds, job is killed"
                 curl -X POST -H 'Content-type: application/json' \
-                --data "{'text':':x:Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
+                --data "{'text':':x:Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
                 https://hooks.slack.com/services/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
                 echo "Killing on timeout"
                 #Set the status in trainer_job
@@ -79,6 +100,13 @@ set status=5,ec2_end_date=now(),update_date=NOW(),description='${description}'
 where job_id='${S3PATH}';
 commit;
 EOF
+		aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
+		echo ${description} > errors.log
+		aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null
+		aws sqs send-message \
+			--queue-url ${SQS_URL} \
+			--message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
+			--message-group-id training
                 sleep 12h
         fi
         sleep $sleep_time
@@ -87,12 +115,12 @@ done
 wait $pid
 script_exit=$?
 status=4
-description="Job finishsed"
+description="Job finished"
 if [ ${script_exit} != 0 ]
 then
 	description=`tail -c 254 ${log_file} | tr '\n' ' ' | sed "s/'//g"`
 	curl -X POST -H 'Content-type: application/json' \
-		--data "{'text':':x:Training ${S3PATH} Job Crashed\nError: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
+		--data "{'text':':x:Training ${S3PATH} Job Crashed\nError: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
 		https://hooks.slack.com/services/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
 	echo "Training crashed"
 	tail -1  ${log_file} >> errors.log
@@ -149,7 +177,7 @@ if [ "${SUCCESS}" != "${NUM_SAMPLES}" ]
 then
         description="Only ${SUCCESS} trials were successful out of ${NUM_SAMPLES}"
         curl -X POST -H 'Content-type: application/json' \
-        --data "{'text':':x:Job Failed ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}'}" \
+        --data "{'text':':x:Job Failed ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
         https://hooks.slack.com/services/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
         echo "Error on training"
         status=5

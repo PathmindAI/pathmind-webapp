@@ -3,13 +3,21 @@ package io.skymind.pathmind.services;
 import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import io.skymind.pathmind.shared.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class TrainingService {
@@ -36,7 +44,7 @@ public abstract class TrainingService {
         }
 
 //        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
-        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_1_0_1, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
+        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_1_0_5, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
     }
     public void startRun(Experiment exp){
         startRun(exp,
@@ -51,5 +59,27 @@ public abstract class TrainingService {
         startRun(exp, iterations, maxTimeInSec, numSamples, null);
     }
 
-    protected abstract void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSampes, Policy basePolicy);
+    protected abstract void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSamples, Policy basePolicy);
+
+    public void stopRun(Experiment experiment, BiConsumer<Run, List<Policy>> callback)  {
+        List<Run> runs = experiment.getRuns().stream()
+                .filter(r -> RunStatus.isRunning(r.getStatusEnum()))
+                .collect(Collectors.toList());
+        List<Long> runsIds = runs.stream().map(Data::getId).collect(Collectors.toList());
+
+        executionProviderMetaDataDAO.getProviderRunJobIds(runsIds).values().forEach(executionProvider::stop);
+
+        // immediately mark the job as stopping so that the user doesn't have to wait the updater to update the run
+        // status
+        runs.forEach(run -> {
+            // the 3 lines below are there just to avoid an exception after the status is updated
+            run.setExperiment(experiment);
+            run.setModel(experiment.getModel());
+            run.setProject(experiment.getProject());
+            runDAO.updateRun(run, ProviderJobStatus.STOPPING, experiment.getPolicies());
+            if (callback != null) {
+                callback.accept(run, experiment.getPolicies());
+            }
+        });
+    }
 }

@@ -17,6 +17,9 @@ env:
   DEV_APP_URL: "https://dev.devpathmind.com/"
   TEST_APP_URL: "https://test.devpathmind.com/"
   PROD_APP_URL: "https://app.pathmind.com/"
+  SPRING_PROFILES_ACTIVE: dev
+  APP_DOMAIN: .dev.devpathmind.com
+  AWS_ADMIN_USERS_TABLE: AdminUsersDev
 
 name: pathmind-admin-server
 

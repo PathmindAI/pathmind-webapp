@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.components.buttons;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.Icon;
@@ -20,7 +19,7 @@ public class NewExperimentButton extends Button
 		super("New Experiment");
 		setIcon(new Icon(VaadinIcon.PLUS));
 
-        addClickListener(evt -> ExperimentViewNavigationUtils.createAndNavigateToNewExperiment(UI.getCurrent(), experimentDAO, modelId, defaultRewardFunction));
+        addClickListener(evt -> getUI().ifPresent(ui -> ExperimentViewNavigationUtils.createAndNavigateToNewExperiment(ui, experimentDAO, modelId, defaultRewardFunction)));
 			
 		addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 	}

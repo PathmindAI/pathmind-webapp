@@ -181,14 +181,10 @@ hr {
   height: 100%;
 }
 
-.default-view.guide {
-  background: white;
-}
-
-@media (min-width: 720px) {
-  .default-view.guide {
-    padding-top: var(--lumo-space-m);
-  }
+.default-view.project-view,
+.default-view.model-view {
+  height: auto;
+  min-height: 100%;
 }
 
 .view-section {
@@ -208,10 +204,33 @@ hr {
   align-self: center;
 }
 
-.projects-view .page-content {
+.page-content-header {
+  margin-bottom: var(--lumo-space-m);
+}
+
+.page-content-header vaadin-button {
+  margin: 0;
+}
+
+.projects-view {
+  padding: 0 var(--lumo-space-m) var(--lumo-space-m);
+}
+
+.projects-view .view-section {
   max-width: 1480px;
-  align-self: center;
-  padding: 0;
+  margin-top: var(--lumo-space-m);
+}
+
+.projects-view .project-name-column {
+  align-items: center;
+}
+
+.projects-view .project-name-column vaadin-button {
+  visibility: hidden;
+}
+
+.projects-view .project-name-column:hover vaadin-button {
+  visibility: visible;
 }
 
 .projects-view .view-section,
@@ -220,8 +239,84 @@ hr {
 .projects-view .page-content,
 .project-view .page-content,
 .model-view .page-content {
-  flex: 1;
-  margin-top: 0;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  padding: var(--lumo-space-m);
+}
+
+.project-view .view-section,
+.model-view .view-section,
+.card.view-section {
+  min-width: unset;
+  line-height: 1.6em;
+  overflow: auto;
+}
+
+.card p,
+.card p + div {
+  margin: var(--lumo-space-m) 0 0;
+}
+
+.card p {
+  color: var(--lumo-secondary-text-color);
+}
+
+.card .bold-label {
+  display: block;
+  color: var(--lumo-body-text-color);
+}
+
+.project-view .section-subtitle-label,
+.model-view .section-subtitle-label {
+  color: var(--lumo-secondary-text-color);
+}
+
+.project-view .truncated-label {
+  max-width: 100%;
+  width: auto;
+}
+
+.project-view .section-title-label + vaadin-button {
+  min-width: var(--lumo-button-size);
+  height: 1.4rem;
+  font-size: var(--lumo-font-size-s);
+  padding: 0 var(--lumo-space-xs);
+  margin: 0 0 0 var(--lumo-space-m);
+}
+
+.model-view .model-reward-variables {
+  max-height: 180px;
+  color: var(--lumo-secondary-text-color);
+  line-height: 1.3em;
+  overflow-y: auto;
+}
+
+.model-view .model-reward-variables span {
+  font-size: var(--lumo-font-size-s);
+}
+
+.model-view .model-reward-variables span:first-child {
+  display: inline-block;
+  width: 30px;
+  color: var(--lumo-secondary-text-color);
+}
+
+.model-view .model-reward-variables span:last-child {
+  padding: 0 2px;
+  border-radius: 3px;
+}
+
+.project-view .notes-field-wrapper,
+.model-view .notes-field-wrapper {
+  flex: 1 1 auto;
+}
+
+.model-view .notes-field-wrapper {
+  margin-top: var(--lumo-space-m);
+}
+
+.no-shrink {
+  flex-shrink: 0;
 }
 
 .upload-model-view .view-section {
@@ -242,25 +337,6 @@ hr {
   overflow-y: auto;
 }
 
-.experiment-view .page-content {
-  /* To make the white panels on Experiment page to be 
-     at the same position as the Projects, Project, and Model pages */
-  margin-top: var(--lumo-space-xl);
-}
-
-.guide-view-wrapper {
-  flex-grow: 1;
-  background: white;
-}
-
-/* The side menu goes to the top for smaller screens 
-   Using 50% screen width of 1440px */
-@media (max-width: 720px) {
-  .guide-view-wrapper {
-    flex-direction: column;
-  }
-}
-
 account-view {
   background: var(--pm-app-bg-color);
   height: 100%;
@@ -273,16 +349,10 @@ account-view {
 
 /* Title bar */
 .page-title {
+  justify-content: center;
   color: var(--lumo-body-text-color);
+  padding: 0 var(--lumo-space-m);
   margin-top: var(--lumo-space-m);
-}
-
-.page-title a {
-  color: var(--lumo-body-text-color);
-}
-
-.page-title :last-child {
-  font-weight: bold;
 }
 
 .action-button iron-icon {
@@ -349,6 +419,31 @@ account-view {
   color: var(--lumo-error-color);
 }
 
+/* Primary Button Styles */
+.button-link {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 200px;
+  height: 40px;
+  font-weight: bold;
+  color: white;
+  background-color: var(--pm-primary-color);
+  border-radius: var(--lumo-border-radius);
+}
+
+.button-link:hover {
+  color: var(--pm-primary-color);
+  background-color: white;
+  text-decoration: none;
+  border: 1px solid var(--pm-primary-color);
+}
+
+.button-link:hover::before {
+  opacity: 0;
+}
+
 /* Typography Styles */
 h1 {
   font-size: var(--lumo-font-size-xxl);
@@ -377,15 +472,23 @@ h4 {
 }
 .navigate-icon {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
   flex-grow: 1;
   opacity: 0;
 }
 .dashboard-placeholder {
-  margin-top: 90px;
+  width: auto !important;
+  margin: 90px auto 0;
+}
+.dashboard-placeholder vaadin-horizontal-layout {
+  flex-wrap: wrap;
 }
 
-.dashboard-line:hover > .navigate-icon {
+.dashboard-placeholder vaadin-horizontal-layout .button-link {
+  margin: var(--lumo-space-m);
+}
+
+.dashboard-line:hover .navigate-icon {
   opacity: 1;
 }
 .dashboard-item-main {
@@ -410,6 +513,9 @@ h4 {
   border-left: 1px solid var(--pm-gray-color-light);
   margin-top: 1.8rem;
 }
+.dashboard-item-notes:empty {
+  border-left: none;
+}
 .dashboard-item-notes span {
   line-height: 1;
 }
@@ -429,6 +535,11 @@ h4 {
   left: 0;
   bottom: 0;
   background: linear-gradient(rgba(255, 255, 255, 0), white);
+}
+
+.dashboard-item-icons {
+  flex-grow: 0;
+  align-self: stretch;
 }
 
 .stages-container {
@@ -518,4 +629,19 @@ h4 {
   .dashboard-item-main vaadin-horizontal-layout:not(.stages-container) {
     flex-wrap: wrap;
   }
+}
+
+.dialog-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin: calc(var(--lumo-space-l) * -1);
+  margin-top: var(--lumo-space-l);
+  padding: var(--lumo-space-xs) var(--lumo-space-l);
+  background-color: var(--lumo-contrast-5pct);
+}
+.dialog-footer .cancel-button {
+  margin-right: auto;
+  margin-left: var(--lumo-space-s);
+  align-self: center;
 }

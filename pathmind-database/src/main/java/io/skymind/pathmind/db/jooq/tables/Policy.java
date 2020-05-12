@@ -17,10 +17,11 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = 1723737260;
+    private static final long serialVersionUID = -946787170;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -60,7 +61,7 @@ public class Policy extends TableImpl<PolicyRecord> {
     /**
      * The column <code>public.policy.id</code>.
      */
-    public final TableField<PolicyRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<PolicyRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('policy_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.policy.run_id</code>.
@@ -96,6 +97,11 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.has_file</code>.
      */
     public final TableField<PolicyRecord, Boolean> HAS_FILE = createField(DSL.name("has_file"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+
+    /**
+     * The column <code>public.policy.is_valid</code>.
+     */
+    public final TableField<PolicyRecord, Boolean> IS_VALID = createField(DSL.name("is_valid"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("true", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * Create a <code>public.policy</code> table reference
@@ -138,6 +144,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.POLICY_PKEY, Indexes.POLICY_RUN_FK_INDEX, Indexes.POLICY_RUN_ID_EXTERNAL_ID_KEY);
+    }
+
+    @Override
+    public Identity<PolicyRecord, Long> getIdentity() {
+        return Keys.IDENTITY_POLICY;
     }
 
     @Override
@@ -186,11 +197,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<Long, Long, String, String, LocalDateTime, LocalDateTime, LocalDateTime, Boolean> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row9<Long, Long, String, String, LocalDateTime, LocalDateTime, LocalDateTime, Boolean, Boolean> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }

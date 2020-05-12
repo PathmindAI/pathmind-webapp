@@ -52,10 +52,11 @@ public class NotesField extends HorizontalLayout {
 	}
 
 	private VerticalLayout editableFieldWrapper() {
+		initButtons();
 		HorizontalLayout headerRow = new HorizontalLayout(
 			new Span(title),
 			hintWrapper,
-			buttonsWrapper()
+			saveButton
 		);
 		headerRow.setSpacing(false);
 		headerRow.addClassName("header");
@@ -68,15 +69,6 @@ public class NotesField extends HorizontalLayout {
 		editableFieldWrapper.setSpacing(false);
 		editableFieldWrapper.setPadding(false);
 		return editableFieldWrapper;
-	}
-
-	private HorizontalLayout buttonsWrapper() {
-		initButtons();
-		HorizontalLayout buttonsWrapper = new HorizontalLayout(
-			saveButton
-		);
-		buttonsWrapper.setSpacing(false);
-		return buttonsWrapper;
 	}
 
 	private Button createButton(String label, Boolean isEnabled) {

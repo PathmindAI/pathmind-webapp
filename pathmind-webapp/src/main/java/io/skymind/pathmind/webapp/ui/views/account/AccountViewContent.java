@@ -1,5 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.account;
 
+import io.skymind.pathmind.shared.featureflag.Feature;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
@@ -31,6 +33,8 @@ import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model> {
 
+	private final FeatureManager featureManager;
+
 	@Id("editInfoBtn")
 	private Button editInfoBtn;
 
@@ -53,11 +57,20 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 	private PathmindUser user;
 
 	@Autowired
-	public AccountViewContent(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink, StripeService stripeService, SegmentIntegrator segmentIntegrator) {
+	public AccountViewContent(
+			CurrentUser currentUser,
+			@Value("${pathmind.contact-support.address}") String contactLink,
+			@Value("${pathmind.privacy-policy.url}") String privacyPolicyLink,
+			@Value("${pathmind.terms-of-use.url}") String termsOfUseLink,
+			StripeService stripeService,
+			SegmentIntegrator segmentIntegrator, FeatureManager featureManager) {
         this.stripeService = stripeService;
         this.segmentIntegrator = segmentIntegrator;
 		getModel().setContactLink(contactLink);
+		getModel().setPrivacyLink(privacyPolicyLink);
+		getModel().setTermsOfUseLink(termsOfUseLink);
 		user = currentUser.getUser();
+		this.featureManager= featureManager;
 	}
 
 	@PostConstruct
@@ -71,24 +84,25 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 		editInfoBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountEditView.class)));
 		changePasswordBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(ChangePasswordView.class)));
 		editPaymentBtn.setEnabled(false);
-		upgradeBtn.setVisible(subscription == null);
+		upgradeBtn.setVisible(featureManager.isEnabled(Feature.ACCOUNT_UPGRADE) && subscription == null);
 		cancelSubscriptionBtn.setVisible(subscription != null);
 		cancelSubscriptionBtn.setEnabled(subscription != null && !subscription.getCancelAtPeriodEnd());
 		
-		upgradeBtn.addClickListener(e -> UI.getCurrent().navigate(AccountUpgradeView.class));
+		upgradeBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class)));
 		cancelSubscriptionBtn.addClickListener(evt -> cancelSubscription(subscription));
 	}
 	
 	// This part will probably move to a separate view, but for now implementing it as a confirmation dialog
 	private void cancelSubscription(Subscription subscription) {
-		SubscriptionCancelDialog subscriptionCancelDialog = new SubscriptionCancelDialog(subscription.getCurrentPeriodEnd(), () -> {
-			Subscription updatedSubscription = stripeService.cancelSubscription(user.getEmail(), true);
-			segmentIntegrator.subscriptionCancelled();
-			initContent(updatedSubscription);
-			initBtns(updatedSubscription);
+		getUI().ifPresent(ui -> {
+			SubscriptionCancelDialog subscriptionCancelDialog = new SubscriptionCancelDialog(ui, subscription.getCurrentPeriodEnd(), () -> {
+				Subscription updatedSubscription = stripeService.cancelSubscription(user.getEmail(), true);
+				segmentIntegrator.subscriptionCancelled();
+				initContent(updatedSubscription);
+				initBtns(updatedSubscription);
+			});
+			subscriptionCancelDialog.open();
 		});
-		subscriptionCancelDialog.open();
-		
 	}
 
 	private void initContent(Subscription subscription) {
@@ -97,10 +111,10 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 		getModel().setLastName(user.getLastname());
 		getModel().setSubscription(subscription != null ? "Professional": "Early Access");
 		if (subscription != null && subscription.getCancelAtPeriodEnd()) {
-			VaadinDateAndTimeUtils.withUserTimeZoneId(userTimeZoneId -> {
+			getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZoneId -> {
 				getModel().setSubscriptionCancellationNote("Subscription will be cancelled on " +
 						DateAndTimeUtils.formatDateAndTimeShortFormatter(DateAndTimeUtils.fromEpoch(subscription.getCurrentPeriodEnd()), userTimeZoneId));
-			});
+			}));
 		}
 		getModel().setBillingInfo("Billing Information");
 	}
@@ -113,5 +127,7 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 		void setSubscriptionCancellationNote(String cancellationNote);
 		void setBillingInfo(String billingInfo);
         void setContactLink(String contactLink);
+        void setPrivacyLink(String privacyPolicyLink);
+        void setTermsOfUseLink(String termsOfUseLink);
 	}
 }

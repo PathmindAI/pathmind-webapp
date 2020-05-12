@@ -2,19 +2,6 @@ package io.skymind.pathmind.webapp.ui.views.dashboard;
 
 import java.time.LocalDateTime;
 
-import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
-import io.skymind.pathmind.webapp.exception.InvalidDataException;
-import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
-import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.dashboard.components.DashboardLine;
-import io.skymind.pathmind.webapp.ui.views.dashboard.components.EmptyDashboardPlaceholder;
-import io.skymind.pathmind.webapp.ui.views.dashboard.dataprovider.DashboardDataProvider;
-import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
-import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -27,20 +14,32 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 
-import io.skymind.pathmind.shared.bus.EventBus;
-import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
-import io.skymind.pathmind.shared.constants.GuideStep;
-import io.skymind.pathmind.shared.data.DashboardItem;
-import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.GuideDAO;
+import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
+import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
+import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
+import io.skymind.pathmind.webapp.ui.utils.PushUtils;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.dashboard.components.DashboardLine;
+import io.skymind.pathmind.webapp.ui.views.dashboard.components.EmptyDashboardPlaceholder;
+import io.skymind.pathmind.webapp.ui.views.dashboard.dataprovider.DashboardDataProvider;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.DashboardUtils;
+import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
-import io.skymind.pathmind.webapp.ui.views.model.utils.UploadModelViewNavigationUtils;
+import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 @Route(value= Routes.DASHBOARD_URL, layout = MainLayout.class)
 public class DashboardView extends PathMindDefaultView implements RunUpdateSubscriber
@@ -50,14 +49,19 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
 	@Autowired
 	private ExperimentDAO experimentDAO;
-	
+
 	@Autowired
-	private GuideDAO guideDAO;
+	private ProjectDAO projectDAO;
+
+	@Autowired
+	private ModelDAO modelDAO;
 	
 	private Grid<DashboardItem> dashboardGrid;
 	
 	private EmptyDashboardPlaceholder placeholder;
-	
+
+	private ScreenTitlePanel titlePanel = new ScreenTitlePanel("Dashboard");
+
 	private long loggedUserId;
 
 	@Override
@@ -92,7 +96,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 		dashboardGrid = new Grid<>();
 		dashboardGrid.addClassName("dashboard");
 		dashboardGrid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
-		dashboardGrid.addComponentColumn(item -> new DashboardLine(item, itm -> navigateFromDashboard(itm)));
+		dashboardGrid.addComponentColumn(item -> new DashboardLine(item, itm -> navigateFromDashboard(itm), itm -> archiveItem(itm)));
 		dashboardGrid.setSelectionMode(SelectionMode.NONE);
 		dashboardGrid.setPageSize(10);
 	}
@@ -101,8 +105,14 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 		Stage stage = DashboardUtils.calculateStage(item);
 		switch (stage) {
 			case SetUpSimulation :
-				GuideStep step = guideDAO.getGuideStep(item.getProject().getId());
-				getUI().ifPresent(ui -> ui.navigate(step.getPath() + "/" + item.getProject().getId()));
+				getUI().ifPresent(ui -> {
+					if (item.getModel() != null && item.getModel().isDraft()) {
+						ui.navigate(UploadModelView.class, UploadModelView.createResumeUploadTarget(item.getProject(), item.getModel()));
+					}
+					else {
+						ui.navigate(UploadModelView.class, String.valueOf(item.getProject().getId()));
+					}
+				});
 				break;
 			case WriteRewardFunction:
 				var experimentId = item.getExperiment() == null ?
@@ -115,9 +125,33 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 		}
 	}
 
+	private void archiveItem(DashboardItem item) {
+		Stage stage = DashboardUtils.calculateStage(item);
+		switch (stage) {
+			case SetUpSimulation :
+				ConfirmationUtils.archive("project", () -> {
+					projectDAO.archive(item.getProject().getId(), true);
+					dataProvider.refreshAll();
+				});
+				break;
+			case WriteRewardFunction:
+				ConfirmationUtils.archive("model", () -> {
+					modelDAO.archive(item.getModel().getId(), true);
+					dataProvider.refreshAll();
+				});
+				break;
+			default :
+				ConfirmationUtils.archive("experiment", () -> {
+					experimentDAO.archive(item.getExperiment().getId(), true);
+					dataProvider.refreshAll();
+				});
+				break;
+		}
+	}
+
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("Dashboard");
+		return titlePanel;
 	}
 
 	@Override
@@ -129,8 +163,9 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 	protected void initScreen(BeforeEnterEvent event) {
 		boolean emptyDashboard = dataProvider.isEmpty();
 		placeholder.setVisible(emptyDashboard);
+		titlePanel.setVisible(!emptyDashboard);
 		dashboardGrid.setVisible(!emptyDashboard);
-		VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+		VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
 			// dashboardGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting data provider
 			dashboardGrid.setDataProvider(dataProvider);
 		});

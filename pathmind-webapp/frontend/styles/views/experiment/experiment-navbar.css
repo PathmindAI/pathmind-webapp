@@ -1,8 +1,10 @@
 .experiments-navbar {
   width: auto !important;
+  height: 38rem;
+  min-height: 100%;
   background: white;
   border-radius: var(--lumo-border-radius);
-  padding: var(--lumo-space-s);
+  padding: var(--lumo-space-m);
 }
 
 .experiments-navbar vaadin-button {

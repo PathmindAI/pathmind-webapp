@@ -14,7 +14,7 @@ import static io.skymind.pathmind.db.testutils.UserUtils.*;
 import static org.junit.Assert.*;
 
 @Ignore
-@Transactional
+@Transactional // is this test ever run?
 public class UserDaoTest extends PathmindApplicationTests
 {
 

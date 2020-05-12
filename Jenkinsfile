@@ -15,6 +15,7 @@ def icon=":heavy_check_mark:"
 */
 def buildDockerImage(image_name, image_id) {
         echo "Building the pathmind Docker Image"
+        sh "docker build -t base -f ${WORKSPACE}/Dockerfile-cache ${WORKSPACE}/"
         sh "docker build -t ${image_name} -f ${WORKSPACE}/Dockerfile ${WORKSPACE}/"
 }
 
@@ -38,6 +39,7 @@ pipeline {
     options {
         // Build auto timeout
         timeout(time: 60, unit: 'MINUTES')
+        disableConcurrentBuilds()
     }
 
     // Some global default variables
@@ -145,6 +147,8 @@ pipeline {
             }
             steps {
 		script {
+				echo "Deploying updater helm chart"
+                                sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml -n ${DOCKER_TAG}"
 				echo "Updating helm chart"
 				sh "bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} ${DOCKER_TAG} ${WORKSPACE}"
 		}
@@ -162,18 +166,16 @@ pipeline {
 			try {
 				echo "Running tests"
 				sh "sleep 120"
-				sh "if [ -d pathmind-bdd-tests ]; then rm -rf pathmind-bdd-tests; fi"
-				sh "git clone git@github.com:SkymindIO/pathmind-bdd-tests.git"
-				sh "cd pathmind-bdd-tests; mvn clean verify -Dheadless=true -Denvironment=pathmind-dev"
+				sh "mvn clean verify -Dheadless=true -Denvironment=pathmind-dev -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -f pom.xml -P bdd-tests"
 			} catch (err) {
 			} finally {
 				publishHTML (target: [
 				reportDir: 'pathmind-bdd-tests/target/site/serenity',
 				reportFiles: 'index.html',
 				reportName: "Tests",
-        keepAll:     true,
-        alwaysLinkToLastBuild: true,
-        allowMissing: false
+				keepAll:     true,
+				alwaysLinkToLastBuild: true,
+				allowMissing: false
 				])
 			}
 		}
@@ -229,4 +231,3 @@ pipeline {
         }
     }
 }
-

@@ -2,9 +2,9 @@ package io.skymind.pathmind.webapp.ui.components;
 
 import org.springframework.stereotype.Component;
 
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.router.RouterLink;
+
+import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 
 @Component
 public class ScreenTitlePanel extends HorizontalLayout
@@ -15,22 +15,16 @@ public class ScreenTitlePanel extends HorizontalLayout
 	}
 
 	public ScreenTitlePanel(String title) {
-		this(title, "", null);
+		this(title, null, null);
 	}
 
-	public ScreenTitlePanel(String title, String subtitle, Class rootNavigationTarget)
-	{
+	public ScreenTitlePanel(String title, String subtitle, Class rootNavigationTarget){
+		this(new Breadcrumbs(title, subtitle, rootNavigationTarget));
+	}
+	
+	public ScreenTitlePanel(Breadcrumbs breadcrumbs) {
 		setWidthFull();
-		setJustifyContentMode(JustifyContentMode.CENTER);
 		addClassName("page-title");
-
-		if (subtitle == "") {
-			add(LabelFactory.createLabel(title, "section-label-title"));
-		} else {
-			add(new RouterLink(title, rootNavigationTarget));
-			add(new Span(">"));
-			add(LabelFactory.createLabel(subtitle, "section-label-subtitle"));
-		}
-
+		add(breadcrumbs);
 	}
 }

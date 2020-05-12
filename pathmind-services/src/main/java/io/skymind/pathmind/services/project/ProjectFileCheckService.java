@@ -5,7 +5,6 @@ import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -13,17 +12,19 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
-@Service
 @Slf4j
 public class ProjectFileCheckService {
-    @Autowired
-    ExecutorService checkerExecutorService;
 
-    @Autowired
-    ModelAnalyzerApiClient client;
+    private final ExecutorService checkerExecutorService;
+    private final ModelAnalyzerApiClient client;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    ObjectMapper objectMapper;
+    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, ObjectMapper objectMapper) {
+        this.checkerExecutorService = checkerExecutorService;
+        this.client = client;
+        this.objectMapper = objectMapper;
+    }
+
 
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
     public void checkFile(StatusUpdater statusUpdater, byte[] data) {

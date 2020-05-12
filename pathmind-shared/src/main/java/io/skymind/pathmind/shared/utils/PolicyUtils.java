@@ -64,6 +64,12 @@ public class PolicyUtils
             return null;
         return policy.getScores().get(policy.getScores().size() - 1).getMean();
     }
+    
+    public static Integer getLastIteration(Policy policy) {
+    	if(policy == null || policy.getScores() == null || policy.getScores().isEmpty())
+    		return null;
+    	return policy.getScores().get(policy.getScores().size() - 1).getIteration();
+    }
 
     public static final String getElapsedTime(Policy policy) {
         return DateAndTimeUtils.formatDurationTime(RunUtils.getElapsedTime(policy.getRun()));

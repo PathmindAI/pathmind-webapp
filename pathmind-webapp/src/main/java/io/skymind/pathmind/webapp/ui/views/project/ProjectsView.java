@@ -8,10 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
@@ -21,18 +26,20 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
-import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
-@CssImport("./styles/styles.css")
 @Route(value= Routes.PROJECTS_URL, layout = MainLayout.class)
 public class ProjectsView extends PathMindDefaultView
 {
@@ -55,22 +62,23 @@ public class ProjectsView extends PathMindDefaultView
 
 		addClassName("projects-view");
 
-		VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
+		Span projectsTitle = LabelFactory.createLabel("Projects", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
+
+		HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle, new NewProjectButton());
+		headerWrapper.addClassName("page-content-header");
+
+		FlexLayout gridWrapper = new ViewSection(
+				headerWrapper, 
 				archivesTabPanel,
-				new ViewSection(projectGrid)
-		);
+				projectGrid);
 		gridWrapper.addClassName("page-content");
-		gridWrapper.setPadding(false);
-		
-		return WrapperUtils.wrapSizeFullVertical(
-				WrapperUtils.wrapWidthFullCenterHorizontal(createBreadcrumbs()),
-				gridWrapper,
-				WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton()));
+
+		return gridWrapper;
 	}
 
 	private void setupTabbedPanel() {
 		archivesTabPanel = new ArchivesTabPanel<>(
-				"Projects",
+				"Active",
 				projectGrid,
 				this::getProjects,
 				(projectId, isArchive) -> projectDAO.archive(projectId, isArchive));
@@ -80,7 +88,14 @@ public class ProjectsView extends PathMindDefaultView
 	{
 		projectGrid = new Grid<Project>();
 
-		projectGrid.addColumn(Project::getName)
+		projectGrid.addComponentColumn(project -> {
+				Button renameProjectButton = new Button(new Icon(VaadinIcon.EDIT), evt -> renameProject(project));
+				renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+				HorizontalLayout projectNameColumn = new HorizontalLayout(new Span(project.getName()), renameProjectButton);
+				projectNameColumn.addClassName("project-name-column");
+				projectNameColumn.setSpacing(false);
+				return projectNameColumn;
+		})
 				.setHeader("Name")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
@@ -121,13 +136,18 @@ public class ProjectsView extends PathMindDefaultView
 		return projects;
 	}
 
-	private Breadcrumbs createBreadcrumbs() {        
-		return new Breadcrumbs(null, null, null);
+	private void renameProject(Project project) {
+		RenameProjectDialog dialog = new RenameProjectDialog(project, projectDAO, updateProjectName -> {
+			projectGrid.getDataProvider().refreshItem(project);
+			// JS is used because projectGrid.recalculateColumnWidths(); does not work; probably a Vaadin Grid issue
+			projectGrid.getElement().executeJs("setTimeout(() => { this.recalculateColumnWidths() }, 0)");
+		});
+		dialog.open();
 	}
 
 	@Override
 	protected Component getTitlePanel() {
-		return null;
+		return new ScreenTitlePanel("Projects");
 	}
 
 	@Override
@@ -139,7 +159,7 @@ public class ProjectsView extends PathMindDefaultView
 	protected void initLoadData() throws InvalidDataException {
 		projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId());
 		if(projects == null || projects.isEmpty()) {
-			UI.getCurrent().navigate(NewProjectView.class);
+			getUI().ifPresent(ui -> ui.navigate(NewProjectView.class));
 			return;
 		}
 	}
@@ -147,10 +167,12 @@ public class ProjectsView extends PathMindDefaultView
 	@Override
 	protected void initScreen(BeforeEnterEvent event)
 	{
-		VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+		VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
 			// projectGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			projectGrid.setItems(projects);
 		});
-		archivesTabPanel.initData();
+		archivesTabPanel.initData(event.getUI());
+
+		recalculateGridColumnWidth(event.getUI().getPage(), projectGrid);		
 	}
 }

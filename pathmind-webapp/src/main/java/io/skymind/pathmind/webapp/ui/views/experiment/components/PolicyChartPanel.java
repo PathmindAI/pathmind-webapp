@@ -5,8 +5,8 @@ import static io.skymind.pathmind.webapp.utils.ChartUtils.createPassiveSeriesPlo
 
 import java.util.List;
 
-import io.skymind.pathmind.shared.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.shared.bus.subscribers.PolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
@@ -15,13 +15,16 @@ import io.skymind.pathmind.webapp.utils.ChartUtils;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.charts.Chart;
+import com.vaadin.flow.component.charts.model.Accessibility;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.DataSeries;
+import com.vaadin.flow.component.charts.model.Marker;
+import com.vaadin.flow.component.charts.model.PlotOptionsSeries;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import io.skymind.pathmind.shared.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.EventBus;
 
 
 import java.util.stream.Collectors;
@@ -73,6 +76,7 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
         yAxis.setTitle("Mean Reward Score over All Episodes");
 
         chart.getConfiguration().setTitle("Reward Score");
+        chart.getConfiguration().setAccessibility(new Accessibility(false));
         chart.getConfiguration().getLegend().setEnabled(false);
         chart.getConfiguration().addxAxis(xAxis);
         chart.getConfiguration().addyAxis(yAxis);
@@ -84,33 +88,34 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
         chart.setSizeFull();
     }
 
-    public void setExperiment(Experiment experiment) {
+    public void setExperiment(Experiment experiment, Policy bestPolicy) {
         synchronized (experimentLock) {
             this.experiment = experiment;
-            updateChart(experiment.getPolicies());
+            updateChart(experiment.getPolicies(), bestPolicy);
         }
     }
 
-    private void updateChart(List<Policy> policies) {
+    private void updateChart(List<Policy> policies, Policy bestPolicy) {
         // As we cannot clear the chart's ListSeries we need to do things a bit differently.
         chart.getConfiguration().setSeries(
                 policies.stream()
-                        .map(policy -> createDataSeriesForPolicy(policy))
+                        .map(policy -> createDataSeriesForPolicy(policy, policy.equals(bestPolicy)))
                         .collect(Collectors.toList()));
         chart.drawChart(true);
     }
 
     private void addPolicyToChart(Policy policy) {
-        DataSeries dataSeries = createDataSeriesForPolicy(policy);
+        DataSeries dataSeries = createDataSeriesForPolicy(policy, false);
         chart.getConfiguration().addSeries(dataSeries);
     }
     
-    private DataSeries createDataSeriesForPolicy(Policy policy) {
+    private DataSeries createDataSeriesForPolicy(Policy policy, boolean isBestPolicy) {
     	DataSeries dataSeries = new DataSeries(policy.getName());
         dataSeries.setData(ChartUtils.getRewardScoreSeriesItems(policy));
         dataSeries.setId(Long.toString(policy.getId()));
-        // Insert the series as passive by default, they will be highlighted after best policy calculation
-        dataSeries.setPlotOptions(createPassiveSeriesPlotOptions());
+        PlotOptionsSeries plotOptions = isBestPolicy ? createActiveSeriesPlotOptions() : createPassiveSeriesPlotOptions();
+        plotOptions.setMarker(new Marker(false));
+        dataSeries.setPlotOptions(plotOptions);
         return dataSeries;
     }
 

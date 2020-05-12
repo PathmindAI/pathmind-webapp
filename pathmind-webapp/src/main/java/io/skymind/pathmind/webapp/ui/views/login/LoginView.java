@@ -2,11 +2,13 @@ package io.skymind.pathmind.webapp.ui.views.login;
 
 import java.util.List;
 
+import com.vaadin.flow.component.AttachEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.utils.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -39,7 +41,7 @@ import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
-import io.skymind.pathmind.services.UserService;
+import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.webapp.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.webapp.ui.views.project.NewProjectView;
@@ -55,6 +57,7 @@ public class LoginView extends HorizontalLayout
 {
 	private Div badCredentials = new Div();
 	private HorizontalLayout emailNotVerified = WrapperUtils.wrapWidthFullHorizontal();
+	private Div sessionExpired = new Div();
 
 	@Autowired
 	private ProjectDAO projectDAO;
@@ -86,13 +89,17 @@ public class LoginView extends HorizontalLayout
 		badCredentials.setClassName("error-message");
 		badCredentials.setVisible(false);
 
+		sessionExpired.add(new Span("Your session expired"));
+		sessionExpired.setClassName("info-message");
+		sessionExpired.setVisible(false);
+
 		updateEmailNotVerified();
 
 		Div innerContent = new Div();
 		innerContent.setClassName("inner-content");
 		// Temporarily block new signups for public beta - issue https://github.com/SkymindIO/pathmind-webapp/issues/356
 		// innerContent.add(title, badCredentials, emailNotVerified, createLoginForm(), createSignUp());
-		innerContent.add(title, badCredentials, emailNotVerified, createLoginForm());
+		innerContent.add(title, badCredentials, emailNotVerified, sessionExpired, createLoginForm());
 
 		Anchor termsLink = new Anchor(termsOfUseUrl, "Terms of Use");
 		termsLink.setTarget("_blank");
@@ -153,13 +160,13 @@ public class LoginView extends HorizontalLayout
 		loginI18n.setHeader(new LoginI18n.Header());
 		loginI18n.getHeader().setTitle("");
 		loginI18n.getForm().setUsername("Email");
-		loginI18n.getForm().setSubmit("Sign in");
+		loginI18n.getForm().setSubmit("Sign In");
 		loginI18n.getForm().setForgotPassword("Forgot your password?");
 
 		LoginForm loginForm = new LoginForm();
 		loginForm.setI18n(loginI18n);
 		loginForm.setAction(Routes.LOGIN_URL);
-		loginForm.addForgotPasswordListener(e -> UI.getCurrent().navigate(ResetPasswordView.class));
+		loginForm.addForgotPasswordListener(e -> getUI().ifPresent(ui -> ui.navigate(ResetPasswordView.class)));
 		loginForm.addLoginListener(evt -> segmentIntegrator.userLoggedIn());
 		return loginForm;
 	}
@@ -177,7 +184,7 @@ public class LoginView extends HorizontalLayout
 			event.forwardTo(getRerouteClass());
 			// Make sure automatic push mode is enabled. If we don't do this, automatic push
 			// won't work even we have proper annotations in place.
-			UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
+			event.getUI().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 			return;
 		}
 		add(segmentIntegrator);
@@ -206,5 +213,19 @@ public class LoginView extends HorizontalLayout
 
 			emailNotVerified.setVisible(true);
 		}
+		else if (Routes.SESSION_EXPIRED.equals(errorMessage)) {
+			sessionExpired.setVisible(true);
+		}
+	}
+
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		deleteAWSCanCookie();
+	}
+
+	private void deleteAWSCanCookie() {
+		// Deleting the cookie on the login page load to make sure new user sessions
+		// won't be using old webapp instances in the case of canary deployments.
+		CookieUtils.deleteCookie("Can");
 	}
 }

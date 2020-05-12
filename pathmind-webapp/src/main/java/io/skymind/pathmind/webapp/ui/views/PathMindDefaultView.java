@@ -1,22 +1,21 @@
 package io.skymind.pathmind.webapp.ui.views;
 
-import io.skymind.pathmind.webapp.utils.PathmindUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.shared.communication.PushMode;
-
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
+import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Do NOT implement any default methods for this interface because a large part of it's goal is to remind
@@ -27,13 +26,10 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 {
 	private static String COOKIE_CONSENT_LINK = "https://pathmind.com/privacy";
 
-	private boolean isGenerated = false;
-
-    @Value("${skymind.debug.accelerate}")
-    private boolean isDebugAccelerate;
-    
     @Autowired
     private SegmentIntegrator segmentIntegrator;
+
+	private int previousWindowWidth = 0;
 
 	public PathMindDefaultView()
 	{
@@ -46,17 +42,13 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		cookieConsent.setPosition(CookieConsent.Position.BOTTOM_LEFT);
 		cookieConsent.setLearnMoreLink(COOKIE_CONSENT_LINK);
 		add(cookieConsent);
-
-		// IMPORTANT -> Needed so that Push works consistently on every page/view.
-		UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 	}
-
-    public boolean isDebugAccelerate() {
-        return isDebugAccelerate;
-    }
 
 	public void beforeEnter(BeforeEnterEvent event)
 	{
+		// IMPORTANT -> Needed so that Push works consistently on every page/view.
+		event.getUI().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
+		
 		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/217 Implement a security framework on the views.
 		// Before we do anything we need to confirm the user has permission to access the data.
 		// TODO -> This solution is a band-aid solution and although it does implement enough security for now
@@ -73,6 +65,17 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		initScreen(event);
 		// Segment plugin added
 		add(segmentIntegrator);
+	}
+
+	public void recalculateGridColumnWidth(Page page, Grid grid) {
+		page.addBrowserWindowResizeListener(resizeEvent -> {
+			int windowWidth = resizeEvent.getWidth();
+			if ((windowWidth > 1024 && previousWindowWidth <= 1024) ||
+				(windowWidth > 1280 && previousWindowWidth <= 1280)) {
+				grid.recalculateColumnWidths();
+			}
+			previousWindowWidth = windowWidth;
+		});
 	}
 
 	protected void initLoadData() throws InvalidDataException{

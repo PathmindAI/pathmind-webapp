@@ -39,20 +39,12 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	private static final String EVENT_START_DISCOVERY_RUN = "Start Discovery Run";
 	private static final String EVENT_START_FULL_RUN = "Start Full Run";
 	private static final String EVENT_EXPORT_POLICY = "Export Policy";
+	private static final String EVENT_SAVE_MODEL_DRAFT = "Save Model Draft";
 	private static final String EVENT_SAVE_DRAFT = "Save Draft";
 	private static final String EVENT_CHANGE_PW = "Change Password";
 	private static final String EVENT_EDIT_INFO = "Edit Info";
 	private static final String EVENT_ACCOUNT_UPGRADE = "Account Upgrade";
 	private static final String EVENT_CANCEL_SUBSCRIPTION = "Cancel Subscription";
-	private static final String EVENT_COMPLETED_GUIDE_OVERVIEW = "Completed Guide Overview";
-	private static final String EVENT_COMPLETED_GUIDE_INSTALL = "Completed Guide Install Pathmind Helper";
-	private static final String EVENT_COMPLETED_GUIDE_OBSERVATION = "Completed Guide Build Observation Space";
-	private static final String EVENT_COMPLETED_GUIDE_ACTION_SPACE = "Completed Guide Build Action Space";
-	private static final String EVENT_COMPLETED_GUIDE_TRIGGER_ACTIONS = "Completed Guide Triggering Actions";
-	private static final String EVENT_COMPLETED_GUIDE_DONE = "Completed Guide Define Done Condition";
-	private static final String EVENT_COMPLETED_GUIDE_REWARD = "Completed Guide Define Reward Variables";
-	private static final String EVENT_COMPLETED_GUIDE_RECAP = "Completed Guide Conclusion / Recap";
-	private static final String EVENT_SKIP_TO_UPLOAD_MODEL = "Skipped Guide to Upload Model";
 	private static final String EVENT_UPDATED_NOTES_MODELS_VIEW = "Updated Notes on Models View";
 	private static final String EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW = "Updated Notes on Experiments View";
 	private static final String EVENT_UPDATED_NOTES_EXPERIMENT_VIEW = "Updated Notes on Experiment View";
@@ -103,6 +95,10 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 		track(EVENT_SAVE_DRAFT);
 	}
 
+	public void modelDraftSaved() {
+		track(EVENT_SAVE_MODEL_DRAFT);
+	}
+
 	public void passwordChanged() {
 		track(EVENT_CHANGE_PW);
 	}
@@ -117,42 +113,6 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	
 	public void subscriptionCancelled() {
 		track(EVENT_CANCEL_SUBSCRIPTION);
-	}
-	
-	public void completedGuideOverview() {
-		track(EVENT_COMPLETED_GUIDE_OVERVIEW);
-	}
-
-	public void completedGuideInstall() {
-		track(EVENT_COMPLETED_GUIDE_INSTALL);
-	}
-
-	public void completedGuideObservation() {
-		track(EVENT_COMPLETED_GUIDE_OBSERVATION);
-	}
-
-	public void completedGuideActionSpace() {
-		track(EVENT_COMPLETED_GUIDE_ACTION_SPACE);
-	}
-
-	public void completedGuideTriggerActions() {
-		track(EVENT_COMPLETED_GUIDE_TRIGGER_ACTIONS);
-	}
-
-	public void completedGuideDone() {
-		track(EVENT_COMPLETED_GUIDE_DONE);
-	}
-
-	public void completedGuideReward() {
-		track(EVENT_COMPLETED_GUIDE_REWARD);
-	}
-
-	public void completedGuideRecap() {
-		track(EVENT_COMPLETED_GUIDE_RECAP);
-	}
-
-	public void skippedGuideToUploadModel() {
-		track(EVENT_SKIP_TO_UPLOAD_MODEL);
 	}
 
 	public void updatedNotesModelsView() {
