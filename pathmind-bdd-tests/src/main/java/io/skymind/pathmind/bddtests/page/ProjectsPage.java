@@ -172,19 +172,7 @@ public class ProjectsPage extends PageObject {
         Actions actions = new Actions(getDriver());
         actions.moveToElement(getDriver().findElement(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-grid-cell-content")));
         actions.perform();
-        List<String> strings = new ArrayList<>();
-        try {
-            for(WebElement e : projectsNames){
-                strings.add(e.getText());
-            }
-        }
-        catch(org.openqa.selenium.StaleElementReferenceException ex)
-        {
-            for(WebElement e : projectsNames){
-                strings.add(e.getText());
-            }
-        }
-        assertThat(strings, hasItem(projectName));
+        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span")), hasItem(projectName));
     }
 
     public void checkThatObservationFunctionDisplayed(String getObservationFile) throws IOException {
@@ -357,13 +345,7 @@ public class ProjectsPage extends PageObject {
     public void clickBackToModelsBtn() {
         waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
         waitFor(ExpectedConditions.elementToBeClickable(By.xpath("//vaadin-button[@theme='tertiary']")));
-        try {
-            getDriver().findElement(By.xpath("//vaadin-button[@theme='tertiary']")).click();
-        }
-        catch(org.openqa.selenium.StaleElementReferenceException ex)
-        {
-            getDriver().findElement(By.xpath("//vaadin-button[@theme='tertiary']")).click();
-        }
+        utils.clickElementRepeatIfStaleException(By.xpath("//vaadin-button[@theme='tertiary']"));
     }
 
     public void checkThatModelsPageOpened() {
@@ -396,14 +378,7 @@ public class ProjectsPage extends PageObject {
 
     public void inputRewardFunction(String rewardFunction) {
     	waitABit(2500);
-        try {
-            rewardField.click();
-        }
-        catch(org.openqa.selenium.StaleElementReferenceException ex)
-        {
-            rewardField.click();
-        }
-        rewardField.click();
+    	utils.clickElementRepeatIfStaleException(By.xpath("//juicy-ace-editor"));
         rewardField.sendKeys(Keys.chord(Keys.CONTROL, "a"));
         rewardField.sendKeys(Keys.BACK_SPACE);
         rewardField.sendKeys(rewardFunction);
@@ -506,13 +481,7 @@ public class ProjectsPage extends PageObject {
 	}
 
 	public void checkThatExperimentPageOfTheProjectOpened(String projectName) {
-		try {
-			assertThat(getDriver().findElement(By.xpath("//*[contains(@href,'project/')]")).getText(), is(projectName));
-		}
-		catch(org.openqa.selenium.StaleElementReferenceException ex)
-		{
-			assertThat(getDriver().findElement(By.xpath("//*[contains(@href,'project/')]")).getText(), is(projectName));
-		}
+        assertThat(utils.getStringRepeatIfStaleException(By.xpath("//*[contains(@href,'project/')]")), is(projectName));
 	}
 
 	public void clickModelArchiveButton(String model) {
@@ -622,14 +591,7 @@ public class ProjectsPage extends PageObject {
 	}
 
 	public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
-		assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+" ']/following-sibling::vaadin-grid-cell-content[4]")).getText(), is(note));
-        try {
-            assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+" ']/following-sibling::vaadin-grid-cell-content[4]")).getText(), is(note));
-        }
-        catch(org.openqa.selenium.StaleElementReferenceException ex)
-        {
-            assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+" ']/following-sibling::vaadin-grid-cell-content[4]")).getText(), is(note));
-        }
+		assertThat(utils.getStringRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+" ']/following-sibling::vaadin-grid-cell-content[4]")), is(note));
     }
 
     public void checkNumberOfProjectsWithDraftTag(int numberOfProjects) {
