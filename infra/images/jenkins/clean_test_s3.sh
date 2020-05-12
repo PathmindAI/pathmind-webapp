@@ -1,6 +1,13 @@
-#!/bin/bash
+#!/bin/bash 
+if [ "$1" == "" ]
+then
+	echo "Usage: $0 <BUILD_ID>"
+	exit 1
+fi
 
 BUILD_ID=$1
+
+#Clean s3
 S3BUCKET=${BUILD_ID}-training-dynamic-files.pathmind.com
 for ID in `aws s3 ls s3://${S3BUCKET}/ | awk '{print $2}' | grep id | sed 's@/@@g'`
 do 
