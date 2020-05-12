@@ -12,7 +12,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
@@ -69,6 +68,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	private Span modelName;
 	private Span createdDate;
+	private Paragraph packageNameText;
 	private Paragraph actionsText;
 	private Paragraph observationsText;
 	private Div rewardVariableNamesText;
@@ -105,18 +105,23 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	private FlexLayout createRightPanel() {
 		Span panelTitle = LabelFactory.createLabel("Model Details", CssMindPathStyles.SECTION_TITLE_LABEL);
+		packageNameText = new Paragraph(LabelFactory.createLabel("Package Name", CssMindPathStyles.BOLD_LABEL));
 		actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssMindPathStyles.BOLD_LABEL));
 		observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssMindPathStyles.BOLD_LABEL));
 		rewardVariableNamesText = new Div();
 		rewardVariableNamesText.addClassName("model-reward-variables");
 
 		NotesField notesField = createViewNotesField();
-		return new ViewSection(
+		FlexLayout rightPanelCard = new ViewSection(
 				panelTitle,
+				packageNameText,
 				actionsText,
 				observationsText,
 				new Div(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), rewardVariableNamesText),
 				notesField);
+		rightPanelCard.addClassName("card");
+
+		return rightPanelCard;
 	}
 
 	/**
@@ -155,9 +160,9 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	private void handleExperimentClick(Experiment experiment) {
 		if (ExperimentUtils.isDraftRunType(experiment)) {
-			UI.getCurrent().navigate(NewExperimentView.class, experiment.getId());
+			getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
 		} else {
-			UI.getCurrent().navigate(ExperimentView.class, experiment.getId());
+			getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
 		}
 	}
 	
@@ -187,14 +192,16 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
+		String packageName = (model.getPackageName() != null) ? model.getPackageName() : "—";
 		modelName.setText("Model #"+model.getName());
-		VaadinDateAndTimeUtils.withUserTimeZoneId(timeZoneId -> {
+		
+		VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
 			// experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
-			LocalDateTime dateCreatedData = model.getDateCreated();
 			experimentGrid.setItems(experiments);
+			LocalDateTime dateCreatedData = model.getDateCreated();
 			createdDate.setText(String.format("Uploaded on %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(dateCreatedData, timeZoneId)));
 		});
-
+		packageNameText.add(packageName);
 		actionsText.add(""+model.getNumberOfPossibleActions());
 		observationsText.add(""+model.getNumberOfObservations());
 		if (rewardVariableNames.size() > 0) {
@@ -215,9 +222,9 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 		} else {
 			rewardVariableNamesText.add("All reward variables are unnamed. You can name them when you create a new experiment for this model.");
 		}
-		archivesTabPanel.initData();
+		archivesTabPanel.initData(event.getUI());
 
-		recalculateGridColumnWidth(UI.getCurrent().getPage(), experimentGrid);		
+		recalculateGridColumnWidth(event.getUI().getPage(), experimentGrid);		
 	}
 
 	@Override

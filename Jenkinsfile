@@ -15,6 +15,7 @@ def icon=":heavy_check_mark:"
 */
 def buildDockerImage(image_name, image_id) {
         echo "Building the pathmind Docker Image"
+        sh "docker build -t base -f ${WORKSPACE}/Dockerfile-cache ${WORKSPACE}/"
         sh "docker build -t ${image_name} -f ${WORKSPACE}/Dockerfile ${WORKSPACE}/"
 }
 
@@ -146,6 +147,8 @@ pipeline {
             }
             steps {
 		script {
+				echo "Deploying updater helm chart"
+                                sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml -n ${DOCKER_TAG}"
 				echo "Updating helm chart"
 				sh "bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} ${DOCKER_TAG} ${WORKSPACE}"
 		}
@@ -210,6 +213,8 @@ pipeline {
             steps {
 		script {
                 	DEPLOY_PROD = true
+			echo "Deploying updater helm chart"
+                        sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml"
 			echo "Updating helm chart"
 			sh "bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
 		}
@@ -228,4 +233,3 @@ pipeline {
         }
     }
 }
-

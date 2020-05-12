@@ -1,17 +1,25 @@
 package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.utils.ModelUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
+import java.io.*;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
+@Slf4j
 @Repository
-public class ModelDAO
-{
+public class ModelDAO {
     private final DSLContext ctx;
 
     public ModelDAO(DSLContext ctx) {
@@ -30,19 +38,6 @@ public class ModelDAO
     	return Optional.ofNullable(ModelRepository.getModel(ctx, modelId));
 	}
 
-	public long addModelToProject(Model model, long projectId, String userNotes)
-	{
-		return ctx.transactionResult(configuration ->
-		{
-			DSLContext transactionCtx = DSL.using(configuration);
-			LocalDateTime dateCreated = LocalDateTime.now();
-			String modelName = Integer.toString(ModelRepository.getModelCount(transactionCtx, projectId) + 1);
-			long modelId = ModelRepository.insertModel(transactionCtx, model, modelName, userNotes, dateCreated, projectId);
-			model.setId(modelId);
-			return ExperimentRepository.insertExperiment(transactionCtx, modelId, dateCreated);
-		});
-	}
-
 	public void addDraftModelToProject(Model model, long projectId, String userNotes)
 	{
 		ctx.transaction(configuration ->
@@ -59,10 +54,6 @@ public class ModelDAO
 		ModelRepository.updateUserNotes(ctx, modelId, userNotes);
 	}
 
-	public void updateDraftModel(Model model, String modelNotes) {
-		ModelRepository.updateUserNotes(ctx, model.getId(), modelNotes);
-	}
-
 	public long resumeModelCreation(Model model, String modelNotes) {
 		return ctx.transactionResult(configuration ->
 		{
@@ -73,4 +64,5 @@ public class ModelDAO
 			return ExperimentRepository.insertExperiment(transactionCtx, model.getId(), dateCreated);
 		});
 	}
+
 }

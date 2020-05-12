@@ -109,11 +109,6 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.checkThatProjectsInputFieldIsEmpty();
     }
 
-    @Then("^Click project name (.*)$")
-    public void clickProjectName(String project) {
-        projectsPageSteps.clickProjectName(project);
-    }
-
     @Then("^Click the model name (.*)$")
     public void clickTheModelName(String modelName) {
         projectsPageSteps.clickTheModelName(modelName);
@@ -165,6 +160,7 @@ public class ProjectsPageStepDefinitions {
 		projectsPageSteps.uploadModelFile("Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip");
 		projectsPageSteps.clickWizardModelDetailsNextBtn();
 		projectsPageSteps.inputVariableNames(commaSeparatedVariableNames.split(","));
+		projectsPageSteps.clickWizardRewardVariableNamesNextBtn();
 		projectsPageSteps.checkThatExperimentPageOpened("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
 		projectsPageSteps.inputRewardFunctionFile("Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt");
 	}
@@ -391,6 +387,11 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.clickWizardRewardVariableNamesNextBtn();
     }
 
+    @When("^Click wizard reward variables save draft btn$")
+    public void clickWizardRewardVariablesSaveDraftBtn() {
+        projectsPageSteps.clickWizardRewardVariablesSaveDraftBtn();
+    }
+
 	@Then("^Check experiment score greater than (.*)$")
 	public void checkExperimentScoreGreaterThan(double value) {
 		projectsPageSteps.checkExperimentScoreGreaterThan(value);
@@ -481,4 +482,14 @@ public class ProjectsPageStepDefinitions {
 	public void checkThatProjectNameOnProjectPage(String name) {
 		projectsPageSteps.checkThatProjectNameOnProjectPage(name + Serenity.sessionVariableCalled("randomNumber"));
 	}
+
+    @When("^Input reward variable names (.*)$")
+    public void inputRewardVariableNames(String commaSeparatedVariableNames) {
+        projectsPageSteps.inputVariableNames(commaSeparatedVariableNames.split(","));
+    }
+
+    @And("^Check that there is a variable named (.*)$")
+    public void checkThatThereIsAVariableNamed(String variableName) {
+        projectsPageSteps.checkThatThereIsAVariableNamed(variableName);
+    }
 }
