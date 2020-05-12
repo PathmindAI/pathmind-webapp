@@ -1,5 +1,6 @@
 package io.skymind.pathmind.db.dao;
 
+import io.skymind.pathmind.db.utils.DBUtils;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -185,8 +186,7 @@ public class RunDAO {
             List<Policy> policiesToRaiseUpdateEvent = new ArrayList<>();
             DSLContext transactionCtx = DSL.using(configuration);
 
-            // let's make sure we don't end up with a deadlock because of the somewhat long running transaction.
-            transactionCtx.execute(" SET LOCAL lock_timeout = '4s'");
+            DBUtils.setLockTimeout(transactionCtx, 4);
 
             updateRun(transactionCtx, run, providerJobStatus, policies);
 
