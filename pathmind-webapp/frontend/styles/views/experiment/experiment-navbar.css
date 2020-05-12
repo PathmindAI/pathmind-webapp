@@ -34,6 +34,18 @@
   background-color: var(--pm-highlight-medium);
 }
 
+.experiments-navbar iron-icon[icon="vaadin:pencil"] {
+  width: 18px;
+  height: 18px;
+  margin: 3px;
+}
+
+.experiments-navbar .tag {
+  font-size: var(--lumo-font-size-xs);
+  padding: 1px 3px;
+  margin: 0 4px;
+}
+
 .current {
   background-color: var(--pm-app-bg-color);
 }
@@ -77,16 +89,22 @@ iron-icon[icon="vaadin:exclamation-circle-o"] {
 }
 
 .experiment-name {
-  margin-left: calc(var(--lumo-space-s) * 2);
+  margin-left: var(--lumo-space-s);
 }
 
 .experiment-name p {
+  display: flex;
+  align-items: center;
   line-height: 1em;
   margin: 0;
 }
 
 .current .experiment-name p:first-child {
   font-weight: bold;
+}
+
+.current .experiment-name p:first-child .tag {
+  font-weight: normal;
 }
 
 .experiment-name p:last-child {

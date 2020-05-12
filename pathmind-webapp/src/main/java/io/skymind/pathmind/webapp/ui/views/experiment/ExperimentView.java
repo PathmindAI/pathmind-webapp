@@ -176,6 +176,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		rewardFunctionEditor.setReadonly(true);
 		rewardFunctionEditor.setSizeFull();
 		rewardFunctionEditor.setMaxLines(20);
+		// If min line is set to 1 (default when there is max line),
+		// the horizontal scrollbar will not appear even though the line content is very long and scrollable
+		rewardFunctionEditor.setMinLines(2);
 		rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
 			LabelFactory.createLabel("Reward Function", BOLD_LABEL), rewardFunctionEditor
 		);
@@ -325,7 +328,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			updateScreenComponents();
 			notesField.setNotesText(experiment.getUserNotes());
 			pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-			getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
+			if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
+				getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
+			} else {
+				getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
+			}
 		}
 	}
 

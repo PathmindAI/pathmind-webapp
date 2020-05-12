@@ -26,6 +26,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
@@ -38,21 +39,32 @@ import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavbar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
+
+	// We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
+	// on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
+	private Object experimentLock = new Object();
+
 	private long experimentId = -1;
-	private Experiment experiment;
+	private long modelId = -1;
 	private List<RewardVariable> rewardVariables;
+	private Experiment experiment;
+	private List<Experiment> experiments = new ArrayList<>();
 
 	private Div errorMessageWrapper;
 	private RewardFunctionEditor rewardFunctionEditor;
+	private ExperimentsNavbar experimentsNavbar;
 	private NotesField notesField;
 	private RewardVariablesTable rewardVariablesTable;
 	private Span unsavedChanges;
@@ -74,6 +86,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	@Autowired
 	private FeatureManager featureManager;
 
+	private Breadcrumbs pageBreadcrumbs;
 	private Binder<Experiment> binder;
 
     public NewExperimentView() {
@@ -83,7 +96,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     protected Component getTitlePanel() {
-        return new ScreenTitlePanel(createBreadcrumbs());
+		pageBreadcrumbs = createBreadcrumbs();
+		return new ScreenTitlePanel(pageBreadcrumbs);
     }
 
 	@Override
@@ -95,6 +109,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private Component createMainPanel() {
+		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiment.getModelId(), selectedExperiment -> selectExperiment(selectedExperiment));
+		
 		startRunButton = new Button("Train Policy", VaadinIcon.PLAY.create(), click -> handleStartRunButtonClicked());
 		startRunButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		startRunButton.setEnabled(false);
@@ -107,25 +123,23 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 		unsavedChanges = LabelFactory.createLabel("Unsaved Draft!", "unsaved-draft-label");
 		unsavedChanges.setVisible(false);
-		HorizontalLayout header = WrapperUtils.wrapWidthFullBetweenHorizontal(LabelFactory.createLabel("Reward Function", CssMindPathStyles.BOLD_LABEL), unsavedChanges, getActionButton());
-		header.getStyle().set("align-items", "center");
 
-		HorizontalLayout rewardFunctionWrapper = WrapperUtils.wrapSizeFullBetweenHorizontal(getRewardFnEditorPanel(), getRewardVariableNamesPanel());
+		VerticalLayout rewardFnPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Reward Function", CssMindPathStyles.BOLD_LABEL), getRewardFnEditorPanel());
+		rewardFnPanel.addClassName("reward-fn-editor-panel");
+
+		HorizontalLayout rewardFunctionWrapper = WrapperUtils.wrapSizeFullBetweenHorizontal(
+				rewardFnPanel, 
+				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), getRewardVariableNamesPanel()));
 		rewardFunctionWrapper.setClassName("reward-function-wrapper");
+		rewardFunctionWrapper.setPadding(false);
 		rewardFunctionWrapper.setSpacing(true);
-		rewardFunctionWrapper.setPadding(true);
-
-		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(header, rewardFunctionWrapper);
-		rewardFnEditorPanel.addClassName("reward-fn-panel-container");
-		rewardFnEditorPanel.setPadding(false);
-		rewardFnEditorPanel.setSpacing(false);
 
 		HorizontalLayout errorAndNotesContaner = WrapperUtils.wrapWidthFullHorizontal(getErrorsPanel(), createNotesField());
 		errorAndNotesContaner.setClassName("error-and-notes-container");
 
-		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, startRunButton), rewardFnEditorPanel, errorAndNotesContaner);
+		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, startRunButton, getActionButton(), unsavedChanges), rewardFunctionWrapper, errorAndNotesContaner);
 		mainPanel.setClassName("view-section");
-		return mainPanel;
+		return WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, mainPanel);
 	}
 
 	private VerticalLayout getRewardFnEditorPanel() {
@@ -198,7 +212,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private Button getActionButton() {
-		return new Button("Save Draft", click -> handleSaveDraftClicked());
+		Button saveDraftButton = new Button("Save Draft", click -> handleSaveDraftClicked());
+		saveDraftButton.addThemeName("secondary");
+		return saveDraftButton;
 	}
 
 	private void handleSaveDraftClicked() {
@@ -232,6 +248,26 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		return notesField;
 	}
 
+	private void selectExperiment(Experiment selectedExperiment) {
+		// The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
+		// same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
+		synchronized (experimentLock) {
+			experiment = experimentDAO.getExperiment(selectedExperiment.getId())
+					.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
+			experimentId = selectedExperiment.getId();
+			loadExperimentData();
+			updateScreenComponents();
+			notesField.setNotesText(experiment.getUserNotes());
+			pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
+			
+			if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
+				getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "newExperiment/" + selectedExperiment.getId()));
+			} else {
+				getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, selectedExperiment.getId()));
+			}
+		}
+	}
+
 	@Override
 	protected boolean isAccessAllowedForUser() {
 		return userDAO.isUserAllowedAccessToExperiment(experimentId);
@@ -246,11 +282,29 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	protected void initLoadData() {
 		experiment = experimentDAO.getExperiment(experimentId).orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(experiment.getModelId());
+		loadExperimentData();
+	}
+
+	private void loadExperimentData() {
+		modelId = experiment.getModelId();
+		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
+			rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
+		}
+		if (!experiment.isArchived()) {
+			experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+		}
 	}
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
+		updateScreenComponents();
+		experimentsNavbar.setExperiments(event.getUI(), experiments, experiment);
+	}
+
+	private void updateScreenComponents() {
 		binder.setBean(experiment);
+		experimentsNavbar.setVisible(!experiment.isArchived());
+		rewardFunctionEditor.setValue(experiment.getRewardFunction());		
 		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
 			if (!rewardVariables.isEmpty()) {
 				rewardFunctionEditor.setVariableNames(rewardVariables);
