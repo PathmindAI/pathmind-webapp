@@ -22,9 +22,9 @@ Vagrant.configure("2") do |config|
     bash ./setup_13.x && \
     apt-get update -y
 
-    # Install postgresql, maven, node and java
-    echo "-------------------- Installing Postgresql, Maven, Node and Java"
-    apt-get install -y nodejs postgresql openjdk-11-jdk maven
+    # Install postgresql, maven, node, java and tmux
+    echo "-------------------- Installing Postgresql, Maven, Node, Java, and tmux"
+    apt-get install -y nodejs postgresql openjdk-11-jdk maven tmux
 
     # Install Google chrome for headless testing
     echo "-------------------- Installing Google Chrome for headless testing"
