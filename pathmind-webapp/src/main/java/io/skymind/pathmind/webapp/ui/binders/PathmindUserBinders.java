@@ -14,7 +14,7 @@ public class PathmindUserBinders {
         binder.forField(field)
                 .withConverter(new TrimmedStringConverter())
                 .asRequired("First Name is required")
-                .withValidator(new StringLengthValidator("First Name must not exceed 250 characters", 0, 255))
+                .withValidator(new StringLengthValidator("First Name must not exceed 250 characters", 0, 250))
                 .bind(PathmindUser::getFirstname, PathmindUser::setFirstname);
     }
 
@@ -22,7 +22,7 @@ public class PathmindUserBinders {
         binder.forField(field)
                 .withConverter(new TrimmedStringConverter())
                 .asRequired("Last Name is required")
-                .withValidator(new StringLengthValidator("Last Name must not exceed 250 characters", 0, 255))
+                .withValidator(new StringLengthValidator("Last Name must not exceed 250 characters", 0, 250))
                 .bind(PathmindUser::getLastname, PathmindUser::setLastname);
     }
 
