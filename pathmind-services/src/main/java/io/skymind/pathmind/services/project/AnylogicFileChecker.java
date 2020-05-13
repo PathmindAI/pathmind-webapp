@@ -2,8 +2,6 @@ package io.skymind.pathmind.services.project;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.project.meta.PathmindMeta;
-import io.skymind.pathmind.ui.components.status.StatusUpdater;
-import io.skymind.pathmind.utils.FileUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.FileSystemUtils;
 

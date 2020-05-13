@@ -62,8 +62,8 @@ public class PathmindApplication
 	}
 
 	@Bean
-	public ProjectFileCheckService projectFileCheckService(ExecutorService executorService, ModelAnalyzerApiClient modelAnalyzerApiClient) {
-		return new ProjectFileCheckService(executorService, modelAnalyzerApiClient);
+	public ProjectFileCheckService projectFileCheckService(ExecutorService executorService, ModelAnalyzerApiClient modelAnalyzerApiClient, ObjectMapper objectMapper) {
+		return new ProjectFileCheckService(executorService, modelAnalyzerApiClient, objectMapper);
 	}
 
 	@EventListener(ApplicationReadyEvent.class)
