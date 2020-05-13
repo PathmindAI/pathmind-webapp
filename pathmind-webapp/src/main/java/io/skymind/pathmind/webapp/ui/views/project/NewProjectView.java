@@ -77,9 +77,4 @@ public class NewProjectView extends PathMindDefaultView
 	protected VerticalLayout getTitlePanel() {
 		return null;
 	}
-
-	@Override
-	protected boolean isAccessAllowedForUser() {
-		return true;
-	}
 }

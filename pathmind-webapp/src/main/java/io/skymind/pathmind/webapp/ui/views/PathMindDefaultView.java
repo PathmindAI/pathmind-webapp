@@ -93,11 +93,9 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 	// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/217 Implement a security framework on the views.
 	// NOTE -> This is a janky solution for https://github.com/SkymindIO/pathmind-webapp/issues/217 until we decide exactly
 	// what we want to implement.
-	// NOTE -> I'm forcing all views to implement this method, even if it's just to return true, so that if any new
-	// views are implemented before we implement a good framework then it will at least hopefully remind the developer to do a user access check.
-	// TODO -> This currently cannot tell us if a user has access to an item because they item could be just none-existant. But for
-	// now I'm using these method names so that we understand what needs to be done eventually.
-	protected abstract boolean isAccessAllowedForUser();
+	protected boolean isAccessAllowedForUser() {
+		return true;
+	}
 
 	protected abstract Component getTitlePanel();
 
