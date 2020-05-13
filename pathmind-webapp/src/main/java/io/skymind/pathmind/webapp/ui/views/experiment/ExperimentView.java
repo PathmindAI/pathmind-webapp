@@ -490,7 +490,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			} else if (isSameModel(event)) {
 				if (!experiments.contains(event.getRun().getExperiment())) {
 					experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-					getUI().ifPresent(ui -> PushUtils.push(ui, () -> experimentsNavbar.setExperiments(ui, experiments, experiment)));
+					PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
 				}
 			}
 		}
