@@ -6,8 +6,10 @@ import org.jooq.DSLContext;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
-import static io.skymind.pathmind.db.jooq.Tables.*;
+import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
+import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
 
 class ModelRepository
 {
@@ -76,5 +78,17 @@ class ModelRepository
 				.set(MODEL.USER_NOTES, userNotes)
 				.where(MODEL.ID.eq(modelId))
 				.execute();
+	}
+
+	public static Optional<Model> getModelIfAllowed(DSLContext ctx, long modelId, long userId) {
+		return Optional.ofNullable(ctx
+				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.NUMBER_OF_OBSERVATIONS,
+						MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.USER_NOTES, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT)
+				.from(MODEL)
+				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+				.where(MODEL.ID.eq(modelId))
+					.and(PROJECT.PATHMIND_USER_ID.eq(userId))
+				.fetchOneInto(Model.class)
+		);
 	}
 }

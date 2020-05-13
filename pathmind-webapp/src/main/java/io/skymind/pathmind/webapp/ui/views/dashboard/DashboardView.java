@@ -64,12 +64,6 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
 	private long loggedUserId;
 
-	@Override
-	protected boolean isAccessAllowedForUser() {
-		// Not needed since the loadData loads the data based on the user's id.
-		return true;
-	}
-
 	public DashboardView(){
 		super();
 		addClassName("dashboard-view");
