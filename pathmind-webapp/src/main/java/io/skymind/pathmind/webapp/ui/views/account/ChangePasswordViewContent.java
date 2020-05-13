@@ -83,6 +83,7 @@ public class ChangePasswordViewContent extends PolymerTemplate<ChangePasswordVie
 	}
 
 	private void validateCurrentPassword() {
+		currentPasswordValidationNotes.removeAll();
 		if (!userService.isCurrentPassword(user, currentPassword.getValue())) {
 			currentPasswordValidationNotes.removeAll();
 			currentPasswordValidationNotes.add(new Span("Password is incorrect"));
@@ -91,6 +92,7 @@ public class ChangePasswordViewContent extends PolymerTemplate<ChangePasswordVie
 	}
 
 	private void validateNewPassword() {
+		passwordValidationNotes.removeAll();
 		UserService.PasswordValidationResults validationResults = userService
 				.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
 		if (!validationResults.isOk()) {
