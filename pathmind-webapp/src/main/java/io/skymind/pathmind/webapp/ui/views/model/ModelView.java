@@ -6,6 +6,7 @@ import java.util.List;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
@@ -167,11 +168,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 	}
 	
 	@Override
-	protected boolean isAccessAllowedForUser() {
-		return userDAO.isUserAllowedAccessToModel(modelId);
-	}
-
-	@Override
 	protected Component getTitlePanel() {
 		return new ScreenTitlePanel(createBreadcrumbs());
 	}
@@ -182,7 +178,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	@Override
 	protected void initLoadData() {
-		model = modelDAO.getModel(modelId)
+		model = modelDAO.getModelIfAllowed(modelId, SecurityUtils.getUserId())
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Model: " + modelId));
 		experiments = experimentDAO.getExperimentsForModel(modelId);
 		if (experiments == null || experiments.isEmpty())

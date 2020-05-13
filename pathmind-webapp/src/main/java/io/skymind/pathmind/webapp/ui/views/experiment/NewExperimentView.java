@@ -27,6 +27,7 @@ import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
@@ -277,18 +278,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	@Override
-	protected boolean isAccessAllowedForUser() {
-		return userDAO.isUserAllowedAccessToExperiment(experimentId);
-	}
-
-	@Override
 	public void setParameter(BeforeEvent event, Long experimentId) {
 		this.experimentId = experimentId;
 	}
 
 	@Override
 	protected void initLoadData() {
-		experiment = experimentDAO.getExperiment(experimentId).orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
+		experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
+				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(experiment.getModelId());
 		loadExperimentData();
 	}

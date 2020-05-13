@@ -64,8 +64,8 @@ public class ProjectFileCheckService {
     }
 
     private Optional<String> verifyAnalysisResult(HyperparametersDTO analysisResult) {
-        if (analysisResult == null) {
-            return Optional.of("It wasn't possible to analyze the model.");
+        if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null || analysisResult.getRewardVariablesCount() == null) {
+            return Optional.of("Unable to analyze the model.");
         }
         else if (analysisResult.getActions() != null && Integer.parseInt(analysisResult.getActions()) == 0) {
             return Optional.of("Number of actions found to be zero.");
@@ -77,23 +77,11 @@ public class ProjectFileCheckService {
     }
 
     private void setHyperparams(FileCheckResult result, HyperparametersDTO params) {
-        if (params != null) {
-            if (params.getActions() != null) {
-                ((AnylogicFileCheckResult) (result)).setNumAction(Integer.parseInt(params.getActions()));
-            }
-
-            if (params.getObservations() != null) {
-                ((AnylogicFileCheckResult)(result)).setNumObservation(Integer.parseInt(params.getObservations()));
-            }
-
-            if (params.getRewardVariablesCount() != null) {
-                ((AnylogicFileCheckResult) result).setRewardVariablesCount(Integer.parseInt(params.getRewardVariablesCount()));
-            }
-
-            ((AnylogicFileCheckResult)(result)).setRewardVariableFunction(params.getRewardFunction());
-        } else {
-            log.info("Model Analyzer returns null for the given model");
-        }
+    	AnylogicFileCheckResult fileCheckResult = AnylogicFileCheckResult.class.cast(result);
+        fileCheckResult.setNumAction(Integer.parseInt(params.getActions()));
+    	fileCheckResult.setNumObservation(Integer.parseInt(params.getObservations()));
+    	fileCheckResult.setRewardVariablesCount(Integer.parseInt(params.getRewardVariablesCount()));
+    	fileCheckResult.setRewardVariableFunction(params.getRewardFunction());
     }
 
 }
