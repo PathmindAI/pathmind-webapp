@@ -10,6 +10,7 @@ import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.text.MessageFormat.format;
 import static java.util.Objects.nonNull;
@@ -27,6 +28,13 @@ public class PolicyDAO {
         Policy policy = PolicyRepository.getPolicy(ctx, policyId);
         policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(ctx, policyId));
         return policy;
+    }
+
+    public Optional<Policy> getPolicyIfAllowed(long policyId, long userId) {
+        Optional<Policy> optionalPolicy  = PolicyRepository.getPolicyIfAllowed(ctx, policyId, userId);
+        optionalPolicy
+                .ifPresent(policy -> policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(ctx, policyId)));
+        return optionalPolicy;
     }
 
     public List<Policy> getPoliciesForExperiment(long experimentId) {
