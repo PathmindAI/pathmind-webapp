@@ -363,3 +363,12 @@ resource "null_resource" "canary_configmap" {
   }
   depends_on = ["null_resource.configmap_ingress_nginx"]
 }
+
+#cleanup aws resources created by kops
+resource "null_resource" "aws_cleanup" {
+  provisioner "local-exec" {
+    command = "kubectl apply -f ../../k8s/aws_cleanup_job.yaml"
+  }
+  depends_on = ["null_resource.validate_k8s"]
+}
+

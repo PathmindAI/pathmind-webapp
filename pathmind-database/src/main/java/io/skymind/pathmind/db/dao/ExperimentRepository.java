@@ -57,6 +57,27 @@ class ExperimentRepository
 		return experiment;
 	}
 
+	protected static Experiment getExperimentIfAllowed(DSLContext ctx, long experimentId, long userId) {
+		Record record = ctx
+				.select(EXPERIMENT.asterisk())
+				.select(MODEL.asterisk())
+				.select(PROJECT.asterisk())
+				.from(EXPERIMENT)
+				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+				.where(EXPERIMENT.ID.eq(experimentId))
+					.and(Tables.PROJECT.PATHMIND_USER_ID.eq(userId))
+				.fetchOne();
+
+		if(record == null) {
+			return null;
+		}
+
+		Experiment experiment = record.into(EXPERIMENT).into(Experiment.class);
+		addParentDataModelObjects(record, experiment);
+		return experiment;
+	}
+
 	protected static List<Experiment> getExperimentsForModel(DSLContext ctx, long modelId) {
 		Result<?> result = ctx
 				.select(EXPERIMENT.asterisk())
