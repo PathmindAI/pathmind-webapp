@@ -24,12 +24,6 @@ public class PolicyDAO {
         this.ctx = ctx;
     }
 
-    public Policy getPolicy(DSLContext transactionCtx, long policyId) {
-        Policy policy = PolicyRepository.getPolicy(transactionCtx, policyId);
-        policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(transactionCtx, policyId));
-        return policy;
-    }
-
     public Optional<Policy> getPolicyIfAllowed(long policyId, long userId) {
         Optional<Policy> optionalPolicy  = PolicyRepository.getPolicyIfAllowed(ctx, policyId, userId);
         optionalPolicy
