@@ -85,10 +85,11 @@ public class RunDAO {
     	updateRun(run, ProviderJobStatus.STOPPING, Collections.emptyList());
     }
     
-    public void updateRun(Run run, ProviderJobStatus status, List<Policy> policies) {
+    private void updateRun(Run run, ProviderJobStatus status, List<Policy> policies) {
         ctx.transaction(configuration ->
         {
             DSLContext transactionCtx = DSL.using(configuration);
+            DBUtils.setLockTimeout(transactionCtx, 4);
             updateRun(transactionCtx, run, status, policies);
         });
     }
