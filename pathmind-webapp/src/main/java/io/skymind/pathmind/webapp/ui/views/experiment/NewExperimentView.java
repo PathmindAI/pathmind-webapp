@@ -104,13 +104,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	@Override
 	protected Component getMainContent() {
-		VerticalLayout mainContent = WrapperUtils.wrapSizeFullVertical(createMainPanel());
+		HorizontalLayout mainContent = createMainPanel();
 		binder = new Binder<>(Experiment.class);
 		setupBinder();
 		return mainContent;
 	}
 
-	private Component createMainPanel() {
+	private HorizontalLayout createMainPanel() {
 		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiment.getModelId(), selectedExperiment -> selectExperiment(selectedExperiment));
 		
 		startRunButton = new Button("Train Policy", VaadinIcon.PLAY.create(), click -> handleStartRunButtonClicked());
@@ -147,7 +147,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper), rewardFunctionWrapper, errorAndNotesContaner);
 		mainPanel.setClassName("view-section");
-		return WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, mainPanel);
+
+		HorizontalLayout panelsWrapper = WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, mainPanel);
+		panelsWrapper.setPadding(true);
+		return panelsWrapper;
 	}
 
 	private VerticalLayout getRewardFnEditorPanel() {
@@ -243,18 +246,20 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private NotesField createNotesField() {
-		return new NotesField(
+		notesField = new NotesField(
 			"Experiment Notes",
 			experiment.getUserNotes(),
 			updatedNotes -> {
 				experiment.setUserNotes(updatedNotes);
 				experimentDAO.updateUserNotes(experimentId, updatedNotes);
 				notesSavedHint.setVisible(true);
-				// addClassName() only works for the first time; so JS is used instead
-				notesSavedHint.getElement().executeJs("$0.classList.add('fade-in'); setTimeout(() => {$0.classList.remove('fade-in'); $0.setAttribute('hidden', true);}, 3000)");
+				// addClassName() only works for the first time when the class name is removed via JS; so JS is used instead
+				notesSavedHint.getElement().executeJs("$0.classList.add('fade-in'); setTimeout(() => {$0.classList.remove('fade-in');}, 3000)");
 				segmentIntegrator.addedNotesNewExperimentView();
 			}
 		);
+		notesField.setPlaceholder("Add Notes (Optional)");
+		return notesField;
 	}
 
 	private void selectExperiment(Experiment selectedExperiment) {
@@ -269,7 +274,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			notesField.setNotesText(experiment.getUserNotes());
 			pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
 			
-			if (ExperimentUtils.isDraftRunType(experiment)) {
+			if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
 				getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "newExperiment/" + experimentId));
 			} else {
 				getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experimentId));

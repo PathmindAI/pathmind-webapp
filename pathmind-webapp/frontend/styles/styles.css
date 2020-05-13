@@ -176,11 +176,13 @@ hr {
 }
 
 .fade-out-hint-label {
+  display: none;
   opacity: 0;
   transition: opacity 0.5s;
 }
 
 .fade-out-hint-label.fade-in {
+  display: block !important;
   opacity: 1;
 }
 

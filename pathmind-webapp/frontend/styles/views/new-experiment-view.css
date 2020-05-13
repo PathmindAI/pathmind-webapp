@@ -7,8 +7,16 @@
   overflow: visible;
 }
 
-.panel-title {
+.new-experiment-view .page-title + vaadin-horizontal-layout {
+  flex: 1;
+}
+
+.new-experiment-view .panel-title {
   max-width: 460px;
+}
+
+.new-experiment-view .panel-title + vaadin-vertical-layout {
+  height: 9.3rem;
 }
 
 .new-experiment-view .bold-label {
@@ -17,17 +25,23 @@
   font-size: 1.125rem;
 }
 
-.reward-function-wrapper .reward-fn-editor-panel {
-  flex: 2 0 65.7%;
-}
-.reward-function-wrapper vaadin-custom-field {
-  margin-top: unset;
-  flex: 1;
-  border: 1px solid var(--lumo-contrast-20pct);
-  border-radius: var(--lumo-border-radius);
+.new-experiment-view .reward-function-wrapper {
+  margin-top: 0;
 }
 
-.reward-fn-panel-container {
+.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel {
+  flex: 2 0 65.7%;
+}
+.new-experiment-view .reward-function-wrapper vaadin-custom-field {
+  box-sizing: border-box;
+  flex: 1;
+  padding-right: var(--lumo-space-s);
+  border: 1px solid var(--lumo-contrast-20pct);
+  border-radius: var(--lumo-border-radius);
+  margin-top: unset;
+}
+
+.new-experiment-view .reward-fn-panel-container {
   flex: 2;
 }
 
