@@ -169,11 +169,19 @@ hr {
   text-overflow: ellipsis;
 }
 
-.unsaved-draft-label {
+.hint-label,
+.fade-out-hint-label {
   font-size: var(--lumo-font-size-s);
   color: var(--pm-primary-color);
-  margin-left: auto;
-  margin-right: var(--lumo-space-m);
+}
+
+.fade-out-hint-label {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.fade-out-hint-label.fade-in {
+  opacity: 1;
 }
 
 .default-view {

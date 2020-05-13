@@ -29,7 +29,7 @@
   border-bottom: 1px solid var(--pm-gray-color);
 }
 .code-editor-mode vaadin-horizontal-layout {
-  height: 1.8rem;
+  height: calc(var(--lumo-font-size-s) + 8px);
   align-items: center;
   border: none;
 }
@@ -77,10 +77,12 @@
   padding: 0;
 }
 .code-editor-mode vaadin-text-field {
-  height: 1.5rem;
+  height: var(--lumo-font-size-s);
   font-size: var(--lumo-font-size-s);
   font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro",
     monospace;
+  padding: 2px 0;
+  border-radius: 4px;
 }
 
 .code-editor-mode

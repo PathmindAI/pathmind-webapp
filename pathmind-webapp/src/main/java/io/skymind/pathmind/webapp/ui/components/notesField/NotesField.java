@@ -27,7 +27,7 @@ public class NotesField extends HorizontalLayout {
 		this.notesText = notesText;
 		this.title = title;
 		this.saveConsumer = saveConsumer;
-		hintWrapper = LabelFactory.createLabel("Unsaved Notes!", "unsaved-draft-label");
+		hintWrapper = LabelFactory.createLabel("Unsaved Notes!", "hint-label");
 		hintWrapper.setVisible(false);
 		add(editableFieldWrapper());
 		setSpacing(false);

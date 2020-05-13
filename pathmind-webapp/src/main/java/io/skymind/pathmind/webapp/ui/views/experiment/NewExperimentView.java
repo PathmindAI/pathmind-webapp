@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -9,6 +8,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
@@ -68,6 +68,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private NotesField notesField;
 	private RewardVariablesTable rewardVariablesTable;
 	private Span unsavedChanges;
+	private Span notesSavedHint;
 
 	private Button startRunButton;
 
@@ -121,8 +122,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 				LabelFactory.createLabel("To judge if an action is a good one, we calculate a reward score. " + "The reward score is based on the reward function.", CssMindPathStyles.SECTION_SUBTITLE_LABEL));
 		panelTitle.setClassName("panel-title");
 
-		unsavedChanges = LabelFactory.createLabel("Unsaved Draft!", "unsaved-draft-label");
+		unsavedChanges = LabelFactory.createLabel("Unsaved changes!", "hint-label");
 		unsavedChanges.setVisible(false);
+		notesSavedHint = LabelFactory.createLabel("Notes saved!", "fade-out-hint-label");
+		notesSavedHint.setVisible(false);
 
 		VerticalLayout rewardFnPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Reward Function", CssMindPathStyles.BOLD_LABEL), getRewardFnEditorPanel());
 		rewardFnPanel.addClassName("reward-fn-editor-panel");
@@ -137,7 +140,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		HorizontalLayout errorAndNotesContaner = WrapperUtils.wrapWidthFullHorizontal(getErrorsPanel(), createNotesField());
 		errorAndNotesContaner.setClassName("error-and-notes-container");
 
-		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, startRunButton, getActionButton(), unsavedChanges), rewardFunctionWrapper, errorAndNotesContaner);
+		VerticalLayout buttonsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(startRunButton, getActionButton(), unsavedChanges, notesSavedHint);
+		buttonsWrapper.setWidth(null);
+		buttonsWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
+
+		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper), rewardFunctionWrapper, errorAndNotesContaner);
 		mainPanel.setClassName("view-section");
 		return WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, mainPanel);
 	}
@@ -212,7 +219,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private Button getActionButton() {
-		Button saveDraftButton = new Button("Save Draft", click -> handleSaveDraftClicked());
+		Button saveDraftButton = new Button("Save", click -> handleSaveDraftClicked());
 		saveDraftButton.addThemeName("secondary");
 		return saveDraftButton;
 	}
@@ -226,6 +233,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.draftSaved();
 		unsavedChanges.setVisible(false);
+		notesSavedHint.setVisible(false);
 		NotificationUtils.showSuccess("Draft successfully saved");
 	}
 
@@ -234,36 +242,36 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private NotesField createNotesField() {
-		notesField = new NotesField(
+		return new NotesField(
 			"Experiment Notes",
 			experiment.getUserNotes(),
 			updatedNotes -> {
 				experiment.setUserNotes(updatedNotes);
 				experimentDAO.updateUserNotes(experimentId, updatedNotes);
-				NotificationUtils.showSuccess("Notes saved");
+				notesSavedHint.setVisible(true);
+				// addClassName() only works for the first time; so JS is used instead
+				notesSavedHint.getElement().executeJs("$0.classList.add('fade-in'); setTimeout(() => {$0.classList.remove('fade-in'); $0.setAttribute('hidden', true);}, 3000)");
 				segmentIntegrator.addedNotesNewExperimentView();
 			}
 		);
-		notesField.setPlaceholder("Add Notes (optional)");
-		return notesField;
 	}
 
 	private void selectExperiment(Experiment selectedExperiment) {
 		// The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
 		// same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
 		synchronized (experimentLock) {
-			experiment = experimentDAO.getExperiment(selectedExperiment.getId())
-					.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
 			experimentId = selectedExperiment.getId();
+			experiment = experimentDAO.getExperiment(experimentId)
+					.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 			loadExperimentData();
 			updateScreenComponents();
 			notesField.setNotesText(experiment.getUserNotes());
 			pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
 			
-			if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
-				getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "newExperiment/" + selectedExperiment.getId()));
+			if (ExperimentUtils.isDraftRunType(experiment)) {
+				getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "newExperiment/" + experimentId));
 			} else {
-				getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, selectedExperiment.getId()));
+				getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experimentId));
 			}
 		}
 	}
@@ -316,5 +324,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			rewardVariablesTable.setVisible(false);
 		}
 		unsavedChanges.setVisible(false);
+		notesSavedHint.setVisible(false);
 	}
 }
