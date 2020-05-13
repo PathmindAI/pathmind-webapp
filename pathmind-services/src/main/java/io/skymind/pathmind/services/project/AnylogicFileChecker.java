@@ -40,7 +40,7 @@ public class AnylogicFileChecker implements FileChecker {
 
         AnylogicFileCheckResult anylogicFileCheckResult = new AnylogicFileCheckResult();
         try {
-            //To check the file(model.zip) exist and does the server have permission to read
+            //To check the file(model.zip) exist and the server has permission to read
             if (file.exists() && file.isFile() && file.canRead()) {
                 log.info("Uploaded file exists and it is readable");
                 //To check a Zip file and if it is a valid file extract it in to the temporary folder
@@ -159,8 +159,6 @@ public class AnylogicFileChecker implements FileChecker {
         log.info("{} :- checkJarFile Started", uuid);
 
         File modelJarFile = null;
-
-        System.out.println("kepricondebug : " + unZipped);
 
         Optional<File> modelJar = Arrays.stream(unZipped.listFiles())
                 .filter(file -> file.getName().equalsIgnoreCase("model.jar"))

@@ -51,14 +51,12 @@ public class ProjectFileCheckService {
                             }
                         }
                         statusUpdater.fileSuccessfullyVerified(result);
-                    }
-                    else {
+                    } else {
                         statusUpdater.updateError("The uploaded file is invalid, check it and upload again.");
                     }
                 } finally {
                     tempFile.delete();
                 }
-
             } catch (Exception e) {
                 log.error("File check interrupted.", e);
                 statusUpdater.updateError("File check interrupted.");
