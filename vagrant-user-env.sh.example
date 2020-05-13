@@ -1,1 +1,2 @@
+export DB_URL=jdbc:postgresql://localhost/pathmind?user=skynet\\&password=skynetskynet123
 export JOB_MOCK_CYCLE=0
