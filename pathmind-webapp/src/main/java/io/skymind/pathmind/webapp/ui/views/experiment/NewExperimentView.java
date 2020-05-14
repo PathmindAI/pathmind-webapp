@@ -141,9 +141,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		HorizontalLayout errorAndNotesContaner = WrapperUtils.wrapWidthFullHorizontal(getErrorsPanel(), createNotesField());
 		errorAndNotesContaner.setClassName("error-and-notes-container");
 
-		VerticalLayout buttonsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(startRunButton, getActionButton(), unsavedChanges, notesSavedHint);
+		VerticalLayout saveButtonAndHintsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(getActionButton(), unsavedChanges, notesSavedHint);
+		saveButtonAndHintsWrapper.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
+		HorizontalLayout buttonsWrapper = new HorizontalLayout(saveButtonAndHintsWrapper, startRunButton);
 		buttonsWrapper.setWidth(null);
-		buttonsWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
 
 		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper), rewardFunctionWrapper, errorAndNotesContaner);
 		mainPanel.setClassName("view-section");

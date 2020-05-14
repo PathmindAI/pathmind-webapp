@@ -1,6 +1,6 @@
 .experiments-navbar {
   width: auto !important;
-  height: 38rem;
+  height: calc(100vh - 9rem);
   min-height: 100%;
   background: white;
   border-radius: var(--lumo-border-radius);
@@ -50,25 +50,54 @@
   background-color: var(--pm-app-bg-color);
 }
 
-.icon-loading-spinner {
+.icon-loading-spinner,
+.icon-stopped {
   display: block;
   position: relative;
   width: 24px;
   height: 24px;
 }
 
+.experiment-view .training-starting-placeholder .section-title-label::before,
 .icon-loading-spinner::after {
+  box-sizing: border-box;
   content: "";
   position: absolute;
   width: 24px;
   height: 24px;
   top: 0;
   left: 0;
-  background-image: url("/frontend/icons/icon-loading.png");
-  background-repeat: no-repeat;
-  background-size: 100% auto;
-  background-position: center;
-  animation: spin 5s linear infinite;
+  border: 2px solid var(--pm-gray-color-light);
+  border-radius: 50%;
+  border-top: 2px solid var(--pm-primary-color);
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+.icon-stopped {
+  background: var(--pm-gray-color);
+  border-radius: 50%;
+}
+
+.icon-stopped::after {
+  box-sizing: border-box;
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: 6px;
+  left: 6px;
+  border: 1px solid white;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
 }
 
 @keyframes spin {

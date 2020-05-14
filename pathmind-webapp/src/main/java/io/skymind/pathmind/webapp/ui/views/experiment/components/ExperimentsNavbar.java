@@ -123,12 +123,16 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 		}
 
 		private Component createStatusIcon(RunStatus status) {
-			if (status.getValue() <= RunStatus.Running.getValue()) {
+			if (status.getValue() <= RunStatus.Running.getValue() || status == RunStatus.Restarting) {
 				Div loadingSpinner = new Div();
 				loadingSpinner.addClassName("icon-loading-spinner");
 				return loadingSpinner;
 			} else if (status == RunStatus.Completed) {
 				return new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE);
+			} else if (status == RunStatus.Killed || status == RunStatus.Stopping) {
+				Div stoppedIcon = new Div();
+				stoppedIcon.addClassName("icon-stopped");
+				return stoppedIcon;
 			}
 			return new Icon(VaadinIcon.EXCLAMATION_CIRCLE_O);
 		}

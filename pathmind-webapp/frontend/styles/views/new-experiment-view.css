@@ -1,7 +1,3 @@
-.new-experiment-view {
-  min-height: 760px;
-}
-
 .new-experiment-view .view-section {
   padding: var(--lumo-space-m);
   overflow: visible;
@@ -15,8 +11,8 @@
   max-width: 460px;
 }
 
-.new-experiment-view .panel-title + vaadin-vertical-layout {
-  height: 9.3rem;
+.new-experiment-view .panel-title + vaadin-horizontal-layout {
+  height: 6.3rem;
 }
 
 .new-experiment-view .bold-label {
@@ -36,7 +32,7 @@
   box-sizing: border-box;
   flex: 1;
   padding-right: var(--lumo-space-s);
-  border: 1px solid var(--lumo-contrast-20pct);
+  border: 1px solid var(--pm-gray-color);
   border-radius: var(--lumo-border-radius);
   margin-top: unset;
 }
@@ -82,7 +78,7 @@
   font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro",
     monospace;
   padding: var(--lumo-space-s) var(--lumo-space-m);
-  border: 1px solid var(--lumo-contrast-20pct);
+  border: 1px solid var(--pm-gray-color);
   border-radius: var(--lumo-border-radius);
   overflow: auto;
 }

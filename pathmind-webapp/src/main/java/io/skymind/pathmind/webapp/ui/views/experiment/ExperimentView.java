@@ -33,6 +33,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -48,7 +49,6 @@ import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
-import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
@@ -119,8 +119,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Autowired
 	private TrainingService trainingService;
 	@Autowired
-	private UserDAO userDAO;
-	@Autowired
 	private RunDAO runDAO;
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
@@ -157,22 +155,22 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected Component getMainContent() {
-		setupLeftPanel();
+		experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
+		setupExperimentContentPanel();
+		HorizontalLayout experimentContent = WrapperUtils.wrapWidthFullHorizontal(middlePanel, getRightPanel());
+		experimentContent.addClassName("view-section");
 		HorizontalLayout pageWrapper = WrapperUtils.wrapWidthFullHorizontal(
 				experimentsNavbar,
-				middlePanel,
-				getRightPanel());
+				experimentContent);
 		pageWrapper.addClassName("page-content");
 		pageWrapper.setPadding(true);
 
 		return pageWrapper;
 	}
 
-	private void setupLeftPanel() {
-		experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
+	private void setupExperimentContentPanel() {
 		panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
 		policyChartPanel = new PolicyChartPanel();
-		policyChartPanel.setPadding(false);
 		rewardFunctionEditor = new RewardFunctionEditor();
 		rewardFunctionEditor.setReadonly(true);
 		rewardFunctionEditor.setSizeFull();
@@ -189,7 +187,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				rewardFunctionGroup,
 				trainingStartingPlaceholder,
 				policyChartPanel);
-		middlePanel.addClassName("view-section");
+		middlePanel.setPadding(false);
 	}
 
 	private VerticalLayout getRightPanel() {
@@ -227,14 +225,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 		notesField = createViewNotesField();
 
-		VerticalLayout buttonsWrapper = WrapperUtils.wrapWidthFullCenterVertical(
-			exportPolicyButton,
+		Div buttonsWrapper = new Div(
+			archiveExperimentButton,
+			unarchiveExperimentButton,
 			restartTraining,
 			stopTrainingButton,
-			archiveExperimentButton,
-			unarchiveExperimentButton
+			exportPolicyButton
 		);
-		buttonsWrapper.setPadding(false);
+		buttonsWrapper.addClassName("buttons-wrapper");
 
 		VerticalLayout rightPanel = WrapperUtils.wrapSizeFullVertical(
 				buttonsWrapper,
@@ -242,6 +240,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				policyHighlightPanel,
 				notesField);
 		rightPanel.addClassName("right-panel");
+		rightPanel.setPadding(false);
 		return rightPanel;
 	}
 
