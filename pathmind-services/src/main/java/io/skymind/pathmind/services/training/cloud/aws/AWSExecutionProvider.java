@@ -74,28 +74,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public String uploadModel(byte[] modelFile) {
-        throw new UnsupportedOperationException("Not currently supported");
-    }
-
-    @Override
-    public String uploadModel(long runId, byte[] modelFile) {
-        File model = null;
-        try {
-            model = File.createTempFile("pathmind", UUID.randomUUID().toString());
-            FileUtils.writeByteArrayToFile(model, modelFile);
-            return client.fileUpload(buildJobId(runId)+ "/model.zip", model);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return null;
-        } finally {
-            if (model != null) {
-                model.delete();
-            }
-        }
-    }
-
-    @Override
     public void stop(String jobHandle) {
         File emptyFile = null;
         try {
@@ -200,11 +178,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
     public Map.Entry<@NotNull String, byte[]> snapshot(String jobHandle, String trainingRun) {
         Optional<byte[]> optional = getFile(jobHandle, "checkpoint.zip");
         return optional.isPresent() ? Map.entry(jobHandle, optional.get()): null;
-    }
-
-    @Override
-    public String uploadCheckpoint(byte[] checkpointFile) {
-        throw new UnsupportedOperationException("Not currently supported");
     }
 
     @Override
