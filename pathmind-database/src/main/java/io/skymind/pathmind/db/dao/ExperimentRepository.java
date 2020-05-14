@@ -19,6 +19,7 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Record1;
 import org.jooq.Record7;
+import org.jooq.Record8;
 import org.jooq.Result;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
@@ -207,7 +208,7 @@ class ExperimentRepository
 	 * @return List of dashboard items
 	 */
 	static List<DashboardItem> getDashboardItems(DSLContext ctx, DashboardQueryParams dashboardQueryParams) {
-		final var latestRun = ctx.select(RUN.ID, RUN.EXPERIMENT_ID, RUN.NAME, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT, RUN.STATUS)
+		final var latestRun = ctx.select(RUN.ID, RUN.EXPERIMENT_ID, RUN.NAME, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT, RUN.EC2_CREATED_AT, RUN.STATUS)
 				.distinctOn(RUN.EXPERIMENT_ID)
 				.from(RUN)
 				.where(RUN.STARTED_AT.isNotNull())
@@ -263,7 +264,7 @@ class ExperimentRepository
 	 * Helper method to map received database row to {@link DashboardItem} object.<br/>
 	 * It sets {@link DashboardItem#setPolicyExported(boolean)} to true if any run with an exported policy was found.
 	 */
-	private static DashboardItem mapRecordToDashboardItem(Record record, Table<Record7<Long, Long, String, Integer, LocalDateTime, LocalDateTime, Integer>> lastRun, Table<Record1<Long>> policyForLastRun) {
+	private static DashboardItem mapRecordToDashboardItem(Record record, Table<Record8<Long, Long, String, Integer, LocalDateTime, LocalDateTime, LocalDateTime, Integer>> lastRun, Table<Record1<Long>> policyForLastRun) {
 		var experiment = record.into(EXPERIMENT).into(Experiment.class);
 		var model = record.into(MODEL).into(Model.class);
 		var project = record.into(PROJECT).into(Project.class);
