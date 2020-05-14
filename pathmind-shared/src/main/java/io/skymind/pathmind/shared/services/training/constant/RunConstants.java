@@ -14,7 +14,7 @@ public final class RunConstants {
 	/**
 	 * Number of possible iterations for PBT run
 	 */
-	public static final int PBT_RUN_ITERATIONS = 250;
+	public static final int PBT_RUN_ITERATIONS = 500;
 	public static final int PBT_MAX_TIME_IN_SEC = 12 * HOUR;
 	public static final int PBT_NUM_SAMPLES = 4;
 
