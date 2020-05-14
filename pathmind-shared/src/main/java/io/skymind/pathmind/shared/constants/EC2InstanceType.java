@@ -7,6 +7,7 @@ public enum  EC2InstanceType {
     IT_16CPU_64GB("16cpu_64gb"),
     IT_8CPU_16GB("8cpu_16gb"),
     IT_8CPU_32GB("8cpu_32gb"),
+    IT_36CPU_72GB("36cpu_72gb"),
     DEFAULT("default");
 
     private String name;
