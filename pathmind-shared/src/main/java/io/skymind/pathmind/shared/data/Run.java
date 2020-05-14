@@ -46,11 +46,14 @@ public class Run extends Data
 	}
 
 	public LocalDateTime getEc2CreatedAt() {
-		if (ec2CreatedAt == null) {
+		if (ec2CreatedAt != null) {
+			return ec2CreatedAt;
+		}
+		else if(startedAt != null) {
 			return startedAt.plusMinutes(15);
 		}
 		else {
-			return ec2CreatedAt;
+			return null;
 		}
 	}
 }
