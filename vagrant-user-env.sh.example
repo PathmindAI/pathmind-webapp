@@ -13,7 +13,7 @@ export SNS_UPDATER_SQS_FILTER_ATTR=""
 export JOB_MOCK_CYCLE=0
 
 # These are standard for the Vagrant file and usually don't need to be changed
-export DB_URL=jdbc:postgresql://localhost/pathmind?user=skynet\\&password=skynetskynet123
+export DB_URL=jdbc:postgresql://localhost/pathmind?user=skynet\&password=skynetskynet123
 export SNS_UPDATER_TOPIC_ARN=arn:aws:sns:us-east-1:839270835622:dev-updater-topic
 export SQS_URL="https://sqs.us-east-1.amazonaws.com/839270835622/test-training-queue.fifo"
 export AWS_DEFAULT_REGION="us-east-1"

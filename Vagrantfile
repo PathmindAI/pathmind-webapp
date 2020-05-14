@@ -37,11 +37,8 @@ Vagrant.configure("2") do |config|
     sudo -u postgres psql -c "CREATE DATABASE pathmind;"
     sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE pathmind to skynet;"
 
-    echo "-------------------- Setting Env Vars"
-    sudo cp /Vagrant/vagrant-user-env.sh /etc/profile.d/pathmindvar.sh
-
     echo "-------------------- Setting up .bash_profile"
-    sudo echo "cd /vagrant" > /home/vagrant/.bash_profile
+    sudo echo ". /vagrant/vagrant-user-env.sh;\n cd /vagrant" > /home/vagrant/.bash_profile
 
 SHELL
     
