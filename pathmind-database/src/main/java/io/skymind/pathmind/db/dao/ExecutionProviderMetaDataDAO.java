@@ -2,7 +2,10 @@ package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.ExecutionProviderClass;
+
+import org.jooq.Configuration;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -39,8 +42,9 @@ public class ExecutionProviderMetaDataDAO {
         this.providerClass = provider.executionProviderClass();
     }
 
-    public void putProviderRunJobId(long runId, String value) {
-        put(this.providerClass, IdType.Run, String.valueOf(runId), value);
+    public void putProviderRunJobId(Configuration conf, long runId, String value) {
+    	DSLContext transactionContext = DSL.using(conf); 
+        put(transactionContext, this.providerClass, IdType.Run, String.valueOf(runId), value);
     }
 
     public Map<Long, String> getProviderRunJobIds(List<Long> runIds) {
@@ -56,7 +60,7 @@ public class ExecutionProviderMetaDataDAO {
 
     @Deprecated
     public void putModelFileKey(long modelId, String value) {
-        put(this.providerClass, IdType.ModelFile, String.valueOf(modelId), value);
+        put(ctx, this.providerClass, IdType.ModelFile, String.valueOf(modelId), value);
     }
 
     @Deprecated
@@ -70,15 +74,15 @@ public class ExecutionProviderMetaDataDAO {
     }
 
     public void putCheckPointFileKey(String policyExternalId, String value) {
-        put(this.providerClass, IdType.CheckPointFile, policyExternalId, value);
+        put(ctx, this.providerClass, IdType.CheckPointFile, policyExternalId, value);
     }
 
     public String getCheckPointFileKey(String policyExternalId) {
         return get(this.providerClass, IdType.CheckPointFile, policyExternalId);
     }
 
-    private void put(ExecutionProviderClass providerClass, IdType type, String key, String value) {
-        ExecutionProviderMetaDataRepository.put(ctx, providerClass.getId(), type.getId(), key, value);
+    private void put(DSLContext context, ExecutionProviderClass providerClass, IdType type, String key, String value) {
+        ExecutionProviderMetaDataRepository.put(context, providerClass.getId(), type.getId(), key, value);
     }
 
     private String get(ExecutionProviderClass providerClass, IdType type, String key) {
