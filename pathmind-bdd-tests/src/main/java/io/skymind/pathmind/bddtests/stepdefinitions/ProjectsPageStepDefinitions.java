@@ -497,4 +497,9 @@ public class ProjectsPageStepDefinitions {
     public void clickEditProjectIconFromProjectsPage(String projectName) {
         projectsPageSteps.clickEditProjectIconFromProjectsPage(projectName + Serenity.sessionVariableCalled("randomNumber"));
     }
+
+    @Then("^Check new project name error shown (.*)$")
+    public void checkNewProjectNameErrorShown(String error) {
+        projectsPageSteps.checkNewProjectNameErrorShown(error);
+    }
 }

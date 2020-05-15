@@ -666,4 +666,9 @@ public class ProjectsPage extends PageObject {
         actions.perform();
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label' and text()='Rename project']")));
     }
+
+    public void checkNewProjectNameErrorShown(String error) {
+        WebElement e = utils.expandRootElement(projectNameInputFieldShadow);
+        assertThat(e.findElement(By.cssSelector("div[part='error-message']")).getText(), is(error));
+    }
 }

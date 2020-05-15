@@ -75,6 +75,7 @@ Feature: Create new user
       |123456      |123456            |* 1 uppercase character,* 1 lowercase character                                                                              |
       |Testing     |Retesting         |* New Password doesn't match Confirmation password                                                                           |
       |Test        |                  |* 6 min characters                                                                                                           |
+      |            |                  |* 6 min characters,* 1 uppercase character,* 1 lowercase character                                                           |
       |            |Testing           |* 6 min characters,* New Password doesn't match Confirmation password,* 1 uppercase character,* 1 lowercase character        |
 
   Scenario: Check create new user email error message
@@ -94,3 +95,71 @@ Feature: Create new user
     When Create new user click sign up button
     When Create new user click reset password btn
     Then Check password recovery page elements
+
+  Scenario: Check early access First/Last Name, email required messages are shown
+    Given Open page early-access-sign-up
+    When Create new user click sign up button
+    Then Check that early access error message First Name is required is shown for First Name field
+    Then Check that early access error message Last Name is required is shown for Last Name field
+    Then Check that early access error message Email is required is shown for Work Email field
+
+  Scenario: Check early access First/Last Name required messages are shown
+    Given Open page early-access-sign-up
+    When Fill temporary email to the new user form
+    When Create new user click sign up button
+    Then Check that early access error message First Name is required is shown for First Name field
+    Then Check that early access error message Last Name is required is shown for Last Name field
+
+  Scenario: Check early access First Name required messages is shown
+    Given Open page early-access-sign-up
+    When Fill new user form with last name AutotestLastName
+    When Fill temporary email to the new user form
+    When Create new user click sign up button
+    Then Check that early access error message First Name is required is shown for First Name field
+
+  Scenario: Check early access Last Name required messages is shown
+    Given Open page early-access-sign-up
+    When Fill new user form with first name AutotestFirstName
+    When Fill temporary email to the new user form
+    When Create new user click sign up button
+    Then Check that early access error message Last Name is required is shown for Last Name field
+
+  Scenario: Check early access email required messages is shown
+    Given Open page early-access-sign-up
+    When Fill new user form with first name AutotestFirstName
+    When Fill new user form with last name AutotestLastName
+    When Create new user click sign up button
+    Then Check that early access error message Email is required is shown for Work Email field
+
+  Scenario Outline: Check First/Last Name max length
+    Given Open page early-access-sign-up
+    When Fill new user form with first name <text>
+    When Fill new user form with last name <text>
+    When Fill temporary email to the new user form
+    When Create new user click sign up button
+    Then Check new password page opened
+
+    Examples:
+      | characters  | text                                                                                                                                                                                                                                                          |
+      | 250         | Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium.    |
+      | 249         | Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium     |
+
+  Scenario: Check First/Last Name 251 chars length error
+    Given Open page early-access-sign-up
+    When Fill new user form with first name Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium q
+    When Fill new user form with last name Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium q
+    When Fill temporary email to the new user form
+    When Create new user click sign up button
+    Then Check that early access error message First Name must not exceed 250 characters is shown for First Name field
+    Then Check that early access error message Last Name must not exceed 250 characters is shown for Last Name field
+
+  Scenario: Check password 51 chars length error
+    Given Open page early-access-sign-up
+    When Fill new user form with first name AutotestFirstName
+    When Fill new user form with last name AutotestLastName
+    When Fill temporary email to the new user form
+    When Create new user click sign up button
+    When Fill new user password Lorem ipsum dolor sit amet, consectetuer adipiscing
+    When Fill new user confirmation password Lorem ipsum dolor sit amet, consectetuer adipiscing
+    When Create new user click sign in button
+    Then Create new user check that error message shown * 50 max characters
