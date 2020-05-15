@@ -58,7 +58,7 @@
   height: 24px;
 }
 
-.experiment-view .training-starting-placeholder .section-title-label::before,
+.experiment-view .training-starting-placeholder span::before,
 .icon-loading-spinner::after {
   box-sizing: border-box;
   content: "";

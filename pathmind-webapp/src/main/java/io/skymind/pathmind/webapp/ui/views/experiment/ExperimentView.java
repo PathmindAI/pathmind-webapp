@@ -39,6 +39,8 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -75,7 +77,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LAB
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
-public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
+public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>, AfterNavigationObserver
 {
 
 	// We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
@@ -164,7 +166,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				experimentContent);
 		pageWrapper.addClassName("page-content");
 		pageWrapper.setPadding(true);
-
 		return pageWrapper;
 	}
 
@@ -357,6 +358,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		experimentsNavbar.setExperiments(event.getUI(), experiments, experiment);
 	}
 
+	@Override
+	public void afterNavigation(AfterNavigationEvent event) {
+		setChartHeight();
+	}
+
+	private void setChartHeight() {
+		// hack for inaccurate height calculation for vaadin chart only happening on initial load
+		// the height was inaccurate due to the in-progress initialization of the reward function editor with dynamic height
+		getUI().ifPresent(ui -> ui.getPage().executeJs("const vChart = window.document.getElementsByTagName('vaadin-chart')[0]; vChart && setTimeout(() => {const editorHeight = window.document.getElementsByTagName('juicy-ace-editor')[0].offsetHeight + 'px'; vChart.style.height = `calc(100vh - 19rem - ${editorHeight})`}, 200)"));
+	}
+
 	private void updateScreenComponents() {
 		clearErrorState();
 		setPolicyChartVisibility();
@@ -369,6 +381,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		policyChartPanel.setExperiment(experiment, policy);
 		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 		updateRightPanelForExperiment();
+		setChartHeight();
 	}
 
 	private void setPolicyChartVisibility() {
