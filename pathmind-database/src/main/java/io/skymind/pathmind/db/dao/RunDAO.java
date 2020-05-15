@@ -9,6 +9,8 @@ import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
+
+import org.jooq.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -43,12 +45,15 @@ public class RunDAO {
         return RunRepository.getRunsForExperiment(ctx, experiment.getId());
     }
 
-    public Run createRun(Experiment experiment, RunType runType) {
-        return RunRepository.createRun(ctx, experiment, runType);
+    public Run createRun(Configuration conf, Experiment experiment, RunType runType){
+    	DSLContext transactionCtx = DSL.using(conf);
+    	RunRepository.clearNotificationSentInfo(transactionCtx, experiment.getId());
+        return RunRepository.createRun(transactionCtx, experiment, runType);
     }
 
-    public void markAsStarting(long runId, String jobId){
-        RunRepository.markAsStarting(ctx, runId, jobId);
+    public void markAsStarting(Configuration conf, long runId, String jobId){
+        DSLContext transactionCtx = DSL.using(conf);
+        RunRepository.markAsStarting(transactionCtx, runId, jobId);
     }
 
     /**

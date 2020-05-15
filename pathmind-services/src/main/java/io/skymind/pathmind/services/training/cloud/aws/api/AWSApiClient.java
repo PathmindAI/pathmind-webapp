@@ -16,6 +16,7 @@ import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientSQ
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.RunType;
+import io.skymind.pathmind.shared.exception.PathMindException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -108,7 +109,7 @@ public class AWSApiClient {
             return IOUtils.toByteArray(o.getObjectContent());
         } catch (IOException e) {
             log.error("Failed to get content from {}/{}", bucketName, keyId, e);
-            return null;
+            throw new PathMindException("Failed to get model content");
         }
     }
 

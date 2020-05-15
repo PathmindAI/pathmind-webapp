@@ -7,6 +7,7 @@ import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AWSFileManager;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
+import io.skymind.pathmind.shared.exception.PathMindException;
 import io.skymind.pathmind.shared.data.rllib.CheckPoint;
 import io.skymind.pathmind.shared.data.rllib.ExperimentState;
 import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
@@ -460,7 +461,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             return client.jobSubmit(jobId, job.getType());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return null;
+            throw new PathMindException("Failed to start training");
         } finally {
             if (script != null) {
                 script.delete();
