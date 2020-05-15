@@ -364,7 +364,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			rewardFunctionEditor.setVariableNames(rewardVariables);
 		}
 		policyChartPanel.setExperiment(experiment, policy);
-		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 		updateRightPanelForExperiment();
 	}
 
