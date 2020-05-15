@@ -1,9 +1,17 @@
 package io.skymind.pathmind.db.dao;
 
+import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO.IdType;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.ProviderJobStatus;
+import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.services.training.ExecutionProviderClass;
+import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
+
+import org.jooq.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -36,12 +44,16 @@ public class RunDAO {
     	return RunRepository.getRunsForExperiment(ctx, experiment.getId());
     }
 
-    public Run createRun(Experiment experiment, RunType runType){
-        return RunRepository.createRun(ctx, experiment, runType);
+    public Run createRun(Configuration conf, Experiment experiment, RunType runType){
+    	DSLContext transactionCtx = DSL.using(conf);
+    	RunRepository.clearNotificationSentInfo(transactionCtx, experiment.getId());
+        return RunRepository.createRun(transactionCtx, experiment, runType);
     }
 
-    public void markAsStarting(long runId){
-        RunRepository.markAsStarting(ctx, runId);
+    public void markAsStarting(Configuration conf, long runId, ExecutionProviderClass executionProviderClass, String executionId){
+    	DSLContext transactionCtx = DSL.using(conf);
+    	ExecutionProviderMetaDataRepository.put(transactionCtx, executionProviderClass.getId(), IdType.Run.getId(), String.valueOf(runId), executionId);
+        RunRepository.markAsStarting(transactionCtx, runId);
     }
 
     /**
@@ -57,14 +69,6 @@ public class RunDAO {
     	RunRepository.markAsNotificationSent(ctx, runId);
     }
     
-    /**
-     * This is used in case a run is restarted, so that Notification Sent value is cleared
-     * and a notification can be sent again after the training is completed
-     */
-    public void clearNotificationSentInfo(long experimentId) {
-    	RunRepository.clearNotificationSentInfo(ctx, experimentId);
-    }
-
     public List<Long> getExecutingRuns() {
         return RunRepository.getExecutingRuns(ctx);
     }

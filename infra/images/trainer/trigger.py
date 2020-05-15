@@ -75,6 +75,13 @@ def send_mockup_data(s3bucket, s3path, cycle):
         if mockup_status[s3bucket+'/'+s3path]['destroy']==True:
             app_logger.info('Killing mockup {s3bucket}/{s3path}'\
                 .format(s3bucket=s3bucket,s3path=s3path))
+            app_logger.info('Uploading killed file for {s3path}'\
+                .format(s3path=s3path))
+            open('killed', 'w').close()
+            s3 = boto3.client('s3')
+            s3.upload_file('killed', \
+                s3bucket, \
+                s3path+'/output/killed')
             return True
         app_logger.info('Sending mockup folder {folder} to {s3bucket}/{s3path}'\
             .format(folder=folder,s3bucket=s3bucket,s3path=s3path))
@@ -95,7 +102,7 @@ def process_message(message):
         return
     global update_cluster
     global mockup_status
-    hw_type_list=['16cpu_32gb','16cpu_64gb','8cpu_16gb','8cpu_32gb','default']
+    hw_type_list=['16cpu_32gb','16cpu_64gb','8cpu_16gb','8cpu_32gb','36cpu_72gb','default']
     app_logger.info('Received {message}'.format(message=message['Body']))
     body=json.loads(message['Body'])
     s3bucket=body['S3Bucket']
