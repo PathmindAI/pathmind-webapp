@@ -7,6 +7,7 @@ import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AWSFileManager;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
+import io.skymind.pathmind.shared.exception.PathMindException;
 import io.skymind.pathmind.shared.data.rllib.CheckPoint;
 import io.skymind.pathmind.shared.data.rllib.ExperimentState;
 import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
@@ -71,28 +72,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
         // Start actual execution of the job
         return startTrainingRun(job, instructions, files);
-    }
-
-    @Override
-    public String uploadModel(byte[] modelFile) {
-        throw new UnsupportedOperationException("Not currently supported");
-    }
-
-    @Override
-    public String uploadModel(long runId, byte[] modelFile) {
-        File model = null;
-        try {
-            model = File.createTempFile("pathmind", UUID.randomUUID().toString());
-            FileUtils.writeByteArrayToFile(model, modelFile);
-            return client.fileUpload(buildJobId(runId)+ "/model.zip", model);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return null;
-        } finally {
-            if (model != null) {
-                model.delete();
-            }
-        }
     }
 
     @Override
@@ -200,11 +179,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
     public Map.Entry<@NotNull String, byte[]> snapshot(String jobHandle, String trainingRun) {
         Optional<byte[]> optional = getFile(jobHandle, "checkpoint.zip");
         return optional.isPresent() ? Map.entry(jobHandle, optional.get()): null;
-    }
-
-    @Override
-    public String uploadCheckpoint(byte[] checkpointFile) {
-        throw new UnsupportedOperationException("Not currently supported");
     }
 
     @Override
@@ -487,7 +461,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             return client.jobSubmit(jobId, job.getType());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return null;
+            throw new PathMindException("Failed to start training");
         } finally {
             if (script != null) {
                 script.delete();
