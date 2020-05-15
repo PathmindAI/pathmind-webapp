@@ -102,11 +102,11 @@ class ElapsedTimer extends PolymerElement {
     secs = secs % 60;
     mins = mins % 60;
 
-    let formattedText = "";
-    if (hours > 0) formattedText += `${hours} h `;
-    if (mins > 0) formattedText += `${mins} min `;
-    formattedText += `${secs} sec`;
-    return formattedText;
+    function addZero(originalNumericFigure) {
+      return originalNumericFigure.toString().padStart(2, "0");
+    }
+
+    return `${addZero(hours)}h ${addZero(mins)}m ${addZero(secs)}s`;
   }
 }
 
