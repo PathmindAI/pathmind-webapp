@@ -259,7 +259,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 				segmentIntegrator.addedNotesNewExperimentView();
 			}
 		);
-		notesField.setPlaceholder("Add Notes (Optional)");
+		notesField.setPlaceholder("Add Notes (optional)");
 		return notesField;
 	}
 
