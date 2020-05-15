@@ -1228,7 +1228,7 @@
          </createProcedure>
          <sql>
          	SELECT migrate_exec_prov_meta_data();
-         	DROP FUNCTION migrate_exec_prov_meta_data;
+         	DROP FUNCTION migrate_exec_prov_meta_data();
          </sql>
          <dropTable tableName="EXECUTION_PROVIDER_META_DATA"/>
          <rollback>
@@ -1236,7 +1236,7 @@
              <dropColumn tableName="RUN" columnName="JOB_ID"/>
              <dropColumn tableName="POLICY" columnName="CHECK_POINT_FILE_KEY"/>
              <sql>
-         		DROP FUNCTION IF EXISTS migrate_exec_prov_meta_data;
+         		DROP FUNCTION IF EXISTS migrate_exec_prov_meta_data();
          	</sql>
          </rollback>
      </changeSet>
