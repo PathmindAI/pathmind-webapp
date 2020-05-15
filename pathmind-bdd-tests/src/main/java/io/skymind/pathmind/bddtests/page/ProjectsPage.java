@@ -169,9 +169,7 @@ public class ProjectsPage extends PageObject {
     }
 
     public void checkThatProjectExistInProjectsList(String projectName) {
-        Actions actions = new Actions(getDriver());
-        actions.moveToElement(getDriver().findElement(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-grid-cell-content")));
-        actions.perform();
+        utils.moveToElementRepeatIfStaleException(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-grid-cell-content"));
         assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span")), hasItem(projectName));
     }
 
@@ -288,7 +286,9 @@ public class ProjectsPage extends PageObject {
         getDriver().findElement(By.xpath("//vaadin-tab[@aria-selected='false']")).click();
     }
     public void clickArchivesTab(){
-		getDriver().findElement(By.xpath("//vaadin-tab[text()='Archives']")).click();
+        By archivesTab = By.xpath("//vaadin-tab[text()='Archives']");
+        utils.clickElementRepeatIfStaleException(archivesTab);
+        waitFor(ExpectedConditions.attributeToBe(archivesTab, "selected", "true"));
 	}
 	public void clickModelsTab(){
 		getDriver().findElement(By.xpath("//vaadin-tab[text()='Models']")).click();
@@ -298,10 +298,7 @@ public class ProjectsPage extends PageObject {
 	}
 
     public void checkThatProjectNotExistInProjectList(String projectName) {
-        List<String> strings = new ArrayList<>();
-        for(WebElement e : projectsNames){
-            strings.add(e.getText());
-        }
+        List<String> strings = utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span"));
         assertThat(strings, not(hasItem(projectName)));
     }
 
@@ -386,9 +383,9 @@ public class ProjectsPage extends PageObject {
 
     public void clickProjectSaveDraftBtn() {
         Actions action = new Actions(getDriver());
-        WebElement we = getDriver().findElement(By.xpath("//vaadin-button[text()='Save Draft']"));
+        WebElement we = getDriver().findElement(By.xpath("//vaadin-button[text()='Save']"));
         action.moveToElement(we).build().perform();
-        getDriver().findElement(By.xpath("//vaadin-button[text()='Save Draft']")).click();
+        getDriver().findElement(By.xpath("//vaadin-button[text()='Save']")).click();
         try {
             WebElement closePopUp = getDriver().findElement(By.xpath("//vaadin-button[@theme='icon']"));
             waitFor(ExpectedConditions.visibilityOf(closePopUp));

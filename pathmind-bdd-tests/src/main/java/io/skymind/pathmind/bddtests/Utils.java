@@ -7,6 +7,7 @@ import net.thucydides.core.util.SystemEnvironmentVariables;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,5 +67,19 @@ public class Utils extends PageObject {
             attempts++;
         }
         return string;
+    }
+    public void moveToElementRepeatIfStaleException(By by) {
+        int attempts = 0;
+        while(attempts < 3) {
+            try {
+                Actions actions = new Actions(getDriver());
+                actions.moveToElement(getDriver().findElement(by));
+                actions.perform();
+                break;
+            } catch(org.openqa.selenium.StaleElementReferenceException ex) {
+                waitABit(2000);
+            }
+            attempts++;
+        }
     }
 }
