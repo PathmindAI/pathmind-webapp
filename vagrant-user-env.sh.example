@@ -18,4 +18,4 @@ export SNS_UPDATER_TOPIC_ARN=""
 export JOB_MOCK_CYCLE=0
 
 # These are standard for the Vagrant file and usually don't need to be changed
-export DB_URL="jdbc:postgresql://localhost/pathmind?user=skynet\&password=skynetskynet123"
+export DB_URL="jdbc:postgresql://localhost/pathmind?user=skynet&password=skynetskynet123"
