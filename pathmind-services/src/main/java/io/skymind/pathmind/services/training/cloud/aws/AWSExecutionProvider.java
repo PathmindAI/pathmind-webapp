@@ -17,12 +17,13 @@ import io.skymind.pathmind.shared.services.training.JobSpec;
 import io.skymind.pathmind.shared.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -40,6 +41,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private final TrainingErrorDAO trainingErrorDAO;
 
     private static final String AWS_JOB_ID_PREFIX = "id";
+    public static final String RLLIB_ERROR_PREFIX = "x-rllib_error";
 
     public AWSExecutionProvider(AWSApiClient client, ObjectMapper objectMapper, TrainingErrorDAO trainingErrorDAO) {
         this.client = client;
@@ -131,6 +133,14 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 log.warn("{} error(s) detected for the AWS jobHandle {}: {}", allErrorsList.size(), jobHandle, oneLineErrors);
                 return new ProviderJobStatus(Error, allErrorsList);
             }
+
+            Optional<String> rlLibError = getRLlibError(jobHandle);
+            if (rlLibError.isPresent()) {
+                String error = rlLibError.get();
+                log.warn("rlLib error detected for the AWS jobHandle {}: {}", jobHandle, rlLibError.get());
+                return new ProviderJobStatus(Error, Collections.singletonList(RLLIB_ERROR_PREFIX + error));
+            }
+
 
             if (experimentState != null && experimentState.getCheckpoints() != null && experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L)) {
                 return ProviderJobStatus.COMPLETED.addExperimentState(experimentState);
@@ -231,6 +241,26 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 });
 
         return expOpt != null && expOpt.isPresent() ? expOpt.get() : null;
+    }
+
+    public Optional<String> getRLlibError(String jobHandle) {
+        return client.listObjects(jobHandle + "/output/error_")
+                        .getObjectSummaries().parallelStream()
+                        .map(S3ObjectSummary::getKey).max(Comparator.naturalOrder())
+                        .map(it -> {
+                            byte[] bytes = client.fileContents(it);
+                            try (BufferedReader r = new BufferedReader(new InputStreamReader(
+                                            new ByteArrayInputStream(bytes), StandardCharsets.UTF_8))
+                            ) {
+                                String last = null;
+                                for (String line = r.readLine(); line != null; line = r.readLine()) {
+                                    last = line;
+                                }
+                                return last;
+                            } catch (Exception e) {
+                                return null;
+                            }
+                        });
     }
 
     public Map<String, LocalDateTime> getTerminatedTrials(ExperimentState experimentState) {
