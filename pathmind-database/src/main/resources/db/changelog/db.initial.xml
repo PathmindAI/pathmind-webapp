@@ -8,6 +8,10 @@
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS"
         logicalFilePath="db.initial.xml">
 
+    <changeSet author="steph@followsteph.com" id="1">
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200517_01"/>
+    </changeSet>
+
     <changeSet author="paul.dubs@skymind.io" id="20190918">
         <createTable tableName="PATHMIND_USER">
             <column autoIncrement="true" name="ID" type="BIGINT">
@@ -105,7 +109,7 @@
             </column>
             <column name="NAME" type="VARCHAR(255)">
                 <constraints nullable="false"/>
-             </column>
+            </column>
             <column name="REWARD_FUNCTION" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
@@ -294,6 +298,9 @@
     </changeSet>
 
     <changeSet id="20191001-1" author="daehyun@skymind.io">
+        <sql>
+            DROP FUNCTION IF EXISTS update_model_activity_date;
+        </sql>
         <createProcedure>
             CREATE FUNCTION public.update_model_activity_date()
             RETURNS trigger
@@ -322,6 +329,9 @@
     </changeSet>
 
     <changeSet id="20191001-3" author="daehyun@skymind.io">
+        <sql>
+            DROP FUNCTION IF EXISTS update_project_activity_date;
+        </sql>
         <createProcedure>
             CREATE FUNCTION public.update_project_activity_date()
             RETURNS trigger
@@ -547,15 +557,15 @@
     <changeSet id="20191117-1" author="steph@followsteph.com">
         <sql>
             DELETE FROM POLICY WHERE ID IN
-                (SELECT POLICY.ID FROM POLICY LEFT JOIN RUN ON RUN.ID = POLICY.RUN_ID LEFT JOIN EXPERIMENT ON EXPERIMENT.ID = RUN.EXPERIMENT_ID LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            (SELECT POLICY.ID FROM POLICY LEFT JOIN RUN ON RUN.ID = POLICY.RUN_ID LEFT JOIN EXPERIMENT ON EXPERIMENT.ID = RUN.EXPERIMENT_ID LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
             DELETE FROM RUN WHERE ID IN
-                (SELECT RUN.ID FROM RUN LEFT JOIN EXPERIMENT ON EXPERIMENT.ID = RUN.EXPERIMENT_ID LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            (SELECT RUN.ID FROM RUN LEFT JOIN EXPERIMENT ON EXPERIMENT.ID = RUN.EXPERIMENT_ID LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
             DELETE FROM EXPERIMENT WHERE ID IN
-                (SELECT EXPERIMENT.ID FROM EXPERIMENT LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            (SELECT EXPERIMENT.ID FROM EXPERIMENT LEFT JOIN MODEL ON MODEL.ID = EXPERIMENT.MODEL_ID LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
             DELETE FROM MODEL WHERE ID IN
-                (SELECT MODEL.ID FROM MODEL LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            (SELECT MODEL.ID FROM MODEL LEFT JOIN PROJECT ON PROJECT.ID = MODEL.PROJECT_ID LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
             DELETE FROM PROJECT WHERE ID IN
-                (SELECT PROJECT.ID FROM PROJECT LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
+            (SELECT PROJECT.ID FROM PROJECT LEFT JOIN PATHMIND_USER ON PATHMIND_USER.ID = PROJECT.PATHMIND_USER_ID WHERE PATHMIND_USER.EMAIL = 'steph@followsteph.com');
         </sql>
     </changeSet>
 
@@ -707,8 +717,8 @@
         </addColumn>
         <sql>
             UPDATE POLICY SET name=SPLIT_PART(external_id, '_', 3);
-<!--        The following line fails in liquibase but works in postgres directly. Therefore this code has been implemented in the Java changeset code -->
-<!--        UPDATE POLICY SET NOTES=concat('sgd_minibatch_size=', batch_size, ', lr=', learning_rate, ', gamma=', gamma);-->
+            <!--        The following line fails in liquibase but works in postgres directly. Therefore this code has been implemented in the Java changeset code -->
+            <!--        UPDATE POLICY SET NOTES=concat('sgd_minibatch_size=', batch_size, ', lr=', learning_rate, ', gamma=', gamma);-->
         </sql>
         <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200128_05"/>
         <rollback>
@@ -728,7 +738,7 @@
 
     <changeSet id="20200128_07" author="onur@vaadin.com">
         <addColumn tableName="RUN">
-         	<column name="NOTIFICATION_SENT_AT" type="DATETIME"/>
+            <column name="NOTIFICATION_SENT_AT" type="DATETIME"/>
         </addColumn>
     </changeSet>
 
@@ -1132,14 +1142,14 @@
             </column>
         </createTable>
     </changeSet>
-    
+
     <changeSet id="20200401_02" author="onur@vaadin.com">
         <insert tableName="TRAINING_ERROR">
             <column name="KEYWORD" value="killed training"/>
             <column name="DESCRIPTION" value="An error occurred. Please contact the Pathmind team"/>
         </insert>
     </changeSet>
-    
+
     <!-- #1320 Remove the checklist feature from the app -->
     <changeSet id="20200304-01" author="steph@followsteph.com">
         <dropTable tableName="GUIDE"/>
