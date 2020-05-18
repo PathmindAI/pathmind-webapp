@@ -225,6 +225,12 @@ hr {
   align-items: center;
 }
 
+.projects-view .project-name-column span {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .projects-view .project-name-column vaadin-button {
   visibility: hidden;
 }
