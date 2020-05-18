@@ -209,7 +209,7 @@ hr {
 }
 
 .page-content-header vaadin-button {
-  margin: 0;
+  margin: 0 0 0 var(--lumo-space-xxl);
 }
 
 .projects-view {
@@ -287,7 +287,7 @@ hr {
   height: 1.4rem;
   font-size: var(--lumo-font-size-s);
   padding: 0 var(--lumo-space-xs);
-  margin: 0 0 0 var(--lumo-space-m);
+  margin: 0 0 0 var(--lumo-space-xs);
 }
 
 .model-view .model-reward-variables {
