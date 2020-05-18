@@ -91,4 +91,8 @@ public class RewardVariablesPanel extends VerticalLayout
 			return rewardVariablesTable.getValue();
 		}
 	}
+
+	public boolean isInputValueValid() {
+		return !rewardVariablesTable.isInvalid();
+	}
 }

@@ -147,6 +147,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	private void handleRewardVariablesSaveDraftClicked() {
+		if (!rewardVariablesPanel.isInputValueValid()) {
+			return;
+		}
+
 		segmentIntegrator.modelDraftSaved();
 		List<RewardVariable> rewardVariables = rewardVariablesPanel.getRewardVariables();
 		modelService.updateModelRewardVariables(model, rewardVariables);
@@ -154,6 +158,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	private void handleSaveDraftClicked() {
+		if(!FormUtils.isValidForm(modelBinder, model)) {
+			return;
+		}
+
 		segmentIntegrator.modelDraftSaved();
 		final String modelNotes = modelDetailsWizardPanel.getModelNotes();
 		if (model.getId() == -1) {
@@ -189,7 +197,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	private void handleRewardVariablesClicked() {
-		saveAndNavigateToNewExperiment();
+		if (rewardVariablesPanel.isInputValueValid()) {
+			saveAndNavigateToNewExperiment();
+		}
 	}
 
 	private void handleMoreDetailsClicked()

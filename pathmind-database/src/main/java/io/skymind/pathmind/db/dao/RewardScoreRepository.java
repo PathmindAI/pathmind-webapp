@@ -4,14 +4,15 @@ import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.db.utils.JooqUtils;
 import org.jooq.DSLContext;
 import org.jooq.Query;
-import org.jooq.impl.DSL;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.db.jooq.Tables.*;
 import static org.jooq.impl.DSL.count;
+import static org.jooq.impl.DSL.max;
 
 class RewardScoreRepository
 {
@@ -52,27 +53,32 @@ class RewardScoreRepository
 				.fetchMap(EXPERIMENT.ID, count());
 	}
 
-	protected static int getMaxRewardScoreIteration(DSLContext ctx, long policyId) {
-		return ctx.select(DSL.max(REWARD_SCORE.ITERATION))
+	protected static Map<Long, Integer> getMaxRewardScoreIterationForPolicies(DSLContext ctx, List<Long> policyIds) {
+		return ctx.select(REWARD_SCORE.POLICY_ID, max(REWARD_SCORE.ITERATION))
 				.from(REWARD_SCORE)
-				.where(REWARD_SCORE.POLICY_ID.eq(policyId))
-				.fetchOptional(0, Integer.class).orElse(0);
+				.where(REWARD_SCORE.POLICY_ID.in(policyIds))
+				.groupBy(REWARD_SCORE.POLICY_ID)
+				.fetchMap(REWARD_SCORE.POLICY_ID, max(REWARD_SCORE.ITERATION));
 	}
 
 	/**
 	 * This is due to a limitation in JOOQ which does not allow dynamic multi-row inserts https://github.com/jOOQ/jOOQ/issues/6604
 	 * we have to rely on batching.
 	 */
-	protected static void insertRewardScores(DSLContext ctx, long policyId, List<RewardScore> rewardScores) {
-		List<Query> insertQueries = rewardScores.stream().map(rewardScore ->
+	protected static void insertRewardScores(DSLContext ctx, Map<Long, List<RewardScore>> rewardScoresByPolicyId) {
+		List<Query> insertQueries = new ArrayList<>();
+		rewardScoresByPolicyId.forEach((policyId, rewardScores) -> {
+			List<Query> insertQueriesForPolicyId = rewardScores.stream().map(rewardScore ->
 				ctx.insertInto(REWARD_SCORE)
-					.columns(REWARD_SCORE.MIN, REWARD_SCORE.MEAN, REWARD_SCORE.MAX, REWARD_SCORE.ITERATION, REWARD_SCORE.POLICY_ID, REWARD_SCORE.EPISODE_COUNT)
-					.values(JooqUtils.getSafeBigDecimal(rewardScore.getMin()),
-							JooqUtils.getSafeBigDecimal(rewardScore.getMean()),
-							JooqUtils.getSafeBigDecimal(rewardScore.getMax()),
-							rewardScore.getIteration(),
-							policyId,
-							rewardScore.getEpisodeCount())).collect(Collectors.toList());
+				.columns(REWARD_SCORE.MIN, REWARD_SCORE.MEAN, REWARD_SCORE.MAX, REWARD_SCORE.ITERATION, REWARD_SCORE.POLICY_ID, REWARD_SCORE.EPISODE_COUNT)
+				.values(JooqUtils.getSafeBigDecimal(rewardScore.getMin()),
+						JooqUtils.getSafeBigDecimal(rewardScore.getMean()),
+						JooqUtils.getSafeBigDecimal(rewardScore.getMax()),
+						rewardScore.getIteration(),
+						policyId,
+						rewardScore.getEpisodeCount())).collect(Collectors.toList());
+			insertQueries.addAll(insertQueriesForPolicyId);
+		});
 
 		ctx.batch(insertQueries).execute();
 	}
