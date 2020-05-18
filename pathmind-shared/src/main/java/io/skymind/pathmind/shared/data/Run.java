@@ -18,6 +18,7 @@ public class Run extends Data
 	private LocalDateTime stoppedAt;
 	private LocalDateTime notificationSentAt;
 	private LocalDateTime exportedAt;
+	private LocalDateTime ec2CreatedAt;
 	private long trainingErrorId;
 	private String jobId;
 
@@ -44,4 +45,15 @@ public class Run extends Data
 		this.status = runStatus.getValue();
 	}
 
+	public LocalDateTime getEc2CreatedAt() {
+		if (ec2CreatedAt != null) {
+			return ec2CreatedAt;
+		}
+		else if(startedAt != null) {
+			return startedAt.plusMinutes(15);
+		}
+		else {
+			return null;
+		}
+	}
 }
