@@ -14,6 +14,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
@@ -51,7 +53,7 @@ import java.util.stream.Collectors;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
-public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
+public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>, BeforeLeaveObserver {
 
 	// We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
 	// on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
@@ -267,6 +269,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		// The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
 		// same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
 		synchronized (experimentLock) {
+			triggerSaveDraft();
+
 			experimentId = selectedExperiment.getId();
 			experiment = experimentDAO.getExperiment(experimentId)
 					.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
@@ -281,6 +285,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 				getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experimentId));
 			}
 		}
+	}
+
+	private void triggerSaveDraft() {
+		if (unsavedChanges.isVisible()) {
+			handleSaveDraftClicked();
+		}
+	}
+
+	@Override
+	public void beforeLeave(BeforeLeaveEvent event) {
+		triggerSaveDraft();
 	}
 
 	@Override
