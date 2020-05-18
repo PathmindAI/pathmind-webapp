@@ -75,6 +75,13 @@ def send_mockup_data(s3bucket, s3path, cycle):
         if mockup_status[s3bucket+'/'+s3path]['destroy']==True:
             app_logger.info('Killing mockup {s3bucket}/{s3path}'\
                 .format(s3bucket=s3bucket,s3path=s3path))
+            app_logger.info('Uploading killed file for {s3path}'\
+                .format(s3path=s3path))
+            open('killed', 'w').close()
+            s3 = boto3.client('s3')
+            s3.upload_file('killed', \
+                s3bucket, \
+                s3path+'/output/killed')
             return True
         app_logger.info('Sending mockup folder {folder} to {s3bucket}/{s3path}'\
             .format(folder=folder,s3bucket=s3bucket,s3path=s3path))

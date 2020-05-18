@@ -4,6 +4,7 @@ HELP.md
 !**/src/test/**
 node_modules
 target
+vagrant-user-env.sh
 
 ### STS ###
 .apt_generated
