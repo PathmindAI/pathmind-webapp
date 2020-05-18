@@ -503,10 +503,6 @@ public class ProjectsPage extends PageObject {
 		getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/ancestor::*[@class='view-section']/descendant::vaadin-button[normalize-space(text())='Next']")).click();
 	}
 
-	public void checkExperimentScoreGreaterThan(double value) {
-		assertThat(Double.parseDouble(getDriver().findElement(By.id("content")).getText().replace(",",".")), greaterThan(value));
-	}
-
 	public void checkExperimentStatusCompletedWithLimitHours(int limit) {
     	System.out.println("!Waiting for training completed with limit " + limit + " hours!");
 		for (int i=0; i < limit*60; i++) {
