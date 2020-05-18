@@ -1,5 +1,6 @@
 package io.skymind.pathmind.db.dao;
 
+import io.skymind.pathmind.db.utils.DBUtils;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -89,10 +90,11 @@ public class RunDAO {
     	updateRun(run, ProviderJobStatus.STOPPING, Collections.emptyList());
     }
     
-    public void updateRun(Run run, ProviderJobStatus status, List<Policy> policies) {
+    private void updateRun(Run run, ProviderJobStatus status, List<Policy> policies) {
         ctx.transaction(configuration ->
         {
             DSLContext transactionCtx = DSL.using(configuration);
+            DBUtils.setLockTimeout(transactionCtx, 4);
             updateRun(transactionCtx, run, status, policies);
         });
     }
@@ -189,6 +191,9 @@ public class RunDAO {
         return ctx.transactionResult(configuration -> {
             List<Policy> policiesToRaiseUpdateEvent = new ArrayList<>();
             DSLContext transactionCtx = DSL.using(configuration);
+
+            DBUtils.setLockTimeout(transactionCtx, 4);
+
             updateRun(transactionCtx, run, providerJobStatus, policies);
 
             if (providerJobStatus.getRunStatus() == RunStatus.Completed) {
