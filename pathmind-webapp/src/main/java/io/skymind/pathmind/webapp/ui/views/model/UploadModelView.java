@@ -1,5 +1,10 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
+import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT;
+import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_SUBTITLE_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.PROJECT_TITLE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +14,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -30,6 +36,7 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
@@ -119,14 +126,23 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		rewardVariablesPanel.addButtonClickListener(click -> handleRewardVariablesClicked());
 		rewardVariablesPanel.addSaveDraftClickListener(click -> handleRewardVariablesSaveDraftClicked());
 
+		Div sectionTitleWrapper = new Div();
+		
+		sectionTitleWrapper.add(
+			LabelFactory.createLabel("Project: ", SECTION_TITLE_LABEL),
+			LabelFactory.createLabel(project.getName(), SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT, SECTION_SUBTITLE_LABEL)
+		);
+		sectionTitleWrapper.addClassName(PROJECT_TITLE);
+
 		VerticalLayout wrapper = WrapperUtils.wrapFormCenterVertical(
+				sectionTitleWrapper,
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel,
 				rewardVariablesPanel);
 
-		wrapper.getStyle().set("width", "auto");
-		wrapper.getStyle().set("padding-top", "var(--lumo-space-xxl)");
-		wrapper.addClassName("upload-model-view");
+		wrapper.addClassName("view-section");
+		wrapper.setSpacing(false);
+		addClassName("upload-model-view");
 		return wrapper;
 	}
 
@@ -170,9 +186,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
-		uploadModelWizardPanel.setProjectName(project.getName());
-		modelDetailsWizardPanel.setProjectName(project.getName());
-		rewardVariablesPanel.setProjectName(project.getName());
 	}
 
 	private void handleRewardVariablesClicked() {
