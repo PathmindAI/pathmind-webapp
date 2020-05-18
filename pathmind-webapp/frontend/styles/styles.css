@@ -115,9 +115,9 @@ hr {
 }
 
 .project-title-label {
-  font-size: 18px;
-  font-weight: bold;
-  color: #999;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.1;
 }
 .light-text-label {
   font-size: var(--lumo-font-size-m);
@@ -319,8 +319,15 @@ hr {
   flex-shrink: 0;
 }
 
+.default-view.upload-model-view {
+  height: auto;
+  min-height: 100%;
+  padding: var(--lumo-space-xxl);
+}
+
 .upload-model-view .view-section {
   max-width: 540px;
+  flex: 0 0 auto;
 }
 
 /* Upload Model View Reward Variable Names */
@@ -499,11 +506,10 @@ h4 {
   display: block;
   margin: 0;
 }
-.dashboard-item-main .project-title {
+.dashboard-item-main .project-title-label {
   color: var(--lumo-body-text-color);
   font-size: var(--lumo-font-size-xl);
   font-weight: bold;
-  line-height: 1.1;
 }
 .dashboard-item-notes {
   justify-content: space-between;

@@ -1,6 +1,10 @@
 .breadcrumb {
   position: relative;
+  max-width: 10rem;
   color: var(--lumo-body-text-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .breadcrumb:last-child {
