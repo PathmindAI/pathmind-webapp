@@ -295,7 +295,7 @@
 
     <changeSet id="20191001-1" author="daehyun@skymind.io">
         <createProcedure>
-            CREATE FUNCTION public.update_model_activity_date()
+            CREATE OR REPLACE FUNCTION public.update_model_activity_date()
             RETURNS trigger
             LANGUAGE 'plpgsql'
             COST 100
@@ -323,7 +323,7 @@
 
     <changeSet id="20191001-3" author="daehyun@skymind.io">
         <createProcedure>
-            CREATE FUNCTION public.update_project_activity_date()
+            CREATE OR REPLACE FUNCTION public.update_project_activity_date()
             RETURNS trigger
             LANGUAGE 'plpgsql'
             COST 100
