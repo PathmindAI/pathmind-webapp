@@ -8,14 +8,11 @@ import java.util.stream.Collectors;
 
 import org.jooq.DSLContext;
 
-import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.Data;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
@@ -24,27 +21,22 @@ import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import io.skymind.pathmind.shared.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 
-
 @Slf4j
 public abstract class TrainingService {
     protected final ExecutionProvider executionProvider;
     protected final RunDAO runDAO;
     protected final ModelService modelService;
     protected final PolicyDAO policyDAO;
-    protected final ExecutionProviderMetaDataDAO executionProviderMetaDataDAO;
     protected ExecutionEnvironment executionEnvironment;
     private final DSLContext ctx;
 
     public TrainingService(boolean multiAgent, ExecutionProvider executionProvider,
                            RunDAO runDAO, ModelService modelService,
-                           PolicyDAO policyDAO,
-                           ExecutionProviderMetaDataDAO executionProviderMetaDataDAO,
-                           DSLContext ctx) {
+                           PolicyDAO policyDAO, DSLContext ctx) {
         this.executionProvider = executionProvider;
         this.runDAO = runDAO;
         this.modelService = modelService;
         this.policyDAO = policyDAO;
-        this.executionProviderMetaDataDAO = executionProviderMetaDataDAO;
         this.ctx = ctx;
 
         PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_1_0_1;
@@ -68,7 +60,7 @@ public abstract class TrainingService {
     	ctx.transaction(conf -> {
     		Run run = runDAO.createRun(conf, exp, DiscoveryRun);
     		String executionId = startRun(exp.getModel(), exp, run, iterations, maxTimeInSec, numSamples);
-    		runDAO.markAsStarting(conf, run.getId(), executionProvider.executionProviderClass(), executionId);
+    		runDAO.markAsStarting(conf, run.getId(), executionId);
             log.info("Started {} training job with id {}", DiscoveryRun, executionId);
     	});
     }
@@ -79,9 +71,8 @@ public abstract class TrainingService {
         List<Run> runs = experiment.getRuns().stream()
                 .filter(r -> RunStatus.isRunning(r.getStatusEnum()))
                 .collect(Collectors.toList());
-        List<Long> runsIds = runs.stream().map(Data::getId).collect(Collectors.toList());
-
-        executionProviderMetaDataDAO.getProviderRunJobIds(runsIds).values().forEach(executionProvider::stop);
+        
+        runs.stream().map(Run::getJobId).forEach(executionProvider::stop);
 
         // immediately mark the job as stopping so that the user doesn't have to wait the updater to update the run
         // status
@@ -90,7 +81,7 @@ public abstract class TrainingService {
             run.setExperiment(experiment);
             run.setModel(experiment.getModel());
             run.setProject(experiment.getProject());
-            runDAO.updateRun(run, ProviderJobStatus.STOPPING, experiment.getPolicies());
+            runDAO.markAsStopping(run);
             if (callback != null) {
                 callback.accept(run, experiment.getPolicies());
             }

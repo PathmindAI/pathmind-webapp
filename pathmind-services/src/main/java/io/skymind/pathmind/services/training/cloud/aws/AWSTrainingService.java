@@ -1,6 +1,5 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
-import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
@@ -25,10 +24,8 @@ public class AWSTrainingService extends TrainingService {
     private final boolean multiAgent;
     public AWSTrainingService(@Value("${pathmind.training.multiagent:false}") boolean multiAgent,
                               ExecutionProvider executionProvider, RunDAO runDAO, ModelService modelService,
-                              PolicyDAO policyDAO,
-                              ExecutionProviderMetaDataDAO executionProviderMetaDataDAO,
-                              DSLContext ctx) {
-        super(multiAgent, executionProvider, runDAO, modelService, policyDAO, executionProviderMetaDataDAO, ctx);
+                              PolicyDAO policyDAO, DSLContext ctx) {
+    	super(multiAgent, executionProvider, runDAO, modelService, policyDAO, ctx);
         this.multiAgent = multiAgent;
     }
 
