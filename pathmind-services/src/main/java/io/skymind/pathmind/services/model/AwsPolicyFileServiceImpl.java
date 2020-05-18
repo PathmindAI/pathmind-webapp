@@ -38,10 +38,9 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
     }
 
     @Override
-    public Policy savePolicyFile(Long runId, String finishPolicyName, byte[] policyFile) {
+    public void savePolicyFile(Long runId, String finishPolicyName, byte[] policyFile) {
         Long policyId = policyDAO.assurePolicyId(runId, finishPolicyName);
         savePolicyFile(policyId, policyFile);
-        return policyDAO.getPolicy(policyId);
     }
 
     @Override
@@ -53,7 +52,6 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
     @Override
     public void savePolicyFile(Long policyId, byte[] policyFile) {
         awsApiClient.fileUpload(POLICY_FILE + policyId, policyFile);
-        policyDAO.setHasFile(policyId, true);
     }
 
     @Override
