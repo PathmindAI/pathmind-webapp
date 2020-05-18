@@ -16,6 +16,9 @@ RUN chmod 600 id_rsa && \
 
 # Jenkins init scripts
 COPY *groovy /usr/share/jenkins/ref/init.groovy.d/
+COPY clean_test_s3.sh /usr/bin/clean_test_s3.sh
+COPY sqs_policy.json /tmp/sqs_policy.json
+RUN chmod +x /usr/bin/clean_test_s3.sh
 
 #Install python packages
 RUN apt update && \
