@@ -17,23 +17,6 @@ public interface ExecutionProvider {
     String execute(JobSpec job);
 
     /**
-     * Uploads the model file.
-     *
-     * @param modelFile The modelFile
-     * @return The model file id
-     */
-    String uploadModel(byte[] modelFile);
-
-    /**
-     * Uploads the model file.
-     *
-     * @param runId The Run ID
-     * @param modelFile The modelFile
-     * @return The model file id
-     */
-    String uploadModel(long runId, byte[] modelFile);
-
-    /**
      * Stops the execution of the training  job identified by the given job handle.
      * Does nothing if the job is already stopped
      *
@@ -93,14 +76,6 @@ public interface ExecutionProvider {
      * @return
      */
     Map.Entry<@NotNull String, byte[]> snapshot(String jobHandle, String trainingRun);
-
-    /**
-     * upload checkpoint file
-     *
-     * @param checkpointFile
-     * @return rescale file id for the checkpoint file
-     */
-    String uploadCheckpoint(byte[] checkpointFile);
 
     /**
      *  Download the current console output for the given jobHandle. Best used for debugging purposes; usually not

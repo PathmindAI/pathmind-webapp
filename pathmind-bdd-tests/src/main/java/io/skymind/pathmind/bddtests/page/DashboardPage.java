@@ -1,5 +1,6 @@
 package io.skymind.pathmind.bddtests.page;
 
+import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 import org.openqa.selenium.By;
@@ -14,13 +15,15 @@ import java.util.List;
 @DefaultUrl("page:home.page")
 public class DashboardPage extends PageObject {
 
+	private Utils utils;
+
 	public void clickProjectFromDashboard(String randomNumber) {
 		getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='"+randomNumber+"']")).click();
 		waitABit(2500);
 	}
 
 	public void clickModelBreadcrumbFromDashboard(String projectName) {
-		getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='"+projectName+"']/following-sibling::a[text()='Model #1']")).click();
+		utils.clickElementRepeatIfStaleException(By.xpath("//*[@class='breadcrumb' and text()='"+projectName+"']/following-sibling::a[text()='Model #1']"));
 		waitABit(2500);
 	}
 

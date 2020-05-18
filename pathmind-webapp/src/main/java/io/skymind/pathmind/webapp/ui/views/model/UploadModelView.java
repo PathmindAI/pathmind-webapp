@@ -261,11 +261,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	@Override
-	protected boolean isAccessAllowedForUser() {
-		return true;
-	}
-
-	@Override
 	public void setParameter(BeforeEvent event, @WildcardParameter String parameter) {
  		String[] segments = parameter.split("/");
  		uploadMode = UploadMode.FOLDER;

@@ -147,10 +147,11 @@ pipeline {
             }
             steps {
 		script {
-				echo "Deploying updater helm chart"
-                                sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml -n ${DOCKER_TAG}"
 				echo "Updating helm chart"
 				sh "bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} ${DOCKER_TAG} ${WORKSPACE}"
+				sh "sleep 60"
+				echo "Deploying updater helm chart"
+                                sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml -n ${DOCKER_TAG}"
 		}
             }
         }
@@ -165,6 +166,14 @@ pipeline {
 		script {
 			try {
 				echo "Running tests"
+				sh "sleep 120"
+				echo "CLean s3 bucket for tests"
+				sh "aws s3 rm s3://dev-training-dynamic-files.pathmind.com/id2 --recursive"
+				sh "aws s3 rm s3://dev-training-dynamic-files.pathmind.com/id3 --recursive"
+				sh "aws s3 rm s3://dev-training-dynamic-files.pathmind.com/id4 --recursive"
+				sh "aws s3 rm s3://dev-training-dynamic-files.pathmind.com/id5 --recursive"
+				sh "aws s3 rm s3://dev-training-dynamic-files.pathmind.com/id6 --recursive"
+				sh "aws s3 rm s3://dev-training-dynamic-files.pathmind.com/id7 --recursive"
 				sh "sleep 120"
 				sh "mvn clean verify -Dheadless=true -Denvironment=pathmind-dev -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -f pom.xml -P bdd-tests"
 			} catch (err) {
@@ -215,6 +224,9 @@ pipeline {
                 	DEPLOY_PROD = true
 			echo "Updating helm chart"
 			sh "bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
+			sh "sleep 60"
+			echo "Deploying updater helm chart"
+                        sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml"
 		}
             }
         }

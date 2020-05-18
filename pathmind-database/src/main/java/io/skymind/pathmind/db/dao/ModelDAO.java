@@ -65,4 +65,7 @@ public class ModelDAO {
 		});
 	}
 
+	public Optional<Model> getModelIfAllowed(long modelId, long userId) {
+		return ModelRepository.getModelIfAllowed(ctx, modelId, userId);
+	}
 }

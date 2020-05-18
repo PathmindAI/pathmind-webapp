@@ -11,6 +11,7 @@ import org.jooq.Result;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.db.jooq.Tables.*;
@@ -64,7 +65,33 @@ class PolicyRepository {
 		return policy;
     }
 
-    protected static Policy getPolicy(DSLContext ctx, long runId, String policyExternalId) {
+	protected static Optional<Policy> getPolicyIfAllowed(DSLContext ctx, long policyId, long userId) {
+		Record record = ctx
+				.select(POLICY.ID, POLICY.RUN_ID, POLICY.EXTERNAL_ID, POLICY.NAME, POLICY.STARTED_AT, POLICY.STOPPED_AT, POLICY.HAS_FILE)
+				.select(RUN.ID, RUN.NAME, RUN.STATUS, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT)
+				.select(EXPERIMENT.ID, EXPERIMENT.NAME)
+				.select(MODEL.ID, MODEL.NAME)
+				.select(PROJECT.ID, PROJECT.NAME)
+				.from(POLICY)
+				.leftJoin(RUN).on(RUN.ID.eq(POLICY.RUN_ID))
+				.leftJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
+				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+				.leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
+				.where(POLICY.ID.eq(policyId))
+					.and(PROJECT.PATHMIND_USER_ID.eq(userId))
+				.fetchOne();
+
+		if (record == null) {
+			return Optional.empty();
+		}
+
+		Policy policy = record.into(POLICY).into(Policy.class);
+		addParentDataModelObjects(record, policy);
+		return Optional.of(policy);
+	}
+
+	protected static Policy getPolicy(DSLContext ctx, long runId, String policyExternalId) {
         return ctx.selectFrom(POLICY)
                 .where(POLICY.RUN_ID.eq(runId).and(POLICY.EXTERNAL_ID.in(policyExternalId)))
                 .fetchOneInto(Policy.class);

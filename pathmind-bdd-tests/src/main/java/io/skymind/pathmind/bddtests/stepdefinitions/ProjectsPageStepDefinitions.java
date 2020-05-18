@@ -487,4 +487,9 @@ public class ProjectsPageStepDefinitions {
     public void checkThatThereIsAVariableNamed(String variableName) {
         projectsPageSteps.checkThatThereIsAVariableNamed(variableName);
     }
+
+    @When("^Click edit (.*) project icon from projects page$")
+    public void clickEditProjectIconFromProjectsPage(String projectName) {
+        projectsPageSteps.clickEditProjectIconFromProjectsPage(projectName + Serenity.sessionVariableCalled("randomNumber"));
+    }
 }
