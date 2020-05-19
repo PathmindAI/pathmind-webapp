@@ -298,11 +298,7 @@ public class ProjectsPage extends PageObject {
 	}
 
     public void checkThatProjectNotExistInProjectList(String projectName) {
-        List<String> strings = new ArrayList<>();
-        for(WebElement e : projectsNames){
-            strings.add(e.getText());
-        }
-        assertThat(strings, not(hasItem(projectName)));
+        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span")), not(hasItem(projectName)));
     }
 
     public void checkCreateANewProjectPage() {
