@@ -84,7 +84,7 @@ public class ExperimentDAO
 	}
 
 	public long createNewExperiment(long modelId) {
-	    String experimentName = Integer.toString(ExperimentRepository.getExperimentCount(ctx, modelId) + 1);
+        String experimentName = Integer.toString(ExperimentRepository.getExperimentCount(ctx, modelId) + 1);
         Experiment lastExperiment = ExperimentRepository.getLastExperimentForModel(ctx, modelId);
         String rewardFunction = lastExperiment != null ? lastExperiment.getRewardFunction() : Experiment.DEFAULT_REWARD_FUNCTION; 
 		return ExperimentRepository.createNewExperiment(ctx, modelId, experimentName, rewardFunction);
