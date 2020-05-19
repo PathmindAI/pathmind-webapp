@@ -21,11 +21,6 @@ public class AccountView extends PathMindDefaultView {
 	}
 
 	@Override
-	protected boolean isAccessAllowedForUser() {
-		return true;
-	}
-
-	@Override
 	protected Component getTitlePanel() {
 		return new ScreenTitlePanel("Account");
 	}

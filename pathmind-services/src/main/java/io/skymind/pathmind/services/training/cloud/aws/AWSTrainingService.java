@@ -1,6 +1,5 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
-import io.skymind.pathmind.db.dao.ExecutionProviderMetaDataDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
@@ -12,6 +11,8 @@ import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.JobSpec;
 import lombok.extern.slf4j.Slf4j;
+
+import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -23,16 +24,13 @@ public class AWSTrainingService extends TrainingService {
     private final boolean multiAgent;
     public AWSTrainingService(@Value("${pathmind.training.multiagent:false}") boolean multiAgent,
                               ExecutionProvider executionProvider, RunDAO runDAO, ModelService modelService,
-                              PolicyDAO policyDAO,
-                              ExecutionProviderMetaDataDAO executionProviderMetaDataDAO) {
-        super(multiAgent, executionProvider, runDAO, modelService, policyDAO, executionProviderMetaDataDAO);
+                              PolicyDAO policyDAO, DSLContext ctx) {
+    	super(multiAgent, executionProvider, runDAO, modelService, policyDAO, ctx);
         this.multiAgent = multiAgent;
     }
 
-    protected void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSamples, Policy basePolicy) {
-        final Run run = runDAO.createRun(exp, DiscoveryRun);
+    protected String startRun(Model model, Experiment exp, Run run, int iterations, int maxTimeInSec, int numSamples) {
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
-        final Model model = modelService.getModel(exp.getModelId()).get();
         final String modelFileId = modelService.buildModelPath(model.getId());
 
         final JobSpec spec = new JobSpec(
@@ -42,7 +40,7 @@ public class AWSTrainingService extends TrainingService {
                 run.getId(),
                 modelFileId,
                 "", // not collected via UI yet
-                "",    // not collected via UI yet
+                "", // not collected via UI yet
                 exp.getRewardFunction(),
                 model.getNumberOfPossibleActions(),
                 model.getNumberOfObservations(),
@@ -57,21 +55,7 @@ public class AWSTrainingService extends TrainingService {
                 false
         );
 
-        if (basePolicy != null) {
-            String checkpointFileId = executionProviderMetaDataDAO.getCheckPointFileKey(basePolicy.getExternalId());
-            if (checkpointFileId != null) {
-                // for AWS provider, need to pass s3 path
-                String checkpointS3Path = checkpointFileId + "/output/" + basePolicy.getExternalId() + "/" + "checkpoint.zip";
-                spec.setCheckpointFileId(checkpointS3Path);
-            }
-        }
-
-        // IMPORTANT -> There are multiple database calls within executionProvider.execute.
-        final String executionId = executionProvider.execute(spec);
-        executionProviderMetaDataDAO.putProviderRunJobId(spec.getRunId(), executionId);
-
-        runDAO.markAsStarting(run.getId());
-        log.info("Started {} training job with id {}", DiscoveryRun, executionId);
+        return executionProvider.execute(spec);        
     }
 
 

@@ -48,9 +48,4 @@ public class InvalidDataView extends PathMindDefaultView implements HasErrorPara
 	protected Component getTitlePanel() {
 		return new ScreenTitlePanel("Invalid data error");
 	}
-
-	@Override
-	protected boolean isAccessAllowedForUser() {
-		return true;
-	}
 }

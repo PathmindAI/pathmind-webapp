@@ -19,6 +19,7 @@ public class Run extends Data
 	private LocalDateTime notificationSentAt;
 	private LocalDateTime exportedAt;
 	private long trainingErrorId;
+	private String jobId;
 
 	// Helper attributes
 	private Experiment experiment;

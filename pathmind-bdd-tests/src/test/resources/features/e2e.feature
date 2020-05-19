@@ -12,9 +12,8 @@ Feature: E2E
     Then Input from file reward function <reward function file>
     Then Click project start run button
     Then Check experiment status completed with <limit> hours
-    Then Check experiment score greater than <score>
 
     Examples:
-      | project name    | model                                                              | reward function file                                              | score    | limit   |
-      | AutotestProject | Production_Single_Agent/CheeseChasing_6Observations_4Actions.zip   | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt  | 0.9      | 15      |
-      | AutotestProject | Production_Single_Agent/CoffeeShopPathmindDemo.zip                 | Production_Single_Agent/CoffeeShopPathmindDemo.txt                | 120      | 15      |
+      | project name    | model                                                              | reward function file                                              | limit   |
+      | AutotestProject | Production_Single_Agent/CheeseChasing_6Observations_4Actions.zip   | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt  | 15      |
+      | AutotestProject | Production_Single_Agent/CoffeeShopPathmindDemo.zip                 | Production_Single_Agent/CoffeeShopPathmindDemo.txt                | 15      |

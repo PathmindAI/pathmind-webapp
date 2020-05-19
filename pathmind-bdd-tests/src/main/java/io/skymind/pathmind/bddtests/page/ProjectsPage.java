@@ -172,11 +172,7 @@ public class ProjectsPage extends PageObject {
         Actions actions = new Actions(getDriver());
         actions.moveToElement(getDriver().findElement(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-grid-cell-content")));
         actions.perform();
-        List<String> strings = new ArrayList<>();
-        for(WebElement e : projectsNames){
-            strings.add(e.getText());
-        }
-        assertThat(strings, hasItem(projectName));
+        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span")), hasItem(projectName));
     }
 
     public void checkThatObservationFunctionDisplayed(String getObservationFile) throws IOException {
@@ -292,7 +288,7 @@ public class ProjectsPage extends PageObject {
         getDriver().findElement(By.xpath("//vaadin-tab[@aria-selected='false']")).click();
     }
     public void clickArchivesTab(){
-		getDriver().findElement(By.xpath("//vaadin-tab[text()='Archives']")).click();
+		utils.clickElementRepeatIfStaleException(By.xpath("//vaadin-tab[text()='Archives']"));
 	}
 	public void clickModelsTab(){
 		getDriver().findElement(By.xpath("//vaadin-tab[text()='Models']")).click();
@@ -349,13 +345,7 @@ public class ProjectsPage extends PageObject {
     public void clickBackToModelsBtn() {
         waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
         waitFor(ExpectedConditions.elementToBeClickable(By.xpath("//vaadin-button[@theme='tertiary']")));
-        try {
-            getDriver().findElement(By.xpath("//vaadin-button[@theme='tertiary']")).click();
-        }
-        catch(org.openqa.selenium.StaleElementReferenceException ex)
-        {
-            getDriver().findElement(By.xpath("//vaadin-button[@theme='tertiary']")).click();
-        }
+        utils.clickElementRepeatIfStaleException(By.xpath("//vaadin-button[@theme='tertiary']"));
     }
 
     public void checkThatModelsPageOpened() {
@@ -388,14 +378,7 @@ public class ProjectsPage extends PageObject {
 
     public void inputRewardFunction(String rewardFunction) {
     	waitABit(2500);
-        try {
-            rewardField.click();
-        }
-        catch(org.openqa.selenium.StaleElementReferenceException ex)
-        {
-            rewardField.click();
-        }
-        rewardField.click();
+    	utils.clickElementRepeatIfStaleException(By.xpath("//juicy-ace-editor"));
         rewardField.sendKeys(Keys.chord(Keys.CONTROL, "a"));
         rewardField.sendKeys(Keys.BACK_SPACE);
         rewardField.sendKeys(rewardFunction);
@@ -486,7 +469,7 @@ public class ProjectsPage extends PageObject {
 
     public void checkExperimentModelStatusIsStarting(String status) {
         List<String> strings = new ArrayList<>();
-        for(WebElement e : projectsNames){
+        for(WebElement e : experimentModelsNames){
             strings.add(e.getText());
         }
         assertThat(strings, hasItem(status));
@@ -498,13 +481,7 @@ public class ProjectsPage extends PageObject {
 	}
 
 	public void checkThatExperimentPageOfTheProjectOpened(String projectName) {
-		try {
-			assertThat(getDriver().findElement(By.xpath("//*[contains(@href,'project/')]")).getText(), is(projectName));
-		}
-		catch(org.openqa.selenium.StaleElementReferenceException ex)
-		{
-			assertThat(getDriver().findElement(By.xpath("//*[contains(@href,'project/')]")).getText(), is(projectName));
-		}
+        assertThat(utils.getStringRepeatIfStaleException(By.xpath("//*[contains(@href,'project/')]")), is(projectName));
 	}
 
 	public void clickModelArchiveButton(String model) {
@@ -523,11 +500,7 @@ public class ProjectsPage extends PageObject {
 	}
 
 	public void clickWizardRewardVariableNamesNextBtn() {
-		getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/ancestor::*[@class='view-section']/descendant::vaadin-button[normalize-space(text())='Next']")).click();
-	}
-
-	public void checkExperimentScoreGreaterThan(double value) {
-		assertThat(Double.parseDouble(getDriver().findElement(By.id("content")).getText().replace(",",".")), greaterThan(value));
+		getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/ancestor::*[@class='view-section']/descendant::vaadin-button[normalize-space(text())='Next'][2]")).click();
 	}
 
 	public void checkExperimentStatusCompletedWithLimitHours(int limit) {
@@ -614,8 +587,8 @@ public class ProjectsPage extends PageObject {
 	}
 
 	public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
-		assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+" ']/following-sibling::vaadin-grid-cell-content[4]")).getText(), is(note));
-	}
+		assertThat(utils.getStringRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+" ']/following-sibling::vaadin-grid-cell-content[4]")), is(note));
+    }
 
     public void checkNumberOfProjectsWithDraftTag(int numberOfProjects) {
     	setImplicitTimeout(5, SECONDS);
@@ -658,7 +631,7 @@ public class ProjectsPage extends PageObject {
 
 	public void checkThatProjectNameDetailsOnProjectPage(String name) {
         waitABit(3500);
-		assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label truncated-label']")).getText(), is(name));
+		assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label project-title-label']")).getText(), is(name));
 	}
 
 	public void checkThatProjectNameBreadcrumbOnProjectPage(String name) {
@@ -675,5 +648,23 @@ public class ProjectsPage extends PageObject {
             variables.add(webElement.getAttribute("value"));
         }
         assertThat(variables, hasItem(variableName) );
+    }
+
+    public void clickEditProjectIconFromProjectsPage(String projectName) {
+        waitABit(3000);
+        WebElement project = getDriver().findElement(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-grid-cell-content"));
+        Actions actions = new Actions(getDriver());
+        actions.moveToElement(project);
+        actions.perform();
+        WebElement editProjectBtn = getDriver().findElement(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-horizontal-layout/descendant::iron-icon[@icon='vaadin:edit']"));
+        actions.moveToElement(editProjectBtn);
+        actions.click();
+        actions.perform();
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label' and text()='Rename project']")));
+    }
+
+    public void checkNewProjectNameErrorShown(String error) {
+        WebElement e = utils.expandRootElement(projectNameInputFieldShadow);
+        assertThat(e.findElement(By.cssSelector("div[part='error-message']")).getText(), is(error));
     }
 }

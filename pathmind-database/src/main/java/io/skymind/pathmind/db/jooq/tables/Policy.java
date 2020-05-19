@@ -21,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row10;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = -946787170;
+    private static final long serialVersionUID = 1174592979;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -98,11 +98,17 @@ public class Policy extends TableImpl<PolicyRecord> {
      */
     public final TableField<PolicyRecord, Boolean> HAS_FILE = createField(DSL.name("has_file"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
+
     /**
      * The column <code>public.policy.is_valid</code>.
      */
     public final TableField<PolicyRecord, Boolean> IS_VALID = createField(DSL.name("is_valid"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("true", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
+    /**
+     * The column <code>public.policy.check_point_file_key</code>.
+     */
+    public final TableField<PolicyRecord, String> CHECK_POINT_FILE_KEY = createField(DSL.name("check_point_file_key"), org.jooq.impl.SQLDataType.VARCHAR(36), this, "");
+    
     /**
      * Create a <code>public.policy</code> table reference
      */
@@ -201,7 +207,7 @@ public class Policy extends TableImpl<PolicyRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<Long, Long, String, String, LocalDateTime, LocalDateTime, LocalDateTime, Boolean, Boolean> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row10<Long, Long, String, String, LocalDateTime, LocalDateTime, LocalDateTime, Boolean, Boolean, String> fieldsRow() {
+        return (Row10) super.fieldsRow();
     }
 }

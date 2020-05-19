@@ -6,6 +6,7 @@ import org.jooq.DSLContext;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static io.skymind.pathmind.db.jooq.Tables.PROJECT;
 
@@ -55,5 +56,14 @@ class ProjectRepository
 				.set(PROJECT.NAME, projectName)
 				.where(PROJECT.ID.eq(projectId))
 				.execute();
+	}
+
+	public static Optional<Project> getProjectIfAllowed(DSLContext ctx, long projectId, long userId) {
+		return Optional.ofNullable(ctx
+				.selectFrom(PROJECT)
+				.where(PROJECT.ID.eq(projectId))
+					.and(PROJECT.PATHMIND_USER_ID.eq(userId))
+				.fetchOneInto(Project.class)
+		);
 	}
 }
