@@ -334,15 +334,14 @@ hr {
 
 /* Upload Model View Reward Variable Names */
 .upload-model-view vaadin-custom-field {
+  box-sizing: border-box;
+  flex: 1;
   width: 100%;
+  max-height: 280px;
   line-height: 1;
-}
-
-.upload-model-view .reward-function-wrapper vaadin-custom-field {
-  margin-top: var(--lumo-space-l);
-}
-
-.reward-function-wrapper vaadin-custom-field {
+  padding-right: var(--lumo-space-s);
+  border: 1px solid var(--pm-gray-color);
+  border-radius: var(--lumo-border-radius);
   overflow-y: auto;
 }
 

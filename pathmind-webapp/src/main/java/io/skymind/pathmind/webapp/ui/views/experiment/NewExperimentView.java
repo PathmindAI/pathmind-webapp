@@ -18,6 +18,9 @@ import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
+import com.vaadin.flow.server.Command;
+
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -38,6 +41,7 @@ import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -120,6 +124,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		startRunButton = new Button("Train Policy", VaadinIcon.PLAY.create(), click -> handleStartRunButtonClicked());
 		startRunButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		startRunButton.setEnabled(false);
+		
+		saveDraftButton = new Button("Save", click -> handleSaveDraftClicked());
+		saveDraftButton.addThemeName("secondary");
+		saveDraftButton.setEnabled(false);
 
 		VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
 		mainPanel.setSpacing(true);
@@ -145,7 +153,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		HorizontalLayout errorAndNotesContaner = WrapperUtils.wrapWidthFullHorizontal(getErrorsPanel(), createNotesField());
 		errorAndNotesContaner.setClassName("error-and-notes-container");
 
-		VerticalLayout saveButtonAndHintsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(getActionButton(), unsavedChanges, notesSavedHint);
+		VerticalLayout saveButtonAndHintsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(saveDraftButton, unsavedChanges, notesSavedHint);
 		saveButtonAndHintsWrapper.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
 		HorizontalLayout buttonsWrapper = new HorizontalLayout(saveButtonAndHintsWrapper, startRunButton);
 		buttonsWrapper.setWidth(null);
@@ -182,7 +190,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		rewardEditorErrorLabel = LabelFactory.createLabel("Reward Function must not exceed 1000 characters", "reward-editor-error");
 		rewardEditorErrorLabel.setVisible(false);
 		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(rewardEditorErrorLabel, rewardFunctionEditor);
-		rewardFnEditorPanel.addClassName("reward-fn-editor-panel");
 		rewardFnEditorPanel.setPadding(false);
 		return rewardFnEditorPanel;
 	}
@@ -243,12 +250,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experimentId));
 	}
 
-	private Button getActionButton() {
-		Button saveDraftButton = new Button("Save", click -> handleSaveDraftClicked());
-		saveDraftButton.addThemeName("secondary");
-		return saveDraftButton;
-	}
-
 	private void handleSaveDraftClicked() {
 		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();
 		if (rewardVariables != null) {
@@ -284,11 +285,16 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private void selectExperiment(Experiment selectedExperiment) {
+		triggerSaveDraft(() -> navigateToAnotherDraftExperiment(selectedExperiment));
+		if (saveDraftButton.isEnabled()) {
+			navigateToAnotherDraftExperiment(selectedExperiment);
+		}
+	}
+	
+	private void navigateToAnotherDraftExperiment(Experiment selectedExperiment) {
 		// The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
 		// same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
 		synchronized (experimentLock) {
-			triggerSaveDraft();
-
 			experimentId = selectedExperiment.getId();
 			experiment = experimentDAO.getExperiment(experimentId)
 					.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
@@ -305,15 +311,20 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		}
 	}
 
-	private void triggerSaveDraft() {
+	private void triggerSaveDraft(Command cancelListener) {
 		if (unsavedChanges.isVisible()) {
-			handleSaveDraftClicked();
+			if (saveDraftButton.isEnabled()) {
+				handleSaveDraftClicked();
+			} else {
+				ConfirmationUtils.leavePage(cancelListener);
+			}
 		}
 	}
 
 	@Override
 	public void beforeLeave(BeforeLeaveEvent event) {
-		triggerSaveDraft();
+		ContinueNavigationAction action = event.postpone();
+		triggerSaveDraft(() -> action.proceed());
 	}
 
 	@Override

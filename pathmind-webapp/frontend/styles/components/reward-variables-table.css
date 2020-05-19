@@ -1,178 +1,43 @@
 .reward-variables-table {
-  max-height: 280px;
-  overflow-y: auto;
+  font-size: var(--lumo-font-size-s);
 }
-
 .reward-function-wrapper .reward-variables-table {
   max-height: 100%;
-  overflow-y: initial;
-}
-
-.code-editor-mode {
-  font-size: var(--lumo-font-size-s);
 }
 
 .reward-variables-table .header-row {
   position: sticky;
   top: 0;
-  border-top: 1px solid var(--pm-gray-color);
-  z-index: 1;
-}
-.code-editor-mode .header-row {
-  border-top: unset;
-}
-
-.reward-variables-table vaadin-horizontal-layout {
-  height: 32px;
-  border-left: 1px solid var(--pm-gray-color);
-  border-right: 1px solid var(--pm-gray-color);
-  border-bottom: 1px solid var(--pm-gray-color);
-}
-.reward-variables-table vaadin-horizontal-layout.invalid-reward-variable-row {
-  height: 64px;
-}
-
-.code-editor-mode vaadin-horizontal-layout {
-  height: calc(var(--lumo-font-size-s) + 8px);
-  align-items: center;
-  border: none;
-}
-.code-editor-mode vaadin-horizontal-layout.invalid-reward-variable-row {
-  height: 3.8rem;
-}
-
-.reward-variables-table .header-row {
   color: var(--pm-secondary-text-color);
   background-color: white;
+  z-index: 1;
 }
-.code-editor-mode .header-row {
-  align-items: flex-end;
-  background-color: transparent;
-  border-left: unset;
-  border-right: unset;
+.reward-variables-table vaadin-horizontal-layout {
+  height: 32px;
+  align-items: center;
 }
-
+.reward-variables-table vaadin-horizontal-layout.invalid-reward-variable-row {
+  height: auto;
+}
 .reward-variables-table span {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 var(--lumo-space-s);
-}
-.code-editor-mode span {
   padding: 0;
 }
-
 .reward-variables-table span:first-child {
-  flex: 0 0 60px;
-  text-align: center;
-  border-right: 1px solid var(--pm-gray-color);
-}
-.code-editor-mode span:first-child {
-  flex: 0 0 40px;
+  box-sizing: border-box;
+  flex: 0 0 3rem;
   color: var(--pm-gray-color-dark);
-  border-right: none !important;
+  text-align: center;
+  padding: 0.5em;
 }
-
 .reward-variables-table :not(.header-row) span:first-child {
-  background-color: var(--pm-gray-color-lighter);
+  align-self: flex-start;
 }
-.code-editor-mode :not(.header-row) span:first-child {
-  background-color: transparent !important;
-}
-
 .reward-variables-table vaadin-text-field {
-  padding: 0;
-}
-.code-editor-mode vaadin-text-field {
-  height: var(--lumo-font-size-s);
   font-size: var(--lumo-font-size-s);
   font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro",
     monospace;
-  padding: 2px 0;
-  border-radius: 4px;
-}
-
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(2)
-  .reward-variable-name-field,
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(10n + 2)
-  .reward-variable-name-field {
-  color: #000;
-  background-color: #67ea93;
-}
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(3)
-  .reward-variable-name-field,
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(10n + 3)
-  .reward-variable-name-field {
-  color: #fff;
-  background-color: #214e96;
-}
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(4)
-  .reward-variable-name-field,
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(10n + 4)
-  .reward-variable-name-field {
-  color: #000;
-  background-color: #9bf7ec;
-}
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(5)
-  .reward-variable-name-field,
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(10n + 5)
-  .reward-variable-name-field {
-  color: #fff;
-  background-color: #7550e5;
-}
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(6)
-  .reward-variable-name-field,
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(10n + 6)
-  .reward-variable-name-field {
-  color: #000;
-  background-color: #b0f78c;
-}
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(7)
-  .reward-variable-name-field,
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(10n + 7)
-  .reward-variable-name-field {
-  color: #000;
-  background-color: #ef99a4;
-}
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(8)
-  .reward-variable-name-field,
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(10n + 8)
-  .reward-variable-name-field {
-  color: #000;
-  background-color: #9bc0f7;
-}
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(9)
-  .reward-variable-name-field,
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(10n + 9)
-  .reward-variable-name-field {
-  color: #fff;
-  background-color: #931901;
-}
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(10n)
-  .reward-variable-name-field {
-  color: #fff;
-  background-color: #f413bc;
-}
-.code-editor-mode
-  vaadin-horizontal-layout:nth-of-type(10n + 1)
-  .reward-variable-name-field {
-  color: #000;
-  background-color: #d1b112;
+  padding: 0;
 }

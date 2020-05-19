@@ -105,6 +105,7 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 			this.rowNumber = rowNumber;
 			this.rewardVariableNameField = new TextField();
 			rewardVariableNameField.addClassName("reward-variable-name-field");
+			rewardVariableNameField.addClassName("reward-variable-"+rowNumber);
 			rewardVariableNameField.addValueChangeListener(e -> {
 				ComponentValueChangeEvent<RowField, RewardVariable> newEvent = new ComponentValueChangeEvent<>(
 						this, this, create(e.getOldValue()), e.isFromClient());

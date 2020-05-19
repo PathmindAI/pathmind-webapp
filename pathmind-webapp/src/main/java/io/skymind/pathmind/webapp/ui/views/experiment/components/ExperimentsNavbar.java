@@ -157,9 +157,10 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 		}
 
 		private void handleRowClicked(Experiment experiment, Consumer<Experiment> selectExperimentConsumer) {
+			selectExperimentConsumer.accept(experiment);
+			// TODO --> Do not update nav bar current if screen did not update
 			experimentsNavBarItems.stream().forEach(experimentsNavBarItem -> experimentsNavBarItem.removeAsCurrent());
 			setAsCurrent();
-			selectExperimentConsumer.accept(experiment);
 		}
 
 		private void setAsCurrent() {
