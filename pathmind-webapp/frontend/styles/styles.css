@@ -536,6 +536,7 @@ h4 {
   height: 5rem;
   line-height: 1.29rem;
   white-space: normal;
+  word-break: break-word;
   overflow: hidden;
   margin-bottom: 0;
 }

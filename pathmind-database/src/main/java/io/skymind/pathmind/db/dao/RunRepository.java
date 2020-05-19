@@ -105,7 +105,8 @@ class RunRepository
 							.leftJoin(RUN).on(RUN.ID.eq(POLICY.RUN_ID))
 							.where(
 									RUN.STATUS.eq(RunStatus.Completed.getValue())
-									.and(POLICY.HAS_FILE.isFalse())))))
+									.and(POLICY.HAS_FILE.isFalse())
+                                    .and(POLICY.IS_VALID.isTrue())))))
     			.fetch(record -> fetchRunLeftJoin(record));
     }
 
