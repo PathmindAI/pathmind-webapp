@@ -298,11 +298,7 @@ public class ProjectsPage extends PageObject {
 	}
 
     public void checkThatProjectNotExistInProjectList(String projectName) {
-        List<String> strings = new ArrayList<>();
-        for(WebElement e : projectsNames){
-            strings.add(e.getText());
-        }
-        assertThat(strings, not(hasItem(projectName)));
+        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span")), not(hasItem(projectName)));
     }
 
     public void checkCreateANewProjectPage() {
@@ -666,5 +662,9 @@ public class ProjectsPage extends PageObject {
     public void checkNewProjectNameErrorShown(String error) {
         WebElement e = utils.expandRootElement(projectNameInputFieldShadow);
         assertThat(e.findElement(By.cssSelector("div[part='error-message']")).getText(), is(error));
+    }
+
+    public void checkThatModelSuccessfullyUploaded() {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Your model was successfully uploaded!']")));
     }
 }
