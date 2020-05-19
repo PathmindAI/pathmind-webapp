@@ -80,3 +80,17 @@
   font-size: var(--lumo-font-size-s);
   padding: 0 var(--lumo-space-s);
 }
+
+.reward-editor-error {
+  align-self: flex-end;
+  color: var(--pm-danger-color);
+  margin-top: 0px;
+}
+
+.reward-editor-error[hidden="true"] + * {
+  margin-top: auto;
+}
+
+.reward-editor-error + * {
+  margin-top: 0px;
+}

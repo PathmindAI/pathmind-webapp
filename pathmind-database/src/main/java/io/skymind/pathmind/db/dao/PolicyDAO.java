@@ -24,12 +24,6 @@ public class PolicyDAO {
         this.ctx = ctx;
     }
 
-    public Policy getPolicy(long policyId) {
-        Policy policy = PolicyRepository.getPolicy(ctx, policyId);
-        policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(ctx, policyId));
-        return policy;
-    }
-
     public Optional<Policy> getPolicyIfAllowed(long policyId, long userId) {
         Optional<Policy> optionalPolicy  = PolicyRepository.getPolicyIfAllowed(ctx, policyId, userId);
         optionalPolicy
@@ -56,18 +50,10 @@ public class PolicyDAO {
         PolicyRepository.updateExportedDate(ctx, policyId);
     }
 
-    public Long getPolicyId(long runId, String externalId) {
-        return PolicyRepository.getPolicyIdByRunIdAndExternalId(ctx, runId, externalId);
-    }
-
-    public void setHasFile(Long policyId, boolean value) {
-        PolicyRepository.setHasFile(ctx, policyId, value);
-    }
-
     public Long assurePolicyId(Long runId, String finishPolicyName) {
         Assert.notNull(runId, "runId should be provided");
         Assert.hasText(finishPolicyName, "finalPolicyName should be provided");
-        Long policyId = getPolicyId(runId, finishPolicyName);
+        Long policyId = PolicyRepository.getPolicyIdByRunIdAndExternalId(ctx, runId, finishPolicyName);
         Assert.state(
                 nonNull(policyId),
                 format("Can not find policyId for run {0} and finishName {1}", runId, finishPolicyName)
