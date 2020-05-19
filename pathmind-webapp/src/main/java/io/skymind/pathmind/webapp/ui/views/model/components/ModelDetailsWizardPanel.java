@@ -6,18 +6,12 @@ import java.util.List;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.NO_TOP_MARGIN_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_SUBTITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.TRUNCATED_LABEL;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -36,8 +30,6 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 {
 	private VerticalLayout formPanel = new VerticalLayout();
 
-	private Div sectionTitleWrapper;
-	private Span projectNameLabel;
 	private PathmindTextArea notesFieldTextArea;
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
@@ -52,13 +44,6 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		nextStepButton.setIconAfterText(true);
 		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-		sectionTitleWrapper = new Div();
-		Span projectText = new Span("Project: ");
-		projectText.addClassName(SECTION_TITLE_LABEL);
-		projectNameLabel = LabelFactory.createLabel("", SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT, SECTION_SUBTITLE_LABEL);
-		sectionTitleWrapper.add(projectText, projectNameLabel);
-		sectionTitleWrapper.addClassName(TRUNCATED_LABEL);
-
 		Icon checkmarkIcon = new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE);
 		checkmarkIcon.setColor("var(--pm-friendly-color)");
 
@@ -71,7 +56,6 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 		List<Component> items = new ArrayList<>(
 				Arrays.asList(
-						sectionTitleWrapper,
 						modelDetailsLine,
 						GuiUtils.getFullWidthHr()
 				)
@@ -96,7 +80,8 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		bindFields(binder);
 
 		setWidthFull();
-		setClassName("view-section"); // adds the white 'panel' style with rounded corners
+		setPadding(false);
+		setSpacing(false);
 	}
 
 	private void setupFields()
@@ -119,10 +104,6 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	public void addSaveDraftClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
 		draftButton.addClickListener(listener);
-	}
-
-	public void setProjectName(String name) {
-		projectNameLabel.setText(name);
 	}
 
 	private void setupNotesFieldTextArea() {
