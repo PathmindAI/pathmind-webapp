@@ -134,7 +134,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		);
 		sectionTitleWrapper.addClassName(PROJECT_TITLE);
 
-		VerticalLayout wrapper = WrapperUtils.wrapFormCenterVertical(
+		VerticalLayout wrapper = new VerticalLayout(
 				sectionTitleWrapper,
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel,

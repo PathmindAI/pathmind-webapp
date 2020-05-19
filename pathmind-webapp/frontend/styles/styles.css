@@ -116,7 +116,7 @@ hr {
 
 .project-title-label {
   white-space: pre-wrap;
-  word-break: break-all;
+  word-break: break-word;
   line-height: 1.1;
 }
 .light-text-label {
