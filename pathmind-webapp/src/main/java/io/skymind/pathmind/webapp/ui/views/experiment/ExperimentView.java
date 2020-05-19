@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
@@ -312,11 +313,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		this.experimentId = experimentId;
 	}
 
-	@Override
-	protected boolean isAccessAllowedForUser() {
-		return userDAO.isUserAllowedAccessToExperiment(experimentId);
-	}
-
 	private void selectExperiment(Experiment selectedExperiment) {
 		// The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
 		// same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
@@ -334,7 +330,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected void initLoadData() throws InvalidDataException {
-		experiment = experimentDAO.getExperiment(experimentId)
+		experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		loadExperimentData();
 	}
@@ -368,7 +364,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			rewardFunctionEditor.setVariableNames(rewardVariables);
 		}
 		policyChartPanel.setExperiment(experiment, policy);
-		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 		updateRightPanelForExperiment();
 	}
 
@@ -484,22 +479,37 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	class ExperimentViewRunUpdateSubscriber implements RunUpdateSubscriber {
 		@Override
 		public void handleBusEvent(RunUpdateBusEvent event) {
-			addOrUpdateRun(event.getRun());
-			updatedRunForPolicies(event.getRun());
-			PushUtils.push(getUI(), () -> {
-				setPolicyChartVisibility();
-				updateRightPanelForExperiment();
-			});
+			if (isSameExperiment(event)) {
+				addOrUpdateRun(event.getRun());
+				updatedRunForPolicies(event.getRun());
+				PushUtils.push(getUI(), () -> {
+					setPolicyChartVisibility();
+					updateRightPanelForExperiment();
+				});
+			} else if (isSameModel(event)) {
+				if (!experiments.contains(event.getRun().getExperiment())) {
+					experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+					PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
+				}
+			}
 		}
 
 		@Override
 		public boolean filterBusEvent(RunUpdateBusEvent event) {
-			return experiment != null && experiment.getId() == event.getRun().getExperiment().getId();
+			return isSameExperiment(event) || isSameModel(event);
 		}
 
 		@Override
 		public boolean isAttached() {
 			return ExperimentView.this.getUI().isPresent();
+		}
+		
+		private boolean isSameExperiment(RunUpdateBusEvent event) {
+			return experiment != null && experiment.getId() == event.getRun().getExperiment().getId();
+		}
+		
+		private boolean isSameModel(RunUpdateBusEvent event) {
+			return experiment != null && experiment.getModelId() == event.getRun().getModel().getId();
 		}
 	}
 }

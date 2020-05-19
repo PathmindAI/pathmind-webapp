@@ -33,6 +33,10 @@ public class ExperimentDAO
 		return Optional.ofNullable(experiment);
 	}
 
+	public Optional<Experiment> getExperimentIfAllowed(long experimentId, long userId) {
+		return Optional.ofNullable(ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId));
+	}
+
 	public long setupNewExperiment(Experiment experiment) {
 		return ExperimentRepository.setupNewExperiment(ctx, experiment);
 	}
