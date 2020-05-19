@@ -392,11 +392,6 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.clickWizardRewardVariablesSaveDraftBtn();
     }
 
-	@Then("^Check experiment score greater than (.*)$")
-	public void checkExperimentScoreGreaterThan(double value) {
-		projectsPageSteps.checkExperimentScoreGreaterThan(value);
-	}
-
 	@Then("^Check experiment status completed with (.*) hours$")
 	public void checkExperimentStatusCompletedWithLimitHours(int limit) {
 		projectsPageSteps.checkExperimentStatusCompletedWithLimitHours(limit);
@@ -496,6 +491,11 @@ public class ProjectsPageStepDefinitions {
     @When("^Click edit (.*) project icon from projects page$")
     public void clickEditProjectIconFromProjectsPage(String projectName) {
         projectsPageSteps.clickEditProjectIconFromProjectsPage(projectName + Serenity.sessionVariableCalled("randomNumber"));
+    }
+
+    @Then("^Check new project name error shown (.*)$")
+    public void checkNewProjectNameErrorShown(String error) {
+        projectsPageSteps.checkNewProjectNameErrorShown(error);
     }
 
     @When("^Check that model successfully uploaded$")
