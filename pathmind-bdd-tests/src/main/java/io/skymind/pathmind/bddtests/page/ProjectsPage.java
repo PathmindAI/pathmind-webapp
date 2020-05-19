@@ -184,6 +184,7 @@ public class ProjectsPage extends PageObject {
 
     public void inputRewardFunctionFile(String rewardFile) throws IOException {
         rewardField.click();
+        rewardField.sendKeys(Keys.chord(Keys.CONTROL,"a",Keys.DELETE));
         rewardField.sendKeys(FileUtils.readFileToString(new File("models/" + rewardFile), StandardCharsets.UTF_8));
     }
 
