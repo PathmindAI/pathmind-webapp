@@ -250,10 +250,6 @@ public class ProjectsPageSteps {
 		projectsPage.clickWizardModelDetailsNextBtn();
 	}
 	@Step
-	public void checkExperimentScoreGreaterThan(double value) {
-		projectsPage.checkExperimentScoreGreaterThan(value);
-	}
-	@Step
 	public void checkExperimentStatusCompletedWithLimitHours(int limit) {
 		projectsPage.checkExperimentStatusCompletedWithLimitHours(limit);
     }
@@ -359,5 +355,9 @@ public class ProjectsPageSteps {
     @Step
     public void clickEditProjectIconFromProjectsPage(String projectName) {
         projectsPage.clickEditProjectIconFromProjectsPage(projectName);
+    }
+    @Step
+    public void checkNewProjectNameErrorShown(String error) {
+        projectsPage.checkNewProjectNameErrorShown(error);
     }
 }

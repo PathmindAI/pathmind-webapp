@@ -107,3 +107,17 @@
 .new-experiment-view .notes-block .header vaadin-button {
   display: none !important;
 }
+
+.reward-editor-error {
+  align-self: flex-end;
+  color: var(--pm-danger-color);
+  margin-top: 0px;
+}
+
+.reward-editor-error[hidden="true"] + * {
+  margin-top: auto;
+}
+
+.reward-editor-error + * {
+  margin-top: 0px;
+}

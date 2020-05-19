@@ -28,10 +28,17 @@
   border-right: 1px solid var(--pm-gray-color);
   border-bottom: 1px solid var(--pm-gray-color);
 }
+.reward-variables-table vaadin-horizontal-layout.invalid-reward-variable-row {
+  height: 64px;
+}
+
 .code-editor-mode vaadin-horizontal-layout {
   height: calc(var(--lumo-font-size-s) + 8px);
   align-items: center;
   border: none;
+}
+.code-editor-mode vaadin-horizontal-layout.invalid-reward-variable-row {
+  height: 3.8rem;
 }
 
 .reward-variables-table .header-row {

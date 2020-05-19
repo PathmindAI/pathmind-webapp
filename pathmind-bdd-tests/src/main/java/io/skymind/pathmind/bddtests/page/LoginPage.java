@@ -258,4 +258,15 @@ public class LoginPage extends PageObject {
 			assertThat(logEntry.getMessage(), not(containsString(error)));
 		}
 	}
+
+    public void checkThatEarlyAccessErrorMessageIsShownForField(String error, String field) {
+        WebElement signUpView = utils.expandRootElement(signUpShadow);
+        WebElement inpuView =  utils.expandRootElement(signUpView.findElement(By.cssSelector("vaadin-text-field[label='"+field+"']")));
+        assertThat(inpuView.findElement(By.cssSelector("div[part='error-message']")).getText(), is(error));
+    }
+
+    public void checkNewPasswordPageOpened() {
+        WebElement signUpView = utils.expandRootElement(signUpShadow);
+        assertThat(signUpView.findElement(By.cssSelector("h3")).getText(), is("Create Password"));
+    }
 }

@@ -21,7 +21,7 @@
 }
 
 .notes-block .header vaadin-button {
-  min-width: var(--lumo-button-size);
+  min-width: 45px;
   height: 1.4rem;
   font-size: var(--lumo-font-size-s);
   padding: 0 var(--lumo-space-xs);
@@ -37,4 +37,10 @@
   align-self: center;
   margin-left: auto;
   margin-right: var(--lumo-space-m);
+}
+
+.unsaved-draft-label.unsaved-and-too-big-text-label {
+  align-self: center;
+  color: var(--pm-danger-color);
+  margin-left: var(--lumo-space-m);
 }

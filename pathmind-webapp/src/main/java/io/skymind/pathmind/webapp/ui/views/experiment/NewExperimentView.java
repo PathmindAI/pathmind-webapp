@@ -72,6 +72,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private RewardVariablesTable rewardVariablesTable;
 	private Span unsavedChanges;
 	private Span notesSavedHint;
+	private Span rewardEditorErrorLabel;
+	private Button saveDraftButton;
 
 	private Button startRunButton;
 
@@ -93,10 +95,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Breadcrumbs pageBreadcrumbs;
 	private Binder<Experiment> binder;
 
-    public NewExperimentView() {
-        super();
-        addClassName("new-experiment-view");
-    }
+	public NewExperimentView() {
+		super();
+		addClassName("new-experiment-view");
+	}
 
     @Override
     protected Component getTitlePanel() {
@@ -167,20 +169,32 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			errorMessageWrapper.removeAll();
 			if ((errorText.length() == 0)) {
 				errorMessageWrapper.add(new Icon(VaadinIcon.CHECK), new Span("No Errors"));
-				startRunButton.setEnabled(true);
 			} else {
 				errorMessageWrapper.setText(errorText);
-				startRunButton.setEnabled(false);
 			}
 			errorMessageWrapper.removeClassNames("hasError", "noError");
 			errorMessageWrapper.addClassName(wrapperClassName);
-		});
+			rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > 1000);
 
-		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(rewardFunctionEditor);
+			startRunButton.setEnabled(canStartTraining());
+			saveDraftButton.setEnabled(canSaveDataInDB());
+		});
+		rewardEditorErrorLabel = LabelFactory.createLabel("Reward Function must not exceed 1000 characters", "reward-editor-error");
+		rewardEditorErrorLabel.setVisible(false);
+		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(rewardEditorErrorLabel, rewardFunctionEditor);
 		rewardFnEditorPanel.addClassName("reward-fn-editor-panel");
 		rewardFnEditorPanel.setPadding(false);
 		return rewardFnEditorPanel;
 	}
+
+	private boolean canStartTraining() {
+		return errorMessageWrapper.hasClassName("noError") && canSaveDataInDB();
+	}
+
+	private boolean canSaveDataInDB() {
+		return rewardFunctionEditor.getValue().length() <= 1000 && !rewardVariablesTable.isInvalid();
+	}
+
 	private Component getErrorsPanel() {
 		errorMessageWrapper = new Div();
 		errorMessageWrapper.addClassName("error-message-wrapper");
@@ -190,7 +204,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private void setupBinder() {
-		binder.forField(rewardFunctionEditor).asRequired().bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
+		binder.forField(rewardFunctionEditor)
+				.asRequired()
+				.bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
 	}
 
 	private RewardVariablesTable getRewardVariableNamesPanel() {
@@ -204,6 +220,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private void handleRewardVariableNameChanged(List<RewardVariable> updatedRewardVariables) {
 		unsavedChanges.setVisible(true);
 		rewardFunctionEditor.setVariableNames(updatedRewardVariables);
+		startRunButton.setEnabled(canStartTraining());
+		saveDraftButton.setEnabled(canSaveDataInDB());
 	}
 
 	private void handleStartRunButtonClicked() {
