@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
@@ -49,11 +50,11 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.shared.bus.EventBus;
-import io.skymind.pathmind.shared.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.shared.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.shared.bus.subscribers.PolicyUpdateSubscriber;
-import io.skymind.pathmind.shared.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
@@ -182,7 +183,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		middlePanel = WrapperUtils.wrapWidthFullVertical(
 				panelTitle,
 				rewardFunctionGroup,
-				trainingStartingPlaceholder, 
+				trainingStartingPlaceholder,
 				policyChartPanel);
 		middlePanel.addClassName("view-section");
 	}
@@ -258,7 +259,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		confirmDialog.setConfirmButton(
 				"Stop Training",
 				(e) -> {
-					trainingService.stopRun(experiment);
+					trainingService.stopRun(experiment, EventBus::fireEventBusUpdates);
 					confirmDialog.close();
 				},
 				StringUtils.join(
@@ -269,7 +270,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		confirmDialog.setCancelable(true);
 		confirmDialog.open();
 	}
-	
+
 	private void archiveExperiment() {
 		ConfirmationUtils.archive("experiment", () -> {
 			experimentDAO.archive(experiment.getId(), true);
@@ -283,7 +284,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			}
 		});
 	}
-	
+
 	private void unarchiveExperiment() {
 		ConfirmationUtils.unarchive("experiment", () -> {
 			experimentDAO.archive(experiment.getId(), false);
@@ -291,7 +292,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		});
 	}
 
-	private Breadcrumbs createBreadcrumbs() {        
+	private Breadcrumbs createBreadcrumbs() {
 		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
 	}
 
@@ -312,11 +313,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		this.experimentId = experimentId;
 	}
 
-	@Override
-	protected boolean isAccessAllowedForUser() {
-		return userDAO.isUserAllowedAccessToExperiment(experimentId);
-	}
-
 	private void selectExperiment(Experiment selectedExperiment) {
 		// The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
 		// same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
@@ -334,7 +330,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected void initLoadData() throws InvalidDataException {
-		experiment = experimentDAO.getExperiment(experimentId)
+		experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		loadExperimentData();
 	}
@@ -398,8 +394,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private void addOrUpdatePolicies(List<Policy> updatedPolicies) {
 		updatedPolicies.forEach(updatedPolicy -> {
-			if (experiment.getPolicies().contains(updatedPolicy)) {
-				experiment.getPolicies().set(experiment.getPolicies().indexOf(updatedPolicy), updatedPolicy);
+			int index = experiment.getPolicies().indexOf(updatedPolicy);
+			if (index != -1) {
+				experiment.getPolicies().set(index, updatedPolicy);
 			} else {
 				experiment.getPolicies().add(updatedPolicy);
 			}
@@ -455,8 +452,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				if (event.getExperimentId() != experimentId)
 					return;
 				// Update or insert the policy in experiment.getPolicies
+
 				addOrUpdatePolicies(event.getPolicies());
-				
+
 				// Calculate the best policy again
 				policy = selectBestPolicy(experiment.getPolicies());
 				PushUtils.push(getUI(), () -> {

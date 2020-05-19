@@ -4,7 +4,6 @@ import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -12,15 +11,16 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
-@Service
 @Slf4j
 public class ProjectFileCheckService {
-    @Autowired
-    ExecutorService checkerExecutorService;
 
+    private final ExecutorService checkerExecutorService;
+    private final ModelAnalyzerApiClient client;
 
-    @Autowired
-    ModelAnalyzerApiClient client;
+    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client) {
+        this.checkerExecutorService = checkerExecutorService;
+        this.client = client;
+    }
 
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
     public void checkFile(StatusUpdater statusUpdater, byte[] data) {
@@ -64,8 +64,8 @@ public class ProjectFileCheckService {
     }
 
     private Optional<String> verifyAnalysisResult(HyperparametersDTO analysisResult) {
-        if (analysisResult == null) {
-            return Optional.of("It wasn't possible to analyze the model.");
+        if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null || analysisResult.getRewardVariablesCount() == null) {
+            return Optional.of("Unable to analyze the model.");
         }
         else if (analysisResult.getActions() != null && Integer.parseInt(analysisResult.getActions()) == 0) {
             return Optional.of("Number of actions found to be zero.");
@@ -77,23 +77,11 @@ public class ProjectFileCheckService {
     }
 
     private void setHyperparams(FileCheckResult result, HyperparametersDTO params) {
-        if (params != null) {
-            if (params.getActions() != null) {
-                ((AnylogicFileCheckResult) (result)).setNumAction(Integer.parseInt(params.getActions()));
-            }
-
-            if (params.getObservations() != null) {
-                ((AnylogicFileCheckResult)(result)).setNumObservation(Integer.parseInt(params.getObservations()));
-            }
-
-            if (params.getRewardVariablesCount() != null) {
-                ((AnylogicFileCheckResult) result).setRewardVariablesCount(Integer.parseInt(params.getRewardVariablesCount()));
-            }
-
-            ((AnylogicFileCheckResult)(result)).setRewardVariableFunction(params.getRewardFunction());
-        } else {
-            log.info("Model Analyzer returns null for the given model");
-        }
+    	AnylogicFileCheckResult fileCheckResult = AnylogicFileCheckResult.class.cast(result);
+        fileCheckResult.setNumAction(Integer.parseInt(params.getActions()));
+    	fileCheckResult.setNumObservation(Integer.parseInt(params.getObservations()));
+    	fileCheckResult.setRewardVariablesCount(Integer.parseInt(params.getRewardVariablesCount()));
+    	fileCheckResult.setRewardVariableFunction(params.getRewardFunction());
     }
 
 }

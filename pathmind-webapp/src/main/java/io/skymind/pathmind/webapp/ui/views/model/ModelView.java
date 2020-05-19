@@ -6,6 +6,7 @@ import java.util.List;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
@@ -68,6 +69,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	private Span modelName;
 	private Span createdDate;
+	private Paragraph packageNameText;
 	private Paragraph actionsText;
 	private Paragraph observationsText;
 	private Div rewardVariableNamesText;
@@ -104,18 +106,23 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	private FlexLayout createRightPanel() {
 		Span panelTitle = LabelFactory.createLabel("Model Details", CssMindPathStyles.SECTION_TITLE_LABEL);
+		packageNameText = new Paragraph(LabelFactory.createLabel("Package Name", CssMindPathStyles.BOLD_LABEL));
 		actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssMindPathStyles.BOLD_LABEL));
 		observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssMindPathStyles.BOLD_LABEL));
 		rewardVariableNamesText = new Div();
 		rewardVariableNamesText.addClassName("model-reward-variables");
 
 		NotesField notesField = createViewNotesField();
-		return new ViewSection(
+		FlexLayout rightPanelCard = new ViewSection(
 				panelTitle,
+				packageNameText,
 				actionsText,
 				observationsText,
 				new Div(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), rewardVariableNamesText),
 				notesField);
+		rightPanelCard.addClassName("card");
+
+		return rightPanelCard;
 	}
 
 	/**
@@ -161,11 +168,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 	}
 	
 	@Override
-	protected boolean isAccessAllowedForUser() {
-		return userDAO.isUserAllowedAccessToModel(modelId);
-	}
-
-	@Override
 	protected Component getTitlePanel() {
 		return new ScreenTitlePanel(createBreadcrumbs());
 	}
@@ -176,7 +178,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	@Override
 	protected void initLoadData() {
-		model = modelDAO.getModel(modelId)
+		model = modelDAO.getModelIfAllowed(modelId, SecurityUtils.getUserId())
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Model: " + modelId));
 		experiments = experimentDAO.getExperimentsForModel(modelId);
 		if (experiments == null || experiments.isEmpty())
@@ -186,6 +188,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
+		String packageName = (model.getPackageName() != null) ? model.getPackageName() : "—";
 		modelName.setText("Model #"+model.getName());
 		
 		VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
@@ -194,7 +197,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 			LocalDateTime dateCreatedData = model.getDateCreated();
 			createdDate.setText(String.format("Uploaded on %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(dateCreatedData, timeZoneId)));
 		});
-
+		packageNameText.add(packageName);
 		actionsText.add(""+model.getNumberOfPossibleActions());
 		observationsText.add(""+model.getNumberOfObservations());
 		if (rewardVariableNames.size() > 0) {

@@ -109,11 +109,6 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.checkThatProjectsInputFieldIsEmpty();
     }
 
-    @Then("^Click project name (.*)$")
-    public void clickProjectName(String project) {
-        projectsPageSteps.clickProjectName(project);
-    }
-
     @Then("^Click the model name (.*)$")
     public void clickTheModelName(String modelName) {
         projectsPageSteps.clickTheModelName(modelName);
@@ -496,6 +491,11 @@ public class ProjectsPageStepDefinitions {
     @And("^Check that there is a variable named (.*)$")
     public void checkThatThereIsAVariableNamed(String variableName) {
         projectsPageSteps.checkThatThereIsAVariableNamed(variableName);
+    }
+
+    @When("^Click edit (.*) project icon from projects page$")
+    public void clickEditProjectIconFromProjectsPage(String projectName) {
+        projectsPageSteps.clickEditProjectIconFromProjectsPage(projectName + Serenity.sessionVariableCalled("randomNumber"));
     }
 
     @When("^Check that model successfully uploaded$")

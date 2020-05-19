@@ -35,11 +35,6 @@ public class PaymentView extends PathMindDefaultView {
 	}
 
 	@Override
-	protected boolean isAccessAllowedForUser() {
-		return true;
-	}
-
-	@Override
 	protected Component getTitlePanel() {
 		return new ScreenTitlePanel("Account", "Upgrade Subscription Plans", AccountView.class);
 	}

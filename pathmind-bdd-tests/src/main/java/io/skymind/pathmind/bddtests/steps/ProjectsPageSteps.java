@@ -93,10 +93,6 @@ public class ProjectsPageSteps {
         projectsPage.checkThatProjectsInputFieldIsEmpty();
     }
     @Step
-    public void clickProjectName(String project) {
-        projectsPage.clickProjectName(project);
-    }
-    @Step
     public void clickTheModelName(String modelName) {
         projectsPage.clickTheModelName(modelName);
     }
@@ -360,6 +356,10 @@ public class ProjectsPageSteps {
     @Step
     public void checkThatThereIsAVariableNamed(String variableName) {
         projectsPage.checkThatThereIsAVariableNamed(variableName);
+    }
+    @Step
+    public void clickEditProjectIconFromProjectsPage(String projectName) {
+        projectsPage.clickEditProjectIconFromProjectsPage(projectName);
     }
     @Step
     public void checkThatModelSuccessfullyUploaded() {

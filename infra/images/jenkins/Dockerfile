@@ -16,11 +16,15 @@ RUN chmod 600 id_rsa && \
 
 # Jenkins init scripts
 COPY *groovy /usr/share/jenkins/ref/init.groovy.d/
+COPY clean_test_s3.sh /usr/bin/clean_test_s3.sh
+COPY sqs_policy.json /tmp/sqs_policy.json
+RUN chmod +x /usr/bin/clean_test_s3.sh
 
 #Install python packages
 RUN apt update && \
         apt-get install postgresql-client -y && \
         apt-get install maven -y && \
+        apt-get install jq -y && \
         apt-get install -y unzip xvfb libxi6 libgconf-2-4 && \
         apt install python-pip -y && \
         pip install awscli
@@ -30,7 +34,6 @@ RUN mkdir /var/cache/oracle-jdk11-installer-local/ && \
         wget http://s3.amazonaws.com/public-pathmind.com/jdk-11.0.7_linux-x64_bin.tar.gz -P /var/cache/oracle-jdk11-installer-local/ && \
         echo "oracle-java11-installer shared/accepted-oracle-license-v1-2 select true" | debconf-set-selections && \
         echo "oracle-java11-installer shared/accepted-oracle-license-v1-2 seen true" | debconf-set-selections && \
-#       apt purge oracle-java11-installer && \
         echo "deb http://ppa.launchpad.net/linuxuprising/java/ubuntu focal main" | tee /etc/apt/sources.list.d/linuxuprising-java.list && \
         apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 73C3DB2A && \
         apt-get update && \

@@ -1,25 +1,22 @@
 package io.skymind.pathmind.services.training.cloud.aws.api;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.amazonaws.util.IOUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientS3;
+import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientSQS;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.RunType;
+import io.skymind.pathmind.shared.exception.PathMindException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,47 +30,35 @@ import java.util.List;
 
 @Slf4j
 @Service
+@Getter
 public class AWSApiClient {
-    private final AWSCredentials credentials;
+
     private final AmazonS3 s3Client;
+    private final String bucketName;
+
     private final AmazonSQS sqsClient;
+    private final String queueUrl;
+    private final String updaterQueueUrl;
+
     private final ObjectMapper objectMapper;
 
-    private final Regions regions;
-    @Getter
-    private final String bucketName;
-    private final String queueUrl;
     private final int mockCycle;
 
     public AWSApiClient(
-            @Value("${pathmind.aws.region}") String region,
-            @Value("${pathmind.aws.key.id}") String keyId,
-            @Value("${pathmind.aws.secret_key}") String secretAccessKey,
+            AwsApiClientS3 s3,
             @Value("${pathmind.aws.s3.bucket}") String bucketName,
-            @Value("${pathmind.aws.sqs_url}") String queueUrl,
-            @Value("${pathmind.aws.mock_cycle:0}") int mockCycle,
-            ObjectMapper objectMapper) {
+            AwsApiClientSQS sqs,
+            @Value("${pathmind.aws.sqs.url}") String queueUrl,
+            @Value("${pathmind.aws.sqs.updater_url}") String updaterQueueUrl,
+            ObjectMapper objectMapper,
+            @Value("${pathmind.aws.mock_cycle:0}") int mockCycle) {
 
-        this.regions = Regions.fromName(region);
-        this.credentials = new BasicAWSCredentials(
-                keyId,
-                secretAccessKey
-        );
-
-        this.s3Client = AmazonS3ClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(regions)
-                .build();
-
-        this.sqsClient = AmazonSQSClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(regions)
-                .build();
-
+        this.s3Client = s3.getS3Client();
         this.bucketName = bucketName;
+
+        this.sqsClient = sqs.getSqsClient();
         this.queueUrl = queueUrl;
+        this.updaterQueueUrl = updaterQueueUrl;
 
         this.objectMapper = objectMapper;
 
@@ -82,6 +67,7 @@ public class AWSApiClient {
             Assert.isTrue(mockCycle > 0, "Mock Cycle should be greater than zero");
             log.warn("Running with mock cycle {}", mockCycle);
         }
+
     }
 
     public List<Bucket> listBuckets() {
@@ -123,7 +109,7 @@ public class AWSApiClient {
             return IOUtils.toByteArray(o.getObjectContent());
         } catch (IOException e) {
             log.error("Failed to get content from {}/{}", bucketName, keyId, e);
-            return null;
+            throw new PathMindException("Failed to get model content");
         }
     }
 
@@ -138,7 +124,7 @@ public class AWSApiClient {
     public String jobSubmit(String jobId, RunType type) throws JsonProcessingException {
         final String mockType = type == null ? null : type.toString();
         Job job = new Job(bucketName, jobId, mockCycle, mockType);
-        job.setEc2InstanceType(EC2InstanceType.IT_16CPU_32GB);
+        job.setEc2InstanceType(EC2InstanceType.IT_36CPU_72GB);
 
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
@@ -150,7 +136,7 @@ public class AWSApiClient {
     }
 
     public String jobStop(String jobId) throws JsonProcessingException {
-        Job job = new Job(bucketName, jobId, true);
+        Job job = new Job(bucketName, jobId, true, mockCycle);
 
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
@@ -160,4 +146,5 @@ public class AWSApiClient {
         SendMessageResult result = sqsClient.sendMessage(send_msg_request);
         return result.getMessageId();
     }
+
 }

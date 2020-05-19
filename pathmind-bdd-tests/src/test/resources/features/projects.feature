@@ -31,7 +31,7 @@ Feature: Projects page
     When Click wizard next step button
     Then Check that experiment page of the AutotestProject opened
     When Open projects page
-    Then Click project name <project name>
+    When Open project AutotestProject on projects page
     Then Click the model name 1
     Then Click the experiment name 1
     Then Check that experiment page of the AutotestProject opened
@@ -93,6 +93,31 @@ Feature: Projects page
     When Check that model/experiment NOT exist in archived tab
     When Open models tab
     Then Check that model/experiment name 1 exist in archived tab
+
+  Scenario: Edit project name from projects page
+    Given Login to the pathmind
+    When Create new CoffeeShop project
+    When Open projects page
+    When Click edit AutotestProject project icon from projects page
+    When Input project name AutotestEditName to the edit popup
+    When Click in 'Rename Project' button
+    When Check that project exist in project list AutotestEditName
+    When Open project AutotestEditName on projects page
+    Then Check that project name is AutotestEditName on project page
+
+  Scenario: Edit archived project name from projects page
+    Given Login to the pathmind
+    When Create new CoffeeShop project
+    When Open projects page
+    When Click AutotestProject project archive/unarchive button
+    When Confirm archive/unarchive popup
+    When Open archives tab
+    When Click edit AutotestProject project icon from projects page
+    When Input project name AutotestEditName to the edit popup
+    When Click in 'Rename Project' button
+    When Check that project exist in project list AutotestEditName
+    When Open project AutotestEditName on projects page
+    Then Check that project name is AutotestEditName on project page
 
   Scenario: Edit project name
     Given Login to the pathmind
