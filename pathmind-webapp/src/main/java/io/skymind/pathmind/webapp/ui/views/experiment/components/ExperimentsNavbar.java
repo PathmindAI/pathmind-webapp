@@ -37,6 +37,7 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 	private List<ExperimentsNavBarItem> experimentsNavBarItems = new ArrayList<>();
 	private VerticalLayout rowsWrapper;
 	private Consumer<Experiment> selectExperimentConsumer;
+	private ExperimentsNavBarItem currentExperimentNavItem;
 
 	public ExperimentsNavbar(ExperimentDAO experimentDAO, long modelId, Consumer<Experiment> selectExperimentConsumer)
 	{
@@ -62,10 +63,21 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 			.forEach(experiment -> {
 				ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(ui, experiment, selectExperimentConsumer);
 				experimentsNavBarItems.add(navBarItem);
-				if(experiment.getId() == currentExperiment.getId()) {
+				if(experiment.equals(currentExperiment)) {
 					navBarItem.setAsCurrent();
+					currentExperimentNavItem = navBarItem;
 				}
 				rowsWrapper.add(navBarItem);
+		});
+	}
+
+	public void setCurrentExperiment(Experiment newCurrentExperiment) {
+		currentExperimentNavItem.removeAsCurrent();
+		experimentsNavBarItems.stream().forEach(experimentsNavBarItem -> {
+			if (experimentsNavBarItem.getExperiment().equals(newCurrentExperiment)) {
+				experimentsNavBarItem.setAsCurrent();
+				currentExperimentNavItem = experimentsNavBarItem;
+			}
 		});
 	}
 
@@ -158,16 +170,13 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 
 		private void handleRowClicked(Experiment experiment, Consumer<Experiment> selectExperimentConsumer) {
 			selectExperimentConsumer.accept(experiment);
-			// TODO --> Do not update nav bar current if screen did not update
-			experimentsNavBarItems.stream().forEach(experimentsNavBarItem -> experimentsNavBarItem.removeAsCurrent());
-			setAsCurrent();
 		}
 
-		private void setAsCurrent() {
+		public void setAsCurrent() {
 			addClassName(CURRENT);
 		}
 
-		private void removeAsCurrent() {
+		public void removeAsCurrent() {
 			removeClassName(CURRENT);
 		}
 

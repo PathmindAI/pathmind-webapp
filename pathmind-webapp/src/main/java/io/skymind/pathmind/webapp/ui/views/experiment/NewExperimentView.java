@@ -125,7 +125,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		startRunButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		startRunButton.setEnabled(false);
 		
-		saveDraftButton = new Button("Save", click -> handleSaveDraftClicked());
+		saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> {}));
 		saveDraftButton.addThemeName("secondary");
 		saveDraftButton.setEnabled(false);
 
@@ -250,7 +250,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experimentId));
 	}
 
-	private void handleSaveDraftClicked() {
+	private void handleSaveDraftClicked(Command afterClickedCallback) {
 		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();
 		if (rewardVariables != null) {
 			rewardVariables.forEach(rv -> rv.setModelId(experiment.getModelId()));
@@ -261,6 +261,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		unsavedChanges.setVisible(false);
 		notesSavedHint.setVisible(false);
 		NotificationUtils.showSuccess("Draft successfully saved");
+		afterClickedCallback.execute();
 	}
 
 	private Breadcrumbs createBreadcrumbs() {
@@ -302,6 +303,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			updateScreenComponents();
 			notesField.setNotesText(experiment.getUserNotes());
 			pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
+			experimentsNavbar.setCurrentExperiment(selectedExperiment);
 			
 			if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
 				getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "newExperiment/" + experimentId));
@@ -314,10 +316,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private void triggerSaveDraft(Command cancelListener) {
 		if (unsavedChanges.isVisible()) {
 			if (saveDraftButton.isEnabled()) {
-				handleSaveDraftClicked();
+				handleSaveDraftClicked(cancelListener);
 			} else {
 				ConfirmationUtils.leavePage(cancelListener);
 			}
+		} else {
+			cancelListener.execute();
 		}
 	}
 
