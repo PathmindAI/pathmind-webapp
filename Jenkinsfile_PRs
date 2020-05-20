@@ -104,13 +104,15 @@ pipeline {
                 }
             }
             steps {
+                echo "Check out code"
+		checkout scm
 		script {
                 	// Define a unique name for the tests container and helm release
                     	RELEASE_ID = "${IMAGE_NAME}-${env.BUILD_NUMBER}"
                     	echo "Global pathmind Id set to ${RELEASE_ID}"
+                        echo "Rebasing with dev"
+			sh "cd ${WORKSPACE} && git rebase origin/dev"
 		}
-                echo "Check out code"
-		checkout scm
             }
         }
 
