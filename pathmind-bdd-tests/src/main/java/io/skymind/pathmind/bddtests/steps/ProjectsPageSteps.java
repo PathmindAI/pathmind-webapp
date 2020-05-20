@@ -361,4 +361,8 @@ public class ProjectsPageSteps {
     public void checkNewProjectNameErrorShown(String error) {
         projectsPage.checkNewProjectNameErrorShown(error);
     }
+    @Step
+    public void checkThatModelSuccessfullyUploaded() {
+        projectsPage.checkThatModelSuccessfullyUploaded();
+    }
 }

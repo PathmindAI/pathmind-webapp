@@ -73,4 +73,9 @@ public class DashboardPageStepDefinitions {
 	public void clickInAutotestProjectStageBreadcrumb(String projectName) {
 		dashboardPageSteps.clickInAutotestProjectStageBreadcrumb(projectName + Serenity.sessionVariableCalled("randomNumber"));
 	}
+
+    @When("^Click archive btn from dashboard$")
+    public void clickArchiveBtnFromDashboard() {
+        dashboardPageSteps.clickArchiveBtnFromDashboard("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
+    }
 }
