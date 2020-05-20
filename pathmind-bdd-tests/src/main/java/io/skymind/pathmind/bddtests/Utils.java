@@ -67,4 +67,11 @@ public class Utils extends PageObject {
         }
         return string;
     }
+    public String getTextRootElement(WebElement element) {
+        String text = element.getText().trim();
+        for (WebElement child : element.findElements(By.xpath("./*"))) {
+            text = text.replaceFirst(child.getText(), "").trim();
+        }
+        return text;
+    }
 }
