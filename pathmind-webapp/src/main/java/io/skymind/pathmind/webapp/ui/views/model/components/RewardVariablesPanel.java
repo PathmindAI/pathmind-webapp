@@ -2,10 +2,6 @@ package io.skymind.pathmind.webapp.ui.views.model.components;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.NO_TOP_MARGIN_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_SUBTITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.TRUNCATED_LABEL;
 
 import java.util.List;
 
@@ -14,9 +10,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -32,9 +26,6 @@ public class RewardVariablesPanel extends VerticalLayout
 	private VerticalLayout formPanel = new VerticalLayout();
 	private RewardVariablesTable rewardVariablesTable;
 
-	private Div sectionTitleWrapper;
-	private Span projectNameLabel;
-
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
 	private Button draftButton = new Button("Save Draft", new Icon(VaadinIcon.FILE));
@@ -45,13 +36,6 @@ public class RewardVariablesPanel extends VerticalLayout
 		nextStepButton.setIconAfterText(true);
 		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-		sectionTitleWrapper = new Div();
-		Span projectText = new Span("Project: ");
-		projectText.addClassName(SECTION_TITLE_LABEL);
-		projectNameLabel = LabelFactory.createLabel("", SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT, SECTION_SUBTITLE_LABEL);
-		sectionTitleWrapper.add(projectText, projectNameLabel);
-		sectionTitleWrapper.addClassName(TRUNCATED_LABEL);
-
 		draftButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 		HorizontalLayout rewardVariablesNameLine = WrapperUtils.wrapWidthFullBetweenHorizontal(
@@ -59,14 +43,14 @@ public class RewardVariablesPanel extends VerticalLayout
 				draftButton);
 		rewardVariablesNameLine.getStyle().set("align-items", "center");
 
-		add(sectionTitleWrapper,
-				rewardVariablesNameLine,
+		add(rewardVariablesNameLine,
 				GuiUtils.getFullWidthHr(),
 				formPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
 
 		setWidthFull();
-		setClassName("view-section"); // adds the white 'panel' style with rounded corners
+		setPadding(false);
+		setSpacing(false);
 	}
 
 	public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
@@ -75,10 +59,6 @@ public class RewardVariablesPanel extends VerticalLayout
 
 	public void addSaveDraftClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
 		draftButton.addClickListener(listener);
-	}
-
-	public void setProjectName(String name) {
-		projectNameLabel.setText(name);
 	}
 
 	private void setupForm() {
@@ -110,5 +90,9 @@ public class RewardVariablesPanel extends VerticalLayout
 		} else {
 			return rewardVariablesTable.getValue();
 		}
+	}
+
+	public boolean isInputValueValid() {
+		return !rewardVariablesTable.isInvalid();
 	}
 }
