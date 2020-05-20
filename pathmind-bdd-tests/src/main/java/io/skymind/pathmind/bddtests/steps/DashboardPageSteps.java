@@ -39,4 +39,9 @@ public class DashboardPageSteps {
 	public void clickInAutotestProjectStageBreadcrumb(String projectName) {
 		dashboardPage.clickInAutotestProjectStageBreadcrumb(projectName);
 	}
+    @Step
+    public void clickArchiveBtnFromDashboard(String projectName) {
+        dashboardPage.clickDashItemIcons(projectName);
+        dashboardPage.clickArchiveBtn();
+    }
 }
