@@ -62,7 +62,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Button startRunButton;
 
-	private int REWARD_FUNCTION_MAX_LENGTH = 65535;
+	private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
 
 	@Autowired
 	private ExperimentDAO experimentDAO;
