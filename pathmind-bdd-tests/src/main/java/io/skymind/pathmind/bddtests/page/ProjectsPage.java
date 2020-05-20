@@ -286,9 +286,7 @@ public class ProjectsPage extends PageObject {
         getDriver().findElement(By.xpath("//vaadin-tab[@aria-selected='false']")).click();
     }
     public void clickArchivesTab(){
-        By archivesTab = By.xpath("//vaadin-tab[text()='Archives']");
-        utils.clickElementRepeatIfStaleException(archivesTab);
-        waitFor(ExpectedConditions.attributeToBe(archivesTab, "selected", "true"));
+		utils.clickElementRepeatIfStaleException(By.xpath("//vaadin-tab[text()='Archives']"));
 	}
 	public void clickModelsTab(){
 		getDriver().findElement(By.xpath("//vaadin-tab[text()='Models']")).click();
@@ -298,8 +296,7 @@ public class ProjectsPage extends PageObject {
 	}
 
     public void checkThatProjectNotExistInProjectList(String projectName) {
-        List<String> strings = utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span"));
-        assertThat(strings, not(hasItem(projectName)));
+        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span")), not(hasItem(projectName)));
     }
 
     public void checkCreateANewProjectPage() {
@@ -497,7 +494,7 @@ public class ProjectsPage extends PageObject {
 	}
 
 	public void clickWizardRewardVariableNamesNextBtn() {
-		getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/ancestor::*[@class='view-section']/descendant::vaadin-button[normalize-space(text())='Next']")).click();
+		getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/ancestor::*[@class='view-section']/descendant::vaadin-button[normalize-space(text())='Next'][2]")).click();
 	}
 
 	public void checkExperimentStatusCompletedWithLimitHours(int limit) {
@@ -628,7 +625,7 @@ public class ProjectsPage extends PageObject {
 
 	public void checkThatProjectNameDetailsOnProjectPage(String name) {
         waitABit(3500);
-		assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label truncated-label']")).getText(), is(name));
+		assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label project-title-label']")).getText(), is(name));
 	}
 
 	public void checkThatProjectNameBreadcrumbOnProjectPage(String name) {
@@ -663,5 +660,9 @@ public class ProjectsPage extends PageObject {
     public void checkNewProjectNameErrorShown(String error) {
         WebElement e = utils.expandRootElement(projectNameInputFieldShadow);
         assertThat(e.findElement(By.cssSelector("div[part='error-message']")).getText(), is(error));
+    }
+
+    public void checkThatModelSuccessfullyUploaded() {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Your model was successfully uploaded!']")));
     }
 }
