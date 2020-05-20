@@ -30,7 +30,7 @@
 }
 .new-experiment-view .reward-function-wrapper vaadin-custom-field {
   box-sizing: border-box;
-  flex: 1 1 20rem;
+  flex: 1 1 19rem;
   line-height: 1;
   padding-right: var(--lumo-space-s);
   border: 1px solid var(--pm-gray-color);

@@ -247,6 +247,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		trainingService.startRun(experiment);
 		segmentIntegrator.discoveryRunStarted();
 
+		unsavedChanges.setVisible(false);
+
 		getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experimentId));
 	}
 

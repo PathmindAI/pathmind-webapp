@@ -13,7 +13,7 @@
   z-index: 1;
 }
 .reward-variables-table vaadin-horizontal-layout {
-  height: 32px;
+  height: 2rem;
   align-items: center;
 }
 .reward-variables-table vaadin-horizontal-layout.invalid-reward-variable-row {

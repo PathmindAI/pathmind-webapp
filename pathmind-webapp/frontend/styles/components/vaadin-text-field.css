@@ -26,7 +26,7 @@
 
 :host(.reward-variable-name-field) [part="input-field"] {
   padding: 0.4em;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 :host(.reward-variable-name-field[class$="0"]) [part="input-field"] {
