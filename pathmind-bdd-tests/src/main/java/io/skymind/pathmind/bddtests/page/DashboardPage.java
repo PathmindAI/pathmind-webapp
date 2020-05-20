@@ -64,4 +64,12 @@ public class DashboardPage extends PageObject {
 		getDriver().findElement(By.xpath(xpath)).click();
 		waitABit(2500);
 	}
+
+    public void clickDashItemIcons(String projectName) {
+        getDriver().findElement(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-horizontal-layout/descendant::vaadin-button")).click();
+    }
+
+    public void clickArchiveBtn() {
+        getDriver().findElement(By.xpath("//vaadin-context-menu-item[text()='Archive']")).click();
+    }
 }

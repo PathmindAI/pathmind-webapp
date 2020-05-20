@@ -184,7 +184,7 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.confirmArchivePopup();
     }
 
-    @When("^Open projects archived tab$")
+    @When("^Open projects/model/experiment archived tab$")
     public void openProjectsArchivedTab() {
         projectsPageSteps.openProjectsArchivedTab();
     }
@@ -249,12 +249,12 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.checkThatModelsPageOpened();
     }
 
-    @Then("^Check that model name (.*) exist in archived tab$")
+    @Then("^Check that model/experiment name (.*) exist in archived tab$")
     public void checkThatModelExistInArchivedTab(String modelName) {
         projectsPageSteps.checkThatModelExistInArchivedTab(modelName);
     }
 
-    @When("^Check that model NOT exist in archived tab$")
+    @When("^Check that model/experiment NOT exist in archived tab$")
     public void checkThatModelNOTExistInArchivedTab() {
         projectsPageSteps.checkThatModelNOTExistInArchivedTab();
     }
@@ -496,5 +496,10 @@ public class ProjectsPageStepDefinitions {
     @Then("^Check new project name error shown (.*)$")
     public void checkNewProjectNameErrorShown(String error) {
         projectsPageSteps.checkNewProjectNameErrorShown(error);
+    }
+
+    @When("^Check that model successfully uploaded$")
+    public void checkThatModelSuccessfullyUploaded() {
+        projectsPageSteps.checkThatModelSuccessfullyUploaded();
     }
 }

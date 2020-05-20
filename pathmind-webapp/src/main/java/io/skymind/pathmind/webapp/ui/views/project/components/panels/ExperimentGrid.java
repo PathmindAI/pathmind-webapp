@@ -20,7 +20,7 @@ public class ExperimentGrid extends Grid<Experiment>
 		Grid.Column<Experiment> nameColumn = addColumn(
 				TemplateRenderer.<Experiment> of("[[item.name]] <span class='tag'>[[item.draft]]</span>")
 					.withProperty("name", Experiment::getName)
-					.withProperty("draft", experiment -> experiment.getRuns() == null || experiment.getRuns().isEmpty() ? "Draft" : ""))
+					.withProperty("draft", experiment -> experiment.isDraft() ? "Draft" : ""))
 				.setComparator(Comparator.comparingLong(experiment -> Long.parseLong(experiment.getName())))
 				.setHeader("#")
 				.setAutoWidth(true)
