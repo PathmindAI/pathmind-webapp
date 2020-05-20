@@ -103,7 +103,8 @@ class ElapsedTimer extends PolymerElement {
     mins = mins % 60;
 
     function addZero(originalNumericFigure) {
-      return originalNumericFigure.toString().padStart(2, "0");
+      const numberString = originalNumericFigure.toString();
+      return numberString >= 10 ? numberString : "0" + numberString;
     }
 
     return `${addZero(hours)}h ${addZero(mins)}m ${addZero(secs)}s`;
