@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -127,10 +126,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		rewardFnEditorPanel.setPadding(false);
 		rewardFnEditorPanel.setSpacing(false);
 
-		HorizontalLayout errorAndNotesContaner = WrapperUtils.wrapWidthFullHorizontal(getErrorsPanel(), createNotesField());
-		errorAndNotesContaner.setClassName("error-and-notes-container");
+		HorizontalLayout errorAndNotesContainer = WrapperUtils.wrapWidthFullHorizontal(getErrorsPanel(), createNotesField());
+		errorAndNotesContainer.setClassName("error-and-notes-container");
 
-		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, startRunButton), rewardFnEditorPanel, errorAndNotesContaner);
+		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, startRunButton), rewardFnEditorPanel, errorAndNotesContainer);
 		mainPanel.setClassName("view-section");
 		return mainPanel;
 	}
