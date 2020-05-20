@@ -62,6 +62,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Button startRunButton;
 
+	private int REWARD_FUNCTION_MAX_LENGTH = 65535;
+
 	@Autowired
 	private ExperimentDAO experimentDAO;
 	@Autowired
@@ -149,12 +151,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			}
 			errorMessageWrapper.removeClassNames("hasError", "noError");
 			errorMessageWrapper.addClassName(wrapperClassName);
-			rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > 1000);
+			rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > REWARD_FUNCTION_MAX_LENGTH);
 
 			startRunButton.setEnabled(canStartTraining());
 			saveDraftButton.setEnabled(canSaveDataInDB());
 		});
-		rewardEditorErrorLabel = LabelFactory.createLabel("Reward Function must not exceed 1000 characters", "reward-editor-error");
+		rewardEditorErrorLabel = LabelFactory.createLabel("Reward Function must not exceed " + REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
 		rewardEditorErrorLabel.setVisible(false);
 		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(rewardEditorErrorLabel, rewardFunctionEditor);
 		rewardFnEditorPanel.addClassName("reward-fn-editor-panel");
@@ -167,7 +169,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private boolean canSaveDataInDB() {
-		return rewardFunctionEditor.getValue().length() <= 1000 && !rewardVariablesTable.isInvalid();
+		return rewardFunctionEditor.getValue().length() <= REWARD_FUNCTION_MAX_LENGTH && !rewardVariablesTable.isInvalid();
 	}
 
 	private Component getErrorsPanel() {
