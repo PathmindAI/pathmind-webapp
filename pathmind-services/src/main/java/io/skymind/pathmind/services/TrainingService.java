@@ -8,9 +8,10 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
+import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
+import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironmentManager;
 import io.skymind.pathmind.shared.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
@@ -26,27 +27,22 @@ public abstract class TrainingService {
     protected final ExecutionProvider executionProvider;
     protected final RunDAO runDAO;
     protected final ModelService modelService;
+    protected final ExecutionEnvironmentManager executionEnvironmentManager;
     protected final PolicyDAO policyDAO;
     protected ExecutionEnvironment executionEnvironment;
     private final DSLContext ctx;
 
-    public TrainingService(boolean multiAgent, ExecutionProvider executionProvider,
+    public TrainingService(ExecutionProvider executionProvider,
                            RunDAO runDAO, ModelService modelService,
+                           ExecutionEnvironmentManager executionEnvironmentManager,
                            PolicyDAO policyDAO, DSLContext ctx) {
         this.executionProvider = executionProvider;
         this.runDAO = runDAO;
         this.modelService = modelService;
+        this.executionEnvironmentManager = executionEnvironmentManager;
         this.policyDAO = policyDAO;
         this.ctx = ctx;
-
-        PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_1_0_1;
-        if (multiAgent) {
-            pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
-        }
-
-        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2,
-                pathmindHelperVersion, NativeRL.VERSION_1_0_6,
-                JDK.VERSION_8_222, Conda.VERSION_0_7_6, EC2InstanceType.IT_16CPU_32GB);
+        this.executionEnvironment = this.executionEnvironmentManager.getEnvironment();
     }
     
     public void startRun(Experiment exp){

@@ -11,7 +11,7 @@ import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.exception.PathMindException;
 import io.skymind.pathmind.shared.data.rllib.CheckPoint;
 import io.skymind.pathmind.shared.data.rllib.ExperimentState;
-import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
+import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.ExecutionProviderClass;
 import io.skymind.pathmind.shared.services.training.JobSpec;

@@ -1,4 +1,4 @@
-package io.skymind.pathmind.shared.services.training;
+package io.skymind.pathmind.shared.services.training.environment;
 
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.services.training.versions.*;
