@@ -502,4 +502,34 @@ public class ProjectsPageStepDefinitions {
     public void checkThatModelSuccessfullyUploaded() {
         projectsPageSteps.checkThatModelSuccessfullyUploaded();
     }
+
+    @Then("^Check model page model details package name is (.*)$")
+    public void checkModelPageModelDetailsPackageNameIs(String packageName) {
+        projectsPageSteps.checkModelPageModelDetailsPackageNameIs(packageName);
+    }
+
+    @Then("^Check model page model details actions is (.*)$")
+    public void checkModelPageModelDetailsActionsIs(String actions) {
+        projectsPageSteps.checkModelPageModelDetailsActionsIs(actions);
+    }
+
+    @Then("^Check model page model details observations is (.*)$")
+    public void checkModelPageModelDetailsObservationsIs(String observations) {
+        projectsPageSteps.checkModelPageModelDetailsObservationsIs(observations);
+    }
+
+    @Then("^Check model page model details reward variables order$")
+    public void checkModelPageModelDetailsRewardVariablesOrder() {
+        projectsPageSteps.checkModelPageModelDetailsRewardVariablesOrder();
+    }
+
+    @Then("^Check model page model details reward variables is (.*)$")
+    public void checkModelPageModelDetailsRewardVariablesIs(String commaSeparatedVariableNames) {
+        projectsPageSteps.checkModelPageModelDetailsRewardVariablesIs(commaSeparatedVariableNames);
+    }
+
+    @Then("^Check that model name (.*) exist in archived tab$")
+    public void checkThatModelNameExistInArchivedTab(String experiment) {
+        projectsPageSteps.checkThatModelNameExistInArchivedTab(experiment);
+    }
 }
