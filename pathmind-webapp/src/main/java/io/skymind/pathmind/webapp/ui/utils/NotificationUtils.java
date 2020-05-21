@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.utils;
 
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 
 import io.skymind.pathmind.webapp.ui.components.CloseableNotification;
@@ -25,4 +26,11 @@ public class NotificationUtils {
     	notification.open();
     }
 
+    public static void showPersistentNotification(String html) {
+        Notification notification = new Notification();
+        notification.add(html);
+		notification.setPosition(Notification.Position.TOP_CENTER);
+    	notification.setDuration(-1);
+        notification.open();
+    }
 }

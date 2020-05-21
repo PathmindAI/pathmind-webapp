@@ -6,7 +6,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.spring.SpringVaadinSession;
 import io.skymind.pathmind.webapp.ActiveSessionsRegistry;
-import io.skymind.pathmind.webapp.ui.components.CloseableNotification;
+import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
+
 import javax.servlet.http.HttpSession;
 
 import lombok.extern.slf4j.Slf4j;
@@ -58,9 +59,7 @@ public class VersionController {
 	}
 
 	private void showNotification() {
-		String text = "A new version of the application is available. Please Sign out to use the latest version.";
-		CloseableNotification notification = new CloseableNotification(text);
-		notification.setDuration(-1);
-		notification.open();
+		String text = "Pathmind has been updated. Please log in again to get the latest improvements.";
+		NotificationUtils.showPersistentNotification(text);
 	}
 }
