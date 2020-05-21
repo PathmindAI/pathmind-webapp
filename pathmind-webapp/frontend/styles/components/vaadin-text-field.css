@@ -25,47 +25,8 @@
 }
 
 :host(.reward-variable-name-field) [part="input-field"] {
+  height: 1.75rem;
   padding: 0.4em;
-  border-radius: 3px;
-}
-
-:host(.reward-variable-name-field[class$="0"]) [part="input-field"] {
-  color: #000;
-  background-color: #67ea93;
-}
-:host(.reward-variable-name-field[class$="1"]) [part="input-field"] {
-  color: #fff;
-  background-color: #214e96;
-}
-:host(.reward-variable-name-field[class$="2"]) [part="input-field"] {
-  color: #000;
-  background-color: #9bf7ec;
-}
-:host(.reward-variable-name-field[class$="3"]) [part="input-field"] {
-  color: #fff;
-  background-color: #7550e5;
-}
-:host(.reward-variable-name-field[class$="4"]) [part="input-field"] {
-  color: #000;
-  background-color: #b0f78c;
-}
-:host(.reward-variable-name-field[class$="5"]) [part="input-field"] {
-  color: #000;
-  background-color: #ef99a4;
-}
-:host(.reward-variable-name-field[class$="6"]) [part="input-field"] {
-  color: #000;
-  background-color: #9bc0f7;
-}
-:host(.reward-variable-name-field[class$="7"]) [part="input-field"] {
-  color: #fff;
-  background-color: #931901;
-}
-:host(.reward-variable-name-field[class$="8"]) [part="input-field"] {
-  color: #fff;
-  background-color: #f413bc;
-}
-:host(.reward-variable-name-field[class$="9"]) [part="input-field"] {
-  color: #000;
-  background-color: #d1b112;
+  border-radius: 0 3px 3px 0;
+  border: 1px solid var(--pm-gray-color);
 }

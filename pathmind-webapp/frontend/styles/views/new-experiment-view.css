@@ -32,7 +32,7 @@
   box-sizing: border-box;
   flex: 1 1 19rem;
   line-height: 1;
-  padding-right: var(--lumo-space-s);
+  padding: 0 var(--lumo-space-s) var(--lumo-space-s);
   border: 1px solid var(--pm-gray-color);
   border-radius: var(--lumo-border-radius);
   overflow-y: auto;
