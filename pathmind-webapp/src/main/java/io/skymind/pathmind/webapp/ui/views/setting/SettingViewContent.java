@@ -10,7 +10,7 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.data.PathmindUser;
-import io.skymind.pathmind.shared.featureflag.FeatureManager;
+import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironmentManager;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,8 @@ import javax.annotation.PostConstruct;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Slf4j
 public class SettingViewContent extends PolymerTemplate<SettingViewContent.Model> {
-    private PathmindUser user;
+    private final PathmindUser user;
+    private final ExecutionEnvironmentManager environmentManager;
 
     @Id("ec2InstanceTypeCB")
     private ComboBox<String> ec2InstanceType;
@@ -34,8 +35,9 @@ public class SettingViewContent extends PolymerTemplate<SettingViewContent.Model
     private Button saveBtn;
 
     @Autowired
-    public SettingViewContent(CurrentUser currentUser, FeatureManager featureManager) {
+    public SettingViewContent(CurrentUser currentUser, ExecutionEnvironmentManager environmentManager) {
         this.user = currentUser.getUser();
+        this.environmentManager = environmentManager;
     }
 
     @PostConstruct
@@ -47,7 +49,8 @@ public class SettingViewContent extends PolymerTemplate<SettingViewContent.Model
     private void initBtns() {
         saveBtn.addClickListener(e -> {
             // need pop up message
-            log.info("kepricondebug selecected : " + ec2InstanceType.getValue());
+            environmentManager.getEnvironment().setEc2InstanceType(EC2InstanceType.fromName(ec2InstanceType.getValue()));
+            log.info("kepricondebug selected : " + ec2InstanceType.getValue());
         });
 
     }
@@ -55,6 +58,7 @@ public class SettingViewContent extends PolymerTemplate<SettingViewContent.Model
     private void initContent() {
         ec2InstanceType.setItems(EC2InstanceType.IT_16CPU_32GB.toString(), EC2InstanceType.IT_36CPU_72GB.toString());
         ec2InstanceType.setLabel("Instance Type");
+        ec2InstanceType.setPlaceholder(environmentManager.getEnvironment().getEc2InstanceType().toString());
     }
 
     public interface Model extends TemplateModel {

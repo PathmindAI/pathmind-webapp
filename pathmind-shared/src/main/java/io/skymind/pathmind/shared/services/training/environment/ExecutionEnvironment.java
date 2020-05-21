@@ -9,7 +9,7 @@ public class ExecutionEnvironment {
     private final NativeRL rllibVersion;
     private final JDK jdkVersion;
     private final Conda condaVersion;
-    private final EC2InstanceType ec2InstanceType;
+    private EC2InstanceType ec2InstanceType;
 
     public ExecutionEnvironment(AnyLogic anylogicVersion, PathmindHelper pathmindHelperVersion, NativeRL rllibVersion, JDK jdkVersion, Conda condaVersion, EC2InstanceType ec2InstanceType) {
         this.anylogicVersion = anylogicVersion;
@@ -42,5 +42,9 @@ public class ExecutionEnvironment {
 
     public EC2InstanceType getEc2InstanceType() {
         return ec2InstanceType;
+    }
+
+    public void setEc2InstanceType(EC2InstanceType ec2InstanceType) {
+        this.ec2InstanceType = ec2InstanceType;
     }
 }
