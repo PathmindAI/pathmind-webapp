@@ -92,7 +92,7 @@ pipeline {
     stages {
 	stage('Initialize') {
 		steps {
-                	buildDescription "${env.ghprbPullTitle}"
+                	buildDescription "#${ghprbPullId} - ${env.ghprbPullTitle}"
 		}
 	}
         stage('Git clone and setup') {
