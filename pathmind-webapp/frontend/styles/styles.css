@@ -348,6 +348,13 @@ hr {
   flex: 0 0 auto;
 }
 
+.upload-model-view
+  .view-section
+  > vaadin-vertical-layout
+  > vaadin-horizontal-layout:last-child {
+  margin-top: var(--lumo-space-xl);
+}
+
 /* Upload Model View Reward Variable Names */
 .upload-model-view vaadin-custom-field {
   box-sizing: border-box;
