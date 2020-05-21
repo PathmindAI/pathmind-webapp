@@ -2,6 +2,7 @@ package io.skymind.pathmind.services;
 
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
@@ -43,7 +44,9 @@ public abstract class TrainingService {
             pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
         }
 
-        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_1_0_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
+        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2,
+                pathmindHelperVersion, NativeRL.VERSION_1_0_6,
+                JDK.VERSION_8_222, Conda.VERSION_0_7_6, EC2InstanceType.IT_16CPU_32GB);
     }
     
     public void startRun(Experiment exp){

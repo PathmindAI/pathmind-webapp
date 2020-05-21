@@ -1,5 +1,6 @@
 package io.skymind.pathmind.shared.services.training;
 
+import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.services.training.versions.*;
 
 public class ExecutionEnvironment {
@@ -8,13 +9,15 @@ public class ExecutionEnvironment {
     private final NativeRL rllibVersion;
     private final JDK jdkVersion;
     private final Conda condaVersion;
+    private final EC2InstanceType ec2InstanceType;
 
-    public ExecutionEnvironment(AnyLogic anylogicVersion, PathmindHelper pathmindHelperVersion, NativeRL rllibVersion, JDK jdkVersion, Conda condaVersion) {
+    public ExecutionEnvironment(AnyLogic anylogicVersion, PathmindHelper pathmindHelperVersion, NativeRL rllibVersion, JDK jdkVersion, Conda condaVersion, EC2InstanceType ec2InstanceType) {
         this.anylogicVersion = anylogicVersion;
         this.pathmindHelperVersion = pathmindHelperVersion;
         this.rllibVersion = rllibVersion;
         this.jdkVersion = jdkVersion;
         this.condaVersion = condaVersion;
+        this.ec2InstanceType = ec2InstanceType;
     }
 
     public AnyLogic getAnylogicVersion() {
@@ -35,5 +38,9 @@ public class ExecutionEnvironment {
 
     public Conda getCondaVersion() {
         return condaVersion;
+    }
+
+    public EC2InstanceType getEc2InstanceType() {
+        return ec2InstanceType;
     }
 }

@@ -121,10 +121,10 @@ public class AWSApiClient {
         s3Client.deleteObject(bucketName, keyId);
     }
 
-    public String jobSubmit(String jobId, RunType type) throws JsonProcessingException {
+    public String jobSubmit(String jobId, RunType type, EC2InstanceType ec2InstanceType) throws JsonProcessingException {
         final String mockType = type == null ? null : type.toString();
         Job job = new Job(bucketName, jobId, mockCycle, mockType);
-        job.setEc2InstanceType(EC2InstanceType.IT_16CPU_32GB);
+        job.setEc2InstanceType(ec2InstanceType);
 
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
