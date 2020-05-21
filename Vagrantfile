@@ -22,9 +22,9 @@ Vagrant.configure("2") do |config|
     bash ./setup_13.x && \
     apt-get update -y
 
-    # Install postgresql, maven, node and java
-    echo "-------------------- Installing Postgresql, Maven, Node and Java"
-    apt-get install -y nodejs postgresql openjdk-11-jdk maven
+    # Install postgresql, maven, node, java and tmux
+    echo "-------------------- Installing Postgresql, Maven, Node, Java, and tmux"
+    apt-get install -y nodejs postgresql openjdk-11-jdk maven tmux
 
     # Install Google chrome for headless testing
     echo "-------------------- Installing Google Chrome for headless testing"
@@ -37,11 +37,8 @@ Vagrant.configure("2") do |config|
     sudo -u postgres psql -c "CREATE DATABASE pathmind;"
     sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE pathmind to skynet;"
 
-    echo "-------------------- Setting Env Vars"
-    sudo echo "export DB_URL=jdbc:postgresql://localhost/pathmind?user=skynet\\&password=skynetskynet123\n export JOB_MOCK_CYCLE=10" > /etc/profile.d/pathmindvar.sh
-
     echo "-------------------- Setting up .bash_profile"
-    sudo echo "cd /vagrant" > /home/vagrant/.bash_profile
+    sudo echo ". /vagrant/vagrant-user-env.sh;\n cd /vagrant" > /home/vagrant/.bash_profile
 
 SHELL
     

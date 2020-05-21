@@ -26,6 +26,7 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-body-size: 500m
     nginx.ingress.kubernetes.io/proxy-read-timeout: "7200"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "7200"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   hosts:
     - host: app.pathmind.com
       paths: [/:80:canary]

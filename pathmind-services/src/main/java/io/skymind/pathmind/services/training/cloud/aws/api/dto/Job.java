@@ -41,6 +41,13 @@ public class Job {
         this.destroy = destroy ? 1 : null;
     }
 
+    public Job(String s3Bucket, String s3Path, boolean destroy, int mockCycle) {
+        this(s3Bucket, s3Path, destroy);
+        if (mockCycle > 0) {
+            mockup = "1";
+        }
+    }
+
     public Job(String s3Bucket, String s3Path, int mockCycle, String mockType) {
         this(s3Bucket, s3Path);
         if (mockCycle > 0) {

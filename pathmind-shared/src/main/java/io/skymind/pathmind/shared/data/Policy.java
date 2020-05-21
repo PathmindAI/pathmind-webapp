@@ -21,6 +21,7 @@ public class Policy extends Data
     private List<RewardScore> scores;
 
     private boolean hasFile;
+    private String checkPointFileKey;
 
     // Helper GUI attributes not stored in the database
 	private Project project;

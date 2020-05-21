@@ -250,10 +250,6 @@ public class ProjectsPageSteps {
 		projectsPage.clickWizardModelDetailsNextBtn();
 	}
 	@Step
-	public void checkExperimentScoreGreaterThan(double value) {
-		projectsPage.checkExperimentScoreGreaterThan(value);
-	}
-	@Step
 	public void checkExperimentStatusCompletedWithLimitHours(int limit) {
 		projectsPage.checkExperimentStatusCompletedWithLimitHours(limit);
     }
@@ -356,5 +352,41 @@ public class ProjectsPageSteps {
     @Step
     public void checkThatThereIsAVariableNamed(String variableName) {
         projectsPage.checkThatThereIsAVariableNamed(variableName);
+    }
+    @Step
+    public void clickEditProjectIconFromProjectsPage(String projectName) {
+        projectsPage.clickEditProjectIconFromProjectsPage(projectName);
+    }
+    @Step
+    public void checkNewProjectNameErrorShown(String error) {
+        projectsPage.checkNewProjectNameErrorShown(error);
+    }
+    @Step
+    public void checkThatModelSuccessfullyUploaded() {
+        projectsPage.checkThatModelSuccessfullyUploaded();
+    }
+    @Step
+    public void checkModelPageModelDetailsPackageNameIs(String packageName) {
+        projectsPage.checkModelPageModelDetailsPackageNameIs(packageName);
+    }
+    @Step
+    public void checkModelPageModelDetailsActionsIs(String actions) {
+        projectsPage.checkModelPageModelDetailsActionsIs(actions);
+    }
+    @Step
+    public void checkModelPageModelDetailsObservationsIs(String observations) {
+        projectsPage.checkModelPageModelDetailsObservationsIs(observations);
+    }
+    @Step
+    public void checkModelPageModelDetailsRewardVariablesOrder() {
+        projectsPage.checkModelPageModelDetailsRewardVariablesOrder();
+    }
+    @Step
+    public void checkModelPageModelDetailsRewardVariablesIs(String commaSeparatedVariableNames) {
+        projectsPage.checkModelPageModelDetailsRewardVariablesIs(commaSeparatedVariableNames);
+    }
+    @Step
+    public void checkThatModelNameExistInArchivedTab(String experiment) {
+        projectsPage.checkThatModelNameExistInArchivedTab(experiment);
     }
 }

@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.components.notesField;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.vaadin.flow.component.button.Button;
@@ -8,6 +9,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import org.apache.commons.lang3.StringUtils;
 
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -15,12 +17,14 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 @CssImport("./styles/components/notes-field.css")
 public class NotesField extends HorizontalLayout {
 
+	private static final int MAX_NOTES_SIZE = 1000;
+
 	private String title;
 	private String notesText;
-	private Boolean isEditting = false;
 	private Button saveButton;
 	private TextArea blockEditableField;
 	private Span hintWrapper;
+	private Span warningWrapper;
 	private Consumer<String> saveConsumer;
 
 	public NotesField(String title, String notesText, Consumer<String> saveConsumer) {
@@ -29,33 +33,48 @@ public class NotesField extends HorizontalLayout {
 		this.saveConsumer = saveConsumer;
 		hintWrapper = LabelFactory.createLabel("Unsaved Notes!", "unsaved-draft-label");
 		hintWrapper.setVisible(false);
+		warningWrapper = LabelFactory.createLabel(String.format("Notes must not exceed %s characters", MAX_NOTES_SIZE), "unsaved-draft-label", "unsaved-and-too-big-text-label");
+		warningWrapper.setVisible(false);
 		add(editableFieldWrapper());
 		setSpacing(false);
 		addClassName("notes-field-wrapper");
 	}
 
+	private void updateInformationShownToUser(String notesValue) {
+		warningWrapper.setVisible(false);
+		hintWrapper.setVisible(false);
+		if (notesValue.length() > MAX_NOTES_SIZE) {
+			warningWrapper.setVisible(true);
+		}
+		else if (!Objects.equals(notesText, notesValue)) {
+			hintWrapper.setVisible(true);
+		}
+	}
+
 	private void createEditableField() {
 		blockEditableField = new TextArea("", StringUtils.defaultString(notesText), "Add Notes");
+		// make sure the value change event will be triggered whenever the user type something
+		blockEditableField.setValueChangeMode(ValueChangeMode.EAGER);
 		blockEditableField.addThemeName("notes");
-		blockEditableField.addKeyUpListener(event -> {
-			if (isEditting == false) {
-				toggleIsEditting();
-				hintWrapper.setVisible(true);
-			}
-		});
-		blockEditableField.addValueChangeListener(event -> {
-			if (isEditting && event.getValue() != notesText) {
+		blockEditableField.addBlurListener(event -> {
+			if (canSave(blockEditableField.getValue())) {
 				saveButton.click();
 				hintWrapper.setVisible(false);
 			}
+		});
+		blockEditableField.addValueChangeListener(event -> {
+			updateInformationShownToUser(blockEditableField.getValue());
 		});
 	}
 
 	private VerticalLayout editableFieldWrapper() {
 		initButtons();
+		Span spanTitle = new Span(title);
+		spanTitle.getStyle().set("flex", "1");
 		HorizontalLayout headerRow = new HorizontalLayout(
-			new Span(title),
+			spanTitle,
 			hintWrapper,
+			warningWrapper,
 			saveButton
 		);
 		headerRow.setSpacing(false);
@@ -71,21 +90,11 @@ public class NotesField extends HorizontalLayout {
 		return editableFieldWrapper;
 	}
 
-	private Button createButton(String label, Boolean isEnabled) {
-		Button button = new Button(label);
-		return button;
-	}
-
 	private void initButtons() {
-		saveButton = createButton("Save", isEditting);
+		saveButton = new Button("Save");
 		saveButton.addClickListener(e -> {
-			toggleIsEditting();
 			saveButtonOnClick();
 		});
-	}
- 
-	private void toggleIsEditting() {
-		isEditting = !isEditting;
 	}
 
 	public void setNotesText(String notesText) {
@@ -99,9 +108,15 @@ public class NotesField extends HorizontalLayout {
 
 	public void saveButtonOnClick() {
 		String updatedNotesText = blockEditableField.getValue();
-		if (notesText != updatedNotesText) {
+		if (canSave(updatedNotesText)){
+			warningWrapper.setVisible(false);
+			hintWrapper.setVisible(false);
 			notesText = updatedNotesText;
-			saveConsumer.accept(notesText);
+			saveConsumer.accept(updatedNotesText);
 		}
+	}
+
+	private boolean canSave(String updatedNotesText) {
+		return !Objects.equals(updatedNotesText, notesText) && updatedNotesText.length() <= MAX_NOTES_SIZE;
 	}
 }

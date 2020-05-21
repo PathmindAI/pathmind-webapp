@@ -28,4 +28,7 @@ public class Experiment extends ArchivableData
 		this.policies = new CopyOnWriteArrayList<>(policies);
 	}
 
+    public boolean isDraft() {
+        return getRuns() == null || getRuns().isEmpty();
+    }
 }

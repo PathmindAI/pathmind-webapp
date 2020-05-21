@@ -22,3 +22,4 @@ Feature: Broken Models tests
     | Model File                                      | Error Message                           |
     | problematic_models/AModelWithNoActions.zip      | Number of actions found to be zero.     |
     | problematic_models/AModelWithNoObservations.zip | Number of observations found to be zero.|
+    | problematic_models/ProblemModel#1480.zip        | Unable to analyze the model.            |
