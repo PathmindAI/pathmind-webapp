@@ -20,6 +20,20 @@ def buildDockerImage(image_name) {
 }
 
 /*
+    Build a docker image
+*/
+def createSecrets() {
+	sh """
+		set +x
+		kubectl create secret generic dburl --from-literal DB_URL='jdbc:postgresql://postgres/pathminddb?user=pathminddb&password=Asdf1234' -n ${env.BUILD_NUMBER}
+        	kubectl create secret generic awsaccesskey --from-literal AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID} -n ${env.BUILD_NUMBER}
+        	kubectl create secret generic awssecretaccesskey --from-literal AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY} -n ${env.BUILD_NUMBER}
+        	kubectl create secret generic segmentwebsitekey --from-literal SEGMENT_WEBSITE_KEY=${env.SEGMENT_WEBSITE_KEY} -n ${env.BUILD_NUMBER}
+        	kubectl create secret generic segmentserversitekey --from-literal SEGMENT_SERVER_KEY=${env.SEGMENT_SERVER_KEY} -n ${env.BUILD_NUMBER}
+	"""
+}
+
+/*
     Publish a docker image
 */
 def publishDockerImage(image_name,DOCKER_TAG) {
@@ -146,19 +160,9 @@ pipeline {
 
                         echo "Waiting for psql to come up"
                         sh "timeout 900 bash -c 'while ! pg_isready  -h postgres-${env.BUILD_NUMBER} -q; do sleep 5; done'"
-
-                        echo "Creating user"
-                        userpass='\\$2a\\$10\\$mnh8uyby0UslZw1fiKXc9uvX2370CJJMjYg3U7ztmVXRXmQo3VJLK'
-                        sh "echo \"insert into public.pathmind_user (email, password, account_type, email_verified_at) values ('evegeniy@skymind.io', '${userpass}', '0', '2020-02-02 20:24:48.067479') on conflict (email) do nothing;\" > /tmp/${env.BUILD_NUMBER}.sql"
-                        sh "psql 'host=postgres-${env.BUILD_NUMBER} dbname=pathminddb user=pathminddb password=Asdf1234' < /tmp/${env.BUILD_NUMBER}.sql"
-
-                        echo "Creating secrets"
-                        sh "kubectl create secret generic dburl --from-literal DB_URL='jdbc:postgresql://postgres/pathminddb?user=pathminddb&password=Asdf1234' -n ${env.BUILD_NUMBER}"
-                        sh "kubectl create secret generic awsaccesskey --from-literal AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID} -n ${env.BUILD_NUMBER}"
-                        sh "kubectl create secret generic awssecretaccesskey --from-literal AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY} -n ${env.BUILD_NUMBER}"
-                        sh "kubectl create secret generic segmentwebsitekey --from-literal SEGMENT_WEBSITE_KEY=${env.SEGMENT_WEBSITE_KEY} -n ${env.BUILD_NUMBER}"
-                        sh "kubectl create secret generic segmentserversitekey --from-literal SEGMENT_SERVER_KEY=${env.SEGMENT_SERVER_KEY} -n ${env.BUILD_NUMBER}"
-
+		}
+		createSecrets()
+		script {
 			echo "Creating updater resources"
 			sh "aws sqs create-queue --queue-name ${env.BUILD_ID}-updater-queue --attributes \"{\\\"MessageRetentionPeriod\\\":\\\"60\\\"}\""
 			sh "cat /tmp/sqs_policy.json | sed \"s/BUILD_ID/${env.BUILD_NUMBER}/g\" > /tmp/${env.BUILD_NUMBER}-sqs_policy.json"
