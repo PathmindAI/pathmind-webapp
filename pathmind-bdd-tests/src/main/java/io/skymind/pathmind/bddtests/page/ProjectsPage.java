@@ -90,7 +90,7 @@ public class ProjectsPage extends PageObject {
 	private WebElement archiveBtnShadow;
 	@FindBy(xpath = "//vaadin-button[@title='Unarchive']")
 	private WebElement unarchiveBtnShadow;
-	@FindBy(xpath = "//vaadin-text-field[@class='reward-variable-name-field']")
+	@FindBy(xpath = "//vaadin-text-field[contains(@class,'reward-variable-name-field')]")
 	private List<WebElement> rewardVariableNameInputs;
 	@FindBy(xpath = "//vaadin-text-area[@theme='notes']")
 	private WebElement notesField;
