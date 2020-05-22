@@ -706,4 +706,9 @@ public class ProjectsPage extends PageObject {
     public void checkThatModelNameExistInArchivedTab(String experiment) {
         assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content")), hasItem(experiment));
     }
+
+    public void checkRewardFunctionDefaultValue(String reward) {
+        WebElement e = utils.expandRootElement(rewardField);
+        assertThat(e.findElement(By.cssSelector("div[class='ace_line']")).getText(), is(reward));
+    }
 }

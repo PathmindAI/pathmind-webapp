@@ -532,4 +532,9 @@ public class ProjectsPageStepDefinitions {
     public void checkThatModelNameExistInArchivedTab(String experiment) {
         projectsPageSteps.checkThatModelNameExistInArchivedTab(experiment);
     }
+
+    @Then("^Check Reward Function default value (.*)$")
+    public void checkRewardFunctionDefaultValue(String reward) {
+        projectsPageSteps.checkRewardFunctionDefaultValue(reward);
+    }
 }
