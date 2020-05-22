@@ -11,9 +11,11 @@ import io.skymind.pathmind.shared.services.training.versions.PathmindHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
 public class ExecutionEnvironmentManager {
-//    private CurrentUser currentUser;
     private final FeatureManager featureManager;
 
     @Autowired
@@ -21,8 +23,8 @@ public class ExecutionEnvironmentManager {
         this.featureManager = featureManager;
     }
 
-    // todo need to set the env for each user
-    private ExecutionEnvironment environment = null;
+    // todo need to save this to DB
+    private static Map<Long, ExecutionEnvironment> environmentMap= new HashMap();
 
     private ExecutionEnvironment defaultEnvironment() {
         PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_1_0_1;
@@ -38,12 +40,12 @@ public class ExecutionEnvironmentManager {
                 EC2InstanceType.IT_16CPU_32GB);
     }
 
-    public ExecutionEnvironment getEnvironment() {
-        if (environment == null) {
-            environment = defaultEnvironment();
+    public ExecutionEnvironment getEnvironment(long userId) {
+        if (!environmentMap.containsKey(userId)) {
+            environmentMap.put(userId, defaultEnvironment());
         }
 
-        return environment;
+        return environmentMap.get(userId);
     }
 
 

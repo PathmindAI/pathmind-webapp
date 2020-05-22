@@ -2,17 +2,15 @@ package io.skymind.pathmind.services;
 
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
+import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironmentManager;
-import io.skymind.pathmind.shared.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 
@@ -42,7 +40,7 @@ public abstract class TrainingService {
         this.executionEnvironmentManager = executionEnvironmentManager;
         this.policyDAO = policyDAO;
         this.ctx = ctx;
-        this.executionEnvironment = this.executionEnvironmentManager.getEnvironment();
+
     }
     
     public void startRun(Experiment exp){
@@ -55,6 +53,10 @@ public abstract class TrainingService {
 
     private void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSamples) {
     	ctx.transaction(conf -> {
+    	    // set the current Execution Environment for the given user
+            long userId = this.runDAO.getUserForModel(exp.getModelId());
+            this.executionEnvironment = this.executionEnvironmentManager.getEnvironment(userId);
+
     		Run run = runDAO.createRun(conf, exp, DiscoveryRun);
     		String executionId = startRun(exp.getModel(), exp, run, iterations, maxTimeInSec, numSamples);
     		runDAO.markAsStarting(conf, run.getId(), executionId);

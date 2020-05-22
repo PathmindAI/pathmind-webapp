@@ -49,7 +49,7 @@ public class SettingViewContent extends PolymerTemplate<SettingViewContent.Model
     private void initBtns() {
         saveBtn.addClickListener(e -> {
             // need pop up message
-            environmentManager.getEnvironment().setEc2InstanceType(EC2InstanceType.fromName(ec2InstanceType.getValue()));
+            environmentManager.getEnvironment(user.getId()).setEc2InstanceType(EC2InstanceType.fromName(ec2InstanceType.getValue()));
             log.info("kepricondebug selected : " + ec2InstanceType.getValue());
         });
 
@@ -58,7 +58,7 @@ public class SettingViewContent extends PolymerTemplate<SettingViewContent.Model
     private void initContent() {
         ec2InstanceType.setItems(EC2InstanceType.IT_16CPU_32GB.toString(), EC2InstanceType.IT_36CPU_72GB.toString());
         ec2InstanceType.setLabel("Instance Type");
-        ec2InstanceType.setPlaceholder(environmentManager.getEnvironment().getEc2InstanceType().toString());
+        ec2InstanceType.setPlaceholder(environmentManager.getEnvironment(user.getId()).getEc2InstanceType().toString());
     }
 
     public interface Model extends TemplateModel {
