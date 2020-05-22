@@ -309,6 +309,18 @@ resource "null_resource" "efk" {
   depends_on = ["null_resource.k8s-rbac"]
 }
 
+#install curator
+resource "null_resource" "curator" {
+  provisioner "local-exec" {
+    command = "helm install elasticsearch-curator ../../helm/elasticsearch-curator"
+  }
+  provisioner "local-exec" {
+    when = "destroy"
+    command = "helm delete elasticsearch-curator"
+  }
+  depends_on = ["null_resource.efk"]
+}
+
 #Install Canary
 resource "null_resource" "canary" {
   provisioner "local-exec" {

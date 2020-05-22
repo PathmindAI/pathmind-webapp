@@ -90,6 +90,11 @@ pipeline {
 
     // Pipeline stages
     stages {
+	stage('Initialize') {
+		steps {
+                	buildDescription "#${ghprbPullId} - ${env.ghprbPullTitle}"
+		}
+	}
         stage('Git clone and setup') {
             when {
                 allOf{
