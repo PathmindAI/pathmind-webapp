@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -61,6 +60,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Button saveDraftButton;
 
 	private Button startRunButton;
+
+	private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
 
 	@Autowired
 	private ExperimentDAO experimentDAO;
@@ -125,10 +126,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		rewardFnEditorPanel.setPadding(false);
 		rewardFnEditorPanel.setSpacing(false);
 
-		HorizontalLayout errorAndNotesContaner = WrapperUtils.wrapWidthFullHorizontal(getErrorsPanel(), createNotesField());
-		errorAndNotesContaner.setClassName("error-and-notes-container");
+		HorizontalLayout errorAndNotesContainer = WrapperUtils.wrapWidthFullHorizontal(getErrorsPanel(), createNotesField());
+		errorAndNotesContainer.setClassName("error-and-notes-container");
 
-		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, startRunButton), rewardFnEditorPanel, errorAndNotesContaner);
+		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, startRunButton), rewardFnEditorPanel, errorAndNotesContainer);
 		mainPanel.setClassName("view-section");
 		return mainPanel;
 	}
@@ -149,12 +150,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			}
 			errorMessageWrapper.removeClassNames("hasError", "noError");
 			errorMessageWrapper.addClassName(wrapperClassName);
-			rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > 1000);
+			rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > REWARD_FUNCTION_MAX_LENGTH);
 
 			startRunButton.setEnabled(canStartTraining());
 			saveDraftButton.setEnabled(canSaveDataInDB());
 		});
-		rewardEditorErrorLabel = LabelFactory.createLabel("Reward Function must not exceed 1000 characters", "reward-editor-error");
+		rewardEditorErrorLabel = LabelFactory.createLabel("Reward Function must not exceed " + REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
 		rewardEditorErrorLabel.setVisible(false);
 		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(rewardEditorErrorLabel, rewardFunctionEditor);
 		rewardFnEditorPanel.addClassName("reward-fn-editor-panel");
@@ -167,7 +168,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private boolean canSaveDataInDB() {
-		return rewardFunctionEditor.getValue().length() <= 1000 && !rewardVariablesTable.isInvalid();
+		return rewardFunctionEditor.getValue().length() <= REWARD_FUNCTION_MAX_LENGTH && !rewardVariablesTable.isInvalid();
 	}
 
 	private Component getErrorsPanel() {

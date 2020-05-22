@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -82,7 +81,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		
 		addClassName("project-view");
 
-		projectName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
+		projectName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.PROJECT_TITLE);
 		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
 		Button edit = new Button("Rename", evt -> renameProject());
 		edit.setClassName("no-shrink");

@@ -1,5 +1,6 @@
 package io.skymind.pathmind.bddtests.page;
 
+import com.google.common.collect.Ordering;
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.pages.PageObject;
@@ -17,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -289,7 +291,7 @@ public class ProjectsPage extends PageObject {
         getDriver().findElement(By.xpath("//vaadin-tab[@aria-selected='false']")).click();
     }
     public void clickArchivesTab(){
-		getDriver().findElement(By.xpath("//vaadin-tab[text()='Archives']")).click();
+		utils.clickElementRepeatIfStaleException(By.xpath("//vaadin-tab[text()='Archives']"));
 	}
 	public void clickModelsTab(){
 		getDriver().findElement(By.xpath("//vaadin-tab[text()='Models']")).click();
@@ -299,11 +301,7 @@ public class ProjectsPage extends PageObject {
 	}
 
     public void checkThatProjectNotExistInProjectList(String projectName) {
-        List<String> strings = new ArrayList<>();
-        for(WebElement e : projectsNames){
-            strings.add(e.getText());
-        }
-        assertThat(strings, not(hasItem(projectName)));
+        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span")), not(hasItem(projectName)));
     }
 
     public void checkCreateANewProjectPage() {
@@ -501,7 +499,7 @@ public class ProjectsPage extends PageObject {
 	}
 
 	public void clickWizardRewardVariableNamesNextBtn() {
-		getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/ancestor::*[@class='view-section']/descendant::vaadin-button[normalize-space(text())='Next']")).click();
+		getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/ancestor::*[@class='view-section']/descendant::vaadin-button[normalize-space(text())='Next'][2]")).click();
 	}
 
 	public void checkExperimentStatusCompletedWithLimitHours(int limit) {
@@ -632,7 +630,7 @@ public class ProjectsPage extends PageObject {
 
 	public void checkThatProjectNameDetailsOnProjectPage(String name) {
         waitABit(3500);
-		assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label truncated-label']")).getText(), is(name));
+		assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label project-title-label']")).getText(), is(name));
 	}
 
 	public void checkThatProjectNameBreadcrumbOnProjectPage(String name) {
@@ -667,5 +665,45 @@ public class ProjectsPage extends PageObject {
     public void checkNewProjectNameErrorShown(String error) {
         WebElement e = utils.expandRootElement(projectNameInputFieldShadow);
         assertThat(e.findElement(By.cssSelector("div[part='error-message']")).getText(), is(error));
+    }
+
+    public void checkThatModelSuccessfullyUploaded() {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Your model was successfully uploaded!']")));
+    }
+
+    public void checkModelPageModelDetailsPackageNameIs(String packageName) {
+        assertThat(utils.getTextRootElement(getDriver().findElement(By.xpath("//span[text()='Package Name']/ancestor::p"))), is(packageName));
+    }
+
+    public void checkModelPageModelDetailsActionsIs(String actions) {
+        assertThat(utils.getTextRootElement(getDriver().findElement(By.xpath("//span[text()='Actions']/ancestor::p"))), is(actions));
+    }
+
+    public void checkModelPageModelDetailsObservationsIs(String observations) {
+        assertThat(utils.getTextRootElement(getDriver().findElement(By.xpath("//span[text()='Observations']/ancestor::p"))), is(observations));
+    }
+
+    public void checkModelPageModelDetailsRewardVariablesOrder() {
+        List<String> variables = new ArrayList<>();
+
+        for (WebElement webElement : getDriver().findElements(By.xpath("//div[@class='model-reward-variables']/descendant::span[not(@class)]"))) {
+            variables.add(webElement.getText());
+        }
+
+        assertThat(Ordering.natural().isOrdered(variables), is(true));
+    }
+
+    public void checkModelPageModelDetailsRewardVariablesIs(String commaSeparatedVariableNames) {
+        List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//div[@class='model-reward-variables']/descendant::span[@class]"))) {
+            actual.add(webElement.getText());
+        }
+
+        assertThat(actual, containsInRelativeOrder(items.toArray()));
+    }
+
+    public void checkThatModelNameExistInArchivedTab(String experiment) {
+        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content")), hasItem(experiment));
     }
 }

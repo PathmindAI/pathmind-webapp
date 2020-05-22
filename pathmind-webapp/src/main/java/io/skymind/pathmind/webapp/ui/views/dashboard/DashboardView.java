@@ -127,24 +127,46 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 		Stage stage = DashboardUtils.calculateStage(item);
 		switch (stage) {
 			case SetUpSimulation :
-				ConfirmationUtils.archive("project", () -> {
-					projectDAO.archive(item.getProject().getId(), true);
-					dataProvider.refreshAll();
-				});
+				if (item.getModel() == null) {
+					archiveProject(item);
+				}
+				else {
+					archiveModel(item);
+				}
 				break;
 			case WriteRewardFunction:
-				ConfirmationUtils.archive("model", () -> {
-					modelDAO.archive(item.getModel().getId(), true);
-					dataProvider.refreshAll();
-				});
+				if (item.getExperiment() == null) {
+					archiveModel(item);
+				}
+				else {
+					archiveExperiment(item);
+				}
 				break;
 			default :
-				ConfirmationUtils.archive("experiment", () -> {
-					experimentDAO.archive(item.getExperiment().getId(), true);
-					dataProvider.refreshAll();
-				});
+				archiveExperiment(item);
 				break;
 		}
+	}
+
+	private void archiveExperiment(DashboardItem item) {
+		ConfirmationUtils.archive("experiment", () -> {
+			experimentDAO.archive(item.getExperiment().getId(), true);
+			dataProvider.refreshAll();
+		});
+	}
+
+	private void archiveModel(DashboardItem item) {
+		ConfirmationUtils.archive("model", () -> {
+			modelDAO.archive(item.getModel().getId(), true);
+			dataProvider.refreshAll();
+		});
+	}
+
+	private void archiveProject(DashboardItem item) {
+		ConfirmationUtils.archive("project", () -> {
+			projectDAO.archive(item.getProject().getId(), true);
+			dataProvider.refreshAll();
+		});
 	}
 
 	@Override

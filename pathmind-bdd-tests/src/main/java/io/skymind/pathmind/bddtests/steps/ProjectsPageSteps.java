@@ -361,4 +361,32 @@ public class ProjectsPageSteps {
     public void checkNewProjectNameErrorShown(String error) {
         projectsPage.checkNewProjectNameErrorShown(error);
     }
+    @Step
+    public void checkThatModelSuccessfullyUploaded() {
+        projectsPage.checkThatModelSuccessfullyUploaded();
+    }
+    @Step
+    public void checkModelPageModelDetailsPackageNameIs(String packageName) {
+        projectsPage.checkModelPageModelDetailsPackageNameIs(packageName);
+    }
+    @Step
+    public void checkModelPageModelDetailsActionsIs(String actions) {
+        projectsPage.checkModelPageModelDetailsActionsIs(actions);
+    }
+    @Step
+    public void checkModelPageModelDetailsObservationsIs(String observations) {
+        projectsPage.checkModelPageModelDetailsObservationsIs(observations);
+    }
+    @Step
+    public void checkModelPageModelDetailsRewardVariablesOrder() {
+        projectsPage.checkModelPageModelDetailsRewardVariablesOrder();
+    }
+    @Step
+    public void checkModelPageModelDetailsRewardVariablesIs(String commaSeparatedVariableNames) {
+        projectsPage.checkModelPageModelDetailsRewardVariablesIs(commaSeparatedVariableNames);
+    }
+    @Step
+    public void checkThatModelNameExistInArchivedTab(String experiment) {
+        projectsPage.checkThatModelNameExistInArchivedTab(experiment);
+    }
 }
