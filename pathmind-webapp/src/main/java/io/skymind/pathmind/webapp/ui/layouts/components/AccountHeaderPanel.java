@@ -38,7 +38,7 @@ public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSu
 		account.getSubMenu().addItem("Account", e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
 		account.getSubMenu().addItem("Sign out", e -> {
 			CookieUtils.deleteCookie("Can");
-			getUI().ifPresent(ui -> ui.getPage().executeJavaScript("location.assign('/" + Routes.LOGOUT_URL + "')"));
+			getUI().ifPresent(ui -> ui.getPage().executeJs("location.assign('/" + Routes.LOGOUT_URL + "')"));
 		});
 	}
 

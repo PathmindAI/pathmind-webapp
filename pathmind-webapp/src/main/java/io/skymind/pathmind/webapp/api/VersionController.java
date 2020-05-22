@@ -5,8 +5,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.spring.SpringVaadinSession;
+
+import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ActiveSessionsRegistry;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
+import io.skymind.pathmind.webapp.utils.CookieUtils;
 
 import javax.servlet.http.HttpSession;
 
@@ -43,7 +46,7 @@ public class VersionController {
 					for (UI ui : springVaadinSession.getUIs()) {
 						try {
 							UI.setCurrent(ui);
-							showNotification();
+							showNotification(ui);
 							count.incrementAndGet();
 						} finally {
 							UI.setCurrent(null);
@@ -58,8 +61,11 @@ public class VersionController {
 		return new Response(message);
 	}
 
-	private void showNotification() {
+	private void showNotification(UI ui) {
 		String text = "Pathmind has been updated. Please log in again to get the latest improvements.";
-		NotificationUtils.showPersistentNotification(text);
+		NotificationUtils.showPersistentNotification(text, "Sign out", () -> {
+			CookieUtils.deleteCookie("Can");
+			ui.getPage().executeJs("location.assign('/" + Routes.LOGOUT_URL + "')");
+        });
 	}
 }
