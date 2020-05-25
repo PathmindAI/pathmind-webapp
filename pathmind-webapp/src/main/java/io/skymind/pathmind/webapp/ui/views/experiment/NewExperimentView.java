@@ -246,7 +246,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			updatedNotes -> {
 				experiment.setUserNotes(updatedNotes);
 				experimentDAO.updateUserNotes(experimentId, updatedNotes);
-				NotificationUtils.showSuccess("Notes saved");
 				segmentIntegrator.addedNotesNewExperimentView();
 			}
 		);

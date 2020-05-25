@@ -153,7 +153,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 			model.getUserNotes(),
 			updatedNotes -> {
 				modelDAO.updateUserNotes(modelId, updatedNotes);
-				NotificationUtils.showSuccess("Notes saved");
 				segmentIntegrator.updatedNotesExperimentsView();
 			}
 		);
