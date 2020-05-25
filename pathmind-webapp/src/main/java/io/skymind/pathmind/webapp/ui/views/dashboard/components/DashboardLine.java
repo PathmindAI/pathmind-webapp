@@ -1,5 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.dashboard.components;
 
+import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.PROJECT_TITLE;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
@@ -45,7 +47,7 @@ public class DashboardLine extends HorizontalLayout {
 		timestamp = new Span();
 		
 		Span projectTitle = new Span(item.getProject().getName());
-		projectTitle.addClassName("project-title");
+		projectTitle.addClassName(PROJECT_TITLE);
 		
 		menuButton = new Button(VaadinIcon.ELLIPSIS_DOTS_H.create());
 		menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);

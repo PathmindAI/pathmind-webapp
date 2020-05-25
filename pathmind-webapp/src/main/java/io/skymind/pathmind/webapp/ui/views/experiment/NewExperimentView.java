@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -57,8 +56,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private NotesField notesField;
 	private RewardVariablesTable rewardVariablesTable;
 	private Span unsavedChanges;
+	private Span rewardEditorErrorLabel;
+	private Button saveDraftButton;
 
 	private Button startRunButton;
+
+	private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
 
 	@Autowired
 	private ExperimentDAO experimentDAO;
@@ -77,15 +80,15 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private Binder<Experiment> binder;
 
-    public NewExperimentView() {
-        super();
-        addClassName("new-experiment-view");
-    }
+	public NewExperimentView() {
+		super();
+		addClassName("new-experiment-view");
+	}
 
-    @Override
-    protected Component getTitlePanel() {
-        return new ScreenTitlePanel(createBreadcrumbs());
-    }
+	@Override
+	protected Component getTitlePanel() {
+		return new ScreenTitlePanel(createBreadcrumbs());
+	}
 
 	@Override
 	protected Component getMainContent() {
@@ -108,7 +111,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 		unsavedChanges = LabelFactory.createLabel("Unsaved Draft!", "unsaved-draft-label");
 		unsavedChanges.setVisible(false);
-		HorizontalLayout header = WrapperUtils.wrapWidthFullBetweenHorizontal(LabelFactory.createLabel("Reward Function", CssMindPathStyles.BOLD_LABEL), unsavedChanges, getActionButton());
+		saveDraftButton = getActionButton();
+		HorizontalLayout header = WrapperUtils.wrapWidthFullBetweenHorizontal(LabelFactory.createLabel("Reward Function", CssMindPathStyles.BOLD_LABEL), unsavedChanges,
+				saveDraftButton);
 		header.getStyle().set("align-items", "center");
 
 		HorizontalLayout rewardFunctionWrapper = WrapperUtils.wrapSizeFullBetweenHorizontal(getRewardFnEditorPanel(), getRewardVariableNamesPanel());
@@ -121,10 +126,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		rewardFnEditorPanel.setPadding(false);
 		rewardFnEditorPanel.setSpacing(false);
 
-		HorizontalLayout errorAndNotesContaner = WrapperUtils.wrapWidthFullHorizontal(getErrorsPanel(), createNotesField());
-		errorAndNotesContaner.setClassName("error-and-notes-container");
+		HorizontalLayout errorAndNotesContainer = WrapperUtils.wrapWidthFullHorizontal(getErrorsPanel(), createNotesField());
+		errorAndNotesContainer.setClassName("error-and-notes-container");
 
-		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, startRunButton), rewardFnEditorPanel, errorAndNotesContaner);
+		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, startRunButton), rewardFnEditorPanel, errorAndNotesContainer);
 		mainPanel.setClassName("view-section");
 		return mainPanel;
 	}
@@ -140,20 +145,32 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			errorMessageWrapper.removeAll();
 			if ((errorText.length() == 0)) {
 				errorMessageWrapper.add(new Icon(VaadinIcon.CHECK), new Span("No Errors"));
-				startRunButton.setEnabled(true);
 			} else {
 				errorMessageWrapper.setText(errorText);
-				startRunButton.setEnabled(false);
 			}
 			errorMessageWrapper.removeClassNames("hasError", "noError");
 			errorMessageWrapper.addClassName(wrapperClassName);
-		});
+			rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > REWARD_FUNCTION_MAX_LENGTH);
 
-		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(rewardFunctionEditor);
+			startRunButton.setEnabled(canStartTraining());
+			saveDraftButton.setEnabled(canSaveDataInDB());
+		});
+		rewardEditorErrorLabel = LabelFactory.createLabel("Reward Function must not exceed " + REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
+		rewardEditorErrorLabel.setVisible(false);
+		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(rewardEditorErrorLabel, rewardFunctionEditor);
 		rewardFnEditorPanel.addClassName("reward-fn-editor-panel");
 		rewardFnEditorPanel.setPadding(false);
 		return rewardFnEditorPanel;
 	}
+
+	private boolean canStartTraining() {
+		return errorMessageWrapper.hasClassName("noError") && canSaveDataInDB();
+	}
+
+	private boolean canSaveDataInDB() {
+		return rewardFunctionEditor.getValue().length() <= REWARD_FUNCTION_MAX_LENGTH && !rewardVariablesTable.isInvalid();
+	}
+
 	private Component getErrorsPanel() {
 		errorMessageWrapper = new Div();
 		errorMessageWrapper.addClassName("error-message-wrapper");
@@ -163,7 +180,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private void setupBinder() {
-		binder.forField(rewardFunctionEditor).asRequired().bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
+		binder.forField(rewardFunctionEditor)
+				.asRequired()
+				.bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
 	}
 
 	private RewardVariablesTable getRewardVariableNamesPanel() {
@@ -177,6 +196,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private void handleRewardVariableNameChanged(List<RewardVariable> updatedRewardVariables) {
 		unsavedChanges.setVisible(true);
 		rewardFunctionEditor.setVariableNames(updatedRewardVariables);
+		startRunButton.setEnabled(canStartTraining());
+		saveDraftButton.setEnabled(canSaveDataInDB());
 	}
 
 	private void handleStartRunButtonClicked() {

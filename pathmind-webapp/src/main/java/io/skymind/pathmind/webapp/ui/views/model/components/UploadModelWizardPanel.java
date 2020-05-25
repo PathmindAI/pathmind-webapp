@@ -1,16 +1,11 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.NO_TOP_MARGIN_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_SUBTITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.TRUNCATED_LABEL;
 
 import java.io.IOException;
 
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
@@ -38,9 +33,6 @@ public class UploadModelWizardPanel extends VerticalLayout
 {
 	private final Model model;
 
-	private Div sectionTitleWrapper;
-	private Span projectNameLabel;
-
 	private VerticalLayout uploadModelPanel;
 	private PathmindModelUploader upload;
 
@@ -60,27 +52,17 @@ public class UploadModelWizardPanel extends VerticalLayout
 		this.model = model;
 		this.mode = mode;
 
-		projectNameLabel = LabelFactory.createLabel("", SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT, SECTION_SUBTITLE_LABEL);
-
 		setupLayout();
-
-		setClassName("view-section"); // adds the white 'panel' style with rounded corners
-
 		setWidthFull();
+		setPadding(false);
+		setSpacing(false);
 	}
 	
 	private void setupLayout() {
 		setupUploadPanel();
 		setupFileCheckPanel();
 
-		sectionTitleWrapper = new Div();
-		Span projectText = new Span("Project: ");
-		projectText.addClassName(SECTION_TITLE_LABEL);
-		sectionTitleWrapper.add(projectText, projectNameLabel);
-		sectionTitleWrapper.addClassName(TRUNCATED_LABEL);
-
-		add(sectionTitleWrapper,
-				LabelFactory.createLabel("Upload Model", NO_TOP_MARGIN_LABEL),
+		add(LabelFactory.createLabel("Upload Model", NO_TOP_MARGIN_LABEL),
 				GuiUtils.getFullWidthHr(),
 				getInstructionsDiv(),
 				uploadModelPanel,
@@ -202,10 +184,6 @@ public class UploadModelWizardPanel extends VerticalLayout
 						"</ul>" +
 					"<li>Upload the new zip file below." +
 				"</ol>");
-	}
-
-	public void setProjectName(String name) {
-		projectNameLabel.setText(name);
 	}
 
 	public void showFileCheckPanel() {

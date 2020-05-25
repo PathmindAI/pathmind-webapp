@@ -13,8 +13,8 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
@@ -44,8 +44,7 @@ public abstract class TrainingService {
             pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
         }
 
-//        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_0_7_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
-        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_1_0_5, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
+        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_1_0_6, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
     }
     
     public void startRun(Experiment exp){

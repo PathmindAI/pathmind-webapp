@@ -364,7 +364,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			rewardFunctionEditor.setVariableNames(rewardVariables);
 		}
 		policyChartPanel.setExperiment(experiment, policy);
-		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
 		updateRightPanelForExperiment();
 	}
 
@@ -480,22 +479,37 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	class ExperimentViewRunUpdateSubscriber implements RunUpdateSubscriber {
 		@Override
 		public void handleBusEvent(RunUpdateBusEvent event) {
-			addOrUpdateRun(event.getRun());
-			updatedRunForPolicies(event.getRun());
-			PushUtils.push(getUI(), () -> {
-				setPolicyChartVisibility();
-				updateRightPanelForExperiment();
-			});
+			if (isSameExperiment(event)) {
+				addOrUpdateRun(event.getRun());
+				updatedRunForPolicies(event.getRun());
+				PushUtils.push(getUI(), () -> {
+					setPolicyChartVisibility();
+					updateRightPanelForExperiment();
+				});
+			} else if (isSameModel(event)) {
+				if (!experiments.contains(event.getRun().getExperiment())) {
+					experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+					PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
+				}
+			}
 		}
 
 		@Override
 		public boolean filterBusEvent(RunUpdateBusEvent event) {
-			return experiment != null && experiment.getId() == event.getRun().getExperiment().getId();
+			return isSameExperiment(event) || isSameModel(event);
 		}
 
 		@Override
 		public boolean isAttached() {
 			return ExperimentView.this.getUI().isPresent();
+		}
+		
+		private boolean isSameExperiment(RunUpdateBusEvent event) {
+			return experiment != null && experiment.getId() == event.getRun().getExperiment().getId();
+		}
+		
+		private boolean isSameModel(RunUpdateBusEvent event) {
+			return experiment != null && experiment.getModelId() == event.getRun().getModel().getId();
 		}
 	}
 }

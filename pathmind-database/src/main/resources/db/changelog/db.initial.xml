@@ -1241,7 +1241,7 @@
          </rollback>
      </changeSet>
 
-    <changeSet id="20200514-01" author="bruno.rezende@ext.vaadin.com">
+     <changeSet id="20200514-01" author="bruno.rezende@ext.vaadin.com">
         <addColumn tableName="RUN">
             <column name="EC2_CREATED_AT" type="DATETIME"/>
         </addColumn>

@@ -121,4 +121,12 @@ public class LoginPageSteps {
 	public void checkConsoleError(String error) {
 		loginPage.checkConsoleError(error);
 	}
+    @Step
+    public void checkThatEarlyAccessErrorMessageIsShownForField(String error, String field) {
+        loginPage.checkThatEarlyAccessErrorMessageIsShownForField(error, field);
+    }
+    @Step
+    public void checkNewPasswordPageOpened() {
+        loginPage.checkNewPasswordPageOpened();
+    }
 }

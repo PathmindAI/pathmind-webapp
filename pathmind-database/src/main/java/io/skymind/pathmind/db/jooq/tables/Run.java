@@ -109,11 +109,14 @@ public class Run extends TableImpl<RunRecord> {
     public final TableField<RunRecord, String> JOB_ID = createField(DSL.name("job_id"), org.jooq.impl.SQLDataType.VARCHAR(36), this, "");
 
     /**
+<<<<<<< HEAD
      * The column <code>public.run.ec2_created_at</code>.
      */
     public final TableField<RunRecord, LocalDateTime> EC2_CREATED_AT = createField(DSL.name("ec2_created_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
 
     /**
+=======
+>>>>>>> refs/heads/dev
      * Create a <code>public.run</code> table reference
      */
     public Run() {

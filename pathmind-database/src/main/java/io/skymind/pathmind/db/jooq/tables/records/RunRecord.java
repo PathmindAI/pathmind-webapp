@@ -157,6 +157,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record1
     public Long getTrainingErrorId() {
         return (Long) get(8);
     }
+    
 
     /**
      * Setter for <code>public.run.job_id</code>.
@@ -253,7 +254,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record1
     public Field<Long> field9() {
         return Run.RUN.TRAINING_ERROR_ID;
     }
-
+    
     @Override
     public Field<String> field10() {
         return Run.RUN.JOB_ID;
@@ -308,7 +309,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record1
     public Long component9() {
         return getTrainingErrorId();
     }
-
+    
     @Override
     public String component10() {
         return getJobId();
@@ -363,7 +364,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record1
     public Long value9() {
         return getTrainingErrorId();
     }
-
+    
     @Override
     public String value10() {
         return getJobId();
@@ -427,7 +428,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record1
         setTrainingErrorId(value);
         return this;
     }
-
+    
     @Override
     public RunRecord value10(String value) {
         setJobId(value);

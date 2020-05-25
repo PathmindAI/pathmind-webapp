@@ -75,10 +75,10 @@ Feature: Projects page
     When Open project AutotestProject on projects page
     When Click model 1 archive/unarchive button
     When Confirm archive/unarchive popup
-    When Open projects archived tab
-    Then Check that model name 1 exist in archived tab
-    When Open projects archived tab
-    When Check that model NOT exist in archived tab
+    When Open projects/model/experiment archived tab
+    Then Check that model/experiment name 1 exist in archived tab
+    When Open projects/model/experiment archived tab
+    When Check that model/experiment NOT exist in archived tab
 
   Scenario: Check model page Unarchive btn, move model to active tab
     Given Login to the pathmind
@@ -90,9 +90,9 @@ Feature: Projects page
     When Open archives tab
     When Click model 1 archive/unarchive button
     When Confirm archive/unarchive popup
-    When Check that model NOT exist in archived tab
+    When Check that model/experiment NOT exist in archived tab
     When Open models tab
-    Then Check that model name 1 exist in archived tab
+    Then Check that model/experiment name 1 exist in archived tab
 
   Scenario: Edit project name from projects page
     Given Login to the pathmind
