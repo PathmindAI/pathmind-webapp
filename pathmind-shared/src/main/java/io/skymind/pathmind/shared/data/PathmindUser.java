@@ -41,9 +41,10 @@ public class PathmindUser
         return UserRole.getEnumFromId(this.accountType);
     }
 
-    public void setAccountType(UserRole userRole) {
-        this.accountType = userRole.getId();
+    public void setAccountType(int accountType) {
+        this.accountType = accountType;
     }
+
 
 }
 

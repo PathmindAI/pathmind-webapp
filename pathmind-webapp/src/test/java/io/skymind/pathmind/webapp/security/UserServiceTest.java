@@ -2,7 +2,7 @@ package io.skymind.pathmind.webapp.security;
 
 import io.skymind.pathmind.PathmindApplicationTests;
 import io.skymind.pathmind.shared.data.PathmindUser;
-import io.skymind.pathmind.db.testutils.UserUtils;
+import io.skymind.pathmind.db.testutils.UserTestUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class UserServiceTest extends PathmindApplicationTests
 
     @Test
     public void signup() {
-        PathmindUser pathmindUser = UserUtils.getNewPathmindUser();
+        PathmindUser pathmindUser = UserTestUtils.getNewPathmindUser();
         PathmindUser signedupUser = userService.signup(pathmindUser);
 
         assertNotNull(signedupUser.getEmailVerificationToken());
@@ -29,7 +29,7 @@ public class UserServiceTest extends PathmindApplicationTests
 
     @Test
     public void verifyAccountFail() {
-        PathmindUser pathmindUser = UserUtils.getNewPathmindUser();
+        PathmindUser pathmindUser = UserTestUtils.getNewPathmindUser();
         PathmindUser signedupUser = userService.signup(pathmindUser);
 
         boolean isVerified = userService.verifyAccount(signedupUser, UUID.randomUUID());
@@ -39,7 +39,7 @@ public class UserServiceTest extends PathmindApplicationTests
 
     @Test
     public void verifyAccountSuccess() {
-        PathmindUser pathmindUser = UserUtils.getNewPathmindUser();
+        PathmindUser pathmindUser = UserTestUtils.getNewPathmindUser();
         PathmindUser signedupUser = userService.signup(pathmindUser);
 
         boolean isVerified = userService.verifyAccount(signedupUser, signedupUser.getEmailVerificationToken());
