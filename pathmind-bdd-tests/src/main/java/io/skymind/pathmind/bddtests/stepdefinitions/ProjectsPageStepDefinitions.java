@@ -532,4 +532,9 @@ public class ProjectsPageStepDefinitions {
     public void checkThatModelNameExistInArchivedTab(String experiment) {
         projectsPageSteps.checkThatModelNameExistInArchivedTab(experiment);
     }
+
+    @Then("^Check that checkmark is shown$")
+    public void checkThatCheckmarkIsShown() {
+        projectsPageSteps.checkThatCheckmarkIsShown();
+    }
 }

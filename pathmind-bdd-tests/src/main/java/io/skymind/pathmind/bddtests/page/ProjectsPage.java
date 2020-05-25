@@ -705,4 +705,8 @@ public class ProjectsPage extends PageObject {
     public void checkThatModelNameExistInArchivedTab(String experiment) {
         assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content")), hasItem(experiment));
     }
+
+    public void checkThatCheckmarkIsShown() {
+        assertThat(getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:check' and @class='fade-in']")).isDisplayed(), is(true));
+    }
 }
