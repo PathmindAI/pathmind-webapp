@@ -24,7 +24,7 @@ background: #ebebeb;\
 }\
 .ace-eclipse {\
 background-color: #FFFFFF;\
-border: 1px solid var(--lumo-contrast-20pct);\
+border: 1px solid var(--pm-gray-color);\
 border-radius: var(--lumo-border-radius);\
 color: black;\
 font-size: 0.85rem;\

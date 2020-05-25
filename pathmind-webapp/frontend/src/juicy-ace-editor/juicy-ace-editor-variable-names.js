@@ -145,6 +145,53 @@ function getFoldLineTokens(row, foldLine) {
 
   return renderTokens;
 }
+
+function computeWidth(force) {
+  if (this.$modified || force) {
+    this.$modified = false;
+
+    if (this.$useWrapMode) return (this.screenWidth = this.$wrapLimit);
+
+    var lines = this.doc.getAllLines();
+    var cache = this.$rowLengthCache;
+    var longestScreenLine = 0;
+    var foldIndex = 0;
+    var foldLine = this.$foldData[foldIndex];
+    var foldStart = foldLine ? foldLine.start.row : Infinity;
+    var len = lines.length;
+
+    for (var i = 0; i < len; i++) {
+      if (i > foldStart) {
+        i = foldLine.end.row + 1;
+        if (i >= len) break;
+        foldLine = this.$foldData[foldIndex++];
+        foldStart = foldLine ? foldLine.start.row : Infinity;
+      }
+
+      if (cache[i] == null)
+        cache[i] =
+          this.$getStringScreenWidth(lines[i])[0] + getFoldAdditionalWidth(i);
+
+      if (cache[i] > longestScreenLine) longestScreenLine = cache[i];
+    }
+    this.screenWidth = longestScreenLine;
+  }
+}
+function getFoldAdditionalWidth(row) {
+  var foldLine = editor.session.getFoldLine(row, row);
+  var additionalWidth = 0;
+  if (foldLine && foldLine.folds) {
+    for (var i = 0; i < foldLine.folds.length; i++) {
+      var fold = foldLine.folds[i];
+      if (fold.placeholder) {
+        additionalWidth +=
+          fold.placeholder.length - (fold.end.column - fold.start.column);
+      }
+    }
+  }
+  return additionalWidth;
+}
+
 if (!window.Pathmind) {
   window.Pathmind = {};
 }
@@ -153,6 +200,7 @@ window.Pathmind.CodeEditor = {
     editor = editorWrapper.editor;
     Range = ace.require("ace/range").Range;
     editor.session.expandFold = expandFold;
+    editor.session.$computeWidth = computeWidth;
     editor.renderer.$textLayer.$getFoldLineTokens = getFoldLineTokens;
     createVariableNameHints();
     editor.session.on("change", e => onChange(e));

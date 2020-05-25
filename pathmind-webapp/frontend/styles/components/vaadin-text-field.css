@@ -19,8 +19,14 @@
   box-shadow: inset 0px 0px 0px 1px rgba(26, 41, 73, 1);
 }
 
+:host(.reward-variable-name-field) [part="value"] {
+  min-height: auto;
+  padding: 0;
+}
+
 :host(.reward-variable-name-field) [part="input-field"] {
-  height: 100%;
-  background-color: transparent;
-  border-radius: 0;
+  height: 1.75rem;
+  padding: 0.4em;
+  border-radius: 0 3px 3px 0;
+  border: 1px solid var(--pm-gray-color);
 }

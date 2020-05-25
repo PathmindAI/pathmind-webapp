@@ -9,6 +9,7 @@ import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.utils.ChartUtils;
 
@@ -26,8 +27,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.webapp.bus.EventBus;
 
-
 import java.util.stream.Collectors;
+
+import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
 
 public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubscriber
 {
@@ -39,8 +41,9 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
 
     public PolicyChartPanel() {
         setupChart();
-        add(chart);
-        addClassName("policy-chart-panel");
+        add(LabelFactory.createLabel("Learning Progress", BOLD_LABEL), chart);
+        setPadding(false);
+        setSpacing(false);
     }
 
     private void updatedPolicyChart(List<Policy> updatedPolicies) {
@@ -75,7 +78,6 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
         YAxis yAxis = new YAxis();
         yAxis.setTitle("Mean Reward Score over All Episodes");
 
-        chart.getConfiguration().setTitle("Reward Score");
         chart.getConfiguration().setAccessibility(new Accessibility(false));
         chart.getConfiguration().getLegend().setEnabled(false);
         chart.getConfiguration().addxAxis(xAxis);

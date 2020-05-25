@@ -8,7 +8,6 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-bottom: var(--lumo-space-xs);
 }
 
 .notes-block .header span:first-child {
@@ -34,8 +33,10 @@
   height: 100%;
 }
 
-.unsaved-draft-label {
+.notes-block .hint-label {
   align-self: center;
+  margin-left: auto;
+  margin-right: var(--lumo-space-m);
 }
 
 .unsaved-draft-label.unsaved-and-too-big-text-label {
