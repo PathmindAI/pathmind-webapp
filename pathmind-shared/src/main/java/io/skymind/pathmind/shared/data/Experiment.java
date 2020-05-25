@@ -11,8 +11,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Setter
 public class Experiment extends ArchivableData
 {
-	public static String DEFAULT_REWARD_FUNCTION = "reward = after[0] - before[0];";
-    
 	private long modelId;
 	private String rewardFunction;
 	private LocalDateTime dateCreated;

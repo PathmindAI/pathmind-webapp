@@ -117,7 +117,7 @@ class ExperimentRepository
 	}
 
 	protected static long createNewExperiment(DSLContext ctx, long modelId) {
-        return createNewExperiment(ctx, modelId, "1", Experiment.DEFAULT_REWARD_FUNCTION);
+        return createNewExperiment(ctx, modelId, "1", "");
 	}
 	
 	protected static long createNewExperiment(DSLContext ctx, long modelId, String experimentName, String rewardFunction) {
