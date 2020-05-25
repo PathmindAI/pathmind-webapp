@@ -24,27 +24,27 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ErrorView extends PathMindDefaultView implements HasErrorParameter<Exception>
 {
-	private String errorId;
-	
-	public ErrorView() {
-		super();
-	}
-	
-	@Override
- 	public int setErrorParameter(BeforeEnterEvent event, ErrorParameter<Exception> parameter) {
-		errorId = PathmindErrorHandler.generateUniqueErrorId();
- 		log.error(String.format("Error #%s: %s", errorId, parameter.getException().getMessage()), parameter.getException());
- 		return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
- 	}
+    private String errorId;
 
-	@Override
-	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("Please contact Pathmind for assistance.");
-	}
+    public ErrorView() {
+        super();
+    }
 
-	@Override
-	protected Component getMainContent() {
-		return WrapperUtils.wrapWidthFullCenterVertical(
-				LabelFactory.createLabel(String.format("An unexpected error occurred. Please contact Pathmind for assistance (#%s).", errorId)));
-	}
+    @Override
+     public int setErrorParameter(BeforeEnterEvent event, ErrorParameter<Exception> parameter) {
+        errorId = PathmindErrorHandler.generateUniqueErrorId();
+        log.error(String.format("Error #%s: %s", errorId, parameter.getException().getMessage()), parameter.getException());
+        return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+     }
+
+    @Override
+    protected Component getTitlePanel() {
+        return new ScreenTitlePanel("Oops!");
+    }
+
+    @Override
+    protected Component getMainContent() {
+        return WrapperUtils.wrapWidthFullCenterVertical(
+                LabelFactory.createLabel(String.format("An unexpected error occurred. Please contact Pathmind for assistance (#%s).", errorId)));
+    }
 }
