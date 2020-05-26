@@ -8,6 +8,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,67 +28,77 @@ public class Utils extends PageObject {
     public void openPage(String url) {
         getDriver().navigate().to(PATHMIND_URL + url);
     }
+
     public void clickElementRepeatIfStaleException(By by) {
         int attempts = 0;
-        while(attempts < 3) {
+        while (attempts < 3) {
             try {
                 getDriver().findElement(by).click();
                 break;
-            } catch(org.openqa.selenium.StaleElementReferenceException ex) {
+            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
                 waitABit(2000);
             }
             attempts++;
         }
     }
+
     public List<String> getStringListRepeatIfStaleException(By by) {
         List<String> strings = new ArrayList<>();
         int attempts = 0;
-        while(attempts < 3) {
+        while (attempts < 3) {
             try {
-                for(WebElement e : getDriver().findElements(by)){
+                for (WebElement e : getDriver().findElements(by)) {
                     strings.add(e.getText());
                 }
                 break;
-            } catch(org.openqa.selenium.StaleElementReferenceException ex) {
+            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
                 waitABit(2000);
             }
             attempts++;
         }
         return strings;
     }
+
     public String getStringRepeatIfStaleException(By by) {
         String string = null;
         int attempts = 0;
-        while(attempts < 3) {
+        while (attempts < 3) {
             try {
                 string = getDriver().findElement(by).getText();
                 break;
-            } catch(org.openqa.selenium.StaleElementReferenceException ex) {
+            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
                 waitABit(2000);
             }
             attempts++;
         }
         return string;
     }
+
     public void moveToElementRepeatIfStaleException(By by) {
         int attempts = 0;
-        while(attempts < 3) {
+        while (attempts < 3) {
             try {
                 Actions actions = new Actions(getDriver());
                 actions.moveToElement(getDriver().findElement(by));
                 actions.perform();
                 break;
-            } catch(org.openqa.selenium.StaleElementReferenceException ex) {
+            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
                 waitABit(2000);
             }
             attempts++;
         }
     }
+
     public String getTextRootElement(WebElement element) {
         String text = element.getText().trim();
         for (WebElement child : element.findElements(By.xpath("./*"))) {
             text = text.replaceFirst(child.getText(), "").trim();
         }
         return text;
+    }
+
+    public void waitForLoadingBar() {
+        waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: block;' and @class='v-loading-indicator first']")));
+        waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;' and @class='v-loading-indicator first']")));
     }
 }

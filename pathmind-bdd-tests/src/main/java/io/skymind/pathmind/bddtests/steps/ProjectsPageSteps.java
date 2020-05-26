@@ -392,4 +392,8 @@ public class ProjectsPageSteps {
     public void checkThatCheckmarkIsShown() {
         projectsPage.checkThatCheckmarkIsShown();
     }
+    @Step
+    public void checkThatNotesSavedMsgShown() {
+        projectsPage.checkThatNotesSavedMsgShown();
+    }
 }

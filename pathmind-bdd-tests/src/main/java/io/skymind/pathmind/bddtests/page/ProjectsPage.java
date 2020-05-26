@@ -257,6 +257,7 @@ public class ProjectsPage extends PageObject {
         WebElement experiment = getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experimentName+ " " + "']"));
         waitFor(ExpectedConditions.elementToBeClickable(experiment));
         experiment.click();
+        utils.waitForLoadingBar();
     }
 
     public void clickProjectsArchiveButton(String projectName) {
@@ -706,5 +707,9 @@ public class ProjectsPage extends PageObject {
 
     public void checkThatCheckmarkIsShown() {
         assertThat(getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:check' and @class='fade-in']")).isDisplayed(), is(true));
+    }
+
+    public void checkThatNotesSavedMsgShown() {
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Notes saved!' and @class='fade-out-hint-label fade-in']")).isDisplayed(), is(true));
     }
 }

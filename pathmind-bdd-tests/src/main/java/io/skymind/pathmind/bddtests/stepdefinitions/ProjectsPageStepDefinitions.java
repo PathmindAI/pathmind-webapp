@@ -537,4 +537,9 @@ public class ProjectsPageStepDefinitions {
     public void checkThatCheckmarkIsShown() {
         projectsPageSteps.checkThatCheckmarkIsShown();
     }
+
+    @Then("^Check that Notes saved! msg shown$")
+    public void checkThatNotesSavedMsgShown() {
+        projectsPageSteps.checkThatNotesSavedMsgShown();
+    }
 }

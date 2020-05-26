@@ -122,7 +122,8 @@ Feature: Experiments page
     Then Click the model name 1
     Then Click the experiment name 1
     Then Add note This is the experiment notes for this Coffee Shop project to the experiment page
-    Then Check that checkmark is shown
+    Then Click project save draft btn
+    Then Check that Notes saved! msg shown
 
   @notes
   Scenario: Adding notes to the started experiment
