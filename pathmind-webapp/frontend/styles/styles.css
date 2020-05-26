@@ -31,6 +31,9 @@ html {
   --pm-line-height-m: 1.3em;
   --pm-line-height-s: 1.15em;
 
+  --code-font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas",
+    "source-code-pro", monospace;
+
   /* pathmind-theme */
   --lumo-font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   --lumo-font-size-xxl: 1.875rem;
@@ -169,11 +172,20 @@ hr {
   text-overflow: ellipsis;
 }
 
-.unsaved-draft-label {
+.hint-label,
+.fade-out-hint-label {
   font-size: var(--lumo-font-size-s);
   color: var(--pm-primary-color);
-  margin-left: auto;
-  margin-right: var(--lumo-space-m);
+}
+
+.fade-out-hint-label {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.fade-out-hint-label.fade-in {
+  display: block !important;
+  opacity: 1;
 }
 
 .default-view {
@@ -336,17 +348,23 @@ hr {
   flex: 0 0 auto;
 }
 
+.upload-model-view
+  .view-section
+  > vaadin-vertical-layout
+  > vaadin-horizontal-layout:last-child {
+  margin-top: var(--lumo-space-xl);
+}
+
 /* Upload Model View Reward Variable Names */
 .upload-model-view vaadin-custom-field {
+  box-sizing: border-box;
+  flex: 1;
   width: 100%;
+  max-height: 280px;
   line-height: 1;
-}
-
-.upload-model-view .reward-function-wrapper vaadin-custom-field {
-  margin-top: var(--lumo-space-l);
-}
-
-.reward-function-wrapper vaadin-custom-field {
+  padding: 0 var(--lumo-space-s) var(--lumo-space-s);
+  border: 1px solid var(--pm-gray-color);
+  border-radius: var(--lumo-border-radius);
   overflow-y: auto;
 }
 
@@ -419,10 +437,11 @@ account-view {
 }
 
 .tag {
+  color: var(--pm-gray-color-dark);
   padding: 4px 8px;
   background: var(--lumo-contrast-10pct);
   border-radius: var(--lumo-border-radius);
-  margin: 2px;
+  margin: 0 2px;
 }
 .tag:empty {
   display: none;
