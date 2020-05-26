@@ -1,12 +1,9 @@
-ace.define(
-  "ace/theme/eclipse",
-  ["require", "exports", "module", "ace/lib/dom"],
-  function(require, exports, module) {
+ace.define("ace/theme/eclipse", ["require", "exports", "module", "ace/lib/dom"], function(require, exports, module) {
     "use strict";
 
     exports.isDark = false;
     exports.cssText =
-      '.ace-eclipse .ace_gutter-layer {\
+        '.ace-eclipse .ace_gutter-layer {\
 contain: none;\
 }\
 .ace-eclipse .ace_gutter {\
@@ -27,7 +24,7 @@ background-color: #FFFFFF;\
 border: 1px solid var(--pm-gray-color);\
 border-radius: var(--lumo-border-radius);\
 color: black;\
-font-size: 0.85rem;\
+font-size: var(--lumo-font-size-s);\
 line-height: 1.6rem;\
 }\
 .ace-eclipse .ace_cursor {\
@@ -103,8 +100,7 @@ border: 1px solid rgb(181, 213, 255);\
 background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==") right repeat-y;\
 }\
 .ace-eclipse .ace_reward_variable{\
-  font-style: italic;\
-  padding: 2px 0;\
+  padding: .1em 0;\
   border-radius: 4px;\
 }\
 .variable-color-0 {\
@@ -152,12 +148,11 @@ background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZg
 
     var dom = require("../lib/dom");
     dom.importCssString(exports.cssText, exports.cssClass);
-  }
-);
+});
 (function() {
-  ace.require(["ace/theme/eclipse"], function(m) {
-    if (typeof module == "object" && typeof exports == "object" && module) {
-      module.exports = m;
-    }
-  });
+    ace.require(["ace/theme/eclipse"], function(m) {
+        if (typeof module == "object" && typeof exports == "object" && module) {
+            module.exports = m;
+        }
+    });
 })();
