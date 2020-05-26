@@ -94,7 +94,7 @@ public class ProjectsPage extends PageObject {
 	private List<WebElement> rewardVariableNameInputs;
 	@FindBy(xpath = "//vaadin-text-area[@theme='notes']")
 	private WebElement notesField;
-	@FindBy(xpath = "//*[text()='Experiment Notes']/ancestor::*[@class='notes-field-wrapper']/descendant::vaadin-text-area")
+	@FindBy(xpath = "//*[text()='Notes']/ancestor::*[@class='notes-field-wrapper']/descendant::vaadin-text-area")
 	private WebElement experimentNotes;
 	@FindBy(xpath = "//vaadin-text-field")
 	private WebElement editProjectNameInputShadow;
