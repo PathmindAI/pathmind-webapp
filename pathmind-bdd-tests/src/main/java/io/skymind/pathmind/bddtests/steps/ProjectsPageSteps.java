@@ -284,7 +284,6 @@ public class ProjectsPageSteps {
 	@Step
 	public void addNoteToTheExperimentPage(String note) {
 		projectsPage.addNoteToTheExperimentPage(note);
-		projectsPage.projectPageClickSaveBtn();
 	}
 	@Step
 	public void checkExperimentNotesIs(String note) {

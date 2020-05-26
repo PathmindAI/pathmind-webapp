@@ -1,12 +1,9 @@
-ace.define(
-  "ace/theme/eclipse",
-  ["require", "exports", "module", "ace/lib/dom"],
-  function(require, exports, module) {
+ace.define("ace/theme/eclipse", ["require", "exports", "module", "ace/lib/dom"], function(require, exports, module) {
     "use strict";
 
     exports.isDark = false;
     exports.cssText =
-      '.ace-eclipse .ace_gutter-layer {\
+        '.ace-eclipse .ace_gutter-layer {\
 contain: none;\
 }\
 .ace-eclipse .ace_gutter {\
@@ -24,7 +21,7 @@ background: #ebebeb;\
 }\
 .ace-eclipse {\
 background-color: #FFFFFF;\
-border: 1px solid var(--lumo-contrast-20pct);\
+border: 1px solid var(--pm-gray-color);\
 border-radius: var(--lumo-border-radius);\
 color: black;\
 font-size: 0.85rem;\
@@ -152,12 +149,11 @@ background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZg
 
     var dom = require("../lib/dom");
     dom.importCssString(exports.cssText, exports.cssClass);
-  }
-);
+});
 (function() {
-  ace.require(["ace/theme/eclipse"], function(m) {
-    if (typeof module == "object" && typeof exports == "object" && module) {
-      module.exports = m;
-    }
-  });
+    ace.require(["ace/theme/eclipse"], function(m) {
+        if (typeof module == "object" && typeof exports == "object" && module) {
+            module.exports = m;
+        }
+    });
 })();

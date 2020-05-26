@@ -33,11 +33,14 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -48,7 +51,6 @@ import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
-import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
@@ -75,7 +77,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LAB
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
-public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
+public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>, AfterNavigationObserver
 {
 
 	// We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
@@ -119,8 +121,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Autowired
 	private TrainingService trainingService;
 	@Autowired
-	private UserDAO userDAO;
-	@Autowired
 	private RunDAO runDAO;
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
@@ -157,25 +157,28 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	@Override
 	protected Component getMainContent() {
-		setupLeftPanel();
+		experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
+		setupExperimentContentPanel();
+		HorizontalLayout experimentContent = WrapperUtils.wrapWidthFullHorizontal(middlePanel, getRightPanel());
+		experimentContent.addClassName("view-section");
 		HorizontalLayout pageWrapper = WrapperUtils.wrapWidthFullHorizontal(
 				experimentsNavbar,
-				middlePanel,
-				getRightPanel());
+				experimentContent);
 		pageWrapper.addClassName("page-content");
 		pageWrapper.setPadding(true);
-
 		return pageWrapper;
 	}
 
-	private void setupLeftPanel() {
-		experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
+	private void setupExperimentContentPanel() {
 		panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
 		policyChartPanel = new PolicyChartPanel();
-		policyChartPanel.setPadding(false);
 		rewardFunctionEditor = new RewardFunctionEditor();
 		rewardFunctionEditor.setReadonly(true);
 		rewardFunctionEditor.setSizeFull();
+		rewardFunctionEditor.setMaxLines(20);
+		// If min line is set to 1 (default when there is max line),
+		// the horizontal scrollbar will not appear even though the line content is very long and scrollable
+		rewardFunctionEditor.setMinLines(2);
 		rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
 			LabelFactory.createLabel("Reward Function", BOLD_LABEL), rewardFunctionEditor
 		);
@@ -185,7 +188,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				rewardFunctionGroup,
 				trainingStartingPlaceholder,
 				policyChartPanel);
-		middlePanel.addClassName("view-section");
+		middlePanel.setPadding(false);
 	}
 
 	private VerticalLayout getRightPanel() {
@@ -207,34 +210,30 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 		exportPolicyButton = new Button("Export Policy", click -> getUI().ifPresent(ui -> ui.navigate(ExportPolicyView.class, policy.getId())));
 		exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		exportPolicyButton.addClassName("half-width");
 		exportPolicyButton.setVisible(false);
 
 		stopTrainingButton = new Button("Stop Training", click -> {
 			showStopTrainingConfirmationDialog();
 		});
 		stopTrainingButton.addThemeName("secondary");
-		stopTrainingButton.addClassName("half-width");
 		stopTrainingButton.setVisible(true);
 
 		archiveExperimentButton = new Button("Archive", VaadinIcon.ARCHIVE.create(), click -> archiveExperiment());
 		archiveExperimentButton.addThemeName("secondary");
-		archiveExperimentButton.addClassName("half-width");
 
 		unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
 		unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		unarchiveExperimentButton.addClassName("half-width");
 
 		notesField = createViewNotesField();
 
-		VerticalLayout buttonsWrapper = WrapperUtils.wrapWidthFullCenterVertical(
-			exportPolicyButton,
+		Div buttonsWrapper = new Div(
+			archiveExperimentButton,
+			unarchiveExperimentButton,
 			restartTraining,
 			stopTrainingButton,
-			archiveExperimentButton,
-			unarchiveExperimentButton
+			exportPolicyButton
 		);
-		buttonsWrapper.setPadding(false);
+		buttonsWrapper.addClassName("buttons-wrapper");
 
 		VerticalLayout rightPanel = WrapperUtils.wrapSizeFullVertical(
 				buttonsWrapper,
@@ -242,6 +241,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 				policyHighlightPanel,
 				notesField);
 		rightPanel.addClassName("right-panel");
+		rightPanel.setPadding(false);
 		return rightPanel;
 	}
 
@@ -323,7 +323,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 			updateScreenComponents();
 			notesField.setNotesText(experiment.getUserNotes());
 			pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-			getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
+			experimentsNavbar.setCurrentExperiment(selectedExperiment);
+			
+			if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
+				getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
+			} else {
+				getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
+			}
 		}
 	}
 
@@ -353,6 +359,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		experimentsNavbar.setExperiments(event.getUI(), experiments, experiment);
 	}
 
+	@Override
+	public void afterNavigation(AfterNavigationEvent event) {
+		setChartHeight();
+	}
+
+	private void setChartHeight() {
+		// hack for inaccurate height calculation for vaadin chart only happening on initial load
+		// the height was inaccurate due to the in-progress initialization of the reward function editor with dynamic height
+		getUI().ifPresent(ui -> ui.getPage().executeJs("const vChart = window.document.getElementsByTagName('vaadin-chart')[0]; vChart && setTimeout(() => {const editorHeight = window.document.getElementsByTagName('juicy-ace-editor')[0].offsetHeight + 'px'; vChart.style.height = `calc(100vh - 19rem - ${editorHeight})`}, 200)"));
+	}
+
 	private void updateScreenComponents() {
 		clearErrorState();
 		setPolicyChartVisibility();
@@ -364,6 +381,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		}
 		policyChartPanel.setExperiment(experiment, policy);
 		updateRightPanelForExperiment();
+		setChartHeight();
 	}
 
 	private void setPolicyChartVisibility() {
