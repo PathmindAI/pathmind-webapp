@@ -35,4 +35,13 @@ public class ConfirmationUtils {
 		dialog.setCancelButton("Leave", evt -> cancelAction.execute());
 		dialog.open();
 	}
+
+	public static void signinAgain(Command action) {
+	    String header = "You need to sign-in again...";
+	    String text = "Your email address have changed. Please, sign-in again using your new email address.";
+	    String confirmText = "OK";
+	    ConfirmDialog dialog = new ConfirmDialog(header, text, confirmText, evt -> action.execute());
+	    dialog.open();
+	}
+	
 }

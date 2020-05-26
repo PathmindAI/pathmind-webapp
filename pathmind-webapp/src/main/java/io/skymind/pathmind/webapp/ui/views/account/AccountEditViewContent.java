@@ -8,12 +8,14 @@ import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.data.PathmindUser;
+import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.binders.PathmindUserBinders;
+import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,13 +52,12 @@ public class AccountEditViewContent extends PolymerTemplate<AccountEditViewConte
 	private UserService userService;
 
 	@Autowired
-	public AccountEditViewContent(CurrentUser currentUser,
+	public AccountEditViewContent(CurrentUser currentUser, UserService userService,
 						   @Value("${pathmind.contact-support.address}") String contactLink) {
 		getModel().setContactLink(contactLink);
 		user = currentUser.getUser();
+		this.userService = userService;
 		initBinder();
-
-		email.setEnabled(false);
 
 		cancelBtn.addClickShortcut(Key.ESCAPE);
 
@@ -66,14 +67,18 @@ public class AccountEditViewContent extends PolymerTemplate<AccountEditViewConte
 				return;
 			}
 			userService.update(user);
-			getUI().ifPresent(ui -> ui.navigate(AccountView.class));
+			if (!SecurityUtils.getUsername().equals(user.getEmail())) {
+			    ConfirmationUtils.signinAgain(() -> getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.LOGOUT_URL)));
+			} else {
+			    getUI().ifPresent(ui -> ui.navigate(AccountView.class));
+			}
 		});
 	}
 
 	private void initBinder() {
 		binder = new Binder<>(PathmindUser.class);
 
-		PathmindUserBinders.bindEmail(binder, email);
+		PathmindUserBinders.bindEmail(userService, binder, email);
 		PathmindUserBinders.bindFirstName(binder, firstName);
 		PathmindUserBinders.bindLastName(binder, lastName);
 
