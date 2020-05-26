@@ -12,12 +12,16 @@ import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironmentManager;
 import io.skymind.pathmind.webapp.security.CurrentUser;
+import io.skymind.pathmind.webapp.ui.components.CloseableNotification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Tag("setting-view-content")
 @JsModule("./src/setting/setting-view-content.js")
@@ -48,17 +52,24 @@ public class SettingViewContent extends PolymerTemplate<SettingViewContent.Model
 
     private void initBtns() {
         saveBtn.addClickListener(e -> {
-            // need pop up message
             environmentManager.getEnvironment(user.getId()).setEc2InstanceType(EC2InstanceType.fromName(ec2InstanceType.getValue()));
-            log.info("kepricondebug selected : " + ec2InstanceType.getValue());
+
+            String text = "Current settings are saved!";
+            CloseableNotification notification = new CloseableNotification(text);
+            notification.setDuration(-1);
+            notification.open();
         });
 
     }
 
     private void initContent() {
-        ec2InstanceType.setItems(EC2InstanceType.IT_16CPU_32GB.toString(), EC2InstanceType.IT_36CPU_72GB.toString());
+        List<String> ec2Instances = Arrays.stream(EC2InstanceType.values())
+                .map(EC2InstanceType::toString)
+                .collect(Collectors.toList());
+        ec2InstanceType.setItems(ec2Instances);
         ec2InstanceType.setLabel("Instance Type");
         ec2InstanceType.setPlaceholder(environmentManager.getEnvironment(user.getId()).getEc2InstanceType().toString());
+        ec2InstanceType.setValue(environmentManager.getEnvironment(user.getId()).getEc2InstanceType().toString());
     }
 
     public interface Model extends TemplateModel {
