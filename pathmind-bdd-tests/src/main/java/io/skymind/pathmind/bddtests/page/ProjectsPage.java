@@ -90,7 +90,7 @@ public class ProjectsPage extends PageObject {
 	private WebElement archiveBtnShadow;
 	@FindBy(xpath = "//vaadin-button[@title='Unarchive']")
 	private WebElement unarchiveBtnShadow;
-	@FindBy(xpath = "//vaadin-text-field[@class='reward-variable-name-field']")
+	@FindBy(xpath = "//vaadin-text-field[contains(@class,'reward-variable-name-field')]")
 	private List<WebElement> rewardVariableNameInputs;
 	@FindBy(xpath = "//vaadin-text-area[@theme='notes']")
 	private WebElement notesField;
@@ -171,9 +171,7 @@ public class ProjectsPage extends PageObject {
     }
 
     public void checkThatProjectExistInProjectsList(String projectName) {
-        Actions actions = new Actions(getDriver());
-        actions.moveToElement(getDriver().findElement(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-grid-cell-content")));
-        actions.perform();
+        utils.moveToElementRepeatIfStaleException(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-grid-cell-content"));
         assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span")), hasItem(projectName));
     }
 
@@ -385,9 +383,9 @@ public class ProjectsPage extends PageObject {
 
     public void clickProjectSaveDraftBtn() {
         Actions action = new Actions(getDriver());
-        WebElement we = getDriver().findElement(By.xpath("//vaadin-button[text()='Save Draft']"));
+        WebElement we = getDriver().findElement(By.xpath("//vaadin-button[text()='Save']"));
         action.moveToElement(we).build().perform();
-        getDriver().findElement(By.xpath("//vaadin-button[text()='Save Draft']")).click();
+        getDriver().findElement(By.xpath("//vaadin-button[text()='Save']")).click();
         try {
             WebElement closePopUp = getDriver().findElement(By.xpath("//vaadin-button[@theme='icon']"));
             waitFor(ExpectedConditions.visibilityOf(closePopUp));
