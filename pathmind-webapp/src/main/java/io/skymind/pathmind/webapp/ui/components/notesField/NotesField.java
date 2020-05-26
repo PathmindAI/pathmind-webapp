@@ -38,7 +38,7 @@ public class NotesField extends HorizontalLayout {
         hintWrapper.setVisible(false);
         savedIcon = new Icon(VaadinIcon.CHECK);
         savedIcon.setVisible(false);
-        warningWrapper = LabelFactory.createLabel(String.format("Notes must not exceed %s characters", MAX_NOTES_SIZE), "hint-label", "unsaved-and-too-big-text-label");
+        warningWrapper = LabelFactory.createLabel(String.format("Max. %s characters", MAX_NOTES_SIZE), "hint-label", "unsaved-and-too-big-text-label");
         warningWrapper.setVisible(false);
         add(editableFieldWrapper());
         setSpacing(false);
