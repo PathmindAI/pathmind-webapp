@@ -532,4 +532,9 @@ public class ProjectsPageStepDefinitions {
     public void checkThatModelNameExistInArchivedTab(String experiment) {
         projectsPageSteps.checkThatModelNameExistInArchivedTab(experiment);
     }
+
+    @When("^Check that new project page opened$")
+    public void checkThatNewProjectPageOpened() {
+        projectsPageSteps.checkThatNewProjectPageOpened();
+    }
 }

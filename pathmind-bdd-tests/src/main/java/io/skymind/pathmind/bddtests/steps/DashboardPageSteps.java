@@ -44,4 +44,12 @@ public class DashboardPageSteps {
         dashboardPage.clickDashItemIcons(projectName);
         dashboardPage.clickArchiveBtn();
     }
+    @Step
+    public void checkDashboardBeginScreenElements() {
+	    dashboardPage.checkDashboardBeginScreenElements();
+    }
+    @Step
+    public void clickDashboardCreateYourFirstProjectBtn() {
+	    dashboardPage.clickDashboardCreateYourFirstProjectBtn();
+    }
 }

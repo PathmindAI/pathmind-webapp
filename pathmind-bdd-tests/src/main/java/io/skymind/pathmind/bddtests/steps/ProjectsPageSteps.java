@@ -388,4 +388,8 @@ public class ProjectsPageSteps {
     public void checkThatModelNameExistInArchivedTab(String experiment) {
         projectsPage.checkThatModelNameExistInArchivedTab(experiment);
     }
+    @Step
+    public void checkThatNewProjectPageOpened() {
+        projectsPage.checkThatNewProjectPageOpened();
+    }
 }
