@@ -65,7 +65,8 @@ public class VersionController {
 		String text = "Pathmind has been updated. Please log in again to get the latest improvements.";
 		NotificationUtils.showPersistentNotification(text, "Sign out", () -> {
 			CookieUtils.deleteCookie("Can");
-			ui.getPage().executeJs("location.assign('/" + Routes.LOGOUT_URL + "')");
+			ui.getSession().getSession().invalidate();
+			ui.getPage().reload();
         });
 	}
 }
