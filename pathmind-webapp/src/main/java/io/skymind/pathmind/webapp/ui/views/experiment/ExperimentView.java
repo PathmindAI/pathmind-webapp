@@ -298,7 +298,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
 	private NotesField createViewNotesField() {
 		return new NotesField(
-			"Experiment Notes",
+			"Notes",
 			experiment.getUserNotes(),
 			updatedNotes -> {
 				experimentDAO.updateUserNotes(experimentId, updatedNotes);

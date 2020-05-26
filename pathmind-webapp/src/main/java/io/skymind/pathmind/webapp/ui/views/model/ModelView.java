@@ -149,7 +149,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
 	private NotesField createViewNotesField() {
 		return new NotesField(
-			"Model Notes",
+			"Notes",
 			model.getUserNotes(),
 			updatedNotes -> {
 				modelDAO.updateUserNotes(modelId, updatedNotes);
