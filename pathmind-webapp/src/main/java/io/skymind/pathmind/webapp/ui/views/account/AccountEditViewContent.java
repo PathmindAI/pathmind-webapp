@@ -68,7 +68,7 @@ public class AccountEditViewContent extends PolymerTemplate<AccountEditViewConte
 			}
 			userService.update(user);
 			if (!SecurityUtils.getUsername().equals(user.getEmail())) {
-			    ConfirmationUtils.signinAgain(() -> getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.LOGOUT_URL)));
+			    ConfirmationUtils.emailUpdated(() -> getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.LOGOUT_URL)));
 			} else {
 			    getUI().ifPresent(ui -> ui.navigate(AccountView.class));
 			}

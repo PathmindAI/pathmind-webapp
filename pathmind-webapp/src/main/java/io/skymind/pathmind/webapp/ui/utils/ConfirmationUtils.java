@@ -36,9 +36,9 @@ public class ConfirmationUtils {
 		dialog.open();
 	}
 
-	public static void signinAgain(Command action) {
-	    String header = "You need to sign-in again...";
-	    String text = "Your email address have changed. Please, sign-in again using your new email address.";
+	public static void emailUpdated(Command action) {
+	    String header = "Email Updated";
+	    String text = "Your email address has been updated. Please sign in again using your new email address.";
 	    String confirmText = "OK";
 	    ConfirmDialog dialog = new ConfirmDialog(header, text, confirmText, evt -> action.execute());
 	    dialog.open();
