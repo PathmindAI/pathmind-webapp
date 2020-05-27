@@ -9,6 +9,8 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.templatemodel.TemplateModel;
+
+import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
@@ -48,15 +50,16 @@ public class AccountEditViewContent extends PolymerTemplate<AccountEditViewConte
 
 	private Binder<PathmindUser> binder;
 
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
+	private final EmailNotificationService emailNotificationService;
 
 	@Autowired
-	public AccountEditViewContent(CurrentUser currentUser, UserService userService,
+	public AccountEditViewContent(CurrentUser currentUser, UserService userService, EmailNotificationService emailNotificationService,
 						   @Value("${pathmind.contact-support.address}") String contactLink) {
 		getModel().setContactLink(contactLink);
 		user = currentUser.getUser();
 		this.userService = userService;
+		this.emailNotificationService = emailNotificationService;
 		initBinder();
 
 		cancelBtn.addClickShortcut(Key.ESCAPE);
@@ -66,8 +69,14 @@ public class AccountEditViewContent extends PolymerTemplate<AccountEditViewConte
 			if (!FormUtils.isValidForm(binder, user)) {
 				return;
 			}
+			boolean isEmailChanged = !SecurityUtils.getUsername().equals(user.getEmail());
+			if (isEmailChanged) {
+			    userService.clearEmailVerification(user);
+			}
 			userService.update(user);
-			if (!SecurityUtils.getUsername().equals(user.getEmail())) {
+			
+			if (isEmailChanged) {
+			    this.emailNotificationService.sendVerificationEmail(user);
 			    ConfirmationUtils.emailUpdated(() -> getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.LOGOUT_URL)));
 			} else {
 			    getUI().ifPresent(ui -> ui.navigate(AccountView.class));

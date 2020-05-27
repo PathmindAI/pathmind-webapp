@@ -38,7 +38,7 @@ public class ConfirmationUtils {
 
 	public static void emailUpdated(Command action) {
 	    String header = "Email Updated";
-	    String text = "Your email address has been updated. Please sign in again using your new email address.";
+	    String text = "Your email address has been updated. We sent a verification email to this address. Please follow the instructions in the email to verify your address and then sign in again.";
 	    String confirmText = "OK";
 	    ConfirmDialog dialog = new ConfirmDialog(header, text, confirmText, evt -> action.execute());
 	    dialog.open();

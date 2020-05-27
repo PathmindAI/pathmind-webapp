@@ -16,7 +16,6 @@ import javax.naming.AuthenticationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -156,5 +155,10 @@ public class UserService
         public boolean isOk() {
             return passwordValidationErrors.isEmpty() && confirmPasswordValidationError.isEmpty();
         }
+    }
+
+    public void clearEmailVerification(PathmindUser user) {
+        user.setEmailVerificationToken(UUID.randomUUID());
+        user.setEmailVerifiedAt(null);
     }
 }
