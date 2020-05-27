@@ -12,6 +12,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class Utils extends PageObject {
     private static final EnvironmentVariables VARIABLES = SystemEnvironmentVariables.createEnvironmentVariables();
@@ -98,7 +99,11 @@ public class Utils extends PageObject {
     }
 
     public void waitForLoadingBar() {
-        waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: block;' and @class='v-loading-indicator first']")));
-        waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;' and @class='v-loading-indicator first']")));
+        try {
+            waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: block;' and @class='v-loading-indicator first']")));
+            waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;' and @class='v-loading-indicator first']")));
+        } catch (NoSuchElementException ex){
+            ex.printStackTrace();
+        }
     }
 }
