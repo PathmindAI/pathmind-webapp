@@ -257,7 +257,7 @@ public class ProjectsPage extends PageObject {
         WebElement experiment = getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experimentName+ " " + "']"));
         waitFor(ExpectedConditions.elementToBeClickable(experiment));
         experiment.click();
-        utils.waitForLoadingBar();
+        waitABit(2000);
     }
 
     public void clickProjectsArchiveButton(String projectName) {
