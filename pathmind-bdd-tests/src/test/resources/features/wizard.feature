@@ -35,4 +35,4 @@ Feature: Wizard page
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that experiment AutotestProject page is opened
-    Then Check Reward Function default value reward = after[0] - before[0];
+    Then Check Reward Function default value <>
