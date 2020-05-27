@@ -21,7 +21,7 @@ public class EmptyDashboardPlaceholder extends VerticalLayout {
         gettingStartedButton.addClassName("button-link");
 
         RouterLink createProjectLink = new RouterLink("create your first project.", NewProjectView.class);
-        createProjectLink.getStyle().set("margin-left", ".4em");
+        createProjectLink.addClassName("create-project-link");
 
         VerticalLayout placeholderContent = WrapperUtils.wrapFormCenterVertical(
                 WrapperUtils.wrapSizeFullCenterHorizontal(
