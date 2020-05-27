@@ -102,7 +102,7 @@ public class Utils extends PageObject {
         try {
             waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: block;' and @class='v-loading-indicator first']")));
             waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;' and @class='v-loading-indicator first']")));
-        } catch (NoSuchElementException ex){
+        } catch (org.openqa.selenium.NoSuchElementException ex){
             ex.printStackTrace();
         }
     }
