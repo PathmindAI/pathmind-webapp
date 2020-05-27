@@ -16,7 +16,7 @@ public class EmptyDashboardPlaceholder extends VerticalLayout {
     public EmptyDashboardPlaceholder() {
         setSpacing(false);
 
-        Anchor gettingStartedButton = new Anchor("https://help.pathmind.com/en/articles/3750911-2-finding-the-cheese", "Getting Started Guide");
+        Anchor gettingStartedButton = new Anchor("https://help.pathmind.com/en/articles/4004788-getting-started", "Getting Started Guide");
         gettingStartedButton.setTarget("_blank");
         gettingStartedButton.addClassName("button-link");
 
