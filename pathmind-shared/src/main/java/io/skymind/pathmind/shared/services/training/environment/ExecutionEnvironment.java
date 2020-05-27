@@ -6,15 +6,15 @@ import io.skymind.pathmind.shared.services.training.versions.*;
 public class ExecutionEnvironment {
     private final AnyLogic anylogicVersion;
     private final PathmindHelper pathmindHelperVersion;
-    private final NativeRL rllibVersion;
+    private NativeRL nativerlVersion;
     private final JDK jdkVersion;
     private final Conda condaVersion;
     private EC2InstanceType ec2InstanceType;
 
-    public ExecutionEnvironment(AnyLogic anylogicVersion, PathmindHelper pathmindHelperVersion, NativeRL rllibVersion, JDK jdkVersion, Conda condaVersion, EC2InstanceType ec2InstanceType) {
+    public ExecutionEnvironment(AnyLogic anylogicVersion, PathmindHelper pathmindHelperVersion, NativeRL nativerlVersion, JDK jdkVersion, Conda condaVersion, EC2InstanceType ec2InstanceType) {
         this.anylogicVersion = anylogicVersion;
         this.pathmindHelperVersion = pathmindHelperVersion;
-        this.rllibVersion = rllibVersion;
+        this.nativerlVersion = nativerlVersion;
         this.jdkVersion = jdkVersion;
         this.condaVersion = condaVersion;
         this.ec2InstanceType = ec2InstanceType;
@@ -28,8 +28,8 @@ public class ExecutionEnvironment {
         return pathmindHelperVersion;
     }
 
-    public NativeRL getRllibVersion() {
-        return rllibVersion;
+    public NativeRL getNativerlVersion() {
+        return nativerlVersion;
     }
 
     public JDK getJdkVersion() {
@@ -46,5 +46,9 @@ public class ExecutionEnvironment {
 
     public void setEc2InstanceType(EC2InstanceType ec2InstanceType) {
         this.ec2InstanceType = ec2InstanceType;
+    }
+
+    public void setNativerlVersion(NativeRL nativerlVersion) {
+        this.nativerlVersion = nativerlVersion;
     }
 }

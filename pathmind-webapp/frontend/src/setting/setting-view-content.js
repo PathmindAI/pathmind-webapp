@@ -22,6 +22,7 @@ class SettingViewContent extends PolymerElement {
           <vaadin-horizontal-layout style="width: 100%;" class="block">
             <vaadin-vertical-layout class="info">
               <vaadin-combo-box id="ec2InstanceTypeCB"> </vaadin-combo-box>
+              <vaadin-combo-box id="nativerlVersionCB"> </vaadin-combo-box>
               <vaadin-button id="saveBtn">
                 Save
               </vaadin-button>

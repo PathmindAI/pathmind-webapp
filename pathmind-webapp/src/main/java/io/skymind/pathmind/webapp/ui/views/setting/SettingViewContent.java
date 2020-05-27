@@ -10,7 +10,9 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.data.PathmindUser;
+import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironmentManager;
+import io.skymind.pathmind.shared.services.training.versions.NativeRL;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.ui.components.CloseableNotification;
 import lombok.extern.slf4j.Slf4j;
@@ -30,10 +32,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SettingViewContent extends PolymerTemplate<SettingViewContent.Model> {
     private final PathmindUser user;
-    private final ExecutionEnvironmentManager environmentManager;
+    private final ExecutionEnvironment env;
 
     @Id("ec2InstanceTypeCB")
     private ComboBox<String> ec2InstanceType;
+
+    @Id("nativerlVersionCB")
+    private ComboBox<String> nativerlVersion;
 
     @Id("saveBtn")
     private Button saveBtn;
@@ -41,7 +46,7 @@ public class SettingViewContent extends PolymerTemplate<SettingViewContent.Model
     @Autowired
     public SettingViewContent(CurrentUser currentUser, ExecutionEnvironmentManager environmentManager) {
         this.user = currentUser.getUser();
-        this.environmentManager = environmentManager;
+        this.env = environmentManager.getEnvironment(this.user.getId());
     }
 
     @PostConstruct
@@ -52,7 +57,8 @@ public class SettingViewContent extends PolymerTemplate<SettingViewContent.Model
 
     private void initBtns() {
         saveBtn.addClickListener(e -> {
-            environmentManager.getEnvironment(user.getId()).setEc2InstanceType(EC2InstanceType.fromName(ec2InstanceType.getValue()));
+            env.setEc2InstanceType(EC2InstanceType.fromName(ec2InstanceType.getValue()));
+            env.setNativerlVersion(NativeRL.valueOf(nativerlVersion.getValue()));
 
             String text = "Current settings are saved!";
             CloseableNotification notification = new CloseableNotification(text);
@@ -63,13 +69,24 @@ public class SettingViewContent extends PolymerTemplate<SettingViewContent.Model
     }
 
     private void initContent() {
+        // init EC2 instance types
         List<String> ec2Instances = Arrays.stream(EC2InstanceType.values())
                 .map(EC2InstanceType::toString)
                 .collect(Collectors.toList());
         ec2InstanceType.setItems(ec2Instances);
         ec2InstanceType.setLabel("Instance Type");
-        ec2InstanceType.setPlaceholder(environmentManager.getEnvironment(user.getId()).getEc2InstanceType().toString());
-        ec2InstanceType.setValue(environmentManager.getEnvironment(user.getId()).getEc2InstanceType().toString());
+        ec2InstanceType.setPlaceholder(env.getEc2InstanceType().toString());
+        ec2InstanceType.setValue(env.getEc2InstanceType().toString());
+
+        // init NativeRL versions
+        List<String> nativerlVersions = NativeRL.activeValues().stream()
+                .map(NativeRL::toString)
+                .collect(Collectors.toList());
+
+        nativerlVersion.setItems(nativerlVersions);
+        nativerlVersion.setLabel("NativeRL Version");
+        nativerlVersion.setPlaceholder(env.getNativerlVersion().toString());
+        nativerlVersion.setValue(env.getNativerlVersion().toString());
     }
 
     public interface Model extends TemplateModel {
