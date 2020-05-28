@@ -71,20 +71,29 @@ public class AccountEditViewContent extends PolymerTemplate<AccountEditViewConte
 			}
 			boolean isEmailChanged = !SecurityUtils.getUsername().equals(user.getEmail());
 			if (isEmailChanged) {
-			    userService.clearEmailVerification(user);
-			}
-			userService.update(user);
-			
-			if (isEmailChanged) {
-			    this.emailNotificationService.sendVerificationEmail(user);
-			    ConfirmationUtils.emailUpdated(() -> getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.LOGOUT_URL)));
+			    ConfirmationUtils.emailUpdateConfirmation(user.getEmail(), () -> updateUserInformation(true)); 
 			} else {
-			    getUI().ifPresent(ui -> ui.navigate(AccountView.class));
+			    updateUserInformation(false);
 			}
 		});
 	}
 
-	private void initBinder() {
+	private void updateUserInformation(boolean isEmailChanged) {
+	    if (isEmailChanged) {
+            userService.clearEmailVerification(user);
+        }
+        userService.update(user);
+        
+        if (isEmailChanged) {
+            this.emailNotificationService.sendVerificationEmail(user);
+            ConfirmationUtils.emailUpdated(() -> getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.LOGOUT_URL)));
+        } else {
+            getUI().ifPresent(ui -> ui.navigate(AccountView.class));
+        }
+        
+    }
+
+    private void initBinder() {
 		binder = new Binder<>(PathmindUser.class);
 
 		PathmindUserBinders.bindEmail(userService, binder, email);
