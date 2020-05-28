@@ -22,7 +22,6 @@ import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavbar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyHighlightPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import org.apache.commons.lang3.StringUtils;
@@ -39,8 +38,6 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.AfterNavigationEvent;
-import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -65,6 +62,7 @@ import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.TrainingError;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.webapp.ui.components.CodeViewer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.shared.featureflag.Feature;
@@ -77,7 +75,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LAB
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
-public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>, AfterNavigationObserver
+public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 
 	// We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
@@ -101,7 +99,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
 	private Span panelTitle;
 	private VerticalLayout rewardFunctionGroup;
-	private RewardFunctionEditor rewardFunctionEditor;
+	private CodeViewer rewardFunctionEditor;
 	private TrainingStartingPlaceholder trainingStartingPlaceholder;
 	private PolicyChartPanel policyChartPanel;
 	private ExperimentsNavbar experimentsNavbar;
@@ -172,13 +170,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void setupExperimentContentPanel() {
 		panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
 		policyChartPanel = new PolicyChartPanel();
-		rewardFunctionEditor = new RewardFunctionEditor();
-		rewardFunctionEditor.setReadonly(true);
-		rewardFunctionEditor.setSizeFull();
-		rewardFunctionEditor.setMaxLines(20);
-		// If min line is set to 1 (default when there is max line),
-		// the horizontal scrollbar will not appear even though the line content is very long and scrollable
-		rewardFunctionEditor.setMinLines(2);
+        rewardFunctionEditor = new CodeViewer();
 		rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
 			LabelFactory.createLabel("Reward Function", BOLD_LABEL), rewardFunctionEditor
 		);
@@ -360,29 +352,18 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		experimentsNavbar.setExperiments(event.getUI(), experiments, experiment);
 	}
 
-	@Override
-	public void afterNavigation(AfterNavigationEvent event) {
-		setChartHeight();
-	}
-
-	private void setChartHeight() {
-		// hack for inaccurate height calculation for vaadin chart only happening on initial load
-		// the height was inaccurate due to the in-progress initialization of the reward function editor with dynamic height
-		getUI().ifPresent(ui -> ui.getPage().executeJs("const vChart = window.document.getElementsByTagName('vaadin-chart')[0]; vChart && setTimeout(() => {const editorHeight = window.document.getElementsByTagName('juicy-ace-editor')[0].offsetHeight + 'px'; vChart.style.height = `calc(100vh - 19rem - ${editorHeight})`}, 200)"));
-	}
-
 	private void updateScreenComponents() {
 		clearErrorState();
 		setPolicyChartVisibility();
 		experimentsNavbar.setVisible(!experiment.isArchived());
 		panelTitle.setText("Experiment #"+experiment.getName());
-		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
-			rewardFunctionEditor.setVariableNames(rewardVariables);
-		}
+            rewardFunctionEditor.setValue(experiment.getRewardFunction(), rewardVariables);
+		} else {
+			rewardFunctionEditor.setValue(experiment.getRewardFunction(), null);
+        }
 		policyChartPanel.setExperiment(experiment, policy);
 		updateRightPanelForExperiment();
-		setChartHeight();
 	}
 
 	private void setPolicyChartVisibility() {
