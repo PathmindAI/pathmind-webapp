@@ -31,7 +31,11 @@ class CodeViewer extends PolymerElement {
             return codeSnippet.replace(regexCondition, function(matchedIndex) {
                 return matchedIndex.replace(/[0-9]+/, function(indexNumber) {
                     const rewardVarName = Object.keys(varList).length > 0 && varList[indexNumber];
-                    return `<span class="token-${className}">${indexNumber}</span><span class="variable-color-${indexNumber % 10}">${rewardVarName}</span>`;
+                    if (rewardVarName) {
+                        return `<span class="token-${className}">${indexNumber}</span><span class="variable-color-${indexNumber %
+                            10}">${rewardVarName}</span>`;
+                    }
+                    return `<span class="token-${className}">${indexNumber}</span>`;
                 });
             });
         }
