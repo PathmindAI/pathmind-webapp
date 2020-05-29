@@ -78,437 +78,437 @@ import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 
-	// We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
-	// on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
-	private Object experimentLock = new Object();
+    // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
+    // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
+    private Object experimentLock = new Object();
 
-	private Button exportPolicyButton;
-	private Button stopTrainingButton;
-	private Button archiveExperimentButton;
-	private Button unarchiveExperimentButton;
+    private Button exportPolicyButton;
+    private Button stopTrainingButton;
+    private Button archiveExperimentButton;
+    private Button unarchiveExperimentButton;
 
-	private long experimentId = -1;
-	private long modelId = -1;
-	private List<RewardVariable> rewardVariables;
-	private Policy policy;
-	private Experiment experiment;
-	private List<Experiment> experiments = new ArrayList<>();
+    private long experimentId = -1;
+    private long modelId = -1;
+    private List<RewardVariable> rewardVariables;
+    private Policy policy;
+    private Experiment experiment;
+    private List<Experiment> experiments = new ArrayList<>();
 
-	private VerticalLayout middlePanel;
-	private PolicyHighlightPanel policyHighlightPanel;
-	private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
-	private Span panelTitle;
-	private VerticalLayout rewardFunctionGroup;
-	private CodeViewer codeViewer;
-	private TrainingStartingPlaceholder trainingStartingPlaceholder;
-	private PolicyChartPanel policyChartPanel;
-	private ExperimentsNavbar experimentsNavbar;
-	private NotesField notesField;
+    private VerticalLayout middlePanel;
+    private PolicyHighlightPanel policyHighlightPanel;
+    private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
+    private Span panelTitle;
+    private VerticalLayout rewardFunctionGroup;
+    private CodeViewer codeViewer;
+    private TrainingStartingPlaceholder trainingStartingPlaceholder;
+    private PolicyChartPanel policyChartPanel;
+    private ExperimentsNavbar experimentsNavbar;
+    private NotesField notesField;
 
-	private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
-	private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
+    private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
+    private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
 
-	@Autowired
-	private ExperimentDAO experimentDAO;
-	@Autowired
-	private RewardVariableDAO rewardVariableDAO;
-	@Autowired
-	private PolicyDAO policyDAO;
-	@Autowired
-	private TrainingErrorDAO trainingErrorDAO;
-	@Autowired
-	private TrainingService trainingService;
-	@Autowired
-	private RunDAO runDAO;
-	@Autowired
-	private SegmentIntegrator segmentIntegrator;
-	@Autowired
-	private FeatureManager featureManager;
+    @Autowired
+    private ExperimentDAO experimentDAO;
+    @Autowired
+    private RewardVariableDAO rewardVariableDAO;
+    @Autowired
+    private PolicyDAO policyDAO;
+    @Autowired
+    private TrainingErrorDAO trainingErrorDAO;
+    @Autowired
+    private TrainingService trainingService;
+    @Autowired
+    private RunDAO runDAO;
+    @Autowired
+    private SegmentIntegrator segmentIntegrator;
+    @Autowired
+    private FeatureManager featureManager;
 
-	private Breadcrumbs pageBreadcrumbs;
-	private Button restartTraining;
+    private Breadcrumbs pageBreadcrumbs;
+    private Button restartTraining;
 
-	public ExperimentView() {
-		super();
-		addClassName("experiment-view");
-		policyUpdateSubscriber = new ExperimentViewPolicyUpdateSubscriber();
-		runUpdateSubscriber = new ExperimentViewRunUpdateSubscriber();
-	}
-
-	@Override
-	protected void onDetach(DetachEvent event) {
-		EventBus.unsubscribe(policyUpdateSubscriber);
-		EventBus.unsubscribe(runUpdateSubscriber);
-	}
-
-	@Override
-	protected void onAttach(AttachEvent event) {
-		EventBus.subscribe(policyUpdateSubscriber);
-		EventBus.subscribe(runUpdateSubscriber);
-	}
-
-	@Override
-	protected Component getTitlePanel() {
-		pageBreadcrumbs = createBreadcrumbs();
-		return new ScreenTitlePanel(pageBreadcrumbs);
-	}
-
-	@Override
-	protected Component getMainContent() {
-		experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
-		setupExperimentContentPanel();
-		HorizontalLayout experimentContent = WrapperUtils.wrapWidthFullHorizontal(middlePanel, getRightPanel());
-		experimentContent.addClassName("view-section");
-		HorizontalLayout pageWrapper = WrapperUtils.wrapWidthFullHorizontal(
-				experimentsNavbar,
-				experimentContent);
-		pageWrapper.addClassName("page-content");
-		pageWrapper.setPadding(true);
-		return pageWrapper;
-	}
-
-	private void setupExperimentContentPanel() {
-		panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
-		policyChartPanel = new PolicyChartPanel();
-        codeViewer = new CodeViewer();
-		rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-			LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
-		);
-		trainingStartingPlaceholder = new TrainingStartingPlaceholder();
-		middlePanel = WrapperUtils.wrapWidthFullVertical(
-				panelTitle,
-				rewardFunctionGroup,
-				trainingStartingPlaceholder,
-				policyChartPanel);
-		middlePanel.setPadding(false);
-	}
-
-	private VerticalLayout getRightPanel() {
-		policyHighlightPanel = new PolicyHighlightPanel();
-		trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
-
-		restartTraining = new Button("Restart Training", new Image("frontend/images/start.svg", "run"), click -> {
-			synchronized (experimentLock) {
-				trainingService.startRun(experiment);
-				segmentIntegrator.discoveryRunStarted();
-				initLoadData();
-				trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
-				clearErrorState();
-				setPolicyChartVisibility();
-			}
-		});
-		restartTraining.setVisible(false);
-		restartTraining.addClassNames("large-image-btn", "run");
-
-		exportPolicyButton = new Button("Export Policy", click -> getUI().ifPresent(ui -> ui.navigate(ExportPolicyView.class, policy.getId())));
-		exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		exportPolicyButton.setVisible(false);
-
-		stopTrainingButton = new Button("Stop Training", click -> {
-			showStopTrainingConfirmationDialog();
-		});
-		stopTrainingButton.addThemeName("secondary");
-		stopTrainingButton.setVisible(true);
-
-		archiveExperimentButton = new Button("Archive", VaadinIcon.ARCHIVE.create(), click -> archiveExperiment());
-		archiveExperimentButton.addThemeName("secondary");
-
-		unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
-		unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-		notesField = createViewNotesField();
-
-		Div buttonsWrapper = new Div(
-			archiveExperimentButton,
-			unarchiveExperimentButton,
-			restartTraining,
-			stopTrainingButton,
-			exportPolicyButton
-		);
-		buttonsWrapper.addClassName("buttons-wrapper");
-
-		VerticalLayout rightPanel = WrapperUtils.wrapSizeFullVertical(
-				buttonsWrapper,
-				trainingStatusDetailsPanel,
-				policyHighlightPanel,
-				notesField);
-		rightPanel.addClassName("right-panel");
-		rightPanel.setPadding(false);
-		return rightPanel;
-	}
-
-	private void showStopTrainingConfirmationDialog() {
-		ConfirmDialog confirmDialog = new ConfirmDialog();
-		confirmDialog.setHeader("Stop Training");
-		confirmDialog.setText(new Html(
-				"<div>"
-						+ "<p>Are you sure you want to stop training?</p>"
-						+ "<p>If you stop the training before it completes, you won't be able to download the policy. "
-						+ "<b>If you decide you want to start the training again, you can start a new experiment and "
-						+ "use the same reward function.</b>"
-						+ "</p>"
-						+ "</div>"));
-		confirmDialog.setConfirmButton(
-				"Stop Training",
-				(e) -> {
-					trainingService.stopRun(experiment, EventBus::fireEventBusUpdates);
-					confirmDialog.close();
-				},
-				StringUtils.join(
-						Arrays.asList(ButtonVariant.LUMO_ERROR.getVariantName(), ButtonVariant.LUMO_PRIMARY.getVariantName()),
-						" ")
-		);
-		confirmDialog.setCancelText("Cancel");
-		confirmDialog.setCancelable(true);
-		confirmDialog.open();
-	}
-
-	private void archiveExperiment() {
-		ConfirmationUtils.archive("experiment", () -> {
-			experimentDAO.archive(experiment.getId(), true);
-			experiments.remove(experiment);
-			if (experiments.isEmpty()) {
-				getUI().ifPresent(ui -> ui.navigate(ModelView.class, experiment.getModelId()));
-			} else {
-				Experiment currentExperiment = experiments.get(0);
-				selectExperiment(currentExperiment);
-				getUI().ifPresent(ui -> experimentsNavbar.setExperiments(ui, experiments, currentExperiment));
-			}
-		});
-	}
-
-	private void unarchiveExperiment() {
-		ConfirmationUtils.unarchive("experiment", () -> {
-			experimentDAO.archive(experiment.getId(), false);
-			getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
-		});
-	}
-
-	private Breadcrumbs createBreadcrumbs() {
-		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
-	}
-
-	private NotesField createViewNotesField() {
-		return new NotesField(
-			"Experiment Notes",
-			experiment.getUserNotes(),
-			updatedNotes -> {
-				experimentDAO.updateUserNotes(experimentId, updatedNotes);
-				NotificationUtils.showSuccess("Notes saved");
-				segmentIntegrator.updatedNotesExperimentView();
-			}
-		);
-	}
-
-	@Override
-	public void setParameter(BeforeEvent event, Long experimentId) {
-		this.experimentId = experimentId;
-	}
-
-	private void selectExperiment(Experiment selectedExperiment) {
-		// The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
-		// same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
-		synchronized (experimentLock) {
-			experiment = experimentDAO.getExperiment(selectedExperiment.getId())
-					.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
-			experimentId = selectedExperiment.getId();
-			loadExperimentData();
-			updateScreenComponents();
-			notesField.setNotesText(experiment.getUserNotes());
-			pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-			experimentsNavbar.setCurrentExperiment(selectedExperiment);
-			
-			if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
-				getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
-			} else {
-				getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
-			}
-		}
-	}
-
-	@Override
-	protected void initLoadData() throws InvalidDataException {
-		experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
-				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-		loadExperimentData();
-	}
-
-	private void loadExperimentData() {
-		modelId = experiment.getModelId();
-		experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
-		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
-			rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-		}
-		policy = selectBestPolicy(experiment.getPolicies());
-		experiment.setRuns(runDAO.getRunsForExperiment(experiment));
-		if (!experiment.isArchived()) {
-			experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-		}
-	}
-
-	@Override
-	protected void initScreen(BeforeEnterEvent event) {
-		updateScreenComponents();
-		experimentsNavbar.setExperiments(event.getUI(), experiments, experiment);
-	}
-
-	private void updateScreenComponents() {
-		clearErrorState();
-		setPolicyChartVisibility();
-		experimentsNavbar.setVisible(!experiment.isArchived());
-		panelTitle.setText("Experiment #"+experiment.getName());
-		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
-            codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
-		} else {
-			codeViewer.setValue(experiment.getRewardFunction(), null);
-        }
-		policyChartPanel.setExperiment(experiment, policy);
-		updateRightPanelForExperiment();
-	}
-
-	private void setPolicyChartVisibility() {
-		RunStatus trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
-		trainingStartingPlaceholder.setVisible(trainingStatus == RunStatus.Starting);
-		policyChartPanel.setVisible(trainingStatus != RunStatus.Starting);
-	}
-
-	private Policy selectBestPolicy(List<Policy> policies) {
-		return policies.stream()
-				.filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
-				.max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration))
-				.orElse(null);
-	}
-
-	private void updateUIForError(TrainingError error) {
-		policyHighlightPanel.setErrorDescription(error.getDescription());
-		restartTraining.setVisible(error.isRestartable());
-		restartTraining.setEnabled(error.isRestartable());
-	}
-
-	private void clearErrorState() {
-		policyHighlightPanel.setErrorDescription(null);
-		updateButtonEnablement();
-	}
-
-	private void addOrUpdatePolicies(List<Policy> updatedPolicies) {
-		updatedPolicies.forEach(updatedPolicy -> {
-			int index = experiment.getPolicies().indexOf(updatedPolicy);
-			if (index != -1) {
-				experiment.getPolicies().set(index, updatedPolicy);
-			} else {
-				experiment.getPolicies().add(updatedPolicy);
-			}
-		});
-	}
-
-	private void addOrUpdateRun(Run updatedRun) {
-		experiment.getRuns().stream()
-				.filter(run -> run.getId() == updatedRun.getId())
-				.findAny()
-				.ifPresentOrElse(
-						run -> experiment.getRuns().set(experiment.getRuns().indexOf(run), updatedRun),
-						() -> experiment.getRuns().add(updatedRun));
-	}
-
-	private void updateRightPanelForExperiment() {
-		updateButtonEnablement();
-		trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
-		RunStatus status = ExperimentUtils.getTrainingStatus(experiment);
-		if (status == RunStatus.Error || status == RunStatus.Killed) {
-			experiment.getRuns().stream()
-					.filter(r -> r.getStatusEnum() == RunStatus.Error || r.getStatusEnum() == RunStatus.Killed)
-					.findAny()
-					.map(Run::getTrainingErrorId)
-					.flatMap(trainingErrorDAO::getErrorById)
-					.ifPresent(this::updateUIForError);
-		}
-	}
-
-	private void updateButtonEnablement() {
-		RunStatus trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
-		boolean isCompleted = trainingStatus == RunStatus.Completed;
-		archiveExperimentButton.setVisible(!experiment.isArchived());
-		unarchiveExperimentButton.setVisible(experiment.isArchived());
-		exportPolicyButton.setVisible(isCompleted && policy != null && policy.hasFile());
-		boolean canBeStopped = RunStatus.isRunning(trainingStatus);
-		stopTrainingButton.setVisible(canBeStopped);
-		restartTraining.setVisible(false);
-	}
-
-	private void updatedRunForPolicies(Run run) {
-		experiment.getPolicies().stream()
-			.filter(policy -> policy.getRunId() == run.getId())
-			.forEach(policy -> policy.setRun(run));
-	}
-
-	class ExperimentViewPolicyUpdateSubscriber implements PolicyUpdateSubscriber
-	{
-		@Override
-		public void handleBusEvent(PolicyUpdateBusEvent event) {
-			synchronized (experimentLock) {
-				// Need a check in case the experiment was on hold waiting for the change of experiment to load
-				if (event.getExperimentId() != experimentId)
-					return;
-				// Update or insert the policy in experiment.getPolicies
-
-				addOrUpdatePolicies(event.getPolicies());
-
-				// Calculate the best policy again
-				policy = selectBestPolicy(experiment.getPolicies());
-				PushUtils.push(getUI(), () -> {
-					if (policy != null) {
-						policyChartPanel.highlightPolicy(policy);
-					}
-					updateRightPanelForExperiment();
-				});
-			}
-		}
-
-		@Override
-		public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-			return experiment != null && experiment.getId() == event.getExperimentId();
-		}
-
-		@Override
-		public boolean isAttached() {
-			return ExperimentView.this.getUI().isPresent();
-		}
+    public ExperimentView() {
+        super();
+        addClassName("experiment-view");
+        policyUpdateSubscriber = new ExperimentViewPolicyUpdateSubscriber();
+        runUpdateSubscriber = new ExperimentViewRunUpdateSubscriber();
     }
 
-	class ExperimentViewRunUpdateSubscriber implements RunUpdateSubscriber {
-		@Override
-		public void handleBusEvent(RunUpdateBusEvent event) {
-			if (isSameExperiment(event)) {
-				addOrUpdateRun(event.getRun());
-				updatedRunForPolicies(event.getRun());
-				PushUtils.push(getUI(), () -> {
-					setPolicyChartVisibility();
-					updateRightPanelForExperiment();
-				});
-			} else if (isSameModel(event)) {
-				if (!experiments.contains(event.getRun().getExperiment())) {
-					experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-					PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
-				}
-			}
-		}
+    @Override
+    protected void onDetach(DetachEvent event) {
+        EventBus.unsubscribe(policyUpdateSubscriber);
+        EventBus.unsubscribe(runUpdateSubscriber);
+    }
 
-		@Override
-		public boolean filterBusEvent(RunUpdateBusEvent event) {
-			return isSameExperiment(event) || isSameModel(event);
-		}
+    @Override
+    protected void onAttach(AttachEvent event) {
+        EventBus.subscribe(policyUpdateSubscriber);
+        EventBus.subscribe(runUpdateSubscriber);
+    }
 
-		@Override
-		public boolean isAttached() {
-			return ExperimentView.this.getUI().isPresent();
-		}
-		
-		private boolean isSameExperiment(RunUpdateBusEvent event) {
-			return experiment != null && experiment.getId() == event.getRun().getExperiment().getId();
-		}
-		
-		private boolean isSameModel(RunUpdateBusEvent event) {
-			return experiment != null && experiment.getModelId() == event.getRun().getModel().getId();
-		}
-	}
+    @Override
+    protected Component getTitlePanel() {
+        pageBreadcrumbs = createBreadcrumbs();
+        return new ScreenTitlePanel(pageBreadcrumbs);
+    }
+
+    @Override
+    protected Component getMainContent() {
+        experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
+        setupExperimentContentPanel();
+        HorizontalLayout experimentContent = WrapperUtils.wrapWidthFullHorizontal(middlePanel, getRightPanel());
+        experimentContent.addClassName("view-section");
+        HorizontalLayout pageWrapper = WrapperUtils.wrapWidthFullHorizontal(
+                experimentsNavbar,
+                experimentContent);
+        pageWrapper.addClassName("page-content");
+        pageWrapper.setPadding(true);
+        return pageWrapper;
+    }
+
+    private void setupExperimentContentPanel() {
+        panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
+        policyChartPanel = new PolicyChartPanel();
+        codeViewer = new CodeViewer();
+        rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+            LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
+        );
+        trainingStartingPlaceholder = new TrainingStartingPlaceholder();
+        middlePanel = WrapperUtils.wrapWidthFullVertical(
+                panelTitle,
+                rewardFunctionGroup,
+                trainingStartingPlaceholder,
+                policyChartPanel);
+        middlePanel.setPadding(false);
+    }
+
+    private VerticalLayout getRightPanel() {
+        policyHighlightPanel = new PolicyHighlightPanel();
+        trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
+
+        restartTraining = new Button("Restart Training", new Image("frontend/images/start.svg", "run"), click -> {
+            synchronized (experimentLock) {
+                trainingService.startRun(experiment);
+                segmentIntegrator.discoveryRunStarted();
+                initLoadData();
+                trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
+                clearErrorState();
+                setPolicyChartVisibility();
+            }
+        });
+        restartTraining.setVisible(false);
+        restartTraining.addClassNames("large-image-btn", "run");
+
+        exportPolicyButton = new Button("Export Policy", click -> getUI().ifPresent(ui -> ui.navigate(ExportPolicyView.class, policy.getId())));
+        exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        exportPolicyButton.setVisible(false);
+
+        stopTrainingButton = new Button("Stop Training", click -> {
+            showStopTrainingConfirmationDialog();
+        });
+        stopTrainingButton.addThemeName("secondary");
+        stopTrainingButton.setVisible(true);
+
+        archiveExperimentButton = new Button("Archive", VaadinIcon.ARCHIVE.create(), click -> archiveExperiment());
+        archiveExperimentButton.addThemeName("secondary");
+
+        unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
+        unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        notesField = createViewNotesField();
+
+        Div buttonsWrapper = new Div(
+            archiveExperimentButton,
+            unarchiveExperimentButton,
+            restartTraining,
+            stopTrainingButton,
+            exportPolicyButton
+        );
+        buttonsWrapper.addClassName("buttons-wrapper");
+
+        VerticalLayout rightPanel = WrapperUtils.wrapSizeFullVertical(
+                buttonsWrapper,
+                trainingStatusDetailsPanel,
+                policyHighlightPanel,
+                notesField);
+        rightPanel.addClassName("right-panel");
+        rightPanel.setPadding(false);
+        return rightPanel;
+    }
+
+    private void showStopTrainingConfirmationDialog() {
+        ConfirmDialog confirmDialog = new ConfirmDialog();
+        confirmDialog.setHeader("Stop Training");
+        confirmDialog.setText(new Html(
+                "<div>"
+                        + "<p>Are you sure you want to stop training?</p>"
+                        + "<p>If you stop the training before it completes, you won't be able to download the policy. "
+                        + "<b>If you decide you want to start the training again, you can start a new experiment and "
+                        + "use the same reward function.</b>"
+                        + "</p>"
+                        + "</div>"));
+        confirmDialog.setConfirmButton(
+                "Stop Training",
+                (e) -> {
+                    trainingService.stopRun(experiment, EventBus::fireEventBusUpdates);
+                    confirmDialog.close();
+                },
+                StringUtils.join(
+                        Arrays.asList(ButtonVariant.LUMO_ERROR.getVariantName(), ButtonVariant.LUMO_PRIMARY.getVariantName()),
+                        " ")
+        );
+        confirmDialog.setCancelText("Cancel");
+        confirmDialog.setCancelable(true);
+        confirmDialog.open();
+    }
+
+    private void archiveExperiment() {
+        ConfirmationUtils.archive("experiment", () -> {
+            experimentDAO.archive(experiment.getId(), true);
+            experiments.remove(experiment);
+            if (experiments.isEmpty()) {
+                getUI().ifPresent(ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+            } else {
+                Experiment currentExperiment = experiments.get(0);
+                selectExperiment(currentExperiment);
+                getUI().ifPresent(ui -> experimentsNavbar.setExperiments(ui, experiments, currentExperiment));
+            }
+        });
+    }
+
+    private void unarchiveExperiment() {
+        ConfirmationUtils.unarchive("experiment", () -> {
+            experimentDAO.archive(experiment.getId(), false);
+            getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
+        });
+    }
+
+    private Breadcrumbs createBreadcrumbs() {
+        return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
+    }
+
+    private NotesField createViewNotesField() {
+        return new NotesField(
+            "Experiment Notes",
+            experiment.getUserNotes(),
+            updatedNotes -> {
+                experimentDAO.updateUserNotes(experimentId, updatedNotes);
+                NotificationUtils.showSuccess("Notes saved");
+                segmentIntegrator.updatedNotesExperimentView();
+            }
+        );
+    }
+
+    @Override
+    public void setParameter(BeforeEvent event, Long experimentId) {
+        this.experimentId = experimentId;
+    }
+
+    private void selectExperiment(Experiment selectedExperiment) {
+        // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
+        // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
+        synchronized (experimentLock) {
+            experiment = experimentDAO.getExperiment(selectedExperiment.getId())
+                    .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
+            experimentId = selectedExperiment.getId();
+            loadExperimentData();
+            updateScreenComponents();
+            notesField.setNotesText(experiment.getUserNotes());
+            pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
+            experimentsNavbar.setCurrentExperiment(selectedExperiment);
+            
+            if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
+                getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
+            } else {
+                getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
+            }
+        }
+    }
+
+    @Override
+    protected void initLoadData() throws InvalidDataException {
+        experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
+                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
+        loadExperimentData();
+    }
+
+    private void loadExperimentData() {
+        modelId = experiment.getModelId();
+        experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
+        if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
+            rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
+        }
+        policy = selectBestPolicy(experiment.getPolicies());
+        experiment.setRuns(runDAO.getRunsForExperiment(experiment));
+        if (!experiment.isArchived()) {
+            experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+        }
+    }
+
+    @Override
+    protected void initScreen(BeforeEnterEvent event) {
+        updateScreenComponents();
+        experimentsNavbar.setExperiments(event.getUI(), experiments, experiment);
+    }
+
+    private void updateScreenComponents() {
+        clearErrorState();
+        setPolicyChartVisibility();
+        experimentsNavbar.setVisible(!experiment.isArchived());
+        panelTitle.setText("Experiment #"+experiment.getName());
+        if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
+            codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
+        } else {
+            codeViewer.setValue(experiment.getRewardFunction(), null);
+        }
+        policyChartPanel.setExperiment(experiment, policy);
+        updateRightPanelForExperiment();
+    }
+
+    private void setPolicyChartVisibility() {
+        RunStatus trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
+        trainingStartingPlaceholder.setVisible(trainingStatus == RunStatus.Starting);
+        policyChartPanel.setVisible(trainingStatus != RunStatus.Starting);
+    }
+
+    private Policy selectBestPolicy(List<Policy> policies) {
+        return policies.stream()
+                .filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
+                .max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration))
+                .orElse(null);
+    }
+
+    private void updateUIForError(TrainingError error) {
+        policyHighlightPanel.setErrorDescription(error.getDescription());
+        restartTraining.setVisible(error.isRestartable());
+        restartTraining.setEnabled(error.isRestartable());
+    }
+
+    private void clearErrorState() {
+        policyHighlightPanel.setErrorDescription(null);
+        updateButtonEnablement();
+    }
+
+    private void addOrUpdatePolicies(List<Policy> updatedPolicies) {
+        updatedPolicies.forEach(updatedPolicy -> {
+            int index = experiment.getPolicies().indexOf(updatedPolicy);
+            if (index != -1) {
+                experiment.getPolicies().set(index, updatedPolicy);
+            } else {
+                experiment.getPolicies().add(updatedPolicy);
+            }
+        });
+    }
+
+    private void addOrUpdateRun(Run updatedRun) {
+        experiment.getRuns().stream()
+                .filter(run -> run.getId() == updatedRun.getId())
+                .findAny()
+                .ifPresentOrElse(
+                        run -> experiment.getRuns().set(experiment.getRuns().indexOf(run), updatedRun),
+                        () -> experiment.getRuns().add(updatedRun));
+    }
+
+    private void updateRightPanelForExperiment() {
+        updateButtonEnablement();
+        trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
+        RunStatus status = ExperimentUtils.getTrainingStatus(experiment);
+        if (status == RunStatus.Error || status == RunStatus.Killed) {
+            experiment.getRuns().stream()
+                    .filter(r -> r.getStatusEnum() == RunStatus.Error || r.getStatusEnum() == RunStatus.Killed)
+                    .findAny()
+                    .map(Run::getTrainingErrorId)
+                    .flatMap(trainingErrorDAO::getErrorById)
+                    .ifPresent(this::updateUIForError);
+        }
+    }
+
+    private void updateButtonEnablement() {
+        RunStatus trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
+        boolean isCompleted = trainingStatus == RunStatus.Completed;
+        archiveExperimentButton.setVisible(!experiment.isArchived());
+        unarchiveExperimentButton.setVisible(experiment.isArchived());
+        exportPolicyButton.setVisible(isCompleted && policy != null && policy.hasFile());
+        boolean canBeStopped = RunStatus.isRunning(trainingStatus);
+        stopTrainingButton.setVisible(canBeStopped);
+        restartTraining.setVisible(false);
+    }
+
+    private void updatedRunForPolicies(Run run) {
+        experiment.getPolicies().stream()
+            .filter(policy -> policy.getRunId() == run.getId())
+            .forEach(policy -> policy.setRun(run));
+    }
+
+    class ExperimentViewPolicyUpdateSubscriber implements PolicyUpdateSubscriber
+    {
+        @Override
+        public void handleBusEvent(PolicyUpdateBusEvent event) {
+            synchronized (experimentLock) {
+                // Need a check in case the experiment was on hold waiting for the change of experiment to load
+                if (event.getExperimentId() != experimentId)
+                    return;
+                // Update or insert the policy in experiment.getPolicies
+
+                addOrUpdatePolicies(event.getPolicies());
+
+                // Calculate the best policy again
+                policy = selectBestPolicy(experiment.getPolicies());
+                PushUtils.push(getUI(), () -> {
+                    if (policy != null) {
+                        policyChartPanel.highlightPolicy(policy);
+                    }
+                    updateRightPanelForExperiment();
+                });
+            }
+        }
+
+        @Override
+        public boolean filterBusEvent(PolicyUpdateBusEvent event) {
+            return experiment != null && experiment.getId() == event.getExperimentId();
+        }
+
+        @Override
+        public boolean isAttached() {
+            return ExperimentView.this.getUI().isPresent();
+        }
+    }
+
+    class ExperimentViewRunUpdateSubscriber implements RunUpdateSubscriber {
+        @Override
+        public void handleBusEvent(RunUpdateBusEvent event) {
+            if (isSameExperiment(event)) {
+                addOrUpdateRun(event.getRun());
+                updatedRunForPolicies(event.getRun());
+                PushUtils.push(getUI(), () -> {
+                    setPolicyChartVisibility();
+                    updateRightPanelForExperiment();
+                });
+            } else if (isSameModel(event)) {
+                if (!experiments.contains(event.getRun().getExperiment())) {
+                    experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+                    PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
+                }
+            }
+        }
+
+        @Override
+        public boolean filterBusEvent(RunUpdateBusEvent event) {
+            return isSameExperiment(event) || isSameModel(event);
+        }
+
+        @Override
+        public boolean isAttached() {
+            return ExperimentView.this.getUI().isPresent();
+        }
+        
+        private boolean isSameExperiment(RunUpdateBusEvent event) {
+            return experiment != null && experiment.getId() == event.getRun().getExperiment().getId();
+        }
+        
+        private boolean isSameModel(RunUpdateBusEvent event) {
+            return experiment != null && experiment.getModelId() == event.getRun().getModel().getId();
+        }
+    }
 }
