@@ -24,7 +24,9 @@ public class CodeViewer extends PolymerTemplate<TemplateModel> implements HasSty
 
 	private JsonObject convertToJson(List<RewardVariable> rewardVariables) {
 		JsonObject json = Json.createObject();
-		rewardVariables.forEach(rewardVariable -> json.put(Integer.toString(rewardVariable.getArrayIndex()), rewardVariable.getName()));
+        if (rewardVariables != null) {
+            rewardVariables.forEach(rewardVariable -> json.put(Integer.toString(rewardVariable.getArrayIndex()), rewardVariable.getName()));
+        }
 		return json;
     }
 }

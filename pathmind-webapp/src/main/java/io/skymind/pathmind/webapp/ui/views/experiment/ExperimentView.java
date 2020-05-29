@@ -99,7 +99,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
 	private Span panelTitle;
 	private VerticalLayout rewardFunctionGroup;
-	private CodeViewer rewardFunctionEditor;
+	private CodeViewer codeViewer;
 	private TrainingStartingPlaceholder trainingStartingPlaceholder;
 	private PolicyChartPanel policyChartPanel;
 	private ExperimentsNavbar experimentsNavbar;
@@ -170,9 +170,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	private void setupExperimentContentPanel() {
 		panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
 		policyChartPanel = new PolicyChartPanel();
-        rewardFunctionEditor = new CodeViewer();
+        codeViewer = new CodeViewer();
 		rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-			LabelFactory.createLabel("Reward Function", BOLD_LABEL), rewardFunctionEditor
+			LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
 		);
 		trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 		middlePanel = WrapperUtils.wrapWidthFullVertical(
@@ -358,9 +358,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		experimentsNavbar.setVisible(!experiment.isArchived());
 		panelTitle.setText("Experiment #"+experiment.getName());
 		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
-            rewardFunctionEditor.setValue(experiment.getRewardFunction(), rewardVariables);
+            codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
 		} else {
-			rewardFunctionEditor.setValue(experiment.getRewardFunction(), null);
+			codeViewer.setValue(experiment.getRewardFunction(), null);
         }
 		policyChartPanel.setExperiment(experiment, policy);
 		updateRightPanelForExperiment();

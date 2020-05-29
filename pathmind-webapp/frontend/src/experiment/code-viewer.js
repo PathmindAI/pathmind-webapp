@@ -71,7 +71,7 @@ class CodeViewer extends PolymerElement {
                     color: var(--pm-blue-color);
                 }
                 .token-comment {
-                    color: var(--pm-gray-color-dark);
+                    color: rgb(113, 150, 130);
                 }
                 [class|="variable-color"] {
                     padding: 0.12em 0.3em;
