@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 import io.skymind.pathmind.shared.data.Experiment;
@@ -198,7 +199,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
         actionsText.add(""+model.getNumberOfPossibleActions());
         observationsText.add(""+model.getNumberOfObservations());
         if (rewardVariableNames.size() > 0) {
-            rewardVariableNames.sort((r1, r2) -> r1.getArrayIndex() - r2.getArrayIndex());
+            rewardVariableNames.sort(Comparator.comparingInt(RewardVariable::getArrayIndex));
             rewardVariableNames.forEach(rv -> {
                 String rvName = rv.getName();
                 if (rvName == null || rvName.length() == 0) {
