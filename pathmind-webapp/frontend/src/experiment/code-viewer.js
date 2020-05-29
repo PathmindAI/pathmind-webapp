@@ -15,8 +15,8 @@ class CodeViewer extends PolymerElement {
 
     setValue(codeSnippet, rewardVariables = {}) {
         const codeElement = this.shadowRoot.querySelector("code");
-        const operatorRe = /(?<!\/)[\+\-^\/|\*](?!\/)\=?|\=/g;
-        const commentRe = /\/\/.+/g;
+        const operatorRe = /([\+\-\%\>\<\&\=\!\|]\=?)(?!(.+\*\/))|(?!\/)\/(?![\/\*]|\*(?![\/]))/g;
+        const commentRe = /(\/\*([^\*\/]+)*.+\*\/)|(\/\/.+)/g;
         const indexNumberRe = /\[[0-9]+\]/g;
         codeSnippet = renderToken(operatorRe, "operator");
         codeSnippet = renderToken(commentRe, "comment");
