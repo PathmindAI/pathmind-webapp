@@ -209,4 +209,9 @@ public class LoginPageStepDefinitions {
     public void checkNewPasswordPageOpened() {
         loginPageSteps.checkNewPasswordPageOpened();
     }
+
+    @When("^Login with old user email and password (.*)$")
+    public void loginWithOldUserEmailAndPassword(String password) {
+        loginPageSteps.loginWithCredential(Serenity.sessionVariableCalled("oldEmail"), password);
+    }
 }
