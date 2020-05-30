@@ -72,7 +72,7 @@
     box-sizing: border-box;
     width: 100%;
     white-space: pre;
-    font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
+    font-family: var(--code-font-family);
     padding: var(--lumo-space-s) var(--lumo-space-m);
     border: 1px solid var(--pm-gray-color);
     border-radius: var(--lumo-border-radius);
