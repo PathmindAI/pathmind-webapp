@@ -15,10 +15,9 @@
     height: 6.3rem;
 }
 
-.new-experiment-view .bold-label {
-    /* --lumo-font-size-l is 1.25rem now
-    we may want to change it to 1.125rem later */
-    font-size: 1.125rem;
+.new-experiment-view .section-title-label {
+    line-height: 1;
+    margin-bottom: var(--lumo-space-xs);
 }
 
 .new-experiment-view .reward-function-wrapper {

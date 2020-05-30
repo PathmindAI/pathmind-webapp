@@ -1,19 +1,26 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: aws-cleanup-job
+  name: {{ .Values.name }}
+  labels:
+{{ include "aws-clean-up.labels" . | indent 4 }}
 spec:
   schedule: "0 */24 * * *"
+  successfulJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
         spec:
           restartPolicy: OnFailure
           containers:
-          - name: aws-cleanup-job
-            image: 839270835622.dkr.ecr.us-east-1.amazonaws.com/aws_cleanup:latest
-            imagePullPolicy: Always
+          - name: {{ .Chart.Name }}
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
             env:
+            - name: NAME
+              value: "{{ .Values.env.NAME }}"
+            - name: BUCKET_NAME
+              value: "{{ .Values.env.BUCKET_NAME }}"
             - name: AWS_DEFAULT_REGION
               value: "us-east-1"
             - name: AWS_ACCESS_KEY_ID
