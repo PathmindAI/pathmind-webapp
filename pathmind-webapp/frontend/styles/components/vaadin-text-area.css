@@ -5,7 +5,7 @@
   background-color: white;
   padding: 0;
   border-radius: var(--lumo-border-radius);
-  border: 1px solid var(--lumo-contrast-20pct);
+  border: 1px solid var(--pm-gray-color);
 }
 
 :host([theme~="notes"]) [part="input-field"],

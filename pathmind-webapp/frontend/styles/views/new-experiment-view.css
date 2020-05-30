@@ -1,96 +1,119 @@
-.new-experiment-view {
-  min-height: 760px;
+.new-experiment-view .view-section {
+    padding: var(--lumo-space-m);
+    overflow: visible;
 }
 
-.panel-title {
-  max-width: 460px;
+.new-experiment-view .page-title + vaadin-horizontal-layout {
+    flex: 1;
 }
 
-.new-experiment-view .bold-label {
-  /* --lumo-font-size-l is 1.25rem now
-    we may want to change it to 1.125rem later */
-  font-size: 1.125rem;
+.new-experiment-view .panel-title {
+    max-width: 460px;
 }
 
-.reward-function-wrapper {
-  border: 1px solid var(--lumo-contrast-40pct);
-  border-radius: var(--lumo-border-radius);
+.new-experiment-view .panel-title + vaadin-horizontal-layout {
+    height: 6.3rem;
 }
 
-.reward-function-wrapper .reward-fn-editor-panel {
-  flex: 2;
-}
-.reward-function-wrapper vaadin-custom-field {
-  margin-top: unset;
-  flex: 1;
+.new-experiment-view .section-title-label {
+    line-height: 1;
+    margin-bottom: var(--lumo-space-xs);
 }
 
-.reward-fn-panel-container {
-  flex: 2;
+.new-experiment-view .reward-function-wrapper {
+    margin-top: 0;
 }
 
-.error-and-notes-container {
-  flex: 1;
+.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel {
+    flex: 2 0 65.7%;
+}
+.new-experiment-view .reward-function-wrapper vaadin-custom-field {
+    box-sizing: border-box;
+    flex: 1 1 19rem;
+    line-height: 1;
+    padding: 0 var(--lumo-space-s) var(--lumo-space-s);
+    border: 1px solid var(--pm-gray-color);
+    border-radius: var(--lumo-border-radius);
+    overflow-y: auto;
 }
 
-.errors-wrapper {
-  display: flex;
-  flex-direction: column;
-  flex: 2;
+.new-experiment-view .reward-fn-panel-container {
+    flex: 2;
 }
 
-.notes-wrapper {
-  flex: 1;
+.new-experiment-view .reward-variables-table.code-editor-mode .header-row {
+    align-items: center;
+    color: var(--pm-text-color);
+    background-color: white;
+    padding: var(--lumo-space-m) 0;
 }
 
-.errors-wrapper .bold-label {
-  height: 2.15rem;
+.new-experiment-view .reward-variables-table.code-editor-mode .header-row span:first-child {
+    color: var(--pm-text-color);
 }
 
-.error-message-wrapper {
-  flex: 1;
-  box-sizing: border-box;
-  width: 100%;
-  white-space: pre;
-  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro",
-    monospace;
-  background-color: var(--pm-app-bg-color);
-  padding: var(--lumo-space-s) var(--lumo-space-m);
-  border-radius: var(--lumo-border-radius);
-  overflow: auto;
+.new-experiment-view .error-and-notes-container {
+    flex: 0 0 18rem;
+    overflow: auto;
 }
 
-.hasError {
-  color: var(--pm-danger-color);
+.new-experiment-view .errors-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 2;
 }
 
-.noError {
-  display: flex;
-  color: var(--pm-friendly-color);
+.new-experiment-view .notes-wrapper {
+    flex: 1;
 }
 
-.noError iron-icon {
-  margin-right: var(--lumo-space-xs);
+.new-experiment-view .error-message-wrapper {
+    flex: 1;
+    box-sizing: border-box;
+    width: 100%;
+    white-space: pre;
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
+    padding: var(--lumo-space-s) var(--lumo-space-m);
+    border: 1px solid var(--pm-gray-color);
+    border-radius: var(--lumo-border-radius);
+    overflow: auto;
 }
 
-.reward-fn-panel-container vaadin-button,
-.error-and-notes-container vaadin-button {
-  min-width: calc(var(--lumo-button-size) * 1.625);
-  height: 1.4rem;
-  font-size: var(--lumo-font-size-s);
-  padding: 0 var(--lumo-space-s);
+.new-experiment-view .hasError {
+    color: var(--pm-danger-color);
+}
+
+.new-experiment-view .noError {
+    display: flex;
+    color: var(--pm-friendly-color);
+}
+
+.new-experiment-view .noError iron-icon {
+    margin-right: var(--lumo-space-xs);
+}
+
+.new-experiment-view .error-and-notes-container vaadin-button {
+    min-width: calc(var(--lumo-button-size) * 1.625);
+    height: 1.4rem;
+    font-size: var(--lumo-font-size-s);
+    padding: 0 var(--lumo-space-s);
+}
+
+.new-experiment-view .notes-block .header span:nth-of-type(2),
+.new-experiment-view .notes-block .header vaadin-button {
+    display: none !important;
 }
 
 .reward-editor-error {
-  align-self: flex-end;
-  color: var(--pm-danger-color);
-  margin-top: 0px;
+    align-self: flex-end;
+    color: var(--pm-danger-color);
+    margin-top: 0px;
 }
 
 .reward-editor-error[hidden="true"] + * {
-  margin-top: auto;
+    margin-top: auto;
 }
 
 .reward-editor-error + * {
-  margin-top: 0px;
+    margin-top: 0px;
 }

@@ -15,5 +15,13 @@ RUN apt-get update && \
 
 RUN chmod +x /app/clean_kops_aws.sh
 
+# Install kubectl and kops
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && \
+    chmod +x ./kubectl && \
+    mv ./kubectl /usr/local/bin/kubectl  && \
+    curl -Lo kops https://github.com/kubernetes/kops/releases/download/1.15.0/kops-linux-amd64 && \
+    chmod +x ./kops && \
+    mv ./kops /usr/local/bin/
+
 CMD ["bash","-c","/app/clean_kops_aws.sh"]
 #CMD ["sleep","12h"]
