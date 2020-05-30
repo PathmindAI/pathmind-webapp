@@ -122,7 +122,7 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 
 		@Override
 		public RewardVariable getValue() {
-			return create(rewardVariableNameField.getValue());
+			return create(rewardVariableNameField.getValue().trim());
 		}
 
 		@Override
