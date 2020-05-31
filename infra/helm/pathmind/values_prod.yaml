@@ -22,7 +22,7 @@ service:
   port: 80
 
 env:
-  APPLICATION_URL: http://app.pathmind.com
+  APPLICATION_URL: https://app.pathmind.com
   INTERCOM_APP_ID: byklc7u3
   WEBSITE_HTTPLOGGING_RETENTION_DAYS: 5
   PATHMIND_LOG_FILE_PATH: /tmp/
