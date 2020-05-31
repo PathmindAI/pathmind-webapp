@@ -8,6 +8,8 @@ import io.skymind.pathmind.shared.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.ErrorPageRegistrar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -25,6 +27,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.firewall.RequestRejectedException;
 
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -93,14 +96,19 @@ public class SecurityConfiguration {
             this.passwordEncoder = passwordEncoder;
         }
 
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public CurrentUser currentUser(UserDAO userDAO) {
-        final String username = SecurityUtils.getUsername();
-        PathmindUser user =
-                username != null ? userDAO.findByEmailIgnoreCase(username) : null;
-        return () -> user;
-    }
+        @Bean
+        @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+        public CurrentUser currentUser(UserDAO userDAO) {
+            final String username = SecurityUtils.getUsername();
+            PathmindUser user =
+                    username != null ? userDAO.findByEmailIgnoreCase(username) : null;
+            return () -> user;
+        }
+        
+        @Bean
+        public static ErrorPageRegistrar securityErrorPageRegistrar() {
+            return registry -> registry.addErrorPages(new ErrorPage(RequestRejectedException.class, "/" + Routes.LOGOUT_URL));
+        }
 
         /**
          * Registers our UserDetailsService and the password encoder to be used on login attempts.
