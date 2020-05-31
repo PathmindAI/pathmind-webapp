@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.cache.annotation.EnableCaching;
@@ -27,7 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@SpringBootApplication(scanBasePackages = "io.skymind.pathmind")
+@SpringBootApplication(scanBasePackages = "io.skymind.pathmind", exclude = ErrorMvcAutoConfiguration.class)
 @PropertySource({"application.properties", "shared.properties"})
 @EnableCaching
 @EnableScheduling
