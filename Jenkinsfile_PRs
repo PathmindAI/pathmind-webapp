@@ -111,7 +111,7 @@ pipeline {
                     	RELEASE_ID = "${IMAGE_NAME}-${env.BUILD_NUMBER}"
                     	echo "Global pathmind Id set to ${RELEASE_ID}"
                         echo "Rebasing with dev"
-			sh "cd ${WORKSPACE} && git rebase origin/dev"
+			sh "cd ${WORKSPACE} && git merge origin/dev"
 		}
             }
         }
