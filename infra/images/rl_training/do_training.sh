@@ -19,7 +19,7 @@ where id= (select model_id from experiment where id=(select experiment_id from r
 EOF`
 
 #Monitor spot instance
-bash check_spot.sh "${S3PATH}" "${ENVIRONMENT}" "${EMAIL}" "${s3_url_link}" &
+bash check_spot.sh "${S3PATH}" "${ENVIRONMENT}" "${EMAIL}" "${s3_url_link}" "${s3_url}" &
 
 #Get the instance type and cost
 instanceid=`aws ec2 describe-instances --filters "Name=tag:Name,Values=${S3PATH}.${NAME}"  | jq -r '.[] | .[] | .Instances | .[] | select(.State.Name == "running").InstanceId'`

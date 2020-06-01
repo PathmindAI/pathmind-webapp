@@ -106,7 +106,7 @@ public class DashboardLine extends HorizontalLayout {
 	private Span createStageItem(Stage stage) {
 		Span item = null; 
 		if (stage.getValue() < currentStage.getValue()) {
-			item = new Span(VaadinIcon.COMMENTS.CHECK_CIRCLE.create(), new Text(stage.getNameAfterDone()));
+			item = new Span(VaadinIcon.CHECK_CIRCLE.create(), new Text(stage.getNameAfterDone()));
 			item.setClassName("stage-done");
 		} else if (stage.getValue() == currentStage.getValue()) {
 			if (DashboardUtils.isTrainingInProgress(stage, dashboardItem.getLatestRun())) {
@@ -130,7 +130,7 @@ public class DashboardLine extends HorizontalLayout {
 	
 	private void updateProgress(PathmindTrainingProgress trainingProgress, DashboardItem item) {
 		final double progress = ExperimentUtils.calculateProgressByIterationsProcessed(item.getIterationsProcessed());
-		if (progress > 0 && progress <= 100) {
+		if (progress >= 0 && progress <= 100) {
 			final double estimatedTime = ExperimentUtils.getEstimatedTrainingTime(item.getLatestRun().getEc2CreatedAt(), progress);
 			trainingProgress.setValue(progress, estimatedTime);
 		}

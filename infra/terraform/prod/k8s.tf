@@ -377,10 +377,13 @@ resource "null_resource" "canary_configmap" {
 }
 
 #cleanup aws resources created by kops
-resource "null_resource" "aws_cleanup" {
+resource "null_resource" "aws-clean-up" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ../../k8s/aws_cleanup_job.yaml"
+    command = "helm install aws-clean-up ../../helm/aws-clean-up -f ../../helm/aws-clean-up/values_${var.environment}.yaml"
+  }
+  provisioner "local-exec" {
+    when = "destroy"
+    command = "helm delete aws-clean-up"
   }
   depends_on = ["null_resource.validate_k8s"]
 }
-
