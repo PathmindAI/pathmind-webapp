@@ -30,8 +30,6 @@ public class ProjectsPage extends PageObject {
 
     private Utils utils;
 
-    @FindBy(xpath = "//vaadin-button[text()='New Project']")
-    private WebElement createNewProjectBtn;
     @FindBy(xpath = "//vaadin-text-field[@required]")
     private WebElement projectNameInputFieldShadow;
     @FindBy(xpath = "//vaadin-button[text()='Create Project']")
@@ -40,24 +38,10 @@ public class ProjectsPage extends PageObject {
     private WebElement pathmindHelperNextStepBtn;
     @FindBy(xpath = "//vaadin-upload")
     private WebElement uploadShadow;
-    @FindBy(xpath = "//vaadin-button[text()='Check Your model']")
-    private WebElement checkModelBtn;
     @FindBy(xpath = "//span[text()='Notes']/following-sibling::vaadin-text-area")
     private WebElement modelDetailsNotesShadow;
-    @FindBy(xpath = "//span[text()='Reward Variables']/following-sibling::vaadin-text-area")
-    private WebElement modelDetailsRewardShadow;
-    @FindBy(xpath = "//a[text()='Projects' and @href='projects']")
-    private WebElement headerProjectsBtn;
     @FindBy(xpath = "//vaadin-grid-cell-content")
     private List<WebElement> experimentModelsNames;
-    @FindBy(xpath = "//*[@class='project-name-column']/descendant::span")
-    private List<WebElement> projectsNames;
-    @FindBy(xpath = "(//vaadin-text-area)[1])")
-    private WebElement errorsTextFieldShadow;
-    @FindBy(xpath = "(//vaadin-text-area)[2]")
-    private WebElement getObservationTextFieldShadow;
-    @FindBy(xpath = "(//vaadin-text-area)[2]")
-    private WebElement tipsTextFieldShadow;
     @FindBy(xpath = "//juicy-ace-editor")
     private WebElement rewardField;
     @FindBy(xpath = "//vaadin-text-area[1]")
@@ -66,26 +50,14 @@ public class ProjectsPage extends PageObject {
     private WebElement startDiscoveryRunBtn;
     @FindBy(xpath = "//vaadin-dialog-overlay")
     private WebElement dialogShadow;
-    @FindBy(xpath = "//span[text()='Status']/following-sibling::span[1]")
-    private WebElement experimentStatusCompleted;
-    @FindBy(xpath = "//vaadin-text-field[@tabindex='0']")
-    private WebElement searchFieldShadow;
-    @FindBy(id = "overlay")
-    private WebElement overlayShadow;
     @FindBy(xpath = "//vaadin-button[@theme='primary']")
     private WebElement projectPageUploadBtnShadow;
     @FindBy(xpath = "//vaadin-grid")
     private WebElement projectPageModelsTable;
-    @FindBy(xpath = "//*[@class='section-label-title']")
-    private WebElement pageLabel;
     @FindBy(xpath = "//juicy-ace-editor")
     private WebElement juicyAceEditorShadow;
-    @FindBy(xpath = "//vaadin-text-area")
-    private WebElement getObservationsShadow;
     @FindBy(xpath = "//*[@class='breadcrumb']")
     private List<WebElement> breadcrumb;
-    @FindBy(xpath = "//*[@id='skipToUploadModelBtn']")
-	private WebElement skipToUploadBtnShadow;
     @FindBy(xpath = "//vaadin-button[@title='Archive']")
 	private WebElement archiveBtnShadow;
 	@FindBy(xpath = "//vaadin-button[@title='Unarchive']")
@@ -136,26 +108,12 @@ public class ProjectsPage extends PageObject {
 		upload(System.getProperty("user.dir") + "/models/" + model).fromLocalMachine().to(projectNameInputField);
     }
 
-    public void clickCheckModelBtn() {
-        waitFor(ExpectedConditions.elementToBeClickable(checkModelBtn));
-        Actions actions = new Actions(getDriver());
-        actions.moveToElement(checkModelBtn).click().perform();
-    }
-
     public void inputModelDetailsNotes(String notes) {
         WebElement e = utils.expandRootElement(modelDetailsNotesShadow);
         WebElement notestTextArea = e.findElement(byTextarea);
         notestTextArea.click();
         notestTextArea.clear();
         notestTextArea.sendKeys(notes);
-    }
-
-    public void inputModelDetailsReward(String getObservationFile) throws IOException {
-        WebElement e = utils.expandRootElement(modelDetailsRewardShadow);
-        WebElement rewardInputField = e.findElement(byTextarea);
-        rewardInputField.click();
-        rewardInputField.clear();
-        rewardInputField.sendKeys(FileUtils.readFileToString(new File("models/" + getObservationFile), StandardCharsets.UTF_8));
     }
 
     public void checkThatProjectPageOpened(String projectName) {
@@ -165,21 +123,9 @@ public class ProjectsPage extends PageObject {
 		assertThat(getDriver().findElement(By.xpath("//a[contains(@href, 'project/')]")).getText(), containsString(projectName));
 	}
 
-    public void clickHeaderProjectsBtn() {
-        headerProjectsBtn.click();
-        waitABit(2000);
-    }
-
     public void checkThatProjectExistInProjectsList(String projectName) {
         utils.moveToElementRepeatIfStaleException(By.xpath("//span[text()='"+projectName+"']/ancestor::vaadin-grid-cell-content"));
         assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span")), hasItem(projectName));
-    }
-
-    public void checkThatObservationFunctionDisplayed(String getObservationFile) throws IOException {
-        WebElement e = utils.expandRootElement(getObservationTextFieldShadow);
-        WebElement getObservationTextField = e.findElement(byTextarea);
-        assertThat(getObservationTextField.getAttribute("value").replace("\n", "").replace("\r", ""),
-                equalTo(FileUtils.readFileToString(new File("models/" + getObservationFile), StandardCharsets.UTF_8).replace("\n", "").replace("\r", "")));
     }
 
     public void inputRewardFunctionFile(String rewardFile) throws IOException {
@@ -197,55 +143,6 @@ public class ProjectsPage extends PageObject {
     	waitFor(ExpectedConditions.elementToBeClickable(startDiscoveryRunBtn));
     	waitABit(2500);
         startDiscoveryRunBtn.click();
-    }
-
-    public void clickOkayInThePopup() {
-        waitFor(ExpectedConditions.visibilityOf(dialogShadow));
-        WebElement overlay = utils.expandRootElement(dialogShadow);
-        WebElement d = overlay.findElement(By.cssSelector("#content"));
-        WebElement dialog = utils.expandRootElement(d);
-        WebElement okBtn = dialog.findElement(By.cssSelector("#confirm"));
-        okBtn.click();
-    }
-
-    public void checkExperimentStatusCompleted() {
-        for (int i=0; i < 50; i++) {
-            if (getDriver().findElements(By.xpath("//label[text()='Completed']")).size() != 0) {
-                break;
-            } else {
-                waitABit(30000);
-                getDriver().navigate().refresh();
-            }
-        }
-        assertThat(experimentStatusCompleted.getText(), containsString("Completed"));
-    }
-
-    public void inputToTheProjectsSearchField(String projectName) {
-        waitABit(2000);
-        WebElement e = utils.expandRootElement(searchFieldShadow);
-        WebElement searchInputField = e.findElement(By.cssSelector("input[part='value']"));
-        waitFor(ExpectedConditions.elementToBeClickable(searchInputField));
-        searchInputField.click();
-        searchInputField.clear();
-        searchInputField.sendKeys(projectName);
-    }
-
-    public void checkThatProjectsSearchFieldWorks(String projectName) {
-        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[1]")).getText(), containsString(projectName));
-    }
-
-    public void clickSearchFieldClearBtn() {
-        waitABit(2000);
-        WebElement e = utils.expandRootElement(searchFieldShadow);
-        WebElement searchClearBtn = e.findElement(By.cssSelector("#clearButton"));
-        waitFor(ExpectedConditions.elementToBeClickable(searchClearBtn));
-        searchClearBtn.click();
-    }
-
-    public void checkThatProjectsInputFieldIsEmpty() {
-        WebElement e = utils.expandRootElement(searchFieldShadow);
-        WebElement searchInputField = e.findElement(By.cssSelector("input[part='value']"));
-        assertThat(searchInputField.getAttribute("value"), isEmptyString());
     }
 
     public void clickTheModelName(String modelName) {
@@ -334,17 +231,6 @@ public class ProjectsPage extends PageObject {
         assertThat(e.findElements(By.cssSelector("#items tr[part='row']")).size(), is(modelsCount));
     }
 
-    public void clickBackToProjectsBtn() {
-        waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
-        getDriver().findElement(By.xpath("//vaadin-button[@theme='tertiary']")).click();
-    }
-
-    public void clickBackToModelsBtn() {
-        waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
-        waitFor(ExpectedConditions.elementToBeClickable(By.xpath("//vaadin-button[@theme='tertiary']")));
-        utils.clickElementRepeatIfStaleException(By.xpath("//vaadin-button[@theme='tertiary']"));
-    }
-
     public void checkThatModelsPageOpened() {
 		assertThat(getDriver().getCurrentUrl(), containsString("/model/"));
         assertThat(getDriver().getTitle(), is("Pathmind | Model"));
@@ -396,42 +282,10 @@ public class ProjectsPage extends PageObject {
 		}
     }
 
-    public void clickExperimentShowRewardFunctionBtn(String experimentName) {
-        String slotAttr = getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experimentName+" "+"']")).getAttribute("slot");
-        int showRewardBtnNumber = Integer.parseInt(slotAttr.split("grid-cell-content-")[1]) + 5;
-        getDriver().findElement(By.xpath("//vaadin-grid-cell-content[@slot='vaadin-grid-cell-content-"+showRewardBtnNumber+"']/descendant::vaadin-button[@title='Show reward function']")).click();
-    }
-
     public void checkRewardFunctionIs(String rewardFunction) {
         waitABit(2000);
         WebElement e = utils.expandRootElement(juicyAceEditorShadow);
         assertThat(e.findElement(By.cssSelector(".ace_line")).getText(), is(rewardFunction));
-    }
-
-    public void clickUploadModelBtn() {
-        getDriver().findElement(By.xpath("//vaadin-button[text()='Upload Model']")).click();
-    }
-
-    public void projectWizardClickDownloadItHereBtn() {
-        getDriver().findElement(By.xpath("//a[text()='download it here']")).click();
-    }
-
-    public void projectWizardForMoreDetailsSeeOurDocumentationBtn() {
-        getDriver().findElement(By.xpath("//a[text()='For more details, see our documentation']")).click();
-    }
-
-    public void checkTextInTheProjectPage() {
-        assertThat(getDriver().findElement(By.xpath("//div[@class='view-section']/descendant::div/p[1]")).getText(), containsString("To prepare your AnyLogic model for reinforcement learning, install the Pathmind Helper"));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='view-section']/descendant::div/p[2]")).getText(), containsString("The basics:"));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='view-section']/descendant::div/p[3]")).getText(), containsString("When you're ready, upload your model in the next step."));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='view-section']/descendant::div/p[4]")).getText(), containsString("For more details, see our documentation"));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='view-section']/descendant::ol/li[1]")).getText(), containsString("The Pathmind Helper is an AnyLogic palette item that you add to your simulation. You can download it here."));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='view-section']/descendant::ol/li[2]")).getText(), containsString("Add Pathmind Helper as a library in AnyLogic."));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='view-section']/descendant::ol/li[3]")).getText(), containsString("Add a Pathmind Helper to your model."));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='view-section']/descendant::ol/li[4]")).getText(), containsString("Fill in these functions:"));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='view-section']/descendant::ol/ul/li[1]")).getText(), containsString("Observation for rewards"));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='view-section']/descendant::ol/ul/li[2]")).getText(), containsString("Observation for training"));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='view-section']/descendant::ol/ul/li[3]")).getText(), containsString("doAction"));
     }
 
     public void checkThatErrorShown(String error) {
@@ -457,11 +311,6 @@ public class ProjectsPage extends PageObject {
 		waitFor(ExpectedConditions.elementToBeClickable(bread));
         bread.click();
         waitABit(2500);
-    }
-
-    public void checkThatExperimentsPageOpened() {
-        assertThat(getDriver().getCurrentUrl(), containsString("experiments"));
-        assertThat(getDriver().getTitle(), is("Pathmind | Experiments"));
     }
 
     public void checkExperimentModelStatusIsStarting(String status) {
@@ -500,20 +349,6 @@ public class ProjectsPage extends PageObject {
 		getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/ancestor::*[@class='view-section']/descendant::vaadin-button[normalize-space(text())='Next'][2]")).click();
 	}
 
-	public void checkExperimentStatusCompletedWithLimitHours(int limit) {
-    	System.out.println("!Waiting for training completed with limit " + limit + " hours!");
-		for (int i=0; i < limit*60; i++) {
-		    String status = getDriver().findElement(By.xpath("//span[text()='Status']/following-sibling::span[1]")).getText();
-			if (getDriver().findElements(By.xpath("//span[text()='Completed']")).size() != 0 || status.equals("Error") || status.equals("Stopped")) {
-				break;
-			} else {
-				waitABit(60000);
-				getDriver().navigate().refresh();
-			}
-		}
-		assertThat(experimentStatusCompleted.getText(), containsString("Completed"));
-	}
-
 	public void inputVariableName(String variableName, int variableIndex) {
 		WebElement textField = rewardVariableNameInputs.get(variableIndex);
 		WebElement e = utils.expandRootElement(textField);
@@ -544,24 +379,6 @@ public class ProjectsPage extends PageObject {
         resetImplicitTimeout();
     }
 
-    public void checkThatTheExperimentStatusIsDifferentFrom(String status) {
-        setImplicitTimeout(5, SECONDS);
-        String xpath = String.format("//vaadin-form-item//label[contains(text(), 'Status')]/parent::*//span[contains(text(), '%s')]", status);
-        assertThat(getDriver().findElements(By.xpath(xpath)).size(), is(0));
-        resetImplicitTimeout();
-    }
-
-    public void checkThatTheExperimentStatusIs(String status) {
-        setImplicitTimeout(5, SECONDS);
-		String trainingStatus = "//span[contains(text(), 'Status')]/following-sibling::span[1]";
-        if(status.equals("Stopping")){
-			assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), either(is(status)).or(is("Stopped")));
-		}else {
-			assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), is(status));
-		}
-        resetImplicitTimeout();
-    }
-
 	public void addNoteToTheProjectPage(String note) {
 		notesField.click();
 		notesField.sendKeys(note);
@@ -572,15 +389,6 @@ public class ProjectsPage extends PageObject {
 
 	public void checkProjectNoteIs(String note) {
 		assertThat(notesField.getAttribute("value"), is(note));
-	}
-
-	public void addNoteToTheExperimentPage(String note) {
-		experimentNotes.click();
-		experimentNotes.sendKeys(note);
-	}
-
-	public void checkExperimentNotesIs(String note) {
-		assertThat(experimentNotes.getAttribute("value"), is(note));
 	}
 
 	public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {

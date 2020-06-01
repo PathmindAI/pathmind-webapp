@@ -76,15 +76,16 @@ Feature: Experiments page
     Then Click the experiment name 1
     Then Check reward function is reward -= after[3] - before[3];
 
-  Scenario: Check discovery run status
+  Scenario: Check experiment run status Starting Cluster
     Given Login to the pathmind
     When Create new CoffeeShop project
     Then Click project start run button
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1
-    Then Check experiment model status is Starting Cluster
+    Then Check experiment status is Starting Cluster
     Then Click the experiment name 1
+    Then Check that the experiment status is 'Starting Cluster'
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
@@ -160,3 +161,12 @@ Feature: Experiments page
     And Check that the experiment status is 'Stopping'
     And Check that button 'Stop Training' doesn't exist
     And Check that button 'Export Policy' doesn't exist
+
+  Scenario: Check reward function on started experiment
+    Given Login to the pathmind
+    When Create new CoffeeShop project
+    Then Click project start run button
+    Then Check experiment page reward function Production_Single_Agent/Production_Single_Agent_Reward.txt
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
