@@ -17,7 +17,6 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -43,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = 1174592979;
+    private static final long serialVersionUID = 589894250;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -61,7 +60,7 @@ public class Policy extends TableImpl<PolicyRecord> {
     /**
      * The column <code>public.policy.id</code>.
      */
-    public final TableField<PolicyRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('policy_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
+    public final TableField<PolicyRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.policy.run_id</code>.
@@ -98,7 +97,6 @@ public class Policy extends TableImpl<PolicyRecord> {
      */
     public final TableField<PolicyRecord, Boolean> HAS_FILE = createField(DSL.name("has_file"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
-
     /**
      * The column <code>public.policy.is_valid</code>.
      */
@@ -108,7 +106,7 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.check_point_file_key</code>.
      */
     public final TableField<PolicyRecord, String> CHECK_POINT_FILE_KEY = createField(DSL.name("check_point_file_key"), org.jooq.impl.SQLDataType.VARCHAR(36), this, "");
-    
+
     /**
      * Create a <code>public.policy</code> table reference
      */
@@ -150,11 +148,6 @@ public class Policy extends TableImpl<PolicyRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.POLICY_PKEY, Indexes.POLICY_RUN_FK_INDEX, Indexes.POLICY_RUN_ID_EXTERNAL_ID_KEY);
-    }
-
-    @Override
-    public Identity<PolicyRecord, Long> getIdentity() {
-        return Keys.IDENTITY_POLICY;
     }
 
     @Override
@@ -203,7 +196,7 @@ public class Policy extends TableImpl<PolicyRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row10 type methods
     // -------------------------------------------------------------------------
 
     @Override

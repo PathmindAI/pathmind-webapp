@@ -4,8 +4,8 @@ This repository contains the Pathmind Web application.
 
 The other parts of Pathmind (NativeRL, Pathmind Helper) can be currently still be found here:
 
-- [NativeRL](https://github.com/SkymindIO/skil-somatic-cloud/tree/master/nativerl)
-- [Pathmind Helper](https://github.com/SkymindIO/skil-somatic-cloud/tree/master/PathmindPolicyHelper)
+- [NativeRL](https://github.com/SkymindIO/nativerl/tree/master/nativerl)
+- [Pathmind Helper](https://github.com/SkymindIO/nativerl/tree/master/PathmindPolicyHelper)
 
 ## Tech stack
 
