@@ -33,7 +33,7 @@ Your local env will be running at 127.0.0.1:8080
 [Details for setting up your env variables](https://github.com/SkymindIO/pathmind-webapp/wiki/Setting-up-your-dev-environment). 
 
 Here are instructions for how you can try out the app and the files you can upload to train:
-https://help.pathmind.com/en/articles/3329544-getting-started
+https://help.pathmind.com/en/articles/4004788-getting-started
 
 ### Running Automated Tests
 [Check out the readme here](pathmind-bdd-tests/README.md)
