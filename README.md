@@ -58,7 +58,9 @@ Intellij. For maven commands (also to be run from the IntelliJ) you have to set 
 
 We are using [Jooq](https://www.jooq.org/doc/3.11/manual/) for type-safe database access. So when you change anything
 about the structure of the database, you will have to also regenerate those classes. You can do this by running
-`jooq-codegen:generate` from the maven tab in IntelliJ.
+`jooq-codegen:generate` from the `pathmind-database` submodule in the maven tab in IntelliJ.
+
+[More details are here.](https://github.com/SkymindIO/pathmind-webapp/wiki/Liquibase-and-JOOQ#jooq)
 
 ## Migrations
 
