@@ -28,10 +28,6 @@ public class ProjectsPageSteps {
         projectsPage.uploadModelFile(model);
     }
     @Step
-    public void clickCheckModelBtn() {
-        projectsPage.clickCheckModelBtn();
-    }
-    @Step
     public void inputModelDetails(String notes) {
         projectsPage.inputModelDetailsNotes(notes);
         projectsPage.clickWizardModelDetailsNextBtn();
@@ -45,16 +41,8 @@ public class ProjectsPageSteps {
 		projectsPage.checkThatExperimentPageOpened(projectName);
 	}
     @Step
-    public void clickHeaderProjectsBtn() {
-        projectsPage.clickHeaderProjectsBtn();
-    }
-    @Step
     public void checkThatProjectExistInProjectsList(String projectName) {
         projectsPage.checkThatProjectExistInProjectsList(projectName);
-    }
-    @Step
-    public void checkThatObservationFunctionDisplayed(String getObservationFile) throws IOException {
-        projectsPage.checkThatObservationFunctionDisplayed(getObservationFile);
     }
     @Step
     public void inputRewardFunctionFile(String rewardFile) throws IOException {
@@ -67,30 +55,6 @@ public class ProjectsPageSteps {
     @Step
     public void clickProjectStartDiscoveryRunButton() {
         projectsPage.clickProjectStartDiscoveryRunButton();
-    }
-    @Step
-    public void clickOkayInThePopup() {
-        projectsPage.clickOkayInThePopup();
-    }
-    @Step
-    public void checkExperimentStatusCompleted() {
-        projectsPage.checkExperimentStatusCompleted();
-    }
-    @Step
-    public void checkThatProjectsSearchFieldWorks(String projectName) {
-        projectsPage.checkThatProjectsSearchFieldWorks(projectName);
-    }
-    @Step
-    public void inputToTheProjectsSearchField(String projectName) {
-        projectsPage.inputToTheProjectsSearchField(projectName);
-    }
-    @Step
-    public void clickSearchFieldClearBtn() {
-        projectsPage.clickSearchFieldClearBtn();
-    }
-    @Step
-    public void checkThatProjectsInputFieldIsEmpty() {
-        projectsPage.checkThatProjectsInputFieldIsEmpty();
     }
     @Step
     public void clickTheModelName(String modelName) {
@@ -141,14 +105,6 @@ public class ProjectsPageSteps {
         projectsPage.projectPageCheckThatModelsCountIs(modelsCount);
     }
     @Step
-    public void clickBackToProjectsBtn() {
-        projectsPage.clickBackToProjectsBtn();
-    }
-    @Step
-    public void clickBackToModelsBtn() {
-        projectsPage.clickBackToModelsBtn();
-    }
-    @Step
     public void checkThatModelsPageOpened() {
         projectsPage.checkThatModelsPageOpened();
     }
@@ -173,28 +129,8 @@ public class ProjectsPageSteps {
         projectsPage.clickProjectSaveDraftBtn();
     }
     @Step
-    public void clickExperimentShowRewardFunctionBtn(String experimentName) {
-        projectsPage.clickExperimentShowRewardFunctionBtn(experimentName);
-    }
-    @Step
     public void checkRewardFunctionIs(String rewardFunction) {
         projectsPage.checkRewardFunctionIs(rewardFunction);
-    }
-    @Step
-    public void clickUploadModelBtn() {
-        projectsPage.clickUploadModelBtn();
-    }
-    @Step
-    public void projectWizardClickDownloadItHereBtn() {
-        projectsPage.projectWizardClickDownloadItHereBtn();
-    }
-    @Step
-    public void projectWizardForMoreDetailsSeeOurDocumentationBtn() {
-        projectsPage.projectWizardForMoreDetailsSeeOurDocumentationBtn();
-    }
-    @Step
-    public void checkTextInTheProjectPage() {
-        projectsPage.checkTextInTheProjectPage();
     }
     @Step
     public void checkThatErrorShown(String error) {
@@ -207,10 +143,6 @@ public class ProjectsPageSteps {
     @Step
     public void clickProjectsBreadcrumbBtn(String breadcrumb) {
         projectsPage.clickProjectsBreadcrumbBtn(breadcrumb);
-    }
-    @Step
-    public void checkThatExperimentsPageOpened() {
-        projectsPage.checkThatExperimentsPageOpened();
     }
     @Step
     public void checkExperimentModelStatusIsStarting(String status) {
@@ -250,10 +182,6 @@ public class ProjectsPageSteps {
 		projectsPage.clickWizardModelDetailsNextBtn();
 	}
 	@Step
-	public void checkExperimentStatusCompletedWithLimitHours(int limit) {
-		projectsPage.checkExperimentStatusCompletedWithLimitHours(limit);
-    }
-	@Step
 	public void inputVariableNames(String[] variableNames) {
 		for (int i = 0; i < variableNames.length; i++) {
 			projectsPage.inputVariableName(variableNames[i], i);
@@ -282,25 +210,9 @@ public class ProjectsPageSteps {
 		projectsPage.checkProjectNoteIs(note);
 	}
 	@Step
-	public void addNoteToTheExperimentPage(String note) {
-		projectsPage.addNoteToTheExperimentPage(note);
-	}
-	@Step
-	public void checkExperimentNotesIs(String note) {
-		projectsPage.checkExperimentNotesIs(note);
-	}
-	@Step
 	public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
 		projectsPage.checkOnTheModelPageExperimentNotesIs(experiment, note);
 	}
-    @Step
-    public void checkThatTheExperimentStatusIsDifferentFrom(String status) {
-        projectsPage.checkThatTheExperimentStatusIsDifferentFrom(status);
-    }
-    @Step
-    public void checkThatTheExperimentStatusIs(String status) {
-        projectsPage.checkThatTheExperimentStatusIs(status);
-    }
 	@Step
 	public void clickWizardRewardVariableNamesNextBtn() {
 		projectsPage.clickWizardRewardVariableNamesNextBtn();

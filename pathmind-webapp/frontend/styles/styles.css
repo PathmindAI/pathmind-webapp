@@ -312,6 +312,10 @@ hr {
     overflow-y: auto;
 }
 
+.model-view .model-reward-variables div {
+    margin-bottom: 0.2em;
+}
+
 .model-view .model-reward-variables span {
     font-size: var(--lumo-font-size-s);
 }
@@ -323,8 +327,8 @@ hr {
 }
 
 .model-view .model-reward-variables span:last-child {
-    padding: 0 2px;
-    border-radius: 3px;
+    padding: 0.12em 0.3em;
+    border-radius: 4px;
 }
 
 .project-view .notes-field-wrapper,
