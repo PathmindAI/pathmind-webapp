@@ -15,10 +15,6 @@ public class NotFoundPage extends PageObject {
 
     private Utils utils;
 
-    public void openIncorrectPathPage() {
-        utils.openPage("incorrect-path-page");
-    }
-
     public void check404PageOpened() {
         assertThat(getDriver().findElement(By.xpath("//span[@class='breadcrumb']")).getText(), containsString(PAGE_NOT_FOUND_TEXT));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@theme='padding spacing']")).getText(), containsString(ERROR_MESSAGE));

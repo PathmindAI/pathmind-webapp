@@ -1,46 +1,24 @@
-# Default values for pathmind.
+# Default values for .aws-clean-up
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind
-  tag: test
+  repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/aws_cleanup
+  tag: latest
   pullPolicy: Always
-  command: ["java"]
-  args:
-    - "-Xmx4096m"
-    - "-XX:+UseG1GC"
-    - "-Dvaadin.productionMode"
-    - "-jar"
-    - "/app/pathmind-webapp/target/pathmind-webapp-0.0.1-SNAPSHOT.jar"
-    - "--server.port=80"
 
 service:
   type: NodePort
   port: 80
 
 env:
-  APPLICATION_URL: https://test.devpathmind.com
-  INTERCOM_APP_ID: q51xonft
-  WEBSITE_HTTPLOGGING_RETENTION_DAYS: 7
-  PATHMIND_LOG_FILE_PATH: /tmp/
-  SCM_COMMAND_IDLE_TIMEOUT: 1800
-  ENVIRONMENT: test
-  SQS_URL: https://queue.amazonaws.com/839270835622/test-training-queue.fifo
-  S3_BUCKET: test-training-dynamic-files.pathmind.com
-  DB_SECRET_NAME: dburl
-  DB_SECRET_KEY: DB_URL
-  MODEL_ANALYZER_URL: https://ma.devpathmind.com
-  MULTI_AGENT: false
-  JOB_MOCK_CYCLE: 0
-  SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/test-updater-queue
-  SNS_UPDATER_SQS_FILTER_ATTR: test
+  NAME: dev-pathmind.k8s.local
+  BUCKET_NAME: dev-pathmind-kops-state
 
-name: pathmind  
+name: aws-clean-up
 
-namespace: test
 
 ingress:
   enabled: false
