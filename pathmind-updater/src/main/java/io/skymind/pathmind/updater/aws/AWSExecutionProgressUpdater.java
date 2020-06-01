@@ -49,7 +49,6 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                 sendNotificationMail(providerJobStatus.getRunStatus(), run);
             } catch (Exception e) {
                 log.error("Error for run: " + run.getId() + " : " + e.getMessage(), e);
-                emailNotificationService.sendEmailExceptionNotification("Error for run: " + run.getId() + " : " + e.getMessage(), e);
             }
         });
     }
