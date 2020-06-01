@@ -16,10 +16,6 @@
     margin-left: 0;
 }
 
-.new-experiment-view .notes-block .header span:first-child {
-    font-size: 1.125rem;
-}
-
 .notes-block .header vaadin-button {
     min-width: 45px;
     height: 1.4rem;
