@@ -47,14 +47,4 @@ public class CreateANewProjectPanel extends VerticalLayout
 		ProjectBinders.bindProjectName(binder, projectDao, projectNameTextField);
 	}
 	
-	/**
-	 * <code>createProjectButton</code> has a click shortcut that stays active as long as the button is visible and attached
-	 * For this reason, changing also the visibility of the button, when visibility of panel is changed
-	 * Filed an issue https://github.com/vaadin/flow/issues/7033 for this
-	 */
-	@Override
-	public void setVisible(boolean visible) {
-		super.setVisible(visible);
-		createProjectButton.setVisible(visible);
-	}
 }
