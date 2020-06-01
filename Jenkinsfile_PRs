@@ -25,11 +25,11 @@ def buildDockerImage(image_name) {
 def createSecrets() {
     sh """
     set + x
-    kubectl create secret generic dburl--from - literal DB_URL = 'jdbc:postgresql://postgres/pathminddb?user=pathminddb&password=Asdf1234' - n ${ env.BUILD_NUMBER }
-    kubectl create secret generic awsaccesskey--from - literal AWS_ACCESS_KEY_ID = ${ env.AWS_ACCESS_KEY_ID } -n ${ env.BUILD_NUMBER }
-    kubectl create secret generic awssecretaccesskey--from - literal AWS_SECRET_ACCESS_KEY = ${ env.AWS_SECRET_ACCESS_KEY } -n ${ env.BUILD_NUMBER }
-    kubectl create secret generic segmentwebsitekey--from - literal SEGMENT_WEBSITE_KEY = ${ env.SEGMENT_WEBSITE_KEY } -n ${ env.BUILD_NUMBER }
-    kubectl create secret generic segmentserversitekey--from - literal SEGMENT_SERVER_KEY = ${ env.SEGMENT_SERVER_KEY } -n ${ env.BUILD_NUMBER }
+    kubectl create secret generic dburl --from-literal DB_URL='jdbc:postgresql://postgres/pathminddb?user=pathminddb&password=Asdf1234' -n ${env.BUILD_NUMBER}
+    kubectl create secret generic awsaccesskey --from-literal AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID} -n ${env.BUILD_NUMBER}
+    kubectl create secret generic awssecretaccesskey --from-literal AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY} -n ${env.BUILD_NUMBER}
+    kubectl create secret generic segmentwebsitekey --from-literal SEGMENT_WEBSITE_KEY=${env.SEGMENT_WEBSITE_KEY} -n ${env.BUILD_NUMBER}
+    kubectl create secret generic segmentserversitekey --from-literal SEGMENT_SERVER_KEY=${env.SEGMENT_SERVER_KEY} -n ${env.BUILD_NUMBER}
     """
 }
 
