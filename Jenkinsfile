@@ -70,7 +70,8 @@ pipeline {
                 }
             }
             steps {
-		sh "curl -X POST -H 'Content-type: application/json' --data '{\"text\":\":building_construction: Starting Jenkins Job\nBranch: ${env.BRANCH_NAME}\nUrl: ${env.RUN_DISPLAY_URL}\"}' ${SLACK_URL}"
+                echo "Notifying slack"
+		sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\":building_construction: Starting Jenkins Job\nBranch: ${env.BRANCH_NAME}\nUrl: ${env.RUN_DISPLAY_URL}\"}' ${SLACK_URL}"
 		script {
 		        DOCKER_TAG = "dev"
 		        if(env.BRANCH_NAME == 'master'){
@@ -147,10 +148,11 @@ pipeline {
             }
             steps {
 		script {
+				echo "Updating helm chart"
+				sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} ${DOCKER_TAG} ${WORKSPACE}"
+				sh "sleep 60"
 				echo "Deploying updater helm chart"
                                 sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml -n ${DOCKER_TAG}"
-				echo "Updating helm chart"
-				sh "bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} ${DOCKER_TAG} ${WORKSPACE}"
 		}
             }
         }
@@ -165,6 +167,14 @@ pipeline {
 		script {
 			try {
 				echo "Running tests"
+				sh "sleep 120"
+				echo "CLean s3 bucket for tests"
+				sh "aws s3 rm s3://dev-training-dynamic-files.pathmind.com/id2 --recursive"
+				sh "aws s3 rm s3://dev-training-dynamic-files.pathmind.com/id3 --recursive"
+				sh "aws s3 rm s3://dev-training-dynamic-files.pathmind.com/id4 --recursive"
+				sh "aws s3 rm s3://dev-training-dynamic-files.pathmind.com/id5 --recursive"
+				sh "aws s3 rm s3://dev-training-dynamic-files.pathmind.com/id6 --recursive"
+				sh "aws s3 rm s3://dev-training-dynamic-files.pathmind.com/id7 --recursive"
 				sh "sleep 120"
 				sh "mvn clean verify -Dheadless=true -Denvironment=pathmind-dev -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -f pom.xml -P bdd-tests"
 			} catch (err) {
@@ -213,10 +223,11 @@ pipeline {
             steps {
 		script {
                 	DEPLOY_PROD = true
+			echo "Updating helm chart"
+			sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
+			sh "sleep 60"
 			echo "Deploying updater helm chart"
                         sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml"
-			echo "Updating helm chart"
-			sh "bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
 		}
             }
         }
@@ -229,7 +240,8 @@ pipeline {
 				icon=":x:"
 			}
 		}
-		sh "curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"${icon} Jenkins Job Finished\nBranch: ${env.BRANCH_NAME}\nUrl: ${env.RUN_DISPLAY_URL}\nStatus: ${currentBuild.result}\"}' ${SLACK_URL}"
+                echo "Notifying slack"
+		sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"${icon} Jenkins Job Finished\nBranch: ${env.BRANCH_NAME}\nUrl: ${env.RUN_DISPLAY_URL}\nStatus: ${currentBuild.result}\"}' ${SLACK_URL}"
         }
     }
 }

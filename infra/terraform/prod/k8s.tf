@@ -309,6 +309,18 @@ resource "null_resource" "efk" {
   depends_on = ["null_resource.k8s-rbac"]
 }
 
+#install curator
+resource "null_resource" "curator" {
+  provisioner "local-exec" {
+    command = "helm install elasticsearch-curator ../../helm/elasticsearch-curator"
+  }
+  provisioner "local-exec" {
+    when = "destroy"
+    command = "helm delete elasticsearch-curator"
+  }
+  depends_on = ["null_resource.efk"]
+}
+
 #Install Canary
 resource "null_resource" "canary" {
   provisioner "local-exec" {
@@ -362,4 +374,16 @@ resource "null_resource" "canary_configmap" {
     command = "kubectl delete configmap canary"
   }
   depends_on = ["null_resource.configmap_ingress_nginx"]
+}
+
+#cleanup aws resources created by kops
+resource "null_resource" "aws-clean-up" {
+  provisioner "local-exec" {
+    command = "helm install aws-clean-up ../../helm/aws-clean-up -f ../../helm/aws-clean-up/values_${var.environment}.yaml"
+  }
+  provisioner "local-exec" {
+    when = "destroy"
+    command = "helm delete aws-clean-up"
+  }
+  depends_on = ["null_resource.validate_k8s"]
 }

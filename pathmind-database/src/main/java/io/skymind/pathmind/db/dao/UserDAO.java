@@ -31,30 +31,6 @@ public class UserDAO
 		UserRepository.delete(ctx, id);
 	}
 
-	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
-	// now I'm using these method names so that we understand what needs to be done eventually.
-	public boolean isUserAllowedAccessToProject(long projectId) {
-		return UserRepository.isUserAllowedAccessToProject(ctx, projectId);
-	}
-
-	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
-	// now I'm using these method names so that we understand what needs to be done eventually.
-	public boolean isUserAllowedAccessToModel(long modelId) {
-		return UserRepository.isUserAllowedAccessToModel(ctx, modelId);
-	}
-
-	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
-	// now I'm using these method names so that we understand what needs to be done eventually.
-	public boolean isUserAllowedAccessToExperiment(long experimentId) {
-		return UserRepository.isUserAllowedAccessToExperiment(ctx, experimentId);
-	}
-
-	// TODO -> This cannot tell us if a user has access to an item because they item could be just none-existant. But for
-	// now I'm using these method names so that we understand what needs to be done eventually.
-	public boolean isUserAllowedAccessToPolicy(long policyId) {
-		return UserRepository.isUserAllowedAccessToPolicy(ctx, policyId);
-	}
-
 	public PathmindUser findByEmailIgnoreCase(String email) {
 		return UserRepository.findByEmailIgnoreCase(ctx, email);
 	}

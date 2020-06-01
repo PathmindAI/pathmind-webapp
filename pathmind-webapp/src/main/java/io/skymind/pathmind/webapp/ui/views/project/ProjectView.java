@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -26,6 +25,7 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.data.Data;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -81,7 +81,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		
 		addClassName("project-view");
 
-		projectName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
+		projectName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.PROJECT_TITLE);
 		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
 		Button edit = new Button("Rename", evt -> renameProject());
 		edit.setClassName("no-shrink");
@@ -204,13 +204,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	}
 
 	@Override
-	protected boolean isAccessAllowedForUser() {
-		return userDAO.isUserAllowedAccessToProject(projectId);
-	}
-
-	@Override
 	protected void initLoadData() {
-		project = projectDAO.getProject(projectId)
+		project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));
 		project.setModels(modelDAO.getModelsForProject(projectId));
 	}

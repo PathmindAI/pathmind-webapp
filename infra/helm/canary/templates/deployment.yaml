@@ -46,7 +46,7 @@ spec:
             - name: CANARY_WEIGHT
               value: "{{ .Values.canary_weight }}"
             - name: COOKIE_MAX_AGE
-              value: "172800"
+              value: "86400"
           ports:
             - containerPort: 80
           volumeMounts:

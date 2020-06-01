@@ -52,4 +52,7 @@ public class ProjectDAO
 		return ProjectRepository.getProjectsForUser(ctx, userId);
 	}
 
+	public Optional<Project> getProjectIfAllowed(long projectId, long userId) {
+		return ProjectRepository.getProjectIfAllowed(ctx, projectId, userId);
+	}
 }

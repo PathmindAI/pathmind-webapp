@@ -85,7 +85,7 @@ public class LoginPageStepDefinitions {
     public void fillFormWithLastName(String lastName) {
         loginPageSteps.newUserInputLastName(lastName);
     }
-    @When("^Fill new user form with email from API$")
+    @When("^Fill temporary email to the new user form$")
     public void fillFormWithEmailFromApi() {
         loginPageSteps.newUserInputEmail(emailApi.getEmail());
     }
@@ -199,4 +199,14 @@ public class LoginPageStepDefinitions {
 	public void fillNewUserFormWithWrongEmail(String email) {
 		loginPageSteps.newUserInputEmail(email);
 	}
+
+    @Then("^Check that early access error message (.*) is shown for (.*) field$")
+    public void checkThatEarlyAccessErrorMessageIsShownForField(String error, String field) {
+        loginPageSteps.checkThatEarlyAccessErrorMessageIsShownForField(error, field);
+    }
+
+    @Then("^Check new password page opened$")
+    public void checkNewPasswordPageOpened() {
+        loginPageSteps.checkNewPasswordPageOpened();
+    }
 }

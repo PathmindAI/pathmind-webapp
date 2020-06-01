@@ -1,18 +1,12 @@
 package io.skymind.pathmind.db.dao;
 
-import static io.skymind.pathmind.db.jooq.Tables.EXPERIMENT;
-import static io.skymind.pathmind.db.jooq.Tables.MODEL;
 import static io.skymind.pathmind.db.jooq.Tables.PATHMIND_USER;
-import static io.skymind.pathmind.db.jooq.Tables.POLICY;
-import static io.skymind.pathmind.db.jooq.Tables.PROJECT;
-import static io.skymind.pathmind.db.jooq.Tables.RUN;
 
 import java.util.UUID;
 
 import org.jooq.DSLContext;
 
 import io.skymind.pathmind.shared.data.PathmindUser;
-import io.skymind.pathmind.shared.security.SecurityUtils;
 
 class UserRepository
 {
@@ -92,49 +86,5 @@ class UserRepository
         ctx.delete(PATHMIND_USER)
                 .where(PATHMIND_USER.ID.eq(id))
                 .execute();
-    }
-
-    // STEPH -> This code didnt' actually check the data ID
-    protected static boolean isUserAllowedAccessToProject(DSLContext ctx, long projectId) {
-        int count = ctx.selectCount()
-                .from(PROJECT)
-                .where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
-                    .and(PROJECT.ID.eq(projectId))
-                .fetchOne(0, int.class);
-        return count > 0;
-    }
-
-    protected static boolean isUserAllowedAccessToModel(DSLContext ctx, long modelId) {
-        int count = ctx.selectCount()
-                .from(MODEL)
-                .leftJoin(PROJECT).on(MODEL.PROJECT_ID.eq(PROJECT.ID))
-                .where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
-                    .and(MODEL.ID.eq(modelId))
-                .fetchOne(0, int.class);
-        return count > 0;
-    }
-
-    protected static boolean isUserAllowedAccessToExperiment(DSLContext ctx, long experimentId) {
-        int count = ctx.selectCount()
-                .from(EXPERIMENT)
-                .leftJoin(MODEL).on(EXPERIMENT.MODEL_ID.eq(MODEL.ID))
-                .leftJoin(PROJECT).on(MODEL.PROJECT_ID.eq(PROJECT.ID))
-                .where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
-                    .and(EXPERIMENT.ID.eq(experimentId))
-                .fetchOne(0, int.class);
-        return count > 0;
-    }
-
-    protected static boolean isUserAllowedAccessToPolicy(DSLContext ctx, long policyId) {
-        int count = ctx.selectCount()
-                .from(POLICY)
-                .leftJoin(RUN).on(POLICY.RUN_ID.eq(RUN.ID))
-                .leftJoin(EXPERIMENT).on(RUN.EXPERIMENT_ID.eq(EXPERIMENT.ID))
-                .leftJoin(MODEL).on(EXPERIMENT.MODEL_ID.eq(MODEL.ID))
-                .leftJoin(PROJECT).on(MODEL.PROJECT_ID.eq(PROJECT.ID))
-                .where(PROJECT.PATHMIND_USER_ID.eq(SecurityUtils.getUserId()))
-                    .and(POLICY.ID.eq(policyId))
-                .fetchOne(0, int.class);
-        return count > 0;
     }
 }

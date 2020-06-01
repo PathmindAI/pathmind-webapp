@@ -1,7 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.login;
 
-import java.util.List;
-
+import com.vaadin.flow.data.validator.StringLengthValidator;
+import io.skymind.pathmind.webapp.ui.binders.PathmindUserBinders;
+import io.skymind.pathmind.webapp.ui.converter.TrimmedStringConverter;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -134,9 +135,10 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 		});
 
 		signIn.addClickListener(e -> {
-			List<String> validationResults = userService.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
+			UserService.PasswordValidationResults validationResults = userService
+					.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
 
-			if (validationResults.isEmpty()) {
+			if (validationResults.isOk()) {
 				user.setPassword(newPassword.getValue());
 				user = userService.signup(user);
                 emailNotificationService.sendVerificationEmail(user);
@@ -145,7 +147,9 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 			} else {
 				newPassword.setInvalid(true);
 				passwordValidationNotes.removeAll();
-				validationResults.forEach(message -> passwordValidationNotes.add(new Span(message)));
+				validationResults.getPasswordValidationErrors().forEach(message -> passwordValidationNotes.add(new Span(message)));
+				confirmNewPassword.setInvalid(!validationResults.getConfirmPasswordValidationError().isEmpty());
+				confirmNewPassword.setErrorMessage(validationResults.getConfirmPasswordValidationError());
 			}
 		});
 	}
@@ -160,11 +164,10 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	private void initBinder() {
 		binder = new Binder<>(PathmindUser.class);
 
-		binder.forField(email).asRequired("Email is required").withValidator(new EmailValidator(
-				"This doesn't look like a valid email address"))
-				.bind(PathmindUser::getEmail, PathmindUser::setEmail);
-		binder.forField(firstName).bind(PathmindUser::getFirstname, PathmindUser::setFirstname);
-		binder.forField(lastName).bind(PathmindUser::getLastname, PathmindUser::setLastname);
+		PathmindUserBinders.bindEmail(binder, email);
+		PathmindUserBinders.bindFirstName(binder, firstName);
+		PathmindUserBinders.bindLastName(binder, lastName);
+
 		binder.setBean(user);
 	}
 

@@ -13,6 +13,8 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.security.UserService;
+import io.skymind.pathmind.webapp.ui.binders.PathmindUserBinders;
+import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -42,6 +44,8 @@ public class AccountEditViewContent extends PolymerTemplate<AccountEditViewConte
 
 	private PathmindUser user;
 
+	private Binder<PathmindUser> binder;
+
 	@Autowired
 	private UserService userService;
 
@@ -58,20 +62,21 @@ public class AccountEditViewContent extends PolymerTemplate<AccountEditViewConte
 
 		cancelBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
 		updateBtn.addClickListener(e -> {
+			if (!FormUtils.isValidForm(binder, user)) {
+				return;
+			}
 			userService.update(user);
 			getUI().ifPresent(ui -> ui.navigate(AccountView.class));
 		});
 	}
 
 	private void initBinder() {
-		Binder<PathmindUser> binder = new Binder<>(PathmindUser.class);
+		binder = new Binder<>(PathmindUser.class);
 
-		binder.forField(email).asRequired().withValidator(new EmailValidator(
-				"This doesn't look like a valid email address"))
-				.bind(PathmindUser::getEmail, PathmindUser::setEmail);
+		PathmindUserBinders.bindEmail(binder, email);
+		PathmindUserBinders.bindFirstName(binder, firstName);
+		PathmindUserBinders.bindLastName(binder, lastName);
 
-		binder.forField(firstName).bind(PathmindUser::getFirstname, PathmindUser::setFirstname);
-		binder.forField(lastName).bind(PathmindUser::getLastname, PathmindUser::setLastname);
 		binder.setBean(user);
 	}
 

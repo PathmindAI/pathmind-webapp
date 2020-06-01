@@ -24,11 +24,6 @@ import org.jooq.impl.SequenceImpl;
 public class Sequences {
 
     /**
-     * The sequence <code>public.execution_provider_meta_data_id_seq</code>
-     */
-    public static final Sequence<Long> EXECUTION_PROVIDER_META_DATA_ID_SEQ = new SequenceImpl<Long>("execution_provider_meta_data_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
-
-    /**
      * The sequence <code>public.experiment_id_seq</code>
      */
     public static final Sequence<Long> EXPERIMENT_ID_SEQ = new SequenceImpl<Long>("experiment_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
