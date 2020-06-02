@@ -579,7 +579,6 @@ h4 {
 }
 
 .stages-container {
-    align-items: baseline;
     width: 100%;
 }
 .stages-container > span:not(:first-child) {
@@ -599,6 +598,7 @@ h4 {
 }
 .stages-container > span > iron-icon {
     width: 20px;
+    height: 20px;
     margin-right: 4px;
 }
 .stage-active {
@@ -626,6 +626,25 @@ h4 {
 .stage-failed {
     color: var(--lumo-error-text-color);
 }
+.stage-stopped {
+    display: flex;
+    justify-content: center;
+    color: var(--lumo-body-text-color);
+}
+.stage-stopped .icon-stopped {
+    width: 20px;
+    height: 20px;
+    margin-right: 4px;
+}
+.stage-stopped .icon-stopped::after {
+    width: 10px;
+    height: 10px;
+    top: 5px;
+    left: 5px;
+}
+.stage-stopped .icon-stopped + span {
+    text-align: left;
+}
 .stage-next {
     color: var(--pm-gray-color-light);
 }
@@ -639,6 +658,7 @@ h4 {
     .stages-container > span:nth-child(4) {
         width: 100%;
         text-align: left;
+        justify-content: unset;
     }
     .stages-container > span:nth-child(1),
     .stages-container > span:nth-child(2) {
@@ -653,8 +673,16 @@ h4 {
     .stage-active span {
         margin: 0;
     }
-    .stages-container > span > iron-icon {
+    .stages-container > span > iron-icon,
+    .stage-stopped .icon-stopped {
         width: 16px;
+        height: 16px;
+    }
+    .stage-stopped .icon-stopped::after {
+        width: 8px;
+        height: 8px;
+        top: 4px;
+        left: 4px;
     }
     .dashboard-item-notes {
         height: 12rem;
