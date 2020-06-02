@@ -509,4 +509,8 @@ public class ProjectsPage extends PageObject {
     public void checkThatModelNameExistInArchivedTab(String experiment) {
         assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content")), hasItem(experiment));
     }
+
+    public void checkThatNewProjectPageOpened() {
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']")).getText(), is("Start a New Project!"));
+    }
 }

@@ -72,4 +72,20 @@ public class DashboardPage extends PageObject {
     public void clickArchiveBtn() {
         getDriver().findElement(By.xpath("//vaadin-context-menu-item[text()='Archive']")).click();
     }
+
+    public void checkDashboardBeginScreenElements() {
+	    assertThat(getDriver().findElement(By.xpath("//span[@class='light-text-label']")).getText(), is("Welcome to"));
+	    assertThat(getDriver().findElement(By.xpath("//img[@class='navbar-logo']")).isDisplayed(), is(true));
+        assertThat(getDriver().findElement(By.xpath("//img[@class='navbar-logo']")).getAttribute("src"), containsString("frontend/images/pathmind-logo.png"));
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']")).getText(), is("Let's begin by opening the"));
+        assertThat(getDriver().findElement(By.xpath("//a[@class='button-link']")).getText(), is("Getting Started Guide"));
+        assertThat(getDriver().findElement(By.xpath("//a[@class='button-link']")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4004788-getting-started"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@theme='spacing'][2]/span")).getText(), is("or skip ahead to"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@theme='spacing'][2]/a")).getText(), is("create your first project."));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@theme='spacing'][2]/a")).getAttribute("href"), containsString("newProject"));
+    }
+
+    public void clickDashboardCreateYourFirstProjectBtn() {
+	    getDriver().findElement(By.xpath("//a[text()='create your first project.']")).click();
+    }
 }

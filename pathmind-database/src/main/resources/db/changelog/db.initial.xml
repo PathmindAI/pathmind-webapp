@@ -1239,9 +1239,18 @@
          		DROP FUNCTION IF EXISTS migrate_exec_prov_meta_data();
          	</sql>
          </rollback>
-     </changeSet>
+    </changeSet>
 
-     <changeSet id="20200514-01" author="bruno.rezende@ext.vaadin.com">
+    <changeSet id="20200516-01" author="alexander.makarov@toptal.com">
+        <addColumn tableName="RUN">
+            <column name="RLLIB_ERROR" type="VARCHAR(1024)" />
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="RUN" columnName="RLLIB_ERROR" />
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="20200602-01" author="bruno.rezende@ext.vaadin.com">
         <addColumn tableName="RUN">
             <column name="EC2_CREATED_AT" type="DATETIME"/>
         </addColumn>
