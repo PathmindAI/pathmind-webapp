@@ -153,27 +153,4 @@ public class EmailNotificationService
 	private String createExperimentPageLink(Experiment experiment) {
 		return applicationURL + "/" + Routes.EXPERIMENT_URL + "/" + experiment.getId();
 	}
-
-	// DH -> Should we decide to add email notifications for special exceptions then we just need to replace
-	// the log entries below with mailHelper and set it up according to our preferences.
-	public void sendEmailExceptionNotification(Throwable t) {
-		// Example
-		log.error("Subject: Exception: " + t.getMessage());
-		log.error("to: " + "default email address setup in application.properties");
-		log.error("Message:" + ExceptionUtils.getStackTrace(t));
-	}
-
-	public void sendEmailExceptionNotification(String title, Throwable t) {
-		// Example
-		log.error("Subject: Exception: " + title);
-		log.error("to: " + "default email address setup in application.properties");
-		log.error("Message:" + ExceptionUtils.getStackTrace(t));
-	}
-
-	public void sendEmailErrorNotification(String title, String message) {
-		// Example
-		log.error("Subject: Exception: " + title);
-		log.error("to: " + "default email address setup in application.properties");
-		log.error("Message:" + message);
-	}
 }
