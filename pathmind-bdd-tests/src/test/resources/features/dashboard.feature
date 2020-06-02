@@ -1,5 +1,6 @@
 @dashboard
 Feature: Dashboard page
+
   Scenario: Open project breadcrumb from dashboard
     Given Login to the pathmind
     When Create new CoffeeShop project
@@ -92,7 +93,7 @@ Feature: Dashboard page
     Then Check AutotestProject stage Set up simulation is stage-active
     When <Click action>
     Then Check that resumeUpload page is opened
-     And Check that we can add more info to the draft model
+    And Check that we can add more info to the draft model
 
     Examples:
       | Click action                              |
@@ -160,3 +161,15 @@ Feature: Dashboard page
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
+
+  Scenario: Check dashboard begin screen elements
+    Given Create new user Autotest, User with password Pass123456
+    When Open pathmind page
+    Then Login with new user email and Pass123456
+    When Open dashboard page
+    When Check dashboard begin screen elements
+    When Click dashboard create your first project btn
+    When Check that new project page opened
+    When Open dashboard page
+    When Click Getting Started Guide button
+    Then Check that learn page https://help.pathmind.com/en/articles/4004788-getting-started opened

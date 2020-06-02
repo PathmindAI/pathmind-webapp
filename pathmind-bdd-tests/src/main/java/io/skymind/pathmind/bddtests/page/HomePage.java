@@ -97,4 +97,8 @@ public class HomePage extends PageObject {
         waitABit(2000);
         accountBtn.click();
     }
+
+    public void clickGettingStartedGuideButton() {
+        getDriver().findElement(By.xpath("//a[text()='Getting Started Guide']")).click();
+    }
 }

@@ -1241,7 +1241,16 @@
          </rollback>
      </changeSet>
      
-     <changeSet id="20200519-01" author="onur@vaadin.com">
+    <changeSet id="20200516-01" author="alexander.makarov@toptal.com">
+        <addColumn tableName="RUN">
+            <column name="RLLIB_ERROR" type="VARCHAR(1024)" />
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="RUN" columnName="RLLIB_ERROR" />
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="20200519-01" author="onur@vaadin.com">
         <comment>
             Since liquibase:dropAll doesn't drop procedures or functions, in local environments update operation after dropAll fails, because the functions below could not be created.
             In order to solve this issue, these two functions are dropped and re-created using CREATE OR UPDATE command.          
@@ -1297,4 +1306,5 @@
             EXECUTE PROCEDURE public.update_project_activity_date_fn();
         </createProcedure>
     </changeSet>
+
 </databaseChangeLog>
