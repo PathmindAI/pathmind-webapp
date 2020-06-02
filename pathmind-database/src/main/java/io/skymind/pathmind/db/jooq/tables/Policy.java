@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = 1174592979;
+    private static final long serialVersionUID = -1500725819;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -98,7 +98,6 @@ public class Policy extends TableImpl<PolicyRecord> {
      */
     public final TableField<PolicyRecord, Boolean> HAS_FILE = createField(DSL.name("has_file"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
-
     /**
      * The column <code>public.policy.is_valid</code>.
      */
@@ -108,7 +107,7 @@ public class Policy extends TableImpl<PolicyRecord> {
      * The column <code>public.policy.check_point_file_key</code>.
      */
     public final TableField<PolicyRecord, String> CHECK_POINT_FILE_KEY = createField(DSL.name("check_point_file_key"), org.jooq.impl.SQLDataType.VARCHAR(36), this, "");
-    
+
     /**
      * Create a <code>public.policy</code> table reference
      */
@@ -203,7 +202,7 @@ public class Policy extends TableImpl<PolicyRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row10 type methods
     // -------------------------------------------------------------------------
 
     @Override
