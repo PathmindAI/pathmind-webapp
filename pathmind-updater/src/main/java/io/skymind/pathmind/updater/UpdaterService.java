@@ -5,11 +5,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.amazonaws.services.sns.model.MessageAttributeValue;
@@ -39,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.RLLIB_ERROR_PREFIX;
 import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.*;
 import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.CARGO_ATTRIBUTE;
 import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.TYPE_POLICY;
@@ -170,9 +167,10 @@ public class UpdaterService {
 
     private void setRunError(Run run, ProviderJobStatus jobStatus) {
         final var status = jobStatus.getRunStatus();
-        if (status == RunStatus.Error && !CollectionUtils.isEmpty(jobStatus.getDescription())) {
+        Collection<String> descriptions = CollectionUtils.emptyIfNull(jobStatus.getDescription());
+        if (status == RunStatus.Error && !CollectionUtils.isEmpty(descriptions)) {
             // TODO (KW): 05.02.2020 gets only first error, refactor if multiple errors scenario is possible
-            final var errorMessage = jobStatus.getDescription().get(0);
+            final var errorMessage = descriptions.iterator().next();
             final var allErrorsKeywords = trainingErrorDAO.getAllErrorsKeywords();
             final var knownErrorMessage = allErrorsKeywords.stream()
                     .filter(errorMessage::contains)
@@ -192,6 +190,8 @@ public class UpdaterService {
                 run.setTrainingErrorId(error.getId());
             });
         }
+        descriptions.stream().filter(e -> e.startsWith(RLLIB_ERROR_PREFIX)).findAny()
+                .map(e -> e.replace(RLLIB_ERROR_PREFIX, "")).ifPresent(run::setRLibError);
     }
 
     private void fireEventUpdates(Run run, List<Policy> policies) {
