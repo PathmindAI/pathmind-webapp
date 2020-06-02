@@ -1,6 +1,9 @@
 package io.skymind.pathmind.shared.constants;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public enum RunStatus {
 	NotStarted(0, "Not Started"),
@@ -9,11 +12,15 @@ public enum RunStatus {
 	Completed(3, "Completed"),
 	Error(4, "Error"),
 	Killed(5, "Stopped"),
-	Restarting(6, "Restarting"),
+	Restarting(6, "Restarting") ,
 	Stopping(7, "Stopping");
 
 	private int id;
 	private String name;
+
+	private static final Map<Integer,RunStatus> STATUS_BY_ID;
+	private static final EnumSet<RunStatus> RUNNING_STATES = EnumSet.of(Starting, Running, Restarting);
+	private static final EnumSet<RunStatus> FINISHED_STATES = EnumSet.of(Completed, Error, Killed);
 
 	RunStatus(int id, String name) {
 		this.id = id;
@@ -28,17 +35,23 @@ public enum RunStatus {
 		return id;
 	}
 
+	static {
+		Map<Integer,RunStatus> map = new ConcurrentHashMap<>();
+		for (RunStatus instance : RunStatus.values()) {
+			map.put(instance.getValue(), instance);
+		}
+		STATUS_BY_ID = Collections.unmodifiableMap(map);
+	}
+
 	public static RunStatus getEnumFromValue(int value) {
-		return Arrays.stream(values())
-				.filter(runStatus -> runStatus.getValue() == value)
-				.findAny()
-				.get();
+		return STATUS_BY_ID.get(value);
 	}
 
 	public static boolean isRunning(RunStatus status){
-		return status == RunStatus.Starting || status == RunStatus.Running || status == RunStatus.Restarting;
+		return RUNNING_STATES.contains(status);
 	}
+
 	public static boolean isFinished(RunStatus status){
-		return status == RunStatus.Completed || status == RunStatus.Error || status == RunStatus.Killed;
+		return FINISHED_STATES.contains(status);
 	}
 }
