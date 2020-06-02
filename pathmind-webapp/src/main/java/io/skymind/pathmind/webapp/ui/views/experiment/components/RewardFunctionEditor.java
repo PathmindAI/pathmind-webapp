@@ -21,7 +21,7 @@ public class RewardFunctionEditor extends JuicyAceEditor {
 		setSizeFull();
 		setTheme(JuicyAceTheme.eclipse);
 		setMode(JuicyAceMode.java);
-		setWrapmode(true);
+		setWrapmode(false);
 	}
 
 	public void setVariableNames(List<RewardVariable> rewardVariables) {

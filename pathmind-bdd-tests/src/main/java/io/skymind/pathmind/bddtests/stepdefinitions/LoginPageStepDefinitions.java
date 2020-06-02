@@ -21,7 +21,7 @@ public class LoginPageStepDefinitions {
     private static EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
     private static String pathmindUsername = variables.getProperty("pathmind.username");
     private static String pathmindPassword = variables.getProperty("pathmind.password");
-    private static String pathmindUrl =  EnvironmentSpecificConfiguration.from(variables).getProperty("base.url");
+    private static String pathmindUrl = EnvironmentSpecificConfiguration.from(variables).getProperty("base.url");
 
     @Steps
     private LoginPageSteps loginPageSteps;
@@ -30,19 +30,19 @@ public class LoginPageStepDefinitions {
 
     private Utils utils;
 
-	@Before
-	public void cleanCookies() {
-		utils.deleteAllCookies();
-	}
+    @Before
+    public void cleanCookies() {
+        utils.deleteAllCookies();
+    }
 
-	@Given("^Login to the pathmind$")
+    @Given("^Login to the pathmind$")
     public void loginToThePathmind() {
         loginPageSteps.openPathmindUrl();
         loginPageSteps.loginWithCredential(pathmindUsername, pathmindPassword);
     }
 
     @Given("^Open pathmind page$")
-    public void openHomePage(){
+    public void openHomePage() {
         loginPageSteps.openPathmindUrl();
     }
 
@@ -77,21 +77,25 @@ public class LoginPageStepDefinitions {
         loginPageSteps.newUserInputLastName(lastName);
         loginPageSteps.newUserInputEmail(emailApi.getEmail());
     }
+
     @When("^Fill new user form with first name (.*)$")
     public void fillFormWithFirstName(String firstName) {
         loginPageSteps.newUserInputFirstName(firstName);
     }
+
     @When("^Fill new user form with last name (.*)$")
     public void fillFormWithLastName(String lastName) {
         loginPageSteps.newUserInputLastName(lastName);
     }
+
     @When("^Fill temporary email to the new user form$")
     public void fillFormWithEmailFromApi() {
         loginPageSteps.newUserInputEmail(emailApi.getEmail());
     }
+
     @When("^Fill new user form with email (.*)$")
     public void fillFormWithEmail(String email) {
-		Serenity.setSessionVariable("randomNumber").to(new Date().getTime());
+        Serenity.setSessionVariable("randomNumber").to(new Date().getTime());
         loginPageSteps.newUserInputEmail(Serenity.sessionVariableCalled("randomNumber") + email);
     }
 
@@ -104,8 +108,9 @@ public class LoginPageStepDefinitions {
     public void fillNewUserPassword(String password) {
         loginPageSteps.fillNewUserPassword(password);
     }
+
     @When("^Fill new user confirmation password (.*)$")
-    public void fillNewUserConfirmationPassword(String password){
+    public void fillNewUserConfirmationPassword(String password) {
         loginPageSteps.fillNewUserConfirmationPassword(password);
     }
 
@@ -185,20 +190,20 @@ public class LoginPageStepDefinitions {
         loginPageSteps.checkLoginPageElements();
     }
 
-	@Then("^Check console error (.*)$")
-	public void checkConsoleError(String error) {
-		loginPageSteps.checkConsoleError(error);
-	}
+    @Then("^Check console error (.*)$")
+    public void checkConsoleError(String error) {
+        loginPageSteps.checkConsoleError(error);
+    }
 
-	@When("^Fill new user form with exist email (.*)$")
-	public void fillNewUserFormWithExistEmail(String email) {
-		loginPageSteps.newUserInputEmail(email);
-	}
+    @When("^Fill new user form with exist email (.*)$")
+    public void fillNewUserFormWithExistEmail(String email) {
+        loginPageSteps.newUserInputEmail(email);
+    }
 
-	@When("^Fill new user form with wrong email (.*)$")
-	public void fillNewUserFormWithWrongEmail(String email) {
-		loginPageSteps.newUserInputEmail(email);
-	}
+    @When("^Fill new user form with wrong email (.*)$")
+    public void fillNewUserFormWithWrongEmail(String email) {
+        loginPageSteps.newUserInputEmail(email);
+    }
 
     @Then("^Check that early access error message (.*) is shown for (.*) field$")
     public void checkThatEarlyAccessErrorMessageIsShownForField(String error, String field) {
@@ -208,5 +213,18 @@ public class LoginPageStepDefinitions {
     @Then("^Check new password page opened$")
     public void checkNewPasswordPageOpened() {
         loginPageSteps.checkNewPasswordPageOpened();
+    }
+
+    @When("Create new user (.*), (.*) with password (.*)")
+    public void createNewUserWithPassword(String firstName, String lastName, String password) {
+        loginPageSteps.openPage(pathmindUrl + "early-access-sign-up");
+        loginPageSteps.newUserInputFirstName(firstName);
+        loginPageSteps.newUserInputLastName(lastName);
+        loginPageSteps.newUserInputEmail(emailApi.getEmail());
+        loginPageSteps.clickSignUpButton();
+        loginPageSteps.fillNewUserPassword(password);
+        loginPageSteps.fillNewUserConfirmationPassword(password);
+        loginPageSteps.createNewUserClickSignInButton();
+        loginPageSteps.openPage(pathmindUrl + "email-verification/" + emailApi.fetchEmail());
     }
 }
