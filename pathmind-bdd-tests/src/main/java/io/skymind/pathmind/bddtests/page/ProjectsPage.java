@@ -270,8 +270,8 @@ public class ProjectsPage extends PageObject {
     public void clickProjectSaveDraftBtn() {
         Actions action = new Actions(getDriver());
         WebElement we = getDriver().findElement(By.xpath("//vaadin-button[text()='Save']"));
-        action.moveToElement(we).build().perform();
-        getDriver().findElement(By.xpath("//vaadin-button[text()='Save']")).click();
+        JavascriptExecutor executor = (JavascriptExecutor)getDriver();
+        executor.executeScript("arguments[0].click();", we);
         try {
             WebElement closePopUp = getDriver().findElement(By.xpath("//vaadin-button[@theme='icon']"));
             waitFor(ExpectedConditions.visibilityOf(closePopUp));
