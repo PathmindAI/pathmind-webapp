@@ -130,6 +130,7 @@ class RunRepository
                 .set(Tables.RUN.STATUS, run.getStatus())
                 .set(Tables.RUN.STOPPED_AT, run.getStoppedAt())
 				.set(Tables.RUN.TRAINING_ERROR_ID, run.getTrainingErrorId())
+				.set(Tables.RUN.RLLIB_ERROR, run.getRLibError())
                 .where(Tables.RUN.ID.eq(run.getId()))
                 .execute();
     }

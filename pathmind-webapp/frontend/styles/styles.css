@@ -215,6 +215,10 @@ hr {
     align-self: center;
 }
 
+.dashboard-view .create-project-link {
+    margin-left: 0.4em;
+}
+
 .page-content-header {
     margin-bottom: var(--lumo-space-m);
 }

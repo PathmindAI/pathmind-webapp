@@ -20,6 +20,7 @@ public class Run extends Data
 	private LocalDateTime exportedAt;
 	private long trainingErrorId;
 	private String jobId;
+    private String rLibError;
 
 	// Helper attributes
 	private Experiment experiment;
