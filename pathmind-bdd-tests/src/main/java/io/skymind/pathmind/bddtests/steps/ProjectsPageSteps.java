@@ -308,4 +308,7 @@ public class ProjectsPageSteps {
     public void checkThatNotesSavedMsgShown() {
         projectsPage.checkThatNotesSavedMsgShown();
     }
+    public void checkThatNewProjectPageOpened() {
+        projectsPage.checkThatNewProjectPageOpened();
+    }
 }

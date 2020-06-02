@@ -520,4 +520,8 @@ public class ProjectsPage extends PageObject {
     public void checkThatNotesSavedMsgShown() {
         assertThat(getDriver().findElement(By.xpath("//span[text()='Notes saved!' and @class='fade-out-hint-label fade-in']")).isDisplayed(), is(true));
     }
+
+    public void checkThatNewProjectPageOpened() {
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']")).getText(), is("Start a New Project!"));
+    }
 }

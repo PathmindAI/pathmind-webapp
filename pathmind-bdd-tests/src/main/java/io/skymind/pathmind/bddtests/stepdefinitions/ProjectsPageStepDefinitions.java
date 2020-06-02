@@ -436,4 +436,9 @@ public class ProjectsPageStepDefinitions {
     public void checkThatNotesSavedMsgShown() {
         projectsPageSteps.checkThatNotesSavedMsgShown();
     }
+
+    @When("^Check that new project page opened$")
+    public void checkThatNewProjectPageOpened() {
+        projectsPageSteps.checkThatNewProjectPageOpened();
+    }
 }

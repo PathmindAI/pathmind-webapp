@@ -53,4 +53,8 @@ public class HomePageSteps {
     public void clickBackButton() {
         homePage.getDriver().navigate().back();
     }
+    @Step
+    public void clickGettingStartedGuideButton() {
+        homePage.clickGettingStartedGuideButton();
+    }
 }
