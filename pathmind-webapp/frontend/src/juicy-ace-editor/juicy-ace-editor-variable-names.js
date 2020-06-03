@@ -17,7 +17,7 @@ function createHintsForLine(line) {
     editor.session.removeFolds(existingFolds.folds);
   }
   let value = editor.session.getLine(line);
-  let matchInfo = value.match(/\[[0-9 ]+\]/);
+  let matchInfo = value.match(/\[[\-0-9 ]+\]/);
   let index = 0;
   lineValidationCache[line] = [];
   while (matchInfo) {
@@ -25,12 +25,12 @@ function createHintsForLine(line) {
     matchVariableNameAndFold(matchInfo[0], index, line);
     value = value.substring(matchInfo.index + matchInfo[0].length);
     index += matchInfo[0].length;
-    matchInfo = value.match(/\[[0-9 ]+\]/);
+    matchInfo = value.match(/\[[\-0-9 ]+\]/);
   }
 }
 
 function matchVariableNameAndFold(matchingValue, index, row) {
-  const matchInfo = matchingValue.match(/[0-9]+/);
+  const matchInfo = matchingValue.match(/[\-0-9]+/);
   if (matchInfo) {
     const variableIndex = matchInfo[0];
     if (variableIndex < 0 || variableIndex >= variableCount){
