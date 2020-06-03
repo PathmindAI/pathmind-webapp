@@ -8,7 +8,27 @@ public class AccountPageSteps {
     private AccountPage accountPage;
 
     @Step
-    public void checkThatAccountPageOpened(){
+    public void checkThatAccountPageOpened() {
         accountPage.checkThatAccountPageOpened();
+    }
+
+    @Step
+    public void clickAccountEditBtn() {
+        accountPage.clickAccountEditBtn();
+    }
+
+    @Step
+    public void inputNewEmail(String email) {
+        accountPage.inputNewEmail(email);
+    }
+
+    @Step
+    public void clickAccountEditUpdateBtn() {
+        accountPage.clickAccountEditUpdateBtn();
+    }
+
+    @Step
+    public void checkUserEmailIsCorrect(String email) {
+        accountPage.checkUserEmailIsCorrect(email);
     }
 }

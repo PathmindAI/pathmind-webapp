@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
-import static io.skymind.pathmind.db.testutils.UserUtils.*;
+import static io.skymind.pathmind.db.testutils.UserTestUtils.*;
 import static org.junit.Assert.*;
 
 @Ignore

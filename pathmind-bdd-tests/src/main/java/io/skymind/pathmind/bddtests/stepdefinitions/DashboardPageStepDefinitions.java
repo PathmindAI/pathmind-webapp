@@ -88,4 +88,10 @@ public class DashboardPageStepDefinitions {
     public void clickDashboardCreateYourFirstProjectBtn() {
         dashboardPageSteps.clickDashboardCreateYourFirstProjectBtn();
     }
+
+    @Then("^Check that dashboard page opened with the getting started message$")
+    public void checkThatDashboardPageOpenedWithTheGettingStartedMessage() {
+        homePageSteps.checkThatDashboardPageOpened();
+        dashboardPageSteps.checkDashboardBeginScreenElements();
+    }
 }

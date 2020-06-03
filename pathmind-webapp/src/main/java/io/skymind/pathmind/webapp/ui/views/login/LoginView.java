@@ -172,8 +172,6 @@ public class LoginView extends HorizontalLayout
 	}
 
 	private Class getRerouteClass() {
-		if(projectDAO.getProjectsForUser(SecurityUtils.getUserId()).isEmpty())
-			return NewProjectView.class;
 		return DashboardView.class;
 	}
 
