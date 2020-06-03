@@ -8,8 +8,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 @DefaultUrl("page:home.page")
 public class AccountPage extends PageObject {
@@ -26,6 +25,8 @@ public class AccountPage extends PageObject {
     private WebElement upgradeBtnShadow;
     @FindBy(id = "editPaymentBtn")
     private WebElement editPaymentBtnShadow;
+    @FindBy(xpath = "//account-edit-view-content")
+    private WebElement accountEditViewShadow;
 
     public void checkThatAccountPageOpened() {
         waitABit(2500);
@@ -51,5 +52,30 @@ public class AccountPage extends PageObject {
         assertThat(e.findElement(By.cssSelector(".support")).isDisplayed(), is(true));
         assertThat(e.findElement(By.cssSelector(".support")).getText(), containsString("Contact Support"));
         assertThat(e.findElement(By.cssSelector(".support")).getAttribute("href"), containsString("mailto:support@pathmind.com"));
+    }
+
+    public void clickAccountEditBtn() {
+        WebElement e = utils.expandRootElement(accountViewShadow);
+        e.findElement(By.id("editInfoBtn")).click();
+    }
+
+    public void inputNewEmail(String email) {
+        WebElement e = utils.expandRootElement(accountEditViewShadow);
+        WebElement inputShadow = utils.expandRootElement(e.findElement(By.id("email")));
+        WebElement input = inputShadow.findElement(By.cssSelector("input"));
+        input.click();
+        input.clear();
+        input.sendKeys(email);
+    }
+
+    public void clickAccountEditUpdateBtn() {
+        WebElement e = utils.expandRootElement(accountEditViewShadow);
+        WebElement updateBtnShadow = utils.expandRootElement(e.findElement(By.id("updateBtn")));
+        updateBtnShadow.findElement(By.cssSelector("button")).click();
+    }
+
+    public void checkUserEmailIsCorrect(String email) {
+        WebElement e = utils.expandRootElement(accountViewShadow);
+        assertThat(e.findElement(By.cssSelector(".data:nth-of-type(2)")).getText(), is(email));
     }
 }
