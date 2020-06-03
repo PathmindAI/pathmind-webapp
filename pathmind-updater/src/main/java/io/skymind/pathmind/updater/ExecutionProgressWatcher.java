@@ -65,7 +65,6 @@ public class ExecutionProgressWatcher implements ApplicationListener<ContextRefr
                             updater.update();
                         } catch (Exception e) {
                             log.error("Exception during progress update", e);
-                            emailNotificationService.sendEmailExceptionNotification(e);
                         }
                         lastRun = System.currentTimeMillis();
                     } else {

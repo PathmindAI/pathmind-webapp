@@ -1,12 +1,9 @@
 package io.skymind.pathmind.webapp.security;
 
-import java.util.Collections;
-
-import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
-import io.skymind.pathmind.webapp.exception.EmailIsNotVerifiedException;
-
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.PathmindUserDetails;
+import io.skymind.pathmind.webapp.exception.EmailIsNotVerifiedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.AuthenticationException;
@@ -15,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 /**
  * Implements the {@link UserDetailsService}.
@@ -50,10 +49,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		} else if (user.getEmailVerifiedAt() == null) {
 			throw new EmailIsNotVerifiedException(user.getEmail());
 		} else {
+            Set<SimpleGrantedAuthority> permissions = user.getAccountType().getGrantedAuthorities();
+            permissions.add(new SimpleGrantedAuthority("logged_in"));
 			return new PathmindUserDetails(
 					user.getEmail(),
 					user.getPassword(),
-					Collections.singletonList(new SimpleGrantedAuthority("logged_in")),
+					permissions,
 					user.getId(),
 					user.getFirstname(),
 					user.getLastname()

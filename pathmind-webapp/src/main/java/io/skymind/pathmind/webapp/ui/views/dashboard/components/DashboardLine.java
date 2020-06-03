@@ -130,7 +130,7 @@ public class DashboardLine extends HorizontalLayout {
 	
 	private void updateProgress(PathmindTrainingProgress trainingProgress, DashboardItem item) {
 		final double progress = ExperimentUtils.calculateProgressByIterationsProcessed(item.getIterationsProcessed());
-		if (progress > 0 && progress <= 100) {
+		if (progress >= 0 && progress <= 100) {
 			final double estimatedTime = ExperimentUtils.getEstimatedTrainingTime(item.getLatestRun().getStartedAt(), progress);
 			trainingProgress.setValue(progress, estimatedTime);
 		}

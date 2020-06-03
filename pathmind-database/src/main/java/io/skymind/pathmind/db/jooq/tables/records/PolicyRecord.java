@@ -30,7 +30,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements Record10<Long, Long, String, String, LocalDateTime, LocalDateTime, LocalDateTime, Boolean, Boolean, String> {
 
-    private static final long serialVersionUID = 106282587;
+    private static final long serialVersionUID = -2103472770;
 
     /**
      * Setter for <code>public.policy.id</code>.
@@ -157,7 +157,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
     public Boolean getIsValid() {
         return (Boolean) get(8);
     }
-    
+
     /**
      * Setter for <code>public.policy.check_point_file_key</code>.
      */
@@ -182,7 +182,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
     }
 
     // -------------------------------------------------------------------------
-    // Record9 type implementation
+    // Record10 type implementation
     // -------------------------------------------------------------------------
 
     @Override
@@ -239,7 +239,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
     public Field<Boolean> field9() {
         return Policy.POLICY.IS_VALID;
     }
-    
+
     @Override
     public Field<String> field10() {
         return Policy.POLICY.CHECK_POINT_FILE_KEY;
@@ -289,7 +289,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
     public Boolean component9() {
         return getIsValid();
     }
-    
+
     @Override
     public String component10() {
         return getCheckPointFileKey();
@@ -339,7 +339,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
     public Boolean value9() {
         return getIsValid();
     }
-    
+
     @Override
     public String value10() {
         return getCheckPointFileKey();
@@ -398,7 +398,8 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
         setIsValid(value);
         return this;
     }
-    
+
+    @Override
     public PolicyRecord value10(String value) {
         setCheckPointFileKey(value);
         return this;

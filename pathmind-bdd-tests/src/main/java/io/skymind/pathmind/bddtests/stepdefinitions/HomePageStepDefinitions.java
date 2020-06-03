@@ -60,4 +60,9 @@ public class HomePageStepDefinitions {
     public void clickBackButton() {
         homePageSteps.clickBackButton();
     }
+
+    @When("^Click Getting Started Guide button$")
+    public void clickGettingStartedGuideButton() {
+        homePageSteps.clickGettingStartedGuideButton();
+    }
 }

@@ -1,74 +1,126 @@
 .experiment-view .section-title-label {
-  line-height: 1;
+    line-height: 1;
 }
 
 .experiment-view .view-section {
-  min-width: auto;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: auto;
+    background: white;
+    border-radius: var(--lumo-border-radius);
+    padding: var(--lumo-space-m);
 }
 
-.experiment-view .view-section,
-.experiment-view .right-panel {
-  box-sizing: border-box;
-  width: 100%;
-  background: white;
-  border-radius: var(--lumo-border-radius);
-  padding: var(--lumo-space-m);
+.experiment-view .view-section > vaadin-vertical-layout:first-of-type {
+    width: calc(70% - var(--lumo-space-m)) !important;
+    flex: 1;
 }
 
-.experiment-view .policy-chart-panel {
-  height: calc(100vh - 21.6rem);
-  min-height: 25rem;
-}
-
-.experiment-view .right-panel {
-  height: auto !important;
-  flex: 0 0 25rem;
+.experiment-view .view-section > vaadin-vertical-layout:first-of-type > vaadin-vertical-layout:nth-of-type(3) {
+    height: 100%;
+    min-height: 25rem;
 }
 
 .experiment-view vaadin-chart {
-  min-height: 25rem;
+    min-height: 25rem;
+}
+
+.experiment-view .right-panel {
+    flex: 0 0 30%;
+    max-width: 29rem;
+}
+
+.experiment-view .buttons-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.experiment-view .buttons-wrapper vaadin-button {
+    width: calc(50% - var(--lumo-space-s) / 2);
+    min-width: unset;
+}
+
+.experiment-view .buttons-wrapper vaadin-button:not(:first-child) {
+    margin-left: var(--lumo-space-s);
 }
 
 .experiment-view juicy-ace-editor {
-  min-height: 5rem;
+    display: block;
 }
 
 .experiment-view .right-panel > vaadin-vertical-layout {
-  margin: var(--lumo-space-m) 0;
+    margin: var(--lumo-space-m) 0;
 }
 
 .experiment-view .bold-label {
-  margin-bottom: var(--lumo-space-xs);
+    margin-bottom: var(--lumo-space-xs);
 }
 
 .experiment-view .score {
-  font-size: var(--lumo-font-size-xl);
-  font-weight: bold;
-  color: var(--lumo-primary-text-color);
-  line-height: 1;
+    font-size: var(--lumo-font-size-xl);
+    font-weight: bold;
+    color: var(--lumo-primary-text-color);
+    line-height: 1;
 }
 
-.training-starting-placeholder {
-  margin-top: var(--lumo-space-xxl);
+.experiment-view .training-starting-placeholder {
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    position: relative;
+    min-height: 25rem;
+    background-color: var(--pm-highlight-light);
+    padding: var(--lumo-space-m) var(--lumo-space-xxl);
+    border: 1px solid var(--pm-gray-color);
+    border-radius: var(--lumo-border-radius);
+}
+
+.experiment-view .training-starting-placeholder chart-placeholder {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0.4;
+}
+
+.experiment-view .training-starting-placeholder chart-placeholder + vaadin-vertical-layout {
+    position: relative;
+    max-width: 640px;
+    width: 100%;
+}
+
+.experiment-view .training-starting-placeholder span {
+    display: block;
+    position: relative;
+    font-size: var(--lumo-font-size-l);
+    font-weight: bold;
+    line-height: 1;
+    padding-left: 32px;
+    margin-bottom: 0.75em;
+}
+
+.experiment-view .training-starting-placeholder span::before {
+    top: -0.2rem !important;
 }
 
 .training-status-details-panel vaadin-horizontal-layout vaadin-vertical-layout {
-  padding: 0 var(--lumo-space-l);
+    padding: 0 var(--lumo-space-l);
 }
 
 .training-status-details-panel span,
 .experiment-view elapsed-timer {
-  font-size: var(--lumo-font-size-s);
-  line-height: 1.3;
-  text-align: right;
-  margin-top: 0;
+    font-size: var(--lumo-font-size-s);
+    line-height: 1.3;
 }
 
 .training-status-details-panel span:first-child {
-  color: var(--lumo-primary-text-color);
-  font-weight: bold;
+    color: var(--lumo-primary-text-color);
+    font-weight: bold;
 }
 
 .experiment-view vaadin-progress-bar {
-  margin: var(--lumo-space-xs) 0;
+    margin: var(--lumo-space-xs) 0;
 }
