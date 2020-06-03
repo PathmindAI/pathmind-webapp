@@ -116,15 +116,17 @@ public class DashboardLine extends HorizontalLayout {
 				updateProgress(trainingProgress, dashboardItem);
 				item = new Span(new Text(stage.getNameAfterDone() + INPROGRESS_INDICATOR), trainingProgress);
 				item.setClassName("stage-active");
-			} else if (DashboardUtils.isTrainingInFailed(stage, dashboardItem.getLatestRun())) {
-				item = new Span(VaadinIcon.CLOSE.create(), new Text(stage.getNameAfterDone()));
-                item.setClassName("stage-failed");
-            } else if (DashboardUtils.isTrainingStopped(stage, dashboardItem.getLatestRun())) {
-                String trainingStatusText = dashboardItem.getLatestRun().getStatusEnum() == RunStatus.Stopping ? "Stopping" : "Stopped";
-                Span stoppedIcon = new Span();
-				stoppedIcon.addClassName("icon-stopped");
-                item = new Span(stoppedIcon, new Span(new Text(stage.getNameAfterDone()), new Html("<br/>"), new Text(trainingStatusText)));
-                item.setClassName("stage-stopped");
+            } else if (DashboardUtils.isTrainingStopped(stage, dashboardItem.getLatestRun()) || DashboardUtils.isTrainingInFailed(stage, dashboardItem.getLatestRun())) {
+                if (ExperimentUtils.getTrainingStatus(dashboardItem.getExperiment()) == RunStatus.Error) {
+                    item = new Span(VaadinIcon.EXCLAMATION_CIRCLE_O.create(), new Text(stage.getNameAfterDone()));
+                    item.setClassName("stage-failed");
+                } else {
+                    String trainingStatusText = dashboardItem.getLatestRun().getStatusEnum() == RunStatus.Stopping ? "Stopping" : "Stopped";
+                    Span stoppedIcon = new Span();
+                    stoppedIcon.addClassName("icon-stopped");
+                    item = new Span(stoppedIcon, new Span(new Text(stage.getNameAfterDone()), new Html("<br/>"), LabelFactory.createLabel(trainingStatusText, "hint-label")));
+                    item.setClassName("stage-stopped");
+                }
 			} else {
 				item = new Span(stage.getNameAfterDone());
 				item.setClassName("stage-active");
