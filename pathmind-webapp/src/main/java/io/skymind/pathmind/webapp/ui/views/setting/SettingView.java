@@ -2,13 +2,16 @@ package io.skymind.pathmind.webapp.ui.views.setting;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.shared.constants.ViewPermission;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.webapp.security.annotation.Permission;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = Routes.SETTING_URL, layout = MainLayout.class)
+@Permission(permissions = ViewPermission.SETTING_READ)
 public class SettingView extends PathMindDefaultView {
 
     private final SettingViewContent settingViewContent;
