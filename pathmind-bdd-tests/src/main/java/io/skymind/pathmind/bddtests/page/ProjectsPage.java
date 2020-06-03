@@ -524,4 +524,13 @@ public class ProjectsPage extends PageObject {
     public void checkThatNewProjectPageOpened() {
         assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']")).getText(), is("Start a New Project!"));
     }
+
+    public void checkThatModelNotExistInArchivedTab(String modelName) {
+        waitABit(2500);
+        List<String> strings = new ArrayList<>();
+        for (WebElement e : experimentModelsNames) {
+            strings.add(e.getText());
+        }
+        assertThat(strings, not(hasItem(modelName)));
+    }
 }

@@ -127,7 +127,7 @@ Feature: Dashboard page
     When Open project AutotestProject on projects page
     When Check that model/experiment NOT exist in archived tab
     When Open projects/model/experiment archived tab
-    Then Check that model/experiment name 1 Draft exist in archived tab
+    Then Check that model/experiment name '1 Draft' exist in archived tab
 
   @dashArchiveItem
   Scenario: Check stage status for project with draft experiment
@@ -141,7 +141,7 @@ Feature: Dashboard page
     When Click the model name 1
     When Check that model/experiment NOT exist in archived tab
     When Open projects/model/experiment archived tab
-    Then Check that model/experiment name 1 Draft exist in archived tab
+    Then Check that model/experiment name '1 Draft' exist in archived tab
 
   @dashArchiveItem
   Scenario: Check stage status for project with started experiment
@@ -156,7 +156,7 @@ Feature: Dashboard page
     When Click the model name 1
     When Check that model/experiment NOT exist in archived tab
     When Open projects/model/experiment archived tab
-    Then Check that model/experiment name 1 exist in archived tab
+    Then Check that model/experiment name '1' exist in archived tab
     Then Click the experiment name 1
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown

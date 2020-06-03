@@ -88,4 +88,9 @@ public class DashboardPageStepDefinitions {
     public void clickDashboardCreateYourFirstProjectBtn() {
         dashboardPageSteps.clickDashboardCreateYourFirstProjectBtn();
     }
+
+    @When("^Click stage write reward function (.*) from dashboard$")
+    public void clickStageWriteRewardFunctionFromDashboard(String projectName) {
+        dashboardPageSteps.clickStageWriteRewardFunctionFromDashboard(projectName + Serenity.sessionVariableCalled("randomNumber"));
+    }
 }
