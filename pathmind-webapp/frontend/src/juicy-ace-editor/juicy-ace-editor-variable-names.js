@@ -6,10 +6,10 @@ var variableCount;
 
 function createVariableNameHints() {
     ensureLineValidationCache();
-	for (var i = 0; i < editor.session.getLength(); i++) {
+    for (var i = 0; i < editor.session.getLength(); i++) {
         createHintsForLine(i);
     }
-	calculateValidationsAndDispatchEvent();
+    calculateValidationsAndDispatchEvent();
 }
 function createHintsForLine(line) {
   let existingFolds = editor.session.getFoldLine(line, line);
@@ -227,7 +227,7 @@ if (!window.Pathmind) {
 window.Pathmind.CodeEditor = {
   addVariableNamesSupport: function(editorWrapper) {
     element = editorWrapper;
-	editor = editorWrapper.editor;
+    editor = editorWrapper.editor;
     Range = ace.require("ace/range").Range;
     editor.session.expandFold = expandFold;
     editor.session.$computeWidth = computeWidth;
