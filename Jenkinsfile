@@ -148,6 +148,10 @@ pipeline {
             }
             steps {
                 script {
+                    echo "Running db migrations"
+                    sh "cd ${WORKSPACE} && mvn clean install"
+                    sh "cd ${WORKSPACE}/pathmind-database && mvn liquibase:update"
+                    sh "export DB_URL="$(kubectl get secret dburl -o=jsonpath='{.data.DB_URL}' -n ${DOCKER_TAG} |  base64 --decode; echo)" && cd ${WORKSPACE}/pathmind-database && mvn liquibase:update"
                     echo "Updating helm chart"
                     sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} ${DOCKER_TAG} ${WORKSPACE}"
                     sh "sleep 60"
@@ -223,6 +227,9 @@ pipeline {
             steps {
                 script {
                     DEPLOY_PROD = true
+                    echo "Running db migrations"
+                    sh "cd ${WORKSPACE} && mvn clean install"
+                    sh "export DB_URL="$(kubectl get secret dburl -o=jsonpath='{.data.DB_URL}' |  base64 --decode; echo)" && cd ${WORKSPACE}/pathmind-database && mvn liquibase:update"
                     echo "Updating helm chart"
                     sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
                     sh "sleep 60"
