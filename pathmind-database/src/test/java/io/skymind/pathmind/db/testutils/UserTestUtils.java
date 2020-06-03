@@ -1,11 +1,12 @@
 package io.skymind.pathmind.db.testutils;
 
+import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.PathmindUser;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class UserUtils
+public class UserTestUtils
 {
 
 	public static final String email1 = "email@email.com";
@@ -16,7 +17,7 @@ public class UserUtils
 		PathmindUser pathmindUser = new PathmindUser();
 		pathmindUser.setEmail(email1);
 		pathmindUser.setPassword("Password");
-		pathmindUser.setAccountType(1);
+		pathmindUser.setAccountType(UserRole.Paid.getId());
 		pathmindUser.setFirstname("Firstname");
 		pathmindUser.setLastname("Lastname");
 		pathmindUser.setAddress("Address");
@@ -34,7 +35,7 @@ public class UserUtils
 	{
 		pathmindUser.setEmail(email2);
 		pathmindUser.setPassword("Password2");
-		pathmindUser.setAccountType(2);
+		pathmindUser.setAccountType(UserRole.Premium.getId());
 		pathmindUser.setFirstname("Firstname2");
 		pathmindUser.setLastname("Lastname2");
 		pathmindUser.setAddress("Address2");

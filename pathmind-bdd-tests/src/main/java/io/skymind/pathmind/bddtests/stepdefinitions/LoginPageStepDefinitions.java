@@ -215,6 +215,11 @@ public class LoginPageStepDefinitions {
         loginPageSteps.checkNewPasswordPageOpened();
     }
 
+    @When("^Login with old user email and password (.*)$")
+    public void loginWithOldUserEmailAndPassword(String password) {
+        loginPageSteps.loginWithCredential(Serenity.sessionVariableCalled("oldEmail"), password);
+    }
+
     @When("Create new user (.*), (.*) with password (.*)")
     public void createNewUserWithPassword(String firstName, String lastName, String password) {
         loginPageSteps.openPage(pathmindUrl + "early-access-sign-up");
