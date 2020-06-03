@@ -1,10 +1,15 @@
+var element;
 var editor;
 var rewardVariables = {};
+var lineValidationCache = {};
+var variableCount;
 
 function createVariableNameHints() {
-  for (var i = 0; i < editor.session.getLength(); i++) {
-    createHintsForLine(i);
-  }
+    ensureLineValidationCache();
+	for (var i = 0; i < editor.session.getLength(); i++) {
+        createHintsForLine(i);
+    }
+	calculateValidationsAndDispatchEvent();
 }
 function createHintsForLine(line) {
   let existingFolds = editor.session.getFoldLine(line, line);
@@ -14,6 +19,7 @@ function createHintsForLine(line) {
   let value = editor.session.getLine(line);
   let matchInfo = value.match(/\[[0-9 ]+\]/);
   let index = 0;
+  lineValidationCache[line] = [];
   while (matchInfo) {
     index = index + matchInfo.index;
     matchVariableNameAndFold(matchInfo[0], index, line);
@@ -27,6 +33,9 @@ function matchVariableNameAndFold(matchingValue, index, row) {
   const matchInfo = matchingValue.match(/[0-9]+/);
   if (matchInfo) {
     const variableIndex = matchInfo[0];
+    if (variableIndex < 0 || variableIndex >= variableCount){
+    	lineValidationCache[row].push(variableIndex);
+    }
     if (rewardVariables[variableIndex]) {
       const variableName = variableIndex + " " + rewardVariables[variableIndex];
       const foldLocation = index + matchInfo.index;
@@ -63,16 +72,36 @@ function pushTokensForPlaceholder(renderTokens, placeholder) {
 }
 
 function onChange(e) {
-  for (var i = e.start.row; i <= e.end.row; i++) {
-    var changedValue = e.lines[i - e.start.row];
-    if (changedValue && changedValue.match(/[\[0-9\]]/)) {
-      var existingFolds = editor.session.getFoldLine(i, i);
-      if (existingFolds) {
-        editor.session.removeFolds(existingFolds.folds);
-      }
-      createHintsForLine(i);
-    }
-  }
+	ensureLineValidationCache();
+	for (var i = e.start.row; i <= e.end.row; i++) {
+		var changedValue = e.lines[i - e.start.row];
+		if (changedValue && changedValue.match(/[\[0-9\]]/)) {
+			var existingFolds = editor.session.getFoldLine(i, i);
+			if (existingFolds) {
+				editor.session.removeFolds(existingFolds.folds);
+			}
+			createHintsForLine(i);
+		}
+	}
+	calculateValidationsAndDispatchEvent();
+}
+function calculateValidationsAndDispatchEvent(){
+	var valid = true;
+	var invalidIndexes = [];
+	for (var i = 0; i < editor.session.getLength(); i++) {
+		valid = valid && Object.keys(lineValidationCache[i]).length == 0;
+		invalidIndexes.push(lineValidationCache[i]);
+	}
+	var evt = new CustomEvent('reward-function-validation', {
+        detail: { valid: valid, invalidIndexes: invalidIndexes }
+    });
+	element.dispatchEvent(evt);
+}
+
+function ensureLineValidationCache(){
+	for (var i = 0; i < editor.session.getLength(); i++) {
+		if (lineValidationCache[i] === undefined) lineValidationCache[i] = []; 
+	}
 }
 
 function expandFold(fold) {
@@ -197,7 +226,8 @@ if (!window.Pathmind) {
 }
 window.Pathmind.CodeEditor = {
   addVariableNamesSupport: function(editorWrapper) {
-    editor = editorWrapper.editor;
+    element = editorWrapper;
+	editor = editorWrapper.editor;
     Range = ace.require("ace/range").Range;
     editor.session.expandFold = expandFold;
     editor.session.$computeWidth = computeWidth;
@@ -205,7 +235,8 @@ window.Pathmind.CodeEditor = {
     createVariableNameHints();
     editor.session.on("change", e => onChange(e));
   },
-  setVariableNames: function(vars) {
+  setVariableNames: function(vars, vcount) {
     rewardVariables = vars;
+    variableCount = vcount;
   }
 };
