@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
@@ -90,10 +89,11 @@ public class ProjectsView extends PathMindDefaultView
 
 		projectGrid.addComponentColumn(project -> {
 				Button renameProjectButton = new Button(new Icon(VaadinIcon.EDIT), evt -> renameProject(project));
-				renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-				HorizontalLayout projectNameColumn = new HorizontalLayout(new Span(project.getName()), renameProjectButton);
+                renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+                HorizontalLayout projectNameColumn = new HorizontalLayout(new Span(project.getName()), renameProjectButton);
+                projectNameColumn.getElement().setAttribute("tooltip-content", project.getName());
 				projectNameColumn.addClassName("project-name-column");
-				projectNameColumn.setSpacing(false);
+                projectNameColumn.setSpacing(false);
 				return projectNameColumn;
 		})
 				.setHeader("Name")
@@ -121,7 +121,8 @@ public class ProjectsView extends PathMindDefaultView
 		projectGrid.addColumn(project -> {
 				String userNotes = project.getUserNotes();
 				return userNotes.isEmpty() ? "—" : userNotes;
-		})
+        })
+                .setClassNameGenerator(column -> "grid-notes-column")
 				.setHeader("Notes")
 				.setResizable(true)
 				.setSortable(false);
@@ -157,7 +158,7 @@ public class ProjectsView extends PathMindDefaultView
 			getUI().ifPresent(ui -> ui.navigate(NewProjectView.class));
 			return;
 		}
-	}
+    }
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event)
@@ -166,8 +167,8 @@ public class ProjectsView extends PathMindDefaultView
 			// projectGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			projectGrid.setItems(projects);
 		});
-		archivesTabPanel.initData(event.getUI());
+        archivesTabPanel.initData(event.getUI());
 
-		recalculateGridColumnWidth(event.getUI().getPage(), projectGrid);		
+        recalculateGridColumnWidth(event.getUI().getPage(), projectGrid);
 	}
 }
