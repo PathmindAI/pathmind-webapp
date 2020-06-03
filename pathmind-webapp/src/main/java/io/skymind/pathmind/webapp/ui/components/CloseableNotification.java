@@ -10,16 +10,21 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 public class CloseableNotification extends Notification {
 
 	public CloseableNotification(String html) {
-		Span contentLabel = new Span();
-		contentLabel.getElement().setProperty("innerHTML", html);
-		contentLabel.setMaxWidth("350px");
-		contentLabel.getStyle().set("display", "inline-block");
-		contentLabel.getStyle().set("padding-right", "15px");
+        this(html, true, null);
+	}
 
-		Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
-		closeButton.addClickListener(event -> close());
-		add(WrapperUtils.wrapSizeFullCenterHorizontal(contentLabel, closeButton));
-		setPosition(Notification.Position.TOP_CENTER);
-		setDuration(5000);
+	public CloseableNotification(String html, Boolean isCloseable, Button actionButton) {
+        long durationBeforeClose = isCloseable ? 5000 : -1;
+		Span contentLabel = LabelFactory.createLabel("", "closeable-notification-text-label");
+		contentLabel.getElement().setProperty("innerHTML", html);
+        
+        if (actionButton == null) {
+            actionButton = new Button(VaadinIcon.CLOSE_SMALL.create());
+            actionButton.addClickListener(event -> close());
+        }
+        
+		add(WrapperUtils.wrapSizeFullCenterHorizontal(contentLabel, actionButton));
+        setPosition(Notification.Position.TOP_CENTER);
+        setDuration(durationBeforeClose);
 	}
 }

@@ -189,24 +189,24 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     }
 
     @Override
-     protected void onAttach(AttachEvent attachEvent) {
-         EventBus.subscribe(this);
-     }
+    protected void onAttach(AttachEvent attachEvent) {
+        EventBus.subscribe(this);
+    }
 
-     @Override
-     protected void onDetach(DetachEvent detachEvent) {
-         EventBus.unsubscribe(this);
-     }
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        EventBus.unsubscribe(this);
+    }
 
-     @Override
-     public void handleBusEvent(RunUpdateBusEvent event) {
-         PushUtils.push(this, () -> dataProvider.refreshItemByExperiment(event.getRun().getExperimentId()));
-     }
+    @Override
+    public void handleBusEvent(RunUpdateBusEvent event) {
+        PushUtils.push(this, () -> dataProvider.refreshItemByExperiment(event.getRun().getExperimentId()));
+    }
 
-     @Override
-     public boolean filterBusEvent(RunUpdateBusEvent event) {
-         return event.getRun().getProject().getPathmindUserId() == loggedUserId;
-     }
+    @Override
+    public boolean filterBusEvent(RunUpdateBusEvent event) {
+        return event.getRun().getProject().getPathmindUserId() == loggedUserId;
+    }
 
     @Override
     public boolean isAttached() {

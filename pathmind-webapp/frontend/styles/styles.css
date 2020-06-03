@@ -187,6 +187,12 @@ hr {
     opacity: 1;
 }
 
+.closeable-notification-text-label {
+    display: inline-block;
+    max-width: 350px;
+    padding-right: 15px;
+}
+
 .default-view {
     background: var(--pm-app-bg-color);
     height: 100%;
