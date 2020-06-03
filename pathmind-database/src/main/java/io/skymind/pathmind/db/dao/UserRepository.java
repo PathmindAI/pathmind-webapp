@@ -49,7 +49,7 @@ class UserRepository
         return ctx.insertInto(PATHMIND_USER)
                 .set(PATHMIND_USER.EMAIL, pathmindUser.getEmail())
                 .set(PATHMIND_USER.PASSWORD, password)
-                .set(PATHMIND_USER.ACCOUNT_TYPE, pathmindUser.getAccountType())
+                .set(PATHMIND_USER.ACCOUNT_TYPE, pathmindUser.getAccountType().getId())
                 .set(PATHMIND_USER.FIRSTNAME, pathmindUser.getFirstname())
                 .set(PATHMIND_USER.LASTNAME, pathmindUser.getLastname())
                 .set(PATHMIND_USER.DELETE_AT, pathmindUser.getDeleteAt())
@@ -64,7 +64,7 @@ class UserRepository
     {
         ctx.update(PATHMIND_USER)
                 .set(PATHMIND_USER.EMAIL, pathmindUser.getEmail())
-                .set(PATHMIND_USER.ACCOUNT_TYPE, pathmindUser.getAccountType())
+                .set(PATHMIND_USER.ACCOUNT_TYPE, pathmindUser.getAccountType().getId())
                 .set(PATHMIND_USER.FIRSTNAME, pathmindUser.getFirstname())
                 .set(PATHMIND_USER.LASTNAME, pathmindUser.getLastname())
                 .set(PATHMIND_USER.ADDRESS, pathmindUser.getAddress())
