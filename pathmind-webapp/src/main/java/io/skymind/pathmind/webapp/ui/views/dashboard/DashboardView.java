@@ -145,21 +145,21 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     }
 
     private void archiveExperiment(DashboardItem item) {
-        ConfirmationUtils.archive("experiment", () -> {
+        ConfirmationUtils.archive("this experiment", () -> {
             experimentDAO.archive(item.getExperiment().getId(), true);
             dataProvider.refreshAll();
         });
     }
 
     private void archiveModel(DashboardItem item) {
-        ConfirmationUtils.archive("model", () -> {
+        ConfirmationUtils.archive("this model", () -> {
             modelDAO.archive(item.getModel().getId(), true);
             dataProvider.refreshAll();
         });
     }
 
     private void archiveProject(DashboardItem item) {
-        ConfirmationUtils.archive("project", () -> {
+        ConfirmationUtils.archive("this project", () -> {
             projectDAO.archive(item.getProject().getId(), true);
             dataProvider.refreshAll();
         });

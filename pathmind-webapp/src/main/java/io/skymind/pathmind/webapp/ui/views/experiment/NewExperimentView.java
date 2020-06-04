@@ -48,10 +48,12 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavbar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
+import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -121,7 +123,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private HorizontalLayout createMainPanel() {
-		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiment.getModelId(), selectedExperiment -> selectExperiment(selectedExperiment));
+		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiment.getModelId(), selectedExperiment -> selectExperiment(selectedExperiment), experimentToArchive -> archiveExperiment(experimentToArchive));
 		
 		startRunButton = new Button("Train Policy", VaadinIcon.PLAY.create(), click -> handleStartRunButtonClicked());
 		startRunButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -268,6 +270,22 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		afterClickedCallback.execute();
 	}
 
+    private void archiveExperiment(Experiment experimentToArchive) {
+        ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
+            experimentDAO.archive(experimentToArchive.getId(), true);
+            experiments.remove(experimentToArchive);
+            if (experiments.isEmpty()) {
+                getUI().ifPresent(ui -> ui.navigate(ModelView.class, experimentToArchive.getModelId()));
+            } else {
+                Experiment currentExperiment = (experimentToArchive.getId() == experimentId) ? experiments.get(0) : experiment;
+                if (experimentToArchive.getId() == experimentId) {
+                    selectExperiment(currentExperiment);
+                }
+                getUI().ifPresent(ui -> experimentsNavbar.setExperiments(ui, experiments, currentExperiment));
+            }
+        });
+    }
+
 	private Breadcrumbs createBreadcrumbs() {
 		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
 	}
@@ -354,7 +372,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
 		}
 		if (!experiment.isArchived()) {
-			experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+            experiments = experimentDAO.getExperimentsForModel(modelId).stream()
+                                    .sorted(Comparator.comparing(Experiment::getDateCreated).reversed())
+                                    .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
 		}
 	}
 
