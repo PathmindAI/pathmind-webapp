@@ -74,14 +74,11 @@ function pushTokensForPlaceholder(renderTokens, placeholder) {
 function onChange(e) {
 	ensureLineValidationCache();
 	for (var i = e.start.row; i <= e.end.row; i++) {
-		var changedValue = e.lines[i - e.start.row];
-		if (changedValue && changedValue.match(/[\[0-9\]]/)) {
-			var existingFolds = editor.session.getFoldLine(i, i);
-			if (existingFolds) {
-				editor.session.removeFolds(existingFolds.folds);
-			}
-			createHintsForLine(i);
+		var existingFolds = editor.session.getFoldLine(i, i);
+		if (existingFolds) {
+			editor.session.removeFolds(existingFolds.folds);
 		}
+		createHintsForLine(i);
 	}
 	calculateValidationsAndDispatchEvent();
 }
