@@ -41,7 +41,9 @@ public class InvalidDataView extends PathMindDefaultView implements HasErrorPara
 	@Override
 	protected Component getMainContent() {
 		return WrapperUtils.wrapWidthFullCenterVertical(
-				LabelFactory.createLabel(String.format("This link is invalid. Please contact Pathmind if you believe this is an error (#%s).", errorId)));
+				LabelFactory.createLabel(String.format("This link is invalid. Please contact Pathmind if you believe this is an error (#%s).", errorId)),
+                StatusPageMessage.getMessage()
+                );
 	}
 
 	@Override
