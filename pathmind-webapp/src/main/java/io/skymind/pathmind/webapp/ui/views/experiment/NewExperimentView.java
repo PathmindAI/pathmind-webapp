@@ -79,8 +79,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Span unsavedChanges;
 	private Span notesSavedHint;
 	private Span rewardEditorErrorLabel;
+	private Button unarchiveExperimentButton;
 	private Button saveDraftButton;
-
 	private Button startRunButton;
 
 	private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
@@ -124,7 +124,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private HorizontalLayout createMainPanel() {
 		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiment.getModelId(), selectedExperiment -> selectExperiment(selectedExperiment), experimentToArchive -> archiveExperiment(experimentToArchive));
-		
+
+        unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
+        unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
 		startRunButton = new Button("Train Policy", VaadinIcon.PLAY.create(), click -> handleStartRunButtonClicked());
 		startRunButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		startRunButton.setEnabled(false);
@@ -159,7 +162,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 		VerticalLayout saveButtonAndHintsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(saveDraftButton, unsavedChanges, notesSavedHint);
 		saveButtonAndHintsWrapper.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
-		HorizontalLayout buttonsWrapper = new HorizontalLayout(saveButtonAndHintsWrapper, startRunButton);
+		HorizontalLayout buttonsWrapper = new HorizontalLayout(saveButtonAndHintsWrapper, startRunButton, unarchiveExperimentButton);
 		buttonsWrapper.setWidth(null);
 
 		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper), rewardFunctionWrapper, errorAndNotesContainer);
@@ -286,6 +289,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         });
     }
 
+    private void unarchiveExperiment() {
+        ConfirmationUtils.unarchive("experiment", () -> {
+            experimentDAO.archive(experiment.getId(), false);
+            getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
+        });
+    }
+
 	private Breadcrumbs createBreadcrumbs() {
 		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
 	}
@@ -399,6 +409,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			rewardVariablesTable.setVisible(false);
 		}
 		unsavedChanges.setVisible(false);
-		notesSavedHint.setVisible(false);
+        notesSavedHint.setVisible(false);
+        unarchiveExperimentButton.setVisible(experiment.isArchived());
 	}
 }
