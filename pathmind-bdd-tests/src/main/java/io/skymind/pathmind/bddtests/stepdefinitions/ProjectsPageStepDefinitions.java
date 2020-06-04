@@ -198,12 +198,12 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.checkThatModelsPageOpened();
     }
 
-    @Then("^Check that model/experiment name '(.*)' exist in archived tab$")
+    @Then("^Check that model/experiment name '(.*)' exist in archived/not archived tab$")
     public void checkThatModelExistInArchivedTab(String modelName) {
         projectsPageSteps.checkThatModelExistInArchivedTab(modelName);
     }
 
-    @Then("^Check that model/experiment name '(.*)' NOT exist in archived tab$")
+    @Then("^Check that model/experiment name '(.*)' NOT exist in archived/not archived tab$")
     public void checkThatModelNotExistInArchivedTab(String modelName) {
         projectsPageSteps.checkThatModelNotExistInArchivedTab(modelName);
     }
