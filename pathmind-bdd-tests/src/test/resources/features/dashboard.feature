@@ -106,7 +106,7 @@ Feature: Dashboard page
     When Create new empty project
     When Open dashboard page
     When Click archive btn from dashboard
-    When In confirmation dialog click in 'Archive Project' button
+    When In confirmation dialog click in 'Archive' button
     When Open projects page
     When Check that project not exist in project list AutotestProject
     When Open archives tab
@@ -122,7 +122,7 @@ Feature: Dashboard page
     When Check that model successfully uploaded
     When Open dashboard page
     When Click archive btn from dashboard
-    When In confirmation dialog click in 'Archive Model' button
+    When In confirmation dialog click in 'Archive' button
     When Open projects page
     When Open project AutotestProject on projects page
     When Check that model/experiment NOT exist in archived tab
@@ -135,7 +135,7 @@ Feature: Dashboard page
     When Create new CoffeeShop project
     When Open dashboard page
     When Click archive btn from dashboard
-    When In confirmation dialog click in 'Archive Experiment' button
+    When In confirmation dialog click in 'Archive' button
     When Open projects page
     When Open project AutotestProject on projects page
     When Click the model name 1
@@ -150,7 +150,7 @@ Feature: Dashboard page
     When Click project start run button
     When Open dashboard page
     When Click archive btn from dashboard
-    When In confirmation dialog click in 'Archive Experiment' button
+    When In confirmation dialog click in 'Archive' button
     When Open projects page
     When Open project AutotestProject on projects page
     When Click the model name 1

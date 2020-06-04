@@ -54,7 +54,7 @@ Feature: Experiments page
     When Create new CoffeeShop project
     Then Click project start run button
     Then Click in 'Archive' button
-    When In confirmation dialog click in 'Archive Experiment' button
+    When In confirmation dialog click in 'Archive' button
     When Check that model/experiment NOT exist in archived tab
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name 1 exist in archived tab
