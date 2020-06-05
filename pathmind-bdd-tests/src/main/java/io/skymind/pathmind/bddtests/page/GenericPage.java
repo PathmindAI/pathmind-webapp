@@ -32,7 +32,7 @@ public class GenericPage extends PageObject {
     }
 
     public void clickInButton(String buttonText) {
-        String xpath = String.format("//vaadin-button[text()='%s']", buttonText);
+        String xpath = String.format("//*[text()='%s']", buttonText);
         getDriver().findElement(By.xpath(xpath)).click();
     }
 
