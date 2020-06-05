@@ -18,10 +18,12 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.shared.data.DashboardItem;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
@@ -47,15 +49,14 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 {
     @Autowired
     private DashboardDataProvider dataProvider;
-
     @Autowired
     private ExperimentDAO experimentDAO;
-
     @Autowired
     private ProjectDAO projectDAO;
-
     @Autowired
     private ModelDAO modelDAO;
+    @Autowired
+    private RunDAO runDAO;
 
     private Grid<DashboardItem> dashboardGrid;
 
@@ -90,7 +91,15 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
         dashboardGrid = new Grid<>();
         dashboardGrid.addClassName("dashboard");
         dashboardGrid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
-        dashboardGrid.addComponentColumn(item -> new DashboardLine(item, itm -> navigateFromDashboard(itm), itm -> archiveItem(itm)));
+        dashboardGrid.addComponentColumn(item -> {
+            if (item.getExperiment() != null) {
+                Experiment currentExperiment = item.getExperiment();
+                if (runDAO.getRunsForExperiment(currentExperiment) != null) {
+                    currentExperiment.setRuns(runDAO.getRunsForExperiment(currentExperiment));
+                }
+            }
+            return new DashboardLine(item, itm -> navigateFromDashboard(itm), itm -> archiveItem(itm));
+        });
         dashboardGrid.setSelectionMode(SelectionMode.NONE);
         dashboardGrid.setPageSize(10);
     }
