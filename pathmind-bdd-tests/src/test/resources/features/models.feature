@@ -224,6 +224,7 @@ Feature: Models page
       | AutotestProject | Production_Single_Agent/CoffeeShopPathmindDemo.zip               | Production_Single_Agent/CoffeeShopPathmindDemo.txt                          | kitchen_cleanliness,customers_served,balked_customers,avg_response_time |
       | AutotestProject | Production_Single_Agent/FAST_RailModel_4Observation_3Actions.zip | Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt | rail_var,train_var                                                      |
 
+  @modelDetails
   Scenario Outline: Check sorting of reward variables on model view when change variables names
     Given Login to the pathmind
     When Open projects page
