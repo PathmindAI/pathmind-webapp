@@ -1300,4 +1300,13 @@
         <addNotNullConstraint tableName="EXPERIMENT" columnName="ARCHIVED"/>
      </changeSet>
 
+    <changeSet id="20200516-01" author="alexander.makarov@toptal.com">
+        <addColumn tableName="RUN">
+            <column name="RLLIB_ERROR" type="VARCHAR(1024)" />
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="RUN" columnName="RLLIB_ERROR" />
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
