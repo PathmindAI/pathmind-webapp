@@ -10,6 +10,8 @@ import java.util.stream.IntStream;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.ExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
@@ -113,6 +115,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private RewardVariablesTable rewardVariablesTable;
     private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
     private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
+    private final ExperimentViewExperimentCreatedSubscriber experimentCreatedSubscriber;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -139,18 +142,21 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         addClassName("experiment-view");
         policyUpdateSubscriber = new ExperimentViewPolicyUpdateSubscriber();
         runUpdateSubscriber = new ExperimentViewRunUpdateSubscriber();
+        experimentCreatedSubscriber = new ExperimentViewExperimentCreatedSubscriber();
     }
 
     @Override
     protected void onDetach(DetachEvent event) {
         EventBus.unsubscribe(policyUpdateSubscriber);
         EventBus.unsubscribe(runUpdateSubscriber);
+        EventBus.unsubscribe(experimentCreatedSubscriber);
     }
 
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(policyUpdateSubscriber);
         EventBus.subscribe(runUpdateSubscriber);
+        EventBus.subscribe(experimentCreatedSubscriber);
     }
 
     @Override
@@ -577,6 +583,28 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         
         private boolean isSameModel(RunUpdateBusEvent event) {
             return experiment != null && experiment.getModelId() == event.getRun().getModel().getId();
+        }
+    }
+
+    class ExperimentViewExperimentCreatedSubscriber implements ExperimentCreatedSubscriber {
+
+        @Override
+        public void handleBusEvent(ExperimentCreatedBusEvent event) {
+            if (isSameModel(event)) {
+                if (!experiments.contains(event.getExperiment())) {
+                    experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+                    PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
+                }
+            }
+        }
+
+        private boolean isSameModel(ExperimentCreatedBusEvent event) {
+            return experiment != null && experiment.getModelId() == event.getExperiment().getModelId();
+        }
+
+        @Override
+        public boolean isAttached() {
+            return ExperimentView.this.getUI().isPresent();
         }
     }
 }

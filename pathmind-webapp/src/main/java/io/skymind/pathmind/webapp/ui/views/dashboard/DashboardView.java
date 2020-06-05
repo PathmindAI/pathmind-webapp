@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.dashboard;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import io.skymind.pathmind.shared.data.Run;
