@@ -94,7 +94,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
 
-    private VerticalLayout middlePanel;
+    private HorizontalLayout middlePanel;
     private PolicyHighlightPanel policyHighlightPanel;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private Span panelTitle;
@@ -104,6 +104,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private PolicyChartPanel policyChartPanel;
     private ExperimentsNavbar experimentsNavbar;
     private NotesField notesField;
+    private Span errorDescriptionLabel;
 
     private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
     private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
@@ -155,9 +156,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     @Override
     protected Component getMainContent() {
+        panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
+        trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
         experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
         setupExperimentContentPanel();
-        HorizontalLayout experimentContent = WrapperUtils.wrapWidthFullHorizontal(middlePanel, getRightPanel());
+	    errorDescriptionLabel = LabelFactory.createLabel("", "tag", "error-label");
+
+        VerticalLayout experimentContent = WrapperUtils.wrapWidthFullVertical(
+                WrapperUtils.wrapWidthFullHorizontal(panelTitle, trainingStatusDetailsPanel, getButtonsWrapper()),
+                errorDescriptionLabel,
+                middlePanel,
+                getBottomPanel());
         experimentContent.addClassName("view-section");
         HorizontalLayout pageWrapper = WrapperUtils.wrapWidthFullHorizontal(
                 experimentsNavbar,
@@ -168,25 +177,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private void setupExperimentContentPanel() {
-        panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
-        policyChartPanel = new PolicyChartPanel();
         codeViewer = new CodeViewer();
         rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
             LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
         );
-        trainingStartingPlaceholder = new TrainingStartingPlaceholder();
-        middlePanel = WrapperUtils.wrapWidthFullVertical(
-                panelTitle,
-                rewardFunctionGroup,
-                trainingStartingPlaceholder,
-                policyChartPanel);
+        middlePanel = WrapperUtils.wrapWidthFullHorizontal(
+                rewardFunctionGroup);
         middlePanel.setPadding(false);
     }
 
-    private VerticalLayout getRightPanel() {
-        policyHighlightPanel = new PolicyHighlightPanel();
-        trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
-
+    private Div getButtonsWrapper() {
         restartTraining = new Button("Restart Training", new Image("frontend/images/start.svg", "run"), click -> {
             synchronized (experimentLock) {
                 trainingService.startRun(experiment);
@@ -226,15 +226,26 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             exportPolicyButton
         );
         buttonsWrapper.addClassName("buttons-wrapper");
+        return buttonsWrapper;
+    }
 
-        VerticalLayout rightPanel = WrapperUtils.wrapSizeFullVertical(
-                buttonsWrapper,
-                trainingStatusDetailsPanel,
+    private HorizontalLayout getBottomPanel() {
+        policyChartPanel = new PolicyChartPanel();
+        trainingStartingPlaceholder = new TrainingStartingPlaceholder();
+        policyHighlightPanel = new PolicyHighlightPanel();
+
+        VerticalLayout chartWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                        trainingStartingPlaceholder,
+                        policyChartPanel);
+        chartWrapper.addClassName("flex-2-of-3");
+
+        HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
                 policyHighlightPanel,
+                chartWrapper,
                 notesField);
-        rightPanel.addClassName("right-panel");
-        rightPanel.setPadding(false);
-        return rightPanel;
+        bottomPanel.addClassName("bottom-panel");
+        bottomPanel.setPadding(false);
+        return bottomPanel;
     }
 
     private void showStopTrainingConfirmationDialog() {
@@ -380,13 +391,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private void updateUIForError(TrainingError error) {
-        policyHighlightPanel.setErrorDescription(error.getDescription());
+        errorDescriptionLabel.setText(error.getDescription());
+		errorDescriptionLabel.setVisible(true);
         restartTraining.setVisible(error.isRestartable());
         restartTraining.setEnabled(error.isRestartable());
     }
 
     private void clearErrorState() {
-        policyHighlightPanel.setErrorDescription(null);
+        errorDescriptionLabel.setText(null);
+		errorDescriptionLabel.setVisible(false);
         updateButtonEnablement();
     }
 

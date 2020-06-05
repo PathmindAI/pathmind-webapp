@@ -1,7 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 
 import static io.skymind.pathmind.shared.constants.RunStatus.*;
 
-public class TrainingStatusDetailsPanel extends VerticalLayout {
+public class TrainingStatusDetailsPanel extends HorizontalLayout {
 	private Span statusLabel = LabelFactory.createLabel(RunStatus.NotStarted.toString());
 	/**
 	 * Label for training progress status.
@@ -28,12 +28,11 @@ public class TrainingStatusDetailsPanel extends VerticalLayout {
 	private Span completedTimeLabel = LabelFactory.createLabel("");
 	
 	public TrainingStatusDetailsPanel() {
-		add(trainingProgress);
-		add(WrapperUtils.wrapWidthFullBetweenHorizontal(
-			WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(new Span("Status"), statusLabel, completedTimeLabel),
-			WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(new Span("Elapsed"), elapsedTimeLabel)
-		));
-		addClassName("training-status-details-panel");
+		add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(new Span("Status"), statusLabel, completedTimeLabel),
+            WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(new Span("Elapsed"), elapsedTimeLabel),
+            trainingProgress);
+        addClassName("training-status-details-panel");
+        setWidthFull();
 		setPadding(false);
 	}
 

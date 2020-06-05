@@ -90,6 +90,10 @@ hr {
     background-color: var(--pm-gray-color-darker);
 }
 
+.flex-2-of-3 {
+    flex: 2 !important;
+}
+
 #nav-main-links,
 #nav-main-links a,
 .nav-account-links a {
