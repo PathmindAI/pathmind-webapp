@@ -41,6 +41,7 @@ import io.skymind.pathmind.webapp.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
@@ -118,9 +119,11 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
                 });
                 break;
             case WriteRewardFunction:
-                var experimentId = item.getExperiment() == null ?
-                        experimentDAO.insertExperiment(item.getModel().getId(), LocalDateTime.now()) : item.getExperiment().getId();
-                getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
+                if (item.getExperiment() == null) {
+                    getUI().ifPresent(ui -> ExperimentViewNavigationUtils.createAndNavigateToNewExperiment(ui, experimentDAO, item.getModel().getId()));
+                } else {
+                    getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, item.getExperiment().getId()));
+                }
                 break;
             default :
                 getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, item.getExperiment().getId()));

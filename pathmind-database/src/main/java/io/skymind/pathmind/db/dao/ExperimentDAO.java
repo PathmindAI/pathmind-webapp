@@ -3,7 +3,6 @@ package io.skymind.pathmind.db.dao;
 import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_MULTIPLE_BY_USER;
 import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_SINGLE_BY_EXPERIMENT;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,18 +34,6 @@ public class ExperimentDAO
 
 	public Optional<Experiment> getExperimentIfAllowed(long experimentId, long userId) {
 		return Optional.ofNullable(ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId));
-	}
-
-	public long setupNewExperiment(Experiment experiment) {
-		return ExperimentRepository.setupNewExperiment(ctx, experiment);
-	}
-
-	public int getExperimentCount(long modelId) {
-		return ExperimentRepository.getExperimentCount(ctx, modelId);
-	}
-
-	public Experiment getLastExperimentForModel(long modelId) {
-		return ExperimentRepository.getLastExperimentForModel(ctx, modelId);
 	}
 
 	public List<Experiment> getExperimentsForModel(long modelId) {
@@ -96,8 +83,11 @@ public class ExperimentDAO
 		return ExperimentRepository.countDashboardItemsForUser(ctx, userId);
 	}
 
-	public long insertExperiment(long modelId, LocalDateTime createdDate) {
-		return ExperimentRepository.insertExperiment(ctx, modelId, createdDate);
+	public long createNewExperiment(long modelId) {
+		String experimentName = Integer.toString(ExperimentRepository.getExperimentCount(ctx, modelId) + 1);
+		Experiment lastExperiment = ExperimentRepository.getLastExperimentForModel(ctx, modelId);
+		String rewardFunction = lastExperiment != null ? lastExperiment.getRewardFunction() : ""; 
+		return ExperimentRepository.createNewExperiment(ctx, modelId, experimentName, rewardFunction);
 	}
 
 	public void updateUserNotes(long experimentId, String userNotes) {
