@@ -119,7 +119,7 @@ iron-icon[icon="vaadin:check-circle"] {
 }
 
 iron-icon[icon="vaadin:exclamation-circle-o"] {
-    color: var(--pm-red-color);
+    color: var(--pm-danger-color);
 }
 
 .experiment-name {

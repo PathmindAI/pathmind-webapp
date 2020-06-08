@@ -76,7 +76,7 @@ Feature: Projects page
     When Click model 1 archive/unarchive button
     When Confirm archive/unarchive popup
     When Open projects/model/experiment archived tab
-    Then Check that model/experiment name 1 exist in archived tab
+    Then Check that model/experiment name '1' exist in archived/not archived tab
     When Open projects/model/experiment archived tab
     When Check that model/experiment NOT exist in archived tab
 
@@ -92,7 +92,7 @@ Feature: Projects page
     When Confirm archive/unarchive popup
     When Check that model/experiment NOT exist in archived tab
     When Open models tab
-    Then Check that model/experiment name 1 exist in archived tab
+    Then Check that model/experiment name '1' exist in archived/not archived tab
 
   Scenario: Edit project name from projects page
     Given Login to the pathmind

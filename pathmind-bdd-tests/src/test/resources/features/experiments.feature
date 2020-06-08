@@ -57,7 +57,7 @@ Feature: Experiments page
     When In confirmation dialog click in 'Archive' button
     When Check that model/experiment NOT exist in archived tab
     When Open projects/model/experiment archived tab
-    Then Check that model/experiment name 1 exist in archived tab
+    Then Check that model/experiment name '1' exist in archived/not archived tab
     Then Click the experiment name 1
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
