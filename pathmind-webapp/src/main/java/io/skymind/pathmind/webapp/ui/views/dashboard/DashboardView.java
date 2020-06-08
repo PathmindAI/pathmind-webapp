@@ -3,6 +3,7 @@ package io.skymind.pathmind.webapp.ui.views.dashboard;
 import java.util.List;
 
 import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.Experiment;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.AttachEvent;

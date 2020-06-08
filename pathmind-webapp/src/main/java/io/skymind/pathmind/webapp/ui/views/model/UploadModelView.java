@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
@@ -229,8 +230,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 	
 	private void saveAndNavigateToNewExperiment() {
-		experimentId = modelService.resumeModelCreation(model, modelNotes);
-        experimentDAO.getExperiment(experimentId).ifPresent(e -> EventBus.post(new ExperimentCreatedBusEvent(e)));
+		Experiment experiment = modelService.resumeModelCreation(model, modelNotes);
+		experimentId = experiment.getId();
+        EventBus.post(new ExperimentCreatedBusEvent(experiment));
 
         List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
 		modelService.updateModelRewardVariables(model, rewardVariableList);
