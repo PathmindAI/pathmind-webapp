@@ -38,4 +38,9 @@ public class ExperimentPageSteps {
     public void checkThatTheExperimentStatusIs(String status) {
         experimentPage.checkThatTheExperimentStatusIs(status);
     }
+
+    @Step
+    public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
+        experimentPage.changeRewardVariableOnExperimentView(variableNumber, variableName);
+    }
 }
