@@ -158,6 +158,12 @@ public class AnylogicFileChecker implements FileChecker {
     File checkJarFile(File unZipped, AnylogicFileCheckResult anylogicFileCheckResult) {
         log.info("{} :- checkJarFile Started", uuid);
 
+        if (!unZipped.isDirectory()) {
+            log.error("Error checking the given path");
+            anylogicFileCheckResult.setModelJarFilePresent(false);
+            return null;
+        }
+
         File modelJarFile = null;
 
         Optional<File> modelJar = Arrays.stream(unZipped.listFiles())

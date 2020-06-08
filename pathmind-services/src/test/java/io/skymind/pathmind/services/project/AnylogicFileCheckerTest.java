@@ -1,5 +1,9 @@
 package io.skymind.pathmind.services.project;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,28 +16,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.io.FileMatchers.anExistingFileOrDirectory;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.io.FileMatchers.aFileWithCanonicalPath;
-
+import static org.hamcrest.io.FileMatchers.anExistingFileOrDirectory;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.containsString;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class AnylogicFileCheckerTest {
-//    private File validFile =new File("./src/test/resources/static/CoffeeShopAnylogicExported.zip");
     private File validFile =new File("./src/test/resources/static/CoffeeShop_Fast_Speed_for_Testing.zip");
     private File inValidFile =new File("./src/test/resources/static/CoffeeShop.zip");
     private File invalidFormat = new File("./src/test/resources/static/Sample.txt");
     private File corruptedType = new File("./src/test/resources/static/corrupted.zip");
     private static ThreadLocal<File> jarFile = new ThreadLocal<>();
+    private static ThreadLocal<File> unzipPath = new ThreadLocal<>();
 
     private AnylogicFileCheckResult anylogicFileCheckResult = new AnylogicFileCheckResult();
 
@@ -77,10 +73,10 @@ public class AnylogicFileCheckerTest {
 
     @Test
     public void testCheckZipFileSuccess() throws IOException{
-        File unZippedJar = anylogicFileChecker.checkZipFile(validFile, anylogicFileCheckResult);
-        jarFile.set(unZippedJar);
-        assertThat(unZippedJar, anExistingFileOrDirectory());
-        assertThat(unZippedJar, aFileWithCanonicalPath(containsString("pathmind")));
+        File unZippedPath = anylogicFileChecker.checkZipFile(validFile, anylogicFileCheckResult);
+        unzipPath.set(unZippedPath);
+        assertThat(unZippedPath, anExistingFileOrDirectory());
+        assertThat(unZippedPath, aFileWithCanonicalPath(containsString("pathmind")));
     }
 
     @Test
@@ -102,7 +98,8 @@ public class AnylogicFileCheckerTest {
 
     @Test
     public void testCheckJarFileSuccess(){
-        anylogicFileChecker.checkJarFile(jarFile.get(), anylogicFileCheckResult);
+        File unzipJar = anylogicFileChecker.checkJarFile(unzipPath.get(), anylogicFileCheckResult);
+        jarFile.set(unzipJar);
         assertThat(anylogicFileCheckResult.isModelJarFilePresent(), is(equalTo(true)));
     }
 
@@ -116,12 +113,13 @@ public class AnylogicFileCheckerTest {
         assertThat(anylogicFileCheckResult.isModelJarFilePresent(), is(equalTo(false)));
         List<ILoggingEvent> logsList = listAppender.list;
         assertThat(logsList.get(1).getLevel(), is(equalTo(Level.ERROR)));
-        assertThat(logsList.get(1).getMessage(), is(equalTo("Error opening jar file")));
+        assertThat(logsList.get(1).getMessage(), is(equalTo("Error checking the given path")));
     }
 
     @Before
     public void beforeCheckHelpers() throws IOException{
         testCheckZipFileSuccess();
+        testCheckJarFileSuccess();
     }
 
     @Test
@@ -131,6 +129,7 @@ public class AnylogicFileCheckerTest {
         definedHelpers.add("coffeeshop/Main##pathmindHelper");
         testFileCheckResult.setDefinedHelpers(definedHelpers);
 
+        System.out.println(jarFile.get());
         anylogicFileChecker.checkHelpers(jarFile.get(), anylogicFileCheckResult);
         assertThat(anylogicFileCheckResult.getDefinedHelpers(), is(equalTo(testFileCheckResult.getDefinedHelpers())));
     }
