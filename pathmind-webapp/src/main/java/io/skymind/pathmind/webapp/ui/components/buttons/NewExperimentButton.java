@@ -10,16 +10,12 @@ import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentViewNaviga
 
 public class NewExperimentButton extends Button
 {
-	public NewExperimentButton(ExperimentDAO experimentDAO, long modelId) {
-		this(experimentDAO, modelId, "reward = after[0] - before[0];");
-	}
-
-	public NewExperimentButton(ExperimentDAO experimentDAO, long modelId, String defaultRewardFunction)
+	public NewExperimentButton(ExperimentDAO experimentDAO, long modelId)
 	{
 		super("New Experiment");
 		setIcon(new Icon(VaadinIcon.PLUS));
 
-        addClickListener(evt -> getUI().ifPresent(ui -> ExperimentViewNavigationUtils.createAndNavigateToNewExperiment(ui, experimentDAO, modelId, defaultRewardFunction)));
+        addClickListener(evt -> getUI().ifPresent(ui -> ExperimentViewNavigationUtils.createAndNavigateToNewExperiment(ui, experimentDAO, modelId)));
 			
 		addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 	}

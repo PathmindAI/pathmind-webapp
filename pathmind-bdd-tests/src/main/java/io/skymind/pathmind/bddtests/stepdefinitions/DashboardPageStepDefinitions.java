@@ -94,4 +94,9 @@ public class DashboardPageStepDefinitions {
         homePageSteps.checkThatDashboardPageOpened();
         dashboardPageSteps.checkDashboardBeginScreenElements();
     }
+
+    @When("^Click stage write reward function (.*) from dashboard$")
+    public void clickStageWriteRewardFunctionFromDashboard(String projectName) {
+        dashboardPageSteps.clickStageWriteRewardFunctionFromDashboard(projectName + Serenity.sessionVariableCalled("randomNumber"));
+    }
 }
