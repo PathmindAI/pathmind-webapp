@@ -1,6 +1,7 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.ExperimentPageSteps;
 import net.thucydides.core.annotations.Steps;
 
@@ -39,5 +40,10 @@ public class ExperimentStepDefinitions {
     @Then("^Check that the experiment status is '(.*)'$")
     public void checkThatTheExperimentStatusIs(String status) {
         experimentPageSteps.checkThatTheExperimentStatusIs(status);
+    }
+
+    @When("^Change reward variable on experiment view (.*) to (.*)$")
+    public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
+        experimentPageSteps.changeRewardVariableOnExperimentView(variableNumber, variableName);
     }
 }
