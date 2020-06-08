@@ -275,9 +275,18 @@ public class ProjectsPageSteps {
     }
 
     @Step
+    public void checkThatCheckmarkIsShown() {
+        projectsPage.checkThatCheckmarkIsShown();
+    }
+    @Step
+    public void checkThatNotesSavedMsgShown() {
+        projectsPage.checkThatNotesSavedMsgShown();
+    }
+    @Step
     public void checkRewardFunctionDefaultValue(String reward) {
         projectsPage.checkRewardFunctionDefaultValue(reward);
     }
+    @Step
     public void checkThatNewProjectPageOpened() {
         projectsPage.checkThatNewProjectPageOpened();
     }

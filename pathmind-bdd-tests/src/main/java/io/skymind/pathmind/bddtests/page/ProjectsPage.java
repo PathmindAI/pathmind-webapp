@@ -163,6 +163,7 @@ public class ProjectsPage extends PageObject {
         WebElement experiment = getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experimentName + " " + "']"));
         waitFor(ExpectedConditions.elementToBeClickable(experiment));
         experiment.click();
+        waitABit(2000);
     }
 
     public void clickProjectsArchiveButton(String projectName) {
@@ -278,8 +279,8 @@ public class ProjectsPage extends PageObject {
     public void clickProjectSaveDraftBtn() {
         Actions action = new Actions(getDriver());
         WebElement we = getDriver().findElement(By.xpath("//vaadin-button[text()='Save']"));
-        action.moveToElement(we).build().perform();
-        getDriver().findElement(By.xpath("//vaadin-button[text()='Save']")).click();
+        JavascriptExecutor executor = (JavascriptExecutor)getDriver();
+        executor.executeScript("arguments[0].click();", we);
         try {
             WebElement closePopUp = getDriver().findElement(By.xpath("//vaadin-button[@theme='icon']"));
             waitFor(ExpectedConditions.visibilityOf(closePopUp));
@@ -482,6 +483,14 @@ public class ProjectsPage extends PageObject {
 
     public void checkThatModelSuccessfullyUploaded() {
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Your model was successfully uploaded!']")));
+    }
+
+    public void checkThatCheckmarkIsShown() {
+        assertThat(getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:check' and @class='fade-in']")).isDisplayed(), is(true));
+    }
+
+    public void checkThatNotesSavedMsgShown() {
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Notes saved!' and @class='fade-out-hint-label fade-in']")).isDisplayed(), is(true));
     }
 
     public void checkRewardFunctionDefaultValue(String reward) {

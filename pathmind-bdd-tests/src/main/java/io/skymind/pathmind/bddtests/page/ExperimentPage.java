@@ -23,7 +23,7 @@ public class ExperimentPage extends PageObject {
 
     @FindBy(xpath = "//code-viewer")
     private WebElement rewardFunction;
-    @FindBy(xpath = "//*[text()='Experiment Notes']/ancestor::*[@class='notes-field-wrapper']/descendant::vaadin-text-area")
+    @FindBy(xpath = "//*[text()='Notes']/ancestor::*[@class='notes-field-wrapper']/descendant::vaadin-text-area")
     private WebElement experimentNotes;
     @FindBy(xpath = "//span[text()='Status']/following-sibling::span[1]")
     private WebElement experimentStatus;
