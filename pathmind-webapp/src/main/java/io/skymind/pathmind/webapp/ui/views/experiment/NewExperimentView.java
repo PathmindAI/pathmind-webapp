@@ -434,20 +434,27 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         unarchiveExperimentButton.setVisible(experiment.isArchived());
 	}
 
+    // Note: these 3 methods were copied and pasted from ExperimentView. Duplication will be gone when #1697 is implemented.
+    private boolean isNewExperimentForThisViewModel(Experiment eventExperiment, long modelId) {
+        return isSameModel(modelId) && !experiments.contains(eventExperiment);
+    }
+
+    private void updateNavBarExperiments() {
+        experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+        PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
+    }
+
+    private boolean isSameModel(long modelId) {
+        return experiment != null && experiment.getModelId() == modelId;
+    }
+
     class NewExperimentViewExperimentCreatedSubscriber implements ExperimentCreatedSubscriber {
 
         @Override
         public void handleBusEvent(ExperimentCreatedBusEvent event) {
-            if (isSameModel(event)) {
-                if (!experiments.contains(event.getExperiment())) {
-                    experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-                    PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
-                }
+            if (isNewExperimentForThisViewModel(event.getExperiment(), event.getModelId())) {
+                updateNavBarExperiments();
             }
-        }
-
-        private boolean isSameModel(ExperimentCreatedBusEvent event) {
-            return experiment != null && experiment.getModelId() == event.getExperiment().getModelId();
         }
 
         @Override

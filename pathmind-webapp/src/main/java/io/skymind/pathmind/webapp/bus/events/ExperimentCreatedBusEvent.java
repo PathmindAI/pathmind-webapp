@@ -22,4 +22,8 @@ public class ExperimentCreatedBusEvent implements PathmindBusEvent {
     public Experiment getExperiment() {
         return experiment;
     }
+
+    public long getModelId() {
+        return experiment.getModelId();
+    }
 }

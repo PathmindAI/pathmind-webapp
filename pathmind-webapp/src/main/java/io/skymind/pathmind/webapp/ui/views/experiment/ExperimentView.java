@@ -515,6 +515,19 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             .forEach(policy -> policy.setRun(run));
     }
 
+    private boolean isNewExperimentForThisViewModel(Experiment eventExperiment, long modelId) {
+        return isSameModel(modelId) && !experiments.contains(eventExperiment);
+    }
+
+    private void updateNavBarExperiments() {
+        experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+        PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
+    }
+
+    private boolean isSameModel(long modelId) {
+        return experiment != null && experiment.getModelId() == modelId;
+    }
+
     class ExperimentViewPolicyUpdateSubscriber implements PolicyUpdateSubscriber
     {
         @Override
@@ -559,17 +572,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     setPolicyChartVisibility();
                     updateDetailsForExperiment();
                 });
-            } else if (isSameModel(event)) {
-                if (!experiments.contains(event.getRun().getExperiment())) {
-                    experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-                    PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
-                }
+            } else if (isNewExperimentForThisViewModel(event.getRun().getExperiment(), event.getModelId())) {
+                updateNavBarExperiments();
             }
         }
 
         @Override
         public boolean filterBusEvent(RunUpdateBusEvent event) {
-            return isSameExperiment(event) || isSameModel(event);
+            return isSameExperiment(event) || isSameModel(event.getModelId());
         }
 
         @Override
@@ -580,26 +590,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         private boolean isSameExperiment(RunUpdateBusEvent event) {
             return experiment != null && experiment.getId() == event.getRun().getExperiment().getId();
         }
-        
-        private boolean isSameModel(RunUpdateBusEvent event) {
-            return experiment != null && experiment.getModelId() == event.getRun().getModel().getId();
-        }
     }
 
     class ExperimentViewExperimentCreatedSubscriber implements ExperimentCreatedSubscriber {
 
         @Override
         public void handleBusEvent(ExperimentCreatedBusEvent event) {
-            if (isSameModel(event)) {
-                if (!experiments.contains(event.getExperiment())) {
-                    experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-                    PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
-                }
+            if (isNewExperimentForThisViewModel(event.getExperiment(), event.getModelId())) {
+                updateNavBarExperiments();
             }
-        }
-
-        private boolean isSameModel(ExperimentCreatedBusEvent event) {
-            return experiment != null && experiment.getModelId() == event.getExperiment().getModelId();
         }
 
         @Override
