@@ -69,6 +69,7 @@ import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
+import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
@@ -95,9 +96,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private List<Experiment> experiments = new ArrayList<>();
 
     private HorizontalLayout middlePanel;
+    private Div simulationMetricsWrapper;
     private PolicyHighlightPanel policyHighlightPanel;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private Span panelTitle;
+    private VerticalLayout rewardVariablesGroup;
     private VerticalLayout rewardFunctionGroup;
     private CodeViewer codeViewer;
     private TrainingStartingPlaceholder trainingStartingPlaceholder;
@@ -105,7 +108,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private ExperimentsNavbar experimentsNavbar;
     private NotesField notesField;
     private Span errorDescriptionLabel;
-
+    private RewardVariablesTable rewardVariablesTable;
     private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
     private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
 
@@ -181,9 +184,36 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
             LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
         );
-        middlePanel = WrapperUtils.wrapWidthFullHorizontal(
-                rewardFunctionGroup);
+        simulationMetricsWrapper = getSimulationMetricsTable(featureManager.isEnabled(Feature.SIMULATION_METRICS));
+        String simulationMetricsHeaderText = featureManager.isEnabled(Feature.SIMULATION_METRICS) ? "Simulation Metrics" : "Reward Variables";
+        rewardVariablesGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+            LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsWrapper
+        );
+
+        middlePanel = WrapperUtils.wrapWidthFullHorizontal();
+        if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
+            middlePanel.add(rewardVariablesGroup);
+        }
+        middlePanel.add(rewardFunctionGroup);
+        middlePanel.addClassName("middle-panel");
         middlePanel.setPadding(false);
+    }
+
+    private Div getSimulationMetricsTable(Boolean showSimulationMetrics) {
+        Div tableWrapper = new Div();
+        tableWrapper.addClassName("simulation-metrics-table-wrapper");
+
+        rewardVariablesTable = new RewardVariablesTable();
+        rewardVariablesTable.setCodeEditorMode();
+        rewardVariablesTable.setSizeFull();
+        tableWrapper.add(rewardVariablesTable);
+
+        if (showSimulationMetrics) {
+
+        } else {
+        }
+
+        return tableWrapper;
     }
 
     private Div getButtonsWrapper() {
@@ -237,7 +267,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         VerticalLayout chartWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                         trainingStartingPlaceholder,
                         policyChartPanel);
-        chartWrapper.addClassName("flex-2-of-3");
+        chartWrapper.addClassName("row-2-of-3");
 
         HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
                 policyHighlightPanel,
@@ -370,11 +400,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         panelTitle.setText("Experiment #"+experiment.getName());
         if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
             codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
+            if (!rewardVariables.isEmpty()) {
+				rewardVariablesTable.setValue(rewardVariables);
+			} else {
+				rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
+			}
         } else {
             codeViewer.setValue(experiment.getRewardFunction(), null);
         }
         policyChartPanel.setExperiment(experiment, policy);
-        updateRightPanelForExperiment();
+        updateDetailsForExperiment();
     }
 
     private void setPolicyChartVisibility() {
@@ -423,7 +458,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                         () -> experiment.getRuns().add(updatedRun));
     }
 
-    private void updateRightPanelForExperiment() {
+    private void updateDetailsForExperiment() {
         updateButtonEnablement();
         trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
         RunStatus status = ExperimentUtils.getTrainingStatus(experiment);
@@ -472,7 +507,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     if (policy != null) {
                         policyChartPanel.highlightPolicy(policy);
                     }
-                    updateRightPanelForExperiment();
+                    updateDetailsForExperiment();
                 });
             }
         }
@@ -496,7 +531,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 updatedRunForPolicies(event.getRun());
                 PushUtils.push(getUI(), () -> {
                     setPolicyChartVisibility();
-                    updateRightPanelForExperiment();
+                    updateDetailsForExperiment();
                 });
             } else if (isSameModel(event)) {
                 if (!experiments.contains(event.getRun().getExperiment())) {

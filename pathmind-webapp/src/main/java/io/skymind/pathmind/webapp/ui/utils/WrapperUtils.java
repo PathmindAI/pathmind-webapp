@@ -14,6 +14,13 @@ public class WrapperUtils
 		wrapper.setSpacing(false);
 		return wrapper;
 	}
+	public static VerticalLayout wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(Component... components) {
+		VerticalLayout wrapper = new VerticalLayout(components);
+		wrapper.setPadding(false);
+        wrapper.setSpacing(false);
+        wrapper.setWidth(null);
+		return wrapper;
+	}
 	public static VerticalLayout wrapWidthFullVertical(Component... components) {
 		VerticalLayout wrapper = new VerticalLayout(components);
 		wrapper.setWidthFull();

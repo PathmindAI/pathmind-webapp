@@ -47,6 +47,7 @@ class CodeViewer extends PolymerElement {
         return html`
             <style>
                 :host {
+                    flex: 1;
                     width: 100%;
                     font-size: var(--lumo-font-size-s);
                     border: 1px solid var(--pm-gray-color);

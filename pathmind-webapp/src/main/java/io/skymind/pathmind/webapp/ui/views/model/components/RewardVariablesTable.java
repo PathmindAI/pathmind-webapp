@@ -37,7 +37,6 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 
 	public void setCodeEditorMode() {
 		setClassName("with-container-border");
-		container.addClassName("code-editor-mode");
 	}
 
 	public void setVariableSize(int numOfVariables) {
