@@ -1,5 +1,8 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
+import java.io.IOException;
+import java.util.Date;
+
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -7,9 +10,6 @@ import io.skymind.pathmind.bddtests.steps.HomePageSteps;
 import io.skymind.pathmind.bddtests.steps.ProjectsPageSteps;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
-
-import java.io.IOException;
-import java.util.Date;
 
 public class ProjectsPageStepDefinitions {
 
@@ -171,7 +171,6 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.checkNumberOfProjectsWithDraftTag(numberOfProjects);
     }
 
-
     @And("^Check that there are (.*) project\\(s\\) with 'Draft' tag in (.*) project page$")
     public void checkThatThereAreProjectsWithDraftTagInProjectPage(int numberOfProjects, String projectName) {
         homePageSteps.openProjectsPage();
@@ -179,12 +178,10 @@ public class ProjectsPageStepDefinitions {
         checkNumberOfProjectsWithDraftTag(numberOfProjects);
     }
 
-
     @When("^Click the first draft model$")
     public void clickTheFirstDraftModel() {
         projectsPageSteps.clickTheFirstDraftModel();
     }
-
 
     @When("^Click upload model btn from project page$")
     public void clickUploadModelBtnFromProjectPage() {
@@ -201,9 +198,14 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.checkThatModelsPageOpened();
     }
 
-    @Then("^Check that model/experiment name (.*) exist in archived tab$")
+    @Then("^Check that model/experiment name '(.*)' exist in archived/not archived tab$")
     public void checkThatModelExistInArchivedTab(String modelName) {
         projectsPageSteps.checkThatModelExistInArchivedTab(modelName);
+    }
+
+    @Then("^Check that model/experiment name '(.*)' NOT exist in archived/not archived tab$")
+    public void checkThatModelNotExistInArchivedTab(String modelName) {
+        projectsPageSteps.checkThatModelNotExistInArchivedTab(modelName);
     }
 
     @When("^Check that model/experiment NOT exist in archived tab$")
@@ -425,6 +427,11 @@ public class ProjectsPageStepDefinitions {
     @Then("^Check that model name (.*) exist in archived tab$")
     public void checkThatModelNameExistInArchivedTab(String experiment) {
         projectsPageSteps.checkThatModelNameExistInArchivedTab(experiment);
+    }
+
+    @Then("^Check Reward Function default value <(.*)>$")
+    public void checkRewardFunctionDefaultValue(String reward) {
+        projectsPageSteps.checkRewardFunctionDefaultValue(reward);
     }
 
     @When("^Check that new project page opened$")
