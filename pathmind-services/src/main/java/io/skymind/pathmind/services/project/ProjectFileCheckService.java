@@ -3,9 +3,9 @@ package io.skymind.pathmind.services.project;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.Optional;
@@ -18,11 +18,16 @@ public class ProjectFileCheckService {
     private final ExecutorService checkerExecutorService;
     private final ModelAnalyzerApiClient client;
     private final ObjectMapper objectMapper;
+    private final FeatureManager featureManager;
 
-    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, ObjectMapper objectMapper) {
+    public ProjectFileCheckService(ExecutorService checkerExecutorService,
+                                   ModelAnalyzerApiClient client,
+                                   ObjectMapper objectMapper,
+                                   FeatureManager featureManager) {
         this.checkerExecutorService = checkerExecutorService;
         this.client = client;
         this.objectMapper = objectMapper;
+        this.featureManager = featureManager;
     }
 
 
@@ -35,7 +40,7 @@ public class ProjectFileCheckService {
 
                 try {
                     FileUtils.writeByteArrayToFile(tempFile, data);
-                    AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker(objectMapper);
+                    AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker(objectMapper, featureManager);
                     //File check result.
                     final AnylogicFileCheckResult result = (AnylogicFileCheckResult) anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
 

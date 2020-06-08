@@ -2,6 +2,8 @@ package io.skymind.pathmind.services.project;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.project.meta.PathmindMeta;
+import io.skymind.pathmind.shared.featureflag.Feature;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.FileSystemUtils;
 
@@ -24,9 +26,11 @@ public class AnylogicFileChecker implements FileChecker {
     private byte[] buffer = new byte[1024];
 
     private ObjectMapper objectMapper;
+    private FeatureManager featureManager;
 
-    public AnylogicFileChecker(ObjectMapper objectMapper) {
+    public AnylogicFileChecker(ObjectMapper objectMapper, FeatureManager featureManager) {
         this.objectMapper = objectMapper;
+        this.featureManager = featureManager;
         try {
             tempDir = Files.createTempDirectory("pathmind" + uuid).toFile();
         } catch (IOException e) {
@@ -50,7 +54,9 @@ public class AnylogicFileChecker implements FileChecker {
                 if (anylogicFileCheckResult.isCorrectFileType() && unZipped != null) {
                     //Passing unzipped path to check whether model.jar exist and it is valid or not
                     File modelJarFile = checkJarFile(unZipped, anylogicFileCheckResult);
-                    checkMeta(unZipped, anylogicFileCheckResult);
+                    if (featureManager != null && featureManager.isEnabled(Feature.MODEL_META_INFORMATION_ANALYZE)) {
+                        checkMeta(unZipped, anylogicFileCheckResult);
+                    }
                     statusUpdater.updateStatus(0.30);
 
                     if (anylogicFileCheckResult.isModelJarFilePresent() && modelJarFile != null) {

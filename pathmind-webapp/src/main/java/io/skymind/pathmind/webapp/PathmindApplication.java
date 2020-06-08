@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.SpringApplication;
@@ -18,8 +19,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,8 +64,11 @@ public class PathmindApplication
 	}
 
 	@Bean
-	public ProjectFileCheckService projectFileCheckService(ExecutorService executorService, ModelAnalyzerApiClient modelAnalyzerApiClient, ObjectMapper objectMapper) {
-		return new ProjectFileCheckService(executorService, modelAnalyzerApiClient, objectMapper);
+	public ProjectFileCheckService projectFileCheckService(ExecutorService executorService,
+                                                           ModelAnalyzerApiClient modelAnalyzerApiClient,
+                                                           ObjectMapper objectMapper,
+                                                           FeatureManager featureManager) {
+		return new ProjectFileCheckService(executorService, modelAnalyzerApiClient, objectMapper, featureManager);
 	}
 
 	@EventListener(ApplicationReadyEvent.class)

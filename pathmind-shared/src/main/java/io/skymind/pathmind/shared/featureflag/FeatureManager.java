@@ -21,6 +21,8 @@ public class FeatureManager {
                 return multiAgentEnabled;
             case ACCOUNT_UPGRADE:
                 return false;
+            case MODEL_META_INFORMATION_ANALYZE:
+                return false;
             default:
                 return true;
         }
