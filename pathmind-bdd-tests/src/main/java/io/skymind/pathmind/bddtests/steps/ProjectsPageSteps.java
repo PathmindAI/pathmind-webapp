@@ -58,10 +58,6 @@ public class ProjectsPageSteps {
         projectsPage.clickProjectStartDiscoveryRunButton();
     }
     @Step
-    public void clickTheModelName(String modelName) {
-        projectsPage.clickTheModelName(modelName);
-    }
-    @Step
     public void clickTheExperimentName(String experimentName) {
         projectsPage.clickTheExperimentName(experimentName);
     }
@@ -277,34 +273,20 @@ public class ProjectsPageSteps {
     public void checkThatModelSuccessfullyUploaded() {
         projectsPage.checkThatModelSuccessfullyUploaded();
     }
+
     @Step
-    public void checkModelPageModelDetailsPackageNameIs(String packageName) {
-        projectsPage.checkModelPageModelDetailsPackageNameIs(packageName);
+    public void checkThatCheckmarkIsShown() {
+        projectsPage.checkThatCheckmarkIsShown();
     }
     @Step
-    public void checkModelPageModelDetailsActionsIs(String actions) {
-        projectsPage.checkModelPageModelDetailsActionsIs(actions);
-    }
-    @Step
-    public void checkModelPageModelDetailsObservationsIs(String observations) {
-        projectsPage.checkModelPageModelDetailsObservationsIs(observations);
-    }
-    @Step
-    public void checkModelPageModelDetailsRewardVariablesOrder() {
-        projectsPage.checkModelPageModelDetailsRewardVariablesOrder();
-    }
-    @Step
-    public void checkModelPageModelDetailsRewardVariablesIs(String commaSeparatedVariableNames) {
-        projectsPage.checkModelPageModelDetailsRewardVariablesIs(commaSeparatedVariableNames);
-    }
-    @Step
-    public void checkThatModelNameExistInArchivedTab(String experiment) {
-        projectsPage.checkThatModelNameExistInArchivedTab(experiment);
+    public void checkThatNotesSavedMsgShown() {
+        projectsPage.checkThatNotesSavedMsgShown();
     }
     @Step
     public void checkRewardFunctionDefaultValue(String reward) {
         projectsPage.checkRewardFunctionDefaultValue(reward);
     }
+    @Step
     public void checkThatNewProjectPageOpened() {
         projectsPage.checkThatNewProjectPageOpened();
     }
