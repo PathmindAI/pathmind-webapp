@@ -40,7 +40,7 @@ public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSu
             account.getSubMenu().addItem("Setting", e -> getUI().ifPresent(ui -> ui.navigate(SettingView.class)));
         }
 		account.getSubMenu().addItem("Sign out", e ->
-				getUI().ifPresent(ui -> ui.getPage().executeJavaScript("location.assign('/" + Routes.LOGOUT_URL + "')")));
+				getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.LOGOUT_URL)));
 	}
 
 	private HorizontalLayout createItem(Icon icon, PathmindUser user) {
