@@ -437,6 +437,8 @@ public class ProjectsPageStepDefinitions {
     @Then("^Check that Notes saved! msg shown$")
     public void checkThatNotesSavedMsgShown() {
         projectsPageSteps.checkThatNotesSavedMsgShown();
+    }
+
     @Then("^Check Reward Function default value <(.*)>$")
     public void checkRewardFunctionDefaultValue(String reward) {
         projectsPageSteps.checkRewardFunctionDefaultValue(reward);
