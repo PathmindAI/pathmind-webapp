@@ -76,7 +76,7 @@ Feature: Models page
     When Click experiment archive button
     When Confirm archive/unarchive popup
     When Open projects/model/experiment archived tab
-    Then Check that model/experiment name 1 Draft exist in archived tab
+    Then Check that model/experiment name '1 Draft' exist in archived/not archived tab
     When Open projects/model/experiment archived tab
     When Check that model/experiment NOT exist in archived tab
 
@@ -93,7 +93,7 @@ Feature: Models page
     When Confirm archive/unarchive popup
     When Check that model/experiment NOT exist in archived tab
     When Open projects/model/experiment archived tab
-    Then Check that model/experiment name 1 Draft exist in archived tab
+    Then Check that model/experiment name '1 Draft' exist in archived/not archived tab
 
   Scenario: Check experiment page elements
     Given Login to the pathmind
@@ -233,3 +233,19 @@ Feature: Models page
       | AutotestProject | Production_Single_Agent/CheeseChasing_6Observations_4Actions.zip | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt            | cheese_var                                                              |
       | AutotestProject | Production_Single_Agent/CoffeeShopPathmindDemo.zip               | Production_Single_Agent/CoffeeShopPathmindDemo.txt                          | kitchen_cleanliness,customers_served,balked_customers,avg_response_time |
       | AutotestProject | Production_Single_Agent/FAST_RailModel_4Observation_3Actions.zip | Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt | rail_var,train_var                                                      |
+
+  Scenario: Check duplicated experiment names on model view
+    Given Login to the pathmind
+    When Create new CoffeeShop project
+    When Open dashboard page
+    When Click archive btn from dashboard
+    When In confirmation dialog click in 'Archive Experiment' button
+    When Click stage write reward function AutotestProject from dashboard
+    When Open projects page
+    When Open project AutotestProject on projects page
+    When Click the model name 1
+    When Check that model/experiment name '2 Draft' exist in archived/not archived tab
+    When Check that model/experiment name '1 Draft' NOT exist in archived/not archived tab
+    When Open archives tab
+    When Check that model/experiment name '1 Draft' exist in archived/not archived tab
+    When Check that model/experiment name '2 Draft' NOT exist in archived/not archived tab
