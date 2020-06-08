@@ -72,4 +72,11 @@ public class ExperimentPage extends PageObject {
         }
         resetImplicitTimeout();
     }
+
+    public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
+        WebElement inputShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='reward-variables-table code-editor-mode']/descendant::span[text()='"+variableNumber+"']/following-sibling::vaadin-text-field")));
+        inputShadow.findElement(By.cssSelector("input")).click();
+        inputShadow.findElement(By.cssSelector("input")).clear();
+        inputShadow.findElement(By.cssSelector("input")).sendKeys(variableName);
+    }
 }
