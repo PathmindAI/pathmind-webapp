@@ -22,7 +22,7 @@ EOF`
 bash check_spot.sh "${S3PATH}" "${ENVIRONMENT}" "${EMAIL}" "${s3_url_link}" "${s3_url}" &
 
 #Get the instance type and cost
-instanceid=`aws ec2 describe-instances --filters "Name=tag:Name,Values=${S3PATH}.${NAME}"  | jq -r '.[] | .[] | .Instances | .[] | select(.State.Name == "running").InstanceId'`
+instanceid=`curl http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId'`
 instance_type=`aws ec2 describe-spot-instance-requests | jq -r ".SpotInstanceRequests | .[] | select (.InstanceId ==\"${instanceid}\").LaunchSpecification.InstanceType"`
 instance_price=`aws ec2 describe-spot-instance-requests | jq -r ".SpotInstanceRequests | .[] | select (.InstanceId ==\"${instanceid}\").SpotPrice"`
 
