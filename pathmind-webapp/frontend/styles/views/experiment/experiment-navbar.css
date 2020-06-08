@@ -1,96 +1,143 @@
 .experiments-navbar {
-  width: auto !important;
-  height: 38rem;
-  min-height: 100%;
-  background: white;
-  border-radius: var(--lumo-border-radius);
-  padding: var(--lumo-space-m);
+    width: auto !important;
+    height: calc(100vh - 9rem);
+    min-height: 100%;
+    background: white;
+    border-radius: var(--lumo-border-radius);
+    padding: var(--lumo-space-m);
 }
 
 .experiments-navbar vaadin-button {
-  margin: 0 auto var(--lumo-space-s);
+    margin: 0 auto var(--lumo-space-s);
 }
 
 .experiments-navbar-items {
-  height: 100%;
-  overflow-y: auto;
+    height: 100%;
+    overflow-y: auto;
 }
 
 .experiment-navbar-item {
-  align-items: center;
-  flex-shrink: 0;
-  width: 100%;
-  height: 65px;
-  padding: 0 var(--lumo-space-s);
-  border-top: 0.5px solid var(--pm-gray-color-light);
-  cursor: pointer;
+    align-items: center;
+    flex-shrink: 0;
+    width: 100%;
+    height: 65px;
+    padding: 0 var(--lumo-space-s);
+    border-top: 0.5px solid var(--pm-gray-color-light);
+    cursor: pointer;
 }
 
 .experiment-navbar-item:last-child {
-  border-bottom: 0.5px solid var(--pm-gray-color-light);
+    border-bottom: 0.5px solid var(--pm-gray-color-light);
 }
 
 .experiment-navbar-item:not(.current):hover {
-  background-color: var(--pm-highlight-medium);
+    background-color: var(--pm-highlight-medium);
+}
+
+.experiments-navbar iron-icon[icon="vaadin:pencil"] {
+    width: 18px;
+    height: 18px;
+    margin: 3px;
+}
+
+.experiments-navbar .tag {
+    font-size: var(--lumo-font-size-xs);
+    padding: 1px 3px;
+    margin: 0 4px;
 }
 
 .current {
-  background-color: var(--pm-app-bg-color);
+    background-color: var(--pm-app-bg-color);
 }
 
-.icon-loading-spinner {
-  display: block;
-  position: relative;
-  width: 24px;
-  height: 24px;
+.icon-loading-spinner,
+.icon-stopped {
+    display: block;
+    position: relative;
+    width: 24px;
+    height: 24px;
 }
 
+.experiment-view .training-starting-placeholder span::before,
 .icon-loading-spinner::after {
-  content: "";
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  top: 0;
-  left: 0;
-  background-image: url("/frontend/icons/icon-loading.png");
-  background-repeat: no-repeat;
-  background-size: 100% auto;
-  background-position: center;
-  animation: spin 5s linear infinite;
+    box-sizing: border-box;
+    content: "";
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    top: 0;
+    left: 0;
+    border: 2px solid var(--pm-gray-color-light);
+    border-radius: 50%;
+    border-top: 2px solid var(--pm-primary-color);
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+}
+
+.icon-stopped {
+    background: var(--pm-gray-color);
+    border-radius: 50%;
+}
+
+.icon-stopped::after {
+    box-sizing: border-box;
+    content: "";
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    top: 6px;
+    left: 6px;
+    border: 1px solid white;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 iron-icon[icon="vaadin:check-circle"] {
-  color: var(--pm-green-color);
+    color: var(--pm-green-color);
 }
 
 iron-icon[icon="vaadin:exclamation-circle-o"] {
-  color: var(--pm-red-color);
+    color: var(--pm-danger-color);
 }
 
 .experiment-name {
-  margin-left: calc(var(--lumo-space-s) * 2);
+    margin-left: var(--lumo-space-s);
 }
 
 .experiment-name p {
-  line-height: 1em;
-  margin: 0;
+    display: flex;
+    align-items: center;
+    line-height: 1em;
+    margin: 0;
 }
 
 .current .experiment-name p:first-child {
-  font-weight: bold;
+    font-weight: bold;
+}
+
+.current .experiment-name p:first-child .tag {
+    font-weight: normal;
 }
 
 .experiment-name p:last-child {
-  font-size: var(--lumo-font-size-s);
-  color: var(--pm-gray-color-dark);
-  margin-top: var(--lumo-space-xs);
+    font-size: var(--lumo-font-size-s);
+    color: var(--pm-gray-color-dark);
+    margin-top: var(--lumo-space-xs);
 }

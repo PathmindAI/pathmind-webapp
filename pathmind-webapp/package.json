@@ -9,16 +9,16 @@
   "devDependencies": {
     "compression-webpack-plugin": "3.0.1",
     "copy-webpack-plugin": "5.1.0",
-    "husky": "^3.0.9",
-    "lint-staged": "^9.4.2",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.2",
     "prettier": "1.18.2",
     "raw-loader": "3.0.0",
+    "terser": "4.6.7",
     "webpack": "4.42.0",
     "webpack-babel-multi-target-plugin": "2.3.3",
     "webpack-cli": "3.3.10",
     "webpack-dev-server": "3.9.0",
-    "webpack-merge": "4.2.2",
-    "terser": "4.6.7"
+    "webpack-merge": "4.2.2"
   },
   "vaadinAppPackageHash": "184bee0e7bc523af862fadc923752f9a5cc593c6436ec3c63b7e33c2a4adc339",
   "husky": {
@@ -27,9 +27,6 @@
     }
   },
   "lint-staged": {
-    "*.{js,css,json,md,html}": [
-      "prettier --write",
-      "git add"
-    ]
+    "*.{js,css,md}": "prettier --write"
   }
 }

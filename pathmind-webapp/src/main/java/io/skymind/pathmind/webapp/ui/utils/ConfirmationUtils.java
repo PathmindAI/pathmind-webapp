@@ -26,4 +26,22 @@ public class ConfirmationUtils {
 		dialog.setCancelButton("Cancel", evt -> dialog.close());
 		dialog.open();
 	}
+
+	public static void leavePage(Command cancelAction) {
+		String header = "Before you leave....";
+		String text = "You have unsaved changes on this page that cannot be automatically saved. Please check and fix the invalid fields.";
+		String confirmText = "Stay";
+		ConfirmDialog dialog = new ConfirmDialog(header, text, confirmText, evt -> evt.getSource().close());
+		dialog.setCancelButton("Leave", evt -> cancelAction.execute());
+		dialog.open();
+	}
+
+	public static void emailUpdated(Command action) {
+	    String header = "Email Updated";
+	    String text = "Your email address has been updated. Please sign in again using your new email address.";
+	    String confirmText = "OK";
+	    ConfirmDialog dialog = new ConfirmDialog(header, text, confirmText, evt -> action.execute());
+	    dialog.open();
+	}
+	
 }

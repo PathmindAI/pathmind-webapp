@@ -3,6 +3,7 @@ package io.skymind.pathmind.webapp.data.utils;
 import static io.skymind.pathmind.shared.constants.RunStatus.NotStarted;
 import static io.skymind.pathmind.shared.constants.RunStatus.Running;
 import static io.skymind.pathmind.shared.constants.RunStatus.Starting;
+import static io.skymind.pathmind.shared.constants.RunStatus.Error;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -63,7 +64,15 @@ public class ExperimentUtils
 					.anyMatch(statusVal -> statusVal > Starting.getValue())) {
 				status = Running;
 			}
-		}
+        }
+
+        if (status == RunStatus.Killed) {
+            if (experiment.getRuns().stream()
+                    .map(Run::getTrainingErrorId)
+                    .anyMatch(errorId -> errorId > 0)) {
+                status = Error;
+            }
+        }
 		return status;
 	}
 
