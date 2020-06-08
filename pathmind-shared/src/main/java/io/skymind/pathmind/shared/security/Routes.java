@@ -52,5 +52,5 @@ public class Routes {
     public static final String PROJECTS_URL = "projects";
     public static final String DASHBOARD_URL = "dashboard";
 
-    public static final String SETTING_URL = "setting";
+    public static final String SETTINGS_URL = "settings";
 }

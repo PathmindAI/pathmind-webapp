@@ -17,7 +17,7 @@ import io.skymind.pathmind.webapp.security.VaadinSecurityUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.account.AccountView;
-import io.skymind.pathmind.webapp.ui.views.setting.SettingView;
+import io.skymind.pathmind.webapp.ui.views.settings.SettingsView;
 import org.apache.commons.lang3.StringUtils;
 
 public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSubscriber
@@ -36,8 +36,8 @@ public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSu
 
 		MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER), user));
 		account.getSubMenu().addItem("Account", e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
-		if (VaadinSecurityUtils.isAuthorityGranted(SettingView.class)) {
-            account.getSubMenu().addItem("Setting", e -> getUI().ifPresent(ui -> ui.navigate(SettingView.class)));
+		if (VaadinSecurityUtils.isAuthorityGranted(SettingsView.class)) {
+            account.getSubMenu().addItem("Settings", e -> getUI().ifPresent(ui -> ui.navigate(SettingsView.class)));
         }
 		account.getSubMenu().addItem("Sign out", e ->
 				getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.LOGOUT_URL)));

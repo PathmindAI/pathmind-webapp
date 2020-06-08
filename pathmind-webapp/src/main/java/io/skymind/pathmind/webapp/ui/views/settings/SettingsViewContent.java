@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.setting;
+package io.skymind.pathmind.webapp.ui.views.settings;
 
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
@@ -25,12 +25,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Tag("setting-view-content")
-@JsModule("./src/setting/setting-view-content.js")
+@Tag("settings-view-content")
+@JsModule("./src/settings/settings-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Slf4j
-public class SettingViewContent extends PolymerTemplate<SettingViewContent.Model> {
+public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Model> {
     private final PathmindUser user;
     private final ExecutionEnvironment env;
 
@@ -44,7 +44,7 @@ public class SettingViewContent extends PolymerTemplate<SettingViewContent.Model
     private Button saveBtn;
 
     @Autowired
-    public SettingViewContent(CurrentUser currentUser, ExecutionEnvironmentManager environmentManager) {
+    public SettingsViewContent(CurrentUser currentUser, ExecutionEnvironmentManager environmentManager) {
         this.user = currentUser.getUser();
         this.env = environmentManager.getEnvironment(this.user.getId());
     }

@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.setting;
+package io.skymind.pathmind.webapp.ui.views.settings;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.Route;
@@ -10,24 +10,24 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Route(value = Routes.SETTING_URL, layout = MainLayout.class)
-@Permission(permissions = ViewPermission.SETTING_READ)
-public class SettingView extends PathMindDefaultView {
+@Route(value = Routes.SETTINGS_URL, layout = MainLayout.class)
+@Permission(permissions = ViewPermission.SETTINGS_READ)
+public class SettingsView extends PathMindDefaultView {
 
-    private final SettingViewContent settingViewContent;
+    private final SettingsViewContent settingsViewContent;
 
     @Autowired
-    public SettingView(SettingViewContent settingViewContent) {
-        this.settingViewContent = settingViewContent;
+    public SettingsView(SettingsViewContent settingsViewContent) {
+        this.settingsViewContent = settingsViewContent;
     }
 
     @Override
     protected Component getTitlePanel() {
-        return new ScreenTitlePanel("Setting");
+        return new ScreenTitlePanel("Settings");
     }
 
     @Override
     protected Component getMainContent() {
-        return settingViewContent;
+        return settingsViewContent;
     }
 }
