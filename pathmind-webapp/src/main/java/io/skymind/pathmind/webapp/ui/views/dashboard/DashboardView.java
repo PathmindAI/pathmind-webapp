@@ -25,7 +25,6 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.shared.data.DashboardItem;
-import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
