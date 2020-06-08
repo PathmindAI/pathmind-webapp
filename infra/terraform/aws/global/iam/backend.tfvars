@@ -1,0 +1,6 @@
+bucket = "pathmind-terraform-state"
+prefix = "iam"
+dynamodb_table = "aws-terraform-state-lock"
+key = "global/iam.tfstate"
+region = "us-east-1"
+encrypt = "true"
