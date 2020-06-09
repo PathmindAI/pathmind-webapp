@@ -19,6 +19,7 @@ function createHintsForLine(line) {
     let value = editor.session.getLine(line);
     let matchInfo = value.match(/\[[\-0-9 ]+\]/);
     let index = 0;
+    lineValidationCache[line] = [];
     while (matchInfo) {
         index = index + matchInfo.index;
         matchVariableNameAndFold(matchInfo[0], index, line);
@@ -39,10 +40,11 @@ function matchVariableNameAndFold(matchingValue, index, row) {
             const variableName = variableIndex + " " + rewardVariables[variableIndex];
             const foldLocation = index + matchInfo.index;
             const fold = editor.session.addFold(
-            	variableName,
-            	new Range(row, foldLocation, row, foldLocation + matchInfo[0].length)
+                variableName,
+                new Range(row, foldLocation, row, foldLocation + matchInfo[0].length)
             );
             fold.preventExpand = true;
+        }
     }
 }
 
