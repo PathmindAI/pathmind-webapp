@@ -57,7 +57,7 @@ Feature: Experiments page
     When In confirmation dialog click in 'Archive Experiment' button
     When Check that model/experiment NOT exist in archived tab
     When Open projects/model/experiment archived tab
-    Then Check that model/experiment name 1 exist in archived tab
+    Then Check that model/experiment name '1' exist in archived/not archived tab
     Then Click the experiment name 1
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
@@ -113,6 +113,18 @@ Feature: Experiments page
     Then Check on the model page experiment 1 notes is This is the experiment notes for this Coffee Shop project
     Then Click the experiment name 1
     Then Check experiment notes is This is the experiment notes for this Coffee Shop project
+
+  @notes
+  Scenario: Check that subtle checkmark shown after experiment note saved
+    Given Login to the pathmind
+    When Create new CoffeeShop project
+    When Open projects page
+    When Open project AutotestProject on projects page
+    Then Click the model name 1
+    Then Click the experiment name 1
+    Then Add note This is the experiment notes for this Coffee Shop project to the experiment page
+    Then Click project save draft btn
+    Then Check that Notes saved! msg shown
 
   @notes
   Scenario: Adding notes to the started experiment

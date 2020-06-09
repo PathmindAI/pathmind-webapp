@@ -71,8 +71,8 @@ public class HomePage extends PageObject {
         waitABit(1000);
         waitFor(ExpectedConditions.attributeToBe(dashboardBtn, "highlight", ""));
         waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
-        assertThat(pageLabel.getText(), is("Dashboard"));
         assertThat(getDriver().getTitle(), is("Pathmind | Dashboard"));
+        assertThat(getDriver().getCurrentUrl(), containsString("/dashboard"));
     }
 
     public void checkThatProjectsPageOpened() {

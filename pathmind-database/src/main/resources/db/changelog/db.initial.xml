@@ -1239,8 +1239,13 @@
          		DROP FUNCTION IF EXISTS migrate_exec_prov_meta_data();
          	</sql>
          </rollback>
+<<<<<<< HEAD
     </changeSet>
 
+=======
+     </changeSet>
+     
+>>>>>>> refs/heads/dev
     <changeSet id="20200516-01" author="alexander.makarov@toptal.com">
         <addColumn tableName="RUN">
             <column name="RLLIB_ERROR" type="VARCHAR(1024)" />
@@ -1250,6 +1255,62 @@
         </rollback>
     </changeSet>
     
+    <changeSet id="20200519-01" author="onur@vaadin.com">
+        <comment>
+            Since liquibase:dropAll doesn't drop procedures or functions, in local environments update operation after dropAll fails, because the functions below could not be created.
+            In order to solve this issue, these two functions are dropped and re-created using CREATE OR UPDATE command.          
+        </comment>
+        <sql>
+            DROP TRIGGER update_model on public.experiment;
+            DROP TRIGGER update_project on public.model;
+            DROP FUNCTION IF EXISTS public.update_model_activity_date();
+            DROP FUNCTION IF EXISTS public.update_project_activity_date();
+         </sql>
+        <createProcedure>
+            CREATE OR REPLACE FUNCTION public.update_model_activity_date_fn()
+            RETURNS trigger
+            LANGUAGE 'plpgsql'
+            COST 100
+            VOLATILE NOT LEAKPROOF
+            AS $BODY$BEGIN
+            IF NEW.LAST_ACTIVITY_DATE != OLD.LAST_ACTIVITY_DATE THEN
+            UPDATE MODEL SET LAST_ACTIVITY_DATE = NEW.LAST_ACTIVITY_DATE
+            WHERE id = NEW.MODEL_ID;
+            END IF;
+
+            RETURN NEW;
+            END;$BODY$;
+        </createProcedure>
+        <createProcedure>
+            CREATE TRIGGER update_model
+            AFTER UPDATE OF last_activity_date
+            ON public.experiment
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.update_model_activity_date_fn();
+        </createProcedure>
+        <createProcedure>
+            CREATE OR REPLACE FUNCTION public.update_project_activity_date_fn()
+            RETURNS trigger
+            LANGUAGE 'plpgsql'
+            COST 100
+            VOLATILE NOT LEAKPROOF
+            AS $BODY$BEGIN
+            IF NEW.LAST_ACTIVITY_DATE != OLD.LAST_ACTIVITY_DATE THEN
+            UPDATE PROJECT SET LAST_ACTIVITY_DATE = NEW.LAST_ACTIVITY_DATE
+            WHERE id = NEW.PROJECT_ID;
+            END IF;
+
+            RETURN NEW;
+            END;$BODY$;
+        </createProcedure>
+        <createProcedure>
+            CREATE TRIGGER update_project
+            AFTER UPDATE OF last_activity_date
+            ON public.model
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.update_project_activity_date_fn();
+        </createProcedure>
+    </changeSet>
     <changeSet id="20200602-01" author="bruno.rezende@ext.vaadin.com">
         <addColumn tableName="RUN">
             <column name="EC2_CREATED_AT" type="DATETIME"/>
