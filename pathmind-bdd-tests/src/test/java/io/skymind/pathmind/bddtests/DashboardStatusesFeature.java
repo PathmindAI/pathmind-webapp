@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
     plugin = {"pretty", "html:target/cucumber"},
     glue = "io.skymind.pathmind.bddtests.stepdefinitions",
-    features = "src/test/resources/features//dashboard/dashboardStatuses.feature"
+    features = "src/test/resources/features/dashboard/dashboardStatuses.feature"
 )
 public class DashboardStatusesFeature {
 }

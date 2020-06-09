@@ -1,12 +1,6 @@
 @dashboard
 Feature: Dashboard page
 
-  Scenario: Check dashboard new project btn
-    Given Login to the pathmind
-    When Open dashboard page
-    When Click create new project button
-    Then Check Create A New Project page
-
   @saveModelDraft
   Scenario Outline: Check that Model Drafts are shown correctly
     Given Login to the pathmind
@@ -33,3 +27,9 @@ Feature: Dashboard page
     When Open dashboard page
     When Click Getting Started Guide button
     Then Check that learn page https://help.pathmind.com/en/articles/4004788-getting-started opened
+
+  Scenario: Check dashboard new project btn
+    Given Login to the pathmind
+    When Open dashboard page
+    When Click create new project button
+    Then Check Create A New Project page
