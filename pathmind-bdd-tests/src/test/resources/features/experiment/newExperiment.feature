@@ -1,5 +1,20 @@
 Feature: New experiment page
 
+  Scenario: Create new project and open project experiment
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
+    When Input model details "a user note"
+    When Click wizard next step button
+    Then Check that experiment page of the AutotestProject opened
+    When Open projects page
+    When Open project AutotestProject on projects page
+    Then Click the model name 1
+    Then Click the experiment name 1
+    Then Check that experiment page of the AutotestProject opened
+
   Scenario: Click projectS breadcrumb from new experiment page
     Given Login to the pathmind
     When Create new CoffeeShop project
