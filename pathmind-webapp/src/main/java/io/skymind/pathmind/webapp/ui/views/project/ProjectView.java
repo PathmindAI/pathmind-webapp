@@ -111,7 +111,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 				project.getUserNotes(),
 				updatedNotes -> {
 						projectDAO.updateUserNotes(projectId, updatedNotes);
-						NotificationUtils.showSuccess("Notes saved");
 						segmentIntegrator.updatedNotesModelsView();
 				}
 			);

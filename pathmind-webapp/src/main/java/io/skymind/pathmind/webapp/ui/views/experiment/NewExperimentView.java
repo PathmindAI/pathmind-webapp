@@ -274,7 +274,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private NotesField createNotesField() {
 		notesField = new NotesField(
-			"Experiment Notes",
+			"Notes",
 			experiment.getUserNotes(),
 			updatedNotes -> {
 				experiment.setUserNotes(updatedNotes);
