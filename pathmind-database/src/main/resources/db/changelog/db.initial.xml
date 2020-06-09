@@ -1239,13 +1239,8 @@
          		DROP FUNCTION IF EXISTS migrate_exec_prov_meta_data();
          	</sql>
          </rollback>
-<<<<<<< HEAD
     </changeSet>
 
-=======
-     </changeSet>
-     
->>>>>>> refs/heads/dev
     <changeSet id="20200516-01" author="alexander.makarov@toptal.com">
         <addColumn tableName="RUN">
             <column name="RLLIB_ERROR" type="VARCHAR(1024)" />
