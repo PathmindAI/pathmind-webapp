@@ -4,8 +4,10 @@
 package io.skymind.pathmind.db.jooq;
 
 
+import io.skymind.pathmind.db.jooq.tables.Action;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
 import io.skymind.pathmind.db.jooq.tables.Model;
+import io.skymind.pathmind.db.jooq.tables.Observation;
 import io.skymind.pathmind.db.jooq.tables.PathmindUser;
 import io.skymind.pathmind.db.jooq.tables.Policy;
 import io.skymind.pathmind.db.jooq.tables.Project;
@@ -41,12 +43,17 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -1554323536;
+    private static final long serialVersionUID = 1987191442;
 
     /**
      * The reference instance of <code>public</code>
      */
     public static final Public PUBLIC = new Public();
+
+    /**
+     * The table <code>public.action</code>.
+     */
+    public final Action ACTION = io.skymind.pathmind.db.jooq.tables.Action.ACTION;
 
     /**
      * The table <code>public.experiment</code>.
@@ -57,6 +64,11 @@ public class Public extends SchemaImpl {
      * The table <code>public.model</code>.
      */
     public final Model MODEL = io.skymind.pathmind.db.jooq.tables.Model.MODEL;
+
+    /**
+     * The table <code>public.observation</code>.
+     */
+    public final Observation OBSERVATION = io.skymind.pathmind.db.jooq.tables.Observation.OBSERVATION;
 
     /**
      * The table <code>public.pathmind_user</code>.
@@ -125,8 +137,10 @@ public class Public extends SchemaImpl {
 
     private final List<Sequence<?>> getSequences0() {
         return Arrays.<Sequence<?>>asList(
+            Sequences.ACTION_ID_SEQ,
             Sequences.EXPERIMENT_ID_SEQ,
             Sequences.MODEL_ID_SEQ,
+            Sequences.OBSERVATION_ID_SEQ,
             Sequences.PATHMIND_USER_ID_SEQ,
             Sequences.POLICY_ID_SEQ,
             Sequences.PROJECT_ID_SEQ,
@@ -144,8 +158,10 @@ public class Public extends SchemaImpl {
 
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
+            Action.ACTION,
             Experiment.EXPERIMENT,
             Model.MODEL,
+            Observation.OBSERVATION,
             PathmindUser.PATHMIND_USER,
             Policy.POLICY,
             Project.PROJECT,

@@ -1307,4 +1307,51 @@
         </createProcedure>
     </changeSet>
 
+    <changeSet id="20200609-01" author="bruno.rezende@ext.vaadin.com">
+        <createTable tableName="OBSERVATION">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="MODEL_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_OBSERVATION_MODEL" references="MODEL(ID)"/>
+            </column>
+            <column name="VARIABLE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATA_TYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="EXAMPLE" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="MIN" type="DOUBLE">
+                <constraints nullable="true"/>
+            </column>
+            <column name="MAX" type="DOUBLE">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <createTable tableName="ACTION">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="MODEL_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_ACTION_MODEL" references="MODEL(ID)"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ARRAY_INDEX" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="ACTION" columnNames="MODEL_ID, ARRAY_INDEX"/>
+        <rollback>
+            <dropTable tableName="OBSERVATION"/>
+            <dropTable tableName="ACTION"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
