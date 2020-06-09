@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -65,6 +66,7 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ui.components.CodeViewer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.webapp.ui.components.SparkLine;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
@@ -94,9 +96,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Policy policy;
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
+    private List<Float> simulationMetrics = new ArrayList<>();
+    private List<float[]> sparklinesData = new ArrayList<>();
 
     private HorizontalLayout middlePanel;
-    private Div simulationMetricsWrapper;
+    private HorizontalLayout simulationMetricsWrapper;
     private PolicyHighlightPanel policyHighlightPanel;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private Span panelTitle;
@@ -199,8 +203,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         middlePanel.setPadding(false);
     }
 
-    private Div getSimulationMetricsTable(Boolean showSimulationMetrics) {
-        Div tableWrapper = new Div();
+    private HorizontalLayout getSimulationMetricsTable(Boolean showSimulationMetrics) {
+        HorizontalLayout tableWrapper = new HorizontalLayout();
         tableWrapper.addClassName("simulation-metrics-table-wrapper");
 
         rewardVariablesTable = new RewardVariablesTable();
@@ -209,8 +213,20 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         tableWrapper.add(rewardVariablesTable);
 
         if (showSimulationMetrics) {
+            VerticalLayout metricsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+            metricsWrapper.addClassName("metrics-wrapper");
+            VerticalLayout sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+            sparklinesWrapper.addClassName("sparklines-wrapper");
 
-        } else {
+            IntStream.range(0, simulationMetrics.size())
+                    .forEach(idx -> {
+                        metricsWrapper.add(new Span(simulationMetrics.get(idx).toString()));
+                        SparkLine sparkLine = new SparkLine();
+                        sparkLine.setSparkLine(sparklinesData.get(idx), idx);
+                        sparklinesWrapper.add(sparkLine);
+                    });
+
+            tableWrapper.add(metricsWrapper, sparklinesWrapper);
         }
 
         return tableWrapper;
@@ -385,6 +401,22 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
         }
+
+        // This are mock data to be removed once the backend for simulation metrics is implemented
+        simulationMetrics.add(123f);
+        simulationMetrics.add(2.1f);
+        simulationMetrics.add(0.3234234f);
+        simulationMetrics.add(12323.1f);
+
+        // This are mock data to be removed once the backend for simulation metrics is implemented
+        float f0[] = {123f, 120f, 116f, 128f, 125f, 123f, 124f, 129f, 122f};
+        float f1[] = {2.1f, 2.2f, 2.0f, 2.34f, 2.334f, 2.211f, 2.23f, 2.24f, 2.1f};
+        float f2[] = {0.3234234f, 0.3234434f, 0.3234264f, 0.3234834f, 0.3214234f, 0.321734f, 0.3234934f, 0.3234534f, 0.3234234f};
+        float f3[] = {12322.1f, 12323.1f, 12325.1f, 12323.8f, 12323.4f, 12323.0f, 12353.1f, 12323.8f, 12324.1f};
+        sparklinesData.add(f0);
+        sparklinesData.add(f1);
+        sparklinesData.add(f2);
+        sparklinesData.add(f3);
     }
 
     @Override
