@@ -22,7 +22,6 @@ html {
     --pm-blue-color-darkest-50pct: rgba(26, 41, 73, 0.5);
     --pm-blue-color-darkest-25pct: rgba(26, 41, 73, 0.25);
     --pm-blue-color: #1900ff;
-    --pm-red-color: #930100;
     --pm-green-color: #00a60b;
 
     /* pathmind typography */
@@ -54,11 +53,11 @@ html {
     --lumo-space-xs: 0.375rem;
     --lumo-success-color-50pct: rgba(53, 151, 106, 0.5);
     --lumo-success-color-10pct: rgba(53, 151, 106, 0.1);
-    --lumo-success-color: #35976a;
-    --lumo-error-text-color: #d80947;
+    --lumo-success-color: var(--pm-friendly-color);
+    --lumo-error-text-color: var(--pm-danger-color);
     --lumo-error-color-50pct: rgba(216, 9, 71, 0.5);
     --lumo-error-color-10pct: rgba(216, 9, 71, 0.1);
-    --lumo-error-color: #d80947;
+    --lumo-error-color: var(--pm-danger-color);
     --lumo-header-text-color: #000000;
     --lumo-body-text-color: var(--pm-text-color);
     --lumo-secondary-text-color: var(--pm-gray-color-dark);
@@ -213,6 +212,10 @@ hr {
     flex: 1;
     max-width: 1480px;
     align-self: center;
+}
+
+.dashboard-view .create-project-link {
+    margin-left: 0.4em;
 }
 
 .page-content-header {
@@ -575,7 +578,6 @@ h4 {
 }
 
 .stages-container {
-    align-items: baseline;
     width: 100%;
 }
 .stages-container > span:not(:first-child) {
@@ -595,6 +597,7 @@ h4 {
 }
 .stages-container > span > iron-icon {
     width: 20px;
+    height: 20px;
     margin-right: 4px;
 }
 .stage-active {
@@ -622,6 +625,29 @@ h4 {
 .stage-failed {
     color: var(--lumo-error-text-color);
 }
+.stage-stopped {
+    display: flex;
+    justify-content: center;
+    color: var(--lumo-body-text-color);
+}
+.stage-stopped .icon-stopped {
+    width: 20px;
+    height: 20px;
+    margin-right: 4px;
+}
+.stage-stopped .icon-stopped::after {
+    width: 10px;
+    height: 10px;
+    top: 5px;
+    left: 5px;
+}
+.stage-stopped .icon-stopped + span {
+    text-align: left;
+}
+.stage-active vaadin-progress-bar + span,
+.stage-stopped .hint-label {
+    font-size: var(--lumo-font-size-xs);
+}
 .stage-next {
     color: var(--pm-gray-color-light);
 }
@@ -635,6 +661,7 @@ h4 {
     .stages-container > span:nth-child(4) {
         width: 100%;
         text-align: left;
+        justify-content: unset;
     }
     .stages-container > span:nth-child(1),
     .stages-container > span:nth-child(2) {
@@ -649,8 +676,16 @@ h4 {
     .stage-active span {
         margin: 0;
     }
-    .stages-container > span > iron-icon {
+    .stages-container > span > iron-icon,
+    .stage-stopped .icon-stopped {
         width: 16px;
+        height: 16px;
+    }
+    .stage-stopped .icon-stopped::after {
+        width: 8px;
+        height: 8px;
+        top: 4px;
+        left: 4px;
     }
     .dashboard-item-notes {
         height: 12rem;
