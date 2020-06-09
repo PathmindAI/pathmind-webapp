@@ -129,7 +129,6 @@ public class AnylogicFileCheckerTest {
         definedHelpers.add("coffeeshop/Main##pathmindHelper");
         testFileCheckResult.setDefinedHelpers(definedHelpers);
 
-        System.out.println(jarFile.get());
         anylogicFileChecker.checkHelpers(jarFile.get(), anylogicFileCheckResult);
         assertThat(anylogicFileCheckResult.getDefinedHelpers(), is(equalTo(testFileCheckResult.getDefinedHelpers())));
     }
