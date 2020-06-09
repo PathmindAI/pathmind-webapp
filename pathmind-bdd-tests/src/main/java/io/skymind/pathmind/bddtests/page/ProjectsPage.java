@@ -135,7 +135,11 @@ public class ProjectsPage extends PageObject {
     public void inputRewardFunctionFile(String rewardFile) throws IOException {
         rewardField.click();
         rewardField.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
-        rewardField.sendKeys(FileUtils.readFileToString(new File("models/" + rewardFile), StandardCharsets.UTF_8));
+        if (rewardFile.isEmpty()) {
+            System.out.println("No file");
+        }else {
+            rewardField.sendKeys(FileUtils.readFileToString(new File("models/" + rewardFile), StandardCharsets.UTF_8));
+        }
     }
 
     public void inputExperimentNotes(String notes) {
@@ -159,6 +163,7 @@ public class ProjectsPage extends PageObject {
         WebElement experiment = getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experimentName + " " + "']"));
         waitFor(ExpectedConditions.elementToBeClickable(experiment));
         experiment.click();
+        waitABit(2000);
     }
 
     public void clickProjectsArchiveButton(String projectName) {
@@ -274,8 +279,8 @@ public class ProjectsPage extends PageObject {
     public void clickProjectSaveDraftBtn() {
         Actions action = new Actions(getDriver());
         WebElement we = getDriver().findElement(By.xpath("//vaadin-button[text()='Save']"));
-        action.moveToElement(we).build().perform();
-        getDriver().findElement(By.xpath("//vaadin-button[text()='Save']")).click();
+        JavascriptExecutor executor = (JavascriptExecutor)getDriver();
+        executor.executeScript("arguments[0].click();", we);
         try {
             WebElement closePopUp = getDriver().findElement(By.xpath("//vaadin-button[@theme='icon']"));
             waitFor(ExpectedConditions.visibilityOf(closePopUp));
@@ -480,40 +485,12 @@ public class ProjectsPage extends PageObject {
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Your model was successfully uploaded!']")));
     }
 
-    public void checkModelPageModelDetailsPackageNameIs(String packageName) {
-        assertThat(utils.getTextRootElement(getDriver().findElement(By.xpath("//span[text()='Package Name']/ancestor::p"))), is(packageName));
+    public void checkThatCheckmarkIsShown() {
+        assertThat(getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:check' and @class='fade-in']")).isDisplayed(), is(true));
     }
 
-    public void checkModelPageModelDetailsActionsIs(String actions) {
-        assertThat(utils.getTextRootElement(getDriver().findElement(By.xpath("//span[text()='Actions']/ancestor::p"))), is(actions));
-    }
-
-    public void checkModelPageModelDetailsObservationsIs(String observations) {
-        assertThat(utils.getTextRootElement(getDriver().findElement(By.xpath("//span[text()='Observations']/ancestor::p"))), is(observations));
-    }
-
-    public void checkModelPageModelDetailsRewardVariablesOrder() {
-        List<String> variables = new ArrayList<>();
-
-        for (WebElement webElement : getDriver().findElements(By.xpath("//div[@class='model-reward-variables']/descendant::span[not(@class)]"))) {
-            variables.add(webElement.getText());
-        }
-
-        assertThat(Ordering.natural().isOrdered(variables), is(true));
-    }
-
-    public void checkModelPageModelDetailsRewardVariablesIs(String commaSeparatedVariableNames) {
-        List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
-        List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//div[@class='model-reward-variables']/descendant::span[@class]"))) {
-            actual.add(webElement.getText());
-        }
-
-        assertThat(actual, containsInRelativeOrder(items.toArray()));
-    }
-
-    public void checkThatModelNameExistInArchivedTab(String experiment) {
-        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content")), hasItem(experiment));
+    public void checkThatNotesSavedMsgShown() {
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Notes saved!' and @class='fade-out-hint-label fade-in']")).isDisplayed(), is(true));
     }
 
     public void checkRewardFunctionDefaultValue(String reward) {

@@ -100,6 +100,7 @@
 }
 
 .new-experiment-view .notes-block .header span:nth-of-type(2),
+.new-experiment-view .notes-block .header iron-icon,
 .new-experiment-view .notes-block .header vaadin-button {
     display: none !important;
 }

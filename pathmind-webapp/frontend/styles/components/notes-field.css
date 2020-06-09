@@ -24,6 +24,20 @@
     margin: 0;
 }
 
+.notes-block iron-icon {
+    width: var(--lumo-font-size-m);
+    height: var(--lumo-font-size-m);
+    color: var(--pm-friendly-color);
+    margin-right: var(--lumo-space-m);
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.notes-block iron-icon.fade-in {
+    display: block !important;
+    opacity: 1;
+}
+
 .notes-block vaadin-text-area {
     width: 100%;
     height: 100%;
@@ -35,7 +49,7 @@
     margin-right: var(--lumo-space-m);
 }
 
-.unsaved-draft-label.unsaved-and-too-big-text-label {
+.notes-block .hint-label.unsaved-and-too-big-text-label {
     align-self: center;
     color: var(--pm-danger-color);
     margin-left: var(--lumo-space-m);
