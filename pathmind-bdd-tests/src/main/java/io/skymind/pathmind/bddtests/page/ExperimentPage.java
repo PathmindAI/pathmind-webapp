@@ -23,7 +23,7 @@ public class ExperimentPage extends PageObject {
 
     @FindBy(xpath = "//code-viewer")
     private WebElement rewardFunction;
-    @FindBy(xpath = "//*[text()='Experiment Notes']/ancestor::*[@class='notes-field-wrapper']/descendant::vaadin-text-area")
+    @FindBy(xpath = "//*[text()='Notes']/ancestor::*[@class='notes-field-wrapper']/descendant::vaadin-text-area")
     private WebElement experimentNotes;
     @FindBy(xpath = "//span[text()='Status']/following-sibling::span[1]")
     private WebElement experimentStatus;
@@ -71,5 +71,12 @@ public class ExperimentPage extends PageObject {
             assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), is(status));
         }
         resetImplicitTimeout();
+    }
+
+    public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
+        WebElement inputShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='reward-variables-table code-editor-mode']/descendant::span[text()='"+variableNumber+"']/following-sibling::vaadin-text-field")));
+        inputShadow.findElement(By.cssSelector("input")).click();
+        inputShadow.findElement(By.cssSelector("input")).clear();
+        inputShadow.findElement(By.cssSelector("input")).sendKeys(variableName);
     }
 }
