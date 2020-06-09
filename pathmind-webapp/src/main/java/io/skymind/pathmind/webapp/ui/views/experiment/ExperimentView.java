@@ -16,7 +16,6 @@ import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -347,11 +346,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private NotesField createViewNotesField() {
         return new NotesField(
-            "Experiment Notes",
+            "Notes",
             experiment.getUserNotes(),
             updatedNotes -> {
                 experimentDAO.updateUserNotes(experimentId, updatedNotes);
-                NotificationUtils.showSuccess("Notes saved");
                 segmentIntegrator.updatedNotesExperimentView();
             }
         );
