@@ -30,6 +30,7 @@ Feature: Dashboard page
 
   Scenario: Check dashboard new project btn
     Given Login to the pathmind
+    When Create new CoffeeShop project
     When Open dashboard page
     When Click create new project button
     Then Check Create A New Project page
