@@ -28,6 +28,13 @@
     display: none;
 }
 
+.experiment-view .metrics-wrapper span {
+    display: flex;
+    align-items: center;
+    height: 2rem;
+    font-size: var(--lumo-font-size-s);
+}
+
 .experiment-view vaadin-chart {
     min-height: 25rem;
 }

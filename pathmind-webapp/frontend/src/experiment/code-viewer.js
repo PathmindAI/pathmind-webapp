@@ -81,43 +81,43 @@ class CodeViewer extends PolymerElement {
                 }
                 .variable-color-0 {
                     color: #000;
-                    background-color: #67ea93;
+                    background-color: var(--variable-color-0);
                 }
                 .variable-color-1 {
                     color: #fff;
-                    background-color: #214e96;
+                    background-color: var(--variable-color-1);
                 }
                 .variable-color-2 {
                     color: #000;
-                    background-color: #9bf7ec;
+                    background-color: var(--variable-color-2);
                 }
                 .variable-color-3 {
                     color: #fff;
-                    background-color: #7550e5;
+                    background-color: var(--variable-color-3);
                 }
                 .variable-color-4 {
                     color: #000;
-                    background-color: #b0f78c;
+                    background-color: var(--variable-color-4);
                 }
                 .variable-color-5 {
                     color: #000;
-                    background-color: #ef99a4;
+                    background-color: var(--variable-color-5);
                 }
                 .variable-color-6 {
                     color: #000;
-                    background-color: #9bc0f7;
+                    background-color: var(--variable-color-6);
                 }
                 .variable-color-7 {
                     color: #fff;
-                    background-color: #931901;
+                    background-color: var(--variable-color-7);
                 }
                 .variable-color-8 {
                     color: #fff;
-                    background-color: #f413bc;
+                    background-color: var(--variable-color-8);
                 }
                 .variable-color-9 {
                     color: #000;
-                    background-color: #d1b112;
+                    background-color: var(--variable-color-9);
                 }
             </style>
             <code></code>

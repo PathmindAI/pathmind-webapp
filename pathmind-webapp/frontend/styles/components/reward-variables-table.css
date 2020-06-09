@@ -51,48 +51,48 @@
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(2) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 2) span {
     color: #000;
-    background-color: #67ea93;
+    background-color: var(--variable-color-0);
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(3) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 3) span {
     color: #fff;
-    background-color: #214e96;
+    background-color: var(--variable-color-1);
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(4) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 4) span {
     color: #000;
-    background-color: #9bf7ec;
+    background-color: var(--variable-color-2);
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(5) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 5) span {
     color: #fff;
-    background-color: #7550e5;
+    background-color: var(--variable-color-3);
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(6) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 6) span {
     color: #000;
-    background-color: #b0f78c;
+    background-color: var(--variable-color-4);
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(7) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 7) span {
     color: #000;
-    background-color: #ef99a4;
+    background-color: var(--variable-color-5);
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(8) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 8) span {
     color: #000;
-    background-color: #9bc0f7;
+    background-color: var(--variable-color-6);
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(9) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 9) span {
     color: #fff;
-    background-color: #931901;
+    background-color: var(--variable-color-7);
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n) span {
     color: #fff;
-    background-color: #f413bc;
+    background-color: var(--variable-color-8);
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 1):not(.header-row) span {
     color: #000;
-    background-color: #d1b112;
+    background-color: var(--variable-color-9);
 }

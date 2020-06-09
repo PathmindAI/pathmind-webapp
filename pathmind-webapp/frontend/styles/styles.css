@@ -24,6 +24,18 @@ html {
     --pm-blue-color: #1900ff;
     --pm-green-color: #00a60b;
 
+    /* pathmind reward variable colors */
+    --variable-color-0: #67ea93;
+    --variable-color-1: #214e96;
+    --variable-color-2: #9bf7ec;
+    --variable-color-3: #7550e5;
+    --variable-color-4: #b0f78c;
+    --variable-color-5: #ef99a4;
+    --variable-color-6: #9bc0f7;
+    --variable-color-7: #931901;
+    --variable-color-8: #f413bc;
+    --variable-color-9: #d1b112;
+
     /* pathmind typography */
     --pm-line-height-xl: 2em;
     --pm-line-height-l: 1.5em;
