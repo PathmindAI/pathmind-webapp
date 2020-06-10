@@ -58,10 +58,9 @@ public class ModelDAO {
 		return ctx.transactionResult(configuration ->
 		{
 			DSLContext transactionCtx = DSL.using(configuration);
-			LocalDateTime dateCreated = LocalDateTime.now();
 			model.setDraft(false);
 			ModelRepository.updateModel(transactionCtx, model.getId(), false, modelNotes);
-			return ExperimentRepository.insertExperiment(transactionCtx, model.getId(), dateCreated);
+			return ExperimentRepository.createNewExperiment(transactionCtx, model.getId());
 		});
 	}
 
