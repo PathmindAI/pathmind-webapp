@@ -14,6 +14,7 @@ Feature: User accounts tests
     When Click account edit btn
     When Input account page new temp email
     When Click account edit update btn
+    When In confirmation dialog click in 'Update' button
     When In confirmation dialog click in 'OK' button
     Then Login with new user email and Abcd1234
     Then Check that user EditEmail successfully logged in
@@ -34,6 +35,7 @@ Feature: User accounts tests
     When Click account edit btn
     When Input account page new temp email
     When Click account edit update btn
+    When In confirmation dialog click in 'Update' button
     When In confirmation dialog click in 'OK' button
     When Login with old user email and password Abcd1234
     Then Check that login form warning message is shown
