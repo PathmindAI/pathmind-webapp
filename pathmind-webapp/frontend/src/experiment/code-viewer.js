@@ -11,6 +11,21 @@ class CodeViewer extends PolymerElement {
 
     ready() {
         super.ready();
+
+        // text in pseudo elements i.e. ::before and ::after are unselectable and uncopyable on
+        // modern browsers like Chrome, Firefox, and Edge, however IE11 doesn't behave in the same way,
+        // (user can paste the pseudo element text, but document.getSelection() excludes the pseudo element text)
+        // so this copy eventlistener is needed. Once we remove support for IE11, this can be removed.
+        const codeElement = this.shadowRoot.querySelector("code");
+        codeElement.addEventListener("copy", event => {
+            const selection = document.getSelection().toString();
+            if (event.clipboardData) {
+                event.clipboardData.setData("text/plain", selection);
+            } else {
+                window.clipboardData.setData("text", selection);
+            }
+            event.preventDefault();
+        });
     }
 
     setValue(codeSnippet, rewardVariables = {}) {
@@ -33,7 +48,7 @@ class CodeViewer extends PolymerElement {
                     const rewardVarName = Object.keys(varList).length > 0 && varList[indexNumber];
                     if (rewardVarName) {
                         return `<span class="token-${className}">${indexNumber}</span><span class="variable-color-${indexNumber %
-                            10}">${rewardVarName}</span>`;
+                            10}" data-content="${rewardVarName}"></span>`;
                     }
                     return `<span class="token-${className}">${indexNumber}</span>`;
                 });
@@ -57,7 +72,7 @@ class CodeViewer extends PolymerElement {
                     box-sizing: border-box;
                     display: block;
                     width: 100%;
-                    max-height: calc(1.8em * 6);
+                    max-height: calc(1.8em * 20);
                     white-space: pre;
                     font-family: var(--code-font-family);
                     line-height: 1.8;
@@ -74,10 +89,17 @@ class CodeViewer extends PolymerElement {
                 .token-comment {
                     color: rgb(113, 150, 130);
                 }
-                [class|="variable-color"] {
+                span[class|="variable-color"] {
+                    -webkit-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
                     padding: 0.12em 0.3em;
                     border-radius: 4px;
                     margin: 0 0 0 0.285em;
+                    cursor: default;
+                }
+                span[class|="variable-color"]::before {
+                    content: attr(data-content);
                 }
                 .variable-color-0 {
                     color: #000;
