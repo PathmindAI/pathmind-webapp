@@ -10,6 +10,8 @@ class SparkLine extends PolymerElement {
         return html`
             <style>
                 :host {
+                    display: flex;
+                    align-items: center;
                     height: 2rem;
                 }
                 svg {

@@ -62,6 +62,7 @@ class CodeViewer extends PolymerElement {
         return html`
             <style>
                 :host {
+                    box-sizing: border-box;
                     flex: 1;
                     width: 100%;
                     font-size: var(--lumo-font-size-s);
@@ -73,10 +74,11 @@ class CodeViewer extends PolymerElement {
                     display: block;
                     width: 100%;
                     max-height: calc(1.8em * 20);
+                    height: 100%;
                     white-space: pre;
                     font-family: var(--code-font-family);
                     line-height: 1.8;
-                    padding: 0 var(--lumo-space-xs);
+                    padding: var(--lumo-space-xs) var(--lumo-space-s);
                     margin: 0;
                     overflow: auto;
                 }

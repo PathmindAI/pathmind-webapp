@@ -13,20 +13,39 @@
     overflow: auto; /* For Firefox's clipped wrapper due to Vaadin-chart's unexpected too-wide rendered size */
 }
 
+.experiment-view .middle-panel > vaadin-vertical-layout:first-child {
+    flex: 1 0 calc(30% + var(--lumo-space-m));
+    width: 30% !important;
+}
+
 .experiment-view .middle-panel > vaadin-vertical-layout + vaadin-vertical-layout {
-    flex: 0 0 calc(100% * 2 / 3);
+    flex: 1 1 auto;
+    width: 50% !important;
 }
 
 .experiment-view .simulation-metrics-table-wrapper {
     box-sizing: border-box;
+    flex: 1;
     width: 100%;
-    padding: var(--lumo-space-m);
+    max-height: calc(1.8em * 20);
+    font-size: var(--lumo-font-size-s);
+    line-height: 1.8;
+    padding: var(--lumo-space-s);
     border: 1px solid var(--pm-gray-color);
     border-radius: var(--lumo-border-radius);
+    overflow: auto;
 }
 
-.experiment-view .simulation-metrics-table-wrapper .header-row {
+.experiment-view .reward-variables-table .header-row {
     display: none;
+}
+.experiment-view .reward-variables-table span {
+    display: none;
+}
+.experiment-view .reward-variable-name-field {
+    height: 1.75rem;
+    border-radius: 3px;
+    box-shadow: none;
 }
 
 .experiment-view .metrics-wrapper span {
@@ -34,6 +53,15 @@
     align-items: center;
     height: 2rem;
     font-size: var(--lumo-font-size-s);
+}
+
+.experiment-view .metrics-wrapper,
+.experiment-view .sparklines-wrapper {
+    flex: 0;
+}
+
+.experiment-view .metrics-wrapper {
+    align-items: flex-end;
 }
 
 .experiment-view vaadin-chart {

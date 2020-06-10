@@ -430,6 +430,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         panelTitle.setText("Experiment #"+experiment.getName());
         if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
             codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
+            rewardVariablesTable.setIsReadOnly(true);
             if (!rewardVariables.isEmpty()) {
 				rewardVariablesTable.setValue(rewardVariables);
 			} else {
