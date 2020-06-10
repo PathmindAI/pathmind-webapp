@@ -23,13 +23,10 @@ import com.vaadin.flow.server.Command;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
-import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.featureflag.Feature;
-import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.security.SecurityUtils;
@@ -90,13 +87,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	@Autowired
 	private TrainingService trainingService;
 	@Autowired
-	private UserDAO userDAO;
-	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 	@Autowired
 	private RewardValidationService rewardValidationService;
-	@Autowired
-	private FeatureManager featureManager;
 
 	private Breadcrumbs pageBreadcrumbs;
 	private Binder<Experiment> binder;
@@ -350,9 +343,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private void loadExperimentData() {
 		modelId = experiment.getModelId();
-		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
-			rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-		}
+		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
 		if (!experiment.isArchived()) {
 			experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
 		}
@@ -368,15 +359,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		binder.setBean(experiment);
 		experimentsNavbar.setVisible(!experiment.isArchived());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());		
-		if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
-			if (!rewardVariables.isEmpty()) {
-				rewardFunctionEditor.setVariableNames(rewardVariables);
-				rewardVariablesTable.setValue(rewardVariables);
-			} else {
-				rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
-			}
+		if (!rewardVariables.isEmpty()) {
+			rewardFunctionEditor.setVariableNames(rewardVariables);
+			rewardVariablesTable.setValue(rewardVariables);
 		} else {
-			rewardVariablesTable.setVisible(false);
+			rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
 		}
 		unsavedChanges.setVisible(false);
 		notesSavedHint.setVisible(false);
