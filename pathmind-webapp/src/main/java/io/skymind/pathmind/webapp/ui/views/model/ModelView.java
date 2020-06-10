@@ -39,7 +39,6 @@ import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -147,11 +146,10 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
     private NotesField createViewNotesField() {
         return new NotesField(
-            "Model Notes",
+            "Notes",
             model.getUserNotes(),
             updatedNotes -> {
                 modelDAO.updateUserNotes(modelId, updatedNotes);
-                NotificationUtils.showSuccess("Notes saved");
                 segmentIntegrator.updatedNotesExperimentsView();
             }
         );
@@ -164,7 +162,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
             getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
         }
     }
-    
+
     @Override
     protected Component getTitlePanel() {
         return new ScreenTitlePanel(createBreadcrumbs());
@@ -188,7 +186,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
     protected void initScreen(BeforeEnterEvent event) {
         String packageName = (model.getPackageName() != null) ? model.getPackageName() : "—";
         modelName.setText("Model #"+model.getName());
-        
+
         VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
             // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
             experimentGrid.setItems(experiments);
@@ -201,7 +199,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
         if (rewardVariableNames.size() > 0) {
             rewardVariableNames.sort(Comparator.comparingInt(RewardVariable::getArrayIndex));
             rewardVariableNames.forEach(rv -> {
-                String rvName = rv.getName();
+            String rvName = rv.getName();
                 if (rvName == null || rvName.length() == 0) {
                     rvName = "—";
                 }
@@ -219,7 +217,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
         }
         archivesTabPanel.initData(event.getUI());
 
-        recalculateGridColumnWidth(event.getUI().getPage(), experimentGrid);		
+        recalculateGridColumnWidth(event.getUI().getPage(), experimentGrid);
     }
 
     @Override

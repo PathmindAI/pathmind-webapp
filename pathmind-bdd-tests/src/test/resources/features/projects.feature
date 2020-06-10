@@ -68,6 +68,15 @@ Feature: Projects page
     When Open project AutotestProject on projects page
     Then Check project note is AutotestNote
 
+  @notes
+  Scenario: Check that subtle checkmark shown after project note saved
+    Given Login to the pathmind
+    When Create new CoffeeShop project
+    When Open projects page
+    When Open project AutotestProject on projects page
+    When Add note AutotestNote to the project page
+    Then Check that checkmark is shown
+
   Scenario: Check model page archive btn, move model to archived
     Given Login to the pathmind
     When Create new CoffeeShop project
