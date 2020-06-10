@@ -17,8 +17,8 @@ public class FeatureManager {
         switch (feature) {
             case REWARD_VARIABLES_FEATURE:
                 return true;
-            case ACTIONS_FEATURE:
-                return false;
+            case ACTIONS_AND_OBSERVATION_FEATURE:
+                return true;
             case MULTI_AGENT_TRAINING:
                 return multiAgentEnabled;
             case ACCOUNT_UPGRADE:

@@ -43,7 +43,6 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
-import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
@@ -227,7 +226,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		} else {
 			modelService.updateDraftModel(model, modelNotes);
 			rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount(), rewardVariables);
-            if (featureManager.isEnabled(Feature.ACTIONS_FEATURE)) {
+            if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
                 rewardVariablesPanel.setupActionsTable(model.getNumberOfPossibleActions(), actions);
             }
 			setVisibleWizardPanel(rewardVariablesPanel);
@@ -241,7 +240,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
             modelService.updateModelRewardVariables(model, rewardVariableList);
         }
-        if (featureManager.isEnabled(Feature.ACTIONS_FEATURE)) {
+        if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
             modelService.updateModelActions(model, rewardVariablesPanel.getActions());
         }
 
