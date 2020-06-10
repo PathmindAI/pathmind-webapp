@@ -1,3 +1,4 @@
+@model
 Feature: Model page
 
   Scenario: Add experiment to exist model

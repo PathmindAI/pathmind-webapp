@@ -1,5 +1,5 @@
 @signup
-Feature: Sign-Up email field
+Feature: Sign Up email field
 
   Scenario Outline: Check create new user page wrong email alert
     Given Open page early-access-sign-up

@@ -1,4 +1,4 @@
-package io.skymind.pathmind.bddtests;
+package io.skymind.pathmind.bddtests.project;
 
 import cucumber.api.CucumberOptions;
 import net.serenitybdd.cucumber.CucumberWithSerenity;
@@ -8,8 +8,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
     plugin = {"pretty", "html:target/cucumber"},
     glue = "io.skymind.pathmind.bddtests.stepdefinitions",
-    features = "src/test/resources/features/e2e.feature",
-    tags = {"@e2e"}
+    features = "src/test/resources/features/project/projectNotes.feature"
 )
-public class E2EFeature {
+public class ProjectNotesFeature {
 }

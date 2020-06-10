@@ -1,5 +1,5 @@
 @signup
-Feature: Sign-Up
+Feature: Sign Up
 
   Scenario Outline: Create new user
     Given Open page early-access-sign-up

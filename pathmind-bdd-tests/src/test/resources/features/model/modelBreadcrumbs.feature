@@ -1,4 +1,4 @@
-@modelBreadcrumb
+@modelBreadcrumbs
 Feature: Models breadcrumbs
 
   Scenario: Click project breadcrumb from model page

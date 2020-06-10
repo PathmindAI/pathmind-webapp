@@ -1,5 +1,5 @@
 @signup
-Feature: Sign-Up fields length
+Feature: Sign Up fields length
 
   Scenario Outline: Check First/Last Name max length
     Given Open page early-access-sign-up

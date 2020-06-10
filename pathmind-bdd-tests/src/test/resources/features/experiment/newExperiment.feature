@@ -1,3 +1,4 @@
+@newExperiment
 Feature: New experiment page
 
   Scenario: Create new project and open project experiment

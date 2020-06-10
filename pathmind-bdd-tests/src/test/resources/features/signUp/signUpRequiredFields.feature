@@ -1,5 +1,5 @@
 @signup
-Feature: SignUp required fields
+Feature: Sign Up required fields
 
   Scenario: Check early access First/Last Name, email required messages are shown
     Given Open page early-access-sign-up

@@ -1,4 +1,4 @@
-package io.skymind.pathmind.bddtests;
+package io.skymind.pathmind.bddtests.model;
 
 import cucumber.api.CucumberOptions;
 import net.serenitybdd.cucumber.CucumberWithSerenity;

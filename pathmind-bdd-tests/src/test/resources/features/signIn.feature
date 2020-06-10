@@ -1,4 +1,5 @@
-Feature: Login form tests
+@signin
+Feature: Sign In form tests
 
   Scenario Outline: Login with valid credentials
     Given Open pathmind page

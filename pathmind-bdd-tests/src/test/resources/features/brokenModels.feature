@@ -1,3 +1,4 @@
+@brokenModels
 Feature: Broken Models tests
 
   Scenario: Upload broken model file
@@ -18,8 +19,8 @@ Feature: Broken Models tests
     Then Wait for text "Checking your model" to disappear
     And Check that error message in model check panel is "<Error Message>"
 
-  Examples:
-    | Model File                                      | Error Message                           |
-    | problematic_models/AModelWithNoActions.zip      | Number of actions found to be zero.     |
-    | problematic_models/AModelWithNoObservations.zip | Number of observations found to be zero.|
-    | problematic_models/ProblemModel#1480.zip        | Unable to analyze the model.            |
+    Examples:
+      | Model File                                      | Error Message                            |
+      | problematic_models/AModelWithNoActions.zip      | Number of actions found to be zero.      |
+      | problematic_models/AModelWithNoObservations.zip | Number of observations found to be zero. |
+      | problematic_models/ProblemModel#1480.zip        | Unable to analyze the model.             |

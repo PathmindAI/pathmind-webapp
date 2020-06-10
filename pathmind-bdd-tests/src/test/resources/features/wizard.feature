@@ -1,3 +1,4 @@
+@wizard
 Feature: Wizard page
 
   Scenario: Open create new project page and check elements

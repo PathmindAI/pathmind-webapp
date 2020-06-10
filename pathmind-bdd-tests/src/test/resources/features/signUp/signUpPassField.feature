@@ -1,5 +1,5 @@
 @signup
-Feature: Sign-Up password field
+Feature: Sign Up password field
 
   Scenario Outline: Check create new user password error message
     Given Open page early-access-sign-up
