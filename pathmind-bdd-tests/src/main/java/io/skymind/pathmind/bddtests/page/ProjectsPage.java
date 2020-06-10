@@ -2,7 +2,6 @@ package io.skymind.pathmind.bddtests.page;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInRelativeOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
@@ -12,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -23,8 +21,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
-import com.google.common.collect.Ordering;
 
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.Serenity;
@@ -132,13 +128,17 @@ public class ProjectsPage extends PageObject {
         assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span")), hasItem(projectName));
     }
 
-    public void inputRewardFunctionFile(String rewardFile) throws IOException {
+    public void inputRewardFunctionFile(String rewardFile) {
         rewardField.click();
         rewardField.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
         if (rewardFile.isEmpty()) {
             System.out.println("No file");
         }else {
-            rewardField.sendKeys(FileUtils.readFileToString(new File("models/" + rewardFile), StandardCharsets.UTF_8));
+            try {
+                rewardField.sendKeys(FileUtils.readFileToString(new File("models/" + rewardFile), StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

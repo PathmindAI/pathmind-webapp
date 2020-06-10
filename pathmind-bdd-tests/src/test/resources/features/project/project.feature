@@ -3,7 +3,7 @@ Feature: Project page
 
   Scenario: Check breadcrumb projects btn
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     When Click projects breadcrumb btn
@@ -11,13 +11,13 @@ Feature: Project page
 
   Scenario: Add second model to the exist project
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
     When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
-    When Input model details "a user note"
-    When Click wizard next step button
+    When Click wizard model details next btn
+    When Click wizard reward variables save draft btn
     Then Check that experiment page of the AutotestProject opened
     When Open projects page
     When Open project AutotestProject on projects page
@@ -25,7 +25,7 @@ Feature: Project page
 
   Scenario: Check model page archive btn, move model to archived
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     When Click model 1 archive/unarchive button
@@ -37,7 +37,7 @@ Feature: Project page
 
   Scenario: Check model page Unarchive btn, move model to active tab
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     When Click model 1 archive/unarchive button
@@ -51,7 +51,7 @@ Feature: Project page
 
   Scenario: Edit project name from project page
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     When Click in 'Rename' button
@@ -65,7 +65,7 @@ Feature: Project page
 
   Scenario: Edit archived project name
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Click AutotestProject project archive/unarchive button
     When Confirm archive/unarchive popup

@@ -3,7 +3,6 @@ Feature: Broken Models tests
 
   Scenario: Upload broken model file
     Given Login to the pathmind
-    When Create new CoffeeShop project
     When Open projects page
     When Click create new project button
     When Input name of the new project AutotestProject and click Create project button

@@ -1,7 +1,5 @@
 package io.skymind.pathmind.bddtests.steps;
 
-import java.io.IOException;
-
 import io.skymind.pathmind.bddtests.page.ProjectsPage;
 import net.thucydides.core.annotations.Step;
 
@@ -46,7 +44,7 @@ public class ProjectsPageSteps {
         projectsPage.checkThatProjectExistInProjectsList(projectName);
     }
     @Step
-    public void inputRewardFunctionFile(String rewardFile) throws IOException {
+    public void inputRewardFunctionFile(String rewardFile) {
         projectsPage.inputRewardFunctionFile(rewardFile);
     }
     @Step

@@ -75,52 +75,6 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.clickTheExperimentName(experimentName);
     }
 
-    @When("^Create new CoffeeShop project$")
-    public void createNewProject() throws IOException {
-        homePageSteps.openProjectsPage();
-        projectsPageSteps.clickCreateNewProjectBtn();
-        Serenity.setSessionVariable("randomNumber").to(new Date().getTime());
-        projectsPageSteps.inputNameOfTheNewProject("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
-        projectsPageSteps.clickProjectNameCreateBtn();
-        projectsPageSteps.uploadModelFile("Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip");
-        projectsPageSteps.clickWizardModelDetailsNextBtn();
-        projectsPageSteps.clickWizardRewardVariableNamesNextBtn();
-        projectsPageSteps.checkThatExperimentPageOpened("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
-        projectsPageSteps.inputRewardFunctionFile("Production_Single_Agent/Production_Single_Agent_Reward.txt");
-        projectsPageSteps.clickProjectSaveDraftBtn();
-    }
-
-    @When("^Create new CoffeeShop project with experiment notes$")
-    public void createNewProjectWithExperimentNotes() throws IOException {
-        homePageSteps.openProjectsPage();
-        projectsPageSteps.clickCreateNewProjectBtn();
-        Serenity.setSessionVariable("randomNumber").to(new Date().getTime());
-        projectsPageSteps.inputNameOfTheNewProject("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
-        projectsPageSteps.clickProjectNameCreateBtn();
-        projectsPageSteps.uploadModelFile("Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip");
-        projectsPageSteps.inputModelDetails("");
-        projectsPageSteps.clickWizardRewardVariableNamesNextBtn();
-        projectsPageSteps.checkThatExperimentPageOpened("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
-        projectsPageSteps.inputRewardFunctionFile("Production_Single_Agent/Production_Single_Agent_Reward.txt");
-        projectsPageSteps.inputExperimentNotes("This is the experiment notes for this Coffee Shop project fast speed model.");
-        projectsPageSteps.clickProjectSaveDraftBtn();
-    }
-
-    @When("^Create new CoffeeShop project with variable names: (.*)$")
-    public void createNewProjectWithVariableNames(String commaSeparatedVariableNames) throws IOException {
-        homePageSteps.openProjectsPage();
-        projectsPageSteps.clickCreateNewProjectBtn();
-        Serenity.setSessionVariable("randomNumber").to(new Date().getTime());
-        projectsPageSteps.inputNameOfTheNewProject("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
-        projectsPageSteps.clickProjectNameCreateBtn();
-        projectsPageSteps.uploadModelFile("Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip");
-        projectsPageSteps.clickWizardModelDetailsNextBtn();
-        projectsPageSteps.inputVariableNames(commaSeparatedVariableNames.split(","));
-        projectsPageSteps.clickWizardRewardVariableNamesNextBtn();
-        projectsPageSteps.checkThatExperimentPageOpened("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
-        projectsPageSteps.inputRewardFunctionFile("Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt");
-    }
-
     @When("^Click (.*) project archive/unarchive button$")
     public void clickProjectsArchiveButton(String projectName) {
         projectsPageSteps.clickProjectsArchiveButton(projectName + Serenity.sessionVariableCalled("randomNumber"));
@@ -239,7 +193,7 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.checkThatErrorShown(error);
     }
 
-    @Then("^Check experiments page elements$")
+    @Then("^Check model page elements$")
     public void checkExperimentsPageElements() {
         projectsPageSteps.checkExperimentsPageElements();
     }
@@ -257,15 +211,6 @@ public class ProjectsPageStepDefinitions {
     @Then("^Check that newExperiment page opened$")
     public void checkThatNewExperimentPageOpened() {
         projectsPageSteps.checkThatNewExperimentPageOpened();
-    }
-
-    @When("^Create new empty project$")
-    public void createNewEmptyProject() {
-        homePageSteps.openProjectsPage();
-        projectsPageSteps.clickCreateNewProjectBtn();
-        Serenity.setSessionVariable("randomNumber").to(new Date().getTime());
-        projectsPageSteps.inputNameOfTheNewProject("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
-        projectsPageSteps.clickProjectNameCreateBtn();
     }
 
     @When("^Check that experiment page of the (.*) opened$")

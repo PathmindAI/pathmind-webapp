@@ -3,7 +3,7 @@ Feature: Experiment page
 
   Scenario: Click new experiment btn from running experiment page
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with single reward function
     When Click project start run button
     When Click in 'New Experiment' button
     Then Check that newExperiment page opened
@@ -17,7 +17,7 @@ Feature: Experiment page
 
   Scenario: Check running experiment page archive btn, move model to archived
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with single reward function
     Then Click project start run button
     Then Click in 'Archive' button
     When In confirmation dialog click in 'Archive Experiment' button
@@ -31,7 +31,7 @@ Feature: Experiment page
 
   Scenario: Check experiment run status Starting Cluster
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with single reward function
     Then Click project start run button
     When Open projects page
     When Open project AutotestProject on projects page
@@ -45,7 +45,7 @@ Feature: Experiment page
 
   Scenario: Adding notes to the started experiment
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with single reward function
     Then Click project start run button
     And Check that button 'Stop Training' exists
     Then Add note This is the experiment notes for this Coffee Shop project to the experiment page
@@ -61,7 +61,7 @@ Feature: Experiment page
 
   Scenario: Stop experiment
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with single reward function
     Then Click project start run button
     And Check that button 'Stop Training' exists
     And Check that button 'Export Policy' doesn't exist
@@ -80,7 +80,7 @@ Feature: Experiment page
 
   Scenario: Check reward function on started experiment
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with single reward function
     Then Click project start run button
     Then Check experiment page reward function Production_Single_Agent/Production_Single_Agent_Reward.txt
     When Click in 'Stop Training' button

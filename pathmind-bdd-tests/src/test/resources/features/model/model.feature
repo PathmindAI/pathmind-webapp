@@ -3,7 +3,7 @@ Feature: Model page
 
   Scenario: Add experiment to exist model
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1
@@ -13,7 +13,7 @@ Feature: Model page
 
   Scenario: Check model page archive btn, move experiment to archived
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1
@@ -26,7 +26,7 @@ Feature: Model page
 
   Scenario: Check model page Unarchive btn
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1
@@ -41,16 +41,16 @@ Feature: Model page
 
   Scenario: Check model page elements
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1
-    Then Check experiments page elements
+    Then Check model page elements
 
   @saveModelDraft
   Scenario: Check that Model is saved as draft as soon as it is uploaded
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
@@ -61,7 +61,7 @@ Feature: Model page
   @saveModelDraft
   Scenario: Check that after uploading a model and clicking in next, the model is still a draft
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
@@ -72,7 +72,7 @@ Feature: Model page
   @saveModelDraft
   Scenario: Check Save Model Draft with reward variables
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
@@ -91,7 +91,7 @@ Feature: Model page
 
   Scenario: Check duplicated experiment names on model view
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open dashboard page
     When Click archive btn from dashboard
     When In confirmation dialog click in 'Archive Experiment' button

@@ -4,7 +4,7 @@ Feature: Project page
   @notes
   Scenario: Adding notes to the project
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     When Add note AutotestNote to the project page
@@ -15,7 +15,7 @@ Feature: Project page
   @notes
   Scenario: Check that subtle checkmark shown after project note saved
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     When Add note AutotestNote to the project page

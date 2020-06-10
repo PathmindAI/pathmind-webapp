@@ -4,12 +4,7 @@ Feature: New experiment page
   Scenario: Create new project and open project experiment
     Given Login to the pathmind
     When Open projects page
-    When Click create new project button
-    When Input name of the new project AutotestProject and click Create project button
-    When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
-    When Input model details "a user note"
-    When Click wizard next step button
-    Then Check that experiment page of the AutotestProject opened
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1
@@ -18,7 +13,7 @@ Feature: New experiment page
 
   Scenario: Click projectS breadcrumb from new experiment page
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1
@@ -29,7 +24,7 @@ Feature: New experiment page
 
   Scenario: Click project breadcrumb from new experiment page
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1
@@ -40,7 +35,7 @@ Feature: New experiment page
 
   Scenario: Click model breadcrumb from new experiment page
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1
@@ -50,7 +45,7 @@ Feature: New experiment page
 
   Scenario: Edit exist experiment
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with single reward function
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1
@@ -76,7 +71,7 @@ Feature: New experiment page
   @notes
   Scenario: Adding notes to the experiment
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     Then Add note This is the experiment notes for this Coffee Shop project to the experiment page
     When Open projects page
     When Open project AutotestProject on projects page
@@ -88,7 +83,7 @@ Feature: New experiment page
   @notes
   Scenario: Check that subtle checkmark shown after experiment note saved
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1

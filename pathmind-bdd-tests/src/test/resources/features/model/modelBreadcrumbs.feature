@@ -3,7 +3,7 @@ Feature: Models breadcrumbs
 
   Scenario: Click project breadcrumb from model page
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1
@@ -12,7 +12,7 @@ Feature: Models breadcrumbs
 
   Scenario: Click projectS breadcrumb from model page
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1

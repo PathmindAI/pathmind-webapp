@@ -33,7 +33,7 @@ Feature: Dashboard archive feature
   @dashArchiveItem
   Scenario: Archive project with reward function from dashboard
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with single reward function
     When Open dashboard page
     When Click archive btn from dashboard
     When In confirmation dialog click in 'Archive Experiment' button
@@ -47,7 +47,7 @@ Feature: Dashboard archive feature
   @dashArchiveItem
   Scenario: Archive project with started experiment
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with single reward function
     When Click project start run button
     When Open dashboard page
     When Click archive btn from dashboard

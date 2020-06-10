@@ -12,7 +12,7 @@ Feature: Dashboard statuses feature
 
   Scenario: Check stage status for project with model
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with single reward function
     When Open dashboard page
     Then Check AutotestProject stage Set up simulation is stage-done
     Then Check AutotestProject stage Write reward function is stage-active
@@ -21,7 +21,7 @@ Feature: Dashboard statuses feature
 
   Scenario: Check stage status for experiment run
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new CoffeeShop project with single reward function
     When Click project start run button
     When Open dashboard page
     Then Check AutotestProject stage Set up simulation is stage-done

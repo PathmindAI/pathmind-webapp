@@ -4,7 +4,7 @@ Feature: Dashboard page
   @saveModelDraft
   Scenario Outline: Check that Model Drafts are shown correctly
     Given Login to the pathmind
-    When Create a Model Draft
+    When Create new empty project
     When Open dashboard page
     Then Check AutotestProject stage Set up simulation is stage-active
     When <Click action>
@@ -42,7 +42,7 @@ Feature: Dashboard page
 
   Scenario: Check dashboard new project btn
     Given Login to the pathmind
-    When Create new CoffeeShop project
+    When Create new empty project
     When Open dashboard page
     When Click create new project button
     Then Check Create A New Project page
