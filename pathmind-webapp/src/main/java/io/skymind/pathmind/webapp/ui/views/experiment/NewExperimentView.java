@@ -197,7 +197,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		rewardEditorErrorLabel = LabelFactory.createLabel("Reward Function must not exceed " + REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
 		rewardEditorErrorLabel.setVisible(false);
 		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(rewardEditorErrorLabel, rewardFunctionEditor);
-		rewardFnEditorPanel.setPadding(false);
+        rewardFnEditorPanel.setPadding(false);
+        if (experiment.isArchived()) {
+            rewardFnEditorPanel.setEnabled(false);
+        }
 		return rewardFnEditorPanel;
 	}
 
@@ -226,8 +229,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private RewardVariablesTable getRewardVariableNamesPanel() {
 		rewardVariablesTable = new RewardVariablesTable();
 		rewardVariablesTable.setCodeEditorMode();
-		rewardVariablesTable.setSizeFull();
-		rewardVariablesTable.addValueChangeListener(evt -> handleRewardVariableNameChanged(evt.getValue()));
+        rewardVariablesTable.setSizeFull();
+        if (!experiment.isArchived()) {
+            rewardVariablesTable.addValueChangeListener(evt -> handleRewardVariableNameChanged(evt.getValue()));
+        } else {
+            rewardVariablesTable.setEnabled(false);
+        }
 		return rewardVariablesTable;
 	}
 
@@ -313,7 +320,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 				segmentIntegrator.addedNotesNewExperimentView();
 			}
 		);
-		notesField.setPlaceholder("Add Notes (optional)");
+        notesField.setPlaceholder("Add Notes (optional)");
+        if (experiment.isArchived()) {
+            notesField.setEnabled(false);
+        }
 		return notesField;
 	}
 
