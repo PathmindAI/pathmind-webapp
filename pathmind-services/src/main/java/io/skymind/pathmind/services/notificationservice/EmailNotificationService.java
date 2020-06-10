@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -50,14 +50,14 @@ public class EmailNotificationService
 	 *
 	 * @param pathmindUser
 	 */
-	public void sendVerificationEmail(PathmindUser pathmindUser)
+	public void sendVerificationEmail(PathmindUser pathmindUser, String email)
 	{
 		Objects.requireNonNull(pathmindUser);
 		if (!isEmailSendingEnabled) {
-			log.info("Email sending has been disabled, not sending the email to: " + pathmindUser.getEmail());
+			log.info("Email sending has been disabled, not sending the email to: " + email);
 			return;
 		}
-		if (pathmindUser.getEmailVerifiedAt() != null) {
+		if (pathmindUser.getEmailVerifiedAt() != null && Strings.isBlank(pathmindUser.getNewEmailToVerify())) {
 			log.info("Canceling verification email sending, user: " + pathmindUser.getEmail() + ", has already been verified");
 			return;
 		}
@@ -68,7 +68,7 @@ public class EmailNotificationService
 		final String emailVerificationLink = createEmailVerificationLink(pathmindUser);
 		Mail verificationEmail;
 		try {
-			verificationEmail = mailHelper.createVerificationEmail(pathmindUser.getEmail(), pathmindUser.getName(), emailVerificationLink);
+			verificationEmail = mailHelper.createVerificationEmail(email, pathmindUser.getName(), emailVerificationLink);
 		} catch (PathMindException e) {
 			log.warn("Could not create email due to missing data in the PathmindUser object");
 			return;
