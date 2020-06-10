@@ -146,15 +146,4 @@ class RunRepository
 			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
 			.execute();
 	}
-
-    protected static long getUserIdForModel(DSLContext ctx, long modelId) {
-        return ctx.select(PROJECT.PATHMIND_USER_ID)
-                .from(PROJECT)
-                .where(PROJECT.ID.eq(
-                        ctx.select(MODEL.PROJECT_ID)
-                                .from(MODEL)
-                                .where(MODEL.ID.eq(modelId))
-                ))
-                .fetchOne(PROJECT.PATHMIND_USER_ID);
-    }
 }

@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services;
 
+import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
@@ -27,18 +28,22 @@ public abstract class TrainingService {
     protected final ModelService modelService;
     protected final ExecutionEnvironmentManager executionEnvironmentManager;
     protected final PolicyDAO policyDAO;
+    protected final ModelDAO modelDAO;
     protected ExecutionEnvironment executionEnvironment;
     private final DSLContext ctx;
 
     public TrainingService(ExecutionProvider executionProvider,
                            RunDAO runDAO, ModelService modelService,
                            ExecutionEnvironmentManager executionEnvironmentManager,
-                           PolicyDAO policyDAO, DSLContext ctx) {
+                           PolicyDAO policyDAO,
+                           ModelDAO modelDAO,
+                           DSLContext ctx) {
         this.executionProvider = executionProvider;
         this.runDAO = runDAO;
         this.modelService = modelService;
         this.executionEnvironmentManager = executionEnvironmentManager;
         this.policyDAO = policyDAO;
+        this.modelDAO = modelDAO;
         this.ctx = ctx;
 
     }
@@ -54,7 +59,7 @@ public abstract class TrainingService {
     private void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSamples) {
     	ctx.transaction(conf -> {
     	    // set the current Execution Environment for the given user
-            long userId = this.runDAO.getUserForModel(exp.getModelId());
+            long userId = this.modelDAO.getUserForModel(exp.getModelId());
             this.executionEnvironment = this.executionEnvironmentManager.getEnvironment(userId);
 
     		Run run = runDAO.createRun(conf, exp, DiscoveryRun);

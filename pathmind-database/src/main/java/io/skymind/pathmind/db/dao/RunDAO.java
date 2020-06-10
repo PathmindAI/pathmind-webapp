@@ -21,7 +21,6 @@ public class RunDAO {
 
     private final DSLContext ctx;
 
-
     public RunDAO(DSLContext ctx) {
         this.ctx = ctx;
     }
@@ -206,9 +205,5 @@ public class RunDAO {
         Policy policy = PolicyRepository.getPolicy(transactionCtx, policyId);
         policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(transactionCtx, policyId));
         return policy;
-    }
-
-    public long getUserForModel(long modelId) {
-        return RunRepository.getUserIdForModel(ctx, modelId);
     }
 }
