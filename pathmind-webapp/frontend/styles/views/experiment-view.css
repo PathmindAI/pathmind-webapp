@@ -9,6 +9,7 @@
     background: white;
     border-radius: var(--lumo-border-radius);
     padding: var(--lumo-space-m);
+    overflow: auto; /* For Firefox's clipped wrapper due to Vaadin-chart's unexpected too-wide rendered size */
 }
 
 .experiment-view .view-section > vaadin-vertical-layout:first-of-type {

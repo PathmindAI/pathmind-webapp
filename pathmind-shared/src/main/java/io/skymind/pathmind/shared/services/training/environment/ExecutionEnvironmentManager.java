@@ -34,7 +34,7 @@ public class ExecutionEnvironmentManager {
 
         return new ExecutionEnvironment(AnyLogic.VERSION_8_5_2,
                 pathmindHelperVersion,
-                NativeRL.VERSION_1_0_6,
+                NativeRL.VERSION_1_0_7,
                 JDK.VERSION_8_222,
                 Conda.VERSION_0_7_6,
                 EC2InstanceType.IT_16CPU_32GB);
