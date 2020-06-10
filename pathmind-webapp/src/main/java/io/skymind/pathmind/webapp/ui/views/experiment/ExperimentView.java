@@ -83,7 +83,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private Button exportPolicyButton;
     private Button stopTrainingButton;
-    private Button archiveExperimentButton;
     private Button unarchiveExperimentButton;
 
     private long experimentId = -1;
@@ -209,16 +208,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         stopTrainingButton.addThemeName("secondary");
         stopTrainingButton.setVisible(true);
 
-        archiveExperimentButton = new Button("Archive", VaadinIcon.ARCHIVE.create(), click -> archiveExperiment(experiment));
-        archiveExperimentButton.addThemeName("secondary");
-
         unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
         unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         notesField = createViewNotesField();
 
         Div buttonsWrapper = new Div(
-            archiveExperimentButton,
             unarchiveExperimentButton,
             restartTraining,
             stopTrainingButton,
@@ -429,7 +424,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void updateButtonEnablement() {
         RunStatus trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
         boolean isCompleted = trainingStatus == RunStatus.Completed;
-        archiveExperimentButton.setVisible(!experiment.isArchived());
         unarchiveExperimentButton.setVisible(experiment.isArchived());
         exportPolicyButton.setVisible(isCompleted && policy != null && policy.hasFile());
         boolean canBeStopped = RunStatus.isRunning(trainingStatus);
