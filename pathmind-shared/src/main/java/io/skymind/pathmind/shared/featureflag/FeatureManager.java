@@ -22,7 +22,7 @@ public class FeatureManager {
             case ACCOUNT_UPGRADE:
                 return false;
             case SIMULATION_METRICS:
-                return true;
+                return false;
             default:
                 return true;
         }
