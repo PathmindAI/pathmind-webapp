@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.skymind.pathmind.shared.data.Action;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private Model model;
 
 	private List<RewardVariable> rewardVariables = new ArrayList<>();
+    private List<Action> actions = new ArrayList<>();
 
 	private Binder<Model> modelBinder;
 
@@ -154,6 +156,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		segmentIntegrator.modelDraftSaved();
 		List<RewardVariable> rewardVariables = rewardVariablesPanel.getRewardVariables();
 		modelService.updateModelRewardVariables(model, rewardVariables);
+		// Note: if we decide to keep all model related info in the same screen, we might create a new method
+        // that will update all such info in the db at the same time. For now I'm keeping them split just to be able
+        // to experiment with the place where it will last.
+		modelService.updateModelActions(model, rewardVariablesPanel.getActions());
 		NotificationUtils.showSuccess("Draft successfully saved");
 	}
 
@@ -179,6 +185,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			this.model = modelService.getModel(modelId)
 					.orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
 			this.rewardVariables = modelService.getModelRewardVariables(modelId);
+			this.actions = modelService.getModelActions(modelId);
 		}
 		else {
 			this.model = ModelUtils.generateNewDefaultModel();
@@ -220,6 +227,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		} else {
 			modelService.updateDraftModel(model, modelNotes);
 			rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount(), rewardVariables);
+            if (featureManager.isEnabled(Feature.ACTIONS_FEATURE)) {
+                rewardVariablesPanel.setupActionsTable(model.getNumberOfPossibleActions(), actions);
+            }
 			setVisibleWizardPanel(rewardVariablesPanel);
 		}
 	}
@@ -227,8 +237,13 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private void saveAndNavigateToNewExperiment() {
 		experimentId = modelService.resumeModelCreation(model, modelNotes);
 
-		List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
-		modelService.updateModelRewardVariables(model, rewardVariableList);
+        if(featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
+            List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
+            modelService.updateModelRewardVariables(model, rewardVariableList);
+        }
+        if (featureManager.isEnabled(Feature.ACTIONS_FEATURE)) {
+            modelService.updateModelActions(model, rewardVariablesPanel.getActions());
+        }
 
 		getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
 	}

@@ -1,6 +1,8 @@
 package io.skymind.pathmind.services.model;
 
+import io.skymind.pathmind.db.dao.ActionDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
+import io.skymind.pathmind.shared.data.Action;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.services.ModelService;
@@ -22,12 +24,14 @@ class AwsModelServiceImpl implements ModelService {
 
     private final ModelDAO modelDAO;
     private final RewardVariableDAO rewardVariableDAO;
+    private final ActionDAO actionDAO;
     private final AWSApiClient awsApiClient;
 
     public AwsModelServiceImpl(ModelDAO modelDAO, RewardVariableDAO rewardVariableDAO,
-            AWSApiClient awsApiClient) {
+                               ActionDAO actionDAO, AWSApiClient awsApiClient) {
         this.modelDAO = modelDAO;
         this.rewardVariableDAO = rewardVariableDAO;
+        this.actionDAO = actionDAO;
         this.awsApiClient = awsApiClient;
     }
 
@@ -58,6 +62,16 @@ class AwsModelServiceImpl implements ModelService {
     }
 
     @Override
+    public void updateModelActions(Model model, List<Action> actions) {
+        Assert.notNull(model, "Model should be provided");
+        actionDAO.deleteModelActions(model.getId());
+        if (actions != null) {
+            actions.forEach(a -> a.setModelId(model.getId()));
+            actionDAO.saveActions(actions);
+        }
+    }
+
+    @Override
     public long resumeModelCreation(Model model, String modelNotes) {
         Assert.notNull(model, "Model should be provided");
         Assert.isTrue(model.getId() != -1, "Model id should be provided");
@@ -72,6 +86,11 @@ class AwsModelServiceImpl implements ModelService {
     @Override
     public List<RewardVariable> getModelRewardVariables(long modelId) {
         return rewardVariableDAO.getRewardVariablesForModel(modelId);
+    }
+
+    @Override
+    public List<Action> getModelActions(long modelId) {
+        return actionDAO.getActionsForModel(modelId);
     }
 
     @Override

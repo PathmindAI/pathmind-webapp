@@ -16,6 +16,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
+import io.skymind.pathmind.shared.data.Action;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
@@ -25,6 +26,7 @@ public class RewardVariablesPanel extends VerticalLayout
 {
 	private VerticalLayout formPanel = new VerticalLayout();
 	private RewardVariablesTable rewardVariablesTable;
+    private ActionsTable actionsTable;
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
@@ -76,6 +78,15 @@ public class RewardVariablesPanel extends VerticalLayout
 		formPanel.add(rewardVariablesTable);
 	}
 
+    public void setupActionsTable(int numberOfPossibleActions, List<Action> actions) {
+	    actionsTable = new ActionsTable();
+	    actionsTable.setNumberOfItems(numberOfPossibleActions);
+	    if (!actions.isEmpty()) {
+            actionsTable.setValue(actions);
+        }
+	    formPanel.add(actionsTable);
+    }
+
 	private Component getRewardVariablesPanel() {
 		VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
 				LabelFactory.createLabel("Let’s give each variable a name", BOLD_LABEL),
@@ -92,7 +103,17 @@ public class RewardVariablesPanel extends VerticalLayout
 		}
 	}
 
+    public List<Action> getActions(){
+        if (actionsTable == null) {
+            return null;
+        } else {
+            return actionsTable.getValue();
+        }
+    }
+
 	public boolean isInputValueValid() {
-		return !rewardVariablesTable.isInvalid();
+        boolean rewardsIsValid = !rewardVariablesTable.isInvalid();
+        boolean actionsIsValid = actionsTable == null || !actionsTable.isInvalid();
+        return rewardsIsValid && actionsIsValid;
 	}
 }

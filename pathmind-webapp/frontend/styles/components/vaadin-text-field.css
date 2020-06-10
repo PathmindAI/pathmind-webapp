@@ -30,3 +30,15 @@
     border-radius: 0 3px 3px 0;
     border: 1px solid var(--pm-gray-color);
 }
+
+:host(.action-name-field) [part="value"] {
+    min-height: auto;
+    padding: 0;
+}
+
+:host(.action-name-field) [part="input-field"] {
+    height: 1.75rem;
+    padding: 0.4em;
+    border-radius: 0 3px 3px 0;
+    border: 1px solid var(--pm-gray-color);
+}
