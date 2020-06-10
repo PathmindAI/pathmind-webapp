@@ -33,15 +33,3 @@ Feature: Login form tests
       | error                                                                                                                       |
       | Uncaught DOMException: Failed to execute 'define' on 'CustomElementRegist…etector" has already been used with this registry |
       | Uncaught TypeError: $0.page is not a function                                                                               |
-
-  Scenario: Check start page with the getting started message user see after login
-    Given Open page early-access-sign-up
-    When Fill new user form with name EditEmail, User
-    When Create new user click sign up button
-    When Fill new user password Abcd1234
-    When Fill new user confirmation password Abcd1234
-    When Create new user click sign in button
-    When Get email and verify user email
-    When Open pathmind page
-    Then Login with new user email and Abcd1234
-    Then Check that dashboard page opened with the getting started message
