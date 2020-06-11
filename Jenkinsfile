@@ -35,7 +35,7 @@ def publishDockerImage(image_name, DOCKER_TAG) {
 */
 def runMigrations(namespace) {
     sh """
-    set + x
+    set +x
     export DB_URL=`kubectl get secret dburl -o=jsonpath='{.data.DB_URL}' -n ${namespace} |  base64 --decode; echo`
     cd ${WORKSPACE}/pathmind-database
     mvn liquibase:update
