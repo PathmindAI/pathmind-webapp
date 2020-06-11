@@ -44,3 +44,5 @@ terraform.tfstate*
 ### Vim tmp files ###
 *swp
 
+
+pathmind-webapp/src/main/resources/application-local.properties
