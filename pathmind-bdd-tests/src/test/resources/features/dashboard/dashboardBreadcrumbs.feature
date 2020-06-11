@@ -3,7 +3,7 @@ Feature: Dashboard breadcrumbs feature
 
   Scenario: Open project breadcrumb from dashboard
     Given Login to the pathmind
-    When Create new empty project
+    When Create new CoffeeShop project with draft model
     When Open dashboard page
     When Click project AutotestProject from dashboard
     Then Check that project AutotestProject page is opened

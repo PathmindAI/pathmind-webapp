@@ -155,12 +155,4 @@ public class ProjectsPage extends PageObject {
         WebElement e = utils.expandRootElement(projectNameInputFieldShadow);
         assertThat(e.findElement(By.cssSelector("div[part='error-message']")).getText(), is(error));
     }
-
-    public void checkThatCheckmarkIsShown() {
-        assertThat(getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:check' and @class='fade-in']")).isDisplayed(), is(true));
-    }
-
-    public void checkThatNotesSavedMsgShown() {
-        assertThat(getDriver().findElement(By.xpath("//span[text()='Notes saved!' and @class='fade-out-hint-label fade-in']")).isDisplayed(), is(true));
-    }
 }

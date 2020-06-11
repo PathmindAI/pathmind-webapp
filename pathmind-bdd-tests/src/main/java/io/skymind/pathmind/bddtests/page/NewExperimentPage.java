@@ -111,4 +111,8 @@ public class NewExperimentPage extends PageObject {
         WebElement e = utils.expandRootElement(rewardField);
         assertThat(e.findElement(By.cssSelector("div[class='ace_line']")).getText(), is(reward));
     }
+
+    public void checkThatNotesSavedMsgShown() {
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Notes saved!' and @class='fade-out-hint-label fade-in']")).isDisplayed(), is(true));
+    }
 }

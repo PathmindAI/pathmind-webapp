@@ -68,10 +68,6 @@ public class ProjectsPageSteps {
         projectsPage.clickTheFirstDraftModel();
     }
 
-
-
-
-
     @Step
     public void checkThatTheNotesFieldHasTheValue(String text) {
         projectsPage.checkThatTheNotesFieldHasTheValue(text);
@@ -90,15 +86,5 @@ public class ProjectsPageSteps {
     @Step
     public void checkNewProjectNameErrorShown(String error) {
         projectsPage.checkNewProjectNameErrorShown(error);
-    }
-
-    @Step
-    public void checkThatCheckmarkIsShown() {
-        projectsPage.checkThatCheckmarkIsShown();
-    }
-
-    @Step
-    public void checkThatNotesSavedMsgShown() {
-        projectsPage.checkThatNotesSavedMsgShown();
     }
 }

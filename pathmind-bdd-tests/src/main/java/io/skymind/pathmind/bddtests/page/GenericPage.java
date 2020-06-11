@@ -45,7 +45,8 @@ public class GenericPage extends PageObject {
 
     public void clickInButton(String buttonText) {
         String xpath = String.format("//*[text()='%s']", buttonText);
-        getDriver().findElement(By.xpath(xpath)).click();
+//        getDriver().findElement(By.xpath(xpath)).click();
+        utils.clickElementRepeatIfStaleException(By.xpath(xpath));
     }
 
     public void checkThatNotificationIsShown(String notificationText) {
@@ -153,5 +154,9 @@ public class GenericPage extends PageObject {
         input.click();
         input.clear();
         input.sendKeys(projectName);
+    }
+
+    public void checkThatCheckmarkIsShown() {
+        assertThat(getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:check' and @class='fade-in']")).isDisplayed(), is(true));
     }
 }

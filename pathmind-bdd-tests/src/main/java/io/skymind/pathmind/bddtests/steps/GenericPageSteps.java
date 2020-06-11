@@ -87,4 +87,9 @@ public class GenericPageSteps {
     public void inputProjectNameToTheEditPopup(String projectName) {
         genericPage.inputProjectNameToTheEditPopup(projectName);
     }
+
+    @Step
+    public void checkThatCheckmarkIsShown() {
+        genericPage.checkThatCheckmarkIsShown();
+    }
 }

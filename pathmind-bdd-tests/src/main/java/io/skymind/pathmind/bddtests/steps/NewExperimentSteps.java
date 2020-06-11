@@ -58,4 +58,9 @@ public class NewExperimentSteps {
     public void checkRewardFunctionDefaultValue(String reward) {
         newExperimentPage.checkRewardFunctionDefaultValue(reward);
     }
+
+    @Step
+    public void checkThatNotesSavedMsgShown() {
+        newExperimentPage.checkThatNotesSavedMsgShown();
+    }
 }

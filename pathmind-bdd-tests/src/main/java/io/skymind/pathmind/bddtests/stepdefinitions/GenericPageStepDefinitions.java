@@ -93,4 +93,9 @@ public class GenericPageStepDefinitions {
         Serenity.setSessionVariable("randomNumber").to(new Date().getTime());
         genericPageSteps.inputProjectNameToTheEditPopup(projectName + Serenity.sessionVariableCalled("randomNumber"));
     }
+
+    @Then("^Check that checkmark is shown$")
+    public void checkThatCheckmarkIsShown() {
+        genericPageSteps.checkThatCheckmarkIsShown();
+    }
 }

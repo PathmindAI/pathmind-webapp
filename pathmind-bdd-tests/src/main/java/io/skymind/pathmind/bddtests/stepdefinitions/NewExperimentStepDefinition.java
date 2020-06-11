@@ -55,4 +55,9 @@ public class NewExperimentStepDefinition {
     public void checkRewardFunctionDefaultValue(String reward) {
         newExperimentSteps.checkRewardFunctionDefaultValue(reward);
     }
+
+    @Then("^Check that Notes saved! msg shown$")
+    public void checkThatNotesSavedMsgShown() {
+        newExperimentSteps.checkThatNotesSavedMsgShown();
+    }
 }
