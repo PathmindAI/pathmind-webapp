@@ -19,15 +19,15 @@ class SettingsViewContent extends PolymerElement {
             </style>
             <div class="content">
                 <vaadin-vertical-layout style="width: 100%;" class="inner-content">
-                    <vaadin-horizontal-layout style="width: 100%;" class="block">
-                        <vaadin-vertical-layout class="info">
+                        <vaadin-vertical-layout style="width: 100%; height: 100%;">
                             <vaadin-combo-box id="ec2InstanceTypeCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="nativerlVersionCB" style="width: 100%;"> </vaadin-combo-box>
-                            <vaadin-button id="saveBtn" theme="primary">
-                                Save
-                            </vaadin-button>
+                            <vaadin-vertical-layout id="buttonsCont">
+                            	<vaadin-button id="saveBtn" theme="primary">
+                                    Save
+                            	</vaadin-button>
+                            </vaadin-vertical-layout>
                         </vaadin-vertical-layout>
-                    </vaadin-horizontal-layout>
                 </vaadin-vertical-layout>
             </div>
         `;
