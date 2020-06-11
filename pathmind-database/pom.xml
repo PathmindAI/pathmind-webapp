@@ -45,6 +45,7 @@
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
+                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                     <changeLogFile>src/main/resources/db/changelog/changelog-master.xml</changeLogFile>
                     <driver>org.postgresql.Driver</driver>
                     <url>${DB_URL}</url>
