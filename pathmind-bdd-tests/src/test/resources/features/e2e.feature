@@ -9,7 +9,7 @@ Feature: E2E
     When Upload model <model>
     When Click wizard model details next btn
     When Click wizard reward variables next btn
-    Then Check that experiment <project name> page is opened
+    Then Check that new experiment <project name> page is opened
     Then Input from file reward function <reward function file>
     Then Click project start run button
     Then Check experiment status completed with <limit> hours

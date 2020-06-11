@@ -10,7 +10,7 @@ Feature: Dashboard archive feature
     When In confirmation dialog click in 'Archive Project' button
     When Open projects page
     When Check that project not exist in project list AutotestProject
-    When Open archives tab
+    When Open projects/model/experiment archived tab
     When Check that project exist in project list AutotestProject
 
   @dashArchiveItem
@@ -26,7 +26,7 @@ Feature: Dashboard archive feature
     When In confirmation dialog click in 'Archive Model' button
     When Open projects page
     When Open project AutotestProject on projects page
-    When Check that model/experiment NOT exist in archived tab
+    When Check that model/experiment name 'AutotestProject' NOT exist in archived/not archived tab
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1 Draft' exist in archived/not archived tab
 
@@ -40,7 +40,7 @@ Feature: Dashboard archive feature
     When Open projects page
     When Open project AutotestProject on projects page
     When Click the model name 1
-    When Check that model/experiment NOT exist in archived tab
+    When Check that model/experiment name 'AutotestProject' NOT exist in archived/not archived tab
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1 Draft' exist in archived/not archived tab
 
@@ -55,7 +55,7 @@ Feature: Dashboard archive feature
     When Open projects page
     When Open project AutotestProject on projects page
     When Click the model name 1
-    When Check that model/experiment NOT exist in archived tab
+    When Check that model/experiment name 'AutotestProject' NOT exist in archived/not archived tab
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1' exist in archived/not archived tab
     Then Click the experiment name 1

@@ -6,7 +6,7 @@ Feature: Experiment page
     When Create new CoffeeShop project with single reward function
     When Click project start run button
     When Click in 'New Experiment' button
-    Then Check that newExperiment page opened
+    Then Check that new experiment AutotestProject page is opened
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1
@@ -21,7 +21,7 @@ Feature: Experiment page
     Then Click project start run button
     Then Click in 'Archive' button
     When In confirmation dialog click in 'Archive Experiment' button
-    When Check that model/experiment NOT exist in archived tab
+    When Check that model/experiment name '1' NOT exist in archived/not archived tab
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1' exist in archived/not archived tab
     Then Click the experiment name 1

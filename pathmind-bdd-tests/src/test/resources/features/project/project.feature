@@ -18,7 +18,7 @@ Feature: Project page
     When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
     When Click wizard model details next btn
     When Click wizard reward variables save draft btn
-    Then Check that experiment page of the AutotestProject opened
+    Then Check that new experiment AutotestProject page is opened
     When Open projects page
     When Open project AutotestProject on projects page
     Then Project page check that models count is 2
@@ -33,7 +33,7 @@ Feature: Project page
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1' exist in archived/not archived tab
     When Open projects/model/experiment archived tab
-    When Check that model/experiment NOT exist in archived tab
+    When Check that model/experiment name 'AutotestProject' NOT exist in archived/not archived tab
 
   Scenario: Check model page Unarchive btn, move model to active tab
     Given Login to the pathmind
@@ -42,10 +42,10 @@ Feature: Project page
     When Open project AutotestProject on projects page
     When Click model 1 archive/unarchive button
     When Confirm archive/unarchive popup
-    When Open archives tab
+    When Open projects/model/experiment archived tab
     When Click model 1 archive/unarchive button
     When Confirm archive/unarchive popup
-    When Check that model/experiment NOT exist in archived tab
+    When Check that model/experiment name 'AutotestProject' NOT exist in archived/not archived tab
     When Open models tab
     Then Check that model/experiment name '1' exist in archived/not archived tab
 
@@ -69,14 +69,14 @@ Feature: Project page
     When Open projects page
     When Click AutotestProject project archive/unarchive button
     When Confirm archive/unarchive popup
-    When Open archives tab
+    When Open projects/model/experiment archived tab
     When Open project AutotestProject on projects page
     When Click in 'Rename' button
     When Input project name AutotestEditName to the edit popup
     When Click in 'Rename Project' button
     Then Check that project name is AutotestEditName on project page
     When Open projects page
-    When Open archives tab
+    When Open projects/model/experiment archived tab
     When Check that project exist in project list AutotestEditName
     When Open project AutotestEditName on projects page
     Then Check that project name is AutotestEditName on project page

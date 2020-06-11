@@ -20,4 +20,4 @@ Feature: Dashboard breadcrumbs feature
     When Create new CoffeeShop project with single reward function
     When Open dashboard page
     When Click experiment breadcrumb AutotestProject from dashboard
-    Then Check that newExperiment page opened
+    Then Check that new experiment AutotestProject page is opened

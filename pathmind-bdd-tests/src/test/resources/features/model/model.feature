@@ -22,7 +22,7 @@ Feature: Model page
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1 Draft' exist in archived/not archived tab
     When Open projects/model/experiment archived tab
-    When Check that model/experiment NOT exist in archived tab
+    When Check that model/experiment name '1 Draft' NOT exist in archived/not archived tab
 
   Scenario: Check model page Unarchive btn
     Given Login to the pathmind
@@ -35,7 +35,7 @@ Feature: Model page
     When Open projects/model/experiment archived tab
     When Click experiment unarchive button
     When Confirm archive/unarchive popup
-    When Check that model/experiment NOT exist in archived tab
+    When Check that model/experiment name '1 Draft' NOT exist in archived/not archived tab
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1 Draft' exist in archived/not archived tab
 
@@ -55,8 +55,10 @@ Feature: Model page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
     When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
-    Then Check that button 'Save Draft' exists
-    And Check that there are 1 project(s) with 'Draft' tag in AutotestProject project page
+    Then Check that model successfully uploaded
+    When Open projects page
+    When Open project AutotestProject on projects page
+    Then Check that there are 1 model(s) with 'Draft' tag in project page
 
   @saveModelDraft
   Scenario: Check that after uploading a model and clicking in next, the model is still a draft
@@ -66,8 +68,10 @@ Feature: Model page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
     When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
-    Then Click wizard next step button
-    Then Check that there are 1 project(s) with 'Draft' tag in AutotestProject project page
+    Then Click wizard model details next btn
+    When Open projects page
+    When Open project AutotestProject on projects page
+    Then Check that there are 1 model(s) with 'Draft' tag in project page
 
   @saveModelDraft
   Scenario: Check Save Model Draft with reward variables
@@ -77,17 +81,21 @@ Feature: Model page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
     When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
-    When Click wizard next step button
+    When Click wizard model details next btn
     Then Check that button 'Save Draft' exists
     When Input reward variable names kitchen_cleanliness
     When Click wizard reward variables save draft btn
     Then Check that the notification 'Draft successfully saved' is shown
-    And Check that there are 1 project(s) with 'Draft' tag in AutotestProject project page
-    When Click the first draft model
+    When Open projects page
+    When Open project AutotestProject on projects page
+    Then Check that there are 1 model(s) with 'Draft' tag in project page
+    When Click the model name 2
     When Click wizard model details next btn
     And Check that there is a variable named kitchen_cleanliness
-    When Click wizard next step button
-    Then Check that there are 0 project(s) with 'Draft' tag in AutotestProject project page
+    When Click wizard reward variables next btn
+    When Open projects page
+    When Open project AutotestProject on projects page
+    Then Check that there are 0 model(s) with 'Draft' tag in project page
 
   Scenario: Check duplicated experiment names on model view
     Given Login to the pathmind
@@ -101,6 +109,6 @@ Feature: Model page
     When Click the model name 1
     When Check that model/experiment name '2 Draft' exist in archived/not archived tab
     When Check that model/experiment name '1 Draft' NOT exist in archived/not archived tab
-    When Open archives tab
+    When Open projects/model/experiment archived tab
     When Check that model/experiment name '1 Draft' exist in archived/not archived tab
     When Check that model/experiment name '2 Draft' NOT exist in archived/not archived tab

@@ -4,12 +4,11 @@ Feature: Dashboard page
   @saveModelDraft
   Scenario Outline: Check that Model Drafts are shown correctly
     Given Login to the pathmind
-    When Create new empty project
+    When Create new CoffeeShop project with draft model
     When Open dashboard page
     Then Check AutotestProject stage Set up simulation is stage-active
     When <Click action>
-    Then Check that resumeUpload page is opened
-    And Check that we can add more info to the draft model
+    Then Check that model details page is opened
 
     Examples:
       | Click action                              |

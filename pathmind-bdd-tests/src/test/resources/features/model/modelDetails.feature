@@ -9,7 +9,7 @@ Feature: Models details
     When Upload model <model>
     When Click wizard model details next btn
     When Click wizard reward variables next btn
-    Then Check that experiment <project name> page is opened
+    Then Check that new experiment <project name> page is opened
     Then Input from file reward function <reward function file>
     When Open projects page
     When Open project <project name> on projects page
@@ -30,7 +30,7 @@ Feature: Models details
     When Upload model <model>
     When Click wizard model details next btn
     When Click wizard reward variables next btn
-    Then Check that experiment <project name> page is opened
+    Then Check that new experiment <project name> page is opened
     Then Input from file reward function <reward function file>
     When Open projects page
     When Open project <project name> on projects page
@@ -53,7 +53,7 @@ Feature: Models details
     When Click wizard model details next btn
     When Input reward variable names <variables>
     When Click wizard reward variables next btn
-    Then Check that experiment <project name> page is opened
+    Then Check that new experiment <project name> page is opened
     Then Input from file reward function <reward function file>
     When Open projects page
     When Open project <project name> on projects page
@@ -76,7 +76,7 @@ Feature: Models details
     When Click wizard model details next btn
     When Input reward variable names <variables>
     When Click wizard reward variables next btn
-    Then Check that experiment <project name> page is opened
+    Then Check that new experiment <project name> page is opened
     Then Input from file reward function <reward function file>
     When Open projects page
     When Open project <project name> on projects page

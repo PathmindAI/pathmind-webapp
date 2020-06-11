@@ -35,5 +35,5 @@ Feature: Wizard page
     When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
     When Click wizard model details next btn
     When Click wizard reward variables next btn
-    Then Check that experiment AutotestProject page is opened
+    Then Check that new experiment AutotestProject page is opened
     Then Check Reward Function default value <>

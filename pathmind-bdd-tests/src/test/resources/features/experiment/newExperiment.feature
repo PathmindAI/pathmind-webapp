@@ -9,7 +9,7 @@ Feature: New experiment page
     When Open project AutotestProject on projects page
     Then Click the model name 1
     Then Click the experiment name 1
-    Then Check that experiment page of the AutotestProject opened
+    Then Check that new experiment AutotestProject page is opened
 
   Scenario: Click projectS breadcrumb from new experiment page
     Given Login to the pathmind
@@ -18,7 +18,7 @@ Feature: New experiment page
     When Open project AutotestProject on projects page
     Then Click the model name 1
     Then Click the experiment name 1
-    Then Check that newExperiment page opened
+    Then Check that new experiment AutotestProject page is opened
     When Click projects breadcrumb btn
     Then Check that projects page opened
 
@@ -29,7 +29,7 @@ Feature: New experiment page
     When Open project AutotestProject on projects page
     Then Click the model name 1
     Then Click the experiment name 1
-    Then Check that newExperiment page opened
+    Then Check that new experiment AutotestProject page is opened
     When Click project/ breadcrumb btn
     Then Check that project AutotestProject page is opened
 

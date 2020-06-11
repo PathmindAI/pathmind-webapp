@@ -46,4 +46,44 @@ public class ModelPageSteps {
     public void checkModelPageModelDetailsRewardVariableNameIs(String variableNumber, String variableName) {
         modelPage.checkModelPageModelDetailsRewardVariableNameIs(variableNumber, variableName);
     }
+
+    @Step
+    public void clickTheExperimentName(String experimentName) {
+        modelPage.clickTheExperimentName(experimentName);
+    }
+
+    @Step
+    public void clickExperimentArchiveButton() {
+        modelPage.clickExperimentArchiveButton();
+    }
+
+    @Step
+    public void clickExperimentUnArchiveButton() {
+        modelPage.clickExperimentUnArchiveButton();
+    }
+
+    @Step
+    public void checkThatModelsPageOpened() {
+        modelPage.checkThatModelsPageOpened();
+    }
+
+    @Step
+    public void clickProjectPageNewExperimentButton() {
+        modelPage.clickProjectPageNewExperimentButton();
+    }
+
+    @Step
+    public void checkModelPageElements() {
+        modelPage.checkModelPageElements();
+    }
+
+    @Step
+    public void checkExperimentModelStatusIsStarting(String status) {
+        modelPage.checkExperimentModelStatusIsStarting(status);
+    }
+
+    @Step
+    public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
+        modelPage.checkOnTheModelPageExperimentNotesIs(experiment, note);
+    }
 }

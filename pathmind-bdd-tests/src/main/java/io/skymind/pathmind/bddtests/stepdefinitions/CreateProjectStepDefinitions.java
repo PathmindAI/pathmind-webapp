@@ -3,7 +3,12 @@ package io.skymind.pathmind.bddtests.stepdefinitions;
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.GenericPageSteps;
 import io.skymind.pathmind.bddtests.steps.HomePageSteps;
+import io.skymind.pathmind.bddtests.steps.NewExperimentSteps;
+import io.skymind.pathmind.bddtests.steps.wizard.ModelDetailsSteps;
+import io.skymind.pathmind.bddtests.steps.wizard.ModelUploadSteps;
+import io.skymind.pathmind.bddtests.steps.wizard.NewProjectSteps;
 import io.skymind.pathmind.bddtests.steps.ProjectsPageSteps;
+import io.skymind.pathmind.bddtests.steps.wizard.RewardVariablesSteps;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
 
@@ -17,53 +22,63 @@ public class CreateProjectStepDefinitions {
     private HomePageSteps homePageSteps;
     @Steps
     private GenericPageSteps genericPageSteps;
+    @Steps
+    private NewProjectSteps newProjectSteps;
+    @Steps
+    private ModelUploadSteps modelUploadSteps;
+    @Steps
+    private ModelDetailsSteps modelDetailsSteps;
+    @Steps
+    private NewExperimentSteps newExperimentSteps;
+    @Steps
+    private RewardVariablesSteps rewardVariablesSteps;
 
     @When("^Create new empty project$")
     public void createNewEmptyProject() {
         homePageSteps.openProjectsPage();
         projectsPageSteps.clickCreateNewProjectBtn();
         Serenity.setSessionVariable("randomNumber").to(new Date().getTime());
-        projectsPageSteps.inputNameOfTheNewProject("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
-        projectsPageSteps.clickProjectNameCreateBtn();
+        newProjectSteps.inputNameOfTheNewProject("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
+        newProjectSteps.clickProjectNameCreateBtn();
     }
 
     @When("^Create new CoffeeShop project with draft model$")
     public void createNewCoffeeShopProjectWithDraftModel() {
         createNewEmptyProject();
-        projectsPageSteps.uploadModelFile("Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip");
-        projectsPageSteps.checkThatModelSuccessfullyUploaded();
+        modelUploadSteps.uploadModelFile("Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip");
+        modelDetailsSteps.checkThatModelSuccessfullyUploaded();
     }
 
     @When("^Create new CoffeeShop project with draft experiment$")
     public void createNewProjectWithModelAndDraftExperiment() {
         createNewCoffeeShopProjectWithDraftModel();
-        projectsPageSteps.clickWizardModelDetailsNextBtn();
-        projectsPageSteps.clickWizardRewardVariableNamesNextBtn();
-        projectsPageSteps.checkThatExperimentPageOpened("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
+        modelDetailsSteps.clickWizardModelDetailsNextBtn();
+        rewardVariablesSteps.clickWizardRewardVariableNamesNextBtn();
+        newExperimentSteps.checkThatExperimentPageOpened("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
     }
 
     @When("^Create new CoffeeShop project with single reward function$")
     public void createNewProjectWithModel() {
         createNewProjectWithModelAndDraftExperiment();
-        projectsPageSteps.inputRewardFunctionFile("Production_Single_Agent/Production_Single_Agent_Reward.txt");
-        projectsPageSteps.clickProjectSaveDraftBtn();
+        newExperimentSteps.inputRewardFunctionFile("Production_Single_Agent/Production_Single_Agent_Reward.txt");
+        newExperimentSteps.clickProjectSaveDraftBtn();
     }
 
     @When("^Create new CoffeeShop project with experiment note '(.*)'$")
     public void createNewProjectWitExperimentNote(String note) {
         createNewProjectWithModelAndDraftExperiment();
         projectsPageSteps.inputExperimentNotes(note);
-        projectsPageSteps.clickProjectSaveDraftBtn();
+        newExperimentSteps.clickProjectSaveDraftBtn();
     }
 
     @When("^Create new CoffeeShop project with variable names: (.*)$")
     public void createNewProjectWithVariableNames(String commaSeparatedVariableNames) {
         createNewCoffeeShopProjectWithDraftModel();
-        projectsPageSteps.clickWizardModelDetailsNextBtn();
-        projectsPageSteps.inputVariableNames(commaSeparatedVariableNames.split(","));
-        projectsPageSteps.clickWizardRewardVariableNamesNextBtn();
-        projectsPageSteps.checkThatExperimentPageOpened("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
-        projectsPageSteps.inputRewardFunctionFile("Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt");
-        projectsPageSteps.clickProjectSaveDraftBtn();
+        modelDetailsSteps.clickWizardModelDetailsNextBtn();
+        newExperimentSteps.inputVariableNames(commaSeparatedVariableNames.split(","));
+        rewardVariablesSteps.clickWizardRewardVariableNamesNextBtn();
+        newExperimentSteps.checkThatExperimentPageOpened("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
+        newExperimentSteps.inputRewardFunctionFile("Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt");
+        newExperimentSteps.clickProjectSaveDraftBtn();
     }
 }
