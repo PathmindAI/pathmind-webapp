@@ -31,6 +31,7 @@ import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.security.Routes;
@@ -47,12 +48,12 @@ import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ActionsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
+import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import lombok.extern.slf4j.Slf4j;
 
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
-@Slf4j
 public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<String> {
 
 	private static final int PROJECT_ID_SEGMENT = 0;
@@ -78,6 +79,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private List<RewardVariable> rewardVariables = new ArrayList<>();
     private List<Action> actions = new ArrayList<>();
+    private List<Observation> observations = new ArrayList<>();
 
 	private Binder<Model> modelBinder;
 
@@ -85,6 +87,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private ModelDetailsWizardPanel modelDetailsWizardPanel;
 	private RewardVariablesPanel rewardVariablesPanel;
 	private ActionsPanel actionsPanel;
+	private ObservationsPanel observationsPanel;
 
 	private List<Component> wizardPanels;
 
@@ -109,6 +112,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload());
 		rewardVariablesPanel = new RewardVariablesPanel();
 		actionsPanel = new ActionsPanel();
+		observationsPanel = new ObservationsPanel();
 
 		modelBinder.readBean(model);
 
@@ -116,7 +120,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel,
 				rewardVariablesPanel,
-				actionsPanel);
+				actionsPanel,
+				observationsPanel);
 
 		if (isResumeUpload()) {
 			setVisibleWizardPanel(modelDetailsWizardPanel);
@@ -132,6 +137,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		rewardVariablesPanel.addSaveDraftClickListener(click -> handleRewardVariablesSaveDraftClicked());
 		actionsPanel.addButtonClickListener(click -> handleActionsClicked());
 		actionsPanel.addSaveDraftClickListener(click -> handleActionsSaveDraftClicked());
+		observationsPanel.addButtonClickListener(click -> handleObservationsClicked());
+		observationsPanel.addSaveDraftClickListener(click -> handleObservationsSaveDraftClicked());
 
 		Div sectionTitleWrapper = new Div();
 		
@@ -146,7 +153,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel,
 				rewardVariablesPanel,
-				actionsPanel);
+				actionsPanel,
+		        observationsPanel);
 
 		wrapper.addClassName("view-section");
 		wrapper.setSpacing(false);
@@ -165,6 +173,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		NotificationUtils.showSuccess("Draft successfully saved");
 	}
 	private void handleActionsSaveDraftClicked() {
+	    modelService.updateModelActions(model, actionsPanel.getActions());
+	    NotificationUtils.showSuccess("Draft successfully saved");
+	}
+	private void handleObservationsSaveDraftClicked() {
 	    modelService.updateModelActions(model, actionsPanel.getActions());
 	    NotificationUtils.showSuccess("Draft successfully saved");
 	}
@@ -225,7 +237,14 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	    if (!actionsPanel.isInputValueValid()) {
 	        return;
 	    }
-        saveAndNavigateToNewExperiment();
+	    observationsPanel.setupObservationTable(model.getNumberOfObservations(), observations);
+	    setVisibleWizardPanel(observationsPanel);
+	}
+	private void handleObservationsClicked() {
+	    if (!actionsPanel.isInputValueValid()) {
+	        return;
+	    }
+	    saveAndNavigateToNewExperiment();
 	}
 
 	private void handleMoreDetailsClicked()

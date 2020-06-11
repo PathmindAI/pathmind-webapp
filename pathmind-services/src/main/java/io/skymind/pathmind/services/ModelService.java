@@ -2,6 +2,7 @@ package io.skymind.pathmind.services;
 
 import io.skymind.pathmind.shared.data.Action;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.RewardVariable;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public interface ModelService {
     long resumeModelCreation(Model model, String modelNotes);
     void updateModelRewardVariables(Model model, List<RewardVariable> rewardVariables);
     void updateModelActions(Model model, List<Action> actions);
+    void updateModelObservations(Model model, List<Observation> observations);
     List<RewardVariable> getModelRewardVariables(long modelId);
     String buildModelPath(long modelId);
 }

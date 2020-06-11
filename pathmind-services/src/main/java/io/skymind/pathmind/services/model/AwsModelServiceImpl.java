@@ -4,7 +4,9 @@ import io.skymind.pathmind.db.dao.ActionDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.shared.data.Action;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.shared.data.RewardVariable;
@@ -25,13 +27,15 @@ class AwsModelServiceImpl implements ModelService {
     private final ModelDAO modelDAO;
     private final RewardVariableDAO rewardVariableDAO;
     private final ActionDAO actionDAO;
+    private final ObservationDAO observationDAO;
     private final AWSApiClient awsApiClient;
 
     public AwsModelServiceImpl(ModelDAO modelDAO, RewardVariableDAO rewardVariableDAO,
-                               ActionDAO actionDAO, AWSApiClient awsApiClient) {
+                               ActionDAO actionDAO, ObservationDAO observationDAO, AWSApiClient awsApiClient) {
         this.modelDAO = modelDAO;
         this.rewardVariableDAO = rewardVariableDAO;
         this.actionDAO = actionDAO;
+        this.observationDAO = observationDAO;
         this.awsApiClient = awsApiClient;
     }
 
@@ -68,6 +72,16 @@ class AwsModelServiceImpl implements ModelService {
         if (actions != null) {
             actions.forEach(a -> a.setModelId(model.getId()));
             actionDAO.saveActions(actions);
+        }
+    }
+    
+    @Override
+    public void updateModelObservations(Model model, List<Observation> observations) {
+        Assert.notNull(model, "Model should be provided");
+        observationDAO.deleteModelObservations(model.getId());
+        if (observations != null) {
+            observations.forEach(obs -> obs.setModelId(model.getId()));
+            observationDAO.saveObservations(observations);
         }
     }
 
