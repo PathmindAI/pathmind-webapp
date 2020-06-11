@@ -40,7 +40,7 @@ def runMigrations() {
     sh """
     cd ${WORKSPACE}
     mvn clean install
-    set + x
+    set +x
     export DB_URL='jdbc:postgresql://postgres.${env.BUILD_NUMBER}/pathminddb?user=pathminddb&password=Asdf1234'
     cd ${WORKSPACE}/pathmind-database && mvn liquibase:update
     """
