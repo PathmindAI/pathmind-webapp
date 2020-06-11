@@ -1,5 +1,11 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -15,10 +21,10 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 import com.vaadin.flow.server.Command;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
@@ -28,8 +34,8 @@ import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
@@ -46,11 +52,6 @@ import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavbar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
@@ -163,24 +164,31 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private VerticalLayout getRewardFnEditorPanel() {
 		rewardFunctionEditor = new RewardFunctionEditor();
+		rewardFunctionEditor.addValidationListener(evt -> {
+		    errorMessageWrapper.removeAll();
+		    final List<String> errors = new ArrayList<>();
+		    if (!evt.isValid()) {
+		        evt.getInvalidLineVariableIndexPairs().forEach(pair -> errors.add(String.format("ERROR: Line %s: Invalid variable index:%s", pair.getFirst(), pair.getSecond())));
+		    } else {
+		        errors.addAll(rewardValidationService.validateRewardFunction(rewardFunctionEditor.getValue()));
+		    }
+		    final String errorText = String.join("\n", errors);
+		    final String wrapperClassName = (errorText.length() == 0) ? "noError" : "hasError";
+		    if ((errorText.length() == 0)) {
+		        errorMessageWrapper.add(new Icon(VaadinIcon.CHECK), new Span("No Errors"));
+		    } else {
+		        errorMessageWrapper.setText(errorText);
+		    }
+		    errorMessageWrapper.removeClassNames("hasError", "noError");
+		    errorMessageWrapper.addClassName(wrapperClassName);
+		    
+		    startRunButton.setEnabled(canStartTraining());
+		    saveDraftButton.setEnabled(canSaveDataInDB());
+		    
+		});
 		rewardFunctionEditor.addValueChangeListener(changeEvent -> {
 			unsavedChanges.setVisible(true);
-			final List<String> errors = rewardValidationService.validateRewardFunction(changeEvent.getValue());
-			final String errorText = String.join("\n", errors);
-			final String wrapperClassName = (errorText.length() == 0) ? "noError" : "hasError";
-
-			errorMessageWrapper.removeAll();
-			if ((errorText.length() == 0)) {
-				errorMessageWrapper.add(new Icon(VaadinIcon.CHECK), new Span("No Errors"));
-			} else {
-				errorMessageWrapper.setText(errorText);
-			}
-			errorMessageWrapper.removeClassNames("hasError", "noError");
-			errorMessageWrapper.addClassName(wrapperClassName);
 			rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > REWARD_FUNCTION_MAX_LENGTH);
-
-			startRunButton.setEnabled(canStartTraining());
-			saveDraftButton.setEnabled(canSaveDataInDB());
 		});
 		rewardEditorErrorLabel = LabelFactory.createLabel("Reward Function must not exceed " + REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
 		rewardEditorErrorLabel.setVisible(false);
@@ -221,7 +229,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private void handleRewardVariableNameChanged(List<RewardVariable> updatedRewardVariables) {
 		unsavedChanges.setVisible(true);
-		rewardFunctionEditor.setVariableNames(updatedRewardVariables);
+		rewardFunctionEditor.setVariableNames(updatedRewardVariables, experiment.getModel().getRewardVariablesCount());
 		startRunButton.setEnabled(canStartTraining());
 		saveDraftButton.setEnabled(canSaveDataInDB());
 	}
@@ -360,11 +368,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		experimentsNavbar.setVisible(!experiment.isArchived());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());		
 		if (!rewardVariables.isEmpty()) {
-			rewardFunctionEditor.setVariableNames(rewardVariables);
 			rewardVariablesTable.setValue(rewardVariables);
 		} else {
 			rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
 		}
+		rewardFunctionEditor.setVariableNames(rewardVariables, experiment.getModel().getRewardVariablesCount());
 		unsavedChanges.setVisible(false);
 		notesSavedHint.setVisible(false);
 	}
