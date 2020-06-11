@@ -93,13 +93,10 @@ class ModelRepository
 	}
 
     protected static long getUserIdForModel(DSLContext ctx, long modelId) {
-        return ctx.select(PROJECT.PATHMIND_USER_ID)
+	    return ctx.select(PROJECT.PATHMIND_USER_ID)
                 .from(PROJECT)
-                .where(PROJECT.ID.eq(
-                        ctx.select(MODEL.PROJECT_ID)
-                                .from(MODEL)
-                                .where(MODEL.ID.eq(modelId))
-                ))
+                .leftJoin(MODEL).on(MODEL.PROJECT_ID.eq(PROJECT.ID))
+                .where(MODEL.ID.eq(modelId))
                 .fetchOne(PROJECT.PATHMIND_USER_ID);
     }
 }
