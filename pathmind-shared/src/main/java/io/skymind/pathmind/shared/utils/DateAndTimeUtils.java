@@ -48,7 +48,9 @@ public class DateAndTimeUtils {
         long hours = Math.round(totalSeconds / 3600d);
         long minutes = Math.round((totalSeconds % 3600) / 60d);
 
-        if (hours > 0)
+        if (hours > 12)
+            return "12+ hr";
+        else if (hours > 0)
             return hours + " hr";
         else if (minutes > 0)
             return minutes + " min";
