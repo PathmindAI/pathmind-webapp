@@ -45,6 +45,7 @@ import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.webapp.ui.views.model.components.ActionsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
@@ -83,6 +84,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private UploadModelWizardPanel uploadModelWizardPanel;
 	private ModelDetailsWizardPanel modelDetailsWizardPanel;
 	private RewardVariablesPanel rewardVariablesPanel;
+	private ActionsPanel actionsPanel;
 
 	private List<Component> wizardPanels;
 
@@ -106,13 +108,15 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode);
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload());
 		rewardVariablesPanel = new RewardVariablesPanel();
+		actionsPanel = new ActionsPanel();
 
 		modelBinder.readBean(model);
 
 		wizardPanels = Arrays.asList(
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel,
-				rewardVariablesPanel);
+				rewardVariablesPanel,
+				actionsPanel);
 
 		if (isResumeUpload()) {
 			setVisibleWizardPanel(modelDetailsWizardPanel);
@@ -126,6 +130,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		modelDetailsWizardPanel.addSaveDraftClickListener(click -> handleSaveDraftClicked());
 		rewardVariablesPanel.addButtonClickListener(click -> handleRewardVariablesClicked());
 		rewardVariablesPanel.addSaveDraftClickListener(click -> handleRewardVariablesSaveDraftClicked());
+		actionsPanel.addButtonClickListener(click -> handleActionsClicked());
+		actionsPanel.addSaveDraftClickListener(click -> handleActionsSaveDraftClicked());
 
 		Div sectionTitleWrapper = new Div();
 		
@@ -139,7 +145,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 				sectionTitleWrapper,
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel,
-				rewardVariablesPanel);
+				rewardVariablesPanel,
+				actionsPanel);
 
 		wrapper.addClassName("view-section");
 		wrapper.setSpacing(false);
@@ -155,12 +162,13 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		segmentIntegrator.modelDraftSaved();
 		List<RewardVariable> rewardVariables = rewardVariablesPanel.getRewardVariables();
 		modelService.updateModelRewardVariables(model, rewardVariables);
-		// Note: if we decide to keep all model related info in the same screen, we might create a new method
-        // that will update all such info in the db at the same time. For now I'm keeping them split just to be able
-        // to experiment with the place where it will last.
-		modelService.updateModelActions(model, rewardVariablesPanel.getActions());
 		NotificationUtils.showSuccess("Draft successfully saved");
 	}
+	private void handleActionsSaveDraftClicked() {
+	    modelService.updateModelActions(model, actionsPanel.getActions());
+	    NotificationUtils.showSuccess("Draft successfully saved");
+	}
+	
 
 	private void handleSaveDraftClicked() {
 		if(!FormUtils.isValidForm(modelBinder, model)) {
@@ -203,9 +211,21 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	private void handleRewardVariablesClicked() {
-		if (rewardVariablesPanel.isInputValueValid()) {
-			saveAndNavigateToNewExperiment();
+		if (!rewardVariablesPanel.isInputValueValid()) {
+		    return;
 		}
+		if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
+            actionsPanel.setupActionsTable(model.getNumberOfPossibleActions(), actions);
+            setVisibleWizardPanel(actionsPanel);
+        } else {
+            saveAndNavigateToNewExperiment();
+        }
+	}
+	private void handleActionsClicked() {
+	    if (!actionsPanel.isInputValueValid()) {
+	        return;
+	    }
+        saveAndNavigateToNewExperiment();
 	}
 
 	private void handleMoreDetailsClicked()
@@ -226,9 +246,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		} else {
 			modelService.updateDraftModel(model, modelNotes);
 			rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount(), rewardVariables);
-            if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
-                rewardVariablesPanel.setupActionsTable(model.getNumberOfPossibleActions(), actions);
-            }
 			setVisibleWizardPanel(rewardVariablesPanel);
 		}
 	}
@@ -241,7 +258,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             modelService.updateModelRewardVariables(model, rewardVariableList);
         }
         if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
-            modelService.updateModelActions(model, rewardVariablesPanel.getActions());
+            modelService.updateModelActions(model, actionsPanel.getActions());
         }
 
 		getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));

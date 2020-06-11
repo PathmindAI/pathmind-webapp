@@ -10,28 +10,26 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.shared.data.Action;
-import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
-public class RewardVariablesPanel extends VerticalLayout
+public class ActionsPanel extends VerticalLayout
 {
 	private VerticalLayout formPanel = new VerticalLayout();
-	private RewardVariablesTable rewardVariablesTable;
+    private ActionsTable actionsTable;
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
 	private Button draftButton = new Button("Save Draft", new Icon(VaadinIcon.FILE));
 
-	public RewardVariablesPanel()
+	public ActionsPanel()
 	{
 		setupForm();
 		nextStepButton.setIconAfterText(true);
@@ -39,12 +37,12 @@ public class RewardVariablesPanel extends VerticalLayout
 
 		draftButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-		HorizontalLayout rewardVariablesNameLine = WrapperUtils.wrapWidthFullBetweenHorizontal(
-				LabelFactory.createLabel("Reward Variable Names", NO_TOP_MARGIN_LABEL),
+		HorizontalLayout actionNamesLine = WrapperUtils.wrapWidthFullBetweenHorizontal(
+				LabelFactory.createLabel("Action Names", NO_TOP_MARGIN_LABEL),
 				draftButton);
-		rewardVariablesNameLine.getStyle().set("align-items", "center");
+		actionNamesLine.getStyle().set("align-items", "center");
 
-		add(rewardVariablesNameLine,
+		add(actionNamesLine,
 				GuiUtils.getFullWidthHr(),
 				formPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
@@ -63,37 +61,35 @@ public class RewardVariablesPanel extends VerticalLayout
 	}
 
 	private void setupForm() {
-		formPanel.add(new Paragraph("You have created a function to gather reward variables in your simulation. Let’s give them variable names to make it easier to remember what they reference."));
-		formPanel.add(getRewardVariablesPanel());
+		formPanel.add(getActionsPanel());
 		formPanel.setPadding(false);
 	}
 
-	public void setupRewardVariablesTable(int rewardVariablesCount, List<RewardVariable> rewardVariables) {
-		rewardVariablesTable = new RewardVariablesTable();
-		rewardVariablesTable.setVariableSize(Math.max(rewardVariablesCount, rewardVariables.size()));
-		if (!rewardVariables.isEmpty()) {
-			rewardVariablesTable.setValue(rewardVariables);
-		}
-		formPanel.add(rewardVariablesTable);
-	}
+    public void setupActionsTable(int numberOfPossibleActions, List<Action> actions) {
+	    actionsTable = new ActionsTable();
+	    actionsTable.setNumberOfItems(numberOfPossibleActions);
+	    if (!actions.isEmpty()) {
+            actionsTable.setValue(actions);
+        }
+	    formPanel.add(actionsTable);
+    }
 
-	private Component getRewardVariablesPanel() {
+	private Component getActionsPanel() {
 		VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
-				LabelFactory.createLabel("Let’s give each variable a name", BOLD_LABEL),
-				LabelFactory.createLabel("This will make it easier to understand when you’re creating reward functions."));
+				LabelFactory.createLabel("Let’s give each action a name", BOLD_LABEL));
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
 	}
 	
-	public List<RewardVariable> getRewardVariables(){
-		if (rewardVariablesTable == null) {
-			return null;
-		} else {
-			return rewardVariablesTable.getValue();
-		}
-	}
+    public List<Action> getActions(){
+        if (actionsTable == null) {
+            return null;
+        } else {
+            return actionsTable.getValue();
+        }
+    }
 
 	public boolean isInputValueValid() {
-        return !rewardVariablesTable.isInvalid();
+        return actionsTable == null || !actionsTable.isInvalid();
 	}
 }
