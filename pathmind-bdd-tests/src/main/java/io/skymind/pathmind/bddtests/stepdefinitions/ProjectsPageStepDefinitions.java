@@ -1,8 +1,5 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
-import java.util.Date;
-
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.HomePageSteps;
@@ -46,27 +43,6 @@ public class ProjectsPageStepDefinitions {
     public void openProjectsTab() {
         projectsPageSteps.openProjectsTab();
     }
-
-//    @Then("^Check that newExperiment page opened$")
-//    public void checkThatNewExperimentPageOpened() {
-//        projectsPageSteps.checkThatNewExperimentPageOpened();
-//    }
-
-//    @When("^Check that experiment page of the (.*) opened$")
-//    public void checkThatExperimentPageOfTheProjectOpened(String projectName) {
-//        projectsPageSteps.checkThatExperimentPageOfTheProjectOpened(projectName + Serenity.sessionVariableCalled("randomNumber"));
-//    }
-
-//    @When("^Open archives tab$")
-//    public void openArchivesTab() {
-//        projectsPageSteps.openArchivesTab();
-//    }
-
-//    @Then("^Check that the Notes field has the value \"(.*)\"$")
-//    public void checkThatTheNotesFieldHasTheValue(String text) {
-//        projectsPageSteps.checkThatTheNotesFieldHasTheValue(text);
-//    }
-
 
     @When("^Click edit (.*) project icon from projects page$")
     public void clickEditProjectIconFromProjectsPage(String projectName) {

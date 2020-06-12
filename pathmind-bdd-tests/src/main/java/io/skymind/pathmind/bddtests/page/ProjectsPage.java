@@ -2,28 +2,19 @@ package io.skymind.pathmind.bddtests.page;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
 import io.skymind.pathmind.bddtests.Utils;
-import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 
@@ -73,8 +64,6 @@ public class ProjectsPage extends PageObject {
         getDriver().findElement(By.xpath("//vaadin-button[text()='New Project']")).click();
     }
 
-
-
     public void checkThatProjectExistInProjectsList(String projectName) {
         utils.moveToElementRepeatIfStaleException(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-grid-cell-content"));
         assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span")), hasItem(projectName));
@@ -85,14 +74,11 @@ public class ProjectsPage extends PageObject {
         experimentNotesField.sendKeys(notes);
     }
 
-    public void clickTheModelName(String modelName) {
-        getDriver().findElement(By.xpath("//vaadin-grid-cell-content[normalize-space(text())='" + modelName + "']")).click();
-    }
-
     public void clickProjectsArchiveButton(String projectName) {
         waitABit(2000);
         getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-grid-cell-content/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button")).click();
     }
+
     public void clickArchivesTab() {
         utils.clickElementRepeatIfStaleException(By.xpath("//vaadin-tab[text()='Archives']"));
     }
@@ -106,6 +92,7 @@ public class ProjectsPage extends PageObject {
     }
 
     public void openProjectOnProjectsPage(String projectName) {
+        waitABit(2500);
         WebElement project = getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-grid-cell-content"));
         waitFor(ExpectedConditions.elementToBeClickable(project));
         JavascriptExecutor executor = (JavascriptExecutor) getDriver();

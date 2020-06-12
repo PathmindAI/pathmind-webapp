@@ -12,12 +12,6 @@ public class ProjectsPageSteps {
         projectsPage.clickCreateNewProjectBtn();
     }
 
-
-
-
-
-
-
     @Step
     public void checkThatProjectExistInProjectsList(String projectName) {
         projectsPage.checkThatProjectExistInProjectsList(projectName);
@@ -44,47 +38,12 @@ public class ProjectsPageSteps {
     }
 
     @Step
-    public void checkThatNewExperimentPageOpened() {
-        projectsPage.checkThatNewExperimentPageOpened();
-    }
-
-    @Step
-    public void checkThatExperimentPageOfTheProjectOpened(String projectName) {
-        projectsPage.checkThatExperimentPageOfTheProjectOpened(projectName);
-    }
-
-    @Step
-    public void openArchivesTab() {
-        projectsPage.clickArchivesTab();
-    }
-
-    @Step
     public void openProjectsTab() {
         projectsPage.clickProjectsTab();
     }
 
     @Step
-    public void clickTheFirstDraftModel() {
-        projectsPage.clickTheFirstDraftModel();
-    }
-
-    @Step
-    public void checkThatTheNotesFieldHasTheValue(String text) {
-        projectsPage.checkThatTheNotesFieldHasTheValue(text);
-    }
-
-    @Step
-    public void checkThatRewardVariablesPageOpened() {
-        projectsPage.checkThatRewardVariablesPageOpened();
-    }
-
-    @Step
     public void clickEditProjectIconFromProjectsPage(String projectName) {
         projectsPage.clickEditProjectIconFromProjectsPage(projectName);
-    }
-
-    @Step
-    public void checkNewProjectNameErrorShown(String error) {
-        projectsPage.checkNewProjectNameErrorShown(error);
     }
 }
