@@ -127,6 +127,7 @@ class RunRepository
     protected static void updateStatus(DSLContext ctx, Run run) {
         ctx.update(Tables.RUN)
                 .set(Tables.RUN.STATUS, run.getStatus())
+                .set(Tables.RUN.EC2_CREATED_AT, run.getEc2CreatedAt())
                 .set(Tables.RUN.STOPPED_AT, run.getStoppedAt())
 				.set(Tables.RUN.TRAINING_ERROR_ID, run.getTrainingErrorId())
 				.set(Tables.RUN.RLLIB_ERROR, run.getRLibError())
