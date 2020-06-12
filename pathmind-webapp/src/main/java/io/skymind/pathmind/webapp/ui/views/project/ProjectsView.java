@@ -131,7 +131,7 @@ public class ProjectsView extends PathMindDefaultView
 		projectGrid.sort(Arrays.asList(new GridSortOrder<>(lastActivityColumn, SortDirection.DESCENDING)));
 
 		projectGrid.addItemClickListener(event ->
-				getUI().ifPresent(ui -> ui.navigate(ProjectView.class, event.getItem().getId())));
+                getUI().ifPresent(ui -> ui.navigate(ProjectView.class, event.getItem().getId())));
 	}
 
 	private List<Project> getProjects() {
@@ -140,10 +140,11 @@ public class ProjectsView extends PathMindDefaultView
 
 	private void renameProject(Project project) {
 		RenameProjectDialog dialog = new RenameProjectDialog(project, projectDAO, updateProjectName -> {
-			projectGrid.getDataProvider().refreshItem(project);
-			// JS is used because projectGrid.recalculateColumnWidths(); does not work; probably a Vaadin Grid issue
-			projectGrid.getElement().executeJs("setTimeout(() => { this.recalculateColumnWidths() }, 0)");
-		});
+            projectGrid.getDataProvider().refreshItem(project);
+            // JS is used because projectGrid.recalculateColumnWidths(); does not work; probably a Vaadin Grid issue
+            // After recalculating the column widths, some tooltips may not be needed so they need to be removed
+			projectGrid.getElement().executeJs("setTimeout(() => { $0.recalculateColumnWidths(); $0.querySelectorAll('[tooltip-content]').forEach(el => {if (el.querySelector('span').scrollWidth === el.querySelector('span').clientWidth) { el.removeAttribute('tooltip-content'); } })}, 0)");
+        });
 		dialog.open();
 	}
 
