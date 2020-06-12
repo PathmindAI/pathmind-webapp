@@ -2,6 +2,9 @@ package io.skymind.pathmind.shared.data;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
+
+import io.skymind.pathmind.shared.constants.ObservationDataType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +13,7 @@ import lombok.Setter;
 public class Observation {
     private long id = -1;
     private long modelId;
+    private int arrayIndex;
     private String variable;
     private String dataType;
     private String description;
@@ -29,6 +33,14 @@ public class Observation {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+    
+    public ObservationDataType getDataTypeEnum() {
+        return ObservationDataType.getEnumFromValue(dataType).orElse(null);
+    }
+    
+    public void setDataTypeEnum(ObservationDataType dataTypeEnum) {
+        dataType = dataTypeEnum.getValue();
     }
 
 }

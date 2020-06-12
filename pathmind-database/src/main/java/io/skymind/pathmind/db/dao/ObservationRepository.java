@@ -16,11 +16,11 @@ class ObservationRepository {
         final List<Query> saveQueries = observations.stream()
                 .map(observation ->
                         ctx.insertInto(OBSERVATION)
-                            .columns(OBSERVATION.VARIABLE, OBSERVATION.DATA_TYPE, OBSERVATION.DESCRIPTION, OBSERVATION.EXAMPLE, OBSERVATION.MIN, 
-                                    OBSERVATION.MAX, OBSERVATION.MODEL_ID)
-                            .values(observation.getVariable(), observation.getDataType(), observation.getDescription(), observation.getExample(), 
-                                    observation.getMin(), observation.getMax(), observation.getModelId())
-                            .onConflict(OBSERVATION.MODEL_ID, OBSERVATION.VARIABLE)
+                            .columns(OBSERVATION.MODEL_ID, OBSERVATION.ARRAY_INDEX, OBSERVATION.VARIABLE, OBSERVATION.DATA_TYPE, 
+                                    OBSERVATION.DESCRIPTION, OBSERVATION.EXAMPLE, OBSERVATION.MIN, OBSERVATION.MAX)
+                            .values(observation.getModelId(), observation.getArrayIndex(), observation.getVariable(), observation.getDataType(), 
+                                    observation.getDescription(), observation.getExample(), observation.getMin(), observation.getMax())
+                            .onConflict(OBSERVATION.MODEL_ID, OBSERVATION.ARRAY_INDEX)
                                 .doUpdate()
                                 .set(OBSERVATION.VARIABLE, observation.getVariable())
                                 .set(OBSERVATION.DATA_TYPE, observation.getDataType())

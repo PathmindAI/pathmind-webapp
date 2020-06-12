@@ -1383,10 +1383,13 @@
             <column name="MODEL_ID" type="BIGINT">
                 <constraints nullable="false" foreignKeyName="PM_FK_OBSERVATION_MODEL" references="MODEL(ID)"/>
             </column>
-            <column name="VARIABLE" type="VARCHAR(255)">
+            <column name="ARRAY_INDEX" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="DATA_TYPE" type="VARCHAR(255)">
+            <column name="VARIABLE" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATA_TYPE" type="VARCHAR(16)">
                 <constraints nullable="false"/>
             </column>
             <column name="DESCRIPTION" type="VARCHAR(255)">
@@ -1416,6 +1419,7 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <addUniqueConstraint tableName="OBSERVATION" columnNames="MODEL_ID, ARRAY_INDEX"/>
         <addUniqueConstraint tableName="ACTION" columnNames="MODEL_ID, ARRAY_INDEX"/>
         <rollback>
             <dropTable tableName="OBSERVATION"/>

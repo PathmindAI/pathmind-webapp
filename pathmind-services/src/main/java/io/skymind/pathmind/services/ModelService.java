@@ -12,6 +12,7 @@ public interface ModelService {
     Optional<Model> getModel(long modelId);
 
     List<Action> getModelActions(long modelId);
+    List<Observation> getModelObservations(long modelId);
 
     byte[] getModelFile(long modelId);
     void addDraftModelToProject(Model model, long id, String modelNotes);

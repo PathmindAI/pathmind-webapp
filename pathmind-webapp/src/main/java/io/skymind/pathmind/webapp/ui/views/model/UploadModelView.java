@@ -34,6 +34,8 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.featureflag.Feature;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -45,6 +47,7 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ActionsPanel;
+import io.skymind.pathmind.webapp.ui.views.model.components.ActionsTable;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel;
@@ -68,6 +71,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
+	
+	@Autowired
+	private FeatureManager featureManager;
 	
 	private Model model;
 
@@ -125,7 +131,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		}
 
 		uploadModelWizardPanel.addFileUploadCompletedListener(() -> handleUploadWizardClicked());
-		modelDetailsWizardPanel.addButtonClickListener(click -> handleMoreDetailsClicked());
+		modelDetailsWizardPanel.addButtonClickListener(click -> handleModelDetailsClicked());
 		modelDetailsWizardPanel.addSaveDraftClickListener(click -> handleSaveDraftClicked());
 		rewardVariablesPanel.addButtonClickListener(click -> handleRewardVariablesClicked());
 		rewardVariablesPanel.addSaveDraftClickListener(click -> handleRewardVariablesSaveDraftClicked());
@@ -162,7 +168,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		}
 
 		segmentIntegrator.modelDraftSaved();
-		List<RewardVariable> rewardVariables = rewardVariablesPanel.getRewardVariables();
+		rewardVariables = rewardVariablesPanel.getRewardVariables();
 		modelService.updateModelRewardVariables(model, rewardVariables);
 		NotificationUtils.showSuccess("Draft successfully saved");
 	}
@@ -170,11 +176,13 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	    modelService.updateModelActions(model, actionsPanel.getActions());
 	    NotificationUtils.showSuccess("Draft successfully saved");
 	}
-	private void handleObservationsSaveDraftClicked() {
-	    modelService.updateModelActions(model, actionsPanel.getActions());
-	    NotificationUtils.showSuccess("Draft successfully saved");
-	}
 	
+	private void handleObservationsSaveDraftClicked() {
+	    if (observationsPanel.isInputValueValid()) {
+	        modelService.updateModelObservations(model, observationsPanel.getObservations());
+	        NotificationUtils.showSuccess("Draft successfully saved");
+	    }
+	}
 
 	private void handleSaveDraftClicked() {
 		if(!FormUtils.isValidForm(modelBinder, model)) {
@@ -199,6 +207,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 					.orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
 			this.rewardVariables = modelService.getModelRewardVariables(modelId);
 			this.actions = modelService.getModelActions(modelId);
+			this.observations = modelService.getModelObservations(modelId);
 		}
 		else {
 			this.model = ModelUtils.generateNewDefaultModel();
@@ -221,6 +230,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		    return;
 		}
 		if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
+	        modelService.updateModelRewardVariables(model, rewardVariablesPanel.getRewardVariables());
             actionsPanel.setupActionsTable(model.getNumberOfPossibleActions(), actions);
             setVisibleWizardPanel(actionsPanel);
         } else {
@@ -231,6 +241,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	    if (!actionsPanel.isInputValueValid()) {
 	        return;
 	    }
+	    modelService.updateModelActions(model, actionsPanel.getActions());
 	    observationsPanel.setupObservationTable(model.getNumberOfObservations(), observations);
 	    setVisibleWizardPanel(observationsPanel);
 	}
@@ -241,7 +252,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	    saveAndNavigateToNewExperiment();
 	}
 
-	private void handleMoreDetailsClicked()
+	private void handleModelDetailsClicked()
 	{
 		if(!FormUtils.isValidForm(modelBinder, model)) {
 			return;
@@ -260,16 +271,14 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 	
 	private void saveAndNavigateToNewExperiment() {
-		experimentId = modelService.resumeModelCreation(model, modelNotes);
-
-        if(featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
-            List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
-            modelService.updateModelRewardVariables(model, rewardVariableList);
-        }
+        List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
+        modelService.updateModelRewardVariables(model, rewardVariableList);
         if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
             modelService.updateModelActions(model, actionsPanel.getActions());
+            modelService.updateModelObservations(model, observationsPanel.getObservations());
         }
 
+        experimentId = modelService.resumeModelCreation(model, modelNotes);
 		getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
 	}
 

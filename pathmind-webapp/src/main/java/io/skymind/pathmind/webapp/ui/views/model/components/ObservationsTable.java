@@ -1,27 +1,30 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.vaadin.flow.component.AbstractCompositeField;
 import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.HasValidation;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.ValidationResult;
-import com.vaadin.flow.data.binder.Validator;
-import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
+
+import io.skymind.pathmind.shared.constants.ObservationDataType;
 import io.skymind.pathmind.shared.data.Observation;
-import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@CssImport(value = "./styles/components/actions-table.css")
+@CssImport(value = "./styles/components/observations-table.css")
 public class ObservationsTable extends CustomField<List<Observation>> implements HasStyle {
 
 	private List<RowField> observationFields = new ArrayList<>();
@@ -29,8 +32,9 @@ public class ObservationsTable extends CustomField<List<Observation>> implements
 	private VerticalLayout container;
 
 	public ObservationsTable() {
+	    setClassName("observations-table");
 		container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-		container.setClassName("actions-table");
+		container.setClassName("observations-wrapper");
 
 		add(container);
 	}
@@ -38,7 +42,6 @@ public class ObservationsTable extends CustomField<List<Observation>> implements
 	private RowField createRow(int rowNumber) {
 		RowField rowField = new RowField(rowNumber);
 		observationFields.add(rowField);
-		FormUtils.addValidator(rowField, new RowValidator());
 		return rowField;
 	}
 
@@ -46,26 +49,28 @@ public class ObservationsTable extends CustomField<List<Observation>> implements
 	protected List<Observation> generateModelValue() {
 		List<Observation> modelValue = new ArrayList<>();
         for (RowField observationField : observationFields) {
-            modelValue.add(observationField.getValue());
+            Observation observation = observationField.getValue();
+            if (observation != null) { 
+                modelValue.add(observation);
+            }
         }
 		return modelValue;
 	}
 
 	@Override
 	public void setPresentationValue(List<Observation> newPresentationValue) {
-        setNumberOfItems(newPresentationValue.size());
-//		newPresentationValue.forEach(rv -> observationFields.get(rv.getArrayIndex()).setValue(rv));
+		newPresentationValue.forEach(rv -> observationFields.get(rv.getArrayIndex()).setValue(rv));
 	}
 
 	@Override
 	public boolean isInvalid() {
-		return observationFields.stream().anyMatch(f -> f.isInvalid());
+		return observationFields.stream().anyMatch(f -> !f.isValid());
 	}
 
     public void setNumberOfItems(int numberOfPossibleActions) {
         container.removeAll();
         observationFields.clear();
-        HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("#"), new Span("Action Name"));
+        HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("#"), new Span("Observation"));
 
         headerRow.addClassName("header-row");
         GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
@@ -77,83 +82,97 @@ public class ObservationsTable extends CustomField<List<Observation>> implements
         }
     }
 
-    private static class RowValidator implements Validator<Observation> {
-		private final StringLengthValidator nameValidator = new StringLengthValidator("Observation's Variable name must not exceed 100 characters", 0, 100);
-
-		@Override
-		public ValidationResult apply(Observation observation, ValueContext valueContext) {
-			return nameValidator.apply(observation.getVariable(), valueContext);
-		}
-	}
-
-	private static class RowField extends AbstractCompositeField<HorizontalLayout, RowField, Observation> implements
-			HasValidation {
-
-		private long modelId = 0;
+	private static class RowField extends AbstractCompositeField<HorizontalLayout, RowField, Observation> {
 
 		private final int rowNumber;
 
-		private final TextField theField;
+		private TextField variable;
+		private TextField description;
+		private ComboBox<ObservationDataType> dataType;
+		private TextField example;
+		private NumberField min;
+		private NumberField max;
+		
+		private Binder<Observation> binder;
+		private Observation value;
 
 		private RowField(int rowNumber) {
 			super(null);
 			this.rowNumber = rowNumber;
-			this.theField = new TextField();
-			theField.addClassName("action-name-field");
-			theField.addClassName("action-name-"+rowNumber);
-			theField.addValueChangeListener(e -> {
-				ComponentValueChangeEvent<RowField, Observation> newEvent = new ComponentValueChangeEvent<>(
-						this, this, create(e.getOldValue()), e.isFromClient());
-				fireEvent(newEvent);
-			});
-			getContent().add(new Span("" + rowNumber), theField);
-			getContent().setWidthFull();
-			GuiUtils.removeMarginsPaddingAndSpacing(getContent());
+			createLayout();
+			initBinder();
 		}
 
-		private Observation create(String value) {
-            Observation observation = new Observation();
-            observation.setModelId(modelId);
-            observation.setVariable(value);
-			return observation;
-		}
+        private void createLayout() {
+		    variable = new TextField();
+		    variable.setPlaceholder("Variable name");
+            description = new TextField();
+            description.setPlaceholder("Description");
+            dataType = new ComboBox<>();
+            dataType.setItems(ObservationDataType.values());
+            dataType.setPlaceholder("Data type");
+            dataType.getElement().setAttribute("theme", "code");
+            example = new TextField();
+            example.setPlaceholder("Ex.");
+            min = new NumberField();
+            min.setPlaceholder("Min.");
+            max = new NumberField();
+            max.setPlaceholder("Max.");
+            
+            FormLayout form = new FormLayout();
+            form.setResponsiveSteps(new ResponsiveStep("1px", 5));
+            form.addClassName("action-name-"+rowNumber);
+            form.add(variable, 2);
+            form.add(description, 3);
+            form.add(dataType, 2);
+            form.add(example, min, max);
+            
+            getContent().add(new Span("" + rowNumber), form);
+            getContent().setWidthFull();
+            GuiUtils.removeMarginsPaddingAndSpacing(getContent());
+        }
+        
+        private void initBinder() {
+            binder = new Binder<>();
+            binder.forField(variable)
+                .asRequired("Variable name is mandatory")
+                .withValidator(new StringLengthValidator("Variable name must not exceed 16 characters.", 0, 16))
+                .bind(Observation::getVariable, Observation::setVariable);
+            binder.forField(description)
+                .withValidator(new StringLengthValidator("Variable name must not exceed 255 characters.", 0, 255))
+                .bind(Observation::getDescription, Observation::setDescription);
+            binder.forField(dataType)
+                .asRequired("Data type is mandatory")
+                .bind(Observation::getDataTypeEnum, Observation::setDataTypeEnum);
+            binder.forField(example)
+                .withValidator(new StringLengthValidator("Example must not exceed 255 characters.", 0, 255))
+                .bind(Observation::getExample, Observation::setExample);
+            binder.forField(min)
+                .bind(Observation::getMin, Observation::setMin);
+            binder.forField(max)
+                .bind(Observation::getMax, Observation::setMax);
+        }
+
+        public boolean isValid() {
+            return !binder.hasChanges() || binder.validate().isOk();
+        }
 
 		@Override
 		public Observation getValue() {
-			return create(theField.getValue().trim());
+		    if (binder.hasChanges()) {
+		        if (value == null) {
+		            value = new Observation();
+		        }
+		        value.setArrayIndex(rowNumber);
+		        binder.writeBeanIfValid(value);
+		    }
+			return value;
 		}
 
 		@Override
 		protected void setPresentationValue(Observation newPresentationValue) {
-			modelId = newPresentationValue.getModelId();
-			theField.setValue(newPresentationValue.getVariable());
-		}
-
-		@Override
-		public void setErrorMessage(String errorMessage) {
-			theField.setErrorMessage(errorMessage);
-		}
-
-		@Override
-		public String getErrorMessage() {
-			return theField.getErrorMessage();
-		}
-
-		@Override
-		public void setInvalid(boolean invalid) {
-			theField.setInvalid(invalid);
-			String className = "invalid-action-row";
-			if (invalid) {
-				getContent().addClassName(className);
-			}
-			else {
-				getContent().removeClassName(className);
-			}
-		}
-
-		@Override
-		public boolean isInvalid() {
-			return theField.isInvalid();
+		    value = newPresentationValue;
+			binder.readBean(newPresentationValue);
 		}
 	}
 }

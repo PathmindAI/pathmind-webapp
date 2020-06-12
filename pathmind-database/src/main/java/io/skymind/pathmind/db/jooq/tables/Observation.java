@@ -16,11 +16,10 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Observation extends TableImpl<ObservationRecord> {
 
-    private static final long serialVersionUID = -1520858806;
+    private static final long serialVersionUID = 2101711044;
 
     /**
      * The reference instance of <code>public.observation</code>
@@ -60,7 +59,7 @@ public class Observation extends TableImpl<ObservationRecord> {
     /**
      * The column <code>public.observation.id</code>.
      */
-    public final TableField<ObservationRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('observation_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
+    public final TableField<ObservationRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.observation.model_id</code>.
@@ -68,14 +67,19 @@ public class Observation extends TableImpl<ObservationRecord> {
     public final TableField<ObservationRecord, Long> MODEL_ID = createField(DSL.name("model_id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
+     * The column <code>public.observation.array_index</code>.
+     */
+    public final TableField<ObservationRecord, Integer> ARRAY_INDEX = createField(DSL.name("array_index"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
      * The column <code>public.observation.variable</code>.
      */
-    public final TableField<ObservationRecord, String> VARIABLE = createField(DSL.name("variable"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<ObservationRecord, String> VARIABLE = createField(DSL.name("variable"), org.jooq.impl.SQLDataType.VARCHAR(16).nullable(false), this, "");
 
     /**
      * The column <code>public.observation.data_type</code>.
      */
-    public final TableField<ObservationRecord, String> DATA_TYPE = createField(DSL.name("data_type"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<ObservationRecord, String> DATA_TYPE = createField(DSL.name("data_type"), org.jooq.impl.SQLDataType.VARCHAR(16).nullable(false), this, "");
 
     /**
      * The column <code>public.observation.description</code>.
@@ -137,12 +141,7 @@ public class Observation extends TableImpl<ObservationRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.OBSERVATION_PKEY);
-    }
-
-    @Override
-    public Identity<ObservationRecord, Long> getIdentity() {
-        return Keys.IDENTITY_OBSERVATION;
+        return Arrays.<Index>asList(Indexes.OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY, Indexes.OBSERVATION_PKEY);
     }
 
     @Override
@@ -152,7 +151,7 @@ public class Observation extends TableImpl<ObservationRecord> {
 
     @Override
     public List<UniqueKey<ObservationRecord>> getKeys() {
-        return Arrays.<UniqueKey<ObservationRecord>>asList(Keys.OBSERVATION_PKEY);
+        return Arrays.<UniqueKey<ObservationRecord>>asList(Keys.OBSERVATION_PKEY, Keys.OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY);
     }
 
     @Override
@@ -191,11 +190,11 @@ public class Observation extends TableImpl<ObservationRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<Long, Long, String, String, String, String, Double, Double> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row9<Long, Long, Integer, String, String, String, String, Double, Double> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }

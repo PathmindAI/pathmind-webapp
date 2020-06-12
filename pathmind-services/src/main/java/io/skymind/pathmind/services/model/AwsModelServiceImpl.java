@@ -106,6 +106,11 @@ class AwsModelServiceImpl implements ModelService {
     public List<Action> getModelActions(long modelId) {
         return actionDAO.getActionsForModel(modelId);
     }
+    
+    @Override
+    public List<Observation> getModelObservations(long modelId) {
+        return observationDAO.getObservationsForModel(modelId);
+    }
 
     @Override
     public byte[] getModelFile(long modelId) {

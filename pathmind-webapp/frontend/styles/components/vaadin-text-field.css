@@ -42,3 +42,8 @@
     border-radius: 0 3px 3px 0;
     border: 1px solid var(--pm-gray-color);
 }
+
+:host([theme~="code"]){
+    font-size: var(--lumo-font-size-s);
+    font-family: var(--code-font-family);
+}
