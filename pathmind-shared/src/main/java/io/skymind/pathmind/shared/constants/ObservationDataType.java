@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum ObservationDataType {
-    NUMBER("number");
+    NUMBER("number"), INTEGER("int"), BOOLEAN("boolean"), NUMBER_ARRAY("number[]"), INTEGER_ARRAY("int[]");
     
     private String name;
 
