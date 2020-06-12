@@ -16,6 +16,7 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -41,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Action extends TableImpl<ActionRecord> {
 
-    private static final long serialVersionUID = -1586840773;
+    private static final long serialVersionUID = -783258938;
 
     /**
      * The reference instance of <code>public.action</code>
@@ -59,7 +60,7 @@ public class Action extends TableImpl<ActionRecord> {
     /**
      * The column <code>public.action.id</code>.
      */
-    public final TableField<ActionRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ActionRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('action_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.action.model_id</code>.
@@ -117,6 +118,11 @@ public class Action extends TableImpl<ActionRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.ACTION_MODEL_ID_ARRAY_INDEX_KEY, Indexes.ACTION_PKEY);
+    }
+
+    @Override
+    public Identity<ActionRecord, Long> getIdentity() {
+        return Keys.IDENTITY_ACTION;
     }
 
     @Override

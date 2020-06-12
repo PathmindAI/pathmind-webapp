@@ -16,6 +16,7 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -41,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrainingError extends TableImpl<TrainingErrorRecord> {
 
-    private static final long serialVersionUID = 773257336;
+    private static final long serialVersionUID = 652479005;
 
     /**
      * The reference instance of <code>public.training_error</code>
@@ -59,7 +60,7 @@ public class TrainingError extends TableImpl<TrainingErrorRecord> {
     /**
      * The column <code>public.training_error.id</code>.
      */
-    public final TableField<TrainingErrorRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<TrainingErrorRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('training_error_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.training_error.keyword</code>.
@@ -117,6 +118,11 @@ public class TrainingError extends TableImpl<TrainingErrorRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.TRAINING_ERROR_PKEY);
+    }
+
+    @Override
+    public Identity<TrainingErrorRecord, Long> getIdentity() {
+        return Keys.IDENTITY_TRAINING_ERROR;
     }
 
     @Override

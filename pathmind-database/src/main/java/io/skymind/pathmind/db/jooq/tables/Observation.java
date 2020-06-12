@@ -16,6 +16,7 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -41,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Observation extends TableImpl<ObservationRecord> {
 
-    private static final long serialVersionUID = 2101711044;
+    private static final long serialVersionUID = -1260675135;
 
     /**
      * The reference instance of <code>public.observation</code>
@@ -59,7 +60,7 @@ public class Observation extends TableImpl<ObservationRecord> {
     /**
      * The column <code>public.observation.id</code>.
      */
-    public final TableField<ObservationRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ObservationRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('observation_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.observation.model_id</code>.
@@ -142,6 +143,11 @@ public class Observation extends TableImpl<ObservationRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY, Indexes.OBSERVATION_PKEY);
+    }
+
+    @Override
+    public Identity<ObservationRecord, Long> getIdentity() {
+        return Keys.IDENTITY_OBSERVATION;
     }
 
     @Override

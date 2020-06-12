@@ -17,6 +17,7 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -42,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -61792430;
+    private static final long serialVersionUID = 1530603400;
 
     /**
      * The reference instance of <code>public.run</code>
@@ -60,7 +61,7 @@ public class Run extends TableImpl<RunRecord> {
     /**
      * The column <code>public.run.id</code>.
      */
-    public final TableField<RunRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<RunRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('run_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.run.experiment_id</code>.
@@ -158,6 +159,11 @@ public class Run extends TableImpl<RunRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.RUN_EXPERIMENT_FK_INDEX, Indexes.RUN_PKEY);
+    }
+
+    @Override
+    public Identity<RunRecord, Long> getIdentity() {
+        return Keys.IDENTITY_RUN;
     }
 
     @Override
