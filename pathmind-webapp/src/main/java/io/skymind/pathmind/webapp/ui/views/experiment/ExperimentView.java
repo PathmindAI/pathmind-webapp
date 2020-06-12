@@ -114,7 +114,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private RewardVariablesTable rewardVariablesTable;
     private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
     private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
-    private FeatureManager featureManager;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -130,6 +129,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private RunDAO runDAO;
     @Autowired
     private SegmentIntegrator segmentIntegrator;
+    @Autowired
+    private FeatureManager featureManager;
 
     private Breadcrumbs pageBreadcrumbs;
     private Button restartTraining;
@@ -193,10 +194,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         );
 
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
-        if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
-            middlePanel.add(rewardVariablesGroup);
-        }
-        middlePanel.add(rewardFunctionGroup);
+        middlePanel.add(rewardVariablesGroup, rewardFunctionGroup);
         middlePanel.addClassName("middle-panel");
         middlePanel.setPadding(false);
     }
