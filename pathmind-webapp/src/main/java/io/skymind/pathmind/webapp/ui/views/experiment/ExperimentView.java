@@ -114,6 +114,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private RewardVariablesTable rewardVariablesTable;
     private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
     private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
+    private FeatureManager featureManager;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -129,8 +130,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private RunDAO runDAO;
     @Autowired
     private SegmentIntegrator segmentIntegrator;
-    @Autowired
-    private FeatureManager featureManager;
 
     private Breadcrumbs pageBreadcrumbs;
     private Button restartTraining;
@@ -391,9 +390,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void loadExperimentData() {
         modelId = experiment.getModelId();
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
-        if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
-            rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-        }
+        rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
         policy = selectBestPolicy(experiment.getPolicies());
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
@@ -428,16 +425,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         setPolicyChartVisibility();
         experimentsNavbar.setVisible(!experiment.isArchived());
         panelTitle.setText("Experiment #"+experiment.getName());
-        if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
-            codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
-            rewardVariablesTable.setIsReadOnly(true);
-            if (!rewardVariables.isEmpty()) {
-				rewardVariablesTable.setValue(rewardVariables);
-			} else {
-				rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
-			}
+        codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
+        rewardVariablesTable.setIsReadOnly(true);
+        if (!rewardVariables.isEmpty()) {
+            rewardVariablesTable.setValue(rewardVariables);
         } else {
-            codeViewer.setValue(experiment.getRewardFunction(), null);
+            rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
         }
         policyChartPanel.setExperiment(experiment, policy);
         updateDetailsForExperiment();
