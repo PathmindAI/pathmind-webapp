@@ -112,12 +112,18 @@ public class RunDAO {
     }
 
     private void updateRun(Run run, ProviderJobStatus jobStatus, DSLContext transactionCtx) {
-        final var status = jobStatus.getRunStatus();
+        final var newRunStatus = jobStatus.getRunStatus();
+
+        RunStatus currentRunStatus = run.getStatusEnum();
+
         // IMPORTANT -> Needed for both the updateStatus and EventBus post.
-        run.setStatusEnum(status);
+        run.setStatusEnum(newRunStatus);
+        if (newRunStatus == RunStatus.Running && newRunStatus != currentRunStatus) {
+            run.setEc2CreatedAt(LocalDateTime.now());
+        }
 
         // STEPH -> REFACTOR -> QUESTION -> Isn't this just a duplicate of setStoppedAtForFinishedPolicies()
-        run.setStoppedAt(RunStatus.isRunning(status) ? null : LocalDateTime.now());
+        run.setStoppedAt(RunStatus.isRunning(newRunStatus) ? null : LocalDateTime.now());
         RunRepository.updateStatus(transactionCtx, run);
     }
 
