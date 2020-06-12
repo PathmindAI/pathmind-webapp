@@ -12,17 +12,17 @@ public class EmailApi extends PageObject {
 
     private static String emailApiUrl = "http://api.guerrillamail.com/ajax.php";
 
-    public String getEmail(){
+    public String getEmail() {
         Response response = SerenityRest
-                .given()
-                .queryParam("f", "get_email_address")
-                .when()
-                .get(emailApiUrl);
+            .given()
+            .queryParam("f", "get_email_address")
+            .when()
+            .get(emailApiUrl);
         response
-                .then()
-                .log()
-                .all()
-                .statusCode(200);
+            .then()
+            .log()
+            .all()
+            .statusCode(200);
         Serenity.setSessionVariable("email").to(response.jsonPath().get("email_addr"));
         Serenity.setSessionVariable("sessId").to(response.getCookie("PHPSESSID"));
         waitABit(2000);
@@ -30,41 +30,41 @@ public class EmailApi extends PageObject {
         return response.jsonPath().get("email_addr");
     }
 
-    public String fetchEmail(){
+    public String fetchEmail() {
 
-        for(int i = 0; i < 80; i++){
-            if(getInboxCount() > 0){
+        for (int i = 0; i < 80; i++) {
+            if (getInboxCount() > 0) {
                 break;
-            }else {
+            } else {
                 waitABit(3000);
             }
         }
 
         Response getMailId = SerenityRest
-                .given()
-                .cookie("PHPSESSID", Serenity.sessionVariableCalled("sessId"))
-                .queryParam("f", "get_email_list")
-                .queryParam("offset", "0")
-                .when()
-                .get(emailApiUrl);
+            .given()
+            .cookie("PHPSESSID", Serenity.sessionVariableCalled("sessId"))
+            .queryParam("f", "get_email_list")
+            .queryParam("offset", "0")
+            .when()
+            .get(emailApiUrl);
         getMailId
-                .then()
-                .log()
-                .all()
-                .statusCode(200);
+            .then()
+            .log()
+            .all()
+            .statusCode(200);
 
         Response getMail = SerenityRest
-                .given()
-                .cookie("PHPSESSID", Serenity.sessionVariableCalled("sessId"))
-                .queryParam("f", "fetch_email")
-                .queryParam("email_id", getMailId.jsonPath().get("list.mail_id[0]").toString())
-                .when()
-                .get(emailApiUrl);
+            .given()
+            .cookie("PHPSESSID", Serenity.sessionVariableCalled("sessId"))
+            .queryParam("f", "fetch_email")
+            .queryParam("email_id", getMailId.jsonPath().get("list.mail_id[0]").toString())
+            .when()
+            .get(emailApiUrl);
         getMail
-                .then()
-                .log()
-                .all()
-                .statusCode(200);
+            .then()
+            .log()
+            .all()
+            .statusCode(200);
         assertThat(getMail.jsonPath().get("mail_from").toString(), containsString("support@pathmind.com"));
 
         String body = getMail.jsonPath().get("mail_body").toString();
@@ -72,34 +72,34 @@ public class EmailApi extends PageObject {
         return body.split("email-verification/")[1].split("<p>")[0];
     }
 
-    private void deleteEmail(int emailId){
+    private void deleteEmail(int emailId) {
         Response deleteEmail = SerenityRest
-                .given()
-                .cookie("PHPSESSID", Serenity.sessionVariableCalled("sessId"))
-                .queryParam("f", "del_email")
-                .queryParam("email_ids[]", emailId)
-                .when()
-                .get(emailApiUrl);
+            .given()
+            .cookie("PHPSESSID", Serenity.sessionVariableCalled("sessId"))
+            .queryParam("f", "del_email")
+            .queryParam("email_ids[]", emailId)
+            .when()
+            .get(emailApiUrl);
         deleteEmail
-                .then()
-                .log()
-                .all()
-                .statusCode(200);
+            .then()
+            .log()
+            .all()
+            .statusCode(200);
     }
 
-    private int getInboxCount(){
+    private int getInboxCount() {
         Response getInboxCount = SerenityRest
-                .given()
-                .cookie("PHPSESSID", Serenity.sessionVariableCalled("sessId"))
-                .queryParam("f", "get_email_list")
-                .queryParam("offset", "0")
-                .when()
-                .get(emailApiUrl);
+            .given()
+            .cookie("PHPSESSID", Serenity.sessionVariableCalled("sessId"))
+            .queryParam("f", "get_email_list")
+            .queryParam("offset", "0")
+            .when()
+            .get(emailApiUrl);
         getInboxCount
-                .then()
-                .log()
-                .all()
-                .statusCode(200);
+            .then()
+            .log()
+            .all()
+            .statusCode(200);
 
         return Integer.parseInt(getInboxCount.jsonPath().get("count"));
     }

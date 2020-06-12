@@ -68,13 +68,13 @@ public class ExperimentPage extends PageObject {
         if (status.equals("Stopping")) {
             assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), either(is(status)).or(is("Stopped")));
         } else {
-            assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), is(status));
+            assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), is(either(is(status)).or(is("Running"))));
         }
         resetImplicitTimeout();
     }
 
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
-        WebElement inputShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='reward-variables-table code-editor-mode']/descendant::span[text()='"+variableNumber+"']/following-sibling::vaadin-text-field")));
+        WebElement inputShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='reward-variables-table code-editor-mode']/descendant::span[text()='" + variableNumber + "']/following-sibling::vaadin-text-field")));
         inputShadow.findElement(By.cssSelector("input")).click();
         inputShadow.findElement(By.cssSelector("input")).clear();
         inputShadow.findElement(By.cssSelector("input")).sendKeys(variableName);

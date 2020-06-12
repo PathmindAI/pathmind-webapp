@@ -88,6 +88,7 @@ public class ModelPage extends PageObject {
         WebElement e = utils.expandRootElement(archiveBtnShadow);
         e.findElement(By.cssSelector("button")).click();
     }
+
     public void clickExperimentUnArchiveButton() {
         waitABit(2000);
         WebElement e = utils.expandRootElement(unarchiveBtnShadow);
