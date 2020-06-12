@@ -36,8 +36,6 @@ import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
-import io.skymind.pathmind.shared.featureflag.Feature;
-import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
@@ -51,7 +49,6 @@ import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPa
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
-import lombok.extern.slf4j.Slf4j;
 
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
 public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<String> {
@@ -71,9 +68,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
-	
-	@Autowired
-	private FeatureManager featureManager;
 	
 	private Model model;
 
@@ -260,13 +254,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			segmentIntegrator.addedNotesUploadModelView();
 		}
 		
-		if (!featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
-			saveAndNavigateToNewExperiment();
-		} else {
-			modelService.updateDraftModel(model, modelNotes);
-			rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount(), rewardVariables);
-			setVisibleWizardPanel(rewardVariablesPanel);
-		}
+		modelService.updateDraftModel(model, modelNotes);
+		rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount(), rewardVariables);
+		setVisibleWizardPanel(rewardVariablesPanel);
 	}
 	
 	private void saveAndNavigateToNewExperiment() {
