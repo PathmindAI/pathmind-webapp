@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Project extends TableImpl<ProjectRecord> {
 
-    private static final long serialVersionUID = 2071385895;
+    private static final long serialVersionUID = -1139699191;
 
     /**
      * The reference instance of <code>public.project</code>
@@ -71,7 +71,7 @@ public class Project extends TableImpl<ProjectRecord> {
     /**
      * The column <code>public.project.name</code>.
      */
-    public final TableField<ProjectRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<ProjectRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "");
 
     /**
      * The column <code>public.project.date_created</code>.
@@ -86,12 +86,12 @@ public class Project extends TableImpl<ProjectRecord> {
     /**
      * The column <code>public.project.archived</code>.
      */
-    public final TableField<ProjectRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+    public final TableField<ProjectRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.project.user_notes</code>.
      */
-    public final TableField<ProjectRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<ProjectRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR(1000).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * Create a <code>public.project</code> table reference
