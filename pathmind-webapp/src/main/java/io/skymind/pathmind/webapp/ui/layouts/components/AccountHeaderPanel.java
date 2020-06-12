@@ -37,7 +37,7 @@ public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSu
 		MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER), user));
 		account.getSubMenu().addItem("Account", e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
 		account.getSubMenu().addItem("Sign out", e -> {
-            CookieUtils.deleteCookie("Can");
+			CookieUtils.deleteAWSCanCookie();
             getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.LOGOUT_URL));
         });
 	}

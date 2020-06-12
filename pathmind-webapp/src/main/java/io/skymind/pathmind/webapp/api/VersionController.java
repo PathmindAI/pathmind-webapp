@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.spring.SpringVaadinSession;
 
-import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ActiveSessionsRegistry;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.utils.CookieUtils;
@@ -64,7 +63,7 @@ public class VersionController {
 	private void showNotification(UI ui) {
 		String text = "Pathmind has been updated. Please log in again to get the latest improvements.";
 		NotificationUtils.showPersistentNotification(text, "Sign out", () -> {
-			CookieUtils.deleteCookie("Can");
+			CookieUtils.deleteAWSCanCookie();
 			ui.getSession().getSession().invalidate();
 			ui.getPage().reload();
         });
