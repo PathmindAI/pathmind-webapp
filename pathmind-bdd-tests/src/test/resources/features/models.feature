@@ -239,7 +239,7 @@ Feature: Models page
     When Create new CoffeeShop project
     When Open dashboard page
     When Click archive btn from dashboard
-    When In confirmation dialog click in 'Archive Experiment' button
+    When In confirmation dialog click in 'Archive' button
     When Click stage write reward function AutotestProject from dashboard
     When Open projects page
     When Open project AutotestProject on projects page
