@@ -37,6 +37,11 @@ public class ExperimentPage extends PageObject {
         experimentNotes.sendKeys(note);
     }
 
+    public void clickCurrentExperimentArchiveButton() {
+        String xpath = String.format("//*[@class='experiment-navbar-item current']/vaadin-button");
+        getDriver().findElement(By.xpath(xpath)).click();
+    }
+
     public void checkExperimentNotesIs(String note) {
         assertThat(experimentNotes.getAttribute("value"), is(note));
     }

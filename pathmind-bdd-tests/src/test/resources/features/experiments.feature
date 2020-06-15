@@ -49,11 +49,12 @@ Feature: Experiments page
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
 
+  @archiveRunningExperiment
   Scenario: Check running experiment page archive btn, move model to archived
     Given Login to the pathmind
     When Create new CoffeeShop project
     Then Click project start run button
-    Then Click in 'Archive' button
+    Then Click side nav archive button for current experiment
     When In confirmation dialog click in 'Archive' button
     When Check that model/experiment NOT exist in archived tab
     When Open projects/model/experiment archived tab
