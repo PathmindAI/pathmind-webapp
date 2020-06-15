@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Action extends TableImpl<ActionRecord> {
 
-    private static final long serialVersionUID = -783258938;
+    private static final long serialVersionUID = 1734625601;
 
     /**
      * The reference instance of <code>public.action</code>
@@ -117,7 +117,7 @@ public class Action extends TableImpl<ActionRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.ACTION_MODEL_ID_ARRAY_INDEX_KEY, Indexes.ACTION_PKEY);
+        return Arrays.<Index>asList(Indexes.ACTION_MODEL_FK_INDEX, Indexes.ACTION_MODEL_ID_ARRAY_INDEX_KEY, Indexes.ACTION_PKEY);
     }
 
     @Override

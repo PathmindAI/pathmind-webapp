@@ -42,12 +42,14 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
+    public static final Index ACTION_MODEL_FK_INDEX = Indexes0.ACTION_MODEL_FK_INDEX;
     public static final Index ACTION_MODEL_ID_ARRAY_INDEX_KEY = Indexes0.ACTION_MODEL_ID_ARRAY_INDEX_KEY;
     public static final Index ACTION_PKEY = Indexes0.ACTION_PKEY;
     public static final Index EXPERIMENT_MODEL_FK_INDEX = Indexes0.EXPERIMENT_MODEL_FK_INDEX;
     public static final Index EXPERIMENT_PKEY = Indexes0.EXPERIMENT_PKEY;
     public static final Index MODEL_PKEY = Indexes0.MODEL_PKEY;
     public static final Index MODEL_PROJECT_FK_INDEX = Indexes0.MODEL_PROJECT_FK_INDEX;
+    public static final Index OBSERVATION_MODEL_FK_INDEX = Indexes0.OBSERVATION_MODEL_FK_INDEX;
     public static final Index OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY = Indexes0.OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY;
     public static final Index OBSERVATION_PKEY = Indexes0.OBSERVATION_PKEY;
     public static final Index PATHMIND_USER_EMAIL_KEY = Indexes0.PATHMIND_USER_EMAIL_KEY;
@@ -74,12 +76,14 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     private static class Indexes0 {
+        public static Index ACTION_MODEL_FK_INDEX = Internal.createIndex("action_model_fk_index", Action.ACTION, new OrderField[] { Action.ACTION.MODEL_ID }, false);
         public static Index ACTION_MODEL_ID_ARRAY_INDEX_KEY = Internal.createIndex("action_model_id_array_index_key", Action.ACTION, new OrderField[] { Action.ACTION.MODEL_ID, Action.ACTION.ARRAY_INDEX }, true);
         public static Index ACTION_PKEY = Internal.createIndex("action_pkey", Action.ACTION, new OrderField[] { Action.ACTION.ID }, true);
         public static Index EXPERIMENT_MODEL_FK_INDEX = Internal.createIndex("experiment_model_fk_index", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.MODEL_ID }, false);
         public static Index EXPERIMENT_PKEY = Internal.createIndex("experiment_pkey", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.ID }, true);
         public static Index MODEL_PKEY = Internal.createIndex("model_pkey", Model.MODEL, new OrderField[] { Model.MODEL.ID }, true);
         public static Index MODEL_PROJECT_FK_INDEX = Internal.createIndex("model_project_fk_index", Model.MODEL, new OrderField[] { Model.MODEL.PROJECT_ID }, false);
+        public static Index OBSERVATION_MODEL_FK_INDEX = Internal.createIndex("observation_model_fk_index", Observation.OBSERVATION, new OrderField[] { Observation.OBSERVATION.MODEL_ID }, false);
         public static Index OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY = Internal.createIndex("observation_model_id_array_index_key", Observation.OBSERVATION, new OrderField[] { Observation.OBSERVATION.MODEL_ID, Observation.OBSERVATION.ARRAY_INDEX }, true);
         public static Index OBSERVATION_PKEY = Internal.createIndex("observation_pkey", Observation.OBSERVATION, new OrderField[] { Observation.OBSERVATION.ID }, true);
         public static Index PATHMIND_USER_EMAIL_KEY = Internal.createIndex("pathmind_user_email_key", PathmindUser.PATHMIND_USER, new OrderField[] { PathmindUser.PATHMIND_USER.EMAIL }, true);

@@ -1426,4 +1426,13 @@
             <dropTable tableName="ACTION"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="20200615-01" author="bruno.rezende@ext.vaadin.com">
+        <createIndex tableName="ACTION" indexName="ACTION_MODEL_FK_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+        <createIndex tableName="OBSERVATION" indexName="OBSERVATION_MODEL_FK_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
