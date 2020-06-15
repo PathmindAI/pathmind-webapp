@@ -1,32 +1,26 @@
 .breadcrumb {
-  position: relative;
-  max-width: 10rem;
-  color: var(--lumo-body-text-color);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    position: relative;
+    max-width: 10rem;
+    color: var(--lumo-secondary-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .breadcrumb:last-child {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .breadcrumb ~ span {
-  color: var(--lumo-body-text-color);
-  cursor: default;
+    cursor: default;
 }
 
-/* Keep old styles for dashboard */
-.dashboard .breadcrumb {
-  color: var(--lumo-secondary-text-color);
+.breadcrumb:hover,
+.breadcrumb:last-child {
+    color: var(--lumo-primary-text-color);
 }
 
-.dashboard .breadcrumb:hover,
-.dashboard .breadcrumb:last-child {
-  color: var(--lumo-primary-text-color);
-}
-
-.dashboard .breadcrumb:not(:first-child),
-.dashboard .breadcrumb ~ span {
-  margin-left: var(--lumo-space-s);
+.breadcrumb:not(:first-child),
+.breadcrumb ~ span {
+    margin-left: var(--lumo-space-s);
 }
