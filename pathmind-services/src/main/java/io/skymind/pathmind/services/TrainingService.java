@@ -43,9 +43,9 @@ public abstract class TrainingService {
             pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
         }
 
-        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_1_0_7, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
+        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_1_1_0, JDK.VERSION_8_222, Conda.VERSION_0_8_5);
     }
-    
+
     public void startRun(Experiment exp){
         startRun(exp,
                 RunConstants.PBT_RUN_ITERATIONS,
@@ -69,7 +69,7 @@ public abstract class TrainingService {
         List<Run> runs = experiment.getRuns().stream()
                 .filter(r -> RunStatus.isRunning(r.getStatusEnum()))
                 .collect(Collectors.toList());
-        
+
         runs.stream().map(Run::getJobId).forEach(executionProvider::stop);
 
         // immediately mark the job as stopping so that the user doesn't have to wait the updater to update the run
