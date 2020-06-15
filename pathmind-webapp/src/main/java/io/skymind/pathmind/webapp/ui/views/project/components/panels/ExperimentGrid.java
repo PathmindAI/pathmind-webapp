@@ -52,7 +52,8 @@ public class ExperimentGrid extends Grid<Experiment>
 		addColumn(experiment -> {
 					String userNotes = experiment.getUserNotes();
 					return userNotes.isEmpty() ? "—" : userNotes;
-				})
+                })
+                .setClassNameGenerator(column -> "grid-notes-column")
 				.setHeader("Notes")
 				.setFlexGrow(1)
 				.setResizable(true)
