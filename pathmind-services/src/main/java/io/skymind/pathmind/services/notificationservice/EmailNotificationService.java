@@ -50,14 +50,14 @@ public class EmailNotificationService
 	 *
 	 * @param pathmindUser
 	 */
-	public void sendVerificationEmail(PathmindUser pathmindUser, String email)
+	public void sendVerificationEmail(PathmindUser pathmindUser, String email, boolean isNewRegistry)
 	{
 		Objects.requireNonNull(pathmindUser);
 		if (!isEmailSendingEnabled) {
 			log.info("Email sending has been disabled, not sending the email to: " + email);
 			return;
 		}
-		if (pathmindUser.getEmailVerifiedAt() != null && Strings.isBlank(pathmindUser.getNewEmailToVerify())) {
+		if (isNewRegistry && pathmindUser.getEmailVerifiedAt() != null) {
 			log.info("Canceling verification email sending, user: " + pathmindUser.getEmail() + ", has already been verified");
 			return;
 		}
@@ -68,7 +68,11 @@ public class EmailNotificationService
 		final String emailVerificationLink = createEmailVerificationLink(pathmindUser);
 		Mail verificationEmail;
 		try {
-			verificationEmail = mailHelper.createVerificationEmail(email, pathmindUser.getName(), emailVerificationLink);
+		    if (isNewRegistry) {
+		        verificationEmail = mailHelper.createVerificationEmail(email, pathmindUser.getName(), emailVerificationLink);
+		    } else {
+		        verificationEmail = mailHelper.createNewEmailAddressVerificationTemplateId(email, pathmindUser.getName(), emailVerificationLink);
+		    }
 		} catch (PathMindException e) {
 			log.warn("Could not create email due to missing data in the PathmindUser object");
 			return;
