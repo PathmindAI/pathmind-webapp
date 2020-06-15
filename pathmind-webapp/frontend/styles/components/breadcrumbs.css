@@ -11,6 +11,10 @@
     font-weight: bold;
 }
 
+.page-title .breadcrumb:last-child {
+    max-width: none;
+}
+
 .breadcrumb ~ span {
     cursor: default;
 }
