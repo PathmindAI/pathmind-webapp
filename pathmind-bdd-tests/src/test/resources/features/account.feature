@@ -16,6 +16,8 @@ Feature: User accounts tests
     When Click account edit update btn
     When In confirmation dialog click in 'Update' button
     When In confirmation dialog click in 'OK' button
+    When Get email and verify user email
+    When Open pathmind page
     Then Login with new user email and Abcd1234
     Then Check that user EditEmail successfully logged in
     When Open user account page
@@ -37,5 +39,7 @@ Feature: User accounts tests
     When Click account edit update btn
     When In confirmation dialog click in 'Update' button
     When In confirmation dialog click in 'OK' button
+    When Get email and verify user email
+    When Open pathmind page
     When Login with old user email and password Abcd1234
     Then Check that login form warning message is shown
