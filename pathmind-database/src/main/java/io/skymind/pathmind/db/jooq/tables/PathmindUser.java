@@ -82,12 +82,12 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     /**
      * The column <code>public.pathmind_user.firstname</code>.
      */
-    public final TableField<PathmindUserRecord, String> FIRSTNAME = createField(DSL.name("firstname"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<PathmindUserRecord, String> FIRSTNAME = createField(DSL.name("firstname"), org.jooq.impl.SQLDataType.VARCHAR(250).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.pathmind_user.lastname</code>.
      */
-    public final TableField<PathmindUserRecord, String> LASTNAME = createField(DSL.name("lastname"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<PathmindUserRecord, String> LASTNAME = createField(DSL.name("lastname"), org.jooq.impl.SQLDataType.VARCHAR(250).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.pathmind_user.address</code>.
