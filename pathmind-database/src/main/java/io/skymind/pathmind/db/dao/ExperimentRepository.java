@@ -19,6 +19,7 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Record1;
 import org.jooq.Record7;
+import org.jooq.Record8;
 import org.jooq.Result;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
@@ -116,26 +117,19 @@ class ExperimentRepository
 				.execute();
 	}
 
-	protected static long insertExperiment(DSLContext ctx, long modelId, LocalDateTime dateCreated) {
+	protected static long createNewExperiment(DSLContext ctx, long modelId) {
+        return createNewExperiment(ctx, modelId, "1", "");
+	}
+	
+	protected static long createNewExperiment(DSLContext ctx, long modelId, String experimentName, String rewardFunction) {
 		final ExperimentRecord ex = EXPERIMENT.newRecord();
 		ex.attach(ctx.configuration());
-		ex.setDateCreated(dateCreated);
+		ex.setDateCreated(LocalDateTime.now());
 		ex.setModelId(modelId);
-		ex.setName("1");
-		ex.setRewardFunction("");
+		ex.setName(experimentName);
+		ex.setRewardFunction(rewardFunction);
 		ex.store();
 		return ex.key().get(EXPERIMENT.ID);
-	}
-
-	protected static long setupNewExperiment(DSLContext ctx, Experiment experiment) {
-		final ExperimentRecord ex = EXPERIMENT.newRecord();
-		ex.attach(ctx.configuration());
-		ex.setDateCreated(experiment.getDateCreated());
-		ex.setModelId(experiment.getModelId());
-		ex.setName(experiment.getName());
-		ex.setRewardFunction(experiment.getRewardFunction());
-		ex.store();
-		return ex.getId();
 	}
 
 	protected static int getExperimentCount(DSLContext ctx, long modelId) {
@@ -207,7 +201,7 @@ class ExperimentRepository
 	 * @return List of dashboard items
 	 */
 	static List<DashboardItem> getDashboardItems(DSLContext ctx, DashboardQueryParams dashboardQueryParams) {
-		final var latestRun = ctx.select(RUN.ID, RUN.EXPERIMENT_ID, RUN.NAME, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT, RUN.STATUS)
+		final var latestRun = ctx.select(RUN.ID, RUN.EXPERIMENT_ID, RUN.NAME, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT, RUN.EC2_CREATED_AT, RUN.STATUS)
 				.distinctOn(RUN.EXPERIMENT_ID)
 				.from(RUN)
 				.where(RUN.STARTED_AT.isNotNull())
@@ -263,7 +257,7 @@ class ExperimentRepository
 	 * Helper method to map received database row to {@link DashboardItem} object.<br/>
 	 * It sets {@link DashboardItem#setPolicyExported(boolean)} to true if any run with an exported policy was found.
 	 */
-	private static DashboardItem mapRecordToDashboardItem(Record record, Table<Record7<Long, Long, String, Integer, LocalDateTime, LocalDateTime, Integer>> lastRun, Table<Record1<Long>> policyForLastRun) {
+	private static DashboardItem mapRecordToDashboardItem(Record record, Table<Record8<Long, Long, String, Integer, LocalDateTime, LocalDateTime, LocalDateTime, Integer>> lastRun, Table<Record1<Long>> policyForLastRun) {
 		var experiment = record.into(EXPERIMENT).into(Experiment.class);
 		var model = record.into(MODEL).into(Model.class);
 		var project = record.into(PROJECT).into(Project.class);

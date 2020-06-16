@@ -3,6 +3,7 @@ package io.skymind.pathmind.webapp.data.utils;
 import static io.skymind.pathmind.shared.constants.RunStatus.NotStarted;
 import static io.skymind.pathmind.shared.constants.RunStatus.Running;
 import static io.skymind.pathmind.shared.constants.RunStatus.Starting;
+import static io.skymind.pathmind.shared.constants.RunStatus.Error;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -63,13 +64,31 @@ public class ExperimentUtils
 					.anyMatch(statusVal -> statusVal > Starting.getValue())) {
 				status = Running;
 			}
-		}
+        }
+
+        if (status == RunStatus.Killed) {
+            if (experiment.getRuns().stream()
+                    .map(Run::getTrainingErrorId)
+                    .anyMatch(errorId -> errorId > 0)) {
+                status = Error;
+            }
+        }
 		return status;
 	}
 
 	public static LocalDateTime getTrainingStartedDate(Experiment experiment) {
 		return experiment.getRuns().stream()
 				.map(Run::getStartedAt)
+				.filter(Objects::nonNull)
+				// experiment can have multiple run, in case of a restart
+				// so we take the latest one
+				.max(LocalDateTime::compareTo)
+				.orElse(LocalDateTime.now());
+	}
+
+	public static LocalDateTime getEc2CreatedDate(Experiment experiment) {
+		return experiment.getRuns().stream()
+				.map(Run::getEc2CreatedAt)
 				.filter(Objects::nonNull)
 				// experiment can have multiple run, in case of a restart
 				// so we take the latest one
@@ -107,26 +126,17 @@ public class ExperimentUtils
 	}
 
 	public static double getEstimatedTrainingTime(Experiment experiment, double progress){
-		final var earliestRunStartedDate = ExperimentUtils.getTrainingStartedDate(experiment);
-		return calculateTrainingSecondsLeft(earliestRunStartedDate, progress);
+		final var earlistedEc2CreatedDate = ExperimentUtils.getEc2CreatedDate(experiment);
+		return calculateTrainingSecondsLeft(earlistedEc2CreatedDate, progress);
 	}
 
-	public static double getEstimatedTrainingTime(LocalDateTime startedDate, double progress) {
-		return calculateTrainingSecondsLeft(startedDate, progress);
+	public static double getEstimatedTrainingTime(LocalDateTime baseDate, double progress) {
+		return calculateTrainingSecondsLeft(baseDate, progress);
 	}
 
-	private static double calculateTrainingSecondsLeft(LocalDateTime startedDate, double progress) {
-		var difference = Duration.between(startedDate, LocalDateTime.now()).toSeconds();
-		difference = subtractPretrainingTime(difference);
+	private static double calculateTrainingSecondsLeft(LocalDateTime baseDate, double progress) {
+		var difference = Duration.between(baseDate, LocalDateTime.now()).toSeconds();
 		return difference * (100 - progress) / progress;
-	}
-
-	/**
-	 * To make ETA more realistic we subtract 15 minutes as pre-training warm-up time
-	 */
-	private static long subtractPretrainingTime(long difference) {
-		long subtractedTime = difference - TimeUnit.MINUTES.toSeconds(15);
-		return subtractedTime > 0 ? subtractedTime : difference;
 	}
 
 	public static double getEstimatedTrainingTimeForSingleRun(Run run, double progress) {

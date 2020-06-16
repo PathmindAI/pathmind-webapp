@@ -15,7 +15,6 @@ import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -65,8 +64,6 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ui.components.CodeViewer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.shared.featureflag.Feature;
-import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
@@ -122,8 +119,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private RunDAO runDAO;
     @Autowired
     private SegmentIntegrator segmentIntegrator;
-    @Autowired
-    private FeatureManager featureManager;
 
     private Breadcrumbs pageBreadcrumbs;
     private Button restartTraining;
@@ -290,11 +285,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private NotesField createViewNotesField() {
         return new NotesField(
-            "Experiment Notes",
+            "Notes",
             experiment.getUserNotes(),
             updatedNotes -> {
                 experimentDAO.updateUserNotes(experimentId, updatedNotes);
-                NotificationUtils.showSuccess("Notes saved");
                 segmentIntegrator.updatedNotesExperimentView();
             }
         );
@@ -336,9 +330,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void loadExperimentData() {
         modelId = experiment.getModelId();
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
-        if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
-            rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-        }
+        rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
         policy = selectBestPolicy(experiment.getPolicies());
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
@@ -357,11 +349,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         setPolicyChartVisibility();
         experimentsNavbar.setVisible(!experiment.isArchived());
         panelTitle.setText("Experiment #"+experiment.getName());
-        if (featureManager.isEnabled(Feature.REWARD_VARIABLES_FEATURE)) {
-            codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
-        } else {
-            codeViewer.setValue(experiment.getRewardFunction(), null);
-        }
+        codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
         policyChartPanel.setExperiment(experiment, policy);
         updateRightPanelForExperiment();
     }

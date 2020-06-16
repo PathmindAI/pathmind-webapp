@@ -3,6 +3,7 @@ package io.skymind.pathmind.webapp.ui.views.dashboard.components;
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.PROJECT_TITLE;
 
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -16,6 +17,7 @@ import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.router.RouterLink;
 
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
+import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -106,7 +108,7 @@ public class DashboardLine extends HorizontalLayout {
 	private Span createStageItem(Stage stage) {
 		Span item = null; 
 		if (stage.getValue() < currentStage.getValue()) {
-			item = new Span(VaadinIcon.COMMENTS.CHECK_CIRCLE.create(), new Text(stage.getNameAfterDone()));
+			item = new Span(VaadinIcon.CHECK_CIRCLE.create(), new Text(stage.getNameAfterDone()));
 			item.setClassName("stage-done");
 		} else if (stage.getValue() == currentStage.getValue()) {
 			if (DashboardUtils.isTrainingInProgress(stage, dashboardItem.getLatestRun())) {
@@ -114,9 +116,17 @@ public class DashboardLine extends HorizontalLayout {
 				updateProgress(trainingProgress, dashboardItem);
 				item = new Span(new Text(stage.getNameAfterDone() + INPROGRESS_INDICATOR), trainingProgress);
 				item.setClassName("stage-active");
-			} else if (DashboardUtils.isTrainingInFailed(stage, dashboardItem.getLatestRun())) {
-				item = new Span(VaadinIcon.CLOSE.create(), new Text(stage.getNameAfterDone()));
-				item.setClassName("stage-failed");
+            } else if (DashboardUtils.isTrainingStopped(stage, dashboardItem.getLatestRun()) || DashboardUtils.isTrainingInFailed(stage, dashboardItem.getLatestRun())) {
+                if (ExperimentUtils.getTrainingStatus(dashboardItem.getExperiment()) == RunStatus.Error) {
+                    item = new Span(VaadinIcon.EXCLAMATION_CIRCLE_O.create(), new Text(stage.getNameAfterDone()));
+                    item.setClassName("stage-failed");
+                } else {
+                    String trainingStatusText = dashboardItem.getLatestRun().getStatusEnum() == RunStatus.Stopping ? "Stopping" : "Stopped";
+                    Span stoppedIcon = new Span();
+                    stoppedIcon.addClassName("icon-stopped");
+                    item = new Span(stoppedIcon, new Span(new Text(stage.getNameAfterDone()), new Html("<br/>"), LabelFactory.createLabel(trainingStatusText, "hint-label")));
+                    item.setClassName("stage-stopped");
+                }
 			} else {
 				item = new Span(stage.getNameAfterDone());
 				item.setClassName("stage-active");
@@ -131,7 +141,7 @@ public class DashboardLine extends HorizontalLayout {
 	private void updateProgress(PathmindTrainingProgress trainingProgress, DashboardItem item) {
 		final double progress = ExperimentUtils.calculateProgressByIterationsProcessed(item.getIterationsProcessed());
 		if (progress >= 0 && progress <= 100) {
-			final double estimatedTime = ExperimentUtils.getEstimatedTrainingTime(item.getLatestRun().getStartedAt(), progress);
+			final double estimatedTime = ExperimentUtils.getEstimatedTrainingTime(item.getLatestRun().getEc2CreatedAt(), progress);
 			trainingProgress.setValue(progress, estimatedTime);
 		}
 	}

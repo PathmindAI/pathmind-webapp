@@ -1,100 +1,98 @@
 .reward-variables-table {
-  font-size: var(--lumo-font-size-s);
+    font-size: var(--lumo-font-size-s);
 }
 .reward-function-wrapper .reward-variables-table {
-  max-height: 100%;
+    max-height: 100%;
 }
 
 .reward-variables-table .header-row {
-  position: sticky;
-  top: 0;
-  color: var(--pm-secondary-text-color);
-  background-color: white;
-  z-index: 1;
+    position: sticky;
+    top: 0;
+    color: var(--pm-secondary-text-color);
+    background-color: white;
+    z-index: 1;
 }
 .reward-variables-table vaadin-horizontal-layout {
-  height: 2rem;
-  align-items: center;
+    height: 2rem;
+    align-items: center;
 }
 .reward-variables-table vaadin-horizontal-layout.invalid-reward-variable-row {
-  height: auto;
+    height: auto;
 }
 .reward-variables-table span {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
 }
 .reward-variables-table span:first-child {
-  box-sizing: border-box;
-  flex: 0 0 2rem;
-  color: var(--pm-gray-color-dark);
-  text-align: center;
-  padding: 0.5em;
+    box-sizing: border-box;
+    flex: 0 0 2rem;
+    color: var(--pm-gray-color-dark);
+    text-align: center;
+    padding: 0.5em;
 }
 .reward-variables-table :not(.header-row) span:first-child {
-  box-sizing: border-box;
-  align-self: flex-start;
-  height: 1.75rem;
-  font-size: var(--lumo-font-size-s);
-  font-family: var(--code-font-family);
-  border-radius: 3px 0 0 3px;
-  border: 1px solid var(--pm-gray-color);
-  border-right: none;
+    box-sizing: border-box;
+    align-self: flex-start;
+    height: 1.75rem;
+    font-size: var(--lumo-font-size-s);
+    font-family: var(--code-font-family);
+    border-radius: 3px 0 0 3px;
+    border: 1px solid var(--pm-gray-color);
+    border-right: none;
 }
 .reward-variables-table vaadin-text-field {
-  font-size: var(--lumo-font-size-s);
-  font-family: var(--code-font-family);
-  padding: 0;
+    font-size: var(--lumo-font-size-s);
+    font-family: var(--code-font-family);
+    padding: 0;
 }
 
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(2) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 2) span {
-  color: #000;
-  background-color: #67ea93;
+    color: #000;
+    background-color: #67ea93;
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(3) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 3) span {
-  color: #fff;
-  background-color: #214e96;
+    color: #fff;
+    background-color: #214e96;
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(4) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 4) span {
-  color: #000;
-  background-color: #9bf7ec;
+    color: #000;
+    background-color: #9bf7ec;
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(5) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 5) span {
-  color: #fff;
-  background-color: #7550e5;
+    color: #fff;
+    background-color: #7550e5;
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(6) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 6) span {
-  color: #000;
-  background-color: #b0f78c;
+    color: #000;
+    background-color: #b0f78c;
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(7) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 7) span {
-  color: #000;
-  background-color: #ef99a4;
+    color: #000;
+    background-color: #ef99a4;
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(8) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 8) span {
-  color: #000;
-  background-color: #9bc0f7;
+    color: #000;
+    background-color: #9bc0f7;
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(9) span,
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 9) span {
-  color: #fff;
-  background-color: #931901;
+    color: #fff;
+    background-color: #931901;
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n) span {
-  color: #fff;
-  background-color: #f413bc;
+    color: #fff;
+    background-color: #f413bc;
 }
-.reward-variables-table
-  vaadin-horizontal-layout:nth-of-type(10n + 1):not(.header-row)
-  span {
-  color: #000;
-  background-color: #d1b112;
+.reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 1):not(.header-row) span {
+    color: #000;
+    background-color: #d1b112;
 }

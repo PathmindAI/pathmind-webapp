@@ -1239,7 +1239,7 @@
          		DROP FUNCTION IF EXISTS migrate_exec_prov_meta_data();
          	</sql>
          </rollback>
-     </changeSet>
+    </changeSet>
 
     <changeSet id="20200516-01" author="alexander.makarov@toptal.com">
         <addColumn tableName="RUN">
@@ -1247,6 +1247,131 @@
         </addColumn>
         <rollback>
             <dropColumn tableName="RUN" columnName="RLLIB_ERROR" />
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="20200519-01" author="onur@vaadin.com">
+        <comment>
+            Since liquibase:dropAll doesn't drop procedures or functions, in local environments update operation after dropAll fails, because the functions below could not be created.
+            In order to solve this issue, these two functions are dropped and re-created using CREATE OR UPDATE command.          
+        </comment>
+        <sql>
+            DROP TRIGGER update_model on public.experiment;
+            DROP TRIGGER update_project on public.model;
+            DROP FUNCTION IF EXISTS public.update_model_activity_date();
+            DROP FUNCTION IF EXISTS public.update_project_activity_date();
+         </sql>
+        <createProcedure>
+            CREATE OR REPLACE FUNCTION public.update_model_activity_date_fn()
+            RETURNS trigger
+            LANGUAGE 'plpgsql'
+            COST 100
+            VOLATILE NOT LEAKPROOF
+            AS $BODY$BEGIN
+            IF NEW.LAST_ACTIVITY_DATE != OLD.LAST_ACTIVITY_DATE THEN
+            UPDATE MODEL SET LAST_ACTIVITY_DATE = NEW.LAST_ACTIVITY_DATE
+            WHERE id = NEW.MODEL_ID;
+            END IF;
+
+            RETURN NEW;
+            END;$BODY$;
+        </createProcedure>
+        <createProcedure>
+            CREATE TRIGGER update_model
+            AFTER UPDATE OF last_activity_date
+            ON public.experiment
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.update_model_activity_date_fn();
+        </createProcedure>
+        <createProcedure>
+            CREATE OR REPLACE FUNCTION public.update_project_activity_date_fn()
+            RETURNS trigger
+            LANGUAGE 'plpgsql'
+            COST 100
+            VOLATILE NOT LEAKPROOF
+            AS $BODY$BEGIN
+            IF NEW.LAST_ACTIVITY_DATE != OLD.LAST_ACTIVITY_DATE THEN
+            UPDATE PROJECT SET LAST_ACTIVITY_DATE = NEW.LAST_ACTIVITY_DATE
+            WHERE id = NEW.PROJECT_ID;
+            END IF;
+
+            RETURN NEW;
+            END;$BODY$;
+        </createProcedure>
+        <createProcedure>
+            CREATE TRIGGER update_project
+            AFTER UPDATE OF last_activity_date
+            ON public.model
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.update_project_activity_date_fn();
+        </createProcedure>
+    </changeSet>
+    
+    <changeSet id="20200528-01" author="onur@vaadin.com">
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM PROJECT WHERE LENGTH(NAME) > 100;
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM REWARD_VARIABLE WHERE LENGTH(NAME) > 100;
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM PATHMIND_USER WHERE LENGTH(FIRSTNAME) > 250;
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM PATHMIND_USER WHERE LENGTH(LASTNAME) > 250;
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM PROJECT WHERE LENGTH(USER_NOTES) > 1000;
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM MODEL WHERE LENGTH(USER_NOTES) > 1000;
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM EXPERIMENT WHERE LENGTH(USER_NOTES) > 1000;
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM TRAINING_ERROR WHERE LENGTH(KEYWORD) > 255;
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM TRAINING_ERROR WHERE LENGTH(DESCRIPTION) > 255;
+            </sqlCheck>
+        </preConditions>
+        <comment>
+             Align constraints on DB with Application
+        </comment> 
+        <modifyDataType tableName="PROJECT" columnName="NAME" newDataType="VARCHAR(100)"/>
+        <modifyDataType tableName="REWARD_VARIABLE" columnName="NAME" newDataType="VARCHAR(100)"/>
+        <modifyDataType tableName="PATHMIND_USER" columnName="FIRSTNAME" newDataType="VARCHAR(250)"/>
+        <modifyDataType tableName="PATHMIND_USER" columnName="LASTNAME" newDataType="VARCHAR(250)"/>
+        <modifyDataType tableName="PROJECT" columnName="USER_NOTES" newDataType="VARCHAR(1000)"/>
+        <modifyDataType tableName="MODEL" columnName="USER_NOTES" newDataType="VARCHAR(1000)"/>
+        <modifyDataType tableName="EXPERIMENT" columnName="USER_NOTES" newDataType="VARCHAR(1000)"/>
+        <modifyDataType tableName="TRAINING_ERROR" columnName="KEYWORD" newDataType="VARCHAR(255)"/>
+        <modifyDataType tableName="TRAINING_ERROR" columnName="DESCRIPTION" newDataType="VARCHAR(255)"/>
+        <update tableName="PROJECT">
+            <column name="ARCHIVED" valueBoolean="false"/>
+            <where>ARCHIVED IS NULL</where>
+        </update>
+        <update tableName="MODEL">
+            <column name="ARCHIVED" valueBoolean="false"/>
+            <where>ARCHIVED IS NULL</where>
+        </update>
+        <update tableName="EXPERIMENT">
+            <column name="ARCHIVED" valueBoolean="false"/>
+            <where>ARCHIVED IS NULL</where>
+        </update>
+        <addNotNullConstraint tableName="PROJECT" columnName="ARCHIVED"/>
+        <addNotNullConstraint tableName="MODEL" columnName="ARCHIVED"/>
+        <addNotNullConstraint tableName="EXPERIMENT" columnName="ARCHIVED"/>
+     </changeSet>
+     
+     <changeSet id="20200602-01" author="bruno.rezende@ext.vaadin.com">
+        <addColumn tableName="RUN">
+            <column name="EC2_CREATED_AT" type="DATETIME"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="RUN" columnName="EC2_CREATED_AT" />
         </rollback>
     </changeSet>
 
