@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Action extends TableImpl<ActionRecord> {
 
-    private static final long serialVersionUID = 1734625601;
+    private static final long serialVersionUID = -439145248;
 
     /**
      * The reference instance of <code>public.action</code>
@@ -70,7 +70,7 @@ public class Action extends TableImpl<ActionRecord> {
     /**
      * The column <code>public.action.name</code>.
      */
-    public final TableField<ActionRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<ActionRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "");
 
     /**
      * The column <code>public.action.array_index</code>.

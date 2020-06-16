@@ -139,13 +139,13 @@ public class ObservationsTable extends CustomField<List<Observation>> implements
                 .withValidator(new StringLengthValidator("Variable name must not exceed 16 characters.", 0, 16))
                 .bind(Observation::getVariable, Observation::setVariable);
             binder.forField(description)
-                .withValidator(new StringLengthValidator("Variable name must not exceed 255 characters.", 0, 255))
+                .withValidator(new StringLengthValidator("Variable name must not exceed 100 characters.", 0, 100))
                 .bind(Observation::getDescription, Observation::setDescription);
             binder.forField(dataType)
                 .asRequired("Data type is mandatory")
                 .bind(Observation::getDataTypeEnum, Observation::setDataTypeEnum);
             binder.forField(example)
-                .withValidator(new StringLengthValidator("Example must not exceed 255 characters.", 0, 255))
+                .withValidator(new StringLengthValidator("Example must not exceed 100 characters.", 0, 100))
                 .bind(Observation::getExample, Observation::setExample);
             binder.forField(min)
                 .bind(Observation::getMin, Observation::setMin);

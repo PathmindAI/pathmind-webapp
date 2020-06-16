@@ -1392,10 +1392,10 @@
             <column name="DATA_TYPE" type="VARCHAR(16)">
                 <constraints nullable="false"/>
             </column>
-            <column name="DESCRIPTION" type="VARCHAR(255)">
+            <column name="DESCRIPTION" type="VARCHAR(100)">
                 <constraints nullable="true"/>
             </column>
-            <column name="EXAMPLE" type="VARCHAR(255)">
+            <column name="EXAMPLE" type="VARCHAR(100)">
                 <constraints nullable="true"/>
             </column>
             <column name="MIN" type="DOUBLE">
@@ -1412,7 +1412,7 @@
             <column name="MODEL_ID" type="BIGINT">
                 <constraints nullable="false" foreignKeyName="PM_FK_ACTION_MODEL" references="MODEL(ID)"/>
             </column>
-            <column name="NAME" type="VARCHAR(255)">
+            <column name="NAME" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
             <column name="ARRAY_INDEX" type="INT">
@@ -1421,18 +1421,15 @@
         </createTable>
         <addUniqueConstraint tableName="OBSERVATION" columnNames="MODEL_ID, ARRAY_INDEX"/>
         <addUniqueConstraint tableName="ACTION" columnNames="MODEL_ID, ARRAY_INDEX"/>
-        <rollback>
-            <dropTable tableName="OBSERVATION"/>
-            <dropTable tableName="ACTION"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet id="20200615-01" author="bruno.rezende@ext.vaadin.com">
         <createIndex tableName="ACTION" indexName="ACTION_MODEL_FK_INDEX">
             <column name="MODEL_ID"/>
         </createIndex>
         <createIndex tableName="OBSERVATION" indexName="OBSERVATION_MODEL_FK_INDEX">
             <column name="MODEL_ID"/>
         </createIndex>
+        <rollback>
+            <dropTable tableName="OBSERVATION"/>
+            <dropTable tableName="ACTION"/>
+        </rollback>
     </changeSet>
 </databaseChangeLog>
