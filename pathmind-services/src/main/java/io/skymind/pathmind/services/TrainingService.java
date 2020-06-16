@@ -38,7 +38,7 @@ public abstract class TrainingService {
         this.policyDAO = policyDAO;
         this.ctx = ctx;
 
-        PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_1_0_1;
+        PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_1_0_2;
         if (multiAgent) {
             pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
         }

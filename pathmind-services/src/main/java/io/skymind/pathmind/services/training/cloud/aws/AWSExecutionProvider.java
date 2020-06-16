@@ -379,6 +379,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_0_25:
             case VERSION_0_0_25_Multi:
             case VERSION_1_0_1:
+            case VERSION_1_0_2:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));
