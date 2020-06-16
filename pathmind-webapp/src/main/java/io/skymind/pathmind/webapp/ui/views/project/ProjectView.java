@@ -168,7 +168,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		modelGrid.addColumn(model -> {
 				String userNotes = model.getUserNotes();
 				return userNotes.isEmpty() ? "—" : userNotes;
-		})
+        })
+                .setClassNameGenerator(column -> "grid-notes-column")
 				.setHeader("Notes")
 				.setResizable(true)
 				.setSortable(false);
