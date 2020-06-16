@@ -97,15 +97,6 @@ public class GenericPage extends PageObject {
         resetImplicitTimeout();
     }
 
-    public void confirmArchivePopup() {
-        waitABit(2500);
-        WebElement overlay = utils.expandRootElement(dialogShadow);
-        WebElement d = overlay.findElement(By.cssSelector("#content"));
-        WebElement dialog = utils.expandRootElement(d);
-        WebElement confirmBtn = dialog.findElement(By.cssSelector("#confirm"));
-        confirmBtn.click();
-    }
-
     public void switchProjectsTab() {
         getDriver().findElement(By.xpath("//vaadin-tab[@aria-selected='false']")).click();
     }

@@ -18,7 +18,7 @@ Feature: Model page
     When Open project AutotestProject on projects page
     Then Click the model name 1
     When Click experiment archive button
-    When Confirm archive/unarchive popup
+    When In confirmation dialog click in 'Archive Experiment' button
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1 Draft' exist in archived/not archived tab
     When Open projects/model/experiment archived tab
@@ -31,10 +31,10 @@ Feature: Model page
     When Open project AutotestProject on projects page
     Then Click the model name 1
     When Click experiment archive button
-    When Confirm archive/unarchive popup
+    When In confirmation dialog click in 'Archive Experiment' button
     When Open projects/model/experiment archived tab
     When Click experiment unarchive button
-    When Confirm archive/unarchive popup
+    When In confirmation dialog click in 'Unarchive Experiment' button
     When Check that model/experiment name '1 Draft' NOT exist in archived/not archived tab
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1 Draft' exist in archived/not archived tab

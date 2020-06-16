@@ -30,7 +30,7 @@ Feature: Project page
     When Open projects page
     When Open project AutotestProject on projects page
     When Click model 1 archive/unarchive button
-    When Confirm archive/unarchive popup
+    When In confirmation dialog click in 'Archive Model' button
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1' exist in archived/not archived tab
     When Open projects/model/experiment archived tab
@@ -42,10 +42,10 @@ Feature: Project page
     When Open projects page
     When Open project AutotestProject on projects page
     When Click model 1 archive/unarchive button
-    When Confirm archive/unarchive popup
+    When In confirmation dialog click in 'Archive Model' button
     When Open projects/model/experiment archived tab
     When Click model 1 archive/unarchive button
-    When Confirm archive/unarchive popup
+    When In confirmation dialog click in 'Unarchive Model' button
     When Check that model/experiment name 'AutotestProject' NOT exist in archived/not archived tab
     When Open models tab
     Then Check that model/experiment name '1' exist in archived/not archived tab
@@ -69,7 +69,7 @@ Feature: Project page
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Click AutotestProject project archive/unarchive button
-    When Confirm archive/unarchive popup
+    When In confirmation dialog click in 'Archive Project' button
     When Open projects/model/experiment archived tab
     When Open project AutotestProject on projects page
     When Click in 'Rename' button

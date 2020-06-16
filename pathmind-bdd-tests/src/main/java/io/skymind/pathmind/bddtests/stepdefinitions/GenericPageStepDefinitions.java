@@ -53,11 +53,6 @@ public class GenericPageStepDefinitions {
         genericPageSteps.waitForTextToDisappear(text);
     }
 
-    @When("^Confirm archive/unarchive popup$")
-    public void confirmArchivePopup() {
-        genericPageSteps.confirmArchivePopup();
-    }
-
     @When("^Open projects/model/experiment archived tab$")
     public void openProjectsArchivedTab() {
         genericPageSteps.openProjectsArchivedTab();

@@ -40,11 +40,6 @@ public class ModelStepDefinitions {
         modelPageSteps.checkModelPageModelDetailsRewardVariablesIs(commaSeparatedVariableNames);
     }
 
-//    @Then("^Check that model name (.*) exist in archived tab$")
-//    public void checkThatModelNameExistInArchivedTab(String experiment) {
-//        modelPageSteps.checkThatModelNameExistInArchivedTab(experiment);
-//    }
-
     @Then("^Check model page model details reward variable (.*) name is (.*)$")
     public void checkModelPageModelDetailsRewardVariableNameIs(String variableNumber, String variableName) {
         modelPageSteps.checkModelPageModelDetailsRewardVariableNameIs(variableNumber, variableName);

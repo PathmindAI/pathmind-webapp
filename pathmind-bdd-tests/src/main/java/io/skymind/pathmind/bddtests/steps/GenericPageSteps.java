@@ -48,11 +48,6 @@ public class GenericPageSteps {
     }
 
     @Step
-    public void confirmArchivePopup() {
-        genericPage.confirmArchivePopup();
-    }
-
-    @Step
     public void openProjectsArchivedTab() {
         genericPage.switchProjectsTab();
     }
