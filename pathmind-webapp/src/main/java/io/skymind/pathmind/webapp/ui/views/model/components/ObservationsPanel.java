@@ -15,7 +15,6 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import io.skymind.pathmind.shared.data.Action;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
@@ -69,9 +68,7 @@ public class ObservationsPanel extends VerticalLayout
     public void setupObservationTable(int numberOfObservations, List<Observation> observations) {
 	    observationsTable = new ObservationsTable();
 	    observationsTable.setNumberOfItems(numberOfObservations);
-	    if (!observations.isEmpty()) {
-	        observationsTable.setValue(observations);
-        }
+        observationsTable.setValue(observations);
 	    formPanel.add(observationsTable);
     }
 
@@ -83,11 +80,7 @@ public class ObservationsPanel extends VerticalLayout
 	}
 	
     public List<Observation> getObservations(){
-        if (observationsTable == null) {
-            return null;
-        } else {
-            return observationsTable.getValue();
-        }
+        return observationsTable.getValue();
     }
 
 	public boolean isInputValueValid() {

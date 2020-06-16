@@ -71,9 +71,7 @@ public class RewardVariablesPanel extends VerticalLayout
 	public void setupRewardVariablesTable(int rewardVariablesCount, List<RewardVariable> rewardVariables) {
 		rewardVariablesTable = new RewardVariablesTable();
 		rewardVariablesTable.setVariableSize(Math.max(rewardVariablesCount, rewardVariables.size()));
-		if (!rewardVariables.isEmpty()) {
-			rewardVariablesTable.setValue(rewardVariables);
-		}
+		rewardVariablesTable.setValue(rewardVariables);
 		formPanel.add(rewardVariablesTable);
 	}
 
@@ -86,11 +84,7 @@ public class RewardVariablesPanel extends VerticalLayout
 	}
 	
 	public List<RewardVariable> getRewardVariables(){
-		if (rewardVariablesTable == null) {
-			return null;
-		} else {
-			return rewardVariablesTable.getValue();
-		}
+		return rewardVariablesTable.getValue();
 	}
 
 	public boolean isInputValueValid() {

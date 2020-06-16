@@ -53,7 +53,6 @@ public class ActionsTable extends CustomField<List<Action>> implements HasStyle 
 
 	@Override
 	public void setPresentationValue(List<Action> newPresentationValue) {
-        setNumberOfItems(newPresentationValue.size());
 		newPresentationValue.forEach(rv -> actionNameFields.get(rv.getArrayIndex()).setValue(rv));
 	}
 

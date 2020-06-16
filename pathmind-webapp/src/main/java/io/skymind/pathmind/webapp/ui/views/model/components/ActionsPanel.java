@@ -68,9 +68,7 @@ public class ActionsPanel extends VerticalLayout
     public void setupActionsTable(int numberOfPossibleActions, List<Action> actions) {
 	    actionsTable = new ActionsTable();
 	    actionsTable.setNumberOfItems(numberOfPossibleActions);
-	    if (!actions.isEmpty()) {
-            actionsTable.setValue(actions);
-        }
+        actionsTable.setValue(actions);
 	    formPanel.add(actionsTable);
     }
 
@@ -82,11 +80,7 @@ public class ActionsPanel extends VerticalLayout
 	}
 	
     public List<Action> getActions(){
-        if (actionsTable == null) {
-            return null;
-        } else {
-            return actionsTable.getValue();
-        }
+        return actionsTable.getValue();
     }
 
 	public boolean isInputValueValid() {

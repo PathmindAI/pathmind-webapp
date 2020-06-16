@@ -39,9 +39,4 @@ class ObservationRepository {
                 .where(OBSERVATION.MODEL_ID.eq(modelId))
                 .fetchInto(Observation.class);
     }
-
-    protected static void deleteModelObservations(DSLContext ctx, long modelId) {
-        ctx.deleteFrom(OBSERVATION)
-                .where(OBSERVATION.MODEL_ID.equal(modelId));
-    }
 }

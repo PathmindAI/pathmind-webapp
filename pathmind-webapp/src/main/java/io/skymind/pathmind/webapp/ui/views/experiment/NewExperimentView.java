@@ -361,11 +361,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		binder.setBean(experiment);
 		experimentsNavbar.setVisible(!experiment.isArchived());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());		
-		if (!rewardVariables.isEmpty()) {
-			rewardVariablesTable.setValue(rewardVariables);
-		} else {
-			rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
-		}
+	    rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
+		rewardVariablesTable.setValue(rewardVariables);
 		rewardFunctionEditor.setVariableNames(rewardVariables, experiment.getModel().getRewardVariablesCount());
 		unsavedChanges.setVisible(false);
 		notesSavedHint.setVisible(false);

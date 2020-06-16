@@ -30,9 +30,4 @@ class ActionRepository {
                 .where(ACTION.MODEL_ID.eq(modelId))
                 .fetchInto(Action.class);
     }
-
-    protected static void deleteModelActions(DSLContext ctx, long modelId) {
-        ctx.deleteFrom(ACTION)
-                .where(ACTION.MODEL_ID.equal(modelId));
-    }
 }
