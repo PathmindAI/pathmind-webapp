@@ -16,21 +16,21 @@ public class RewardVariableDAO {
         this.ctx = ctx;
     }
 
-    public void saveRewardVariables(List<RewardVariable> rewardVariables) {
+    public void updateModelRewardVariables(long modelId, List<RewardVariable> rewardVariables) {
         ctx.transaction(configuration ->
         {
             DSLContext transactionCtx = DSL.using(configuration);
             DBUtils.setLockTimeout(transactionCtx, 4);
-            RewardVariableRepository.insertOrUpdateRewardVariables(transactionCtx, rewardVariables);
+            RewardVariableRepository.deleteModelRewardsVariables(ctx, modelId);
+            if (rewardVariables != null) {
+                rewardVariables.forEach(rv -> rv.setModelId(modelId));
+                RewardVariableRepository.insertOrUpdateRewardVariables(transactionCtx, rewardVariables);
+            }
         });
 
     }
 
     public List<RewardVariable> getRewardVariablesForModel(long modelId) {
         return RewardVariableRepository.getRewardVariablesForModel(ctx, modelId);
-    }
-
-    public void deleteModelRewardVariables(long modelId) {
-        RewardVariableRepository.deleteModelRewardsVariables(ctx, modelId);
     }
 }

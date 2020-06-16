@@ -240,10 +240,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		}
 
 		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();
-		if (rewardVariables != null) {
-			rewardVariables.forEach(rv -> rv.setModelId(experiment.getModelId()));
-			rewardVariableDAO.saveRewardVariables(rewardVariables);
-		}
+		rewardVariableDAO.updateModelRewardVariables(experiment.getModelId(), rewardVariables);
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.rewardFuntionCreated();
 
@@ -257,10 +254,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private void handleSaveDraftClicked(Command afterClickedCallback) {
 		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();
-		if (rewardVariables != null) {
-			rewardVariables.forEach(rv -> rv.setModelId(experiment.getModelId()));
-			rewardVariableDAO.saveRewardVariables(rewardVariables);
-		}
+		rewardVariableDAO.updateModelRewardVariables(experiment.getModelId(), rewardVariables);
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.draftSaved();
 		unsavedChanges.setVisible(false);

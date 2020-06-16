@@ -1,41 +1,26 @@
 package io.skymind.pathmind.services.model;
 
-import io.skymind.pathmind.db.dao.ActionDAO;
-import io.skymind.pathmind.db.dao.RewardVariableDAO;
-import io.skymind.pathmind.shared.data.Action;
-import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Observation;
-import io.skymind.pathmind.db.dao.ModelDAO;
-import io.skymind.pathmind.db.dao.ObservationDAO;
-import io.skymind.pathmind.services.ModelService;
-import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
-import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.utils.ModelUtils;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.util.List;
-import java.util.Optional;
+import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.services.ModelService;
+import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.utils.ModelUtils;
 
-@Slf4j
 @Service
 class AwsModelServiceImpl implements ModelService {
 
     public static final String MODEL_FILES = "model_file/";
 
     private final ModelDAO modelDAO;
-    private final RewardVariableDAO rewardVariableDAO;
-    private final ActionDAO actionDAO;
-    private final ObservationDAO observationDAO;
     private final AWSApiClient awsApiClient;
 
-    public AwsModelServiceImpl(ModelDAO modelDAO, RewardVariableDAO rewardVariableDAO,
-                               ActionDAO actionDAO, ObservationDAO observationDAO, AWSApiClient awsApiClient) {
+    public AwsModelServiceImpl(ModelDAO modelDAO, AWSApiClient awsApiClient) {
         this.modelDAO = modelDAO;
-        this.rewardVariableDAO = rewardVariableDAO;
-        this.actionDAO = actionDAO;
-        this.observationDAO = observationDAO;
         this.awsApiClient = awsApiClient;
     }
 
@@ -56,36 +41,6 @@ class AwsModelServiceImpl implements ModelService {
     }
 
     @Override
-    public void updateModelRewardVariables(Model model, List<RewardVariable> rewardVariableList) {
-        Assert.notNull(model, "Model should be provided");
-        rewardVariableDAO.deleteModelRewardVariables(model.getId());
-        if (rewardVariableList != null) {
-            rewardVariableList.forEach(rv -> rv.setModelId(model.getId()));
-            rewardVariableDAO.saveRewardVariables(rewardVariableList);
-        }
-    }
-
-    @Override
-    public void updateModelActions(Model model, List<Action> actions) {
-        Assert.notNull(model, "Model should be provided");
-        actionDAO.deleteModelActions(model.getId());
-        if (actions != null) {
-            actions.forEach(a -> a.setModelId(model.getId()));
-            actionDAO.saveActions(actions);
-        }
-    }
-    
-    @Override
-    public void updateModelObservations(Model model, List<Observation> observations) {
-        Assert.notNull(model, "Model should be provided");
-        observationDAO.deleteModelObservations(model.getId());
-        if (observations != null) {
-            observations.forEach(obs -> obs.setModelId(model.getId()));
-            observationDAO.saveObservations(observations);
-        }
-    }
-
-    @Override
     public long resumeModelCreation(Model model, String modelNotes) {
         Assert.notNull(model, "Model should be provided");
         Assert.isTrue(model.getId() != -1, "Model id should be provided");
@@ -97,22 +52,6 @@ class AwsModelServiceImpl implements ModelService {
         return modelDAO.getModel(modelId);
     }
 
-    @Override
-    public List<RewardVariable> getModelRewardVariables(long modelId) {
-        return rewardVariableDAO.getRewardVariablesForModel(modelId);
-    }
-
-    @Override
-    public List<Action> getModelActions(long modelId) {
-        return actionDAO.getActionsForModel(modelId);
-    }
-    
-    @Override
-    public List<Observation> getModelObservations(long modelId) {
-        return observationDAO.getObservationsForModel(modelId);
-    }
-
-    @Override
     public byte[] getModelFile(long modelId) {
         return awsApiClient.fileContents(buildModelPath(modelId), true);
     }
