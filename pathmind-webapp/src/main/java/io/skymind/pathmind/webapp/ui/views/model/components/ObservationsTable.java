@@ -1,8 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.AbstractCompositeField;
 import com.vaadin.flow.component.HasStyle;
@@ -47,14 +47,7 @@ public class ObservationsTable extends CustomField<List<Observation>> implements
 
 	@Override
 	protected List<Observation> generateModelValue() {
-		List<Observation> modelValue = new ArrayList<>();
-        for (RowField observationField : observationFields) {
-            Observation observation = observationField.getValue();
-            if (observation != null) { 
-                modelValue.add(observation);
-            }
-        }
-		return modelValue;
+	    return observationFields.stream().map(RowField::getValue).filter(val -> val != null).collect(Collectors.toList());
 	}
 
 	@Override

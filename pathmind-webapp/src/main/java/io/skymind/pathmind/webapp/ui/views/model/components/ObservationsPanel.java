@@ -61,15 +61,15 @@ public class ObservationsPanel extends VerticalLayout
 	}
 
 	private void setupForm() {
+	    observationsTable = new ObservationsTable();
 		formPanel.add(getObservationsPanel());
 		formPanel.setPadding(false);
+		formPanel.add(observationsTable);
 	}
 
     public void setupObservationTable(int numberOfObservations, List<Observation> observations) {
-	    observationsTable = new ObservationsTable();
-	    observationsTable.setNumberOfItems(numberOfObservations);
+        observationsTable.setNumberOfItems(numberOfObservations);
         observationsTable.setValue(observations);
-	    formPanel.add(observationsTable);
     }
 
 	private Component getObservationsPanel() {
@@ -84,6 +84,6 @@ public class ObservationsPanel extends VerticalLayout
     }
 
 	public boolean isInputValueValid() {
-        return observationsTable == null || !observationsTable.isInvalid();
+        return !observationsTable.isInvalid();
 	}
 }

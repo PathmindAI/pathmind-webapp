@@ -61,15 +61,15 @@ public class ActionsPanel extends VerticalLayout
 	}
 
 	private void setupForm() {
+	    actionsTable = new ActionsTable();
 		formPanel.add(getActionsPanel());
 		formPanel.setPadding(false);
+		formPanel.add(actionsTable);
 	}
 
     public void setupActionsTable(int numberOfPossibleActions, List<Action> actions) {
-	    actionsTable = new ActionsTable();
 	    actionsTable.setNumberOfItems(numberOfPossibleActions);
         actionsTable.setValue(actions);
-	    formPanel.add(actionsTable);
     }
 
 	private Component getActionsPanel() {
@@ -84,6 +84,6 @@ public class ActionsPanel extends VerticalLayout
     }
 
 	public boolean isInputValueValid() {
-        return actionsTable == null || !actionsTable.isInvalid();
+        return !actionsTable.isInvalid();
 	}
 }

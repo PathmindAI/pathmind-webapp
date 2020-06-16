@@ -20,6 +20,7 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @CssImport(value = "./styles/components/actions-table.css")
 public class ActionsTable extends CustomField<List<Action>> implements HasStyle {
@@ -44,11 +45,7 @@ public class ActionsTable extends CustomField<List<Action>> implements HasStyle 
 
 	@Override
 	protected List<Action> generateModelValue() {
-		List<Action> modelValue = new ArrayList<>();
-        for (RowField actionNameField : actionNameFields) {
-            modelValue.add(actionNameField.getValue());
-        }
-		return modelValue;
+	    return actionNameFields.stream().map(RowField::getValue).collect(Collectors.toList());
 	}
 
 	@Override
