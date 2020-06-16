@@ -63,7 +63,8 @@ public class ProjectFileCheckService {
     }
 
     private Optional<String> verifyAnalysisResult(HyperparametersDTO analysisResult) {
-        if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null || analysisResult.getRewardVariablesCount() == null) {
+        if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null 
+                || analysisResult.getRewardVariablesCount() == null || analysisResult.getActionTupleSize() == null) {
             return Optional.of("Unable to analyze the model.");
         }
         else if (analysisResult.getActions() != null && Integer.parseInt(analysisResult.getActions()) == 0) {
