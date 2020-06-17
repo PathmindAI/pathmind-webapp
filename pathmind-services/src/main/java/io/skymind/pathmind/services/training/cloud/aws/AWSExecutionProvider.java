@@ -6,14 +6,15 @@ import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AWSFileManager;
+import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.rllib.CheckPoint;
 import io.skymind.pathmind.shared.data.rllib.ExperimentState;
 import io.skymind.pathmind.shared.exception.PathMindException;
-import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.ExecutionProviderClass;
 import io.skymind.pathmind.shared.services.training.JobSpec;
+import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -63,7 +64,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         // Set up which files are needed, and how to install them
         installJDK(env.getJdkVersion(), instructions, files);
         installConda(env.getCondaVersion(), instructions, files);
-        installNativeRL(env.getRllibVersion(), instructions, files);
+        installNativeRL(env.getNativerlVersion(), instructions, files);
         installAnyLogic(env.getAnylogicVersion(), instructions, files);
         installHelper(env.getPathmindHelperVersion(), instructions, files);
         installModel(job.getModelFileId(), instructions, files);
@@ -76,7 +77,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         runTraining(instructions);
 
         // Start actual execution of the job
-        return startTrainingRun(job, instructions, files);
+        return startTrainingRun(job, instructions, files, env.getEc2InstanceType());
     }
 
     @Override
@@ -466,7 +467,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         ));
     }
 
-    private String startTrainingRun(JobSpec job, List<String> instructions, List<String> files) {
+    private String startTrainingRun(JobSpec job, List<String> instructions, List<String> files, EC2InstanceType ec2InstanceType) {
         File script = null;
         File errChecker = null;
         try {
@@ -491,7 +492,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
             client.fileUpload(jobId + "/script.sh", script);
             client.fileUpload(jobId + "/errorCheck.sh", errChecker);
-            return client.jobSubmit(jobId, job.getType());
+            return client.jobSubmit(jobId, job.getType(), ec2InstanceType);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new PathMindException("Failed to start training");
