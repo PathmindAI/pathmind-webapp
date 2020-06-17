@@ -3,6 +3,7 @@ package io.skymind.pathmind.db.dao;
 import java.util.List;
 
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import io.skymind.pathmind.shared.data.Observation;
@@ -21,6 +22,9 @@ public class ObservationDAO {
 
     public void updateModelObservations(long modelId, List<Observation> observations) {
         observations.forEach(obs -> obs.setModelId(modelId));
-        ObservationRepository.insertOrUpdateObservations(ctx, observations);
+        ctx.transaction(conf -> {
+            DSLContext transactionCtx = DSL.using(conf);
+            ObservationRepository.insertOrUpdateObservations(transactionCtx, observations);
+        });
     }
 }

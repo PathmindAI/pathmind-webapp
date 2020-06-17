@@ -3,6 +3,7 @@ package io.skymind.pathmind.db.dao;
 import java.util.List;
 
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import io.skymind.pathmind.shared.data.Action;
@@ -21,6 +22,9 @@ public class ActionDAO {
     
     public void updateModelActions(long modelId, List<Action> actions) {
         actions.forEach(a -> a.setModelId(modelId));
-        ActionRepository.insertOrUpdateActions(ctx, actions);
+        ctx.transaction(conf -> {
+            DSLContext transactionCtx = DSL.using(conf);
+            ActionRepository.insertOrUpdateActions(transactionCtx, actions);
+        });
     }
 }
