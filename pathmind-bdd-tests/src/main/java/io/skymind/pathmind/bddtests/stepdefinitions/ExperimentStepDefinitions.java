@@ -46,4 +46,9 @@ public class ExperimentStepDefinitions {
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
         experimentPageSteps.changeRewardVariableOnExperimentView(variableNumber, variableName);
     }
+
+    @Then("^Check experiment page reward variables is (.*)$")
+    public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
+        experimentPageSteps.checkExperimentPageRewardVariablesIs(commaSeparatedVariableNames);
+    }
 }

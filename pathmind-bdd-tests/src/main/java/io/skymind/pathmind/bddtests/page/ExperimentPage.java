@@ -11,6 +11,9 @@ import org.openqa.selenium.support.FindBy;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -84,5 +87,15 @@ public class ExperimentPage extends PageObject {
         inputShadow.findElement(By.cssSelector("input")).click();
         inputShadow.findElement(By.cssSelector("input")).clear();
         inputShadow.findElement(By.cssSelector("input")).sendKeys(variableName);
+    }
+
+    public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
+        List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-text-field"))) {
+            actual.add(webElement.getAttribute("value"));
+        }
+
+        assertThat(actual, containsInRelativeOrder(items.toArray()));
     }
 }
