@@ -25,19 +25,19 @@ public class WebDriverManagerSource implements DriverSource {
             case CHROME:
                 WebDriverManager.chromedriver().version(chromeVersion).setup();
                 ChromeOptions options = new ChromeOptions();
-                if (_headless.equals("true")){
+                if (_headless.equals("true")) {
                     options.addArguments("--headless");
                 }
                 options.addArguments("--remote-debugging-port=9222");
                 options.addArguments("--no-sandbox");
                 options.addArguments("--disable-dev-shm-usage");
-				options.addArguments("--verbose");
+                options.addArguments("--verbose");
                 _driver = new ChromeDriver(options);
                 break;
             case FIREFOX:
                 WebDriverManager.firefoxdriver().setup();
                 FirefoxOptions firefoxOptions = new FirefoxOptions();
-                if (_headless.equals("true")){
+                if (_headless.equals("true")) {
                     firefoxOptions.addArguments("--headless");
                 }
                 _driver = new FirefoxDriver(firefoxOptions);
