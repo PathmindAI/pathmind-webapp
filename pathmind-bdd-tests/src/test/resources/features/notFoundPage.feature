@@ -1,4 +1,3 @@
-@debug
 Feature: Not found page
 
   Scenario Outline: Check 404 page title and its error message
