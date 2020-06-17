@@ -1377,7 +1377,7 @@
 
     <changeSet id="20200605-01" author="onur@vaadin.com">
         <addColumn tableName="MODEL">
-            <column name="ACTION_TUPLE_SIZE" type="INT" defaultValue="0">
+            <column name="ACTION_TUPLE_SIZE" type="INT" defaultValue="1">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
