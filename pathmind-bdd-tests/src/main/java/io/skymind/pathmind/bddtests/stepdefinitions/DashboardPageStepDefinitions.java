@@ -1,7 +1,5 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
-import java.util.Date;
-
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.DashboardPageSteps;
@@ -51,16 +49,6 @@ public class DashboardPageStepDefinitions {
     @Then("^Check dashboard (.*) experiment notes is (.*)$")
     public void checkExperimentNotes(String projectName, String experimentNotes) {
         dashboardPageSteps.checkExperimentNotes(projectName + Serenity.sessionVariableCalled("randomNumber"), experimentNotes);
-    }
-
-    @When("^Create a Model Draft$")
-    public void createAModelDraft() {
-        homePageSteps.openProjectsPage();
-        projectsPageSteps.clickCreateNewProjectBtn();
-        Serenity.setSessionVariable("randomNumber").to(new Date().getTime());
-        projectsPageSteps.inputNameOfTheNewProject("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
-        projectsPageSteps.clickProjectNameCreateBtn();
-        projectsPageSteps.uploadModelFile("Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip");
     }
 
     @When("^Click in (.*) navigation icon$")
