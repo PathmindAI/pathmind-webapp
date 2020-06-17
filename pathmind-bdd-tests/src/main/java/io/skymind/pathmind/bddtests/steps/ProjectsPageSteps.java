@@ -254,10 +254,6 @@ public class ProjectsPageSteps {
         projectsPage.checkThatProjectNameBreadcrumbOnProjectPage(name);
     }
     @Step
-    public void clickWizardRewardVariablesSaveDraftBtn() {
-        projectsPage.clickWizardRewardVariablesSaveDraftBtn();
-    }
-    @Step
     public void checkThatThereIsAVariableNamed(String variableName) {
         projectsPage.checkThatThereIsAVariableNamed(variableName);
     }

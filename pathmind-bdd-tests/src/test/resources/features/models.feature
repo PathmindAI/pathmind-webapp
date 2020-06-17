@@ -111,7 +111,6 @@ Feature: Models page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
     When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
-    Then Check that button 'Save Draft' exists
     And Check that there are 1 project(s) with 'Draft' tag in AutotestProject project page
 
   @saveModelDraft
@@ -122,11 +121,9 @@ Feature: Models page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
     When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
-    Then Check that button 'Save Draft' exists
     When Fill Notes field as "a user note"
-    When Click in 'Save Draft' button
-    Then Check that the notification 'Draft successfully saved' is shown
-    And Check that there are 1 project(s) with 'Draft' tag in AutotestProject project page
+    When Open projects page
+    Then Check that there are 1 project(s) with 'Draft' tag in AutotestProject project page
     When Click the first draft model
     Then Check that resumeUpload page is opened
     And Check that the Notes field has the value "a user note"
@@ -154,11 +151,9 @@ Feature: Models page
     When Click upload model btn from project page
     When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
     When Click wizard next step button
-    Then Check that button 'Save Draft' exists
     When Input reward variable names kitchen_cleanliness
-    When Click wizard reward variables save draft btn
-    Then Check that the notification 'Draft successfully saved' is shown
-    And Check that there are 1 project(s) with 'Draft' tag in AutotestProject project page
+    When Open projects page
+    Then Check that there are 1 project(s) with 'Draft' tag in AutotestProject project page
     When Click the first draft model
     When Click wizard model details next btn
     And Check that there is a variable named kitchen_cleanliness

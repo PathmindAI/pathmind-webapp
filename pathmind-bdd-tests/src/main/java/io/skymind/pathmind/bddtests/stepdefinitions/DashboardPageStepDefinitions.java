@@ -61,7 +61,6 @@ public class DashboardPageStepDefinitions {
         projectsPageSteps.inputNameOfTheNewProject("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
         projectsPageSteps.clickProjectNameCreateBtn();
         projectsPageSteps.uploadModelFile("Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip");
-        genericPageSteps.clickInButton("Save Draft");
     }
 
     @When("^Click in (.*) navigation icon$")

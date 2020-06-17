@@ -308,11 +308,6 @@ public class ProjectsPageStepDefinitions {
         projectsPageSteps.clickWizardRewardVariableNamesNextBtn();
     }
 
-    @When("^Click wizard reward variables save draft btn$")
-    public void clickWizardRewardVariablesSaveDraftBtn() {
-        projectsPageSteps.clickWizardRewardVariablesSaveDraftBtn();
-    }
-
     @Then("^Check variable (.*) marked (.*) times in row (.*) with index (.*)$")
     public void checkVariableMarkedCorrectlyInCodeEditor(String variableName, int occurance, int row, int variableIndex) {
         projectsPageSteps.checkCodeEditorRowHasVariableMarked(row, occurance, variableName, variableIndex);
