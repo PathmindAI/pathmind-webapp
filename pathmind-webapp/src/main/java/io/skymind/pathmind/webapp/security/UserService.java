@@ -5,6 +5,8 @@ import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.UserUpdateBusEvent;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -156,5 +158,32 @@ public class UserService
         public boolean isOk() {
             return passwordValidationErrors.isEmpty() && confirmPasswordValidationError.isEmpty();
         }
+    }
+
+
+    /*
+     * When user wants to change email, we keep this email in a temporary field till it's verified.
+     * For the new address, a new verification token is generated, so that previous one will not work.
+     * Once user clicks the verify link in verification mail, verifyEmailByToken method replaces Email with NewEmailToVerify field
+     */
+    public void setNewEmailToVerify(PathmindUser user, String originalEmail, String newEmail) {
+        user.setEmail(originalEmail);
+        user.setNewEmailToVerify(newEmail);
+        user.setEmailVerificationToken(UUID.randomUUID());
+    }
+
+    // Verifies the email for token, and returns PathmindUser instance
+    // If token is not valid, returns null
+    public PathmindUser verifyEmailByToken(String token) {
+        PathmindUser user = findByToken(token);
+        if (user != null) {
+            user.setEmailVerifiedAt(LocalDateTime.now());
+            if (Strings.isNotBlank(user.getNewEmailToVerify())) {
+                user.setEmail(user.getNewEmailToVerify());
+                user.setNewEmailToVerify(null);
+            }
+        }
+        update(user);
+        return user;
     }
 }
