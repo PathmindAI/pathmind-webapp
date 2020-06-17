@@ -105,6 +105,26 @@ hr {
     width: calc(100% * 2 / 3) !important;
 }
 
+[tooltip-content] {
+    position: relative;
+}
+
+[tooltip-content]:hover::after {
+    content: attr(tooltip-content);
+    position: absolute;
+    top: calc(-0.8 * var(--lumo-space-xs));
+    left: 0;
+    line-height: 1;
+    background-color: white;
+    padding: 0.14em 0.16em;
+    z-index: 1;
+}
+
+[tooltip-content] span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 #nav-main-links,
 #nav-main-links a,
 .nav-account-links a {
@@ -257,8 +277,6 @@ hr {
 
 .projects-view .project-name-column span {
     max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .projects-view .project-name-column vaadin-button {
