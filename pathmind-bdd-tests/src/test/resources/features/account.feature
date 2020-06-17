@@ -1,3 +1,4 @@
+@account
 Feature: User accounts tests
 
   Scenario: Edit user email in account page
