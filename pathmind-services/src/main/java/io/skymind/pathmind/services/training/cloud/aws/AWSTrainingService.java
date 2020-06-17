@@ -52,7 +52,8 @@ public class AWSTrainingService extends TrainingService {
                 multiAgent,
                 false,
                 50,
-                false
+                false,
+                model.getActionTupleSize()
         );
 
         return executionProvider.execute(spec);        

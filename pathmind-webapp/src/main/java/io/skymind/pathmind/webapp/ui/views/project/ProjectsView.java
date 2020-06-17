@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
@@ -28,6 +27,7 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.webapp.ui.components.TooltipContainer;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
@@ -89,11 +89,12 @@ public class ProjectsView extends PathMindDefaultView
 		projectGrid = new Grid<Project>();
 
 		projectGrid.addComponentColumn(project -> {
+                String projectName = project.getName();
 				Button renameProjectButton = new Button(new Icon(VaadinIcon.EDIT), evt -> renameProject(project));
-				renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-				HorizontalLayout projectNameColumn = new HorizontalLayout(new Span(project.getName()), renameProjectButton);
+                renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+                HorizontalLayout projectNameColumn = new TooltipContainer(projectName, projectName, renameProjectButton);
 				projectNameColumn.addClassName("project-name-column");
-				projectNameColumn.setSpacing(false);
+                projectNameColumn.setSpacing(false);
 				return projectNameColumn;
 		})
 				.setHeader("Name")
@@ -121,7 +122,8 @@ public class ProjectsView extends PathMindDefaultView
 		projectGrid.addColumn(project -> {
 				String userNotes = project.getUserNotes();
 				return userNotes.isEmpty() ? "—" : userNotes;
-		})
+        })
+                .setClassNameGenerator(column -> "grid-notes-column")
 				.setHeader("Notes")
 				.setResizable(true)
 				.setSortable(false);
@@ -129,7 +131,7 @@ public class ProjectsView extends PathMindDefaultView
 		projectGrid.sort(Arrays.asList(new GridSortOrder<>(lastActivityColumn, SortDirection.DESCENDING)));
 
 		projectGrid.addItemClickListener(event ->
-				getUI().ifPresent(ui -> ui.navigate(ProjectView.class, event.getItem().getId())));
+                getUI().ifPresent(ui -> ui.navigate(ProjectView.class, event.getItem().getId())));
 	}
 
 	private List<Project> getProjects() {
@@ -138,10 +140,11 @@ public class ProjectsView extends PathMindDefaultView
 
 	private void renameProject(Project project) {
 		RenameProjectDialog dialog = new RenameProjectDialog(project, projectDAO, updateProjectName -> {
-			projectGrid.getDataProvider().refreshItem(project);
-			// JS is used because projectGrid.recalculateColumnWidths(); does not work; probably a Vaadin Grid issue
-			projectGrid.getElement().executeJs("setTimeout(() => { this.recalculateColumnWidths() }, 0)");
-		});
+            projectGrid.getDataProvider().refreshItem(project);
+            // JS is used because projectGrid.recalculateColumnWidths(); does not work; probably a Vaadin Grid issue
+            // After recalculating the column widths, some tooltips may not be needed so they need to be removed
+			projectGrid.getElement().executeJs("setTimeout(() => { $0.recalculateColumnWidths(); $0.querySelectorAll('[tooltip-content]').forEach(el => {if (el.querySelector('span').scrollWidth === el.querySelector('span').clientWidth) { el.removeAttribute('tooltip-content'); } })}, 0)");
+        });
 		dialog.open();
 	}
 
@@ -157,7 +160,7 @@ public class ProjectsView extends PathMindDefaultView
 			getUI().ifPresent(ui -> ui.navigate(NewProjectView.class));
 			return;
 		}
-	}
+    }
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event)
@@ -166,8 +169,8 @@ public class ProjectsView extends PathMindDefaultView
 			// projectGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			projectGrid.setItems(projects);
 		});
-		archivesTabPanel.initData(event.getUI());
+        archivesTabPanel.initData(event.getUI());
 
-		recalculateGridColumnWidth(event.getUI().getPage(), projectGrid);		
+        recalculateGridColumnWidth(event.getUI().getPage(), projectGrid);
 	}
 }

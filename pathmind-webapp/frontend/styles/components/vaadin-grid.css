@@ -1,51 +1,55 @@
 #header [part~="cell"] {
-  color: var(--pm-gray-color);
+    color: var(--pm-gray-color);
 }
 
 #items [part~="cell"] {
-  font-size: var(--lumo-font-size-s);
-  color: var(--lumo-secondary-text-color);
-  border-top-color: var(--pm-gray-color-light);
+    font-size: var(--lumo-font-size-s);
+    color: var(--lumo-secondary-text-color);
+    border-top-color: var(--pm-gray-color-light);
 }
 
 :host(:not(.dashboard)) #items [part~="row"]:last-child [part~="cell"] {
-  border-bottom: var(--_lumo-grid-border-width) solid
-    var(--_lumo-grid-border-color);
+    border-bottom: var(--_lumo-grid-border-width) solid var(--_lumo-grid-border-color);
 }
 
 :host(:not(.dashboard)) #items [part~="row"]:hover [part~="body-cell"] {
-  background: var(--lumo-shade-10pct);
+    background: var(--lumo-shade-10pct);
 }
 
 :host {
-  border-color: transparent !important;
-  width: 100%;
-  height: 100%;
+    border-color: transparent !important;
+    width: 100%;
+    height: 100%;
 }
 
 /* grid header when the column is being sorted */
 vaadin-grid-cell-content vaadin-grid-sorter[direction] {
-  color: var(--pm-text-color);
-  font-weight: bold;
+    color: var(--pm-text-color);
+    font-weight: bold;
 }
 
 [part~="cell"] ::slotted(vaadin-grid-cell-content) {
-  cursor: pointer;
+    cursor: pointer;
+    overflow: visible;
+}
+
+.grid-notes-column[part~="cell"] ::slotted(vaadin-grid-cell-content) {
+    overflow: hidden;
 }
 
 :host(.dashboard) {
-  background: transparent;
-  max-width: 1080px;
-  margin: auto;
+    background: transparent;
+    max-width: 1080px;
+    margin: auto;
 }
 
 :host(.dashboard) [part~="cell"]:not(:empty):not([details-cell]) {
-  padding: 0;
+    padding: 0;
 }
 
 :host(.dashboard) [part~="row"][selected] [part~="cell"] {
-  background: transparent !important;
+    background: transparent !important;
 }
 :host(.dashboard) [part~="body-cell"] {
-  background: transparent;
+    background: transparent;
 }

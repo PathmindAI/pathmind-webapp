@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrainingError extends TableImpl<TrainingErrorRecord> {
 
-    private static final long serialVersionUID = -880234717;
+    private static final long serialVersionUID = 652479005;
 
     /**
      * The reference instance of <code>public.training_error</code>
@@ -65,12 +65,12 @@ public class TrainingError extends TableImpl<TrainingErrorRecord> {
     /**
      * The column <code>public.training_error.keyword</code>.
      */
-    public final TableField<TrainingErrorRecord, String> KEYWORD = createField(DSL.name("keyword"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
+    public final TableField<TrainingErrorRecord, String> KEYWORD = createField(DSL.name("keyword"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
      * The column <code>public.training_error.description</code>.
      */
-    public final TableField<TrainingErrorRecord, String> DESCRIPTION = createField(DSL.name("description"), org.jooq.impl.SQLDataType.VARCHAR, this, "");
+    public final TableField<TrainingErrorRecord, String> DESCRIPTION = createField(DSL.name("description"), org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
 
     /**
      * The column <code>public.training_error.restartable</code>.

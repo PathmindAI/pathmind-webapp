@@ -1,12 +1,23 @@
 package io.skymind.pathmind.webapp.ui.components.juicy;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.flow.component.AbstractSinglePropertyField;
+import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.DebounceSettings;
+import com.vaadin.flow.component.DomEvent;
+import com.vaadin.flow.component.EventData;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.Synchronize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.dom.DebouncePhase;
+import com.vaadin.flow.internal.Pair;
+
+import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import io.skymind.pathmind.webapp.ui.components.juicy.mode.JuicyAceMode;
 import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
@@ -84,7 +95,44 @@ public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, 
 		getElement().executeJs("window.Pathmind.CodeEditor.addVariableNamesSupport($0)");
 	}
 	
-	protected void setVariableNames(JsonObject variableNames) {
-		getElement().executeJs("window.Pathmind.CodeEditor.setVariableNames($0)", variableNames);
+	protected void setVariableNames(JsonObject variableNames, int variableCount) {
+		getElement().executeJs("window.Pathmind.CodeEditor.setVariableNames($0, $1)", variableNames, variableCount);
+	}
+	
+	@DomEvent(value = "reward-function-validation", debounce = @DebounceSettings(timeout = 400, phases = DebouncePhase.TRAILING))
+    public static class RewardFunctionValidationEvent extends ComponentEvent<JuicyAceEditor> {
+        private boolean valid;
+        private List<Pair<String, String>> invalidLineVariableIndexPairs;
+
+        public RewardFunctionValidationEvent(JuicyAceEditor source, boolean fromClient, @EventData("event.detail.valid") boolean isValid,
+                @EventData("event.detail.invalidIndexes") JsonArray invalidIndexes) {
+            super(source, fromClient);
+            this.valid = isValid;
+            invalidLineVariableIndexPairs = new ArrayList<>();
+            for (int line = 0; line < invalidIndexes.length(); line++) {
+                JsonArray invalidIndexesForLine = invalidIndexes.getArray(line);
+                for (int i = 0; i < invalidIndexesForLine.length(); i++) {
+                    String invalidIndex = invalidIndexesForLine.getString(i);
+                    invalidLineVariableIndexPairs.add(new Pair<>(Integer.toString(line + 1), invalidIndex));
+                }
+            }
+        }
+
+        public boolean isValid() {
+            return valid;
+        }
+
+        public void setValid(boolean valid) {
+            this.valid = valid;
+        }
+
+        public List<Pair<String, String>> getInvalidLineVariableIndexPairs() {
+            return invalidLineVariableIndexPairs;
+        }
+
+        public void setInvalidLineVariableIndexPairs(List<Pair<String, String>> invalidLineVariableIndexPairs) {
+            this.invalidLineVariableIndexPairs = invalidLineVariableIndexPairs;
+        }
+
 	}
 }

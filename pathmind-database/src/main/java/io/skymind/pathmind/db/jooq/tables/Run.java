@@ -21,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row11;
+import org.jooq.Row12;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -1484703757;
+    private static final long serialVersionUID = 1530603400;
 
     /**
      * The reference instance of <code>public.run</code>
@@ -112,6 +112,11 @@ public class Run extends TableImpl<RunRecord> {
      * The column <code>public.run.rllib_error</code>.
      */
     public final TableField<RunRecord, String> RLLIB_ERROR = createField(DSL.name("rllib_error"), org.jooq.impl.SQLDataType.VARCHAR(1024), this, "");
+
+    /**
+     * The column <code>public.run.ec2_created_at</code>.
+     */
+    public final TableField<RunRecord, LocalDateTime> EC2_CREATED_AT = createField(DSL.name("ec2_created_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
 
     /**
      * Create a <code>public.run</code> table reference
@@ -211,11 +216,11 @@ public class Run extends TableImpl<RunRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row11 type methods
+    // Row12 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<Long, Long, String, Integer, LocalDateTime, LocalDateTime, Integer, LocalDateTime, Long, String, String> fieldsRow() {
-        return (Row11) super.fieldsRow();
+    public Row12<Long, Long, String, Integer, LocalDateTime, LocalDateTime, Integer, LocalDateTime, Long, String, String, LocalDateTime> fieldsRow() {
+        return (Row12) super.fieldsRow();
     }
 }
