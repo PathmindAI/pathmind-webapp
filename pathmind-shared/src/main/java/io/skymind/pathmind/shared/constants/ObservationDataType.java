@@ -25,4 +25,11 @@ public enum ObservationDataType {
                 .filter(dataType -> dataType.getValue().equals(value))
                 .findAny();
     }
+    
+    public static boolean isNumeric(ObservationDataType dataType) {
+        return dataType == NUMBER || dataType == INTEGER;
+    }
+    public static boolean isArray(ObservationDataType dataType) {
+        return dataType == NUMBER_ARRAY || dataType == INTEGER_ARRAY;
+    }
 }

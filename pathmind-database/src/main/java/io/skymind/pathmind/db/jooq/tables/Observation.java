@@ -20,7 +20,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row11;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Observation extends TableImpl<ObservationRecord> {
 
-    private static final long serialVersionUID = -457135874;
+    private static final long serialVersionUID = 777311048;
 
     /**
      * The reference instance of <code>public.observation</code>
@@ -101,6 +101,16 @@ public class Observation extends TableImpl<ObservationRecord> {
      * The column <code>public.observation.max</code>.
      */
     public final TableField<ObservationRecord, Double> MAX = createField(DSL.name("max"), org.jooq.impl.SQLDataType.DOUBLE, this, "");
+
+    /**
+     * The column <code>public.observation.min_items</code>.
+     */
+    public final TableField<ObservationRecord, Double> MIN_ITEMS = createField(DSL.name("min_items"), org.jooq.impl.SQLDataType.DOUBLE, this, "");
+
+    /**
+     * The column <code>public.observation.max_items</code>.
+     */
+    public final TableField<ObservationRecord, Double> MAX_ITEMS = createField(DSL.name("max_items"), org.jooq.impl.SQLDataType.DOUBLE, this, "");
 
     /**
      * Create a <code>public.observation</code> table reference
@@ -196,11 +206,11 @@ public class Observation extends TableImpl<ObservationRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row11 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<Long, Long, Integer, String, String, String, String, Double, Double> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row11<Long, Long, Integer, String, String, String, String, Double, Double, Double, Double> fieldsRow() {
+        return (Row11) super.fieldsRow();
     }
 }

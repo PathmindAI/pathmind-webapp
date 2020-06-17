@@ -2,8 +2,6 @@ package io.skymind.pathmind.shared.data;
 
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
-
 import io.skymind.pathmind.shared.constants.ObservationDataType;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +18,8 @@ public class Observation {
     private String example;
     private Double min;
     private Double max;
+    private Double minItems;
+    private Double maxItems;
 
     @Override
     public boolean equals(Object o) {

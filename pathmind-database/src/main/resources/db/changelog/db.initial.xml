@@ -1404,6 +1404,12 @@
             <column name="MAX" type="DOUBLE">
                 <constraints nullable="true"/>
             </column>
+            <column name="MIN_ITEMS" type="DOUBLE">
+                <constraints nullable="true"/>
+            </column>
+            <column name="MAX_ITEMS" type="DOUBLE">
+                <constraints nullable="true"/>
+            </column>
         </createTable>
         <createTable tableName="ACTION">
             <column autoIncrement="true" name="ID" type="BIGINT">

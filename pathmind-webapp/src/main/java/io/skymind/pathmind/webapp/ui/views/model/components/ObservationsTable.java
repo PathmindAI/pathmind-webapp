@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,6 +86,8 @@ public class ObservationsTable extends CustomField<List<Observation>> implements
 		private TextField example;
 		private NumberField min;
 		private NumberField max;
+		private NumberField minItems;
+		private NumberField maxItems;
 		
 		private Binder<Observation> binder;
 		private Observation value;
@@ -94,6 +97,8 @@ public class ObservationsTable extends CustomField<List<Observation>> implements
 			this.rowNumber = rowNumber;
 			createLayout();
 			initBinder();
+			dataType.addValueChangeListener(evt -> arrangeFieldVisibility(evt.getValue()));
+			arrangeFieldVisibility(null);
 		}
 
         private void createLayout() {
@@ -111,6 +116,10 @@ public class ObservationsTable extends CustomField<List<Observation>> implements
             min.setPlaceholder("Min.");
             max = new NumberField();
             max.setPlaceholder("Max.");
+            minItems = new NumberField();
+            minItems.setPlaceholder("Min Items");
+            maxItems = new NumberField();
+            maxItems.setPlaceholder("Max Items");
             
             FormLayout form = new FormLayout();
             form.setResponsiveSteps(new ResponsiveStep("1px", 5));
@@ -118,7 +127,7 @@ public class ObservationsTable extends CustomField<List<Observation>> implements
             form.add(variable, 2);
             form.add(description, 3);
             form.add(dataType, 2);
-            form.add(example, min, max);
+            form.add(example, min, max, minItems, maxItems);
             
             getContent().add(new Span("" + rowNumber), form);
             getContent().setWidthFull();
@@ -144,6 +153,10 @@ public class ObservationsTable extends CustomField<List<Observation>> implements
                 .bind(Observation::getMin, Observation::setMin);
             binder.forField(max)
                 .bind(Observation::getMax, Observation::setMax);
+            binder.forField(minItems)
+                .bind(Observation::getMinItems, Observation::setMinItems);
+            binder.forField(maxItems)
+                .bind(Observation::getMaxItems, Observation::setMaxItems);
         }
 
         public boolean isValid() {
@@ -166,6 +179,13 @@ public class ObservationsTable extends CustomField<List<Observation>> implements
 		protected void setPresentationValue(Observation newPresentationValue) {
 		    value = newPresentationValue;
 			binder.readBean(newPresentationValue);
+		}
+		
+		private void arrangeFieldVisibility(ObservationDataType type) {
+		    min.setVisible(type != null && ObservationDataType.isNumeric(type));
+		    max.setVisible(type != null && ObservationDataType.isNumeric(type));
+		    minItems.setVisible(type != null && ObservationDataType.isArray(type));
+		    maxItems.setVisible(type != null && ObservationDataType.isArray(type));
 		}
 	}
 }
