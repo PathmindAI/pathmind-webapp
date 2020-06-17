@@ -1,28 +1,27 @@
 package io.skymind.pathmind.db.dao;
 
-import static io.skymind.pathmind.db.jooq.Tables.POLICY;
-import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
-import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
-import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
-import static io.skymind.pathmind.db.jooq.tables.Run.RUN;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.impl.DSL;
-
+import io.skymind.pathmind.db.jooq.Tables;
+import io.skymind.pathmind.db.jooq.tables.records.RunRecord;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.db.jooq.Tables;
-import io.skymind.pathmind.db.jooq.tables.records.RunRecord;
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.impl.DSL;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static io.skymind.pathmind.db.jooq.Tables.POLICY;
+import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
+import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
+import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
+import static io.skymind.pathmind.db.jooq.tables.Run.RUN;
 
 class RunRepository
 {

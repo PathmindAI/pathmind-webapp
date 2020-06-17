@@ -1,21 +1,14 @@
 package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.utils.ModelUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
-import java.io.*;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 @Slf4j
 @Repository
@@ -67,4 +60,8 @@ public class ModelDAO {
 	public Optional<Model> getModelIfAllowed(long modelId, long userId) {
 		return ModelRepository.getModelIfAllowed(ctx, modelId, userId);
 	}
+
+    public long getUserForModel(long modelId) {
+        return ModelRepository.getUserIdForModel(ctx, modelId);
+    }
 }
