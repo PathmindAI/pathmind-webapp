@@ -36,10 +36,7 @@ Feature: Save Model draft
     When Click upload model btn from project page
     When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
     When Click wizard model details next btn
-    Then Check that button 'Save Draft' exists
     When Input reward variable names kitchen_cleanliness
-    When Click wizard reward variables save draft btn
-    Then Check that the notification 'Draft successfully saved' is shown
     When Open projects page
     When Open project AutotestProject on projects page
     Then Check that there are 1 model(s) with 'Draft' tag in project page
