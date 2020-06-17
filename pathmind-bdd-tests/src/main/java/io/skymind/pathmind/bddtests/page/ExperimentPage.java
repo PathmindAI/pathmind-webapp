@@ -70,10 +70,11 @@ public class ExperimentPage extends PageObject {
                 assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), either(is(status)).or(is("Stopped")));
                 break;
             case "Starting Cluster":
-                assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), is(either(is(status)).or(is("Running"))));
+                assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), either(is(status)).or(is("Running")));
                 break;
             default:
                 assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), is(status));
+                break;
         }
         resetImplicitTimeout();
     }

@@ -11,6 +11,7 @@ Feature: Check Model Details package name field
     When Click wizard reward variables next btn
     Then Check that new experiment <project name> page is opened
     Then Input from file reward function <reward function file>
+    When Click project save draft btn
     When Open projects page
     When Open project <project name> on projects page
     When Click the model name 1
