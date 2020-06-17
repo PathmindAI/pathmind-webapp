@@ -30,6 +30,7 @@ public class PathmindUser
 	private UUID emailVerificationToken;
 	private LocalDateTime passwordResetSendAt;
 	private String stripeCustomerId;
+	private String newEmailToVerify;
 
 	private List<Project> projects;
 

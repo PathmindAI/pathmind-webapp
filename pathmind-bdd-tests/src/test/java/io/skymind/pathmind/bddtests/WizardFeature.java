@@ -6,9 +6,9 @@ import org.junit.runner.RunWith;
 
 @RunWith(CucumberWithSerenity.class)
 @CucumberOptions(
-        plugin = {"pretty", "html:target/cucumber"},
-        glue = "io.skymind.pathmind.bddtests.stepdefinitions",
-        features = "src/test/resources/features/wizard.feature"
+    plugin = {"pretty", "html:target/cucumber"},
+    glue = "io.skymind.pathmind.bddtests.stepdefinitions",
+    features = "src/test/resources/features/wizard.feature"
 )
 public class WizardFeature {
 }

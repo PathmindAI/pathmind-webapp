@@ -36,9 +36,18 @@ public class ConfirmationUtils {
 		dialog.open();
 	}
 
+	public static void emailUpdateConfirmation(String newEmailAddress, Command action) {
+        String header = "Update Email";
+        String text = String.format("Your email will be updated as %s and you will receive a verification email. You can start using your new email after verifying it.", newEmailAddress);
+        String confirmText = "Update";
+        ConfirmDialog dialog = new ConfirmDialog(header, text, confirmText, evt -> action.execute());
+        dialog.setCancelButton("Cancel", evt -> dialog.close());
+        dialog.open();
+    }
+	
 	public static void emailUpdated(Command action) {
 	    String header = "Email Updated";
-	    String text = "Your email address has been updated. Please sign in again using your new email address.";
+	    String text = "Your email address has been updated. We sent a verification email to this address. Please follow the instructions in the email to verify your address and then sign in again.";
 	    String confirmText = "OK";
 	    ConfirmDialog dialog = new ConfirmDialog(header, text, confirmText, evt -> action.execute());
 	    dialog.open();

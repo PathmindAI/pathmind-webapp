@@ -5,6 +5,7 @@ import io.skymind.pathmind.bddtests.steps.NotFoundPageSteps;
 import net.thucydides.core.annotations.Steps;
 
 public class NotFoundPageStepDefinitions {
+
     @Steps
     private NotFoundPageSteps notFoundPageSteps;
 
