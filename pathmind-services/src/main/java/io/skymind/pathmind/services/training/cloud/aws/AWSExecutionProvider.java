@@ -451,7 +451,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("VF_LOSS_RANGE", "0.1"),
                 var("VALUE_PRED", "1"), // disabled for now
                 var("USER_LOG", String.valueOf(job.isUserLog())),
-                var("ACTIONTUPLESIZE", String.valueOf(job.getActionTupleSize()))
+                var("ACTION_TUPLE_SIZE", String.valueOf(job.getActionTupleSize()))
         ));
     }
 
