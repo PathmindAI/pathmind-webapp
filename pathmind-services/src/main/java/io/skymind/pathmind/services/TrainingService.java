@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.jooq.DSLContext;
 
+import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
@@ -15,10 +16,10 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.services.training.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
-import io.skymind.pathmind.shared.services.training.versions.*;
+import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
+import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironmentManager;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -26,25 +27,26 @@ public abstract class TrainingService {
     protected final ExecutionProvider executionProvider;
     protected final RunDAO runDAO;
     protected final ModelService modelService;
+    protected final ExecutionEnvironmentManager executionEnvironmentManager;
     protected final PolicyDAO policyDAO;
+    protected final ModelDAO modelDAO;
     protected ExecutionEnvironment executionEnvironment;
     private final DSLContext ctx;
 
-    public TrainingService(boolean multiAgent, ExecutionProvider executionProvider,
+    public TrainingService(ExecutionProvider executionProvider,
                            RunDAO runDAO, ModelService modelService,
-                           PolicyDAO policyDAO, DSLContext ctx) {
+                           ExecutionEnvironmentManager executionEnvironmentManager,
+                           PolicyDAO policyDAO,
+                           ModelDAO modelDAO,
+                           DSLContext ctx) {
         this.executionProvider = executionProvider;
         this.runDAO = runDAO;
         this.modelService = modelService;
+        this.executionEnvironmentManager = executionEnvironmentManager;
         this.policyDAO = policyDAO;
+        this.modelDAO = modelDAO;
         this.ctx = ctx;
 
-        PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_1_0_1;
-        if (multiAgent) {
-            pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
-        }
-
-        executionEnvironment = new ExecutionEnvironment(AnyLogic.VERSION_8_5_2, pathmindHelperVersion, NativeRL.VERSION_1_0_7, JDK.VERSION_8_222, Conda.VERSION_0_7_6);
     }
     
     public void startRun(Experiment exp){
@@ -57,6 +59,10 @@ public abstract class TrainingService {
 
     private void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSamples) {
     	ctx.transaction(conf -> {
+    	    // set the current Execution Environment for the given user
+            long userId = this.modelDAO.getUserForModel(exp.getModelId());
+            this.executionEnvironment = this.executionEnvironmentManager.getEnvironment(userId);
+
     		Run run = runDAO.createRun(conf, exp, DiscoveryRun);
     		String executionId = startRun(exp.getModel(), exp, run, iterations, maxTimeInSec, numSamples);
     		runDAO.markAsStarting(conf, run.getId(), executionId);

@@ -1,8 +1,8 @@
+@brokenModels
 Feature: Broken Models tests
 
   Scenario: Upload broken model file
     Given Login to the pathmind
-    When Create new CoffeeShop project
     When Open projects page
     When Click create new project button
     When Input name of the new project AutotestProject and click Create project button
@@ -18,8 +18,8 @@ Feature: Broken Models tests
     Then Wait for text "Checking your model" to disappear
     And Check that error message in model check panel is "<Error Message>"
 
-  Examples:
-    | Model File                                      | Error Message                           |
-    | problematic_models/AModelWithNoActions.zip      | Number of actions found to be zero.     |
-    | problematic_models/AModelWithNoObservations.zip | Number of observations found to be zero.|
-    | problematic_models/ProblemModel#1480.zip        | Unable to analyze the model.            |
+    Examples:
+      | Model File                                      | Error Message                            |
+      | problematic_models/AModelWithNoActions.zip      | Number of actions found to be zero.      |
+      | problematic_models/AModelWithNoObservations.zip | Number of observations found to be zero. |
+      | problematic_models/ProblemModel#1480.zip        | Unable to analyze the model.             |

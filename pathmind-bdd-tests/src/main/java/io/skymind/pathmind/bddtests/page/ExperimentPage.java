@@ -65,16 +65,22 @@ public class ExperimentPage extends PageObject {
     public void checkThatTheExperimentStatusIs(String status) {
         setImplicitTimeout(5, SECONDS);
         String trainingStatus = "//span[contains(text(), 'Status')]/following-sibling::span[1]";
-        if (status.equals("Stopping")) {
-            assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), either(is(status)).or(is("Stopped")));
-        } else {
-            assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), is(status));
+        switch (status) {
+            case "Stopping":
+                assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), either(is(status)).or(is("Stopped")));
+                break;
+            case "Starting Cluster":
+                assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), either(is(status)).or(is("Running")));
+                break;
+            default:
+                assertThat(getDriver().findElement(By.xpath(trainingStatus)).getText(), is(status));
+                break;
         }
         resetImplicitTimeout();
     }
 
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
-        WebElement inputShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='reward-variables-table code-editor-mode']/descendant::span[text()='"+variableNumber+"']/following-sibling::vaadin-text-field")));
+        WebElement inputShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='reward-variables-table code-editor-mode']/descendant::span[text()='" + variableNumber + "']/following-sibling::vaadin-text-field")));
         inputShadow.findElement(By.cssSelector("input")).click();
         inputShadow.findElement(By.cssSelector("input")).clear();
         inputShadow.findElement(By.cssSelector("input")).sendKeys(variableName);
