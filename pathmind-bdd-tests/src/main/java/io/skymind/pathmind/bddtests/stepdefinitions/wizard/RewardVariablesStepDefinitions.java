@@ -18,11 +18,6 @@ public class RewardVariablesStepDefinitions {
         rewardVariablesSteps.clickWizardRewardVariableNamesNextBtn();
     }
 
-    @When("^Click wizard reward variables save draft btn$")
-    public void clickWizardRewardVariablesSaveDraftBtn() {
-        rewardVariablesSteps.clickWizardRewardVariablesSaveDraftBtn();
-    }
-
     @When("^Input reward variable names (.*)$")
     public void inputRewardVariableNames(String commaSeparatedVariableNames) {
         newExperimentSteps.inputVariableNames(commaSeparatedVariableNames.split(","));
