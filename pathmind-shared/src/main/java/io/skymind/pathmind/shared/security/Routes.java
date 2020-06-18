@@ -38,14 +38,7 @@ public class Routes {
     public static final String RESUME_UPLOAD_MODEL = "resumeUploadModel";
     public static final String ERROR_URL = "error";
 
-    public static final String GUIDE_URL = "guide/overview";
-    public static final String GUIDE_INSTALL_URL = "guide/install";
-    public static final String GUIDE_OBSERVATION_URL = "guide/observation";
-    public static final String GUIDE_ACTION_SPACE_URL = "guide/action-space";
-    public static final String GUIDE_TRIGGER_ACTIONS_URL = "guide/trigger-actions";
-    public static final String GUIDE_DONE_URL = "guide/done-condition";
-    public static final String GUIDE_REWARD_URL = "guide/reward";
-    public static final String GUIDE_RECAP_URL = "guide/recap";
+    public static final String POLICY_SERVER_FORM = "policy-server/setup";
 
     public static final String EXPORT_POLICY_URL = "exportPolicy";
     public static final String PROJECT_URL = "project";
