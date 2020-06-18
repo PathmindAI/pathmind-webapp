@@ -257,18 +257,18 @@ pipeline {
     }
     post {
         always {
-            echo 'Deleting workspace'
-            #deleteDir()
-            #echo "Deleting image"
-            #deleteDockerImage("${RELEASE_ID}")
-            #echo "Deleting name space ${env.BUILD_NUMBER}"
-            #sh "helm delete postgres -n ${env.BUILD_NUMBER}"
-            #sh "helm delete ${RELEASE_ID} -n ${env.BUILD_NUMBER}"
-            #sh "helm delete ${RELEASE_ID}-updater -n ${env.BUILD_NUMBER}"
-            #sh "kubectl delete namespace ${env.BUILD_NUMBER}"
-            #sh "aws sqs delete-queue --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_NUMBER}-updater-queue"
-            #sh "aws sns unsubscribe --subscription-arn `aws sns list-subscriptions | jq -r \".[] | .[] |  select(.Endpoint ==\\\"arn:aws:sqs:us-east-1:839270835622:${env.BUILD_ID}-updater-queue\\\").SubscriptionArn\"`"
-            #sh "/usr/bin/clean_test_s3.sh ${env.BUILD_NUMBER}"
+            //echo 'Deleting workspace'
+            //deleteDir()
+            //echo "Deleting image"
+            //deleteDockerImage("${RELEASE_ID}")
+            //echo "Deleting name space ${env.BUILD_NUMBER}"
+            //sh "helm delete postgres -n ${env.BUILD_NUMBER}"
+            //sh "helm delete ${RELEASE_ID} -n ${env.BUILD_NUMBER}"
+            //sh "helm delete ${RELEASE_ID}-updater -n ${env.BUILD_NUMBER}"
+            //sh "kubectl delete namespace ${env.BUILD_NUMBER}"
+            //sh "aws sqs delete-queue --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_NUMBER}-updater-queue"
+            //sh "aws sns unsubscribe --subscription-arn `aws sns list-subscriptions | jq -r \".[] | .[] |  select(.Endpoint ==\\\"arn:aws:sqs:us-east-1:839270835622:${env.BUILD_ID}-updater-queue\\\").SubscriptionArn\"`"
+            //sh "/usr/bin/clean_test_s3.sh ${env.BUILD_NUMBER}"
         }
     }
 }
