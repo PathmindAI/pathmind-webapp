@@ -15,6 +15,7 @@ import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -86,8 +87,8 @@ public class ObservationsTable extends CustomField<List<Observation>> implements
 		private TextField example;
 		private NumberField min;
 		private NumberField max;
-		private NumberField minItems;
-		private NumberField maxItems;
+		private IntegerField minItems;
+		private IntegerField maxItems;
 		
 		private Binder<Observation> binder;
 		private Observation value;
@@ -116,9 +117,9 @@ public class ObservationsTable extends CustomField<List<Observation>> implements
             min.setPlaceholder("Min.");
             max = new NumberField();
             max.setPlaceholder("Max.");
-            minItems = new NumberField();
+            minItems = new IntegerField();
             minItems.setPlaceholder("Min Items");
-            maxItems = new NumberField();
+            maxItems = new IntegerField();
             maxItems.setPlaceholder("Max Items");
             
             FormLayout form = new FormLayout();

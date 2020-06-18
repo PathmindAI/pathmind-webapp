@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Observation extends TableImpl<ObservationRecord> {
 
-    private static final long serialVersionUID = 777311048;
+    private static final long serialVersionUID = 1427862518;
 
     /**
      * The reference instance of <code>public.observation</code>
@@ -105,12 +105,12 @@ public class Observation extends TableImpl<ObservationRecord> {
     /**
      * The column <code>public.observation.min_items</code>.
      */
-    public final TableField<ObservationRecord, Double> MIN_ITEMS = createField(DSL.name("min_items"), org.jooq.impl.SQLDataType.DOUBLE, this, "");
+    public final TableField<ObservationRecord, Integer> MIN_ITEMS = createField(DSL.name("min_items"), org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * The column <code>public.observation.max_items</code>.
      */
-    public final TableField<ObservationRecord, Double> MAX_ITEMS = createField(DSL.name("max_items"), org.jooq.impl.SQLDataType.DOUBLE, this, "");
+    public final TableField<ObservationRecord, Integer> MAX_ITEMS = createField(DSL.name("max_items"), org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * Create a <code>public.observation</code> table reference
@@ -210,7 +210,7 @@ public class Observation extends TableImpl<ObservationRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<Long, Long, Integer, String, String, String, String, Double, Double, Double, Double> fieldsRow() {
+    public Row11<Long, Long, Integer, String, String, String, String, Double, Double, Integer, Integer> fieldsRow() {
         return (Row11) super.fieldsRow();
     }
 }

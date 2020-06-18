@@ -18,8 +18,8 @@ public class Observation {
     private String example;
     private Double min;
     private Double max;
-    private Double minItems;
-    private Double maxItems;
+    private Integer minItems;
+    private Integer maxItems;
 
     @Override
     public boolean equals(Object o) {

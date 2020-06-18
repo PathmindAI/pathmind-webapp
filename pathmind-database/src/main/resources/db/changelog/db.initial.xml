@@ -1413,10 +1413,10 @@
             <column name="MAX" type="DOUBLE">
                 <constraints nullable="true"/>
             </column>
-            <column name="MIN_ITEMS" type="DOUBLE">
+            <column name="MIN_ITEMS" type="INT">
                 <constraints nullable="true"/>
             </column>
-            <column name="MAX_ITEMS" type="DOUBLE">
+            <column name="MAX_ITEMS" type="INT">
                 <constraints nullable="true"/>
             </column>
         </createTable>
