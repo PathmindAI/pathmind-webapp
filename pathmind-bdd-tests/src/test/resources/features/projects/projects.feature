@@ -19,7 +19,7 @@ Feature: Projects page
     Then Check that project not exist in project list AutotestProject
     When Open projects/model/experiment archived tab
     When Click AutotestProject project archive/unarchive button
-    When In confirmation dialog click in 'Unarchive Project' button
+    When In confirmation dialog click in 'Unarchive' button
     Then Check that project not exist in project list AutotestProject
     When Open projects tab
     Then Check that project exist in project list AutotestProject

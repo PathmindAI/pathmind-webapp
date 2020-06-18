@@ -34,7 +34,7 @@ Feature: Model page
     When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
     When Click experiment unarchive button
-    When In confirmation dialog click in 'Unarchive Experiment' button
+    When In confirmation dialog click in 'Unarchive' button
     When Check that model/experiment name '1 Draft' NOT exist in archived/not archived tab
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1 Draft' exist in archived/not archived tab

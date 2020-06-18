@@ -44,7 +44,7 @@ Feature: Project page
     When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
     When Click model 1 archive/unarchive button
-    When In confirmation dialog click in 'Unarchive Model' button
+    When In confirmation dialog click in 'Unarchive' button
     When Check that model/experiment name 'AutotestProject' NOT exist in archived/not archived tab
     When Open models tab
     Then Check that model/experiment name '1' exist in archived/not archived tab
