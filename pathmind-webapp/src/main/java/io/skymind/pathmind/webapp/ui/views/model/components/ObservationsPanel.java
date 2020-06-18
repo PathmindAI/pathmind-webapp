@@ -27,19 +27,14 @@ public class ObservationsPanel extends VerticalLayout
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
-	private Button draftButton = new Button("Save Draft", new Icon(VaadinIcon.FILE));
-
 	public ObservationsPanel()
 	{
 		setupForm();
 		nextStepButton.setIconAfterText(true);
 		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-		draftButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-
 		HorizontalLayout observationsLine = WrapperUtils.wrapWidthFullBetweenHorizontal(
-				LabelFactory.createLabel("Observations", NO_TOP_MARGIN_LABEL),
-				draftButton);
+				LabelFactory.createLabel("Observations", NO_TOP_MARGIN_LABEL));
 		observationsLine.getStyle().set("align-items", "center");
 
 		add(observationsLine,
@@ -54,10 +49,6 @@ public class ObservationsPanel extends VerticalLayout
 
 	public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
 		nextStepButton.addClickListener(listener);
-	}
-
-	public void addSaveDraftClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
-		draftButton.addClickListener(listener);
 	}
 
 	private void setupForm() {
