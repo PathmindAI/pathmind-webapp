@@ -34,8 +34,6 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
-	private Button draftButton = new Button("Save Draft", new Icon(VaadinIcon.FILE));
-
 	public ModelDetailsWizardPanel(Binder<Model> binder, boolean isResumeUpload)
 	{
 		setupFields();
@@ -47,11 +45,8 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		Icon checkmarkIcon = new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE);
 		checkmarkIcon.setColor("var(--pm-friendly-color)");
 
-		draftButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-
 		HorizontalLayout modelDetailsLine = WrapperUtils.wrapWidthFullBetweenHorizontal(
-				LabelFactory.createLabel("Model Details", NO_TOP_MARGIN_LABEL),
-				draftButton);
+				LabelFactory.createLabel("Model Details", NO_TOP_MARGIN_LABEL));
 		modelDetailsLine.getStyle().set("align-items", "center");
 
 		List<Component> items = new ArrayList<>(
@@ -100,10 +95,6 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
 		nextStepButton.addClickListener(listener);
-	}
-
-	public void addSaveDraftClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
-		draftButton.addClickListener(listener);
 	}
 
 	private void setupNotesFieldTextArea() {
