@@ -13,11 +13,6 @@ public class RewardVariablesSteps {
     }
 
     @Step
-    public void clickWizardRewardVariablesSaveDraftBtn() {
-        rewardVariablesPage.clickWizardRewardVariablesSaveDraftBtn();
-    }
-
-    @Step
     public void checkThatThereIsAVariableNamed(String variableName) {
         rewardVariablesPage.checkThatThereIsAVariableNamed(variableName);
     }
