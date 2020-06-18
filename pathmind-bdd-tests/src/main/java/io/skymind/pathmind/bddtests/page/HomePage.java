@@ -9,6 +9,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.ArrayList;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -32,7 +33,7 @@ public class HomePage extends PageObject {
     @FindBy(xpath = "//span[@class='breadcrumb']")
     private WebElement pageLabel;
     @FindBy(xpath = "//span[@class='breadcrumb']")
-	private WebElement projectPageLabel;
+    private WebElement projectPageLabel;
     @FindBy(xpath = "//vaadin-menu-bar[@class='account-menu']")
     private WebElement accountMenuBtn;
     @FindBy(xpath = "//vaadin-context-menu-item[@role='menuitem' and text()='Account']")
