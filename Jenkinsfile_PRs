@@ -257,7 +257,7 @@ pipeline {
     }
     post {
         always {
-            //echo 'Deleting workspace'
+            echo 'Deleting workspace'
             //deleteDir()
             //echo "Deleting image"
             //deleteDockerImage("${RELEASE_ID}")
