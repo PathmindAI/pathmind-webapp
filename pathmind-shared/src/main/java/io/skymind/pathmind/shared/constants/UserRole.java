@@ -7,14 +7,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.shared.constants.ViewPermission.BASIC_READ;
-import static io.skymind.pathmind.shared.constants.ViewPermission.SETTING_READ;
+import static io.skymind.pathmind.shared.constants.ViewPermission.SETTINGS_READ;
 
 public enum UserRole {
     Trial(0, "Trial", Set.of(BASIC_READ)),
     Paid(1, "Paid", Set.of(BASIC_READ)),
     Premium(2, "Premium", Set.of(BASIC_READ)),
-    Admin(3, "Admin", Set.of(BASIC_READ, SETTING_READ)),
-    Master(4, "Master", Set.of(BASIC_READ, SETTING_READ));
+    Admin(3, "Admin", Set.of(BASIC_READ, SETTINGS_READ)),
+    Master(4, "Master", Set.of(BASIC_READ, SETTINGS_READ));
 
     private int id;
     private String name;

@@ -45,16 +45,4 @@ public class Run extends Data
 	public void setStatusEnum(RunStatus runStatus) {
 		this.status = runStatus.getValue();
 	}
-
-	public LocalDateTime getEc2CreatedAt() {
-		if (ec2CreatedAt != null) {
-			return ec2CreatedAt;
-		}
-		else if(startedAt != null) {
-			return startedAt.plusMinutes(15);
-		}
-		else {
-			return null;
-		}
-	}
 }
