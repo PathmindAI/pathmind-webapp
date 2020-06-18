@@ -18,7 +18,7 @@ Feature: Model page
     When Open project AutotestProject on projects page
     Then Click the model name 1
     When Click experiment archive button
-    When In confirmation dialog click in 'Archive Experiment' button
+    When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1 Draft' exist in archived/not archived tab
     When Open projects/model/experiment archived tab
@@ -31,7 +31,7 @@ Feature: Model page
     When Open project AutotestProject on projects page
     Then Click the model name 1
     When Click experiment archive button
-    When In confirmation dialog click in 'Archive Experiment' button
+    When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
     When Click experiment unarchive button
     When In confirmation dialog click in 'Unarchive Experiment' button
@@ -52,7 +52,7 @@ Feature: Model page
     When Create new CoffeeShop project with draft experiment
     When Open dashboard page
     When Click archive btn from dashboard
-    When In confirmation dialog click in 'Archive Experiment' button
+    When In confirmation dialog click in 'Archive' button
     When Click stage write reward function AutotestProject from dashboard
     When Open projects page
     When Open project AutotestProject on projects page

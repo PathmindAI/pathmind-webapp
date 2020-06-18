@@ -12,7 +12,7 @@ Feature: Projects page
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Click AutotestProject project archive/unarchive button
-    When In confirmation dialog click in 'Archive Project' button
+    When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
     Then Check that project exist in project list AutotestProject
     When Open projects tab
@@ -40,7 +40,7 @@ Feature: Projects page
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Click AutotestProject project archive/unarchive button
-    When In confirmation dialog click in 'Archive Project' button
+    When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
     When Click edit AutotestProject project icon from projects page
     When Input project name AutotestEditName to the edit popup

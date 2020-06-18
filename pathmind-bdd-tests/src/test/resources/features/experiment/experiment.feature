@@ -20,7 +20,7 @@ Feature: Experiment page
     When Create new CoffeeShop project with single reward function
     Then Click project start run button
     Then Click in 'Archive' button
-    When In confirmation dialog click in 'Archive Experiment' button
+    When In confirmation dialog click in 'Archive' button
     When Check that model/experiment name '1' NOT exist in archived/not archived tab
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1' exist in archived/not archived tab
