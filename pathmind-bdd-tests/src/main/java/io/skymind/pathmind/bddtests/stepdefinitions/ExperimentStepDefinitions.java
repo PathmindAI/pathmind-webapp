@@ -42,8 +42,18 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.checkThatTheExperimentStatusIs(status);
     }
 
+    @Then("^Click side nav archive button for current experiment$")
+    public void clickCurrentExperimentArchiveButton() {
+        experimentPageSteps.clickCurrentExperimentArchiveButton();
+    }
+
     @When("^Change reward variable on experiment view (.*) to (.*)$")
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
         experimentPageSteps.changeRewardVariableOnExperimentView(variableNumber, variableName);
+    }
+
+    @Then("^Click side nav archive button for '(.*)'$")
+    public void clickSideNavArchiveButtonFor(String experimentName) {
+        experimentPageSteps.clickSideNavArchiveButtonFor(experimentName);
     }
 }
