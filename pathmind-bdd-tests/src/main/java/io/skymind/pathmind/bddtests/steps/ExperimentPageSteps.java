@@ -40,8 +40,18 @@ public class ExperimentPageSteps {
     }
 
     @Step
+    public void clickCurrentExperimentArchiveButton() {
+        experimentPage.clickCurrentExperimentArchiveButton();
+    }
+
+    @Step
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
         experimentPage.changeRewardVariableOnExperimentView(variableNumber, variableName);
+    }
+
+    @Step
+    public void clickSideNavArchiveButtonFor(String experimentName) {
+        experimentPage.clickSideNavArchiveButtonFor(experimentName);
     }
 
     @Step

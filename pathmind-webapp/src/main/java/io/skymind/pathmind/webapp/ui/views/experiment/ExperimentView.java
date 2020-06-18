@@ -86,7 +86,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private Button exportPolicyButton;
     private Button stopTrainingButton;
-    private Button archiveExperimentButton;
     private Button unarchiveExperimentButton;
 
     private long experimentId = -1;
@@ -164,7 +163,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     protected Component getMainContent() {
         panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
-        experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment));
+        experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment), experimentToArchive -> archiveExperiment(experimentToArchive));
         setupExperimentContentPanel();
 	    errorDescriptionLabel = LabelFactory.createLabel("", "tag", "error-label");
 
@@ -252,16 +251,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         stopTrainingButton.addThemeName("secondary");
         stopTrainingButton.setVisible(true);
 
-        archiveExperimentButton = new Button("Archive", VaadinIcon.ARCHIVE.create(), click -> archiveExperiment());
-        archiveExperimentButton.addThemeName("secondary");
-
         unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
         unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         notesField = createViewNotesField();
 
         Div buttonsWrapper = new Div(
-            archiveExperimentButton,
             unarchiveExperimentButton,
             restartTraining,
             stopTrainingButton,
@@ -316,15 +311,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         confirmDialog.open();
     }
 
-    private void archiveExperiment() {
-        ConfirmationUtils.archive("experiment", () -> {
-            experimentDAO.archive(experiment.getId(), true);
-            experiments.remove(experiment);
+    private void archiveExperiment(Experiment experimentToArchive) {
+        ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
+            experimentDAO.archive(experimentToArchive.getId(), true);
+            experiments.remove(experimentToArchive);
             if (experiments.isEmpty()) {
-                getUI().ifPresent(ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+                getUI().ifPresent(ui -> ui.navigate(ModelView.class, experimentToArchive.getModelId()));
             } else {
-                Experiment currentExperiment = experiments.get(0);
-                selectExperiment(currentExperiment);
+                Experiment currentExperiment = (experimentToArchive.getId() == experimentId) ? experiments.get(0) : experiment;
+                if (experimentToArchive.getId() == experimentId) {
+                    selectExperiment(currentExperiment);
+                }
                 getUI().ifPresent(ui -> experimentsNavbar.setExperiments(ui, experiments, currentExperiment));
             }
         });
@@ -392,7 +389,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         policy = selectBestPolicy(experiment.getPolicies());
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
-            experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+            experiments = experimentDAO.getExperimentsForModel(modelId).stream()
+                                .sorted(Comparator.comparing(Experiment::getDateCreated).reversed())
+                                .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
         }
 
         // This are mock data to be removed once the backend for simulation metrics is implemented
@@ -497,7 +496,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void updateButtonEnablement() {
         RunStatus trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
         boolean isCompleted = trainingStatus == RunStatus.Completed;
-        archiveExperimentButton.setVisible(!experiment.isArchived());
         unarchiveExperimentButton.setVisible(experiment.isArchived());
         exportPolicyButton.setVisible(isCompleted && policy != null && policy.hasFile());
         boolean canBeStopped = RunStatus.isRunning(trainingStatus);
