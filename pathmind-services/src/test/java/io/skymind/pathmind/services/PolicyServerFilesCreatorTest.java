@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class PolicyServerServiceTest {
-    private PolicyServerService policyServerService;
+public class PolicyServerFilesCreatorTest {
+    private PolicyServerFilesCreator policyServerFilesCreator;
 
     @Before
     public void setup() {
-        policyServerService = new PolicyServerService();
+        policyServerFilesCreator = new PolicyServerFilesCreator();
     }
 
     @Test
@@ -29,7 +29,7 @@ public class PolicyServerServiceTest {
                     return action;
                 })
                 .collect(Collectors.toList());
-        String yaml = policyServerService.createOutputYaml(actions);
+        String yaml = policyServerFilesCreator.createOutputYaml(actions);
         String expected = "0: the first\n" +
                 "1: second\n" +
                 "2: Third";
@@ -43,7 +43,7 @@ public class PolicyServerServiceTest {
         observation.setDataTypeEnum(ObservationDataType.BOOLEAN);
         observation.setExample("True");
         observation.setDescription("A description.");
-        String yaml = policyServerService.createSchemaYaml(Arrays.asList(observation));
+        String yaml = policyServerFilesCreator.createSchemaYaml(Arrays.asList(observation));
         String expected = "Observation:\n" +
                 "  type: object\n" +
                 "  required:\n" +
@@ -63,7 +63,7 @@ public class PolicyServerServiceTest {
         observation.setDataTypeEnum(ObservationDataType.INTEGER);
         observation.setExample("17");
         observation.setDescription("A description.");
-        String yaml = policyServerService.createSchemaYaml(Arrays.asList(observation));
+        String yaml = policyServerFilesCreator.createSchemaYaml(Arrays.asList(observation));
         String expected = "Observation:\n" +
                 "  type: object\n" +
                 "  required:\n" +
@@ -85,7 +85,7 @@ public class PolicyServerServiceTest {
         observation.setDescription("A description.");
         observation.setMin(3.);
         observation.setMax(7.);
-        String yaml = policyServerService.createSchemaYaml(Arrays.asList(observation));
+        String yaml = policyServerFilesCreator.createSchemaYaml(Arrays.asList(observation));
         String expected = "Observation:\n" +
                 "  type: object\n" +
                 "  required:\n" +
@@ -107,7 +107,7 @@ public class PolicyServerServiceTest {
         observation.setDataTypeEnum(ObservationDataType.NUMBER);
         observation.setExample("17.417");
         observation.setDescription("A description.");
-        String yaml = policyServerService.createSchemaYaml(Arrays.asList(observation));
+        String yaml = policyServerFilesCreator.createSchemaYaml(Arrays.asList(observation));
         String expected = "Observation:\n" +
                 "  type: object\n" +
                 "  required:\n" +
@@ -131,7 +131,7 @@ public class PolicyServerServiceTest {
         observation.setDescription("A description.");
         observation.setMin(3.);
         observation.setMax(7.);
-        String yaml = policyServerService.createSchemaYaml(Arrays.asList(observation));
+        String yaml = policyServerFilesCreator.createSchemaYaml(Arrays.asList(observation));
         String expected = "Observation:\n" +
                 "  type: object\n" +
                 "  required:\n" +
@@ -154,7 +154,7 @@ public class PolicyServerServiceTest {
         observation.setDataTypeEnum(ObservationDataType.NUMBER_ARRAY);
         observation.setExample("17.5, 18.443");
         observation.setDescription("A description.");
-        String yaml = policyServerService.createSchemaYaml(Arrays.asList(observation));
+        String yaml = policyServerFilesCreator.createSchemaYaml(Arrays.asList(observation));
         String expected = "Observation:\n" +
                 "  type: object\n" +
                 "  required:\n" +
@@ -181,7 +181,7 @@ public class PolicyServerServiceTest {
         observation.setMax(7.);
         observation.setMinItems(1);
         observation.setMaxItems(10);
-        String yaml = policyServerService.createSchemaYaml(Arrays.asList(observation));
+        String yaml = policyServerFilesCreator.createSchemaYaml(Arrays.asList(observation));
         String expected = "Observation:\n" +
                 "  type: object\n" +
                 "  required:\n" +
@@ -212,7 +212,7 @@ public class PolicyServerServiceTest {
         observation.setMax(7.);
         observation.setMinItems(1);
         observation.setMaxItems(10);
-        String yaml = policyServerService.createSchemaYaml(Arrays.asList(observation));
+        String yaml = policyServerFilesCreator.createSchemaYaml(Arrays.asList(observation));
         String expected = "Observation:\n" +
                 "  type: object\n" +
                 "  required:\n" +
@@ -238,7 +238,7 @@ public class PolicyServerServiceTest {
         observation.setDataTypeEnum(ObservationDataType.INTEGER_ARRAY);
         observation.setExample("17, 18");
         observation.setDescription("A description.");
-        String yaml = policyServerService.createSchemaYaml(Arrays.asList(observation));
+        String yaml = policyServerFilesCreator.createSchemaYaml(Arrays.asList(observation));
         String expected = "Observation:\n" +
                 "  type: object\n" +
                 "  required:\n" +
@@ -266,7 +266,7 @@ public class PolicyServerServiceTest {
         observation2.setDataTypeEnum(ObservationDataType.INTEGER);
         observation2.setExample("17");
         observation2.setDescription("Another description.");
-        String yaml = policyServerService.createSchemaYaml(Arrays.asList(observation1, observation2));
+        String yaml = policyServerFilesCreator.createSchemaYaml(Arrays.asList(observation1, observation2));
         String expected = "Observation:\n" +
                 "  type: object\n" +
                 "  required:\n" +
