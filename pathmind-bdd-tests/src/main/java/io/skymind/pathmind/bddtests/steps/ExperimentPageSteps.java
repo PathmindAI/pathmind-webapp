@@ -43,8 +43,19 @@ public class ExperimentPageSteps {
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
         experimentPage.changeRewardVariableOnExperimentView(variableNumber, variableName);
     }
+
     @Step
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
         experimentPage.checkExperimentPageRewardVariablesIs(commaSeparatedVariableNames);
+    }
+
+    @Step
+    public void checkThatMetricsAreShownForRewardVariables(int metricsNumber) {
+        experimentPage.checkThatMetricsAreShownForRewardVariables(metricsNumber);
+    }
+
+    @Step
+    public void checkThatSparklinesAreShownForRewardVariables(int sparklinesNumber) {
+        experimentPage.checkThatSparklinesAreShownForRewardVariables(sparklinesNumber);
     }
 }

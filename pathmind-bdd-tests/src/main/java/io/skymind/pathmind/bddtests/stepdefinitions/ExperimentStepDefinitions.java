@@ -51,4 +51,14 @@ public class ExperimentStepDefinitions {
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
         experimentPageSteps.checkExperimentPageRewardVariablesIs(commaSeparatedVariableNames);
     }
+
+    @Then("^Check that (.*) metrics are shown for reward variables$")
+    public void checkThatMetricsAreShownForRewardVariables(int metricsNumber) {
+        experimentPageSteps.checkThatMetricsAreShownForRewardVariables(metricsNumber);
+    }
+
+    @Then("^Check that (.*) sparklines are shown for reward variables$")
+    public void checkThatSparklinesAreShownForRewardVariables(int sparklinesNumber) {
+        experimentPageSteps.checkThatSparklinesAreShownForRewardVariables(sparklinesNumber);
+    }
 }

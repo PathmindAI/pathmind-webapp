@@ -83,7 +83,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
-        WebElement inputShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='reward-variables-table']/descendant::span[text()='"+variableNumber+"']/following-sibling::vaadin-text-field")));
+        WebElement inputShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='reward-variables-table']/descendant::span[text()='" + variableNumber + "']/following-sibling::vaadin-text-field")));
         inputShadow.findElement(By.cssSelector("input")).click();
         inputShadow.findElement(By.cssSelector("input")).clear();
         inputShadow.findElement(By.cssSelector("input")).sendKeys(variableName);
@@ -97,5 +97,23 @@ public class ExperimentPage extends PageObject {
         }
 
         assertThat(actual, containsInRelativeOrder(items.toArray()));
+    }
+
+    public void checkThatMetricsAreShownForRewardVariables(int metricsNumber) {
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='metrics-wrapper']/span"))) {
+            actual.add(webElement.getText());
+        }
+
+        assertThat(actual, hasSize(metricsNumber));
+    }
+
+    public void checkThatSparklinesAreShownForRewardVariables(int sparklinesNumber) {
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='sparklines-wrapper']/spark-line"))) {
+            actual.add(webElement.getText());
+        }
+
+        assertThat(actual, hasSize(sparklinesNumber));
     }
 }
