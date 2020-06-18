@@ -90,4 +90,8 @@ public class ExperimentPage extends PageObject {
         inputShadow.findElement(By.cssSelector("input")).clear();
         inputShadow.findElement(By.cssSelector("input")).sendKeys(variableName);
     }
+
+    public void clickSideNavArchiveButtonFor(String experimentName) {
+        getDriver().findElement(By.xpath("//p[text()='"+experimentName+"']/ancestor::vaadin-horizontal-layout[contains(@class,'experiment-navbar-item')]/vaadin-button")).click();
+    }
 }

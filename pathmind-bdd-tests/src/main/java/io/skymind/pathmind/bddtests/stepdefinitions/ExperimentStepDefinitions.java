@@ -51,4 +51,9 @@ public class ExperimentStepDefinitions {
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
         experimentPageSteps.changeRewardVariableOnExperimentView(variableNumber, variableName);
     }
+
+    @Then("^Click side nav archive button for '(.*)'$")
+    public void clickSideNavArchiveButtonFor(String experimentName) {
+        experimentPageSteps.clickSideNavArchiveButtonFor(experimentName);
+    }
 }
