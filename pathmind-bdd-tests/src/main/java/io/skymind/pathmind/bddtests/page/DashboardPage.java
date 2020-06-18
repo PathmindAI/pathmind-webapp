@@ -4,6 +4,7 @@ import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -67,7 +68,11 @@ public class DashboardPage extends PageObject {
     }
 
     public void clickDashItemIcons(String projectName) {
-        getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-horizontal-layout/descendant::vaadin-button")).click();
+        WebElement itemIcon = getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-horizontal-layout/descendant::vaadin-button"));
+        waitFor(ExpectedConditions.elementToBeClickable(itemIcon));
+        JavascriptExecutor executor = (JavascriptExecutor) getDriver();
+        executor.executeScript("arguments[0].scrollIntoView()", itemIcon);
+        executor.executeScript("arguments[0].click();", itemIcon);
     }
 
     public void clickArchiveBtn() {

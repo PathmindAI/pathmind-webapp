@@ -1,7 +1,7 @@
 package io.skymind.pathmind.shared.services.training;
 
 import io.skymind.pathmind.shared.constants.RunType;
-import lombok.AllArgsConstructor;
+import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import lombok.Getter;
 import lombok.Setter;
 
