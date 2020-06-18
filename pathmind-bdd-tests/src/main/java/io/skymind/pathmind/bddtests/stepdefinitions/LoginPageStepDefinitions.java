@@ -121,7 +121,7 @@ public class LoginPageStepDefinitions {
 
     @When("^Get email and verify user email$")
     public void getEmailAndVerifyUserEmail() {
-        loginPageSteps.openPage(pathmindUrl + "email-verification/" + emailApi.fetchEmail());
+        loginPageSteps.openPage(pathmindUrl + "email-verification/" + emailApi.getVerificationLink());
     }
 
     @Then("^Login with new user email and (.*)$")
@@ -230,6 +230,6 @@ public class LoginPageStepDefinitions {
         loginPageSteps.fillNewUserPassword(password);
         loginPageSteps.fillNewUserConfirmationPassword(password);
         loginPageSteps.createNewUserClickSignInButton();
-        loginPageSteps.openPage(pathmindUrl + "email-verification/" + emailApi.fetchEmail());
+        loginPageSteps.openPage(pathmindUrl + "email-verification/" + emailApi.getVerificationLink());
     }
 }

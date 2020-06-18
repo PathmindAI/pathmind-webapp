@@ -1375,7 +1375,16 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="20200609-01" author="bruno.rezende@ext.vaadin.com">
+    <changeSet id="20200609-01" author="onur@vaadin.com">
+        <addColumn tableName="PATHMIND_USER">
+            <column name="NEW_EMAIL_TO_VERIFY" type="VARCHAR(255)" />
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="PATHMIND_USER" columnName="NEW_EMAIL_TO_VERIFY"  />
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="20200609-02" author="bruno.rezende@ext.vaadin.com">
         <createTable tableName="OBSERVATION">
             <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -1438,4 +1447,5 @@
             <dropTable tableName="ACTION"/>
         </rollback>
     </changeSet>
+    
 </databaseChangeLog>

@@ -20,9 +20,12 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.WildcardParameter;
+import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 
 import io.skymind.pathmind.db.dao.ActionDAO;
 import io.skymind.pathmind.db.dao.ObservationDAO;
@@ -45,7 +48,6 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
@@ -56,7 +58,7 @@ import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
-public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<String> {
+public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<String>, BeforeLeaveObserver {
 
 	private static final int PROJECT_ID_SEGMENT = 0;
  	private static final int UPLOAD_MODE_SEGMENT = 1;
@@ -143,13 +145,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 		uploadModelWizardPanel.addFileUploadCompletedListener(() -> handleUploadWizardClicked());
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleModelDetailsClicked());
-		modelDetailsWizardPanel.addSaveDraftClickListener(click -> handleSaveDraftClicked());
 		rewardVariablesPanel.addButtonClickListener(click -> handleRewardVariablesClicked());
-		rewardVariablesPanel.addSaveDraftClickListener(click -> handleRewardVariablesSaveDraftClicked());
 		actionsPanel.addButtonClickListener(click -> handleActionsClicked());
-		actionsPanel.addSaveDraftClickListener(click -> handleActionsSaveDraftClicked());
 		observationsPanel.addButtonClickListener(click -> handleObservationsClicked());
-		observationsPanel.addSaveDraftClickListener(click -> handleObservationsSaveDraftClicked());
 
 		Div sectionTitleWrapper = new Div();
 		
@@ -173,7 +171,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		return wrapper;
 	}
 
-	private void handleRewardVariablesSaveDraftClicked() {
+	private void autosaveRewardVariables() {
 		if (!rewardVariablesPanel.isInputValueValid()) {
 			return;
 		}
@@ -181,23 +179,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		segmentIntegrator.modelDraftSaved();
 		rewardVariables = rewardVariablesPanel.getRewardVariables();
 		rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
-		NotificationUtils.showSuccess("Draft successfully saved");
-	}
-	private void handleActionsSaveDraftClicked() {
-	    actions = actionsPanel.getActions();
-	    actionDAO.updateModelActions(model.getId(), actions);
-	    NotificationUtils.showSuccess("Draft successfully saved");
 	}
 	
-	private void handleObservationsSaveDraftClicked() {
-	    if (observationsPanel.isInputValueValid()) {
-	        observations = observationsPanel.getObservations();
-	        observationDAO.updateModelObservations(model.getId(), observations);
-	        NotificationUtils.showSuccess("Draft successfully saved");
-	    }
-	}
-
-	private void handleSaveDraftClicked() {
+	private void autosaveModelDetails() {
 		if(!FormUtils.isValidForm(modelBinder, model)) {
 			return;
 		}
@@ -210,8 +194,19 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		else {
 			modelService.updateDraftModel(model, modelNotes);
 		}
-		NotificationUtils.showSuccess("Draft successfully saved");
 	}
+
+	@Override
+	public void beforeLeave(BeforeLeaveEvent event) {
+        ContinueNavigationAction action = event.postpone();
+        if (modelDetailsWizardPanel.isVisible()) {
+            autosaveModelDetails();
+        }
+        if (rewardVariablesPanel.isVisible()) {
+            autosaveRewardVariables();
+        }
+		action.proceed();
+    }
 
 	@Override
     protected void initLoadData() throws InvalidDataException {
@@ -279,7 +274,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		if (!modelNotes.isEmpty()) {
 			segmentIntegrator.addedNotesUploadModelView();
 		}
-		
+
 		modelService.updateDraftModel(model, modelNotes);
 		rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount(), rewardVariables);
 		setVisibleWizardPanel(rewardVariablesPanel);

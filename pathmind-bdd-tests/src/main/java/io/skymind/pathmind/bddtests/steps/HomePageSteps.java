@@ -13,46 +13,57 @@ public class HomePageSteps {
     public void openProjectsPage() {
         homePage.openProjectsPage();
     }
+
     @Step
     public void logoutFromPathmind() {
         homePage.logoutFromPathmind();
     }
+
     @Step
     public void clickLearnBtn() {
         homePage.clickLearnBtn();
     }
+
     @Step
     public void checkThatLearnPageOpened(String learnPage) {
         homePage.checkThatLearnPageOpened(learnPage);
     }
+
     @Step
     public void openDashboardPage() {
         homePage.openDashboardPage();
     }
+
     @Step
     public void checkThatDashboardPageOpened() {
         homePage.checkThatDashboardPageOpened();
     }
+
     @Step
     public void checkThatProjectsPageOpened() {
         homePage.checkThatProjectsPageOpened();
     }
+
     @Step
     public void closeBrowserTab() {
         homePage.closeBrowserTab();
     }
+
     @Step
     public void openUserDropdown() {
         homePage.openUserDropdown();
     }
+
     @Step
     public void clickAccountBtn() {
         homePage.clickAccountBtn();
     }
+
     @Step
     public void clickBackButton() {
         homePage.getDriver().navigate().back();
     }
+
     @Step
     public void clickGettingStartedGuideButton() {
         homePage.clickGettingStartedGuideButton();
