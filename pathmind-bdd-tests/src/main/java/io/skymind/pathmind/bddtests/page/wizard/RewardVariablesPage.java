@@ -16,10 +16,6 @@ public class RewardVariablesPage extends PageObject {
         getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/ancestor::*[@class='view-section']/descendant::vaadin-button[normalize-space(text())='Next'][2]")).click();
     }
 
-    public void clickWizardRewardVariablesSaveDraftBtn() {
-        getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/following-sibling::vaadin-button[text()='Save Draft']")).click();
-    }
-
     public void checkThatThereIsAVariableNamed(String variableName) {
         List<String> variables = new ArrayList<>();
         for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-text-field"))) {
