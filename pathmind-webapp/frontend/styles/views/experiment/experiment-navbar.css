@@ -4,11 +4,12 @@
     min-height: 100%;
     background: white;
     border-radius: var(--lumo-border-radius);
-    padding: var(--lumo-space-m);
+    padding-top: var(--lumo-space-s);
 }
 
-.experiments-navbar vaadin-button {
-    margin: 0 auto var(--lumo-space-s);
+.experiments-navbar > vaadin-button {
+    min-width: 15.5rem;
+    margin: 0 var(--lumo-space-s) var(--lumo-space-s);
 }
 
 .experiments-navbar-items {
@@ -22,12 +23,22 @@
     width: 100%;
     height: 65px;
     padding: 0 var(--lumo-space-s);
-    border-top: 0.5px solid var(--pm-gray-color-light);
+    border-top: 0.5px solid var(--pm-gray-color-lighter);
     cursor: pointer;
 }
 
+.experiment-navbar-item vaadin-button {
+    color: var(--pm-gray-color);
+    font-size: var(--lumo-font-size-s);
+    margin-left: auto;
+}
+
+.experiment-navbar-item vaadin-button:hover {
+    color: var(--pm-primary-color);
+}
+
 .experiment-navbar-item:last-child {
-    border-bottom: 0.5px solid var(--pm-gray-color-light);
+    border-bottom: 0.5px solid var(--pm-gray-color-lighter);
 }
 
 .experiment-navbar-item:not(.current):hover {

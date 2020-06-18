@@ -33,7 +33,7 @@ function matchVariableNameAndFold(matchingValue, index, row) {
     const matchInfo = matchingValue.match(/[\-0-9]+/);
     if (matchInfo) {
         const variableIndex = matchInfo[0];
-        if (variableIndex < 0 || variableIndex >= variableCount){
+        if (variableIndex < 0 || variableIndex >= variableCount) {
             lineValidationCache[row].push(variableIndex);
         }
         if (rewardVariables[variableIndex]) {
@@ -82,21 +82,21 @@ function onChange(e) {
     }
     calculateValidationsAndDispatchEvent();
 }
-function calculateValidationsAndDispatchEvent(){
+function calculateValidationsAndDispatchEvent() {
     var valid = true;
     var invalidIndexes = [];
     for (var i = 0; i < editor.session.getLength(); i++) {
         valid = valid && Object.keys(lineValidationCache[i]).length == 0;
         invalidIndexes.push(lineValidationCache[i]);
     }
-    var evt = new CustomEvent('reward-function-validation', {
+    var evt = new CustomEvent("reward-function-validation", {
         detail: { valid: valid, invalidIndexes: invalidIndexes }
     });
     element.dispatchEvent(evt);
 }
-function ensureLineValidationCache(){
+function ensureLineValidationCache() {
     for (var i = 0; i < editor.session.getLength(); i++) {
-        if (lineValidationCache[i] === undefined) lineValidationCache[i] = []; 
+        if (lineValidationCache[i] === undefined) lineValidationCache[i] = [];
     }
 }
 function expandFold(fold) {
@@ -218,7 +218,7 @@ if (!window.Pathmind) {
 }
 window.Pathmind.CodeEditor = {
     addVariableNamesSupport: function(editorWrapper) {
-    	element = editorWrapper;
+        element = editorWrapper;
         editor = editorWrapper.editor;
         Range = ace.require("ace/range").Range;
         editor.session.expandFold = expandFold;
