@@ -8,6 +8,12 @@ Feature: Experiment page Simulation Metrics
     When Click project start run button
     Then Check experiment page reward variables is kitchen_cleanliness,customers_served,balked_customers,avg_response_time
 
+  Scenario: Check that simulation metrics block is shown
+    Given Login to the pathmind
+    When Create new CoffeeShop project with variable names: kitchen_cleanliness,customers_served,balked_customers,avg_response_time
+    When Click project start run button
+    Then Check that simulation metrics block is shown
+
   Scenario Outline: Check metrics shown for reward variables
     Given Login to the pathmind
     When Open projects page

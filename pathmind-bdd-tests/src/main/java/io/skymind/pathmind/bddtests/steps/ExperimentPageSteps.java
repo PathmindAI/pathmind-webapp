@@ -68,4 +68,9 @@ public class ExperimentPageSteps {
     public void checkThatSparklinesAreShownForRewardVariables(int sparklinesNumber) {
         experimentPage.checkThatSparklinesAreShownForRewardVariables(sparklinesNumber);
     }
+
+    @Step
+    public void checkThatSimulationMetricsBlockIsShown() {
+        experimentPage.checkThatSimulationMetricsBlockIsShown();
+    }
 }

@@ -71,4 +71,9 @@ public class ExperimentStepDefinitions {
     public void checkThatSparklinesAreShownForRewardVariables(int sparklinesNumber) {
         experimentPageSteps.checkThatSparklinesAreShownForRewardVariables(sparklinesNumber);
     }
+
+    @Then("^Check that simulation metrics block is shown$")
+    public void checkThatSimulationMetricsBlockIsShown() {
+        experimentPageSteps.checkThatSimulationMetricsBlockIsShown();
+    }
 }

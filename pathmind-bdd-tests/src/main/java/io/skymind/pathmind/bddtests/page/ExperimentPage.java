@@ -125,4 +125,8 @@ public class ExperimentPage extends PageObject {
 
         assertThat(actual, hasSize(sparklinesNumber));
     }
+
+    public void checkThatSimulationMetricsBlockIsShown() {
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Simulation Metrics']/parent::vaadin-vertical-layout")).isDisplayed(), is(true));
+    }
 }
