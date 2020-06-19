@@ -37,6 +37,11 @@ public class ExperimentPage extends PageObject {
         experimentNotes.sendKeys(note);
     }
 
+    public void clickCurrentExperimentArchiveButton() {
+        String xpath = String.format("//*[@class='experiment-navbar-item current']/vaadin-button");
+        getDriver().findElement(By.xpath(xpath)).click();
+    }
+
     public void checkExperimentNotesIs(String note) {
         assertThat(experimentNotes.getAttribute("value"), is(note));
     }
@@ -84,5 +89,9 @@ public class ExperimentPage extends PageObject {
         inputShadow.findElement(By.cssSelector("input")).click();
         inputShadow.findElement(By.cssSelector("input")).clear();
         inputShadow.findElement(By.cssSelector("input")).sendKeys(variableName);
+    }
+
+    public void clickSideNavArchiveButtonFor(String experimentName) {
+        getDriver().findElement(By.xpath("//p[text()='"+experimentName+"']/ancestor::vaadin-horizontal-layout[contains(@class,'experiment-navbar-item')]/vaadin-button")).click();
     }
 }
