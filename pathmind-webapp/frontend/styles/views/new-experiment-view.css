@@ -73,7 +73,7 @@
     width: 100%;
     white-space: pre;
     font-family: var(--code-font-family);
-    padding: var(--lumo-space-s) var(--lumo-space-m);
+    padding: var(--lumo-space-xs) var(--lumo-space-s);
     border: 1px solid var(--pm-gray-color);
     border-radius: var(--lumo-border-radius);
     overflow: auto;

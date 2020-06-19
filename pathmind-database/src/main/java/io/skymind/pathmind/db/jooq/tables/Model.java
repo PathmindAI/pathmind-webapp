@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = -125060373;
+    private static final long serialVersionUID = 57045546;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -121,7 +121,7 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.action_tuple_size</code>.
      */
-    public final TableField<ModelRecord, Integer> ACTION_TUPLE_SIZE = createField(DSL.name("action_tuple_size"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+    public final TableField<ModelRecord, Integer> ACTION_TUPLE_SIZE = createField(DSL.name("action_tuple_size"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>public.model</code> table reference
