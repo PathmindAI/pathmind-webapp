@@ -15,20 +15,6 @@ Feature: Experiment page
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
 
-  Scenario: Check running experiment page archive btn, move model to archived
-    Given Login to the pathmind
-    When Create new CoffeeShop project with single reward function
-    Then Click project start run button
-    Then Click in 'Archive' button
-    When In confirmation dialog click in 'Archive Experiment' button
-    When Check that model/experiment name '1' NOT exist in archived/not archived tab
-    When Open projects/model/experiment archived tab
-    Then Check that model/experiment name '1' exist in archived/not archived tab
-    Then Click the experiment name 1
-    When Click in 'Stop Training' button
-    Then Check that the 'Stop Training' confirmation dialog is shown
-    When In confirmation dialog click in 'Stop Training' button
-
   Scenario: Check experiment run status Starting Cluster
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
