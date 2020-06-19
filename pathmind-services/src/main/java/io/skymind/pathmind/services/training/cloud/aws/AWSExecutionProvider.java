@@ -292,6 +292,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_0_5:
             case VERSION_1_0_6:
             case VERSION_1_0_7:
+            case VERSION_1_1_0:
                 instructions.addAll(Arrays.asList(
                         // Setup NativeRL
                         "mkdir -p work",
@@ -354,6 +355,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_7_0:
             case VERSION_0_7_6:
             case VERSION_0_8_1:
+            case VERSION_0_8_5:
                 instructions.addAll(Arrays.asList(
                         // Setup Anaconda
                         "mkdir -p conda",
@@ -378,6 +380,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_0_25:
             case VERSION_0_0_25_Multi:
             case VERSION_1_0_1:
+            case VERSION_1_0_2:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));
@@ -451,7 +454,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("ENTROPY_SLOPE", "0.01"),
                 var("VF_LOSS_RANGE", "0.1"),
                 var("VALUE_PRED", "1"), // disabled for now
-                var("USER_LOG", String.valueOf(job.isUserLog()))
+                var("USER_LOG", String.valueOf(job.isUserLog())),
+                var("ACTION_TUPLE_SIZE", String.valueOf(job.getActionTupleSize()))
         ));
     }
 
