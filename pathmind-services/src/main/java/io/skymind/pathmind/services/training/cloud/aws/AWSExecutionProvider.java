@@ -416,7 +416,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     private String var(String name, String value) {
-        return "export " + name + "='" + value.replace("'", "\\'") + "'";
+        return "export " + name + "='" + value.replace("'", "'\"'\"'") + "'";
     }
 
     private String varExp(String name, String value) {
