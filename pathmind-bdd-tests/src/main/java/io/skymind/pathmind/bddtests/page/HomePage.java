@@ -9,6 +9,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.ArrayList;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -32,7 +33,7 @@ public class HomePage extends PageObject {
     @FindBy(xpath = "//span[@class='breadcrumb']")
     private WebElement pageLabel;
     @FindBy(xpath = "//span[@class='breadcrumb']")
-	private WebElement projectPageLabel;
+    private WebElement projectPageLabel;
     @FindBy(xpath = "//vaadin-menu-bar[@class='account-menu']")
     private WebElement accountMenuBtn;
     @FindBy(xpath = "//vaadin-context-menu-item[@role='menuitem' and text()='Account']")
@@ -71,8 +72,8 @@ public class HomePage extends PageObject {
         waitABit(1000);
         waitFor(ExpectedConditions.attributeToBe(dashboardBtn, "highlight", ""));
         waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
-        assertThat(pageLabel.getText(), is("Dashboard"));
         assertThat(getDriver().getTitle(), is("Pathmind | Dashboard"));
+        assertThat(getDriver().getCurrentUrl(), containsString("/dashboard"));
     }
 
     public void checkThatProjectsPageOpened() {
@@ -96,5 +97,9 @@ public class HomePage extends PageObject {
     public void clickAccountBtn() {
         waitABit(2000);
         accountBtn.click();
+    }
+
+    public void clickGettingStartedGuideButton() {
+        getDriver().findElement(By.xpath("//a[text()='Getting Started Guide']")).click();
     }
 }

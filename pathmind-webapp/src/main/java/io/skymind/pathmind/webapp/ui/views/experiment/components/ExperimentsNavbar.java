@@ -4,6 +4,8 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
@@ -11,6 +13,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
@@ -19,12 +22,12 @@ import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -36,10 +39,13 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 	private List<ExperimentsNavBarItem> experimentsNavBarItems = new ArrayList<>();
 	private VerticalLayout rowsWrapper;
 	private Consumer<Experiment> selectExperimentConsumer;
+	private Consumer<Experiment> archiveExperimentHandler;
+    private ExperimentsNavBarItem currentExperimentNavItem;
 
-	public ExperimentsNavbar(ExperimentDAO experimentDAO, long modelId, Consumer<Experiment> selectExperimentConsumer)
+	public ExperimentsNavbar(ExperimentDAO experimentDAO, long modelId, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler)
 	{
-		this.selectExperimentConsumer = selectExperimentConsumer;
+        this.selectExperimentConsumer = selectExperimentConsumer;
+        this.archiveExperimentHandler = archiveExperimentHandler;
 		rowsWrapper = new VerticalLayout();
 		rowsWrapper.addClassName("experiments-navbar-items");
 		rowsWrapper.setPadding(false);
@@ -57,17 +63,26 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 		experimentsNavBarItems.clear();
 		
 		experiments.stream()
-			.filter(experiment -> !ExperimentUtils.isDraftRunType(experiment))
-			.sorted(Comparator.comparing(Experiment::getDateCreated).reversed())
 			.forEach(experiment -> {
-				ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(ui, experiment, selectExperimentConsumer);
+				ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(ui, experiment, selectExperimentConsumer, archiveExperimentHandler);
 				experimentsNavBarItems.add(navBarItem);
-				if(experiment.getId() == currentExperiment.getId()) {
+				if(experiment.equals(currentExperiment)) {
 					navBarItem.setAsCurrent();
+					currentExperimentNavItem = navBarItem;
 				}
 				rowsWrapper.add(navBarItem);
 		});
 	}
+
+	public void setCurrentExperiment(Experiment newCurrentExperiment) {
+		currentExperimentNavItem.removeAsCurrent();
+		experimentsNavBarItems.stream().forEach(experimentsNavBarItem -> {
+			if (experimentsNavBarItem.getExperiment().equals(newCurrentExperiment)) {
+				experimentsNavBarItem.setAsCurrent();
+				currentExperimentNavItem = experimentsNavBarItem;
+			}
+		});
+    }
 
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
@@ -108,33 +123,47 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 		private Experiment experiment;
 		private Component statusComponent;
 
-		ExperimentsNavBarItem(UI ui, Experiment experiment, Consumer<Experiment> selectExperimentConsumer) {
+		ExperimentsNavBarItem(UI ui, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler) {
 			this.experiment = experiment;
+			Boolean isDraft = ExperimentUtils.isDraftRunType(experiment);
 			RunStatus overallExperimentStatus = ExperimentUtils.getTrainingStatus(experiment);
-			statusComponent = createStatusIcon(overallExperimentStatus);
+			statusComponent = isDraft ? new Icon(VaadinIcon.PENCIL) : createStatusIcon(overallExperimentStatus);
 			add(statusComponent);
 			addClickListener(event -> handleRowClicked(experiment, selectExperimentConsumer));
 			addClassName("experiment-navbar-item");
 			setSpacing(false);
+            Button archiveExperimentButton = new Button(VaadinIcon.ARCHIVE.create());
+            archiveExperimentButton.getElement().addEventListener("click", click -> archiveExperimentHandler.accept(experiment)).addEventData("event.stopPropagation()");
+            archiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
 			VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
-				add(createExperimentText(experiment.getName(), DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId)));
+				add(createExperimentText(experiment.getName(), DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId), isDraft));
+                add(archiveExperimentButton);
 			});
 		}
 
 		private Component createStatusIcon(RunStatus status) {
-			if (status.getValue() <= RunStatus.Running.getValue()) {
+			if (status.getValue() <= RunStatus.Running.getValue() || status == RunStatus.Restarting) {
 				Div loadingSpinner = new Div();
 				loadingSpinner.addClassName("icon-loading-spinner");
 				return loadingSpinner;
 			} else if (status == RunStatus.Completed) {
 				return new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE);
+			} else if (status == RunStatus.Killed || status == RunStatus.Stopping) {
+				Div stoppedIcon = new Div();
+				stoppedIcon.addClassName("icon-stopped");
+				return stoppedIcon;
 			}
 			return new Icon(VaadinIcon.EXCLAMATION_CIRCLE_O);
 		}
 
-		private Div createExperimentText(String experimentNumber, String experimentDateCreated) {
+		private Div createExperimentText(String experimentNumber, String experimentDateCreated, Boolean isDraft) {
+			Paragraph experimentNameLine = new Paragraph("Experiment #" + experimentNumber);
+			if (isDraft) {
+				experimentNameLine.add(LabelFactory.createLabel("Draft", "tag"));
+			}
+			
 			Div experimentNameWrapper = new Div();
-			experimentNameWrapper.add(new Paragraph("Experiment #" + experimentNumber));
+			experimentNameWrapper.add(experimentNameLine);
 			experimentNameWrapper.add(new Paragraph("Created " + experimentDateCreated));
 			experimentNameWrapper.addClassName("experiment-name");
 			return experimentNameWrapper;
@@ -147,21 +176,19 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 		}
 
 		private void handleRowClicked(Experiment experiment, Consumer<Experiment> selectExperimentConsumer) {
-			experimentsNavBarItems.stream().forEach(experimentsNavBarItem -> experimentsNavBarItem.removeAsCurrent());
-			setAsCurrent();
 			selectExperimentConsumer.accept(experiment);
 		}
 
-		private void setAsCurrent() {
+		public void setAsCurrent() {
 			addClassName(CURRENT);
 		}
 
-		private void removeAsCurrent() {
+		public void removeAsCurrent() {
 			removeClassName(CURRENT);
 		}
 
 		public Experiment getExperiment() {
 			return experiment;
-		}
+        }
 	}
 }

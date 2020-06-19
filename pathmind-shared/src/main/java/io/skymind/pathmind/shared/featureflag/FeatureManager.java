@@ -15,11 +15,11 @@ public class FeatureManager {
 
     public boolean isEnabled(Feature feature) {
         switch (feature) {
-            case REWARD_VARIABLES_FEATURE:
-                return true;
             case MULTI_AGENT_TRAINING:
                 return multiAgentEnabled;
             case ACCOUNT_UPGRADE:
+                return false;
+            case SIMULATION_METRICS:
                 return false;
             default:
                 return true;

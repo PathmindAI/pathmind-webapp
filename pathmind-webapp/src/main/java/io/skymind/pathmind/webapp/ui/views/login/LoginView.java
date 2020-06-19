@@ -128,7 +128,7 @@ public class LoginView extends HorizontalLayout
 		resendVerification.addClickListener(e -> {
 			PathmindUser user = userService.findByEmailIgnoreCase(email);
 			if (user != null) {
-				emailNotificationService.sendVerificationEmail(user);
+				emailNotificationService.sendVerificationEmail(user, user.getEmail(), true);
 				NotificationUtils.showSuccess("Email verification was sent to your email.");
 			} else {
 				NotificationUtils.showError("Email: " + email + " was not found. Please try to login again.");
@@ -172,8 +172,6 @@ public class LoginView extends HorizontalLayout
 	}
 
 	private Class getRerouteClass() {
-		if(projectDAO.getProjectsForUser(SecurityUtils.getUserId()).isEmpty())
-			return NewProjectView.class;
 		return DashboardView.class;
 	}
 

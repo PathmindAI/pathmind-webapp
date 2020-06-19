@@ -5,6 +5,8 @@ S3PATH=$1
 ENVIRONMENT=$2
 EMAIL=$3
 s3_url_link=$4
+s3_url=$5
+log_file="process_output.log"
 
 while true
 do
@@ -16,6 +18,7 @@ do
 	sleep $sleep_time
 done
 
+aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
 description="Spot instance will be terminated by AWS"
 curl -X POST -H 'Content-type: application/json' \
 	--data "{'text':':x:Spot Instance Termination Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \

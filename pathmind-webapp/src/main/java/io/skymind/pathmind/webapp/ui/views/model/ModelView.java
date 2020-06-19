@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 import io.skymind.pathmind.shared.data.Experiment;
@@ -26,7 +27,6 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
-import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -39,7 +39,6 @@ import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -48,183 +47,181 @@ import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 @Route(value = Routes.MODEL_URL, layout = MainLayout.class)
 public class ModelView extends PathMindDefaultView implements HasUrlParameter<Long> {
-	@Autowired
-	private ExperimentDAO experimentDAO;
-	@Autowired
-	private ModelDAO modelDAO;
-	@Autowired
-	private RewardVariableDAO rewardVariableDAO;
-	@Autowired
-	private UserDAO userDAO;
-	@Autowired
-	private SegmentIntegrator segmentIntegrator;
+    @Autowired
+    private ExperimentDAO experimentDAO;
+    @Autowired
+    private ModelDAO modelDAO;
+    @Autowired
+    private RewardVariableDAO rewardVariableDAO;
+    @Autowired
+    private SegmentIntegrator segmentIntegrator;
 
-	private long modelId;
-	private Model model;
-	private List<Experiment> experiments;
-	private List<RewardVariable> rewardVariableNames;
+    private long modelId;
+    private Model model;
+    private List<Experiment> experiments;
+    private List<RewardVariable> rewardVariableNames;
 
-	private ArchivesTabPanel<Experiment> archivesTabPanel;
-	private ExperimentGrid experimentGrid;
+    private ArchivesTabPanel<Experiment> archivesTabPanel;
+    private ExperimentGrid experimentGrid;
 
-	private Span modelName;
-	private Span createdDate;
-	private Paragraph packageNameText;
-	private Paragraph actionsText;
-	private Paragraph observationsText;
-	private Div rewardVariableNamesText;
+    private Span modelName;
+    private Span createdDate;
+    private Paragraph packageNameText;
+    private Paragraph actionsText;
+    private Paragraph observationsText;
+    private Div rewardVariableNamesText;
 
-	public ModelView() {
-		super();
-	}
+    public ModelView() {
+        super();
+    }
 
-	protected Component getMainContent() {
-		setupExperimentListPanel();
-		setupArchivesTabPanel();
+    protected Component getMainContent() {
+        setupExperimentListPanel();
+        setupArchivesTabPanel();
 
-		addClassName("model-view");
+        addClassName("model-view");
 
-		modelName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL);
-		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+        modelName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL);
+        createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
 
-		HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(
-			WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(modelName, createdDate),
-			new NewExperimentButton(experimentDAO, modelId));
-		headerWrapper.addClassName("page-content-header");
+        HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(
+            WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(modelName, createdDate),
+            new NewExperimentButton(experimentDAO, modelId));
+        headerWrapper.addClassName("page-content-header");
 
-		FlexLayout leftPanel = new ViewSection(headerWrapper, archivesTabPanel, experimentGrid);
-		FlexLayout rightPanel = createRightPanel();
+        FlexLayout leftPanel = new ViewSection(headerWrapper, archivesTabPanel, experimentGrid);
+        FlexLayout rightPanel = createRightPanel();
 
-		SplitLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-			leftPanel,
-			rightPanel,
-		70);
-		gridWrapper.addClassName("page-content");
+        SplitLayout gridWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+            leftPanel,
+            rightPanel,
+        70);
+        gridWrapper.addClassName("page-content");
 
-		return gridWrapper;
-	}
+        return gridWrapper;
+    }
 
-	private FlexLayout createRightPanel() {
-		Span panelTitle = LabelFactory.createLabel("Model Details", CssMindPathStyles.SECTION_TITLE_LABEL);
-		packageNameText = new Paragraph(LabelFactory.createLabel("Package Name", CssMindPathStyles.BOLD_LABEL));
-		actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssMindPathStyles.BOLD_LABEL));
-		observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssMindPathStyles.BOLD_LABEL));
-		rewardVariableNamesText = new Div();
-		rewardVariableNamesText.addClassName("model-reward-variables");
+    private FlexLayout createRightPanel() {
+        Span panelTitle = LabelFactory.createLabel("Model Details", CssMindPathStyles.SECTION_TITLE_LABEL);
+        packageNameText = new Paragraph(LabelFactory.createLabel("Package Name", CssMindPathStyles.BOLD_LABEL));
+        actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssMindPathStyles.BOLD_LABEL));
+        observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssMindPathStyles.BOLD_LABEL));
+        rewardVariableNamesText = new Div();
+        rewardVariableNamesText.addClassName("model-reward-variables");
 
-		NotesField notesField = createViewNotesField();
-		FlexLayout rightPanelCard = new ViewSection(
-				panelTitle,
-				packageNameText,
-				actionsText,
-				observationsText,
-				new Div(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), rewardVariableNamesText),
-				notesField);
-		rightPanelCard.addClassName("card");
+        NotesField notesField = createViewNotesField();
+        FlexLayout rightPanelCard = new ViewSection(
+                panelTitle,
+                packageNameText,
+                actionsText,
+                observationsText,
+                new Div(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), rewardVariableNamesText),
+                notesField);
+        rightPanelCard.addClassName("card");
 
-		return rightPanelCard;
-	}
+        return rightPanelCard;
+    }
 
-	/**
-	 * Using any experiment's getProject() since they should all be the same. I'm assuming at this point
-	 * that there has to be at least one experiment to be able to get here.
-	 */
-	private Breadcrumbs createBreadcrumbs() {
-		return new Breadcrumbs(experiments.get(0).getProject(), model);
-	}
+    /**
+     * Using any experiment's getProject() since they should all be the same. I'm assuming at this point
+     * that there has to be at least one experiment to be able to get here.
+     */
+    private Breadcrumbs createBreadcrumbs() {
+        return new Breadcrumbs(experiments.get(0).getProject(), model);
+    }
 
-	private void setupArchivesTabPanel() {
-		archivesTabPanel = new ArchivesTabPanel<Experiment>(
-				"Experiments",
-				true,
-				experimentGrid,
-				this::getExperiments,
-				(experimentId, isArchivable) -> experimentDAO.archive(experimentId, isArchivable));
-	}
+    private void setupArchivesTabPanel() {
+        archivesTabPanel = new ArchivesTabPanel<Experiment>(
+                "Experiments",
+                true,
+                experimentGrid,
+                this::getExperiments,
+                (experimentId, isArchivable) -> experimentDAO.archive(experimentId, isArchivable));
+    }
 
-	private void setupExperimentListPanel() {
-		experimentGrid = new ExperimentGrid();
-		experimentGrid.addItemClickListener(event -> handleExperimentClick(event.getItem()));
-	}
+    private void setupExperimentListPanel() {
+        experimentGrid = new ExperimentGrid();
+        experimentGrid.addItemClickListener(event -> handleExperimentClick(event.getItem()));
+    }
 
-	private NotesField createViewNotesField() {
-		return new NotesField(
-			"Model Notes",
-			model.getUserNotes(),
-			updatedNotes -> {
-				modelDAO.updateUserNotes(modelId, updatedNotes);
-				NotificationUtils.showSuccess("Notes saved");
-				segmentIntegrator.updatedNotesExperimentsView();
-			}
-		);
-	}
+    private NotesField createViewNotesField() {
+        return new NotesField(
+            "Notes",
+            model.getUserNotes(),
+            updatedNotes -> {
+                modelDAO.updateUserNotes(modelId, updatedNotes);
+                segmentIntegrator.updatedNotesExperimentsView();
+            }
+        );
+    }
 
-	private void handleExperimentClick(Experiment experiment) {
-		if (ExperimentUtils.isDraftRunType(experiment)) {
-			getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
-		} else {
-			getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
-		}
-	}
-	
-	@Override
-	protected Component getTitlePanel() {
-		return new ScreenTitlePanel(createBreadcrumbs());
-	}
+    private void handleExperimentClick(Experiment experiment) {
+        if (ExperimentUtils.isDraftRunType(experiment)) {
+            getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
+        } else {
+            getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
+        }
+    }
 
-	public List<Experiment> getExperiments() {
-		return experiments;
-	}
+    @Override
+    protected Component getTitlePanel() {
+        return new ScreenTitlePanel(createBreadcrumbs());
+    }
 
-	@Override
-	protected void initLoadData() {
-		model = modelDAO.getModelIfAllowed(modelId, SecurityUtils.getUserId())
-				.orElseThrow(() -> new InvalidDataException("Attempted to access Model: " + modelId));
-		experiments = experimentDAO.getExperimentsForModel(modelId);
-		if (experiments == null || experiments.isEmpty())
-			throw new InvalidDataException("Attempted to access Experiments for Model: " + modelId);
-		rewardVariableNames = rewardVariableDAO.getRewardVariablesForModel(modelId);
-	}
+    public List<Experiment> getExperiments() {
+        return experiments;
+    }
 
-	@Override
-	protected void initScreen(BeforeEnterEvent event) {
-		String packageName = (model.getPackageName() != null) ? model.getPackageName() : "—";
-		modelName.setText("Model #"+model.getName());
-		
-		VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
-			// experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
-			experimentGrid.setItems(experiments);
-			LocalDateTime dateCreatedData = model.getDateCreated();
-			createdDate.setText(String.format("Uploaded on %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(dateCreatedData, timeZoneId)));
-		});
-		packageNameText.add(packageName);
-		actionsText.add(""+model.getNumberOfPossibleActions());
-		observationsText.add(""+model.getNumberOfObservations());
-		if (rewardVariableNames.size() > 0) {
-			rewardVariableNames.forEach(rv -> {
-				String rvName = rv.getName();
-				if (rvName == null || rvName.length() == 0) {
-					rvName = "—";
-				}
-				Span rvSpan = new Span(rvName);
-				rvSpan.addClassName("variable-color-"+rv.getArrayIndex()%10);
-				rewardVariableNamesText.add(
-					new Div(
-						new Span(""+rv.getArrayIndex()),
-						rvSpan
-					)
-				);
-			});
-		} else {
-			rewardVariableNamesText.add("All reward variables are unnamed. You can name them when you create a new experiment for this model.");
-		}
-		archivesTabPanel.initData(event.getUI());
+    @Override
+    protected void initLoadData() {
+        model = modelDAO.getModelIfAllowed(modelId, SecurityUtils.getUserId())
+                .orElseThrow(() -> new InvalidDataException("Attempted to access Model: " + modelId));
+        experiments = experimentDAO.getExperimentsForModel(modelId);
+        if (experiments == null || experiments.isEmpty())
+            throw new InvalidDataException("Attempted to access Experiments for Model: " + modelId);
+        rewardVariableNames = rewardVariableDAO.getRewardVariablesForModel(modelId);
+    }
 
-		recalculateGridColumnWidth(event.getUI().getPage(), experimentGrid);		
-	}
+    @Override
+    protected void initScreen(BeforeEnterEvent event) {
+        String packageName = (model.getPackageName() != null) ? model.getPackageName() : "—";
+        modelName.setText("Model #"+model.getName());
 
-	@Override
-	public void setParameter(BeforeEvent event, Long modelId) {
-		this.modelId = modelId;
-	}
+        VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
+            // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
+            experimentGrid.setItems(experiments);
+            LocalDateTime dateCreatedData = model.getDateCreated();
+            createdDate.setText(String.format("Uploaded on %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(dateCreatedData, timeZoneId)));
+        });
+        packageNameText.add(packageName);
+        actionsText.add(""+model.getNumberOfPossibleActions());
+        observationsText.add(""+model.getNumberOfObservations());
+        if (rewardVariableNames.size() > 0) {
+            rewardVariableNames.sort(Comparator.comparingInt(RewardVariable::getArrayIndex));
+            rewardVariableNames.forEach(rv -> {
+            String rvName = rv.getName();
+                if (rvName == null || rvName.length() == 0) {
+                    rvName = "—";
+                }
+                Span rvSpan = new Span(rvName);
+                rvSpan.addClassName("variable-color-"+rv.getArrayIndex()%10);
+                rewardVariableNamesText.add(
+                    new Div(
+                        new Span(""+rv.getArrayIndex()),
+                        rvSpan
+                    )
+                );
+            });
+        } else {
+            rewardVariableNamesText.add("All reward variables are unnamed. You can name them when you create a new experiment for this model.");
+        }
+        archivesTabPanel.initData(event.getUI());
+
+        recalculateGridColumnWidth(event.getUI().getPage(), experimentGrid);
+    }
+
+    @Override
+    public void setParameter(BeforeEvent event, Long modelId) {
+        this.modelId = modelId;
+    }
 }
