@@ -77,7 +77,7 @@ class ExperimentRepository
 		Experiment experiment = record.into(EXPERIMENT).into(Experiment.class);
 		addParentDataModelObjects(record, experiment);
 		return experiment;
-	}
+    }
 
 	protected static List<Experiment> getExperimentsForModel(DSLContext ctx, long modelId) {
 		Result<?> result = ctx
@@ -96,6 +96,25 @@ class ExperimentRepository
 			return experiment;
 		}).collect(Collectors.toList());
 	}
+    
+    protected static List<Experiment> getCompletedExperimentsForUser(DSLContext ctx, long userId) {
+        Result<?> result = ctx
+                    .select(EXPERIMENT.asterisk())
+                    .select(MODEL.ID, MODEL.NAME)
+                    .select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
+                    .from(EXPERIMENT)
+                    .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID)).and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
+                    .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID)).and(PROJECT.ARCHIVED.isFalse().or(PROJECT.ARCHIVED.isNull()))
+                    .where(Tables.PROJECT.PATHMIND_USER_ID.eq(userId))
+                        .and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
+                    .fetch();
+
+        return result.stream().map(record -> {
+			Experiment experiment = record.into(EXPERIMENT).into(Experiment.class);
+			addParentDataModelObjects(record, experiment);
+			return experiment;
+		}).collect(Collectors.toList());
+    }
 
 	private static void addParentDataModelObjects(Record record, Experiment experiment) {
 		experiment.setModel(record.into(MODEL).into(Model.class));

@@ -46,7 +46,11 @@ public class ExperimentDAO
 				.filter(experiment -> experiment.getRuns() == null)
 				.forEach(experiment -> experiment.setRuns(new ArrayList<Run>()));
 		return experiments;
-	}
+    }
+    
+    public List<Experiment> getCompletedExperimentsForUser(long userId) {
+		return ExperimentRepository.getCompletedExperimentsForUser(ctx, userId);
+    }
 
 	public void updateExperiment(Experiment experiment) {
 		ExperimentRepository.updateExperiment(ctx, experiment);

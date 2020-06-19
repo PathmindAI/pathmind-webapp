@@ -361,13 +361,15 @@ hr {
     flex-shrink: 0;
 }
 
-.default-view.upload-model-view {
+.default-view.upload-model-view,
+.default-view.policy-server-form {
     height: auto;
     min-height: 100%;
     padding: var(--lumo-space-xxl);
 }
 
-.upload-model-view .view-section {
+.upload-model-view .view-section,
+.policy-server-form .view-section {
     max-width: 540px;
     flex: 0 0 auto;
 }
@@ -390,6 +392,21 @@ hr {
 }
 .upload-model-view .observations-table {
     max-height: 560px;
+}
+.experiment-list-select-item {
+    flex-wrap: wrap;
+    max-width: 25rem;
+}
+.experiment-list-select-item span:first-child {
+    width: 100%;
+    font-size: var(--lumo-font-size-s);
+    color: var(--lumo-secondary-text-color);
+}
+.experiment-list-select-item span:nth-child(2) {
+    flex: 0 0 6rem;
+}
+.experiment-list-select-item span:last-child {
+    margin-left: var(--lumo-space-m);
 }
 
 account-view {
