@@ -17,7 +17,6 @@ Feature: Project page
     When Click upload model btn from project page
     When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
     When Click wizard model details next btn
-    When Click wizard reward variables save draft btn
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
     When Open projects page
@@ -30,7 +29,7 @@ Feature: Project page
     When Open projects page
     When Open project AutotestProject on projects page
     When Click model 1 archive/unarchive button
-    When In confirmation dialog click in 'Archive Model' button
+    When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1' exist in archived/not archived tab
     When Open projects/model/experiment archived tab
@@ -42,10 +41,10 @@ Feature: Project page
     When Open projects page
     When Open project AutotestProject on projects page
     When Click model 1 archive/unarchive button
-    When In confirmation dialog click in 'Archive Model' button
+    When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
     When Click model 1 archive/unarchive button
-    When In confirmation dialog click in 'Unarchive Model' button
+    When In confirmation dialog click in 'Unarchive' button
     When Check that model/experiment name 'AutotestProject' NOT exist in archived/not archived tab
     When Open models tab
     Then Check that model/experiment name '1' exist in archived/not archived tab
@@ -69,7 +68,7 @@ Feature: Project page
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Click AutotestProject project archive/unarchive button
-    When In confirmation dialog click in 'Archive Project' button
+    When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
     When Open project AutotestProject on projects page
     When Click in 'Rename' button
