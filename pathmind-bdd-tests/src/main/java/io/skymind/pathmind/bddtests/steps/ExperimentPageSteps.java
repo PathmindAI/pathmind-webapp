@@ -53,4 +53,24 @@ public class ExperimentPageSteps {
     public void clickSideNavArchiveButtonFor(String experimentName) {
         experimentPage.clickSideNavArchiveButtonFor(experimentName);
     }
+
+    @Step
+    public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
+        experimentPage.checkExperimentPageRewardVariablesIs(commaSeparatedVariableNames);
+    }
+
+    @Step
+    public void checkThatMetricsAreShownForRewardVariables(int metricsNumber) {
+        experimentPage.checkThatMetricsAreShownForRewardVariables(metricsNumber);
+    }
+
+    @Step
+    public void checkThatSparklinesAreShownForRewardVariables(int sparklinesNumber) {
+        experimentPage.checkThatSparklinesAreShownForRewardVariables(sparklinesNumber);
+    }
+
+    @Step
+    public void checkThatSimulationMetricsBlockIsShown() {
+        experimentPage.checkThatSimulationMetricsBlockIsShown();
+    }
 }
