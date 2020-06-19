@@ -1,19 +1,20 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
+import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.featureflag.Feature;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.JobSpec;
+import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironmentManager;
 import lombok.extern.slf4j.Slf4j;
-
 import org.jooq.DSLContext;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import static io.skymind.pathmind.shared.constants.RunType.DiscoveryRun;
@@ -21,12 +22,15 @@ import static io.skymind.pathmind.shared.constants.RunType.DiscoveryRun;
 @Service
 @Slf4j
 public class AWSTrainingService extends TrainingService {
-    private final boolean multiAgent;
-    public AWSTrainingService(@Value("${pathmind.training.multiagent:false}") boolean multiAgent,
+    private final FeatureManager featureManager;
+    public AWSTrainingService(ExecutionEnvironmentManager executionEnvironmentManager,
+                              FeatureManager featureManager,
                               ExecutionProvider executionProvider, RunDAO runDAO, ModelService modelService,
-                              PolicyDAO policyDAO, DSLContext ctx) {
-    	super(multiAgent, executionProvider, runDAO, modelService, policyDAO, ctx);
-        this.multiAgent = multiAgent;
+                              PolicyDAO policyDAO,
+                              ModelDAO modelDAO,
+                              DSLContext ctx) {
+    	super(executionProvider, runDAO, modelService, executionEnvironmentManager, policyDAO, modelDAO, ctx);
+    	this.featureManager = featureManager;
     }
 
     protected String startRun(Model model, Experiment exp, Run run, int iterations, int maxTimeInSec, int numSamples) {
@@ -49,7 +53,7 @@ public class AWSTrainingService extends TrainingService {
                 DiscoveryRun,
                 maxTimeInSec,
                 numSamples,
-                multiAgent,
+                featureManager.isEnabled(Feature.MULTI_AGENT_TRAINING),
                 false,
                 50,
                 false,

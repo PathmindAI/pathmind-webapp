@@ -28,13 +28,13 @@ public class EmailNotificationServiceTest extends PathmindApplicationTests
 		pathmindUser.setEmailVerificationToken(UUID.randomUUID());
 		pathmindUser.setFirstname("Test");
 		pathmindUser.setLastname("User");
-		emailNotificationService.sendVerificationEmail(pathmindUser);
+		emailNotificationService.sendVerificationEmail(pathmindUser, pathmindUser.getEmail(), true);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void sendVerificationEmail_Fail()
 	{
-		emailNotificationService.sendVerificationEmail(null);
+		emailNotificationService.sendVerificationEmail(null, null, true);
 	}
 
 	@Test
@@ -44,7 +44,7 @@ public class EmailNotificationServiceTest extends PathmindApplicationTests
 		pathmindUser.setEmail(testEmail);
 		pathmindUser.setFirstname("Test");
 		pathmindUser.setLastname("User");
-		emailNotificationService.sendVerificationEmail(pathmindUser);
+		emailNotificationService.sendVerificationEmail(pathmindUser, pathmindUser.getEmail(), true);
 		Assert.assertNotNull(pathmindUser.getEmailVerificationToken());
 	}
 

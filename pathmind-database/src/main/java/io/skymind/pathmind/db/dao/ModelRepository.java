@@ -1,7 +1,7 @@
 package io.skymind.pathmind.db.dao;
 
-import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.db.jooq.tables.records.ModelRecord;
+import io.skymind.pathmind.shared.data.Model;
 import org.jooq.DSLContext;
 
 import java.time.LocalDateTime;
@@ -92,4 +92,12 @@ class ModelRepository
 				.fetchOneInto(Model.class)
 		);
 	}
+
+    protected static long getUserIdForModel(DSLContext ctx, long modelId) {
+	    return ctx.select(PROJECT.PATHMIND_USER_ID)
+                .from(PROJECT)
+                .leftJoin(MODEL).on(MODEL.PROJECT_ID.eq(PROJECT.ID))
+                .where(MODEL.ID.eq(modelId))
+                .fetchOne(PROJECT.PATHMIND_USER_ID);
+    }
 }
