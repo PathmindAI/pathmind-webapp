@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MailHelper
 {
 	public static final String PATHMIND_VERIFICATION_EMAIL_SUBJECT = "Pathmind verification email";
+	public static final String PATHMIND_NEW_ADDRESS_VERIFICATION_EMAIL_SUBJECT = "Pathmind new address veri ";
 	public static final String PATHMIND_RESET_PASSWORD_EMAIL_SUBJECT = "Pathmind reset password email";
 	public static final String PATHMIND_TRAINING_COMPLETED_EMAIL_SUBJECT = "Pathmind training completed successfully email";
 	public static final String PATHMIND_TRAINING_FAILED_EMAIL_SUBJECT = "Pathmind training failed email";
@@ -39,8 +40,9 @@ public class MailHelper
 
 	@Value("${sendgrid.trainingfailed-mail.id}")
 	private String trainingFailedTemplateId;
-	
-	
+
+	@Value("${sendgrid.newemailaddressverification-mail.id}")
+	private String newEmailAddressVerificationTemplateId;
 
 	@Value("${sendgrid.api.key}")
 	private String apiKey;
@@ -92,6 +94,33 @@ public class MailHelper
 
 		Personalization personalization = new Personalization();
 		personalization.addDynamicTemplateData("subject", PATHMIND_VERIFICATION_EMAIL_SUBJECT);
+		personalization.addDynamicTemplateData("name", name);
+		personalization.addDynamicTemplateData("emailVerificationLink", emailVerificationLink);
+		personalization.addTo(new Email(to));
+		mail.addPersonalization(personalization);
+		return mail;
+	}
+	
+	/**
+	 * Creates new email address verification mail
+	 *
+	 * @param to                    The email address of the mail recipient (the user)
+	 * @param name                  The name of the user
+	 * @param emailVerificationLink The email verification link that can be used to verify the new email address
+	 * @return The ready made Mail object
+	 * @throws PathMindException Exception is thrown if any of the arguments is null or empty
+	 */
+	public Mail createNewEmailAddressVerificationTemplateId(String to, String name, String emailVerificationLink) throws PathMindException
+	{
+		if (StringUtils.isAnyEmpty(to, name, emailVerificationLink)) {
+			throw new PathMindException("Email fields are missing");
+		}
+		Mail mail = new Mail();
+		mail.setFrom(createFromEmail());
+		mail.setTemplateId(newEmailAddressVerificationTemplateId);
+		
+		Personalization personalization = new Personalization();
+		personalization.addDynamicTemplateData("subject", PATHMIND_NEW_ADDRESS_VERIFICATION_EMAIL_SUBJECT);
 		personalization.addDynamicTemplateData("name", name);
 		personalization.addDynamicTemplateData("emailVerificationLink", emailVerificationLink);
 		personalization.addTo(new Email(to));

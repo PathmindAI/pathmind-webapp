@@ -1,7 +1,9 @@
 package io.skymind.pathmind.webapp.ui.views.dashboard;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import io.skymind.pathmind.shared.data.Run;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -95,8 +97,9 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
         dashboardGrid.addComponentColumn(item -> {
             if (item.getExperiment() != null) {
                 Experiment currentExperiment = item.getExperiment();
-                if (runDAO.getRunsForExperiment(currentExperiment) != null) {
-                    currentExperiment.setRuns(runDAO.getRunsForExperiment(currentExperiment));
+                List<Run> runsForExperiment = runDAO.getRunsForExperiment(currentExperiment);
+                if (runsForExperiment != null) {
+                    currentExperiment.setRuns(runsForExperiment);
                 }
             }
             return new DashboardLine(item, itm -> navigateFromDashboard(itm), itm -> archiveItem(itm));
@@ -157,21 +160,21 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     }
 
     private void archiveExperiment(DashboardItem item) {
-        ConfirmationUtils.archive("experiment", () -> {
+        ConfirmationUtils.archive("this experiment", () -> {
             experimentDAO.archive(item.getExperiment().getId(), true);
             dataProvider.refreshAll();
         });
     }
 
     private void archiveModel(DashboardItem item) {
-        ConfirmationUtils.archive("model", () -> {
+        ConfirmationUtils.archive("this model", () -> {
             modelDAO.archive(item.getModel().getId(), true);
             dataProvider.refreshAll();
         });
     }
 
     private void archiveProject(DashboardItem item) {
-        ConfirmationUtils.archive("project", () -> {
+        ConfirmationUtils.archive("this project", () -> {
             projectDAO.archive(item.getProject().getId(), true);
             dataProvider.refreshAll();
         });

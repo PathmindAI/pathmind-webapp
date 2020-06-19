@@ -80,7 +80,7 @@ public class VaadinSecurityUtils {
 
             neededPermissions.removeAll(have);
             if (neededPermissions.size() > 0) {
-                log.info("need more authority : " + neededPermissions);
+                log.debug("need more authority : " + neededPermissions + " for "  + securedClass);
                 return false;
             }
         }

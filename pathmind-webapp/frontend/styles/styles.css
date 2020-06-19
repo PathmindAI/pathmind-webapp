@@ -24,6 +24,18 @@ html {
     --pm-blue-color: #1900ff;
     --pm-green-color: #00a60b;
 
+    /* pathmind reward variable colors */
+    --variable-color-0: #67ea93;
+    --variable-color-1: #214e96;
+    --variable-color-2: #9bf7ec;
+    --variable-color-3: #7550e5;
+    --variable-color-4: #b0f78c;
+    --variable-color-5: #ef99a4;
+    --variable-color-6: #9bc0f7;
+    --variable-color-7: #931901;
+    --variable-color-8: #f413bc;
+    --variable-color-9: #d1b112;
+
     /* pathmind typography */
     --pm-line-height-xl: 2em;
     --pm-line-height-l: 1.5em;
@@ -87,6 +99,30 @@ ol > li:not(:first-child) {
 hr {
     margin: var(--lumo-space-s) 0;
     background-color: var(--pm-gray-color-darker);
+}
+
+.row-2-of-3 {
+    width: calc(100% * 2 / 3) !important;
+}
+
+[tooltip-content] {
+    position: relative;
+}
+
+[tooltip-content]:hover::after {
+    content: attr(tooltip-content);
+    position: absolute;
+    top: calc(-0.8 * var(--lumo-space-xs));
+    left: 0;
+    line-height: 1;
+    background-color: white;
+    padding: 0.14em 0.16em;
+    z-index: 1;
+}
+
+[tooltip-content] span {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #nav-main-links,
@@ -241,8 +277,6 @@ hr {
 
 .projects-view .project-name-column span {
     max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .projects-view .project-name-column vaadin-button {

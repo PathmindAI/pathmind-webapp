@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
@@ -81,18 +80,9 @@ public class ExperimentUtils
 				.map(Run::getStartedAt)
 				.filter(Objects::nonNull)
 				// experiment can have multiple run, in case of a restart
-				// so we take the latest one
-				.max(LocalDateTime::compareTo)
-				.orElse(LocalDateTime.now());
-	}
-
-	public static LocalDateTime getEc2CreatedDate(Experiment experiment) {
-		return experiment.getRuns().stream()
-				.map(Run::getEc2CreatedAt)
-				.filter(Objects::nonNull)
-				// experiment can have multiple run, in case of a restart
-				// so we take the latest one
-				.max(LocalDateTime::compareTo)
+				// so we take the first one, this will make sure we show
+                // the correct elapsed time to the user
+				.min(LocalDateTime::compareTo)
 				.orElse(LocalDateTime.now());
 	}
 
@@ -126,22 +116,19 @@ public class ExperimentUtils
 	}
 
 	public static double getEstimatedTrainingTime(Experiment experiment, double progress){
-		final var earlistedEc2CreatedDate = ExperimentUtils.getEc2CreatedDate(experiment);
-		return calculateTrainingSecondsLeft(earlistedEc2CreatedDate, progress);
+        long totalSeconds = experiment.getRuns().stream()
+                .map(r -> {
+                    LocalDateTime startTime = r.getEc2CreatedAt() != null ? r.getEc2CreatedAt() : r.getStartedAt();
+                    LocalDateTime endTime = r.getStoppedAt() != null ? r.getStoppedAt() : LocalDateTime.now();
+                    return Duration.between(startTime, endTime).toSeconds();
+                })
+                .reduce(Long::sum)
+                .orElse(0L);
+        return calculateTrainingSecondsLeft(totalSeconds, progress);
 	}
 
-	public static double getEstimatedTrainingTime(LocalDateTime baseDate, double progress) {
-		return calculateTrainingSecondsLeft(baseDate, progress);
-	}
-
-	private static double calculateTrainingSecondsLeft(LocalDateTime baseDate, double progress) {
-		var difference = Duration.between(baseDate, LocalDateTime.now()).toSeconds();
-		return difference * (100 - progress) / progress;
-	}
-
-	public static double getEstimatedTrainingTimeForSingleRun(Run run, double progress) {
-		final var difference = Duration.between(run.getStartedAt(), LocalDateTime.now());
-		return difference.toSeconds() * (100 - progress) / progress;
+	private static double calculateTrainingSecondsLeft(long totalSeconds, double progress) {
+		return totalSeconds * (100 - progress) / progress;
 	}
 
 	private static boolean isAnyNotFinished(List<LocalDateTime> stoppedTimes) {

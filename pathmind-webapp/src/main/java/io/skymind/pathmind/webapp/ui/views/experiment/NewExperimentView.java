@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,7 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavbar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
+import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 
 @CssImport("./styles/views/new-experiment-view.css")
@@ -75,8 +77,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Span unsavedChanges;
 	private Span notesSavedHint;
 	private Span rewardEditorErrorLabel;
+	private Button unarchiveExperimentButton;
 	private Button saveDraftButton;
-
 	private Button startRunButton;
 
 	private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
@@ -115,8 +117,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private HorizontalLayout createMainPanel() {
-		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiment.getModelId(), selectedExperiment -> selectExperiment(selectedExperiment));
-		
+		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiment.getModelId(), selectedExperiment -> selectExperiment(selectedExperiment), experimentToArchive -> archiveExperiment(experimentToArchive));
+
+        unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
+        unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
 		startRunButton = new Button("Train Policy", VaadinIcon.PLAY.create(), click -> handleStartRunButtonClicked());
 		startRunButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		startRunButton.setEnabled(false);
@@ -151,7 +156,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 		VerticalLayout saveButtonAndHintsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(saveDraftButton, unsavedChanges, notesSavedHint);
 		saveButtonAndHintsWrapper.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
-		HorizontalLayout buttonsWrapper = new HorizontalLayout(saveButtonAndHintsWrapper, startRunButton);
+		HorizontalLayout buttonsWrapper = new HorizontalLayout(saveButtonAndHintsWrapper, startRunButton, unarchiveExperimentButton);
 		buttonsWrapper.setWidth(null);
 
 		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper), rewardFunctionWrapper, errorAndNotesContainer);
@@ -193,7 +198,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		rewardEditorErrorLabel = LabelFactory.createLabel("Reward Function must not exceed " + REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
 		rewardEditorErrorLabel.setVisible(false);
 		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(rewardEditorErrorLabel, rewardFunctionEditor);
-		rewardFnEditorPanel.setPadding(false);
+        rewardFnEditorPanel.setPadding(false);
+        if (experiment.isArchived()) {
+            rewardFnEditorPanel.setEnabled(false);
+        }
 		return rewardFnEditorPanel;
 	}
 
@@ -222,8 +230,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private RewardVariablesTable getRewardVariableNamesPanel() {
 		rewardVariablesTable = new RewardVariablesTable();
 		rewardVariablesTable.setCodeEditorMode();
-		rewardVariablesTable.setSizeFull();
-		rewardVariablesTable.addValueChangeListener(evt -> handleRewardVariableNameChanged(evt.getValue()));
+        rewardVariablesTable.setSizeFull();
+        if (!experiment.isArchived()) {
+            rewardVariablesTable.addValueChangeListener(evt -> handleRewardVariableNameChanged(evt.getValue()));
+        } else {
+            rewardVariablesTable.setEnabled(false);
+        }
 		return rewardVariablesTable;
 	}
 
@@ -269,6 +281,29 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		afterClickedCallback.execute();
 	}
 
+    private void archiveExperiment(Experiment experimentToArchive) {
+        ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
+            experimentDAO.archive(experimentToArchive.getId(), true);
+            experiments.remove(experimentToArchive);
+            if (experiments.isEmpty()) {
+                getUI().ifPresent(ui -> ui.navigate(ModelView.class, experimentToArchive.getModelId()));
+            } else {
+                Experiment currentExperiment = (experimentToArchive.getId() == experimentId) ? experiments.get(0) : experiment;
+                if (experimentToArchive.getId() == experimentId) {
+                    selectExperiment(currentExperiment);
+                }
+                getUI().ifPresent(ui -> experimentsNavbar.setExperiments(ui, experiments, currentExperiment));
+            }
+        });
+    }
+
+    private void unarchiveExperiment() {
+        ConfirmationUtils.unarchive("experiment", () -> {
+            experimentDAO.archive(experiment.getId(), false);
+            getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
+        });
+    }
+
 	private Breadcrumbs createBreadcrumbs() {
 		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
 	}
@@ -286,7 +321,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 				segmentIntegrator.addedNotesNewExperimentView();
 			}
 		);
-		notesField.setPlaceholder("Add Notes (optional)");
+        notesField.setPlaceholder("Add Notes (optional)");
+        if (experiment.isArchived()) {
+            notesField.setEnabled(false);
+        }
 		return notesField;
 	}
 
@@ -353,7 +391,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		modelId = experiment.getModelId();
 		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
 		if (!experiment.isArchived()) {
-			experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+            experiments = experimentDAO.getExperimentsForModel(modelId).stream()
+                                    .sorted(Comparator.comparing(Experiment::getDateCreated).reversed())
+                                    .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
 		}
 	}
 
@@ -366,6 +406,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private void updateScreenComponents() {
 		binder.setBean(experiment);
 		experimentsNavbar.setVisible(!experiment.isArchived());
+		startRunButton.setVisible(!experiment.isArchived());
+		saveDraftButton.setVisible(!experiment.isArchived());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());		
 		if (!rewardVariables.isEmpty()) {
 			rewardVariablesTable.setValue(rewardVariables);
@@ -374,6 +416,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		}
 		rewardFunctionEditor.setVariableNames(rewardVariables, experiment.getModel().getRewardVariablesCount());
 		unsavedChanges.setVisible(false);
-		notesSavedHint.setVisible(false);
+        notesSavedHint.setVisible(false);
+        unarchiveExperimentButton.setVisible(experiment.isArchived());
 	}
 }

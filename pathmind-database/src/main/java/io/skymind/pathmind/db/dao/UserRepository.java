@@ -77,6 +77,7 @@ class UserRepository
                 .set(PATHMIND_USER.EMAIL_VERIFIED_AT, pathmindUser.getEmailVerifiedAt())
                 .set(PATHMIND_USER.PASSWORD_RESET_SEND_AT, pathmindUser.getPasswordResetSendAt())
                 .set(PATHMIND_USER.STRIPE_CUSTOMER_ID, pathmindUser.getStripeCustomerId())
+                .set(PATHMIND_USER.NEW_EMAIL_TO_VERIFY, pathmindUser.getNewEmailToVerify())
                 .where(PATHMIND_USER.ID.eq(pathmindUser.getId()))
                 .execute();
     }
