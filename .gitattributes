@@ -1,4 +1,5 @@
 secret*.tfvars filter=git-crypt diff=git-crypt
+secret*.yaml filter=git-crypt diff=git-crypt
 id_rsa filter=git-crypt diff=git-crypt
 env_dev filter=git-crypt diff=git-crypt
 env_prod filter=git-crypt diff=git-crypt

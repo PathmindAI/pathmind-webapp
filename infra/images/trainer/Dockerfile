@@ -4,11 +4,13 @@ FROM ubuntu
 WORKDIR /app
 
 #Copy files
-COPY spot_ig_template*.yaml ./
 COPY trigger.py .
 COPY LoggerInit.py .
 COPY requirements.txt .
-COPY rl_training_deployment.yaml .
+COPY rl_training_deployment*.yaml ./
+
+#env
+ENV DEBIAN_FRONTEND=noninteractive
 
 #basic packages
 RUN apt-get update && \
@@ -23,10 +25,7 @@ RUN apt-get update && \
 	pip install -r requirements.txt && \
 	curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.17.0/bin/linux/amd64/kubectl && \
 	chmod +x ./kubectl && \
-	mv ./kubectl /usr/local/bin/kubectl && \
-	curl -Lo kops https://github.com/kubernetes/kops/releases/download/1.15.0/kops-linux-amd64 && \
-	chmod +x ./kops && \
-	mv ./kops /usr/local/bin/
+	mv ./kubectl /usr/local/bin/kubectl 
 
 CMD ["python","trigger.py"]
 #CMD ["bash","-c","sleep 10000000"]
