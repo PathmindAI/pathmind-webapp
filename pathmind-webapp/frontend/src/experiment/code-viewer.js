@@ -87,6 +87,8 @@ class CodeViewer extends PolymerElement {
             <style>
                 :host {
                     position: relative;
+                    box-sizing: border-box;
+                    flex: 1;
                     width: 100%;
                     font-size: var(--lumo-font-size-s);
                     border: 1px solid var(--pm-gray-color);
@@ -97,10 +99,11 @@ class CodeViewer extends PolymerElement {
                     display: block;
                     width: 100%;
                     max-height: calc(1.8em * 20);
+                    height: 100%;
                     white-space: pre;
                     font-family: var(--code-font-family);
                     line-height: 1.8;
-                    padding: 0 var(--lumo-space-xs);
+                    padding: var(--lumo-space-xs) var(--lumo-space-s);
                     margin: 0;
                     overflow: auto;
                 }
@@ -151,43 +154,43 @@ class CodeViewer extends PolymerElement {
                 }
                 .variable-color-0 {
                     color: #000;
-                    background-color: #67ea93;
+                    background-color: var(--variable-color-0);
                 }
                 .variable-color-1 {
                     color: #fff;
-                    background-color: #214e96;
+                    background-color: var(--variable-color-1);
                 }
                 .variable-color-2 {
                     color: #000;
-                    background-color: #9bf7ec;
+                    background-color: var(--variable-color-2);
                 }
                 .variable-color-3 {
                     color: #fff;
-                    background-color: #7550e5;
+                    background-color: var(--variable-color-3);
                 }
                 .variable-color-4 {
                     color: #000;
-                    background-color: #b0f78c;
+                    background-color: var(--variable-color-4);
                 }
                 .variable-color-5 {
                     color: #000;
-                    background-color: #ef99a4;
+                    background-color: var(--variable-color-5);
                 }
                 .variable-color-6 {
                     color: #000;
-                    background-color: #9bc0f7;
+                    background-color: var(--variable-color-6);
                 }
                 .variable-color-7 {
                     color: #fff;
-                    background-color: #931901;
+                    background-color: var(--variable-color-7);
                 }
                 .variable-color-8 {
                     color: #fff;
-                    background-color: #f413bc;
+                    background-color: var(--variable-color-8);
                 }
                 .variable-color-9 {
                     color: #000;
-                    background-color: #d1b112;
+                    background-color: var(--variable-color-9);
                 }
             </style>
             <code></code>
