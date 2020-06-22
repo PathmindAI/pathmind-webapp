@@ -105,53 +105,53 @@ background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZg
 }\
 .variable-color-0 {\
   color: #000;\
-  background-color: #67ea93;\
-  box-shadow: -.15em 0 #67ea93, .15em 0 #67ea93;\
+  background-color: var(--variable-color-0);\
+  box-shadow: -.15em 0 var(--variable-color-0), .15em 0 var(--variable-color-0);\
 }\
 .variable-color-1 {\
   color: #fff;\
-  background-color: #214e96;\
-  box-shadow: -.15em 0 #214e96, .15em 0 #214e96;\
+  background-color: var(--variable-color-1);\
+  box-shadow: -.15em 0 var(--variable-color-1), .15em 0 var(--variable-color-1);\
 }\
 .variable-color-2 {\
   color: #000;\
-  background-color: #9bf7ec;\
-  box-shadow: -.15em 0 #9bf7ec, .15em 0 #9bf7ec;\
+  background-color: var(--variable-color-2);\
+  box-shadow: -.15em 0 var(--variable-color-2), .15em 0 var(--variable-color-2);\
 }\
 .variable-color-3 {\
   color: #fff;\
-  background-color: #7550e5;\
-  box-shadow: -.15em 0 #7550e5, .15em 0 #7550e5;\
+  background-color: var(--variable-color-3);\
+  box-shadow: -.15em 0 var(--variable-color-3), .15em 0 var(--variable-color-3);\
 }\
 .variable-color-4 {\
   color: #000;\
-  background-color: #b0f78c;\
-  box-shadow: -.15em 0 #b0f78c, .15em 0 #b0f78c;\
+  background-color: var(--variable-color-4);\
+  box-shadow: -.15em 0 var(--variable-color-4), .15em 0 var(--variable-color-4);\
 }\
 .variable-color-5 {\
   color: #000;\
-  background-color: #ef99a4;\
-  box-shadow: -.15em 0 #ef99a4, .15em 0 #ef99a4;\
+  background-color: var(--variable-color-5);\
+  box-shadow: -.15em 0 var(--variable-color-5), .15em 0 var(--variable-color-5);\
 }\
 .variable-color-6 {\
   color: #000;\
-  background-color: #9bc0f7;\
-  box-shadow: -.15em 0 #9bc0f7, .15em 0 #9bc0f7;\
+  background-color: var(--variable-color-6);\
+  box-shadow: -.15em 0 var(--variable-color-6), .15em 0 var(--variable-color-6);\
 }\
 .variable-color-7 {\
   color: #fff;\
-  background-color: #931901;\
-  box-shadow: -.15em 0 #931901, .15em 0 #931901;\
+  background-color: var(--variable-color-7);\
+  box-shadow: -.15em 0 var(--variable-color-7), .15em 0 var(--variable-color-7);\
 }\
 .variable-color-8 {\
   color: #fff;\
-  background-color: #f413bc;\
-  box-shadow: -.15em 0 #f413bc, .15em 0 #f413bc;\
+  background-color: var(--variable-color-8);\
+  box-shadow: -.15em 0 var(--variable-color-8), .15em 0 var(--variable-color-8);\
 }\
 .variable-color-9 {\
   color: #000;\
-  background-color: #d1b112;\
-  box-shadow: -.15em 0 #d1b112, .15em 0 #d1b112;\
+  background-color: var(--variable-color-9);\
+  box-shadow: -.15em 0 var(--variable-color-9), .15em 0 var(--variable-color-9);\
 }';
 
     exports.cssClass = "ace-eclipse";

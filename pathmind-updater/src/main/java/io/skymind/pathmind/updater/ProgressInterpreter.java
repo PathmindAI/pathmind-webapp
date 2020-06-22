@@ -1,11 +1,13 @@
 package io.skymind.pathmind.updater;
 
-import com.opencsv.CSVReader;
+import com.univocity.parsers.common.record.Record;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -17,8 +19,21 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class ProgressInterpreter
-{
+public class ProgressInterpreter {
+    enum  RAY_PROGRESS {
+        EPISODE_REWARD_MAX("episode_reward_max"),
+        EPISODE_REWARD_MIN("episode_reward_min"),
+        EPISODE_REWARD_MEAN("episode_reward_mean"),
+        EPISODES_THIS_ITER("episodes_this_iter"),
+        TRAINING_ITERATION("training_iteration");
+
+        String column;
+
+        RAY_PROGRESS(String column) {
+            this.column = column;
+        }
+    }
+
     private static final int ALGORITHM = 0;
     private static final int NAME = 2;
 
@@ -72,33 +87,31 @@ public class ProgressInterpreter
         final List<RewardScore> scores = previousScores == null || previousScores.size() == 0 ? new ArrayList<>() : previousScores;
         final int lastIteration = scores.size() == 0 ? -1 : scores.get(scores.size() - 1).getIteration();
 
-        try (CSVReader reader = new CSVReader(new StringReader(entry.getValue()))) {
+        CsvParserSettings settings = new CsvParserSettings();
+        settings.setHeaderExtractionEnabled(true);
+        settings.selectFields(RAY_PROGRESS.values());
 
-            String[] record = null;
-            //skip header row
-            reader.readNext();
+        CsvParser parser = new CsvParser(settings);
+        List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
 
-            while((record = reader.readNext()) != null){
-                final int iter = Integer.parseInt(record[9]); // training_iteration
+        for(Record record : allRecords){
+            final Integer iteration = record.getInt(RAY_PROGRESS.TRAINING_ITERATION);
 
-                if (iter > lastIteration) {
-                    final String max = record[0];   // episode_reward_max
-                    final String min = record[1];   // episode_reward_min
-                    final String mean = record[2];  // episode_reward_mean
-                    final Integer episodeCount = Integer.parseInt(record[4]);
+            if (iteration > lastIteration) {
+                final String max = record.getString(RAY_PROGRESS.EPISODE_REWARD_MAX);
+                final String min = record.getString(RAY_PROGRESS.EPISODE_REWARD_MIN);
+                final String mean = record.getString(RAY_PROGRESS.EPISODE_REWARD_MEAN);
+                final Integer episodeCount = record.getInt(RAY_PROGRESS.EPISODES_THIS_ITER);
 
-                    scores.add(new RewardScore(
-                            Double.valueOf(max.equals("nan") ? "NaN" : max),
-                            Double.valueOf(min.equals("nan") ? "NaN" : min),
-                            Double.valueOf(mean.equals("nan") ? "NaN" : mean),
-                            iter,
-                            episodeCount
-                    ));
-                }
+                scores.add(new RewardScore(
+                    Double.valueOf(max.equals("nan") ? "NaN" : max),
+                    Double.valueOf(min.equals("nan") ? "NaN" : min),
+                    Double.valueOf(mean.equals("nan") ? "NaN" : mean),
+                    iteration,
+                    episodeCount
+                ));
             }
             policy.setScores(scores);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 }
