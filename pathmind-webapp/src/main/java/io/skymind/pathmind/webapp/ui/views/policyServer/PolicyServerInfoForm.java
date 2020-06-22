@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -25,10 +24,13 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ActionsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
+import io.skymind.pathmind.webapp.ui.views.policyServer.components.ExperimentSelectItem;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 
+@CssImport("./styles/views/policy-server.css")
 @Route(value = Routes.POLICY_SERVER_FORM, layout = MainLayout.class)
 public class PolicyServerInfoForm extends PathMindDefaultView implements HasUrlParameter<Long> {
 
@@ -66,18 +68,15 @@ public class PolicyServerInfoForm extends PathMindDefaultView implements HasUrlP
 
     private void setupExperimentSelect() {
         experimentSelect = new Select<>();
-        experimentSelect.setRenderer(new ComponentRenderer<>(experiment -> {
-            HorizontalLayout itemWrapper = new HorizontalLayout(
-                new Span(experiment.getProject().getName()),
-                new Span("Model #"+experiment.getModel().getName()),
-                new Span("Experiment #"+experiment.getName())
-            );
-            itemWrapper.addClassName("experiment-list-select-item");
-            itemWrapper.setSpacing(false);
-            return itemWrapper;
-        }));
         experimentSelect.setItems(completedExperimentsList);
         experimentSelect.setValue(completedExperimentsList.get(0));
+        experimentSelect.setRenderer(new ComponentRenderer<>(experiment -> {
+            ExperimentSelectItem currentItem = new ExperimentSelectItem();
+            currentItem.setProjectName(experiment.getProject().getName());
+            currentItem.setModelName(experiment.getModel().getName());
+            currentItem.setExperimentName(experiment.getName());
+            return currentItem;
+        }));
     }
 
 	protected VerticalLayout getTitlePanel() {
