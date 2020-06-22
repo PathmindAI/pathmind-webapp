@@ -67,16 +67,26 @@ public class PolicyServerInfoForm extends PathMindDefaultView implements HasUrlP
     }
 
     private void setupExperimentSelect() {
+        List<ExperimentSelectItem> experimentSelectItems = new ArrayList<>();
         experimentSelect = new Select<>();
-        experimentSelect.setItems(completedExperimentsList);
-        experimentSelect.setValue(completedExperimentsList.get(0));
         experimentSelect.setRenderer(new ComponentRenderer<>(experiment -> {
             ExperimentSelectItem currentItem = new ExperimentSelectItem();
             currentItem.setProjectName(experiment.getProject().getName());
             currentItem.setModelName(experiment.getModel().getName());
             currentItem.setExperimentName(experiment.getName());
+            experimentSelectItems.add(currentItem);
             return currentItem;
         }));
+        // There's a bug in Flow where the new value cannot get into the polymer component rendered so this hack is used
+        experimentSelect.addValueChangeListener(source -> {
+            Experiment selectedExperiment = source.getValue();
+            String projectName = selectedExperiment.getProject().getName();
+            String modelName = selectedExperiment.getModel().getName();
+            String experimentName = selectedExperiment.getName();
+            experimentSelect.getElement().executeJs("const displayItem = this.shadowRoot.querySelector('experiment-select-item'); displayItem.projectName = $0; displayItem.modelName = $1; displayItem.experimentName = $2;", projectName, modelName, experimentName);
+        });
+        experimentSelect.setItems(completedExperimentsList);
+        experimentSelect.setPlaceholder("Choose a completed experiment");
     }
 
 	protected VerticalLayout getTitlePanel() {
