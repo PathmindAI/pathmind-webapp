@@ -36,6 +36,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -258,6 +259,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		}
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.rewardFuntionCreated();
+		
+		if (!ModelUtils.isTupleModel(experiment.getModel())) {
+		    NotificationUtils.showError(ModelUtils.NONTUPLE_ERROR_MESSAGE);
+		    return;
+		}
 
 		trainingService.startRun(experiment);
 		segmentIntegrator.discoveryRunStarted();

@@ -12,6 +12,8 @@ import static io.skymind.pathmind.shared.utils.ZipUtils.entryContentExtractor;
 @Slf4j
 public class ModelUtils {
 
+    public static String NONTUPLE_ERROR_MESSAGE = "Model needs to be updated. You can take a look at <a target='_blank' href='http://www.google.com'>this article</a> for upgrade instructions.";
+    
     private ModelUtils() {
         throw new IllegalAccessError("Static usage only");
     }
@@ -37,6 +39,10 @@ public class ModelUtils {
 
     private static byte[] getModelJar(byte[] projectFile) {
         return ZipUtils.processZipEntryInFile(projectFile, s -> s.endsWith("model.jar"), entryContentExtractor());
+    }
+    
+    public static boolean isTupleModel(Model model) {
+        return model.getActionTupleSize() > 0;
     }
 
 }

@@ -4,8 +4,8 @@ import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.NO_TOP_M
 
 import java.io.IOException;
 
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
@@ -42,7 +42,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private Command fileCheckerCommand;
 
 	private HorizontalLayout checkingModelComponent;
-	private Text errorText;
+	private Span errorMessage;
 	private UploadModeSwitcherButton uploadModeSwitcher;
 	
 	private UploadMode mode;
@@ -91,13 +91,13 @@ public class UploadModelWizardPanel extends VerticalLayout
 	}
 
 	private void setupFileCheckPanel() {
-		errorText = new Text("");
+	    errorMessage = LabelFactory.createLabel("");
 		checkingModelComponent = WrapperUtils
 				.wrapWidthFullCenterHorizontal(LabelFactory.createLabel("Checking your model..."));
 		fileCheckPanel = WrapperUtils.wrapWidthFullCenterVertical(
 				fileCheckProgressBar,
 				checkingModelComponent,
-				errorText);
+				errorMessage);
 	}
 
 	private void setupUploadPanel()
@@ -195,7 +195,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	public void setFileCheckStatusProgressBarValue(double value) {
 		if(value == 0.0){
 			fileCheckProgressBar.removeThemeVariants(ProgressBarVariant.LUMO_ERROR);
-			this.errorText.setText("");
+			this.errorMessage.setText("");
 		}
 		fileCheckProgressBar.setValue(value);
 	}
@@ -205,13 +205,13 @@ public class UploadModelWizardPanel extends VerticalLayout
 		if (checkingModelComponent != null) {
 			checkingModelComponent.setVisible(false);
 		}
-		this.errorText.setText(error);
+		errorMessage.getElement().setProperty("innerHTML", error);
 		upload.setVisible(true);
 	}
 
 	public void clearError() {
 		fileCheckProgressBar.setValue(0);
-		errorText.setText("");
+		errorMessage.setText("");
 		fileCheckPanel.setVisible(false);
 		upload.setVisible(true);
 	}

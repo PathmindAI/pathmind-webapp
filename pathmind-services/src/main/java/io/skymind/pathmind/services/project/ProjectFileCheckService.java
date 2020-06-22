@@ -2,6 +2,7 @@ package io.skymind.pathmind.services.project;
 
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
+import io.skymind.pathmind.shared.utils.ModelUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
@@ -72,6 +73,9 @@ public class ProjectFileCheckService {
         }
         else if (analysisResult.getObservations() != null && Integer.parseInt(analysisResult.getObservations()) == 0) {
             return Optional.of("Number of observations found to be zero.");
+        }
+        else if (analysisResult.getActionTupleSize() != null && Integer.parseInt(analysisResult.getActionTupleSize()) == 0) {
+            return Optional.of(ModelUtils.NONTUPLE_ERROR_MESSAGE);
         }
         return Optional.empty();
     }
