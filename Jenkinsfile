@@ -192,7 +192,10 @@ pipeline {
                         sh "aws s3 rm s3://dev-training-dynamic-files.pathmind.com/id6 --recursive"
                         sh "aws s3 rm s3://dev-training-dynamic-files.pathmind.com/id7 --recursive"
                         sh "sleep 120"
-                        sh "mvn clean verify -Dheadless=true -Denvironment=pathmind-dev -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n dev |  base64 --decode` -f pom.xml -P bdd-tests"
+                        sh """
+                            set +x
+                            mvn clean verify -Dheadless=true -Denvironment=pathmind-dev -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n dev |  base64 --decode` -f pom.xml -P bdd-tests
+                        """
                     } catch (err) {
                     } finally {
                         publishHTML(target: [
