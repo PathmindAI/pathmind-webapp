@@ -25,6 +25,10 @@
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.univocity</groupId>
+            <artifactId>univocity-parsers</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
