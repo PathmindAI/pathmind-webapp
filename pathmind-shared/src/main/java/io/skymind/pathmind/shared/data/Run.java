@@ -21,7 +21,7 @@ public class Run extends Data
 	private LocalDateTime ec2CreatedAt;
 	private long trainingErrorId;
 	private String jobId;
-    private String rLibError;
+    private String rllibError;
 
 	// Helper attributes
 	private Experiment experiment;

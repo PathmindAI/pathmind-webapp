@@ -183,7 +183,7 @@ public class UpdaterService {
             });
         }
         descriptions.stream().filter(e -> e.startsWith(RLLIB_ERROR_PREFIX)).findAny()
-                .map(e -> e.replace(RLLIB_ERROR_PREFIX, "")).ifPresent(run::setRLibError);
+                .map(e -> e.replace(RLLIB_ERROR_PREFIX, "")).ifPresent(run::setRllibError);
     }
 
     private void fireEventUpdates(Run run, List<Policy> policies) {

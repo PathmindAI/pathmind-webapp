@@ -1,9 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -446,8 +443,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 .orElse(null);
     }
 
-    private void updateUIForError(TrainingError error) {
-        errorDescriptionLabel.setText(error.getDescription());
+    private void updateUIForError(TrainingError error, String errorText) {
+        errorDescriptionLabel.setText(errorText);
 		errorDescriptionLabel.setVisible(true);
         restartTraining.setVisible(error.isRestartable());
         restartTraining.setEnabled(error.isRestartable());
@@ -487,9 +484,19 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experiment.getRuns().stream()
                     .filter(r -> r.getStatusEnum() == RunStatus.Error || r.getStatusEnum() == RunStatus.Killed)
                     .findAny()
-                    .map(Run::getTrainingErrorId)
-                    .flatMap(trainingErrorDAO::getErrorById)
-                    .ifPresent(this::updateUIForError);
+                    .ifPresent(run -> {
+                        trainingErrorDAO.getErrorById(run.getTrainingErrorId())
+                                .ifPresent(trainingError -> {
+                                    String errorText;
+                                    if (run.getRllibError() != null) {
+                                        errorText = run.getRllibError();
+                                    }
+                                    else {
+                                        errorText = trainingError.getDescription();
+                                    }
+                                    this.updateUIForError(trainingError, errorText);
+                                });
+                    });
         }
     }
 
