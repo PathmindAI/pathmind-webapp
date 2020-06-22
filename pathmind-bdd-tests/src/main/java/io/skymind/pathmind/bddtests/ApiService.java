@@ -6,6 +6,9 @@ import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.util.EnvironmentVariables;
 import net.thucydides.core.util.SystemEnvironmentVariables;
 
+import javax.xml.bind.DatatypeConverter;
+import java.io.UnsupportedEncodingException;
+
 public class ApiService extends PageObject {
 
     private static final EnvironmentVariables VARIABLES = SystemEnvironmentVariables.createEnvironmentVariables();
@@ -13,11 +16,15 @@ public class ApiService extends PageObject {
     private static final String PATHMIND_API_KEY = EnvironmentSpecificConfiguration.from(VARIABLES).getProperty("pathmind.api.key");
 
     public void sendLatestVersionNotification() {
-        SerenityRest.
-            given().
-            header("Authorization", "Basic " + PATHMIND_API_KEY).
-            when().
-            post(PATHMIND_URL + "api/newVersionAvailable").
-            then().log().body().statusCode(200);
+        try {
+            SerenityRest.
+                given().
+                header("Authorization", "Basic " + DatatypeConverter.printBase64Binary(("api:" + PATHMIND_API_KEY).getBytes("UTF-8"))).
+                when().
+                post(PATHMIND_URL + "api/newVersionAvailable").
+                then().log().body().statusCode(200);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 }
