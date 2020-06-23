@@ -1,0 +1,8 @@
+resource "aws_ecs_cluster" "ecs" {
+  name = "${var.environment}-ecs"
+  tags = {
+    Name        = "${var.environment}-ecs"
+    Environment = var.environment
+    Terraform   = "true"
+  }
+}

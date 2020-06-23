@@ -31,6 +31,15 @@
     border: 1px solid var(--pm-gray-color);
 }
 
+:host(.reward-variable-name-field[readonly]) [part="input-field"] {
+    color: inherit;
+    border: none;
+}
+
+:host(.reward-variable-name-field[readonly]) [part="input-field"]::after {
+    content: none;
+}
+
 :host(.action-name-field) [part="value"] {
     min-height: auto;
     padding: 0;

@@ -1,0 +1,12 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "trainer.fullname" . }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "trainer.fullname" . }}
+  namespace: {{.Release.Namespace}}
+roleRef:
+  kind: Role
+  name: {{ include "trainer.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io

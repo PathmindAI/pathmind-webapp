@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{JOB_ID}}
+  namespace: {{NAMESPACE}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{JOB_ID}}
+  template:
+    metadata:
+      labels:
+        app: {{JOB_ID}}
+    spec:
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+      containers:
+      - name: {{JOB_ID}}
+        volumeMounts:
+        - mountPath: /dev/shm
+          name: dshm
+        image: {{IMAGE}}
+        imagePullPolicy: Always
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/bash","-c","aws s3 cp /app/process_output.log s3://${S3BUCKET}/${S3PATH}/output/"]
+        env:
+        - name: NAME
+          value: {{NAME}}
+        - name: SQS_URL
+          value: {{SQS_URL}}
+        - name: S3BUCKET
+          value: {{S3BUCKET}}
+        - name: S3PATH
+          value: {{S3PATH}}
+        - name: ENVIRONMENT
+          value: {{ENVIRONMENT}}
+        - name: AWS_DEFAULT_REGION
+          value: 'us-east-1'
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: awsaccesskey
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: awssecretaccesskey
+              key: AWS_SECRET_ACCESS_KEY
+        - name: DB_URL_CLI
+          valueFrom:
+            secretKeyRef:
+              name: dburlcli
+              key: DB_URL_CLI
+        resources:
+          limits:
+            cpu: 16
+            memory: 64G
+          requests:
+            cpu: 12
+            memory: 48G
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "SPOT-16cpu_64gb"
+        effect: "NoSchedule"
+      nodeSelector:
+        dedicated: SPOT-16cpu_64gb

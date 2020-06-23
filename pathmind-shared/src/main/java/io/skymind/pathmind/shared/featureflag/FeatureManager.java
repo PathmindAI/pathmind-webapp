@@ -21,6 +21,8 @@ public class FeatureManager {
                 return multiAgentEnabled;
             case ACCOUNT_UPGRADE:
                 return false;
+            case SIMULATION_METRICS:
+                return false;
             default:
                 return true;
         }

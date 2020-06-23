@@ -27,7 +27,9 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 
 	private List<RowField> rewardVariableNameFields = new ArrayList<>();
 
-	private VerticalLayout container;
+    private VerticalLayout container;
+
+    private boolean isReadOnly = false;
 
 	public RewardVariablesTable() {
 		container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
@@ -38,7 +40,6 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 
 	public void setCodeEditorMode() {
 		setClassName("with-container-border");
-		container.addClassName("code-editor-mode");
 	}
 
 	public void setVariableSize(int numOfVariables) {
@@ -49,19 +50,25 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 		headerRow.addClassName("header-row");
 		GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
 
-		container.add(headerRow);
+        container.add(headerRow);
 
-		for (int i = 0; i < numOfVariables; i++) {
-			container.add(createRow(i));
-		}
-	}
+        for (int i = 0; i < numOfVariables; i++) {
+            container.add(createRow(i));
+        }
+    }
+
+    public void setIsReadOnly(boolean readOnly) {
+        isReadOnly = readOnly;
+    }
 
 	private RowField createRow(int rowNumber) {
-		RowField rewardVariableNameField = new RowField(rowNumber);
-		rewardVariableNameFields.add(rewardVariableNameField);
-		FormUtils.addValidator(rewardVariableNameField, new RowValidator());
+		RowField rewardVariableNameField = new RowField(rowNumber, isReadOnly);
+        rewardVariableNameFields.add(rewardVariableNameField);
+        if (!isReadOnly) {
+            FormUtils.addValidator(rewardVariableNameField, new RowValidator());
+        }
 		return rewardVariableNameField;
-	}
+    }
 
 	@Override
 	protected List<RewardVariable> generateModelValue() {
@@ -96,18 +103,21 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 
 		private final TextField rewardVariableNameField;
 
-		private RowField(int rowNumber) {
+		private RowField(int rowNumber, boolean readOnly) {
 			super(null);
-			this.rowNumber = rowNumber;
-			this.rewardVariableNameField = new TextField();
-			rewardVariableNameField.addClassName("reward-variable-name-field");
-			rewardVariableNameField.addClassName("reward-variable-"+rowNumber);
-			rewardVariableNameField.addValueChangeListener(e -> {
-				ComponentValueChangeEvent<RowField, RewardVariable> newEvent = new ComponentValueChangeEvent<>(
-						this, this, create(e.getOldValue()), e.isFromClient());
-				fireEvent(newEvent);
-			});
-			getContent().add(new Span("" + rowNumber), rewardVariableNameField);
+            this.rowNumber = rowNumber;
+            this.rewardVariableNameField = new TextField();
+            rewardVariableNameField.addClassName("reward-variable-name-field");
+            rewardVariableNameField.addValueChangeListener(e -> {
+                ComponentValueChangeEvent<RowField, RewardVariable> newEvent = new ComponentValueChangeEvent<>(
+                        this, this, create(e.getOldValue()), e.isFromClient());
+                fireEvent(newEvent);
+            });
+            rewardVariableNameField.setReadOnly(readOnly);
+            if (readOnly) {
+                rewardVariableNameField.addClassName("variable-color-"+rowNumber%10);
+            }
+            getContent().add(new Span("" + rowNumber), rewardVariableNameField);
 			getContent().setWidthFull();
 			GuiUtils.removeMarginsPaddingAndSpacing(getContent());
 		}

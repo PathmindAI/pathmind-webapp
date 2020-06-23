@@ -11,6 +11,9 @@ import org.openqa.selenium.support.FindBy;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,6 +38,11 @@ public class ExperimentPage extends PageObject {
     public void addNoteToTheExperimentPage(String note) {
         experimentNotes.click();
         experimentNotes.sendKeys(note);
+    }
+
+    public void clickCurrentExperimentArchiveButton() {
+        String xpath = String.format("//*[@class='experiment-navbar-item current']/vaadin-button");
+        getDriver().findElement(By.xpath(xpath)).click();
     }
 
     public void checkExperimentNotesIs(String note) {
@@ -80,9 +88,45 @@ public class ExperimentPage extends PageObject {
     }
 
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
-        WebElement inputShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='reward-variables-table code-editor-mode']/descendant::span[text()='" + variableNumber + "']/following-sibling::vaadin-text-field")));
+        WebElement inputShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='reward-variables-table']/descendant::span[text()='" + variableNumber + "']/following-sibling::vaadin-text-field")));
         inputShadow.findElement(By.cssSelector("input")).click();
         inputShadow.findElement(By.cssSelector("input")).clear();
         inputShadow.findElement(By.cssSelector("input")).sendKeys(variableName);
+    }
+
+    public void clickSideNavArchiveButtonFor(String experimentName) {
+        getDriver().findElement(By.xpath("//p[text()='"+experimentName+"']/ancestor::vaadin-horizontal-layout[contains(@class,'experiment-navbar-item')]/vaadin-button")).click();
+    }
+
+    public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
+        List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-text-field"))) {
+            actual.add(webElement.getAttribute("value"));
+        }
+
+        assertThat(actual, containsInRelativeOrder(items.toArray()));
+    }
+
+    public void checkThatMetricsAreShownForRewardVariables(int metricsNumber) {
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='metrics-wrapper']/span"))) {
+            actual.add(webElement.getText());
+        }
+
+        assertThat(actual, hasSize(metricsNumber));
+    }
+
+    public void checkThatSparklinesAreShownForRewardVariables(int sparklinesNumber) {
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='sparklines-wrapper']/spark-line"))) {
+            actual.add(webElement.getText());
+        }
+
+        assertThat(actual, hasSize(sparklinesNumber));
+    }
+
+    public void checkThatSimulationMetricsBlockIsShown() {
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Simulation Metrics']/parent::vaadin-vertical-layout")).isDisplayed(), is(true));
     }
 }
