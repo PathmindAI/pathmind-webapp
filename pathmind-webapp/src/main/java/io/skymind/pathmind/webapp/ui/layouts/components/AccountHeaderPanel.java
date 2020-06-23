@@ -14,6 +14,7 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.UserUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.UserUpdateSubscriber;
 import io.skymind.pathmind.webapp.security.VaadinSecurityUtils;
+import io.skymind.pathmind.webapp.ui.components.SearchBox;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.account.AccountView;
@@ -29,6 +30,9 @@ public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSu
 		this.user = user;
 		addClassName("nav-account-links");
 
+		SearchBox searchBox = new SearchBox();
+		add(searchBox);
+		
 		MenuBar menuBar = new MenuBar();
 		add(menuBar);
 		menuBar.setThemeName("tertiary");
