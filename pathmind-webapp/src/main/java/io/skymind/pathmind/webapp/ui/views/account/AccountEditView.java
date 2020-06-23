@@ -13,7 +13,7 @@ import io.skymind.pathmind.shared.security.Routes;
 @Route(value = Routes.ACCOUNT_EDIT_URL, layout = MainLayout.class)
 public class AccountEditView extends PathMindDefaultView {
 
-	private final AccountEditViewContent accountEditViewContent;
+	public final AccountEditViewContent accountEditViewContent;
 
 	@Autowired
 	public AccountEditView(AccountEditViewContent accountEditViewContent) {

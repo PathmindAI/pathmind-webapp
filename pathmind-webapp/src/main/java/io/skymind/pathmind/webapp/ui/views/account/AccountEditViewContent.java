@@ -32,19 +32,19 @@ import org.springframework.stereotype.Component;
 public class AccountEditViewContent extends PolymerTemplate<AccountEditViewContent.Model> {
 
 	@Id("lastName")
-	private TextField lastName;
+	public TextField lastName;
 
 	@Id("firstName")
-	private TextField firstName;
+	public TextField firstName;
 
 	@Id("email")
-	private TextField email;
+	public TextField email;
 
 	@Id("cancelBtn")
-	private Button cancelBtn;
+	public Button cancelBtn;
 
 	@Id("updateBtn")
-	private Button updateBtn;
+	public Button updateBtn;
 
 	private PathmindUser user;
 
