@@ -1,0 +1,8 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "trainer.fullname" . }}
+rules:
+- apiGroups: ["extensions", "apps"] # "" indicates the core API group
+  resources: ["deployments","replicasets"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]

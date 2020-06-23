@@ -42,22 +42,14 @@ def execute_psql(sql_string):
     psql_connection.close()
 
 
-def load_ig_template(IG_TEMPLATE):
-    """
-    loads the spot ig file into memory
-    """
-    global mem_ig_template
-    with open(IG_TEMPLATE,'r') as file:
-        mem_ig_template=file.read().split('\n')
-    return mem_ig_template
-
-def load_deployment_template():
+def load_deployment_template(DEPLOYMENT_TEMPLATE):
     """
     loads the deployment yaml file into memory
     """
     global mem_deployment_template
     with open(DEPLOYMENT_TEMPLATE,'r') as file:
         mem_deployment_template=file.read().split('\n')
+    return mem_deployment_template
 
 def send_mockup_data(s3bucket, s3path, cycle):
     """
@@ -100,20 +92,19 @@ def process_message(message):
     """
     if not message:
         return
-    global update_cluster
     global mockup_status
-    hw_type_list=['16cpu_32gb','16cpu_64gb','8cpu_16gb','8cpu_32gb','36cpu_72gb','default']
+    hw_type_list=['16cpu_32gb','16cpu_64gb','8cpu_16gb','8cpu_32gb','36cpu_72gb']
     app_logger.info('Received {message}'.format(message=message['Body']))
     body=json.loads(message['Body'])
     s3bucket=body['S3Bucket']
     s3path=body['S3Path']
-    hw_type='default'
+    hw_type='36cpu_72gb'
     if 'hw_type' in body:
         hw_type=body['hw_type']
     if hw_type not in hw_type_list:
         app_logger.info('hw type {hw_type} not found using default'\
             .format(hw_type=hw_type))
-        hw_type='default'
+        hw_type='36cpu_72gb'
     job_id=s3path
     ReceiptHandle=message['ReceiptHandle']
 
@@ -144,8 +135,6 @@ def process_message(message):
                         s3path+'/output/killed')
                 app_logger.info('Deleting deployment {job_id}'.format(job_id=job_id))
                 sh.kubectl('delete','deployment',job_id)
-                app_logger.info('Deleting ig {job_id}'.format(job_id=job_id))
-                sh.kops('delete','ig',job_id,'--yes')
             except Exception as e:
                 app_logger.error(traceback.format_exc())
 
@@ -164,26 +153,16 @@ def process_message(message):
 
     else:
         #create node and deployment
-        ec2_instance_type='m5.2xlarge'
+        ec2_instance_type='TBD'
         ec2_max_price='0.3'
 
         app_logger.info('Starting job s3://{s3bucket}/{s3path}'\
                 .format(s3bucket=s3bucket,
                     s3path=s3path))
 
-        #replace values in template an dcreate spot ig yaml file
-        IG_TEMPLATE="spot_ig_template-{hw_type}.yaml".format(hw_type=hw_type)
-        IG_FILE=IG_TEMPLATE.replace('_template','')
-        mem_ig_template=load_ig_template(IG_TEMPLATE)
-        JOB_IG_FILE=job_id+"_"+IG_FILE
-        with open(JOB_IG_FILE,'w') as file:
-            for line in mem_ig_template:
-                line=line.replace('{{CLUSTER_NAME}}',NAME)
-                line=line.replace('{{IG_NAME}}',job_id)
-                line=line.replace('{{INSTANCE_TYPE}}',ec2_instance_type)
-                file.write(line+'\n')
-
         #replace values in template an dcreate deployment yaml file
+        DEPLOY_TEMPLATE="rl_training_deployment-{hw_type}.yaml".format(hw_type=hw_type)
+        mem_deployment_template=load_deployment_template(DEPLOY_TEMPLATE)
         JOB_DEPLOYMENT_FILE=job_id+"_"+DEPLOYMENT_FILE
         with open(JOB_DEPLOYMENT_FILE,'w') as file:
             for line in mem_deployment_template:
@@ -243,13 +222,10 @@ def process_message(message):
                 status=1)
         execute_psql(sql_script)
 
-        #Create spot ig and deployment
+        #Create deployment
         try:
-            app_logger.info('Creating ig {job_id}'.format(job_id=job_id))
-            sh.kops('create','-f',JOB_IG_FILE)
             app_logger.info('Creating deployment {job_id}'.format(job_id=job_id))
             sh.kubectl('apply','-f',JOB_DEPLOYMENT_FILE)
-            update_cluster=True
         except Exception as e:
             app_logger.error(traceback.format_exc())
 
@@ -261,61 +237,10 @@ def process_message(message):
     )
 
 
-def check_ig_status():
-    """
-    Checks is all ig are created and have nodes associated
-    """
-    sqs = boto3.client('sqs')
-
-    while True:
-        app_logger.info('Checking ig status')
-        p = subprocess.Popen(['kops','validate','cluster',NAME], stdout=subprocess.PIPE)
-        output='\n'.join([i for i in p.communicate() if i is not None]).split('\n')
-        for line in output:
-            if 'did not have enough nodes' in line:
-                job_id=line.split('\t')[1]
-                #Get the bucket id
-                try:
-                    psql_connection = psycopg2.connect(user = psql_con_details['user'],
-                        password = psql_con_details['password'],
-                        host = psql_con_details['host'],
-                        port = psql_con_details['port'],
-                        database = psql_con_details['dbname'])
-                    psql_cursor = psql_connection.cursor()
-                    sql_script="""
-                      select s3bucket from public.trainer_job where job_id='{job_id}'
-                    """.format(job_id=job_id)
-                    psql_cursor.execute(sql_script)
-                    rows = psql_cursor.fetchall()
-                    s3bucket=rows[0][0]
-                except Exception as e:
-                    app_logger.error(traceback.format_exc())
-                    app_logger.error(sql_string.replace('\n',' '))
-                psql_cursor.close()
-                psql_connection.close()
-                #Delete deployment and ig
-                try:
-                    app_logger.info('Deleting deployment {job_id}'.format(job_id=job_id))
-                    sh.kubectl('delete','deployment',job_id)
-                    app_logger.info('Deleting ig {job_id}'.format(job_id=job_id))
-                    sh.kops('delete','ig',job_id,'--yes')
-                except Exception as e:
-                    app_logger.error(traceback.format_exc())
-                #send sqs message again
-                message='{"S3Bucket": "'+s3bucket+'", "S3Path":"'+job_id+'", "retry":"1"}'
-                response = sqs.send_message(
-                    QueueUrl=SQS_URL,
-                    MessageBody=message,
-                    MessageGroupId='training'
-                )
-        time.sleep(20)
-
-
 def main():
     """
     main function listens on sqs queue defined in SQS_URL env variable
     """
-    global update_cluster
     sqs = boto3.client('sqs')
     while True:
         app_logger.info('Waiting for messages in {SQS_URL}'\
@@ -330,10 +255,6 @@ def main():
         if ('Messages' in resp):
             for message in resp['Messages']:
                 process_message(message)
-            if update_cluster:
-                app_logger.info('Updating cluster')
-                sh.kops('update','cluster',NAME,'--yes')
-            update_cluster=False
 
 
 if __name__ == "__main__":
@@ -346,22 +267,12 @@ if __name__ == "__main__":
     DEPLOYMENT_FILE=DEPLOYMENT_TEMPLATE.replace('_template','')
     psql_con_details={}
     mockup_status={}
-    mem_deployment_template=[]
-    update_cluster=False
     logger=LoggerInit()
     app_logger=logger.get_logger("trainer")
-    #Init kubectl
-    sh.kops('export','kubecfg','--name',NAME)
     #Main thread
-    load_deployment_template()
     parse_dburl()
     worker1 = Thread(target=main, args=())
     worker1.setDaemon(True)
     worker1.start()
-    #check ig thread
-    #worker2 = Thread(target=check_ig_status, args=())
-    #worker2.setDaemon(True)
-    #worker2.start()
     worker1.join()
-    #worker2.join()
 
