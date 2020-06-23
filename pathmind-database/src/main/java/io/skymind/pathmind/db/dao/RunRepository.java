@@ -131,6 +131,8 @@ class RunRepository
                 .set(Tables.RUN.STOPPED_AT, run.getStoppedAt())
 				.set(Tables.RUN.TRAINING_ERROR_ID, run.getTrainingErrorId())
 				.set(Tables.RUN.RLLIB_ERROR, run.getRllibError())
+                .set(Tables.RUN.SUCCESS_MESSAGE, run.getSuccessMessage())
+                .set(Tables.RUN.WARNING_MESSAGE, run.getWarningMessage())
                 .where(Tables.RUN.ID.eq(run.getId()))
                 .execute();
     }

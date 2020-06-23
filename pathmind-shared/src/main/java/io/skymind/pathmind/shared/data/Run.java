@@ -22,6 +22,8 @@ public class Run extends Data
 	private long trainingErrorId;
 	private String jobId;
     private String rllibError;
+    private String successMessage;
+    private String warningMessage;
 
 	// Helper attributes
 	private Experiment experiment;
