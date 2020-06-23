@@ -80,6 +80,9 @@ Feature: Experiment page
     When Click project start run button
     When Click copy reward function btn
     Then Check copy buffer is reward += after[0] - before[0];
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
 
   Scenario: Check copy reward function button 4 variables reward
     Given Login to the pathmind
@@ -88,3 +91,6 @@ Feature: Experiment page
     When Click project start run button
     When Click copy reward function btn
     Then Check copy buffer is reward += after[0] - before[0];,reward += after[1] - before[1];,reward += after[2] - before[2];,reward += after[3] - before[3];
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
