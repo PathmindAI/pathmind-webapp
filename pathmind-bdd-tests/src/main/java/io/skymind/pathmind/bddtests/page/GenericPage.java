@@ -1,5 +1,9 @@
 package io.skymind.pathmind.bddtests.page;
 
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -149,5 +153,13 @@ public class GenericPage extends PageObject {
 
     public void checkThatCheckmarkIsShown() {
         assertThat(getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:check' and @class='fade-in']")).isDisplayed(), is(true));
+    }
+
+    public void checkCopyBufferIs(String value) {
+        try {
+            assertThat(Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor), is(value.replaceAll(",", "\n")));
+        } catch (UnsupportedFlavorException | IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }

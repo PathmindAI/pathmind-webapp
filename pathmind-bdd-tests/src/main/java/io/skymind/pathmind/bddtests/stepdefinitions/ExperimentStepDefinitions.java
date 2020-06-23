@@ -76,4 +76,9 @@ public class ExperimentStepDefinitions {
     public void checkThatSimulationMetricsBlockIsShown() {
         experimentPageSteps.checkThatSimulationMetricsBlockIsShown();
     }
+
+    @Then("^Click copy reward function btn$")
+    public void clickCopyRewardFunctionBtn() {
+        experimentPageSteps.clickCopyRewardFunctionBtn();
+    }
 }

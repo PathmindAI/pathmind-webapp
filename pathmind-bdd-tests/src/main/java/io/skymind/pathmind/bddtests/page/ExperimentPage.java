@@ -95,7 +95,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickSideNavArchiveButtonFor(String experimentName) {
-        getDriver().findElement(By.xpath("//p[text()='"+experimentName+"']/ancestor::vaadin-horizontal-layout[contains(@class,'experiment-navbar-item')]/vaadin-button")).click();
+        getDriver().findElement(By.xpath("//p[text()='" + experimentName + "']/ancestor::vaadin-horizontal-layout[contains(@class,'experiment-navbar-item')]/vaadin-button")).click();
     }
 
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
@@ -128,5 +128,10 @@ public class ExperimentPage extends PageObject {
 
     public void checkThatSimulationMetricsBlockIsShown() {
         assertThat(getDriver().findElement(By.xpath("//span[text()='Simulation Metrics']/parent::vaadin-vertical-layout")).isDisplayed(), is(true));
+    }
+
+    public void clickCopyRewardFunctionBtn() {
+        WebElement e = utils.expandRootElement(rewardFunction);
+        e.findElement(By.cssSelector("vaadin-button")).click();
     }
 }

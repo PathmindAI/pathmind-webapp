@@ -72,3 +72,19 @@ Feature: Experiment page
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
+
+  Scenario: Check copy reward function button 1 line reward
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Click project save draft btn
+    When Click project start run button
+    When Click copy reward function btn
+    Then Check copy buffer is reward += after[0] - before[0];
+
+  Scenario: Check copy reward function button 4 variables reward
+    Given Login to the pathmind
+    When Create new CoffeeShop project with 4 variables reward function
+    When Click project save draft btn
+    When Click project start run button
+    When Click copy reward function btn
+    Then Check copy buffer is reward += after[0] - before[0];,reward += after[1] - before[1];,reward += after[2] - before[2];,reward += after[3] - before[3];
