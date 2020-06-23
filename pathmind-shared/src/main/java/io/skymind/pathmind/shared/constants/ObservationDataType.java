@@ -20,10 +20,16 @@ public enum ObservationDataType {
         return name;
     }
 
+    private static final Map<String, ObservationDataType> BY_NAME;
+    static {
+		Map<Integer,ObservationDataType> map = new ConcurrentHashMap<>();
+		for (RunStatus instance : ObservationDataType.values()) {
+			map.put(instance.getValue(), instance);
+		}
+		BY_NAME = Collections.unmodifiableMap(map);
+    }
     public static Optional<ObservationDataType> getEnumFromValue(String value) {
-        return Arrays.stream(values())
-                .filter(dataType -> dataType.getValue().equals(value))
-                .findAny();
+        return Optional.ofNullable(BY_NAME.get(value));
     }
     
     public static boolean isNumeric(ObservationDataType dataType) {
