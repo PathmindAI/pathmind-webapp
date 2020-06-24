@@ -1,11 +1,13 @@
 package io.skymind.pathmind.webapp.ui.utils;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.server.Command;
 
 import io.skymind.pathmind.webapp.ui.components.CloseableNotification;
+import io.skymind.pathmind.webapp.utils.CookieUtils;
 
 public class NotificationUtils {
 
@@ -37,4 +39,13 @@ public class NotificationUtils {
         CloseableNotification notification = new CloseableNotification(html, false, button);
         notification.open();
     }
+
+	public static void showNewVersionAvailableNotification(UI ui) {
+		String text = "Pathmind has been updated. Please log in again to get the latest improvements.";
+		showPersistentNotification(text, "Sign out", () -> {
+			CookieUtils.deleteAWSCanCookie();
+			ui.getSession().getSession().invalidate();
+			ui.getPage().reload();
+        });
+	}
 }

@@ -8,7 +8,6 @@ import com.vaadin.flow.spring.SpringVaadinSession;
 
 import io.skymind.pathmind.webapp.ActiveSessionsRegistry;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
-import io.skymind.pathmind.webapp.utils.CookieUtils;
 
 import javax.servlet.http.HttpSession;
 
@@ -45,7 +44,8 @@ public class VersionController {
 					for (UI ui : springVaadinSession.getUIs()) {
 						try {
 							UI.setCurrent(ui);
-							showNotification(ui);
+							NotificationUtils.showNewVersionAvailableNotification(ui);
+                            springVaadinSession.setAttribute("isOldVersion", true);
 							count.incrementAndGet();
 						} finally {
 							UI.setCurrent(null);
@@ -58,14 +58,5 @@ public class VersionController {
 		String message = String.format("Sent a new version available message to %s HTTP sessions and %s Vaadin UIs", activeAuthenticatedSessions.size(), count.get());
 		log.info(message);
 		return new Response(message);
-	}
-
-	private void showNotification(UI ui) {
-		String text = "Pathmind has been updated. Please log in again to get the latest improvements.";
-		NotificationUtils.showPersistentNotification(text, "Sign out", () -> {
-			CookieUtils.deleteAWSCanCookie();
-			ui.getSession().getSession().invalidate();
-			ui.getPage().reload();
-        });
 	}
 }
