@@ -93,9 +93,4 @@ public class GenericPageStepDefinitions {
     public void checkThatCheckmarkIsShown() {
         genericPageSteps.checkThatCheckmarkIsShown();
     }
-
-    @Then("^Check copy buffer is (.*)$")
-    public void checkCopyBufferIs(String value) {
-        genericPageSteps.checkCopyBufferIs(value);
-    }
 }

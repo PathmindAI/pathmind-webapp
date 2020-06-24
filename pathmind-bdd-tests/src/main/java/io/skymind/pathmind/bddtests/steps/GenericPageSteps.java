@@ -87,9 +87,4 @@ public class GenericPageSteps {
     public void checkThatCheckmarkIsShown() {
         genericPage.checkThatCheckmarkIsShown();
     }
-
-    @Step
-    public void checkCopyBufferIs(String value) {
-        genericPage.checkCopyBufferIs(value);
-    }
 }
