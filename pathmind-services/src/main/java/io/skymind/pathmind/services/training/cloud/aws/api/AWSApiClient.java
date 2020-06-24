@@ -1,10 +1,7 @@
 package io.skymind.pathmind.services.training.cloud.aws.api;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
@@ -26,6 +23,7 @@ import org.springframework.util.Assert;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -147,4 +145,20 @@ public class AWSApiClient {
         return result.getMessageId();
     }
 
+    public void emptyBucket() {
+        // @DH -> Not sure where this is defined, or if it should be, but would you mind filling it in.
+        if(Arrays.asList("", "", "").contains(bucketName))
+            throw new PathMindException("This code should NEVER be run on dev, staging, or production");
+
+        ObjectListing objectListing = s3Client.listObjects(bucketName);
+        objectListing.getObjectSummaries().parallelStream()
+                .forEach(object -> s3Client.deleteObject(bucketName, object.getKey()));
+
+        // Recommended by Amazon in case the list was truncated.
+        while(objectListing.isTruncated()) {
+            objectListing = s3Client.listNextBatchOfObjects(objectListing);
+            objectListing.getObjectSummaries().parallelStream()
+                    .forEach(object -> s3Client.deleteObject(bucketName, object.getKey()));
+        }
+    }
 }

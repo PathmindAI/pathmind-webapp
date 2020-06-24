@@ -8,10 +8,6 @@
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS"
         logicalFilePath="db.initial.xml">
 
-    <changeSet author="steph@followsteph.com" id="1">
-        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200517_01"/>
-    </changeSet>
-
     <changeSet author="paul.dubs@skymind.io" id="20190918">
         <createTable tableName="PATHMIND_USER">
             <column autoIncrement="true" name="ID" type="BIGINT">
@@ -1393,4 +1389,11 @@
             <dropColumn tableName="PATHMIND_USER" columnName="NEW_EMAIL_TO_VERIFY"  />
         </rollback>
     </changeSet>
+
+    <changeSet author="steph@followsteph.com" id="-1">
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200624_01"/>
+    </changeSet>
+
+
+
 </databaseChangeLog>
