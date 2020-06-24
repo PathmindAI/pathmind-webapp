@@ -21,6 +21,6 @@ public class SearchDAO {
     }
     
     public int count(long userId, String keyword){
-        return SearchRepository.count(ctx, userId, keyword);
+        return SearchRepository.count(ctx, userId, keyword); 
     }
 }

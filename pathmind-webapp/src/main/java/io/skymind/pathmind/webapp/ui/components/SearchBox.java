@@ -1,20 +1,16 @@
 package io.skymind.pathmind.webapp.ui.components;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import io.skymind.pathmind.webapp.ui.views.search.SearchResultsView;
 
 public class SearchBox extends HorizontalLayout
 {
@@ -22,8 +18,7 @@ public class SearchBox extends HorizontalLayout
 	private TextField searchTextField = new TextField();
 	private Button searchButton = new Button(new Icon(VaadinIcon.SEARCH));
 
-	public SearchBox()
-	{
+	public SearchBox(){
 		setSpacing(false);
 		setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 
@@ -40,9 +35,10 @@ public class SearchBox extends HorizontalLayout
 		add(searchTextField, searchButton);
 	}
 
-	public void search()
-	{
-	    Notification.show("Searching");
+	public void search(){
+	    if (!StringUtils.isEmpty(searchTextField.getValue())) {
+	        getUI().ifPresent(ui -> ui.navigate(SearchResultsView.class, searchTextField.getValue()));
+	    }
 	}
 
 }

@@ -4,20 +4,22 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.constants.SearchResultItemType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 /**
- * DTO for dashboard purposes
+ * DTO for search result object, which can be one of these: Project, Model, Experiment 
  */
 @AllArgsConstructor
 @Builder
 public class SearchResult {
 	
+    private SearchResultItemType itemType;
     private long itemId;
-    private String itemType;
     private String name;
-    private LocalDateTime latestUpdateTime;
+    private LocalDateTime createDate;
+    private LocalDateTime updateDate;
     private String notes;
     
 
@@ -43,11 +45,11 @@ public class SearchResult {
         this.itemId = itemId;
     }
 
-    public String getItemType() {
+    public SearchResultItemType getItemType() {
         return itemType;
     }
 
-    public void setItemType(String itemType) {
+    public void setItemType(SearchResultItemType itemType) {
         this.itemType = itemType;
     }
 
@@ -59,20 +61,28 @@ public class SearchResult {
         this.name = name;
     }
 
-    public LocalDateTime getLatestUpdateTime() {
-        return latestUpdateTime;
-    }
-
-    public void setLatestUpdateTime(LocalDateTime latestUpdateTime) {
-        this.latestUpdateTime = latestUpdateTime;
-    }
-
     public String getNotes() {
         return notes;
     }
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
+    }
+
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
     }
 
 }
