@@ -17,7 +17,11 @@ public class UpdatePolicy_ChangeSet_20200624_01 implements CustomTaskChange
     @Override
     public void execute(Database database) throws CustomChangeException {
         // @DH -> I'm not sure how it's all wired but would it be possible to call the new method I created called AWSApiClient.emptyBucket() from here?
-        throw new CustomChangeException("Stop if production");
+        // @DH -> I don't think we need the check for the production environment since AWSApiClient would check the bucket.
+        // @DH -> In addition to getting the instance of AWSApiClient I wasn't sure how the environment variables are injected.
+        // awsApiClient.emptyBucket(bucket);
+        // throw new CustomChangeException("Stop if production");
+
     }
 
     @Override
