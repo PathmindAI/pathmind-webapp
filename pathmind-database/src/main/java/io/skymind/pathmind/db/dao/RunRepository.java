@@ -1,28 +1,27 @@
 package io.skymind.pathmind.db.dao;
 
-import static io.skymind.pathmind.db.jooq.Tables.POLICY;
-import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
-import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
-import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
-import static io.skymind.pathmind.db.jooq.tables.Run.RUN;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.impl.DSL;
-
+import io.skymind.pathmind.db.jooq.Tables;
+import io.skymind.pathmind.db.jooq.tables.records.RunRecord;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.db.jooq.Tables;
-import io.skymind.pathmind.db.jooq.tables.records.RunRecord;
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.impl.DSL;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static io.skymind.pathmind.db.jooq.Tables.POLICY;
+import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
+import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
+import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
+import static io.skymind.pathmind.db.jooq.tables.Run.RUN;
 
 class RunRepository
 {
@@ -86,7 +85,7 @@ class RunRepository
     }
     
     protected static List<Run> getExecutingRuns(DSLContext ctx) {
-        return ctx.select(RUN.ID, RUN.NAME, RUN.EXPERIMENT_ID, RUN.JOB_ID, RUN.NOTIFICATION_SENT_AT, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT, RUN.STATUS)
+        return ctx.select(RUN.ID, RUN.NAME, RUN.EXPERIMENT_ID, RUN.JOB_ID, RUN.NOTIFICATION_SENT_AT, RUN.EC2_CREATED_AT, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT, RUN.STATUS)
         		.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.MODEL_ID, EXPERIMENT.DATE_CREATED, EXPERIMENT.LAST_ACTIVITY_DATE)
         		.select(MODEL.ID, MODEL.NAME)
         		.select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
@@ -128,8 +127,10 @@ class RunRepository
     protected static void updateStatus(DSLContext ctx, Run run) {
         ctx.update(Tables.RUN)
                 .set(Tables.RUN.STATUS, run.getStatus())
+                .set(Tables.RUN.EC2_CREATED_AT, run.getEc2CreatedAt())
                 .set(Tables.RUN.STOPPED_AT, run.getStoppedAt())
 				.set(Tables.RUN.TRAINING_ERROR_ID, run.getTrainingErrorId())
+				.set(Tables.RUN.RLLIB_ERROR, run.getRLibError())
                 .where(Tables.RUN.ID.eq(run.getId()))
                 .execute();
     }

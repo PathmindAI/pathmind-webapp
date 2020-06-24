@@ -18,8 +18,10 @@ public class Run extends Data
 	private LocalDateTime stoppedAt;
 	private LocalDateTime notificationSentAt;
 	private LocalDateTime exportedAt;
+	private LocalDateTime ec2CreatedAt;
 	private long trainingErrorId;
 	private String jobId;
+    private String rLibError;
 
 	// Helper attributes
 	private Experiment experiment;
@@ -43,5 +45,4 @@ public class Run extends Data
 	public void setStatusEnum(RunStatus runStatus) {
 		this.status = runStatus.getValue();
 	}
-
 }

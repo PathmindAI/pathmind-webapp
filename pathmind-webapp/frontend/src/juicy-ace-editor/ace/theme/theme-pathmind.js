@@ -1,12 +1,9 @@
-ace.define(
-  "ace/theme/eclipse",
-  ["require", "exports", "module", "ace/lib/dom"],
-  function(require, exports, module) {
+ace.define("ace/theme/eclipse", ["require", "exports", "module", "ace/lib/dom"], function(require, exports, module) {
     "use strict";
 
     exports.isDark = false;
     exports.cssText =
-      '.ace-eclipse .ace_gutter-layer {\
+        '.ace-eclipse .ace_gutter-layer {\
 contain: none;\
 }\
 .ace-eclipse .ace_gutter {\
@@ -24,10 +21,10 @@ background: #ebebeb;\
 }\
 .ace-eclipse {\
 background-color: #FFFFFF;\
-border: 1px solid var(--lumo-contrast-20pct);\
+border: 1px solid var(--pm-gray-color);\
 border-radius: var(--lumo-border-radius);\
 color: black;\
-font-size: 0.85rem;\
+font-size: var(--lumo-font-size-s);\
 line-height: 1.6rem;\
 }\
 .ace-eclipse .ace_cursor {\
@@ -103,61 +100,69 @@ border: 1px solid rgb(181, 213, 255);\
 background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==") right repeat-y;\
 }\
 .ace-eclipse .ace_reward_variable{\
-  font-style: italic;\
-  padding: 2px 0;\
+  padding: .14em 0;\
   border-radius: 4px;\
 }\
 .variable-color-0 {\
-  color: #000 !important;\
-  background-color: #67ea93 !important;\
+  color: #000;\
+  background-color: var(--variable-color-0);\
+  box-shadow: -.15em 0 var(--variable-color-0), .15em 0 var(--variable-color-0);\
 }\
 .variable-color-1 {\
-  color: #fff !important;\
-  background-color: #214e96 !important;\
+  color: #fff;\
+  background-color: var(--variable-color-1);\
+  box-shadow: -.15em 0 var(--variable-color-1), .15em 0 var(--variable-color-1);\
 }\
 .variable-color-2 {\
-  color: #000 !important;\
-  background-color: #9bf7ec !important;\
+  color: #000;\
+  background-color: var(--variable-color-2);\
+  box-shadow: -.15em 0 var(--variable-color-2), .15em 0 var(--variable-color-2);\
 }\
 .variable-color-3 {\
-  color: #fff !important;\
-  background-color: #7550e5 !important;\
+  color: #fff;\
+  background-color: var(--variable-color-3);\
+  box-shadow: -.15em 0 var(--variable-color-3), .15em 0 var(--variable-color-3);\
 }\
 .variable-color-4 {\
-  color: #000 !important;\
-  background-color: #b0f78c !important;\
+  color: #000;\
+  background-color: var(--variable-color-4);\
+  box-shadow: -.15em 0 var(--variable-color-4), .15em 0 var(--variable-color-4);\
 }\
 .variable-color-5 {\
-  color: #000 !important;\
-  background-color: #ef99a4 !important;\
+  color: #000;\
+  background-color: var(--variable-color-5);\
+  box-shadow: -.15em 0 var(--variable-color-5), .15em 0 var(--variable-color-5);\
 }\
 .variable-color-6 {\
-  color: #000 !important;\
-  background-color: #9bc0f7 !important;\
+  color: #000;\
+  background-color: var(--variable-color-6);\
+  box-shadow: -.15em 0 var(--variable-color-6), .15em 0 var(--variable-color-6);\
 }\
 .variable-color-7 {\
-  color: #fff !important;\
-  background-color: #931901 !important;\
+  color: #fff;\
+  background-color: var(--variable-color-7);\
+  box-shadow: -.15em 0 var(--variable-color-7), .15em 0 var(--variable-color-7);\
 }\
 .variable-color-8 {\
-  color: #fff !important;\
-  background-color: #f413bc !important;\
+  color: #fff;\
+  background-color: var(--variable-color-8);\
+  box-shadow: -.15em 0 var(--variable-color-8), .15em 0 var(--variable-color-8);\
 }\
 .variable-color-9 {\
-  color: #000 !important;\
-  background-color: #d1b112 !important;\
+  color: #000;\
+  background-color: var(--variable-color-9);\
+  box-shadow: -.15em 0 var(--variable-color-9), .15em 0 var(--variable-color-9);\
 }';
 
     exports.cssClass = "ace-eclipse";
 
     var dom = require("../lib/dom");
     dom.importCssString(exports.cssText, exports.cssClass);
-  }
-);
+});
 (function() {
-  ace.require(["ace/theme/eclipse"], function(m) {
-    if (typeof module == "object" && typeof exports == "object" && module) {
-      module.exports = m;
-    }
-  });
+    ace.require(["ace/theme/eclipse"], function(m) {
+        if (typeof module == "object" && typeof exports == "object" && module) {
+            module.exports = m;
+        }
+    });
 })();

@@ -4,8 +4,8 @@ This repository contains the Pathmind Web application.
 
 The other parts of Pathmind (NativeRL, Pathmind Helper) can be currently still be found here:
 
-- [NativeRL](https://github.com/SkymindIO/skil-somatic-cloud/tree/master/nativerl)
-- [Pathmind Helper](https://github.com/SkymindIO/skil-somatic-cloud/tree/master/PathmindPolicyHelper)
+- [NativeRL](https://github.com/SkymindIO/nativerl/tree/master/nativerl)
+- [Pathmind Helper](https://github.com/SkymindIO/nativerl/tree/master/PathmindPolicyHelper)
 
 ## Tech stack
 
@@ -33,7 +33,7 @@ Your local env will be running at 127.0.0.1:8080
 [Details for setting up your env variables](https://github.com/SkymindIO/pathmind-webapp/wiki/Setting-up-your-dev-environment). 
 
 Here are instructions for how you can try out the app and the files you can upload to train:
-https://help.pathmind.com/en/articles/3329544-getting-started
+https://help.pathmind.com/en/articles/4004788-getting-started
 
 ### Running Automated Tests
 [Check out the readme here](pathmind-bdd-tests/README.md)
@@ -58,7 +58,9 @@ Intellij. For maven commands (also to be run from the IntelliJ) you have to set 
 
 We are using [Jooq](https://www.jooq.org/doc/3.11/manual/) for type-safe database access. So when you change anything
 about the structure of the database, you will have to also regenerate those classes. You can do this by running
-`jooq-codegen:generate` from the maven tab in IntelliJ.
+`jooq-codegen:generate` from the `pathmind-database` submodule in the maven tab in IntelliJ.
+
+[More details are here.](https://github.com/SkymindIO/pathmind-webapp/wiki/Liquibase-and-JOOQ#jooq)
 
 ## Migrations
 

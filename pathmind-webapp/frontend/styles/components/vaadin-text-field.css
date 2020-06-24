@@ -1,26 +1,41 @@
 :host [part="input-field"] {
-  background: var(--pm-highlight-medium);
+    background: var(--pm-highlight-medium);
 }
 
 :host [part="label"] {
-  color: var(--lumo-secondary-text-color);
-  font-size: var(--lumo-font-size-xs);
+    color: var(--lumo-secondary-text-color);
+    font-size: var(--lumo-font-size-xs);
 }
 
 /* Search box text field */
 :host(.search-box_text-field) vaadin-text-field-container {
-  border: 1px solid var(--pm-text-color);
+    border: 1px solid var(--pm-text-color);
 }
 
 :host(.search-box_text-field) [part="input-field"] {
-  background: transparent;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  box-shadow: inset 0px 0px 0px 1px rgba(26, 41, 73, 1);
+    background: transparent;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow: inset 0px 0px 0px 1px rgba(26, 41, 73, 1);
+}
+
+:host(.reward-variable-name-field) [part="value"] {
+    min-height: auto;
+    padding: 0;
 }
 
 :host(.reward-variable-name-field) [part="input-field"] {
-  height: 100%;
-  background-color: transparent;
-  border-radius: 0;
+    height: 1.75rem;
+    padding: 0.4em;
+    border-radius: 0 3px 3px 0;
+    border: 1px solid var(--pm-gray-color);
+}
+
+:host(.reward-variable-name-field[readonly]) [part="input-field"] {
+    color: inherit;
+    border: none;
+}
+
+:host(.reward-variable-name-field[readonly]) [part="input-field"]::after {
+    content: none;
 }

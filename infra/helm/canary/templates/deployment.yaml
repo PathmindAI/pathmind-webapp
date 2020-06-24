@@ -46,7 +46,7 @@ spec:
             - name: CANARY_WEIGHT
               value: "{{ .Values.canary_weight }}"
             - name: COOKIE_MAX_AGE
-              value: "172800"
+              value: "86400"
           ports:
             - containerPort: 80
           volumeMounts:
@@ -54,3 +54,18 @@ spec:
               mountPath: /etc/nginx/conf.d
             - name: nginxcan-mainconfig
               mountPath: /etc/nginx/customconfig
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+

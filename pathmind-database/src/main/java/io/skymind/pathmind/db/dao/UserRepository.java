@@ -49,7 +49,7 @@ class UserRepository
         return ctx.insertInto(PATHMIND_USER)
                 .set(PATHMIND_USER.EMAIL, pathmindUser.getEmail())
                 .set(PATHMIND_USER.PASSWORD, password)
-                .set(PATHMIND_USER.ACCOUNT_TYPE, pathmindUser.getAccountType())
+                .set(PATHMIND_USER.ACCOUNT_TYPE, pathmindUser.getAccountType().getId())
                 .set(PATHMIND_USER.FIRSTNAME, pathmindUser.getFirstname())
                 .set(PATHMIND_USER.LASTNAME, pathmindUser.getLastname())
                 .set(PATHMIND_USER.DELETE_AT, pathmindUser.getDeleteAt())
@@ -64,7 +64,7 @@ class UserRepository
     {
         ctx.update(PATHMIND_USER)
                 .set(PATHMIND_USER.EMAIL, pathmindUser.getEmail())
-                .set(PATHMIND_USER.ACCOUNT_TYPE, pathmindUser.getAccountType())
+                .set(PATHMIND_USER.ACCOUNT_TYPE, pathmindUser.getAccountType().getId())
                 .set(PATHMIND_USER.FIRSTNAME, pathmindUser.getFirstname())
                 .set(PATHMIND_USER.LASTNAME, pathmindUser.getLastname())
                 .set(PATHMIND_USER.ADDRESS, pathmindUser.getAddress())
@@ -77,6 +77,7 @@ class UserRepository
                 .set(PATHMIND_USER.EMAIL_VERIFIED_AT, pathmindUser.getEmailVerifiedAt())
                 .set(PATHMIND_USER.PASSWORD_RESET_SEND_AT, pathmindUser.getPasswordResetSendAt())
                 .set(PATHMIND_USER.STRIPE_CUSTOMER_ID, pathmindUser.getStripeCustomerId())
+                .set(PATHMIND_USER.NEW_EMAIL_TO_VERIFY, pathmindUser.getNewEmailToVerify())
                 .where(PATHMIND_USER.ID.eq(pathmindUser.getId()))
                 .execute();
     }

@@ -21,7 +21,6 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
@@ -36,8 +35,6 @@ import io.skymind.pathmind.services.notificationservice.EmailNotificationService
 @Route(value = Routes.SIGN_UP_URL)
 public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView
 {
-	private static final String EMAIL_IS_USED = "This email is already used";
-
 	@Id("lastName")
 	private TextField lastName;
 
@@ -77,20 +74,18 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	@Id("policyText")
 	private Div policyText;
 
-	@Autowired
-	private UserService userService;
-
-	@Autowired
-	private EmailNotificationService emailNotificationService;
-	
-	@Autowired
-	private SegmentIntegrator segmentIntegrator;
+	private final UserService userService;
+	private final EmailNotificationService emailNotificationService;
+	private final SegmentIntegrator segmentIntegrator;
 
 	private PathmindUser user;
 	private Binder<PathmindUser> binder;
 
-	public SignUpView(@Value("${pathmind.contact-support.address}") String contactLink)
-	{
+	public SignUpView(UserService userService, EmailNotificationService emailNotificationService, SegmentIntegrator segmentIntegrator, 
+	        @Value("${pathmind.contact-support.address}") String contactLink) {
+	    this.userService = userService;
+	    this.emailNotificationService = emailNotificationService;
+	    this.segmentIntegrator = segmentIntegrator;
 		getModel().setContactLink(contactLink);
 		user = new PathmindUser();
 		initView();
@@ -116,22 +111,10 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 
 		forgotPasswordBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(ResetPasswordView.class)));
 
-		email.addValueChangeListener(event -> {
-			if (userService.findByEmailIgnoreCase(email.getValue()) == null) {
-				getModel().setIsEmailUsed(false);
-			}
-		});
-
 		signUp.addClickListener(e -> {
 			if (binder.validate().isOk()) {
-				if (userService.findByEmailIgnoreCase(email.getValue()) != null) {
-					getModel().setIsEmailUsed(true);
-					email.setErrorMessage(EMAIL_IS_USED);
-					email.setInvalid(true);
-				} else {
-					showPassword(true);
-				}
-			}
+			    showPassword(true);
+			} 
 		});
 
 		signIn.addClickListener(e -> {
@@ -141,7 +124,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 			if (validationResults.isOk()) {
 				user.setPassword(newPassword.getValue());
 				user = userService.signup(user);
-                emailNotificationService.sendVerificationEmail(user);
+                emailNotificationService.sendVerificationEmail(user, user.getEmail(), true);
                 segmentIntegrator.userRegistered();
                 getUI().ifPresent(ui -> ui.navigate(VerificationEmailSentView.class));
 			} else {
@@ -163,15 +146,19 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 
 	private void initBinder() {
 		binder = new Binder<>(PathmindUser.class);
-
-		PathmindUserBinders.bindEmail(binder, email);
+		binder.addStatusChangeListener(evt -> processValidationStatusChange(evt.hasValidationErrors()));
+		PathmindUserBinders.bindEmail(userService, binder, email);
 		PathmindUserBinders.bindFirstName(binder, firstName);
 		PathmindUserBinders.bindLastName(binder, lastName);
 
 		binder.setBean(user);
 	}
 
-	public interface Model extends TemplateModel {
+	private void processValidationStatusChange(boolean hasValidationErrors) {
+	    getModel().setIsEmailUsed(hasValidationErrors && userService.findByEmailIgnoreCase(email.getValue()) != null); 
+    }
+
+    public interface Model extends TemplateModel {
 		void setTitle(String title);
 		void setIsEmailUsed(Boolean isEmailUsed);
 		void setContactLink(String contactLink);

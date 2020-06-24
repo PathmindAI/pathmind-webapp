@@ -2,6 +2,8 @@ package io.skymind.pathmind.shared.constants;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.Arrays;
+
 public enum  EC2InstanceType {
     IT_16CPU_32GB("16cpu_32gb"),
     IT_16CPU_64GB("16cpu_64gb"),
@@ -14,6 +16,13 @@ public enum  EC2InstanceType {
 
     EC2InstanceType(String name) {
         this.name = name;
+    }
+
+    public static EC2InstanceType fromName(String name) {
+        return Arrays.stream(values())
+                .filter(it -> it.name.equals(name))
+                .findAny()
+                .get();
     }
 
     @JsonValue

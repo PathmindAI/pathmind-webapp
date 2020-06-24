@@ -1,31 +1,31 @@
 :host {
-  border: 1px solid var(--lumo-contrast-20pct);
-  border-radius: var(--lumo-border-radius);
+    border: 1px solid var(--pm-gray-color);
+    border-radius: var(--lumo-border-radius);
 }
 
 :host .highcharts-background {
-  fill: var(--pm-highlight-light);
+    fill: var(--pm-highlight-light);
 }
 
 .highcharts-grid-line {
-  stroke-dasharray: 4 4;
+    stroke-dasharray: 4 4;
 }
 
 .highcharts-point {
 }
 .pm-active-series {
-  opacity: 1;
-  fill: var(--pm-text-color);
-  stroke: var(--pm-text-color);
+    opacity: 1;
+    fill: var(--pm-text-color);
+    stroke: var(--pm-text-color);
 }
 .pm-passive-series {
-  opacity: 0.2;
+    opacity: 0.2;
 }
 .pm-active-series .highcharts-halo {
-  fill: var(--pm-text-color);
-  stroke: var(--pm-text-color);
+    fill: var(--pm-text-color);
+    stroke: var(--pm-text-color);
 }
 
 .highcharts-tooltip-box {
-  stroke: var(--pm-text-color);
+    stroke: var(--pm-text-color);
 }

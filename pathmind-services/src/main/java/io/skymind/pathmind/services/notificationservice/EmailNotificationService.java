@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -50,14 +50,14 @@ public class EmailNotificationService
 	 *
 	 * @param pathmindUser
 	 */
-	public void sendVerificationEmail(PathmindUser pathmindUser)
+	public void sendVerificationEmail(PathmindUser pathmindUser, String email, boolean isNewRegistry)
 	{
 		Objects.requireNonNull(pathmindUser);
 		if (!isEmailSendingEnabled) {
-			log.info("Email sending has been disabled, not sending the email to: " + pathmindUser.getEmail());
+			log.info("Email sending has been disabled, not sending the email to: " + email);
 			return;
 		}
-		if (pathmindUser.getEmailVerifiedAt() != null) {
+		if (isNewRegistry && pathmindUser.getEmailVerifiedAt() != null) {
 			log.info("Canceling verification email sending, user: " + pathmindUser.getEmail() + ", has already been verified");
 			return;
 		}
@@ -68,7 +68,11 @@ public class EmailNotificationService
 		final String emailVerificationLink = createEmailVerificationLink(pathmindUser);
 		Mail verificationEmail;
 		try {
-			verificationEmail = mailHelper.createVerificationEmail(pathmindUser.getEmail(), pathmindUser.getName(), emailVerificationLink);
+		    if (isNewRegistry) {
+		        verificationEmail = mailHelper.createVerificationEmail(email, pathmindUser.getName(), emailVerificationLink);
+		    } else {
+		        verificationEmail = mailHelper.createNewEmailAddressVerificationTemplateId(email, pathmindUser.getName(), emailVerificationLink);
+		    }
 		} catch (PathMindException e) {
 			log.warn("Could not create email due to missing data in the PathmindUser object");
 			return;
@@ -152,28 +156,5 @@ public class EmailNotificationService
 
 	private String createExperimentPageLink(Experiment experiment) {
 		return applicationURL + "/" + Routes.EXPERIMENT_URL + "/" + experiment.getId();
-	}
-
-	// DH -> Should we decide to add email notifications for special exceptions then we just need to replace
-	// the log entries below with mailHelper and set it up according to our preferences.
-	public void sendEmailExceptionNotification(Throwable t) {
-		// Example
-		log.error("Subject: Exception: " + t.getMessage());
-		log.error("to: " + "default email address setup in application.properties");
-		log.error("Message:" + ExceptionUtils.getStackTrace(t));
-	}
-
-	public void sendEmailExceptionNotification(String title, Throwable t) {
-		// Example
-		log.error("Subject: Exception: " + title);
-		log.error("to: " + "default email address setup in application.properties");
-		log.error("Message:" + ExceptionUtils.getStackTrace(t));
-	}
-
-	public void sendEmailErrorNotification(String title, String message) {
-		// Example
-		log.error("Subject: Exception: " + title);
-		log.error("to: " + "default email address setup in application.properties");
-		log.error("Message:" + message);
 	}
 }

@@ -12,6 +12,7 @@ import org.openqa.selenium.support.FindBy;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -107,7 +108,8 @@ public class LoginPage extends PageObject {
         inputField.click();
         inputField.sendKeys(password);
     }
-    public void fillNewUserConfirmationPassword(String password){
+
+    public void fillNewUserConfirmationPassword(String password) {
         WebElement signUpView = utils.expandRootElement(signUpShadow);
         WebElement confirmInputFieldShadow = signUpView.findElement(By.id("confirmNewPassword"));
         WebElement configrmField = utils.expandRootElement(confirmInputFieldShadow);
@@ -197,7 +199,7 @@ public class LoginPage extends PageObject {
 
     public void createNewUserCheckThatErrorMessageForEmailFieldShown(String errorMsg) {
         WebElement signUpView = utils.expandRootElement(signUpShadow);
-		WebElement emailView =  utils.expandRootElement(signUpView.findElement(By.cssSelector("#email")));
+        WebElement emailView = utils.expandRootElement(signUpView.findElement(By.cssSelector("#email")));
         assertThat(emailView.findElement(By.cssSelector("#vaadin-text-field-error-2")).getText(), containsString(errorMsg));
     }
 
@@ -251,17 +253,17 @@ public class LoginPage extends PageObject {
         assertThat(getDriver().findElement(By.xpath("//a[text()='Privacy Policy']")).getAttribute("href"), containsString("https://pathmind.com/privacy"));
     }
 
-	public void checkConsoleError(String error) {
-		LogEntries logs = getDriver().manage().logs().get(LogType.BROWSER);
-		for (LogEntry logEntry : logs) {
-			System.out.println(logEntry.getMessage());
-			assertThat(logEntry.getMessage(), not(containsString(error)));
-		}
-	}
+    public void checkConsoleError(String error) {
+        LogEntries logs = getDriver().manage().logs().get(LogType.BROWSER);
+        for (LogEntry logEntry : logs) {
+            System.out.println(logEntry.getMessage());
+            assertThat(logEntry.getMessage(), not(containsString(error)));
+        }
+    }
 
     public void checkThatEarlyAccessErrorMessageIsShownForField(String error, String field) {
         WebElement signUpView = utils.expandRootElement(signUpShadow);
-        WebElement inpuView =  utils.expandRootElement(signUpView.findElement(By.cssSelector("vaadin-text-field[label='"+field+"']")));
+        WebElement inpuView = utils.expandRootElement(signUpView.findElement(By.cssSelector("vaadin-text-field[label='" + field + "']")));
         assertThat(inpuView.findElement(By.cssSelector("div[part='error-message']")).getText(), is(error));
     }
 

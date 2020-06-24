@@ -54,10 +54,6 @@ public class ExecutionProgressWatcher implements ApplicationListener<ContextRefr
         public void run() {
             long lastRun = 0;
             while (!stop) {
-                // todo get rid of the below temporary debug message
-                Thread currentThread = Thread.currentThread();
-                log.info("Watcher thread status : " + currentThread.toString() + ", " + currentThread.getState() + ", " + currentThread.isDaemon());
-
                 final long nextRun = lastRun + UPDATE_INTERVAL;
                 try {
                     if (nextRun <= System.currentTimeMillis()) {
@@ -65,7 +61,6 @@ public class ExecutionProgressWatcher implements ApplicationListener<ContextRefr
                             updater.update();
                         } catch (Exception e) {
                             log.error("Exception during progress update", e);
-                            emailNotificationService.sendEmailExceptionNotification(e);
                         }
                         lastRun = System.currentTimeMillis();
                     } else {

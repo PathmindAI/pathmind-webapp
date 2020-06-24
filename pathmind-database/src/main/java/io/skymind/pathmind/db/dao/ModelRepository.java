@@ -1,7 +1,7 @@
 package io.skymind.pathmind.db.dao;
 
-import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.db.jooq.tables.records.ModelRecord;
+import io.skymind.pathmind.shared.data.Model;
 import org.jooq.DSLContext;
 
 import java.time.LocalDateTime;
@@ -82,7 +82,7 @@ class ModelRepository
 
 	public static Optional<Model> getModelIfAllowed(DSLContext ctx, long modelId, long userId) {
 		return Optional.ofNullable(ctx
-				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.NUMBER_OF_OBSERVATIONS,
+				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.PACKAGE_NAME,
 						MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.USER_NOTES, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT)
 				.from(MODEL)
 				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
@@ -91,4 +91,12 @@ class ModelRepository
 				.fetchOneInto(Model.class)
 		);
 	}
+
+    protected static long getUserIdForModel(DSLContext ctx, long modelId) {
+	    return ctx.select(PROJECT.PATHMIND_USER_ID)
+                .from(PROJECT)
+                .leftJoin(MODEL).on(MODEL.PROJECT_ID.eq(PROJECT.ID))
+                .where(MODEL.ID.eq(modelId))
+                .fetchOne(PROJECT.PATHMIND_USER_ID);
+    }
 }
