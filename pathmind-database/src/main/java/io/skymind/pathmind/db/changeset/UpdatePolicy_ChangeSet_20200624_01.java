@@ -65,7 +65,7 @@ public class UpdatePolicy_ChangeSet_20200624_01 implements CustomTaskChange
                 .map(object -> object.getKey())
                 .toArray(String[]::new);
 
-        // In case the S3 bucket is already empty.
+        // In case the S3 bucket is already empty otherwise it will throw an error when trying to delete the objects (malformed xml).
         if(ArrayUtils.isEmpty(objectKeys))
             return;
 
