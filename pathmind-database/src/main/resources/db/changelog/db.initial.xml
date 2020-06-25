@@ -294,9 +294,6 @@
     </changeSet>
 
     <changeSet id="20191001-1" author="daehyun@skymind.io">
-        <sql>
-            DROP FUNCTION IF EXISTS update_model_activity_date;
-        </sql>
         <createProcedure>
             CREATE FUNCTION public.update_model_activity_date()
             RETURNS trigger
@@ -325,9 +322,6 @@
     </changeSet>
 
     <changeSet id="20191001-3" author="daehyun@skymind.io">
-        <sql>
-            DROP FUNCTION IF EXISTS update_project_activity_date;
-        </sql>
         <createProcedure>
             CREATE FUNCTION public.update_project_activity_date()
             RETURNS trigger
