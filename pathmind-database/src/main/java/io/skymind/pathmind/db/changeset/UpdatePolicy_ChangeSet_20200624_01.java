@@ -14,6 +14,7 @@ import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +27,12 @@ import java.util.stream.Stream;
 @Slf4j
 public class UpdatePolicy_ChangeSet_20200624_01 implements CustomTaskChange
 {
+    private static final List<String> DO_NOT_EMPTY_BUCKETS = List.of("dev", "prod", "test");
+
     @Override
     public void execute(Database database) throws CustomChangeException {
+        // Liquibase will stop if the environment variable is missing. This is so that developers get notified to update their environment variables
+        // to be able to properly delete their S3 buckets as part of a database reset.
         String region = getEnvironmentVariable("AWS_DEFAULT_REGION");
         String accessKey = getEnvironmentVariable("AWS_ACCESS_KEY_ID");
         String secretAccessKey = getEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
@@ -36,8 +41,10 @@ public class UpdatePolicy_ChangeSet_20200624_01 implements CustomTaskChange
         log.info("Emptying bucket : " + bucket);
 
         // Extra security precaution. I'm not throwing an exception because in those cases we just want to stop.
-        if(Stream.of("dev", "prod", "test").anyMatch(specialBuckets -> bucket.startsWith(specialBuckets)))
+        if(DO_NOT_EMPTY_BUCKETS.stream().anyMatch(specialBuckets -> bucket.startsWith(specialBuckets))) {
+            log.info("Bucket " + bucket + " will NOT be emptied");
             return;
+        }
 
         AmazonS3 s3Client = AmazonS3ClientBuilder
                 .standard()
@@ -55,7 +62,6 @@ public class UpdatePolicy_ChangeSet_20200624_01 implements CustomTaskChange
     }
 
     private String getEnvironmentVariable(String name) throws CustomChangeException {
-        // This is so that developers get notified to update their environment variables to be able to properly delete their S3 buckets as part of a database reset.
         return Optional.ofNullable(System.getenv(name)).orElseThrow(
                 () -> new CustomChangeException(name + " environment variable is not set"));
     }
