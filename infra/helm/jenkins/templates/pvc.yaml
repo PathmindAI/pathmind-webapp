@@ -4,7 +4,8 @@ metadata:
   name: {{ .Values.pvc.claimName }}
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
+  storageClassName: efs-sc
   resources:
     requests:
       storage: 100Gi
