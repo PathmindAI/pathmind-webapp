@@ -1390,10 +1390,8 @@
         </rollback>
     </changeSet>
 
-    <changeSet author="steph@followsteph.com" id="-1">
+    <changeSet id="20200624_01" author="steph@followsteph.com">
         <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200624_01"/>
     </changeSet>
-
-
 
 </databaseChangeLog>

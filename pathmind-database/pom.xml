@@ -36,6 +36,10 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -48,7 +52,7 @@
                     <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                     <changeLogFile>src/main/resources/db/changelog/changelog-master.xml</changeLogFile>
                     <driver>org.postgresql.Driver</driver>
-                    <url>${DB_URL}</url>
+                    <url>jdbc:postgresql://localhost/PATHMIND?user=postgres&amp;password=37iCIf83J0fTAOn2AUDQ</url>
                 </configuration>
             </plugin>
             <plugin>
@@ -82,7 +86,7 @@
                 <configuration>
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
-                        <url>${DB_URL}</url>
+                        <url>jdbc:postgresql://localhost/PATHMIND?user=postgres&amp;password=37iCIf83J0fTAOn2AUDQ</url>
                     </jdbc>
                     <generator>
                         <generate>
