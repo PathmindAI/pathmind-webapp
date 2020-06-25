@@ -100,7 +100,6 @@ spec:
           - name: jenkins-storage
             mountPath: /var/jenkins_home
           resources:
-          resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
