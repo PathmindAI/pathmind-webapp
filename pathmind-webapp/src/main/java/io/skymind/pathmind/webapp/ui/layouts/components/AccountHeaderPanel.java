@@ -9,6 +9,8 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import io.skymind.pathmind.shared.data.PathmindUser;
+import io.skymind.pathmind.shared.featureflag.Feature;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.UserUpdateBusEvent;
@@ -26,12 +28,14 @@ public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSu
 	private Span usernameLabel = new Span();
 	private PathmindUser user;
 
-	public AccountHeaderPanel(PathmindUser user) {
+	public AccountHeaderPanel(PathmindUser user, FeatureManager featureManager) {
 		this.user = user;
 		addClassName("nav-account-links");
 
-		SearchBox searchBox = new SearchBox();
-		add(searchBox);
+		if (featureManager.isEnabled(Feature.SEARCH)) {
+		    SearchBox searchBox = new SearchBox();
+		    add(searchBox);
+		}
 		
 		MenuBar menuBar = new MenuBar();
 		add(menuBar);
