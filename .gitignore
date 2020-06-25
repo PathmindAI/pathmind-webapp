@@ -40,6 +40,7 @@ webpack.generated.js
 ## #Terraform tmp files ###
 .terraform/
 terraform.tfstate*
+terraform.tfplan
 
 ### Vim tmp files ###
 *swp
