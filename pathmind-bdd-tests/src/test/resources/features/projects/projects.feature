@@ -1,6 +1,11 @@
 @projectsPage
 Feature: Projects page
 
+  Scenario: Check projects page title
+    Given Login to the pathmind
+    When Open projects page
+    Then Check page title is Projects
+
   Scenario: Create new project and check project exist on projects page
     Given Login to the pathmind
     When Create new CoffeeShop project with draft experiment
