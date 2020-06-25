@@ -1,13 +1,13 @@
 package io.skymind.pathmind.shared.data;
 
-import java.util.Objects;
-
 import io.skymind.pathmind.shared.constants.ObservationDataType;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@EqualsAndHashCode(of = {"id"})
 public class Observation {
     private long id = -1;
     private long modelId;
@@ -30,11 +30,6 @@ public class Observation {
         return id == observation.id;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-    
     public ObservationDataType getDataTypeEnum() {
         return ObservationDataType.getEnumFromValue(dataType).orElse(null);
     }
