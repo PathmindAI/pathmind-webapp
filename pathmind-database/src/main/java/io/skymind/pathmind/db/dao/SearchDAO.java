@@ -16,11 +16,11 @@ public class SearchDAO {
         this.ctx = ctx;
     }
 
-    public List<SearchResult> search(long userId, String keyword){
-        return SearchRepository.search(ctx, userId, keyword);
+    public List<SearchResult> findSearchResults(long userId, String keyword, int offset, int limit){
+        return SearchRepository.findSearchResults(ctx, userId, keyword, offset, limit);
     }
     
-    public int count(long userId, String keyword){
-        return SearchRepository.count(ctx, userId, keyword); 
+    public int countSearchResults(long userId, String keyword){
+        return SearchRepository.countSearchResults(ctx, userId, keyword); 
     }
 }

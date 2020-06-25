@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public enum SearchResultItemType {
 
-    PROJECT("project"), MODEL("model"), EXPERIMENT("experiment");
+    PROJECT("Project"), MODEL("Model"), EXPERIMENT("Experiment");
     
     private String name;
     
@@ -14,6 +14,11 @@ public enum SearchResultItemType {
     
     public String getName() {
         return name;
+    }
+    
+    @Override
+    public String toString() {
+        return getName();
     }
     
     public static SearchResultItemType getEnumFromName(String name) {

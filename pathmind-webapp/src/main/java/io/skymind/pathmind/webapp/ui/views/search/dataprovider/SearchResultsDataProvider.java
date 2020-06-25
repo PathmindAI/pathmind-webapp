@@ -23,7 +23,7 @@ public class SearchResultsDataProvider extends AbstractBackEndDataProvider<Searc
     @Override
     protected Stream<SearchResult> fetchFromBackEnd(Query<SearchResult, String> query) {
         if (query.getFilter().isPresent()) {
-            return dao.search(SecurityUtils.getUserId(), query.getFilter().get()).stream();
+            return dao.findSearchResults(SecurityUtils.getUserId(), query.getFilter().get(), query.getOffset(), query.getLimit()).stream();
         } else {
             return Stream.empty();
         }
@@ -32,7 +32,7 @@ public class SearchResultsDataProvider extends AbstractBackEndDataProvider<Searc
     @Override
     protected int sizeInBackEnd(Query<SearchResult, String> query) {
         if (query.getFilter().isPresent()) {
-            return dao.count(SecurityUtils.getUserId(), query.getFilter().get());
+            return dao.countSearchResults(SecurityUtils.getUserId(), query.getFilter().get());
         } else {
             return 0;
         }
