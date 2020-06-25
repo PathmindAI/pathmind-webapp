@@ -30,9 +30,9 @@ public class AccountPage extends PageObject {
 
     public void checkThatAccountPageOpened() {
         waitABit(2500);
-        assertThat(getDriver().findElement(By.xpath("//span[@class='breadcrumb']")).getText(), containsString("Account"));
         assertThat(getDriver().getTitle(), containsString("Pathmind | Account"));
         WebElement e = utils.expandRootElement(accountViewShadow);
+        assertThat(e.findElement(By.cssSelector(".section-title-label")).getText(), containsString("Account"));
         assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(1) .info div:nth-child(1)")).getText(), containsString("User Email"));
         assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(1) .info div:nth-child(3)")).getText(), containsString("First Name"));
         assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(1) .info div:nth-child(5)")).getText(), containsString("Last Name"));
