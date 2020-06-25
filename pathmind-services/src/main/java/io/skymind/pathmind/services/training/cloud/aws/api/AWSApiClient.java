@@ -145,20 +145,4 @@ public class AWSApiClient {
         return result.getMessageId();
     }
 
-    public void emptyBucket() {
-        // @DH -> Not sure where this is defined, or if it should be, but would you mind filling it in.
-        if(Arrays.asList("", "", "").contains(bucketName))
-            throw new PathMindException("This code should NEVER be run on dev, staging, or production");
-
-        ObjectListing objectListing = s3Client.listObjects(bucketName);
-        objectListing.getObjectSummaries().parallelStream()
-                .forEach(object -> s3Client.deleteObject(bucketName, object.getKey()));
-
-        // Recommended by Amazon in case the list was truncated.
-        while(objectListing.isTruncated()) {
-            objectListing = s3Client.listNextBatchOfObjects(objectListing);
-            objectListing.getObjectSummaries().parallelStream()
-                    .forEach(object -> s3Client.deleteObject(bucketName, object.getKey()));
-        }
-    }
 }
