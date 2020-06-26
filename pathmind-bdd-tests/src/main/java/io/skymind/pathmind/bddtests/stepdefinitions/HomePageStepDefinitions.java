@@ -65,4 +65,9 @@ public class HomePageStepDefinitions {
     public void clickGettingStartedGuideButton() {
         homePageSteps.clickGettingStartedGuideButton();
     }
+
+    @Then("^Check that projects button highlight is (.*)$")
+    public void checkThatProjectsButtonHighlightIs(Boolean status) {
+        homePageSteps.checkThatProjectsButtonHighlightIs(status);
+    }
 }
