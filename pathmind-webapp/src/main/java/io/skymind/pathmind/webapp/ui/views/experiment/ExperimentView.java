@@ -49,6 +49,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.*;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -60,6 +61,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LAB
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
+@Slf4j
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 
@@ -210,6 +212,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void updateSimulationMetrics() {
         metricsWrapper.removeAll();
         sparklinesWrapper.removeAll();
+
+        updateSimulationMetricsData();
+
         IntStream.range(0, simulationMetrics.size())
                 .forEach(idx -> {
                     metricsWrapper.add(new Span(simulationMetrics.get(idx).toString()));
@@ -217,6 +222,36 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     sparkLine.setSparkLine(sparklinesData.get(idx), idx);
                     sparklinesWrapper.add(sparkLine);
                 });
+    }
+
+    private void updateSimulationMetricsData() {
+        List<Metrics> metricsList = policy == null ? null : policy.getMetrics();
+        sparklinesData.clear();
+        simulationMetrics.clear();
+
+        if (metricsList != null && metricsList.size() > 0) {
+            // set the last metrics
+            Metrics lastMetrics = metricsList.get(metricsList.size() - 1);
+            lastMetrics.getMetricsThisIter().stream()
+                .forEach(metricsThisIter -> simulationMetrics.add(metricsThisIter.getMean()));
+
+            // index, metrics list
+            Map<Integer, List<Double>> sparkLineMap = new HashMap<>();
+            metricsList.stream().forEach(metrics ->
+                metrics.getMetricsThisIter().forEach(mIter -> {
+                    int index = mIter.getIndex();
+
+                    List<Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new ArrayList<>();
+                    data.add(mIter.getMean());
+                    sparkLineMap.put(index, data);
+                })
+            );
+
+            // convert List<Double> to double[] because sparLine needs an array of primitive types
+            sparkLineMap.entrySet().stream()
+                .map(e -> e.getValue().stream().mapToDouble(Double::doubleValue).toArray())
+                .forEach(arr -> sparklinesData.add(arr));
+        }
     }
 
     private Div getButtonsWrapper() {
@@ -385,34 +420,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                                 .sorted(Comparator.comparing(Experiment::getDateCreated).reversed())
                                 .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
         }
-
-        List<Metrics> metricsList = policy.getMetrics();
-        sparklinesData.clear();
-        simulationMetrics.clear();
-
-        if (metricsList != null && metricsList.size() > 0) {
-            // set the last metrics
-            Metrics lastMetrics = metricsList.get(metricsList.size() - 1);
-            lastMetrics.getMetricsThisIter().stream()
-                .forEach(metricsThisIter -> simulationMetrics.add(metricsThisIter.getMean()));
-
-            // index, metrics list
-            Map<Integer, List<Double>> sparkLineMap = new HashMap<>();
-            metricsList.stream().forEach(metrics ->
-                metrics.getMetricsThisIter().forEach(mIter -> {
-                    int index = mIter.getIndex();
-
-                    List<Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new ArrayList<>();
-                    data.add(mIter.getMean());
-                    sparkLineMap.put(index, data);
-                })
-            );
-
-            // convert List<Double> to double[] because sparLine needs an array of primitive types
-            sparkLineMap.entrySet().stream()
-                .map(e -> e.getValue().stream().mapToDouble(Double::doubleValue).toArray())
-                .forEach(arr -> sparklinesData.add(arr));
-        }
     }
 
     @Override
@@ -525,7 +532,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 if (event.getExperimentId() != experimentId)
                     return;
                 // Update or insert the policy in experiment.getPolicies
-
                 addOrUpdatePolicies(event.getPolicies());
 
                 // Calculate the best policy again
@@ -536,6 +542,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     }
                     updateDetailsForExperiment();
                 });
+                log.info("kepricondebug1 : " + policy.getRunId());
+                log.info("kepricondebug2 : " + policy.getMetrics().size());
+                if (showSimulationMetrics && policy.getMetrics() != null && policy.getMetrics().size() > 0) {
+                    updateSimulationMetrics();
+                }
             }
         }
 
