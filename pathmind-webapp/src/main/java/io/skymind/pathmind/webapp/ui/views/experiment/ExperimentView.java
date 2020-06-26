@@ -386,28 +386,33 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                                 .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
         }
 
-        // set the last metrics
         List<Metrics> metricsList = policy.getMetrics();
-        Metrics lastMetrics = metricsList.get(metricsList.size()-1);
-        lastMetrics.getMetricsThisIter().stream()
-            .forEach(metricsThisIter -> simulationMetrics.add(metricsThisIter.getMean()));
+        sparklinesData.clear();
+        simulationMetrics.clear();
 
-        // index, metrics list
-        Map<Integer, List<Double>> sparkLineMap = new HashMap<>();
-        metricsList.stream().forEach(metrics ->
-            metrics.getMetricsThisIter().forEach(mIter -> {
-                int index = mIter.getIndex();
+        if (metricsList != null && metricsList.size() > 0) {
+            // set the last metrics
+            Metrics lastMetrics = metricsList.get(metricsList.size() - 1);
+            lastMetrics.getMetricsThisIter().stream()
+                .forEach(metricsThisIter -> simulationMetrics.add(metricsThisIter.getMean()));
 
-                List<Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new ArrayList<>();
-                data.add(mIter.getMean());
-                sparkLineMap.put(index, data);
-            })
-        );
+            // index, metrics list
+            Map<Integer, List<Double>> sparkLineMap = new HashMap<>();
+            metricsList.stream().forEach(metrics ->
+                metrics.getMetricsThisIter().forEach(mIter -> {
+                    int index = mIter.getIndex();
 
-        // convert List<Double> to double[] because sparLine needs an array of primitive types
-        sparkLineMap.entrySet().stream()
-            .map(e -> e.getValue().stream().mapToDouble(Double::doubleValue).toArray())
-            .forEach(arr -> sparklinesData.add(arr));
+                    List<Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new ArrayList<>();
+                    data.add(mIter.getMean());
+                    sparkLineMap.put(index, data);
+                })
+            );
+
+            // convert List<Double> to double[] because sparLine needs an array of primitive types
+            sparkLineMap.entrySet().stream()
+                .map(e -> e.getValue().stream().mapToDouble(Double::doubleValue).toArray())
+                .forEach(arr -> sparklinesData.add(arr));
+        }
     }
 
     @Override
