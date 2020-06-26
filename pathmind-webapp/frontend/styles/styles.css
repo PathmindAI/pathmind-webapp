@@ -136,6 +136,14 @@ hr {
     font-weight: bold;
 }
 
+#nav-main-links .navbar-logo + a:not(.navbar-logo) {
+    margin-left: var(--lumo-space-xxl);
+}
+
+#nav-main-links a:not(.navbar-logo) {
+    margin-left: var(--lumo-space-l);
+}
+
 .nav-account-links {
     margin-left: auto;
     padding-right: 20px;
@@ -267,7 +275,6 @@ hr {
 }
 
 .projects-view .view-section {
-    max-width: 1480px;
     margin-top: var(--lumo-space-m);
 }
 
@@ -417,10 +424,15 @@ account-view {
 
 /* Title bar */
 .page-title {
-    justify-content: center;
-    color: var(--lumo-body-text-color);
+    line-height: 2;
+    color: var(--lumo-secondary-text-color);
+    background-color: white;
     padding: 0 var(--lumo-space-m);
-    margin-top: var(--lumo-space-m);
+    margin-top: 1px;
+}
+
+.projects-view .page-title {
+    width: calc(var(--lumo-space-m) * 2 + 100%) !important;
 }
 
 .action-button iron-icon {
