@@ -1,6 +1,6 @@
 .breadcrumb {
     position: relative;
-    max-width: 10rem;
+    max-width: 30rem;
     color: var(--lumo-secondary-text-color);
     overflow: hidden;
     text-overflow: ellipsis;
