@@ -1,118 +1,112 @@
 :host {
-  background: var(--pm-app-bg-color);
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  align-items: center;
+    background: var(--pm-app-bg-color);
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    align-items: center;
 }
 
 .content {
-  padding: var(--lumo-space-m);
-  max-width: 500px;
-  margin-top: 0;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    padding: var(--lumo-space-m);
+    max-width: 500px;
+    margin-top: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .info {
-  color: #696969;
+    color: #696969;
 }
 
 .inner-content {
-  background: #fff;
-  border-radius: var(--lumo-border-radius);
-  padding: 20px 40px;
-  margin-top: var(--lumo-space-xs);
-  margin-bottom: var(--lumo-space-xs);
+    background: #fff;
+    border-radius: var(--lumo-border-radius);
+    padding: 20px 40px;
+}
+
+span.section-title-label + .inner-content {
+    margin-top: var(--lumo-space-m);
 }
 
 .block {
-  justify-content: space-between;
+    justify-content: space-between;
 }
 
 .border-top {
-  border-top: 1px solid #f2f2f2;
-  padding-top: 10px;
+    border-top: 1px solid #f2f2f2;
+    padding-top: 10px;
 }
 
 .block vaadin-button {
-  width: 120px;
+    width: 120px;
 }
 
 .title {
-  font-weight: 700;
+    font-weight: 700;
 }
 
 .data {
-  padding-bottom: 30px;
+    padding-bottom: 30px;
 }
 
 .support-cont {
-  text-align: center;
+    text-align: center;
 }
 
 .support,
 .support-cont a {
-  display: inline-block;
-  color: var(--lumo-secondary-text-color);
-  margin: 10px var(--lumo-space-s) 0;
+    display: inline-block;
+    color: var(--lumo-secondary-text-color);
+    margin: 10px var(--lumo-space-s) 0;
 }
 
 .support:hover,
 .support-cont a:hover {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 vaadin-tabs,
 vaadin-text-field,
 vaadin-email-field,
 vaadin-password-field {
-  width: 100%;
+    width: 100%;
 }
 
 #buttonsCont {
-  margin-top: 60px;
-  width: 100%;
+    margin-top: 60px;
+    width: 100%;
 }
 
 #buttonsCont vaadin-button {
-  margin: 5px auto;
-}
-
-.section-title {
-  color: #666;
-  font-size: 1.1em;
-  font-weight: 500;
-  margin-bottom: 20px;
-  margin-top: 20px;
+    margin: 5px auto;
 }
 
 .error-message {
-  color: var(--pm-danger-color);
-  padding: 0 0px 10px;
+    color: var(--pm-danger-color);
+    padding: 0 0px 10px;
 }
 
 .info-message {
-  color: var(--lumo-primary-color);
-  padding: 0 0px 10px;
+    color: var(--lumo-primary-color);
+    padding: 0 0px 10px;
 }
 
 .notes {
-  font-size: 0.9em;
-  font-weight: 700;
-  color: #979797;
-  padding-left: 15px;
-  padding-top: 5px;
+    font-size: 0.9em;
+    font-weight: 700;
+    color: #979797;
+    padding-left: 15px;
+    padding-top: 5px;
 }
 
 .notes span:last-child {
-  padding-bottom: 20px;
+    padding-bottom: 20px;
 }
 
 .notes .secondary {
-  color: #e7e7e7;
+    color: #e7e7e7;
 }

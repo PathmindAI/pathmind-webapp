@@ -28,7 +28,6 @@ import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
-import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
@@ -65,8 +64,6 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     private EmptyDashboardPlaceholder placeholder;
 
     private HorizontalLayout newProjectButtonWrapper;
-
-    private ScreenTitlePanel titlePanel = new ScreenTitlePanel("Dashboard");
 
     private long loggedUserId;
 
@@ -181,7 +178,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
     @Override
     protected Component getTitlePanel() {
-        return titlePanel;
+        return null;
     }
 
     @Override
@@ -193,7 +190,6 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     protected void initScreen(BeforeEnterEvent event) {
         boolean emptyDashboard = dataProvider.isEmpty();
         placeholder.setVisible(emptyDashboard);
-        titlePanel.setVisible(!emptyDashboard);
         dashboardGrid.setVisible(!emptyDashboard);
         newProjectButtonWrapper.setVisible(!emptyDashboard);
         VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
