@@ -32,8 +32,6 @@ public class HomePage extends PageObject {
     private WebElement dashboardBtn;
     @FindBy(xpath = "//span[@class='breadcrumb']")
     private WebElement pageLabel;
-    @FindBy(xpath = "//span[@class='breadcrumb']")
-    private WebElement projectPageLabel;
     @FindBy(xpath = "//vaadin-menu-bar[@class='account-menu']")
     private WebElement accountMenuBtn;
     @FindBy(xpath = "//vaadin-context-menu-item[@role='menuitem' and text()='Account']")
@@ -78,7 +76,6 @@ public class HomePage extends PageObject {
 
     public void checkThatProjectsPageOpened() {
         waitFor(ExpectedConditions.titleIs("Pathmind | Projects"));
-        assertThat(projectPageLabel.getText(), is("Projects"));
         assertThat(getDriver().getCurrentUrl(), containsString("/projects"));
     }
 
