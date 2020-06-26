@@ -104,12 +104,14 @@ public class ProgressInterpreter {
     }
 
     public static Policy interpret(Map.Entry<String, String> entry){
-        return interpret(entry, null);
+        return interpret(entry, null, null, 0);
     }
 
-    public static Policy interpret(Map.Entry<String, String> entry, List<RewardScore> previousScores){
+    public static Policy interpret(Map.Entry<String, String> entry, List<RewardScore> previousScores,
+                                   List<Metrics> previousMetrics, int numReward){
         final Policy policy = interpretKey(entry.getKey());
         interpretScores(entry, previousScores, policy);
+        interpretMetrics(entry, previousMetrics, policy, numReward);
         return policy;
     }
 
@@ -145,7 +147,7 @@ public class ProgressInterpreter {
         }
     }
 
-    public static void interpretMetrics(Map.Entry<String, String> entry, List<Metrics> previousMetrics, Policy policy, int numReward) {
+    private static void interpretMetrics(Map.Entry<String, String> entry, List<Metrics> previousMetrics, Policy policy, int numReward) {
         final List<Metrics> metrics = previousMetrics == null || previousMetrics.size() == 0 ? new ArrayList<>() : previousMetrics;
         final int lastIteration = metrics.size() == 0 ? -1 : metrics.get(metrics.size() - 1).getIteration();
 

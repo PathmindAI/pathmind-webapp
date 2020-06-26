@@ -152,17 +152,10 @@ public class UpdaterService {
         return rawProgress.entrySet().stream()
             .map(e -> {
                 List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
-                Policy policy = ProgressInterpreter.interpret(e, previousScores);
+                List<Metrics> previousMetrics = runDAO.getMetrics(runId, e.getKey());
+                int numReward = runDAO.getRewardNumForRun(runId);
 
-                // todo get this value from FeatureManager
-                boolean useMetrics = true;
-                if (useMetrics = true) {
-                    List<Metrics> previousMetrics = runDAO.getMetrics(runId, e.getKey());
-
-                    int numReward = runDAO.getRewardNumForRun(runId);
-                    ProgressInterpreter.interpretMetrics(e, previousMetrics, policy, numReward);
-                }
-                return policy;
+                return ProgressInterpreter.interpret(e, previousScores, previousMetrics, numReward);
             })
             .collect(Collectors.toList());
     }
