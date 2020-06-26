@@ -49,7 +49,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.*;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -61,7 +60,6 @@ import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LAB
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
-@Slf4j
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 
@@ -540,13 +538,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     if (policy != null) {
                         policyChartPanel.highlightPolicy(policy);
                     }
+
                     updateDetailsForExperiment();
+                    if (showSimulationMetrics && policy.getMetrics() != null && policy.getMetrics().size() > 0) {
+                        updateSimulationMetrics();
+                    }
                 });
-                log.info("kepricondebug1 : " + policy.getRunId());
-                log.info("kepricondebug2 : " + policy.getMetrics().size());
-                if (showSimulationMetrics && policy.getMetrics() != null && policy.getMetrics().size() > 0) {
-                    updateSimulationMetrics();
-                }
+
             }
         }
 
