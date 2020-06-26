@@ -157,12 +157,9 @@ public class UpdaterService {
                 // todo get this value from FeatureManager
                 boolean useMetrics = true;
                 if (useMetrics = true) {
+                    List<Metrics> previousMetrics = runDAO.getMetrics(runId, e.getKey());
 
-                    // todo get this list from db
-                    List<Metrics> previousMetrics = null;
-
-                    // todo get this value from db
-                    int numReward = 4;
+                    int numReward = runDAO.getRewardNumForRun(runId);
                     ProgressInterpreter.interpretMetrics(e, previousMetrics, policy, numReward);
                 }
                 return policy;

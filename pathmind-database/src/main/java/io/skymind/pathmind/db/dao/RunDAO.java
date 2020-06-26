@@ -121,8 +121,9 @@ public class RunDAO {
     	PolicyRepository.updateOrInsertPolicies(transactionCtx, policies);
     	loadPersistedPolicies(transactionCtx, policies, run);
 
+        List<Long> policyIds = policies.stream().mapToLong(Policy::getId).boxed().collect(Collectors.toList());
+
     	// Find max reward score iterations in DB, and calculate new reward scores to be inserted into db
-    	List<Long> policyIds = policies.stream().mapToLong(Policy::getId).boxed().collect(Collectors.toList());
     	Map<Long, Integer> maxRewardScoreIterations = RewardScoreRepository.getMaxRewardScoreIterationForPolicies(transactionCtx, policyIds);
     	Map<Long, List<RewardScore>> rewardScoresMap = new HashMap<>();
     	policies.forEach(policy -> {
@@ -132,11 +133,28 @@ public class RunDAO {
 					.collect(Collectors.toList());
 			rewardScoresMap.put(policy.getId(), newRewardScores);
     	});
-    	
+
     	// Insert all new reward scores in a single batch
     	if (!rewardScoresMap.isEmpty()) {
     		RewardScoreRepository.insertRewardScores(transactionCtx, rewardScoresMap);
     	}
+
+    	// Find max metric iteration in DB, and calculate new metrics to be inserted into db
+        Map<Long, Integer> maxMetricsIterations = MetricsRepository.getMaxMetricsIterationForPolicies(transactionCtx, policyIds);
+    	Map<Long, List<Metrics>> metricsMap = new HashMap<>();
+    	policies.forEach(policy -> {
+    	    Integer maxMetricsIteration = maxMetricsIterations.containsKey(policy.getId()) ? maxMetricsIterations.get(policy.getId()) : 0;
+            List<Metrics> newMetrics = policy.getMetrics().stream()
+                .filter(metrics -> metrics.getIteration() > maxMetricsIteration)
+                .collect(Collectors.toList());
+            metricsMap.put(policy.getId(), newMetrics);
+        });
+
+    	// Insert all new metrics in a single batch
+        if (!metricsMap.isEmpty()) {
+            MetricsRepository.insertMetrics(transactionCtx, metricsMap);
+        }
+
     }
 
     public List<RewardScore> getScores(long runId, String policyExtId) {
@@ -147,6 +165,16 @@ public class RunDAO {
         }
 
         return RewardScoreRepository.getRewardScoresForPolicy(ctx, policy.getId());
+    }
+
+    public List<Metrics> getMetrics(long runId, String policyExtId) {
+        Policy policy = PolicyRepository.getPolicy(ctx, runId, policyExtId);
+
+        if (policy == null) {
+            return null;
+        }
+
+        return MetricsRepository.getMetricsForPolicy(ctx, policy.getId());
     }
 
     private void loadPersistedPolicies(DSLContext transactionCtx, List<Policy> policies, Run run) {
@@ -211,5 +239,15 @@ public class RunDAO {
         Policy policy = PolicyRepository.getPolicy(transactionCtx, policyId);
         policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(transactionCtx, policyId));
         return policy;
+    }
+
+    /**
+     * Gets the number of reward variable for AnyLogic Model for the given run id
+     *
+     * @param runId
+     * @return
+     */
+    public int getRewardNumForRun(long runId) {
+        return MetricsRepository.getRewardNumForRun(ctx, runId);
     }
 }
