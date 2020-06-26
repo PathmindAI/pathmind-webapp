@@ -96,9 +96,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private List<Experiment> experiments = new ArrayList<>();
     private List<Float> simulationMetrics = new ArrayList<>();
     private List<float[]> sparklinesData = new ArrayList<>();
+    private Boolean showSimulationMetrics;
 
     private HorizontalLayout middlePanel;
     private HorizontalLayout simulationMetricsWrapper;
+    private VerticalLayout metricsWrapper;
+    private VerticalLayout sparklinesWrapper;
     private PolicyHighlightPanel policyHighlightPanel;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private Span panelTitle;
@@ -186,8 +189,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
             LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
         );
-        simulationMetricsWrapper = getSimulationMetricsTable(featureManager.isEnabled(Feature.SIMULATION_METRICS));
-        String simulationMetricsHeaderText = featureManager.isEnabled(Feature.SIMULATION_METRICS) ? "Simulation Metrics" : "Reward Variables";
+        showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
+        simulationMetricsWrapper = getSimulationMetricsTable();
+        String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
         rewardVariablesGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
             LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsWrapper
         );
@@ -198,7 +202,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         middlePanel.setPadding(false);
     }
 
-    private HorizontalLayout getSimulationMetricsTable(Boolean showSimulationMetrics) {
+    private HorizontalLayout getSimulationMetricsTable() {
         HorizontalLayout tableWrapper = new HorizontalLayout();
         tableWrapper.addClassName("simulation-metrics-table-wrapper");
 
@@ -208,23 +212,28 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         tableWrapper.add(rewardVariablesTable);
 
         if (showSimulationMetrics) {
-            VerticalLayout metricsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+            metricsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
             metricsWrapper.addClassName("metrics-wrapper");
-            VerticalLayout sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+            sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
             sparklinesWrapper.addClassName("sparklines-wrapper");
 
-            IntStream.range(0, simulationMetrics.size())
-                    .forEach(idx -> {
-                        metricsWrapper.add(new Span(simulationMetrics.get(idx).toString()));
-                        SparkLine sparkLine = new SparkLine();
-                        sparkLine.setSparkLine(sparklinesData.get(idx), idx);
-                        sparklinesWrapper.add(sparkLine);
-                    });
-
+            updateSimulationMetrics();
             tableWrapper.add(metricsWrapper, sparklinesWrapper);
         }
 
         return tableWrapper;
+    }
+
+    private void updateSimulationMetrics() {
+        metricsWrapper.removeAll();
+        sparklinesWrapper.removeAll();
+        IntStream.range(0, simulationMetrics.size())
+                .forEach(idx -> {
+                    metricsWrapper.add(new Span(simulationMetrics.get(idx).toString()));
+                    SparkLine sparkLine = new SparkLine();
+                    sparkLine.setSparkLine(sparklinesData.get(idx), idx);
+                    sparklinesWrapper.add(sparkLine);
+                });
     }
 
     private Div getButtonsWrapper() {
@@ -394,13 +403,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                                 .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
         }
 
-        // This are mock data to be removed once the backend for simulation metrics is implemented
+        // TODO: use real data. This are mock data to be removed once the backend for simulation metrics is implemented
         simulationMetrics.add(123f);
         simulationMetrics.add(2.1f);
         simulationMetrics.add(0.3234234f);
         simulationMetrics.add(12323.1f);
 
-        // This are mock data to be removed once the backend for simulation metrics is implemented
+        // TODO: use real data. This are mock data to be removed once the backend for simulation metrics is implemented
         float f0[] = {123f, 120f, 116f, 128f, 125f, 123f, 124f, 129f, 122f};
         float f1[] = {2.1f, 2.2f, 2.0f, 2.34f, 2.334f, 2.211f, 2.23f, 2.24f, 2.1f};
         float f2[] = {0.3234234f, 0.3234434f, 0.3234264f, 0.3234834f, 0.3214234f, 0.321734f, 0.3234934f, 0.3234534f, 0.3234234f};
@@ -428,6 +437,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             rewardVariablesTable.setValue(rewardVariables);
         } else {
             rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
+        }
+        if (showSimulationMetrics) {
+            updateSimulationMetrics();
         }
         policyChartPanel.setExperiment(experiment, policy);
         updateDetailsForExperiment();
