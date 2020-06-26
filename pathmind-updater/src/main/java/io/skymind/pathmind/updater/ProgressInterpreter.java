@@ -159,6 +159,12 @@ public class ProgressInterpreter {
         List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
 
         for(Record record : allRecords) {
+            // missing information check
+            if (Arrays.asList(record.getValues()).contains(null)) {
+                log.debug("There are missing information in the csv contents");
+                continue;
+            }
+
             final Integer iteration = record.getInt(RAY_PROGRESS.TRAINING_ITERATION);
 
             if (iteration > lastIteration) {

@@ -144,10 +144,12 @@ public class RunDAO {
     	Map<Long, List<Metrics>> metricsMap = new HashMap<>();
     	policies.forEach(policy -> {
     	    Integer maxMetricsIteration = maxMetricsIterations.containsKey(policy.getId()) ? maxMetricsIterations.get(policy.getId()) : 0;
-            List<Metrics> newMetrics = policy.getMetrics().stream()
-                .filter(metrics -> metrics.getIteration() > maxMetricsIteration)
-                .collect(Collectors.toList());
-            metricsMap.put(policy.getId(), newMetrics);
+    	    if (policy.getMetrics() != null) {
+                List<Metrics> newMetrics = policy.getMetrics().stream()
+                    .filter(metrics -> metrics.getIteration() > maxMetricsIteration)
+                    .collect(Collectors.toList());
+                metricsMap.put(policy.getId(), newMetrics);
+            }
         });
 
     	// Insert all new metrics in a single batch
