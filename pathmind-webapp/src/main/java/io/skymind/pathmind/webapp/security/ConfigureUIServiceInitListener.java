@@ -1,5 +1,7 @@
 package io.skymind.pathmind.webapp.security;
 
+import static io.skymind.pathmind.webapp.security.constants.VaadinSessionInfo.IS_OLD_VERSION;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.server.CustomizedSystemMessages;
@@ -24,7 +26,7 @@ public class ConfigureUIServiceInitListener implements VaadinServiceInitListener
 	public void serviceInit(ServiceInitEvent event) {
 		event.getSource().addUIInitListener(uiEvent -> {
 			final UI ui = uiEvent.getUI();
-            Object isOldVersion = ui.getSession().getAttribute("isOldVersion");
+            Object isOldVersion = ui.getSession().getAttribute(IS_OLD_VERSION);
 			ui.addBeforeEnterListener(this::beforeEnter);
             ui.getSession().setErrorHandler(new PathmindErrorHandler());
             if (isOldVersion != null) {

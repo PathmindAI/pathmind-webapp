@@ -1,5 +1,7 @@
 package io.skymind.pathmind.webapp.api;
 
+import static io.skymind.pathmind.webapp.security.constants.VaadinSessionInfo.IS_OLD_VERSION;
+
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,7 +47,7 @@ public class VersionController {
 						try {
 							UI.setCurrent(ui);
 							NotificationUtils.showNewVersionAvailableNotification(ui);
-                            springVaadinSession.setAttribute("isOldVersion", true);
+                            springVaadinSession.setAttribute(IS_OLD_VERSION, true);
 							count.incrementAndGet();
 						} finally {
 							UI.setCurrent(null);
