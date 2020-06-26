@@ -93,4 +93,14 @@ public class GenericPageStepDefinitions {
     public void checkThatCheckmarkIsShown() {
         genericPageSteps.checkThatCheckmarkIsShown();
     }
+
+    @Then("^Duplicate current tab$")
+    public void duplicateCurrentTab() {
+        genericPageSteps.duplicateCurrentTab();
+    }
+
+    @When("^Open tab (\\d+)$")
+    public void openTab(int tab) {
+        genericPageSteps.openTab(tab);
+    }
 }

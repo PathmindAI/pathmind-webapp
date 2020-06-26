@@ -73,4 +73,9 @@ public class ExperimentPageSteps {
     public void checkThatSimulationMetricsBlockIsShown() {
         experimentPage.checkThatSimulationMetricsBlockIsShown();
     }
+
+    @Step
+    public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
+        experimentPage.checkThatExperimentExistOnTheExperimentPage(experiment);
+    }
 }

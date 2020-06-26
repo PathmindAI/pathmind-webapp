@@ -76,4 +76,9 @@ public class ExperimentStepDefinitions {
     public void checkThatSimulationMetricsBlockIsShown() {
         experimentPageSteps.checkThatSimulationMetricsBlockIsShown();
     }
+
+    @Then("^Check that (.*) exist on the experiment page$")
+    public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
+        experimentPageSteps.checkThatExperimentExistOnTheExperimentPage(experiment);
+    }
 }

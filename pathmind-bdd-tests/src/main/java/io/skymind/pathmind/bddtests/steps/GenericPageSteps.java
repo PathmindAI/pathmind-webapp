@@ -87,4 +87,14 @@ public class GenericPageSteps {
     public void checkThatCheckmarkIsShown() {
         genericPage.checkThatCheckmarkIsShown();
     }
+
+    @Step
+    public void duplicateCurrentTab() {
+        genericPage.duplicateCurrentTab();
+    }
+
+    @Step
+    public void openTab(int tab) {
+        genericPage.opeTab(tab);
+    }
 }
