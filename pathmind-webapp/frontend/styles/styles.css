@@ -340,7 +340,9 @@ hr {
 .project-view .section-title-label + vaadin-button {
     min-width: var(--lumo-button-size);
     height: 1.4rem;
+    line-height: 1.4rem;
     font-size: var(--lumo-font-size-s);
+    font-weight: normal;
     padding: 0 var(--lumo-space-xs);
     margin: 0 0 0 var(--lumo-space-xs);
 }
@@ -752,9 +754,4 @@ h4 {
     margin-top: var(--lumo-space-l);
     padding: var(--lumo-space-xs) var(--lumo-space-l);
     background-color: var(--lumo-contrast-5pct);
-}
-.dialog-footer .cancel-button {
-    margin-right: auto;
-    margin-left: var(--lumo-space-s);
-    align-self: center;
 }

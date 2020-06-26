@@ -32,8 +32,6 @@ public class RenameProjectDialog extends Dialog {
 		rename.addClickShortcut(Key.ENTER);
 
 		cancel = new Button("Cancel", evt -> close());
-		cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-		cancel.setClassName("cancel-button");
 		HorizontalLayout footer = new HorizontalLayout(cancel, rename);
 		footer.setClassName("dialog-footer");
 

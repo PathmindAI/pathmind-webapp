@@ -20,7 +20,9 @@
 .notes-block .header vaadin-button {
     min-width: 45px;
     height: 1.4rem;
+    line-height: 1.4rem;
     font-size: var(--lumo-font-size-s);
+    font-weight: normal;
     padding: 0 var(--lumo-space-xs);
     margin: 0;
 }
