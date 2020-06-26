@@ -17,11 +17,11 @@ public class SparkLine extends PolymerTemplate<TemplateModel> implements HasStyl
         super();
     }
     
-    public void setSparkLine(float[] sparklineData, int index) {
+    public void setSparkLine(double[] sparklineData, int index) {
         getElement().callJsFunction("setSparkLine", convertToJsArray(sparklineData), index);
     }
     
-    public JsonArray convertToJsArray(float[] sparklineData) {
+    public JsonArray convertToJsArray(double[] sparklineData) {
 		JsonArray json = Json.createArray();
         if (sparklineData != null) {
             for (int i = 0; i < sparklineData.length; i++) {

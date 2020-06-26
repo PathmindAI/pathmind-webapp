@@ -12,9 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.db.jooq.Tables.EXPERIMENT;
-import static io.skymind.pathmind.db.jooq.Tables.METRICS;
-import static io.skymind.pathmind.db.jooq.Tables.MODEL;
+import static io.skymind.pathmind.db.jooq.Tables.*;
 import static io.skymind.pathmind.db.jooq.tables.Run.RUN;
 import static org.jooq.impl.DSL.max;
 
@@ -25,6 +23,16 @@ class MetricsRepository {
             .where(METRICS.POLICY_ID.in(policyIds))
             .groupBy(METRICS.POLICY_ID)
             .fetchMap(METRICS.POLICY_ID, max(METRICS.ITERATION));
+    }
+
+    protected static Map<Long, List<Metrics>> getMetricsForPolicies(DSLContext ctx, List<Long> policyIds) {
+        //todo need to change this query
+        return policyIds.stream()
+            .map(policyId -> {
+                List<Metrics> metrics = getMetricsForPolicy(ctx, policyId);
+                return Map.entry(policyId, metrics);
+            })
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     protected static List<Metrics> getMetricsForPolicy(DSLContext ctx, long policyId) {
