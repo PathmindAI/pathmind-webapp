@@ -7,7 +7,7 @@ EOF`
 
 if [ $AGE -ge 24 ]
 then
-	description="Job running for more than 24 hours seconds, job is killed"
+	description="Job running for more than 24 hours, job is killed"
 	curl -X POST -H 'Content-type: application/json' \
 	--data "{'text':':x:Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
 	https://hooks.slack.com/services/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

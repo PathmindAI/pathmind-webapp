@@ -1383,4 +1383,17 @@
             <dropColumn tableName="PATHMIND_USER" columnName="NEW_EMAIL_TO_VERIFY"  />
         </rollback>
     </changeSet>
+
+    <changeSet id="20200626-01" author="bruno.rezende@ext.vaadin.com">
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="Job running for more than 24 hours, job is killed"/>
+            <column name="DESCRIPTION" value="Job running for more than 24 hours, job is killed"/>
+            <column name="RESTARTABLE" value="true"/>
+        </insert>
+        <rollback>
+            <delete tableName="TRAINING_ERROR">
+                <where>KEYWORD='Job running for more than 24 hours, job is killed'</where>
+            </delete>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
