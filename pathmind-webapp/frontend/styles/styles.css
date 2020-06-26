@@ -509,10 +509,9 @@ account-view {
     background: var(--lumo-success-color-10pct);
     color: var(--lumo-success-color);
 }
-/* TODO: each of the two colors below should be defined as a var */
 .warning-label {
-    background: #856404;
-    color: #fff3cd;
+    background: #FFC038;
+    color: var(--lumo-body-text-color);
 }
 /* Primary Button Styles */
 .button-link {

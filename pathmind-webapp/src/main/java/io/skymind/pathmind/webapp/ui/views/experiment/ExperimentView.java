@@ -457,6 +457,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private void showTheReasonWhyTheTrainingStopped(String text, String labelClass, boolean showEarlyStoppingLink) {
+        reasonWhyTheTrainingStoppedLabel.removeClassNames(SUCCESS_LABEL, WARNING_LABEL, ERROR_LABEL);
         reasonWhyTheTrainingStoppedLabel.addClassName(labelClass);
         reasonWhyTheTrainingStoppedLabel.setText(text);
         if (showEarlyStoppingLink) {
