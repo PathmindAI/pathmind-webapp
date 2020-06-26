@@ -116,5 +116,5 @@ workflow-step-api
 workflow-support
 ws-cleanup
 serenity:1.4
-build-name-setter-plugin
+build-name-setter
 basic-branch-build-strategies
