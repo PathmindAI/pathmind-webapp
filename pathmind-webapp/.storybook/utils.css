@@ -1,0 +1,5 @@
+.storybook-row-wrapper {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--lumo-space-m);
+}

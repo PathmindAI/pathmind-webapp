@@ -3,19 +3,25 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@polymer/polymer": "3.2.0",
+    "@vaadin/flow-deps": "./target/frontend",
     "@webcomponents/webcomponentsjs": "^2.2.10",
-    "@vaadin/flow-deps": "./target/frontend"
+    "css-loader": "^3.6.0",
+    "to-string-loader": "^1.1.6"
   },
   "devDependencies": {
+    "@babel/core": "^7.10.3",
+    "@storybook/polymer": "^5.3.19",
+    "babel-loader": "^8.1.0",
+    "compression-webpack-plugin": "3.0.1",
+    "copy-webpack-plugin": "5.1.0",
+    "polymer-webpack-loader": "^2.0.3",
+    "raw-loader": "3.0.0",
+    "terser": "4.6.7",
     "webpack": "4.42.0",
+    "webpack-babel-multi-target-plugin": "2.3.3",
     "webpack-cli": "3.3.10",
     "webpack-dev-server": "3.9.0",
-    "webpack-babel-multi-target-plugin": "2.3.3",
-    "copy-webpack-plugin": "5.1.0",
-    "compression-webpack-plugin": "3.0.1",
-    "webpack-merge": "4.2.2",
-    "raw-loader": "3.0.0",
-    "terser": "4.6.7"
+    "webpack-merge": "4.2.2"
   },
   "vaadinAppPackageHash": "a444b8f23b5319c003f9ac2538a30cef8361c36c20b4cbfca85f38f427036f1b",
   "husky": {
@@ -25,5 +31,9 @@
   },
   "lint-staged": {
     "*.{js,css,md}": "prettier --write"
+  },
+  "scripts": {
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   }
 }
