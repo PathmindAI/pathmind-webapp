@@ -26,6 +26,31 @@ class CodeViewer extends PolymerElement {
             }
             event.preventDefault();
         });
+
+        const copyButton = this.shadowRoot.querySelector("vaadin-button");
+        copyButton.addEventListener("click", event => {
+            const copyIcon = copyButton.querySelector("iron-icon:first-child");
+            const checkmarkIcon = copyButton.querySelector("iron-icon:last-child");
+            const range = document.createRange();
+            range.selectNode(codeElement);
+            const select = window.getSelection();
+            select.removeAllRanges();
+            select.addRange(range);
+            if (window.clipboardData) {
+                // This is for IE11.
+                window.clipboardData.setData("text", select.toString());
+            } else {
+                document.execCommand("copy");
+            }
+            select.removeAllRanges();
+
+            copyIcon.removeAttribute("active");
+            checkmarkIcon.setAttribute("active", true);
+            setTimeout(function() {
+                copyIcon.setAttribute("active", true);
+                checkmarkIcon.removeAttribute("active");
+            }, 800);
+        });
     }
 
     setValue(codeSnippet, rewardVariables = {}) {
@@ -37,7 +62,6 @@ class CodeViewer extends PolymerElement {
         codeSnippet = renderToken(commentRe, "comment");
         codeSnippet = renderVariableToken(indexNumberRe, "index", rewardVariables);
         codeElement.innerHTML = codeSnippet;
-
         function renderToken(regexCondition, className) {
             return codeSnippet.replace(regexCondition, `<span class="token-${className}">$&</span>`);
         }
@@ -62,6 +86,7 @@ class CodeViewer extends PolymerElement {
         return html`
             <style>
                 :host {
+                    position: relative;
                     box-sizing: border-box;
                     flex: 1;
                     width: 100%;
@@ -81,6 +106,30 @@ class CodeViewer extends PolymerElement {
                     padding: var(--lumo-space-xs) var(--lumo-space-s);
                     margin: 0;
                     overflow: auto;
+                }
+                vaadin-button {
+                    position: absolute;
+                    width: 28px;
+                    min-width: auto;
+                    height: 28px;
+                    top: 0;
+                    right: 0;
+                    padding: 0;
+                    background-color: rgba(200,200,200,0.6);
+                    border-radius: 0;
+                    margin: 0;
+                }
+                iron-icon {
+                    position: absolute;
+                    width: 24px;
+                    height: 24px;
+                    top: 2px;
+                    left: 2px;
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                }
+                iron-icon[active] {
+                    opacity: 1;
                 }
                 .token-operator {
                     color: rgb(127, 0, 85);
@@ -145,6 +194,10 @@ class CodeViewer extends PolymerElement {
                 }
             </style>
             <code></code>
+            <vaadin-button>
+                <iron-icon icon="vaadin:copy-o" active></iron-icon>
+                <iron-icon icon="vaadin:check"></vaadin-button>
+            </div>
         `;
     }
 }
