@@ -1,5 +1,8 @@
 package io.skymind.pathmind.webapp.ui.components;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.flow.component.button.Button;
@@ -37,7 +40,8 @@ public class SearchBox extends HorizontalLayout
 
 	public void search(){
 	    if (!StringUtils.isEmpty(searchTextField.getValue())) {
-	        getUI().ifPresent(ui -> ui.navigate(SearchResultsView.class, searchTextField.getValue()));
+            String searchTerm = URLEncoder.encode(searchTextField.getValue(), StandardCharsets.UTF_8);
+	        getUI().ifPresent(ui -> ui.navigate(SearchResultsView.class, searchTerm));
 	    }
 	}
 

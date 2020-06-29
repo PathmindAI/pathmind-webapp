@@ -1,11 +1,12 @@
 package io.skymind.pathmind.webapp.ui.views.search;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -101,7 +102,7 @@ public class SearchResultsView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     public void setParameter(BeforeEvent event, String keyword) {
-        dataProvider.setFilter(keyword);
+        dataProvider.setFilter(URLDecoder.decode(keyword, StandardCharsets.UTF_8));
     }
 
 }
