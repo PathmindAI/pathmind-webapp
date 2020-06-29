@@ -53,12 +53,12 @@
     font-weight: bold;
     min-width: 14rem;
     height: var(--lumo-size-l);
+    border: 1px solid var(--pm-primary-color);
 }
 
 :host([theme~="primary"]:hover) {
     color: var(--pm-primary-color);
     background-color: white;
-    border: 1px solid var(--pm-primary-color);
 }
 
 :host([theme~="primary"]:hover)::before {
