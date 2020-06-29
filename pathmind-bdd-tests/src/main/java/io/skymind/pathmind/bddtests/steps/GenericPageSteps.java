@@ -89,6 +89,11 @@ public class GenericPageSteps {
     }
 
     @Step
+    public void refreshPage() {
+        genericPage.getDriver().navigate().refresh();
+    }
+
+    @Step
     public void duplicateCurrentTab() {
         genericPage.duplicateCurrentTab();
     }

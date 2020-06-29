@@ -77,6 +77,11 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.checkThatSimulationMetricsBlockIsShown();
     }
 
+    @Then("^Click copy reward function btn and paste text to the notes field$")
+    public void clickCopyRewardFunctionBtn() {
+        experimentPageSteps.clickCopyRewardFunctionBtn();
+    }
+
     @Then("^Check that (.*) exist on the experiment page$")
     public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
         experimentPageSteps.checkThatExperimentExistOnTheExperimentPage(experiment);

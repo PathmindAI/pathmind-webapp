@@ -94,6 +94,11 @@ public class GenericPageStepDefinitions {
         genericPageSteps.checkThatCheckmarkIsShown();
     }
 
+    @When("^Refresh page$")
+    public void refreshPage() {
+        genericPageSteps.refreshPage();
+    }
+
     @Then("^Duplicate current tab$")
     public void duplicateCurrentTab() {
         genericPageSteps.duplicateCurrentTab();
