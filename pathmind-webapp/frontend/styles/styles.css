@@ -18,6 +18,7 @@ html {
     --pm-gray-color: #b3b6c2;
     --pm-gray-color-light: #d0d0d0;
     --pm-gray-color-lighter: #dee3ed;
+    --pm-gray-color-lightest: #eaeeef;
     --pm-blue-color-darkest: #1a2949;
     --pm-blue-color-darkest-50pct: rgba(26, 41, 73, 0.5);
     --pm-blue-color-darkest-25pct: rgba(26, 41, 73, 0.25);
@@ -63,6 +64,7 @@ html {
     --lumo-space-m: 1.125rem;
     --lumo-space-s: 0.75rem;
     --lumo-space-xs: 0.375rem;
+    --lumo-icon-size-l: 1.75rem;
     --lumo-success-color-50pct: rgba(53, 151, 106, 0.5);
     --lumo-success-color-10pct: rgba(53, 151, 106, 0.1);
     --lumo-success-color: var(--pm-friendly-color);
@@ -346,7 +348,7 @@ hr {
 .project-view .section-title-label + vaadin-button {
     min-width: var(--lumo-button-size);
     height: 1.4rem;
-    line-height: 1.4rem;
+    line-height: calc(1.4rem - 2px);
     font-size: var(--lumo-font-size-s);
     font-weight: normal;
     padding: 0 var(--lumo-space-xs);
@@ -441,11 +443,6 @@ account-view {
 
 .projects-view .page-title {
     width: calc(var(--lumo-space-m) * 2 + 100%) !important;
-}
-
-.action-button iron-icon {
-    width: 32px;
-    height: 32px;
 }
 
 .readonly-label {

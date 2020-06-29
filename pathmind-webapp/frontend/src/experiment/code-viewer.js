@@ -112,11 +112,11 @@ class CodeViewer extends PolymerElement {
                     width: 28px;
                     min-width: auto;
                     height: 28px;
-                    top: 0;
-                    right: 0;
+                    top: -1px;
+                    right: -1px;
                     padding: 0;
                     background-color: rgba(200,200,200,0.6);
-                    border-radius: 0;
+                    border-radius: 0 var(--lumo-border-radius) 0 0;
                     margin: 0;
                 }
                 iron-icon {
