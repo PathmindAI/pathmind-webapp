@@ -73,4 +73,9 @@ public class ExperimentPageSteps {
     public void checkThatSimulationMetricsBlockIsShown() {
         experimentPage.checkThatSimulationMetricsBlockIsShown();
     }
+
+    @Step
+    public void clickCopyRewardFunctionBtn() {
+        experimentPage.clickCopyRewardFunctionBtn();
+    }
 }
