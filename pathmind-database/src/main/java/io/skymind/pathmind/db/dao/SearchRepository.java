@@ -32,7 +32,7 @@ public class SearchRepository {
     }
     
     private static Table<Record6<String, Long, String, LocalDateTime, LocalDateTime, String>> generateSearchQueryTable(DSLContext ctx, long userId, String keyword){
-        String searchValue = "%" + keyword + "%";
+        String searchValue = "%" + keyword.replace("%", "\\%").replace("_", "\\_") + "%";
         return ctx.select(DSL.inline(SearchResultItemType.PROJECT.getName()).as("itemType"), PROJECT.ID, PROJECT.NAME, PROJECT.DATE_CREATED, PROJECT.LAST_ACTIVITY_DATE.as("lastActivity"), PROJECT.USER_NOTES)
                 .from(PROJECT)
                 .where(PROJECT.PATHMIND_USER_ID.eq(userId).and(PROJECT.NAME.likeIgnoreCase(searchValue).or(PROJECT.USER_NOTES.likeIgnoreCase(searchValue))))
