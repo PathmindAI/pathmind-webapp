@@ -12,4 +12,10 @@ public class CookieUtils {
 		cookie.setMaxAge(0);
 		VaadinService.getCurrentResponse().addCookie(cookie);
 	}
+
+	public static void deleteAWSCanCookie() {
+		// Deleting the cookie on the login page load to make sure new user sessions
+		// won't be using old webapp instances in the case of canary deployments.
+		deleteCookie("Can");
+	}
 }

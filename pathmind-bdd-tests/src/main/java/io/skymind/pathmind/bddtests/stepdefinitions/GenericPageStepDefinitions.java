@@ -93,4 +93,9 @@ public class GenericPageStepDefinitions {
     public void checkThatCheckmarkIsShown() {
         genericPageSteps.checkThatCheckmarkIsShown();
     }
+
+    @When("^Refresh page$")
+    public void refreshPage() {
+        genericPageSteps.refreshPage();
+    }
 }

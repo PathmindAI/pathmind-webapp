@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.account;
 
-import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ public class AccountView extends PathMindDefaultView {
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("Account");
+		return null;
 	}
 
 	@Override
