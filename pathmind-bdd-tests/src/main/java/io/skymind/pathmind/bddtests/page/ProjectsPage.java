@@ -1,8 +1,7 @@
 package io.skymind.pathmind.bddtests.page;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -72,5 +71,9 @@ public class ProjectsPage extends PageObject {
         actions.click();
         actions.perform();
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label' and text()='Rename project']")));
+    }
+
+    public void checkPageTitleIsProjects(String title) {
+        assertThat(getDriver().findElement(By.xpath("//span[contains(@class,'section-title-label')]")).getText(), is(title));
     }
 }
