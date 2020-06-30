@@ -8,7 +8,6 @@ import "@vaadin/vaadin-button/theme/lumo/vaadin-button.js";
 
 registerStyles("vaadin-button", unsafeCSS(pathmindVaadinButtonStyles));
 
-// const hljs = require("highlight.js/lib/core");
 hljs.registerLanguage('java', hlJava);
 
 const primaryButton = `

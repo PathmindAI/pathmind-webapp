@@ -18,7 +18,7 @@ import '../frontend/styles/styles.css';
 import { registerStyles, unsafeCSS } from "@vaadin/vaadin-themable-mixin/register-styles.js";
 
 // For Java syntax highlighting
-import hljs from "highlight.js/lib/core";
+import hljs from "highlight.js/lib/highlight";
 import hlJava from "highlight.js/lib/languages/java";
 
 // For showing Java code
