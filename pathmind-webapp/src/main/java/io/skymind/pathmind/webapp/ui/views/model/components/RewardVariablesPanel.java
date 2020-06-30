@@ -68,9 +68,11 @@ public class RewardVariablesPanel extends VerticalLayout
 	}
 
 	private Component getRewardVariablesPanel() {
-		VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
-				LabelFactory.createLabel("Let’s give each variable a name", BOLD_LABEL),
-				LabelFactory.createLabel("This will make it easier to understand when you’re creating reward functions."));
+        VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
+                LabelFactory.createLabel("Let’s give each variable a name", BOLD_LABEL),
+                LabelFactory.createLabel("This will make it easier to understand when you’re creating reward functions."),
+                LabelFactory.createLabel("If a name isn't provided, the reward variable will be named 'var-X', where 'X' is its index, e.g. 'var-0'.")
+        );
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
 	}
