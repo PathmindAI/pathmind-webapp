@@ -1,5 +1,22 @@
-.storybook-row-wrapper {
+.story-wrapper {
+    font-family: var(--lumo-font-family);
+    padding: var(--lumo-space-m);
+}
+h1 {
+    margin: 0;
+}
+.row-wrapper {
     display: flex;
     justify-content: space-between;
-    padding: var(--lumo-space-m);
+    margin-top: var(--lumo-space-xs);
+}
+.col-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: var(--lumo-space-m);
+}
+.col-wrapper > :last-child {
+    width: 100%;
+    margin-bottom: 0;
 }

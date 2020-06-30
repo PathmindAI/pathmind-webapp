@@ -2,10 +2,13 @@
   "name": "no-name",
   "license": "UNLICENSED",
   "dependencies": {
+    "@pickra/copy-code-block": "^1.2.0",
     "@polymer/polymer": "3.2.0",
+    "@storybook/addon-backgrounds": "^5.3.19",
     "@vaadin/flow-deps": "./target/frontend",
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "css-loader": "^3.6.0",
+    "highlight.js": "^10.1.1",
     "to-string-loader": "^1.1.6"
   },
   "devDependencies": {
