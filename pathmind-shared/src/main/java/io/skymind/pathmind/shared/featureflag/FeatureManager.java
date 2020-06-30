@@ -1,15 +1,26 @@
 package io.skymind.pathmind.shared.featureflag;
 
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+@Slf4j
+@ToString
 @Component
 public class FeatureManager {
 
     private final boolean multiAgentEnabled;
+    private final boolean simulationMetrics;
 
-    public FeatureManager(@Value("${pathmind.training.multiagent:false}") boolean multiAgentEnabled) {
+    public FeatureManager(
+            @Value("${pathmind.toggle.multiagent:false}") boolean multiAgentEnabled,
+            @Value("${pathmind.toggle.simulation-metrics:false}") boolean simulationMetrics
+            ) {
         this.multiAgentEnabled = multiAgentEnabled;
+        this.simulationMetrics = simulationMetrics;
+
+        log.info("Toggles: {}", this);
     }
 
 
@@ -20,7 +31,7 @@ public class FeatureManager {
             case ACCOUNT_UPGRADE:
                 return false;
             case SIMULATION_METRICS:
-                return false;
+                return simulationMetrics;
             default:
                 return true;
         }
