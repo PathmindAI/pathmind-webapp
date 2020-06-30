@@ -24,3 +24,23 @@ Feature: Nav bar buttons
     Given Login to the pathmind
     When Open user account page
     Then Check that user account page opened
+
+  @Skip
+  Scenario Outline: Check notes search
+    Given Login to the pathmind
+    When Create new CoffeeShop project with experiment note '<note>'
+    When Input '<note>' to the notes search field
+    When Click notes search btn
+    When Check search result page notes contains '<note>'
+
+    Examples:
+      | note               |
+      | AutotestNoteSearch |
+      | AutotestProject    |
+
+  @Skip
+  Scenario: Check search field clear button
+    Given Login to the pathmind
+    When Input 'AutotestNoteSearch' to the notes search field
+    When Click notes clear btn
+    Then Check notes search field text is ''

@@ -65,4 +65,29 @@ public class HomePageStepDefinitions {
     public void clickGettingStartedGuideButton() {
         homePageSteps.clickGettingStartedGuideButton();
     }
+
+    @When("^Input '(.*)' to the notes search field$")
+    public void inputToTheNotesSearchField(String text) {
+        homePageSteps.inputToTheNotesSearchField(text);
+    }
+
+    @When("^Click notes search btn$")
+    public void clickNotesSearchBtn() {
+        homePageSteps.clickNotesSearchBtn();
+    }
+
+    @When("^Check search result page notes contains '(.*)'$")
+    public void checkSearchResultPageNotesContainsSearch(String text) {
+        homePageSteps.checkSearchResultPageNotesContainsSearch(text);
+    }
+
+    @When("^Click notes clear btn$")
+    public void clickNotesClearBtn() {
+        homePageSteps.clickNotesClearBtn();
+    }
+
+    @Then("^Check notes search field text is '(.*)'$")
+    public void checkNotesSearchFieldIs(String text) {
+        homePageSteps.checkNotesSearchFieldIs(text);
+    }
 }

@@ -68,4 +68,29 @@ public class HomePageSteps {
     public void clickGettingStartedGuideButton() {
         homePage.clickGettingStartedGuideButton();
     }
+
+    @Step
+    public void inputToTheNotesSearchField(String text) {
+        homePage.inputToTheNotesSearchField(text);
+    }
+
+    @Step
+    public void clickNotesSearchBtn() {
+        homePage.clickNotesSearchBtn();
+    }
+
+    @Step
+    public void checkSearchResultPageNotesContainsSearch(String text) {
+        homePage.checkSearchResultPageNotesContainsSearch(text);
+    }
+
+    @Step
+    public void clickNotesClearBtn() {
+        homePage.clickNotesClearBtn();
+    }
+
+    @Step
+    public void checkNotesSearchFieldIs(String text) {
+        homePage.checkNotesSearchFieldIs(text);
+    }
 }
