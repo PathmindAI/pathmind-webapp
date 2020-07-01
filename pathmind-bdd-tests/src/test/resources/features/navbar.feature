@@ -1,3 +1,4 @@
+@debug
 Feature: Nav bar buttons
 
   Scenario: Click dashboard btn and check that dashboard opened
@@ -25,7 +26,7 @@ Feature: Nav bar buttons
     When Open user account page
     Then Check that user account page opened
 
-  @Skip
+  @notesSearch
   Scenario Outline: Check notes search
     Given Login to the pathmind
     When Create new CoffeeShop project with experiment note '<note>'
@@ -38,7 +39,7 @@ Feature: Nav bar buttons
       | AutotestNoteSearch |
       | AutotestProject    |
 
-  @Skip
+  @notesSearch
   Scenario: Check search field clear button
     Given Login to the pathmind
     When Input 'AutotestNoteSearch' to the notes search field
