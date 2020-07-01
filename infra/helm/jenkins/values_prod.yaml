@@ -29,6 +29,7 @@ service:
 
 pvc:
   claimName: jenkins-pvc
+  volumeHandle: fs-8b1e5608
 
 ingress:
   enabled: false

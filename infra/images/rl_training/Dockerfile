@@ -40,5 +40,5 @@ RUN cp /usr/bin/bsdtar /bin/tar
 
 RUN chmod +x /app/do_training.sh
 
-CMD ["bash","-c","/app/do_training.sh"]
-#CMD ["bash","-c","sleep 300000000"]
+#CMD ["bash","-c","/app/do_training.sh"]
+CMD ["bash","-c","sleep 300000000"]

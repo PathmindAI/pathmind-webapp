@@ -38,6 +38,21 @@ env:
   SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/test-updater-queue
   SNS_UPDATER_SQS_FILTER_ATTR: test
 
+readinessprobe:
+  httpGet:
+    path: /
+    port: 80
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  failureThreshold: 10
+
+livenessprobe:
+  httpGet:
+    path: /
+    port: 80
+  initialDelaySeconds: 30
+  periodSeconds: 15
+
 name: pathmind  
 
 namespace: test

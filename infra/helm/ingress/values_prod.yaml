@@ -28,38 +28,38 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "7200"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   hosts:
-    - host: app.pathmind.com
-      paths: [/:80:canary]
-    - host: devpathmind.com
+#    - host: app.pathmind.com
+#      paths: [/:80:canary]
+    - host: eks.devpathmind.com
       paths: [/:80:canary]
     #model analyzer
-    - host: ma.devpathmind.com
+    - host: maeks.devpathmind.com
       paths: [/:8080:pathmind-ma]
-    - host: jenkins.devpathmind.com
+    - host: jenkinseks.devpathmind.com
       paths: [/:8080:jenkins]
-    - host: grafana.devpathmind.com
-      paths: [/:80:prometheus-grafana]
-    - host: kibana.devpathmind.com
+    - host: grafanaeks.devpathmind.com
+      paths: [/:80:prometheus-operator-grafana]
+    - host: kibanaeks.devpathmind.com
       paths: [/:5601:kibana-kb-http]
-    - host: pgadmin.devpathmind.com
+    - host: pgadmineks.devpathmind.com
       paths: [/:80:pgadmin]
-    - host: admin.devpathmind.com
+    - host: admineks.devpathmind.com
       paths: [/:80:pathmind-admin-client]
-    - host: admin-server.devpathmind.com
+    - host: admin-servereks.devpathmind.com
       paths: [/:9091:pathmind-admin-server]
 
   tls: 
     - secretName: letsencrypt-prod
       hosts:
-        - app.pathmind.com
-        - devpathmind.com
-        - pgadmin.devpathmind.com
-        - grafana.devpathmind.com
-        - ma.devpathmind.com
-        - kibana.devpathmind.com
-        - jenkins.devpathmind.com
-        - admin.devpathmind.com
-        - admin-server.devpathmind.com
+        #- app.pathmind.com
+        - eks.devpathmind.com
+        - pgadmineks.devpathmind.com
+        - grafanaeks.devpathmind.com
+        - maeks.devpathmind.com
+        - kibanaeks.devpathmind.com
+        - jenkinseks.devpathmind.com
+        - admineks.devpathmind.com
+        - admin-servereks.devpathmind.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

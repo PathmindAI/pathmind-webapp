@@ -37,6 +37,10 @@ env:
   SNS_UPDATER_TOPIC_ARN: arn:aws:sns:us-east-1:839270835622:test-updater-topic
   SNS_UPDATER_SQS_FILTER_ATTR: test
 
+readinessprobe: {}
+
+livenessprobe: {}
+
 name: pathmind-updater
 
 namespace: test
