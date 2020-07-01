@@ -5,7 +5,6 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
 
-import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
 
@@ -18,13 +17,6 @@ public class SectionsHeaderPanel extends HorizontalLayout
 		if (hasLoginUser) {
 			RouterLink dashboardLink = new RouterLink("Dashboard", DashboardView.class);
 			RouterLink projectsLink = new RouterLink("Projects", ProjectsView.class);
-			projectsLink.setHighlightCondition((link, event) -> {
-				return event.getLocation().getPath().startsWith("projects") ||
-						event.getLocation().getPath().startsWith("project") ||
-						event.getLocation().getPath().startsWith("model") ||
-						event.getLocation().getPath().startsWith("experiment");
-				}
-			);
 
 			sectionsHorizontalLayout.add(
 					dashboardLink,
