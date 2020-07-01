@@ -105,6 +105,14 @@ public class HomePage extends PageObject {
         getDriver().findElement(By.xpath("//a[text()='Getting Started Guide']")).click();
     }
 
+    public void checkThatProjectsButtonHighlightIs(Boolean status) {
+        if (status){
+            assertThat(getDriver().findElement(By.xpath("//a[text()='Projects']")).getAttribute("highlight"), is(""));
+        }else {
+            assertThat(getDriver().findElement(By.xpath("//a[text()='Projects']")).getAttribute("highlight"), is(nullValue()));
+        }
+    }
+
     public void inputToTheNotesSearchField(String text) {
         WebElement e = utils.expandRootElement(searchBoxShadow);
         WebElement input = e.findElement(By.cssSelector("input"));

@@ -90,4 +90,9 @@ public class HomePageStepDefinitions {
     public void checkNotesSearchFieldIs(String text) {
         homePageSteps.checkNotesSearchFieldIs(text);
     }
+
+    @Then("^Check that projects button highlight is (.*)$")
+    public void checkThatProjectsButtonHighlightIs(Boolean status) {
+        homePageSteps.checkThatProjectsButtonHighlightIs(status);
+    }
 }

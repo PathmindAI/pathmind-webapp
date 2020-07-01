@@ -93,4 +93,9 @@ public class HomePageSteps {
     public void checkNotesSearchFieldIs(String text) {
         homePage.checkNotesSearchFieldIs(text);
     }
+
+    @Step
+    public void checkThatProjectsButtonHighlightIs(Boolean status) {
+        homePage.checkThatProjectsButtonHighlightIs(status);
+    }
 }
