@@ -77,7 +77,7 @@ public class SearchResultsView extends PathMindDefaultView implements HasUrlPara
                     getUI().ifPresent(ui -> ui.navigate(ModelView.class, item.getItemId()));
                     break;
                 case EXPERIMENT:
-                    Experiment experiment = experimentDao.getExperiment(item.getItemId()).get();
+                    Experiment experiment = experimentDao.getExperimentWithRuns(item.getItemId()).get();
                     if (ExperimentUtils.isDraftRunType(experiment)) {
                         getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, item.getItemId()));
                     } else {
