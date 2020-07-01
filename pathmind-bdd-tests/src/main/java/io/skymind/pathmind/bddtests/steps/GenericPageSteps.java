@@ -87,4 +87,9 @@ public class GenericPageSteps {
     public void checkThatCheckmarkIsShown() {
         genericPage.checkThatCheckmarkIsShown();
     }
+
+    @Step
+    public void refreshPage() {
+        genericPage.getDriver().navigate().refresh();
+    }
 }

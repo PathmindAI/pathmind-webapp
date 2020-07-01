@@ -38,13 +38,11 @@ import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
 import io.skymind.pathmind.shared.data.PathmindUser;
-import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.webapp.ui.views.dashboard.DashboardView;
-import io.skymind.pathmind.webapp.ui.views.project.NewProjectView;
 
 @Route(Routes.LOGIN_URL)
 @Theme(Lumo.class)
@@ -58,9 +56,6 @@ public class LoginView extends HorizontalLayout
 	private Div badCredentials = new Div();
 	private HorizontalLayout emailNotVerified = WrapperUtils.wrapWidthFullHorizontal();
 	private Div sessionExpired = new Div();
-
-	@Autowired
-	private ProjectDAO projectDAO;
 
 	@Autowired
 	private EmailNotificationService emailNotificationService;
@@ -218,12 +213,6 @@ public class LoginView extends HorizontalLayout
 
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
-		deleteAWSCanCookie();
-	}
-
-	private void deleteAWSCanCookie() {
-		// Deleting the cookie on the login page load to make sure new user sessions
-		// won't be using old webapp instances in the case of canary deployments.
-		CookieUtils.deleteCookie("Can");
+		CookieUtils.deleteAWSCanCookie();
 	}
 }
