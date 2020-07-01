@@ -151,4 +151,16 @@ public class HomePage extends PageObject {
     public void checkNotesSearchFieldIs(String text) {
         assertThat(searchBoxShadow.getText(),is(text));
     }
+
+    public void checkSearchResultPageContainsProjectName(String name) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[@slot='vaadin-grid-cell-content-2']")).getText(), is(name));
+    }
+
+    public void checkSearchResultPageContainsModelName(String name) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[contains(text(),'Model')]/following::vaadin-grid-cell-content[1]")).getText(), is(name));
+    }
+
+    public void clickAutotestProjectFromSearchPage(String name) {
+        getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+ name +"']")).click();
+    }
 }

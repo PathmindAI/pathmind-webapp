@@ -3,6 +3,7 @@ package io.skymind.pathmind.bddtests.stepdefinitions;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.HomePageSteps;
+import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
 
 public class HomePageStepDefinitions {
@@ -94,5 +95,25 @@ public class HomePageStepDefinitions {
     @Then("^Check that projects button highlight is (.*)$")
     public void checkThatProjectsButtonHighlightIs(Boolean status) {
         homePageSteps.checkThatProjectsButtonHighlightIs(status);
+    }
+
+    @When("^Input project name to the notes search field$")
+    public void inputProjectNameToTheNotesSearchField() {
+        homePageSteps.inputToTheNotesSearchField("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
+    }
+
+    @When("^Check search result page contains project name$")
+    public void checkSearchResultPageContainsProjectName() {
+        homePageSteps.checkSearchResultPageContainsProjectName("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
+    }
+
+    @When("^Check search result page contains model name '(.*)'$")
+    public void checkSearchResultPageContainsModelName(String name) {
+        homePageSteps.checkSearchResultPageContainsModelName(name);
+    }
+
+    @Then("^Click (.*) from search page$")
+    public void clickAutotestProjectFromSearchPage(String projectName) {
+        homePageSteps.clickAutotestProjectFromSearchPage(projectName + Serenity.sessionVariableCalled("randomNumber"));
     }
 }

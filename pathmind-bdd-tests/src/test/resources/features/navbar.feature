@@ -55,7 +55,32 @@ Feature: Nav bar buttons
     Examples:
       | note               |
       | AutotestNoteSearch |
-      | AutotestProject    |
+
+  @notesSearch
+  Scenario: Check project name search
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft model
+    When Input project name to the notes search field
+    When Click notes search btn
+    When Check search result page contains project name
+    Then Click AutotestProject from search page
+    Then Check that project AutotestProject page is opened
+
+  @notesSearch
+  Scenario: Check model name search
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Input '1' to the notes search field
+    When Click notes search btn
+    When Check search result page contains model name '1'
+
+  @notesSearch
+  Scenario: Check experiment name search
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Input '1' to the notes search field
+    When Click notes search btn
+    When Check search result page contains model name '1'
 
   @notesSearch
   Scenario: Check search field clear button

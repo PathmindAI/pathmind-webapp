@@ -98,4 +98,19 @@ public class HomePageSteps {
     public void checkThatProjectsButtonHighlightIs(Boolean status) {
         homePage.checkThatProjectsButtonHighlightIs(status);
     }
+
+    @Step
+    public void checkSearchResultPageContainsProjectName(String name) {
+        homePage.checkSearchResultPageContainsProjectName(name);
+    }
+
+    @Step
+    public void checkSearchResultPageContainsModelName(String name) {
+        homePage.checkSearchResultPageContainsModelName(name);
+    }
+
+    @Step
+    public void clickAutotestProjectFromSearchPage(String name) {
+        homePage.clickAutotestProjectFromSearchPage(name);
+    }
 }
