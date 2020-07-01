@@ -39,12 +39,12 @@ public class SearchRepository {
         .union(ctx.select(DSL.inline(SearchResultItemType.MODEL.getName()).as("itemType"), MODEL.ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE.as("lastActivity"), MODEL.USER_NOTES)
                 .from(MODEL)
                 .innerJoin(PROJECT).on(MODEL.PROJECT_ID.eq(PROJECT.ID))
-                .where(PROJECT.PATHMIND_USER_ID.eq(userId)).and(MODEL.USER_NOTES.likeIgnoreCase(searchValue)))
+                .where(PROJECT.PATHMIND_USER_ID.eq(userId)).and(MODEL.NAME.equal(keyword).or(MODEL.USER_NOTES.likeIgnoreCase(searchValue))))
         .union(ctx.select(DSL.inline(SearchResultItemType.EXPERIMENT.getName()).as("itemType"), EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.DATE_CREATED, EXPERIMENT.LAST_ACTIVITY_DATE.as("lastActivity"), EXPERIMENT.USER_NOTES)
                 .from(EXPERIMENT)
                 .innerJoin(MODEL).on(EXPERIMENT.MODEL_ID.eq(MODEL.ID))
                 .innerJoin(PROJECT).on(MODEL.PROJECT_ID.eq(PROJECT.ID))
-                .where(PROJECT.PATHMIND_USER_ID.eq(userId).and(EXPERIMENT.USER_NOTES.likeIgnoreCase(searchValue))))
+                .where(PROJECT.PATHMIND_USER_ID.eq(userId).and(EXPERIMENT.NAME.equal(keyword).or(EXPERIMENT.USER_NOTES.likeIgnoreCase(searchValue)))))
                 .asTable();
     }
 
