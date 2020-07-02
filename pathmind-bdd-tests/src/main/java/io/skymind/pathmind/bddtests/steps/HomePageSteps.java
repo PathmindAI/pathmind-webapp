@@ -68,4 +68,9 @@ public class HomePageSteps {
     public void clickGettingStartedGuideButton() {
         homePage.clickGettingStartedGuideButton();
     }
+
+    @Step
+    public void checkThatProjectsButtonHighlightIs(Boolean status) {
+        homePage.checkThatProjectsButtonHighlightIs(status);
+    }
 }

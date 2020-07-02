@@ -24,3 +24,22 @@ Feature: Nav bar buttons
     Given Login to the pathmind
     When Open user account page
     Then Check that user account page opened
+
+  Scenario: Check nav bar Projects highlighted button
+    Given Login to the pathmind
+    Then Check that projects button highlight is false
+    When Create new CoffeeShop project with single reward function
+    Then Check that projects button highlight is false
+    When Click project start run button
+    Then Check that projects button highlight is false
+    When Open projects page
+    Then Check that projects button highlight is true
+    When Open project AutotestProject on projects page
+    Then Check that projects button highlight is false
+    Then Click the model name 1
+    Then Check that projects button highlight is false
+    Then Click the experiment name 1
+    Then Check that projects button highlight is false
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
