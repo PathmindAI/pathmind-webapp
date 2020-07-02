@@ -252,7 +252,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         stopTrainingButton = new Button("Stop Training", click -> {
             showStopTrainingConfirmationDialog();
         });
-        stopTrainingButton.addThemeName("secondary");
         stopTrainingButton.setVisible(true);
 
         unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
