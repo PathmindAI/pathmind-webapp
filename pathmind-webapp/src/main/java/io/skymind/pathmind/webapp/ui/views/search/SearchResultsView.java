@@ -24,7 +24,6 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
@@ -50,7 +49,7 @@ public class SearchResultsView extends PathMindDefaultView implements HasUrlPara
     
     @Override
     protected Component getTitlePanel() {
-        return new ScreenTitlePanel("Search results");
+        return null;
     }
 
     @Override
