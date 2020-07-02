@@ -540,7 +540,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     }
 
                     updateDetailsForExperiment();
-                    if (showSimulationMetrics && policy.getMetrics() != null && policy.getMetrics().size() > 0) {
+                    if (showSimulationMetrics && policy!= null && policy.getMetrics() != null && policy.getMetrics().size() > 0) {
                         updateSimulationMetrics();
                     }
                 });
