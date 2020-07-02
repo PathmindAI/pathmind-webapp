@@ -99,4 +99,12 @@ public class HomePage extends PageObject {
     public void clickGettingStartedGuideButton() {
         getDriver().findElement(By.xpath("//a[text()='Getting Started Guide']")).click();
     }
+
+    public void checkThatProjectsButtonHighlightIs(Boolean status) {
+        if (status){
+            assertThat(getDriver().findElement(By.xpath("//a[text()='Projects']")).getAttribute("highlight"), is(""));
+        }else {
+            assertThat(getDriver().findElement(By.xpath("//a[text()='Projects']")).getAttribute("highlight"), is(nullValue()));
+        }
+    }
 }
