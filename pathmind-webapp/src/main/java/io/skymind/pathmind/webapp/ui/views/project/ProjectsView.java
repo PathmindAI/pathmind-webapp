@@ -91,6 +91,7 @@ public class ProjectsView extends PathMindDefaultView
                 String projectName = project.getName();
 				Button renameProjectButton = new Button(new Icon(VaadinIcon.EDIT), evt -> renameProject(project));
                 renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+                renameProjectButton.addClassName("action-button");
                 HorizontalLayout projectNameColumn = new TooltipContainer(projectName, projectName, renameProjectButton);
 				projectNameColumn.addClassName("project-name-column");
                 projectNameColumn.setSpacing(false);
