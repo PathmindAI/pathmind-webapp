@@ -39,7 +39,7 @@ public class SearchBox extends HorizontalLayout
 	}
 
 	public void search(){
-	    if (!StringUtils.isEmpty(searchTextField.getValue())) {
+	    if (StringUtils.isNotBlank(searchTextField.getValue())) {
             String searchTerm = URLEncoder.encode(searchTextField.getValue(), StandardCharsets.UTF_8);
 	        getUI().ifPresent(ui -> ui.navigate(SearchResultsView.class, searchTerm));
 	    }
