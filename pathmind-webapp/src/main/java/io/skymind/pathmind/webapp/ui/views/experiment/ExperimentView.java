@@ -11,7 +11,9 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.ExperimentCreatedSubscriber;
+import io.skymind.pathmind.webapp.bus.subscribers.ExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
@@ -116,6 +118,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
     private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
     private final ExperimentViewExperimentCreatedSubscriber experimentCreatedSubscriber;
+    private final ExperimentViewExperimentUpdatedSubscriber experimentUpdatedSubscriber;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -143,6 +146,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         policyUpdateSubscriber = new ExperimentViewPolicyUpdateSubscriber();
         runUpdateSubscriber = new ExperimentViewRunUpdateSubscriber();
         experimentCreatedSubscriber = new ExperimentViewExperimentCreatedSubscriber();
+        experimentUpdatedSubscriber = new ExperimentViewExperimentUpdatedSubscriber();
     }
 
     @Override
@@ -150,6 +154,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         EventBus.unsubscribe(policyUpdateSubscriber);
         EventBus.unsubscribe(runUpdateSubscriber);
         EventBus.unsubscribe(experimentCreatedSubscriber);
+        EventBus.unsubscribe(experimentUpdatedSubscriber);
     }
 
     @Override
@@ -157,6 +162,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         EventBus.subscribe(policyUpdateSubscriber);
         EventBus.subscribe(runUpdateSubscriber);
         EventBus.subscribe(experimentCreatedSubscriber);
+        EventBus.subscribe(experimentUpdatedSubscriber);
     }
 
     @Override
@@ -318,7 +324,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void archiveExperiment(Experiment experimentToArchive) {
         ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
-            experimentDAO.archive(experimentToArchive.getId(), true);
+            ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
             experiments.remove(experimentToArchive);
             if (experiments.isEmpty()) {
                 getUI().ifPresent(ui -> ui.navigate(ModelView.class, experimentToArchive.getModelId()));
@@ -334,7 +340,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void unarchiveExperiment() {
         ConfirmationUtils.unarchive("experiment", () -> {
-            experimentDAO.archive(experiment.getId(), false);
+            ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
             getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
         });
     }
@@ -527,6 +533,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return experiment != null && experiment.getModelId() == modelId;
     }
 
+    private boolean isViewAttached() {
+        return getUI().isPresent();
+    }
+
     class ExperimentViewPolicyUpdateSubscriber implements PolicyUpdateSubscriber
     {
         @Override
@@ -557,7 +567,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         @Override
         public boolean isAttached() {
-            return ExperimentView.this.getUI().isPresent();
+            return isViewAttached();
         }
     }
 
@@ -583,7 +593,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         @Override
         public boolean isAttached() {
-            return ExperimentView.this.getUI().isPresent();
+            return isViewAttached();
         }
         
         private boolean isSameExperiment(RunUpdateBusEvent event) {
@@ -602,7 +612,21 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         @Override
         public boolean isAttached() {
-            return ExperimentView.this.getUI().isPresent();
+            return isViewAttached();
+        }
+    }
+
+    class ExperimentViewExperimentUpdatedSubscriber implements ExperimentUpdatedSubscriber {
+        @Override
+        public void handleBusEvent(ExperimentUpdatedBusEvent event) {
+            if (isSameModel(event.getModelId())) {
+                updateNavBarExperiments();
+            }
+        }
+
+        @Override
+        public boolean isAttached() {
+            return isViewAttached();
         }
     }
 }

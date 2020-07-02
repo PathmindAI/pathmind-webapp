@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.ExperimentUpdatedSubscriber;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -62,6 +64,7 @@ import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>, BeforeLeaveObserver {
 
     private final NewExperimentViewExperimentCreatedSubscriber experimentCreatedSubscriber;
+    private final NewExperimentViewExperimentUpdatedSubscriber experimentUpdatedSubscriber;
     // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
 	// on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
 	private Object experimentLock = new Object();
@@ -104,16 +107,19 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		super();
 		addClassName("new-experiment-view");
         experimentCreatedSubscriber = new NewExperimentViewExperimentCreatedSubscriber();
+        experimentUpdatedSubscriber = new NewExperimentViewExperimentUpdatedSubscriber();
 	}
 
     @Override
     protected void onDetach(DetachEvent event) {
         EventBus.unsubscribe(experimentCreatedSubscriber);
+        EventBus.unsubscribe(experimentUpdatedSubscriber);
     }
 
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(experimentCreatedSubscriber);
+        EventBus.subscribe(experimentUpdatedSubscriber);
     }
 
     @Override
@@ -296,7 +302,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private void archiveExperiment(Experiment experimentToArchive) {
         ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
-            experimentDAO.archive(experimentToArchive.getId(), true);
+            ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
             experiments.remove(experimentToArchive);
             if (experiments.isEmpty()) {
                 getUI().ifPresent(ui -> ui.navigate(ModelView.class, experimentToArchive.getModelId()));
@@ -312,7 +318,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private void unarchiveExperiment() {
         ConfirmationUtils.unarchive("experiment", () -> {
-            experimentDAO.archive(experiment.getId(), false);
+            ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
             getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
         });
     }
@@ -447,6 +453,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         return experiment != null && experiment.getModelId() == modelId;
     }
 
+    private boolean isViewAttached() {
+        return getUI().isPresent();
+    }
+
     class NewExperimentViewExperimentCreatedSubscriber implements ExperimentCreatedSubscriber {
 
         @Override
@@ -458,8 +468,22 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         @Override
         public boolean isAttached() {
-            return NewExperimentView.this.getUI().isPresent();
+            return isViewAttached();
         }
     }
 
+    class NewExperimentViewExperimentUpdatedSubscriber implements ExperimentUpdatedSubscriber {
+
+        @Override
+        public void handleBusEvent(ExperimentUpdatedBusEvent event) {
+            if (isSameModel(event.getModelId())) {
+                updateNavBarExperiments();
+            }
+        }
+
+        @Override
+        public boolean isAttached() {
+            return isViewAttached();
+        }
+    }
 }

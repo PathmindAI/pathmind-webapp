@@ -12,11 +12,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.vaadin.flow.component.UI;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 
 public class ExperimentUtils
 {
@@ -145,4 +151,19 @@ public class ExperimentUtils
 		double progress = (iterationsProcessed / totalIterations) * 100;
 		return Math.max(Math.min(100d, progress), 0);
 	}
+
+    public static void createAndNavigateToNewExperiment(UI ui, ExperimentDAO experimentDAO, long modelId) {
+        Experiment experiment = experimentDAO.createNewExperiment(modelId);
+        EventBus.post(new ExperimentCreatedBusEvent(experiment));
+        ui.navigate(NewExperimentView.class, experiment.getId());
+    }
+
+    public static void archiveExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean isArchive) {
+	    experimentDAO.archive(experiment.getId(), isArchive);
+	    EventBus.post(new ExperimentUpdatedBusEvent(experiment));
+    }
+
+    public static void archiveExperiment(ExperimentDAO experimentDAO, long experimentId, boolean isArchive) {
+	    archiveExperiment(experimentDAO, experimentDAO.getExperiment(experimentId).get(), isArchive);
+    }
 }

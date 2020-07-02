@@ -268,7 +268,9 @@ class ExperimentRepository
 		model = model.getId() == 0 ? null : model;
 		run = run.getId() == 0 ? null : run;
 		experiment = experiment.getId() == 0 ? null : experiment;
-
+		if (experiment != null && model != null) {
+		    experiment.setModelId(model.getId());
+        }
 
 		return DashboardItem.builder()
 				.experiment(experiment)
