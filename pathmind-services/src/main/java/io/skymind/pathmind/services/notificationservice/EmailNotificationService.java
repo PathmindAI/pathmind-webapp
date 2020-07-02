@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
+import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.data.Run;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -122,9 +124,25 @@ public class EmailNotificationService
 		return applicationURL + "/" + Routes.RESET_PASSWORD_URL + "/" + pathmindUser.getEmailVerificationToken();
 	}
 
-	public void sendTrainingCompletedEmail(Long userId, Experiment experiment, Project project, MailHelper.TrainingCompletedStatus trainingCompletedStatus) {
-		sendTrainingCompletedEmail(userDAO.findById(userId), experiment, project, trainingCompletedStatus);
-	}
+    public void sendTrainingCompletedEmail(Run run, RunStatus jobStatus) {
+        MailHelper.TrainingCompletedStatus trainingCompletedStatus = getTrainingCompletedStatus(run, jobStatus);
+        long userId = run.getProject().getPathmindUserId();
+        sendTrainingCompletedEmail(userDAO.findById(userId), run.getExperiment(), run.getProject(), trainingCompletedStatus);
+    }
+
+    private MailHelper.TrainingCompletedStatus getTrainingCompletedStatus(Run run, RunStatus jobStatus) {
+        if (jobStatus == RunStatus.Completed) {
+            if (StringUtils.isNotBlank(run.getWarningMessage())) {
+                return MailHelper.TrainingCompletedStatus.SUCCESS_WITH_WARNING;
+            }
+            else {
+                return MailHelper.TrainingCompletedStatus.SUCCESS;
+            }
+        }
+        else {
+            return MailHelper.TrainingCompletedStatus.ERROR;
+        }
+    }
 
 	/**
 	 * Sends training completed email to a Pathmind user.

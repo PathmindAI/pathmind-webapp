@@ -2,7 +2,6 @@ package io.skymind.pathmind.updater.aws;
 
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
-import io.skymind.pathmind.services.notificationservice.MailHelper;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.Run;
@@ -10,7 +9,6 @@ import io.skymind.pathmind.shared.utils.RunUtils;
 import io.skymind.pathmind.updater.ExecutionProgressUpdater;
 import io.skymind.pathmind.updater.UpdaterService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -62,23 +60,8 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     private void sendNotificationMail(RunStatus jobStatus, Run run) {
         // Do not send notification if there is another run with same run type still executing or the notification is already been sent
         if (RunStatus.isFinished(jobStatus) && !RunUtils.isStoppedByUser(run) && runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
-            MailHelper.TrainingCompletedStatus trainingCompletedStatus = getTrainingCompletedStatus(run, jobStatus);
-            emailNotificationService.sendTrainingCompletedEmail(run.getProject().getPathmindUserId(), run.getExperiment(), run.getProject(), trainingCompletedStatus);
+            emailNotificationService.sendTrainingCompletedEmail(run, jobStatus);
             runDAO.markAsNotificationSent(run.getId());
-        }
-    }
-
-    private MailHelper.TrainingCompletedStatus getTrainingCompletedStatus(Run run, RunStatus jobStatus) {
-        if (jobStatus == RunStatus.Completed) {
-            if (StringUtils.isNotBlank(run.getWarningMessage())) {
-                return MailHelper.TrainingCompletedStatus.SUCCESS_WITH_WARNING;
-            }
-            else {
-                return MailHelper.TrainingCompletedStatus.SUCCESS;
-            }
-        }
-        else {
-            return MailHelper.TrainingCompletedStatus.ERROR;
         }
     }
 
