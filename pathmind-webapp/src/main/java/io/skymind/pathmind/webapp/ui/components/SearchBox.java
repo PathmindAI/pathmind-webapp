@@ -45,4 +45,7 @@ public class SearchBox extends HorizontalLayout
 	    }
 	}
 
+	public void clearSearchValue() {
+	    searchTextField.setValue("");
+    }
 }

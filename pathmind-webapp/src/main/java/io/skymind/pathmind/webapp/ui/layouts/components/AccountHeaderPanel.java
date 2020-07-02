@@ -29,13 +29,14 @@ public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSu
 {
 	private Span usernameLabel = new Span();
 	private PathmindUser user;
+	private SearchBox searchBox;
 
 	public AccountHeaderPanel(PathmindUser user, FeatureManager featureManager) {
 		this.user = user;
 		addClassName("nav-account-links");
 
 		if (featureManager.isEnabled(Feature.SEARCH)) {
-		    SearchBox searchBox = new SearchBox();
+		    searchBox = new SearchBox();
 		    add(searchBox);
 		}
 		
@@ -96,4 +97,10 @@ public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSu
 	public boolean isAttached() {
 		return getUI().isPresent();
 	}
+
+    public void clearSearchBoxValue() {
+	    if (searchBox != null) {
+	        searchBox.clearSearchValue();
+        }
+    }
 }

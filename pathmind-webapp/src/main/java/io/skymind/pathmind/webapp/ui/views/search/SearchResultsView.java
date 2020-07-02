@@ -68,6 +68,7 @@ public class SearchResultsView extends PathMindDefaultView implements HasUrlPara
 
     private void navigateToSelectedRecord(Optional<SearchResult> selectedItem) {
         selectedItem.ifPresent(item -> {
+            getMainLayout().ifPresent(MainLayout::clearSearchBoxValue);
             switch (item.getItemType()) {
                 case PROJECT :
                     getUI().ifPresent(ui -> ui.navigate(ProjectView.class, item.getItemId()));
@@ -85,6 +86,10 @@ public class SearchResultsView extends PathMindDefaultView implements HasUrlPara
                     break;
             }
         });
+    }
+
+    private Optional<MainLayout> getMainLayout() {
+        return getParent().map(p -> (MainLayout) p);
     }
 
     private Grid<SearchResult> createSearchResultsGrid() {
