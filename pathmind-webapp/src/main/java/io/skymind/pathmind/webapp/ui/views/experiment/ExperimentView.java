@@ -506,16 +506,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     .findAny()
                     .ifPresent(run -> {
                         trainingErrorDAO.getErrorById(run.getTrainingErrorId())
-                                .ifPresent(trainingError -> {
-                                    String errorText;
-                                    if (run.getRllibError() != null) {
-                                        errorText = run.getRllibError();
-                                    }
-                                    else {
-                                        errorText = trainingError.getDescription();
-                                    }
-                                    this.updateUIForError(trainingError, errorText);
-                                });
+                                .ifPresent(trainingError -> this.updateUIForError(trainingError, run.getRllibError() != null ?
+                                        run.getRllibError() : trainingError.getDescription()));
                     });
         }
         else {
