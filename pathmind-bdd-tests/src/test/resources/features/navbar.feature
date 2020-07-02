@@ -45,16 +45,17 @@ Feature: Nav bar buttons
     When In confirmation dialog click in 'Stop Training' button
 
   @notesSearch
-  Scenario Outline: Check notes search
+  Scenario: Check notes search
     Given Login to the pathmind
-    When Create new CoffeeShop project with experiment note '<note>'
-    When Input '<note>' to the notes search field
+    When Create new CoffeeShop project with single reward function
+    When Input unique experiment page note
+    When Click project save draft btn
+    When Input unique note to the notes search field
     When Click notes search btn
-    When Check search result page notes contains '<note>'
-
-    Examples:
-      | note               |
-      | AutotestNoteSearch |
+    When Check search result page notes contains unique note
+    When Click to the unique note on the search result page
+    When Check that new experiment AutotestProject page is opened
+    Then Check notes search field text is ''
 
   @notesSearch
   Scenario: Check project name search
@@ -88,3 +89,16 @@ Feature: Nav bar buttons
     When Input 'AutotestNoteSearch' to the notes search field
     When Click notes clear btn
     Then Check notes search field text is ''
+
+  @notesSearch
+  Scenario: Check search field empty case
+    Given Login to the pathmind
+    When Click notes search btn
+    Then Check that dashboard page opened
+
+  @notesSearch
+  Scenario: Check search field empty case
+    Given Login to the pathmind
+    When Input ' ' to the notes search field
+    When Click notes search btn
+    Then Check that dashboard page opened

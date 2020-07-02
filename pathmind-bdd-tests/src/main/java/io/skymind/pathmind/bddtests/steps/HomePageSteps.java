@@ -113,4 +113,9 @@ public class HomePageSteps {
     public void clickAutotestProjectFromSearchPage(String name) {
         homePage.clickAutotestProjectFromSearchPage(name);
     }
+
+    @Step
+    public void clickToTheUniqueNoteOnTheSearchResultPage(String text) {
+        homePage.clickToTheUniqueNoteOnTheSearchResultPage(text);
+    }
 }

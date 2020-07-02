@@ -116,4 +116,19 @@ public class HomePageStepDefinitions {
     public void clickAutotestProjectFromSearchPage(String projectName) {
         homePageSteps.clickAutotestProjectFromSearchPage(projectName + Serenity.sessionVariableCalled("randomNumber"));
     }
+
+    @When("^Input unique note to the notes search field$")
+    public void inputUniqueNoteToTheNotesSearchField() {
+        homePageSteps.inputToTheNotesSearchField("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo" + Serenity.sessionVariableCalled("noteRandomNumber"));
+    }
+
+    @When("^Check search result page notes contains unique note$")
+    public void checkSearchResultPageNotesContainsUniqueNote() {
+        homePageSteps.checkSearchResultPageNotesContainsSearch("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo" + Serenity.sessionVariableCalled("noteRandomNumber"));
+    }
+
+    @When("^Click to the unique note on the search result page$")
+    public void clickToTheUniqueNoteOnTheSearchResultPage() {
+        homePageSteps.clickToTheUniqueNoteOnTheSearchResultPage("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo" + Serenity.sessionVariableCalled("noteRandomNumber"));
+    }
 }
