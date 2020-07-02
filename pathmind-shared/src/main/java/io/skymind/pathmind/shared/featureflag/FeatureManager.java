@@ -15,7 +15,7 @@ public class FeatureManager {
     public boolean isEnabled(Feature feature) {
         switch (feature) {
             case SEARCH:
-                return false;
+                return true;
             case MULTI_AGENT_TRAINING:
                 return multiAgentEnabled;
             case ACCOUNT_UPGRADE:
