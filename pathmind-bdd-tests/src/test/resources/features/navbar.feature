@@ -68,6 +68,17 @@ Feature: Nav bar buttons
     Then Check that project AutotestProject page is opened
 
   @notesSearch
+  Scenario: Check project name archived tag
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft model
+    When Open projects page
+    When Click AutotestProject project archive/unarchive button
+    When In confirmation dialog click in 'Archive' button
+    When Input project name to the notes search field
+    When Click notes search btn
+    Then Check search result page project name contains archived tag
+
+  @notesSearch
   Scenario: Check model name search
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function

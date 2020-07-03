@@ -118,4 +118,9 @@ public class HomePageSteps {
     public void clickToTheUniqueNoteOnTheSearchResultPage(String text) {
         homePage.clickToTheUniqueNoteOnTheSearchResultPage(text);
     }
+
+    @Step
+    public void checkSearchResultPageProjectNameContainsDraftTag(String name) {
+        homePage.checkSearchResultPageProjectNameContainsDraftTag(name);
+    }
 }

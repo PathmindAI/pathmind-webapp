@@ -169,4 +169,8 @@ public class HomePage extends PageObject {
     public void clickToTheUniqueNoteOnTheSearchResultPage(String text) {
         getDriver().findElement(By.xpath("//*[text()='"+text+"']")).click();
     }
+
+    public void checkSearchResultPageProjectNameContainsDraftTag(String name) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+name+" ']/span")).getText(), is("Archived"));
+    }
 }

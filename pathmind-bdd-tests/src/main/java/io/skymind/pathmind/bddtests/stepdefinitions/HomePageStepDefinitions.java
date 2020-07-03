@@ -131,4 +131,9 @@ public class HomePageStepDefinitions {
     public void clickToTheUniqueNoteOnTheSearchResultPage() {
         homePageSteps.clickToTheUniqueNoteOnTheSearchResultPage("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo" + Serenity.sessionVariableCalled("noteRandomNumber"));
     }
+
+    @Then("^Check search result page project name contains archived tag$")
+    public void checkSearchResultPageProjectNameContainsDraftTag() {
+        homePageSteps.checkSearchResultPageProjectNameContainsDraftTag("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
+    }
 }
