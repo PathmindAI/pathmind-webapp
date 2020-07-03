@@ -147,6 +147,7 @@ hr {
 }
 
 .nav-account-links {
+    align-items: center;
     margin-left: auto;
     padding-right: 20px;
 }

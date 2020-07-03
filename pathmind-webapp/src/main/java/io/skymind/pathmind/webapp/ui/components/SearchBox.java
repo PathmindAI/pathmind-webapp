@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
@@ -23,7 +22,6 @@ public class SearchBox extends HorizontalLayout
 
 	public SearchBox(){
 		setSpacing(false);
-		setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 
 		searchTextField.setWidthFull();
 		searchTextField.setClearButtonVisible(true);
