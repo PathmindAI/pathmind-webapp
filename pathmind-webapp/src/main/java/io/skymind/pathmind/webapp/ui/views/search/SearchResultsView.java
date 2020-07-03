@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.search;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
@@ -94,11 +96,37 @@ public class SearchResultsView extends PathMindDefaultView implements HasUrlPara
 
     private Grid<SearchResult> createSearchResultsGrid() {
         Grid<SearchResult> grid = new Grid<>();
-        grid.addColumn(SearchResult::getItemType).setHeader("Type").setAutoWidth(true).setFlexGrow(0).setResizable(true);
-        grid.addColumn(SearchResult::getName).setHeader("Name").setAutoWidth(true).setFlexGrow(0).setResizable(true);
-        grid.addColumn(new LocalDateTimeRenderer<>(SearchResult::getCreateDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER)).setHeader("Created").setAutoWidth(true).setFlexGrow(0).setResizable(true);
-        grid.addColumn(new LocalDateTimeRenderer<>(SearchResult::getUpdateDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER)).setHeader("Last Activity").setAutoWidth(true).setFlexGrow(0).setResizable(true);
-        grid.addColumn(SearchResult::getNotes).setHeader("Notes").setAutoWidth(true).setFlexGrow(1).setResizable(true);
+        grid.addColumn(SearchResult::getItemType)
+            .setHeader("Type")
+            .setAutoWidth(true)
+            .setFlexGrow(0)
+            .setResizable(true);
+        grid.addColumn(TemplateRenderer.<SearchResult> of("[[item.name]] <span class='tag'>[[item.archived]]</span>")
+                .withProperty("name", SearchResult::getName)
+                .withProperty("archived", resultItem -> resultItem.getIsArchived() ? "Archived" : ""))
+            .setHeader("Name")
+            .setAutoWidth(true)
+            .setFlexGrow(0)
+            .setResizable(true);
+        grid.addColumn(new LocalDateTimeRenderer<>(SearchResult::getCreateDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_FOMATTER))
+            .setComparator(Comparator.comparing(SearchResult::getCreateDate))
+            .setHeader("Created")
+            .setAutoWidth(true)
+            .setFlexGrow(0)
+            .setResizable(true)
+            .setSortable(true);
+        grid.addColumn(new LocalDateTimeRenderer<>(SearchResult::getUpdateDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_FOMATTER))
+            .setComparator(Comparator.comparing(SearchResult::getUpdateDate))
+            .setHeader("Last Activity")
+            .setAutoWidth(true)
+            .setFlexGrow(0)
+            .setResizable(true)
+            .setSortable(true);
+        grid.addColumn(SearchResult::getNotes)
+            .setHeader("Notes")
+            .setAutoWidth(true)
+            .setFlexGrow(1)
+            .setResizable(true);
         grid.setSizeFull();
         grid.setDataProvider(dataProvider);
         return grid;

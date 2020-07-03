@@ -3,7 +3,6 @@ package io.skymind.pathmind.shared.data;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.SearchResultItemType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,10 +17,10 @@ public class SearchResult {
     private SearchResultItemType itemType;
     private long itemId;
     private String name;
+    private Boolean isArchived;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
     private String notes;
-    
 
 	@Override
  	public boolean equals(Object o) {
@@ -83,6 +82,14 @@ public class SearchResult {
 
     public void setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public void setIsArchived(Boolean isArchived) {
+        this.isArchived = isArchived;
+    }
+
+    public Boolean getIsArchived() {
+        return isArchived;
     }
 
 }
