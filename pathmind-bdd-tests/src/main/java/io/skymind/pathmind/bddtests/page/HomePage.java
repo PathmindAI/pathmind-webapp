@@ -163,7 +163,7 @@ public class HomePage extends PageObject {
     }
 
     public void clickAutotestProjectFromSearchPage(String name) {
-        getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+ name +"']")).click();
+        getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+ name + " " + "']")).click();
     }
 
     public void clickToTheUniqueNoteOnTheSearchResultPage(String text) {
