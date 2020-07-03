@@ -141,7 +141,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		startRunButton.setEnabled(false);
 		
 		saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> {}));
-		saveDraftButton.addThemeName("secondary");
 		saveDraftButton.setEnabled(false);
 
 		VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();

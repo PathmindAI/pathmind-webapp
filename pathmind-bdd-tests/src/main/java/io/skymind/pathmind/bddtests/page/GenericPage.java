@@ -29,7 +29,7 @@ public class GenericPage extends PageObject {
     private List<WebElement> experimentModelsNames;
     @FindBy(xpath = "//vaadin-text-area[@theme='notes']")
     private WebElement notesField;
-    @FindBy(xpath = "//vaadin-text-field")
+    @FindBy(xpath = "(//vaadin-text-field)[2]")
     private WebElement editProjectNameInputShadow;
 
     public void checkThatButtonExists(String buttonText) {

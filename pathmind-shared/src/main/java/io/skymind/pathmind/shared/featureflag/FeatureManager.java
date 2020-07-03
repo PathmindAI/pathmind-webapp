@@ -12,9 +12,10 @@ public class FeatureManager {
         this.multiAgentEnabled = multiAgentEnabled;
     }
 
-
     public boolean isEnabled(Feature feature) {
         switch (feature) {
+            case SEARCH:
+                return true;
             case MULTI_AGENT_TRAINING:
                 return multiAgentEnabled;
             case ACCOUNT_UPGRADE:
