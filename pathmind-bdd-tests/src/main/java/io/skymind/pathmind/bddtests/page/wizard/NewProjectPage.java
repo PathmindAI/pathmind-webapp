@@ -43,7 +43,7 @@ public class NewProjectPage extends PageObject {
         WebElement searchInputField = e.findElement(By.cssSelector("label[part='label']"));
         assertThat(searchInputField.getText(), containsString("Give your project a name"));
 
-        assertThat(getDriver().findElement(By.xpath("//vaadin-button")).getText(), containsString("Create Project"));
+        assertThat(getDriver().findElement(By.cssSelector(".create-project-button")).getText(), containsString("Create Project"));
     }
 
     public void checkThatErrorShown(String error) {

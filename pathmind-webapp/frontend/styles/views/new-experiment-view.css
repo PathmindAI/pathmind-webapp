@@ -95,6 +95,7 @@
 .new-experiment-view .error-and-notes-container vaadin-button {
     min-width: calc(var(--lumo-button-size) * 1.625);
     height: 1.4rem;
+    line-height: calc(1.4rem - 2px);
     font-size: var(--lumo-font-size-s);
     padding: 0 var(--lumo-space-s);
 }

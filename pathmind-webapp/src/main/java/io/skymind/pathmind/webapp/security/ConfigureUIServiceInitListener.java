@@ -1,16 +1,18 @@
 package io.skymind.pathmind.webapp.security;
 
+import static io.skymind.pathmind.webapp.security.constants.VaadinSessionInfo.IS_OLD_VERSION;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.server.CustomizedSystemMessages;
 import com.vaadin.flow.server.ServiceInitEvent;
-import com.vaadin.flow.server.SystemMessagesProvider;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.ui.exceptions.AccessDeniedException;
+import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.views.errors.PathmindErrorHandler;
 import io.skymind.pathmind.webapp.ui.views.login.LoginView;
 
@@ -24,8 +26,12 @@ public class ConfigureUIServiceInitListener implements VaadinServiceInitListener
 	public void serviceInit(ServiceInitEvent event) {
 		event.getSource().addUIInitListener(uiEvent -> {
 			final UI ui = uiEvent.getUI();
+            Object isOldVersion = ui.getSession().getAttribute(IS_OLD_VERSION);
 			ui.addBeforeEnterListener(this::beforeEnter);
-			ui.getSession().setErrorHandler(new PathmindErrorHandler());
+            ui.getSession().setErrorHandler(new PathmindErrorHandler());
+            if (isOldVersion != null) {
+                NotificationUtils.showNewVersionAvailableNotification(ui);
+            }
 		});
 		event.getSource().setSystemMessagesProvider(systemMessagesInfo -> {
 			CustomizedSystemMessages msgs = new CustomizedSystemMessages();

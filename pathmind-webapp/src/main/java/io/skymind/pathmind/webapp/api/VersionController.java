@@ -1,12 +1,16 @@
 package io.skymind.pathmind.webapp.api;
 
+import static io.skymind.pathmind.webapp.security.constants.VaadinSessionInfo.IS_OLD_VERSION;
+
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.spring.SpringVaadinSession;
+
 import io.skymind.pathmind.webapp.ActiveSessionsRegistry;
-import io.skymind.pathmind.webapp.ui.components.CloseableNotification;
+import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
+
 import javax.servlet.http.HttpSession;
 
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +46,8 @@ public class VersionController {
 					for (UI ui : springVaadinSession.getUIs()) {
 						try {
 							UI.setCurrent(ui);
-							showNotification();
+							NotificationUtils.showNewVersionAvailableNotification(ui);
+                            springVaadinSession.setAttribute(IS_OLD_VERSION, true);
 							count.incrementAndGet();
 						} finally {
 							UI.setCurrent(null);
@@ -55,12 +60,5 @@ public class VersionController {
 		String message = String.format("Sent a new version available message to %s HTTP sessions and %s Vaadin UIs", activeAuthenticatedSessions.size(), count.get());
 		log.info(message);
 		return new Response(message);
-	}
-
-	private void showNotification() {
-		String text = "A new version of the application is available. Please Sign out to use the latest version.";
-		CloseableNotification notification = new CloseableNotification(text);
-		notification.setDuration(-1);
-		notification.open();
 	}
 }
