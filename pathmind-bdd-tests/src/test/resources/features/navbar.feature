@@ -24,3 +24,81 @@ Feature: Nav bar buttons
     Given Login to the pathmind
     When Open user account page
     Then Check that user account page opened
+
+  Scenario: Check nav bar Projects highlighted button
+    Given Login to the pathmind
+    Then Check that projects button highlight is false
+    When Create new CoffeeShop project with single reward function
+    Then Check that projects button highlight is false
+    When Click project start run button
+    Then Check that projects button highlight is false
+    When Open projects page
+    Then Check that projects button highlight is true
+    When Open project AutotestProject on projects page
+    Then Check that projects button highlight is false
+    Then Click the model name 1
+    Then Check that projects button highlight is false
+    Then Click the experiment name 1
+    Then Check that projects button highlight is false
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
+
+  @notesSearch
+  Scenario: Check notes search
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Input unique experiment page note
+    When Click project save draft btn
+    When Input unique note to the notes search field
+    When Click notes search btn
+    When Check search result page notes contains unique note
+    When Click to the unique note on the search result page
+    When Check that new experiment AutotestProject page is opened
+    Then Check notes search field text is ''
+
+  @notesSearch
+  Scenario: Check project name search
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft model
+    When Input project name to the notes search field
+    When Click notes search btn
+    When Check search result page contains project name
+    Then Click AutotestProject from search page
+    Then Check that project AutotestProject page is opened
+
+  @notesSearch
+  Scenario: Check model name search
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Input '1' to the notes search field
+    When Click notes search btn
+    When Check search result page contains model name '1'
+
+  @notesSearch
+  Scenario: Check experiment name search
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Input '1' to the notes search field
+    When Click notes search btn
+    When Check search result page contains model name '1'
+
+  @notesSearch
+  Scenario: Check search field clear button
+    Given Login to the pathmind
+    When Input 'AutotestNoteSearch' to the notes search field
+    When Click notes clear btn
+    Then Check notes search field text is ''
+
+  @notesSearch
+  Scenario: Check search field empty case
+    Given Login to the pathmind
+    When Click notes search btn
+    Then Check that dashboard page opened
+
+  @notesSearch
+  Scenario: Check search field empty case
+    Given Login to the pathmind
+    When Input ' ' to the notes search field
+    When Click notes search btn
+    Then Check that dashboard page opened

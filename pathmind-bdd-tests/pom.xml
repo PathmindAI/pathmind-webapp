@@ -99,20 +99,37 @@
                                 <version>2.22.2</version>
                             </dependency>
                         </dependencies>
-                        <configuration>
-                            <skip>false</skip>
-                            <includes>
-                                <include>**/*Feature.java</include>
-                            </includes>
-                            <forkCount>${forkNumber}</forkCount>
-                            <reuseForks>true</reuseForks>
-                        </configuration>
                         <executions>
                             <execution>
+                                <id>parallel-thread-test</id>
                                 <goals>
                                     <goal>integration-test</goal>
                                     <goal>verify</goal>
                                 </goals>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <includes>
+                                        <include>**/*Feature.java</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>io/skymind/pathmind/bddtests/NotificationsFeature.java</exclude>
+                                    </excludes>
+                                    <forkCount>${forkNumber}</forkCount>
+                                    <reuseForks>true</reuseForks>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>single-thread-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <includes>
+                                        <include>io/skymind/pathmind/bddtests/NotificationsFeature.java</include>
+                                    </includes>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
