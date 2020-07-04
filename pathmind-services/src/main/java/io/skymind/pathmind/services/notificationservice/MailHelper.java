@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MailHelper
 {
 	public static final String PATHMIND_VERIFICATION_EMAIL_SUBJECT = "Pathmind verification email";
-	public static final String PATHMIND_NEW_ADDRESS_VERIFICATION_EMAIL_SUBJECT = "Pathmind new address veri ";
+	public static final String PATHMIND_NEW_ADDRESS_VERIFICATION_EMAIL_SUBJECT = "Pathmind new address verification";
 	public static final String PATHMIND_RESET_PASSWORD_EMAIL_SUBJECT = "Pathmind reset password email";
 	public static final String PATHMIND_TRAINING_COMPLETED_EMAIL_SUBJECT = "Pathmind training completed successfully email";
 	public static final String PATHMIND_TRAINING_FAILED_EMAIL_SUBJECT = "Pathmind training failed email";
