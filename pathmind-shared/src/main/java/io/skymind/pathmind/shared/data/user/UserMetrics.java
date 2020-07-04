@@ -14,7 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserMetrics {
 
-    public enum UserCap {
+    public enum UserCapType {
         Daily,
         Monthly
     }

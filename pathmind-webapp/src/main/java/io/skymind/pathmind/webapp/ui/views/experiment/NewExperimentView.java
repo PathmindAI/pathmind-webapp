@@ -17,9 +17,12 @@ import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
+import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.user.UserMetrics;
 import io.skymind.pathmind.shared.security.Routes;
@@ -81,12 +84,16 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private ExperimentDAO experimentDAO;
 	@Autowired
 	private RewardVariableDAO rewardVariableDAO;
+    @Autowired
+    private UserDAO userDAO;
 	@Autowired
 	private TrainingService trainingService;
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 	@Autowired
 	private RewardValidationService rewardValidationService;
+	@Autowired
+    private EmailNotificationService emailNotificationService;
 
 	private Breadcrumbs pageBreadcrumbs;
 	private Binder<Experiment> binder;
@@ -265,12 +272,54 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private boolean isUserWithinCapLimits() {
         UserMetrics userMetrics = experimentDAO.getExperimentUsageDataForUser(SecurityUtils.getUserId());
-        if(SecurityUtils.isWithinCap(userMetrics)) {
-            return true;
-        } else {
-            NotificationUtils.showError("Maximum number of " + SecurityUtils.getWhichCapIsExceed(userMetrics).name().toLowerCase() + " experiments.<br>Please contact Pathmind Support for assistance.");
+        // Criteria for our own email notifications and the user's on screen notifications are slightly different.
+        capLimitEmailNotificationCheck(userMetrics);
+        return capLimitUserNotificationCheck(userMetrics);
+    }
+
+    private boolean capLimitUserNotificationCheck(UserMetrics userMetrics) {
+        if(userMetrics.getExperimentsCreatedToday() >= UserMetrics.MAX_EXPERIMENTS_ALLOWED_PER_DAY) {
+            showUserCapLimitNotification(UserMetrics.UserCapType.Daily);
             return false;
+        } else if(userMetrics.getExperimentsCreatedThisMonth() >= UserMetrics.MAX_EXPERIMENTS_ALLOWED_PER_MONTH) {
+            showUserCapLimitNotification(UserMetrics.UserCapType.Monthly);
+            return false;
+        } else {
+            return true;
         }
+    }
+
+    private void showUserCapLimitNotification(UserMetrics.UserCapType userCapType) {
+        NotificationUtils.showError("Maximum number of " + userCapType.name().toLowerCase() + " experiments run has been reached.<br>" +
+                                            "Please contact Pathmind support for assistance.");
+    }
+
+    /**
+     * This is a notification for us to be able to reach out ot the customer before they reach the caps and as a result the checks are different. For example
+     * even if it isWithinCap(userMetrics) we may want to send ourselves a notification (such as 75%, 90%, and of course when they reach the cap at 100%). These
+     * checks have to be done for all cap types (which as of right now are daily and monthly).
+     */
+    private void capLimitEmailNotificationCheck(UserMetrics userMetrics) {
+        capLimitEmailNotificationCheckForType(UserMetrics.UserCapType.Daily, userMetrics.getExperimentsCreatedToday(), UserMetrics.MAX_EXPERIMENTS_ALLOWED_PER_DAY);
+        capLimitEmailNotificationCheckForType(UserMetrics.UserCapType.Monthly, userMetrics.getExperimentsCreatedThisMonth(), UserMetrics.MAX_EXPERIMENTS_ALLOWED_PER_MONTH);
+    }
+
+    // IMPORTANT -> This will send ourselves an email notifications every time the user creates a new experiment above 75% but the assumption
+    // is that this should be extremely rare, and if it does happen then it's more cost effective for now than creating
+    // a whole infrastructure for it. Worse case we could just push this to 90% rather than 75%. That being said if enough
+    // people hit the 75% threshold then our caps are too low.
+    private void capLimitEmailNotificationCheckForType(UserMetrics.UserCapType userCapType, int experimentCount, int maxAllowed) {
+        if(experimentCount >= maxAllowed)
+            emailNotificationService.sendCapLimitNotification(getPathmindUser(), userCapType, 100);
+        else if(experimentCount >= maxAllowed * 0.90)
+            emailNotificationService.sendCapLimitNotification(getPathmindUser(), userCapType, 90);
+        else if(experimentCount >= maxAllowed * 0.75)
+            emailNotificationService.sendCapLimitNotification(getPathmindUser(), userCapType, 75);
+    }
+
+    // Implemented as a method because we only need it if the right conditions are met.
+    private PathmindUser getPathmindUser() {
+        return userDAO.findById(SecurityUtils.getUserId());
     }
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {

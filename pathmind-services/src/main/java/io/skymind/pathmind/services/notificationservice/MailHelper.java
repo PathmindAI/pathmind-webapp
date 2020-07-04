@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.notificationservice;
 import java.io.IOException;
 import java.util.Objects;
 
+import io.skymind.pathmind.shared.data.user.UserMetrics;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +30,9 @@ public class MailHelper
 	public static final String PATHMIND_TRAINING_COMPLETED_EMAIL_SUBJECT = "Pathmind training completed successfully email";
 	public static final String PATHMIND_TRAINING_FAILED_EMAIL_SUBJECT = "Pathmind training failed email";
 
-	@Value("${sendgrid.verification-mail.id}")
+	public static final String PATHMIND_SUPPORT = "support@pathmind.com";
+
+    @Value("${sendgrid.verification-mail.id}")
 	private String verificationEmailTemplateId;
 
 	@Value("${sendgrid.resetpassword-mail.id}")
@@ -181,4 +184,22 @@ public class MailHelper
 	private Email createFromEmail() {
 		return new Email(fromEmail, fromName);
 	}
+
+    public Mail createCapLimitNotificationEmail(String userEmail, UserMetrics.UserCapType userCap, int percentageReached) {
+        if (StringUtils.isAnyEmpty(userEmail)) {
+            throw new PathMindException("Email fields are missing");
+        }
+        Mail mail = new Mail();
+        mail.setFrom(createFromEmail());
+        // TODO -> How do I link this to Sendgrid?
+        // mail.setTemplateId();
+        Personalization personalization = new Personalization();
+        // TODO -> How do I use the userCap type and the percentageReached?
+        personalization.addDynamicTemplateData("subject", "(" + percentageReached + "%) + " + userCap.name().toLowerCase() + " cap limit reached by user");
+        // TODO -> How do I include the user's account? What is better, email address, account id, etc?
+        personalization.addDynamicTemplateData("user", userEmail);
+        personalization.addTo(new Email(PATHMIND_SUPPORT));
+        mail.addPersonalization(personalization);
+        return mail;
+    }
 }

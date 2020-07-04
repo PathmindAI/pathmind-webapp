@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
+import io.skymind.pathmind.shared.data.user.UserMetrics;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -152,9 +152,24 @@ public class EmailNotificationService
 		mailHelper.sendMail(trainingCompletedMail);
 	}
 
-	
-
 	private String createExperimentPageLink(Experiment experiment) {
 		return applicationURL + "/" + Routes.EXPERIMENT_URL + "/" + experiment.getId();
 	}
+
+    public void sendCapLimitNotification(PathmindUser pathmindUser, UserMetrics.UserCapType userCapType, int percentageReached) {
+        Objects.requireNonNull(pathmindUser);
+        if (!isEmailSendingEnabled) {
+            log.info("Email sending has been disabled, not sending the email to: " + pathmindUser.getEmail());
+            return;
+        }
+
+        Mail capLimitNotificationEmail;
+        try {
+            capLimitNotificationEmail = mailHelper.createCapLimitNotificationEmail(pathmindUser.getEmail(), userCapType, percentageReached);
+        } catch (PathMindException e) {
+            log.warn("Could not create email due to missing data in the PathmindUser object");
+            return;
+        }
+        mailHelper.sendMail(capLimitNotificationEmail);
+    }
 }
