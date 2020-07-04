@@ -18,6 +18,7 @@ html {
     --pm-gray-color: #b3b6c2;
     --pm-gray-color-light: #d0d0d0;
     --pm-gray-color-lighter: #dee3ed;
+    --pm-gray-color-lightest: #eaeeef;
     --pm-blue-color-darkest: #1a2949;
     --pm-blue-color-darkest-50pct: rgba(26, 41, 73, 0.5);
     --pm-blue-color-darkest-25pct: rgba(26, 41, 73, 0.25);
@@ -63,6 +64,7 @@ html {
     --lumo-space-m: 1.125rem;
     --lumo-space-s: 0.75rem;
     --lumo-space-xs: 0.375rem;
+    --lumo-icon-size-l: 1.75rem;
     --lumo-success-color-50pct: rgba(53, 151, 106, 0.5);
     --lumo-success-color-10pct: rgba(53, 151, 106, 0.1);
     --lumo-success-color: var(--pm-friendly-color);
@@ -134,6 +136,14 @@ hr {
 
 #nav-main-links a[highlight] {
     font-weight: bold;
+}
+
+#nav-main-links .navbar-logo + a:not(.navbar-logo) {
+    margin-left: var(--lumo-space-xxl);
+}
+
+#nav-main-links a:not(.navbar-logo) {
+    margin-left: var(--lumo-space-l);
 }
 
 .nav-account-links {
@@ -222,6 +232,12 @@ hr {
     opacity: 1;
 }
 
+.closeable-notification-text-label {
+    display: inline-block;
+    max-width: 350px;
+    padding-right: 15px;
+}
+
 .default-view {
     background: var(--pm-app-bg-color);
     height: 100%;
@@ -267,7 +283,6 @@ hr {
 }
 
 .projects-view .view-section {
-    max-width: 1480px;
     margin-top: var(--lumo-space-m);
 }
 
@@ -292,7 +307,8 @@ hr {
 .model-view .view-section,
 .projects-view .page-content,
 .project-view .page-content,
-.model-view .page-content {
+.model-view .page-content,
+.search-results-view .page-content {
     box-sizing: border-box;
     flex: 1 1 auto;
     padding: var(--lumo-space-m);
@@ -304,6 +320,14 @@ hr {
     min-width: unset;
     line-height: 1.6em;
     overflow: auto;
+}
+
+.search-results-view {
+    padding: 0 var(--lumo-space-m) var(--lumo-space-m);
+}
+
+.search-results-view .view-section {
+    margin-top: var(--lumo-space-m);
 }
 
 .card p,
@@ -333,7 +357,9 @@ hr {
 .project-view .section-title-label + vaadin-button {
     min-width: var(--lumo-button-size);
     height: 1.4rem;
+    line-height: calc(1.4rem - 2px);
     font-size: var(--lumo-font-size-s);
+    font-weight: normal;
     padding: 0 var(--lumo-space-xs);
     margin: 0 0 0 var(--lumo-space-xs);
 }
@@ -417,15 +443,15 @@ account-view {
 
 /* Title bar */
 .page-title {
-    justify-content: center;
-    color: var(--lumo-body-text-color);
+    line-height: 2;
+    color: var(--lumo-secondary-text-color);
+    background-color: white;
     padding: 0 var(--lumo-space-m);
-    margin-top: var(--lumo-space-m);
+    margin-top: 1px;
 }
 
-.action-button iron-icon {
-    width: 32px;
-    height: 32px;
+.projects-view .page-title {
+    width: calc(var(--lumo-space-m) * 2 + 100%) !important;
 }
 
 .readonly-label {
@@ -740,9 +766,4 @@ h4 {
     margin-top: var(--lumo-space-l);
     padding: var(--lumo-space-xs) var(--lumo-space-l);
     background-color: var(--lumo-contrast-5pct);
-}
-.dialog-footer .cancel-button {
-    margin-right: auto;
-    margin-left: var(--lumo-space-s);
-    align-self: center;
 }

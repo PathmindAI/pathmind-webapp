@@ -48,7 +48,7 @@ public class Utils extends PageObject {
         while (attempts < 3) {
             try {
                 for (WebElement e : getDriver().findElements(by)) {
-                    strings.add(e.getText());
+                    strings.add(e.getText().replaceAll("\n", " "));
                 }
                 break;
             } catch (org.openqa.selenium.StaleElementReferenceException ex) {
