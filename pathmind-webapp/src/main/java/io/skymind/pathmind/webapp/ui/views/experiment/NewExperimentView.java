@@ -1,12 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -19,21 +12,16 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
-import com.vaadin.flow.router.BeforeLeaveObserver;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.Command;
-
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.data.user.UserMetrics;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
@@ -54,6 +42,12 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavb
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
@@ -249,6 +243,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		if (!FormUtils.isValidForm(binder, experiment)) {
 			return;
 		}
+		if(!isUserWithinCapLimits()) {
+            return;
+        }
 
 		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();
 		if (rewardVariables != null) {
@@ -266,7 +263,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experimentId));
 	}
 
-	private void handleSaveDraftClicked(Command afterClickedCallback) {
+    private boolean isUserWithinCapLimits() {
+        UserMetrics userMetrics = experimentDAO.getExperimentUsageDataForUser(SecurityUtils.getUserId());
+        if(SecurityUtils.isWithinCap(userMetrics)) {
+            return true;
+        } else {
+            NotificationUtils.showError("Maximum number of " + SecurityUtils.getWhichCapIsExceed(userMetrics).name().toLowerCase() + " experiments.<br>Please contact Pathmind Support for assistance.");
+            return false;
+        }
+    }
+
+    private void handleSaveDraftClicked(Command afterClickedCallback) {
 		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();
 		if (rewardVariables != null) {
 			rewardVariables.forEach(rv -> rv.setModelId(experiment.getModelId()));

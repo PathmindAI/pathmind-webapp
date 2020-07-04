@@ -13,15 +13,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.Record;
-import org.jooq.Record1;
-import org.jooq.Record7;
-import org.jooq.Record8;
-import org.jooq.Result;
-import org.jooq.Table;
+import io.skymind.pathmind.shared.data.user.UserMetrics;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 
 import io.skymind.pathmind.shared.data.DashboardItem;
@@ -310,4 +303,28 @@ class ExperimentRepository
 				.where(Tables.EXPERIMENT.ID.eq(experimentId))
 				.execute();
 	}
+
+	protected static UserMetrics getExperimentUsageDataForUser(DSLContext ctx, long userId) {
+	    Table<?> nestedToday = ctx.select(count().as("experimentsToday")).from(EXPERIMENT)
+                .where(DSL.day(EXPERIMENT.DATE_CREATED).eq(DSL.day(LocalDateTime.now())))
+                .and(DSL.month(EXPERIMENT.DATE_CREATED).eq(DSL.month(LocalDateTime.now())))
+                .and(DSL.year(EXPERIMENT.DATE_CREATED).eq(DSL.year(LocalDateTime.now())))
+                .asTable("today");
+        Table<?> nestedThisMonth = ctx.select(count().as("experimentsThisMonth")).from(EXPERIMENT)
+                .where(DSL.month(EXPERIMENT.DATE_CREATED).eq(DSL.month(LocalDateTime.now())))
+                .and(DSL.year(EXPERIMENT.DATE_CREATED).eq(DSL.year(LocalDateTime.now())))
+                .asTable("thisMonday");
+        Record record = ctx.select(nestedToday.field("experimentsToday"), nestedThisMonth.field("experimentsThisMonth"))
+                .from(nestedToday, nestedThisMonth)
+                .fetchOne();
+
+        // Must be a customer with no experiments.
+        if(record == null) {
+            return new UserMetrics(0, 0);
+        }
+
+        return new UserMetrics(
+                (Integer)record.getValue("experimentsToday"),
+                (Integer)record.getValue("experimentsThisMonth"));
+    }
 }

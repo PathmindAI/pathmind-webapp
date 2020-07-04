@@ -3,6 +3,7 @@ package io.skymind.pathmind.shared.security;
 
 import javax.naming.AuthenticationException;
 
+import io.skymind.pathmind.shared.data.user.UserMetrics;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -70,4 +71,17 @@ public class SecurityUtils
 			return user.getId();
 		}
 	}
+
+    public static boolean isWithinCap(UserMetrics userMetrics) {
+        return userMetrics.getExperimentsCreatedToday() <= UserMetrics.MAX_EXPERIMENTS_ALLOWED_PER_DAY &&
+                userMetrics.getExperimentsCreatedThisMonth() <= UserMetrics.MAX_EXPERIMENTS_ALLOWED_PER_MONTH;
+    }
+
+    public static UserMetrics.UserCap getWhichCapIsExceed(UserMetrics userMetrics) {
+        if(userMetrics.getExperimentsCreatedToday() > UserMetrics.MAX_EXPERIMENTS_ALLOWED_PER_DAY)
+            return UserMetrics.UserCap.Daily;
+        if(userMetrics.getExperimentsCreatedThisMonth() > UserMetrics.MAX_EXPERIMENTS_ALLOWED_PER_MONTH)
+            return UserMetrics.UserCap.Monthly;
+        throw new RuntimeException("Invalid exceeded cap");
+    }
 }
