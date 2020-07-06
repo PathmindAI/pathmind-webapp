@@ -6,10 +6,11 @@ import io.skymind.pathmind.shared.data.Metrics;
 import io.skymind.pathmind.shared.data.MetricsThisIter;
 import org.jooq.DSLContext;
 import org.jooq.Query;
+import org.jooq.Record6;
+import org.jooq.RecordMapper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.db.jooq.Tables.*;
@@ -26,31 +27,42 @@ class MetricsRepository {
     }
 
     protected static Map<Long, List<Metrics>> getMetricsForPolicies(DSLContext ctx, List<Long> policyIds) {
-        //todo need to change this query
-        return policyIds.stream()
-            .map(policyId -> {
-                List<Metrics> metrics = getMetricsForPolicy(ctx, policyId);
-                return Map.entry(policyId, metrics);
-            })
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<Long, List<MetricsThisIter>> subresult = ctx.select(METRICS.POLICY_ID, METRICS.ITERATION, METRICS.INDEX, METRICS.MAX, METRICS.MIN, METRICS.MEAN)
+                .from(METRICS)
+                .where(METRICS.POLICY_ID.in(policyIds))
+                .orderBy(METRICS.POLICY_ID, METRICS.ITERATION, METRICS.INDEX)
+                .fetchGroups(METRICS.POLICY_ID, new RecordMapper<Record6<Long, Integer, Integer, BigDecimal, BigDecimal, BigDecimal>, MetricsThisIter>() {
+                    @Override
+                    public MetricsThisIter map(Record6<Long, Integer, Integer, BigDecimal, BigDecimal, BigDecimal> record) {
+                        return new MetricsThisIter(
+                                record.get(METRICS.INDEX),
+                                JooqUtils.getSafeDouble(record.get(METRICS.MAX)),
+                                JooqUtils.getSafeDouble(record.get(METRICS.MIN)),
+                                JooqUtils.getSafeDouble(record.get(METRICS.MEAN)),
+                                record.get(METRICS.ITERATION)
+                        );
+                    }
+                });
+
+        Map<Long, List<Metrics>> result = new HashMap<>();
+
+        for (Map.Entry<Long, List<MetricsThisIter>> metricsIterEntry: subresult.entrySet()) {
+
+            Map<Integer, List<MetricsThisIter>> groupByIteration
+                    = metricsIterEntry.getValue().stream().collect(Collectors.groupingBy(MetricsThisIter::getIteration));
+
+            List<Metrics> metrics = groupByIteration.entrySet().stream()
+                            .map(entry -> new Metrics(entry.getKey(), entry.getValue()))
+                            .sorted(Comparator.comparing(Metrics::getIteration))
+                            .collect(Collectors.toList());
+
+            result.put(metricsIterEntry.getKey(), metrics);
+        }
+        return result;
     }
 
     protected static List<Metrics> getMetricsForPolicy(DSLContext ctx, long policyId) {
-        Map<Integer, List<MetricsThisIter>> metricsMap = ctx.select(METRICS.INDEX, METRICS.MAX, METRICS.MIN, METRICS.MEAN, METRICS.ITERATION)
-            .from(METRICS)
-            .where(METRICS.POLICY_ID.eq(policyId))
-            .orderBy(METRICS.ITERATION)
-            .fetchGroups(METRICS.ITERATION, record -> new MetricsThisIter(
-                record.get(METRICS.INDEX),
-                JooqUtils.getSafeDouble(record.get(METRICS.MAX)),
-                JooqUtils.getSafeDouble(record.get(METRICS.MIN)),
-                JooqUtils.getSafeDouble(record.get(METRICS.MEAN)
-            )));
-
-
-        return metricsMap.entrySet().stream()
-            .map(e -> new Metrics(e.getKey(), e.getValue()))
-            .collect(Collectors.toList());
+        return getMetricsForPolicies(ctx, Collections.singletonList(policyId)).getOrDefault(policyId, Collections.emptyList());
     }
 
     /**
