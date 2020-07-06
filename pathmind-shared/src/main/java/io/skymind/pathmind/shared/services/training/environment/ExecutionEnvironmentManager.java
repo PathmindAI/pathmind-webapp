@@ -9,6 +9,7 @@ import io.skymind.pathmind.shared.services.training.versions.JDK;
 import io.skymind.pathmind.shared.services.training.versions.NativeRL;
 import io.skymind.pathmind.shared.services.training.versions.PathmindHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -17,6 +18,9 @@ import java.util.Map;
 @Component
 public class ExecutionEnvironmentManager {
     private final FeatureManager featureManager;
+
+    @Value("${pathmind.nativerl-version}")
+    private String nativeRLVersion;
 
     @Autowired
     public ExecutionEnvironmentManager(FeatureManager featureManager) {
@@ -31,10 +35,11 @@ public class ExecutionEnvironmentManager {
         if (featureManager.isEnabled(Feature.MULTI_AGENT_TRAINING)) {
             pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
         }
+        NativeRL nativeRLVersion = NativeRL.valueOf(this.nativeRLVersion);
 
         return new ExecutionEnvironment(AnyLogic.VERSION_8_5_2,
                 pathmindHelperVersion,
-                NativeRL.VERSION_1_0_7,
+                nativeRLVersion,
                 JDK.VERSION_8_222,
                 Conda.VERSION_0_7_6,
                 EC2InstanceType.IT_36CPU_72GB);
