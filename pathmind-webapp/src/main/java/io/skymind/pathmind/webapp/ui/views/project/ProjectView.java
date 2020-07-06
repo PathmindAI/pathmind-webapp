@@ -144,23 +144,20 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 				.setComparator(Comparator.comparingLong(model -> Long.parseLong(model.getName())))
 				.setAutoWidth(true)
 				.setFlexGrow(0)
-				.setResizable(true)
-				.setSortable(true);
+				.setResizable(true);
 		Grid.Column<Model> createdColumn = modelGrid
 				.addColumn(new ZonedDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getDateCreated))
 				.setHeader("Created")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
-				.setResizable(true)
-				.setSortable(true);
+				.setResizable(true);
 		modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
-				.setResizable(true)
-				.setSortable(true);
+				.setResizable(true);
 		modelGrid.addColumn(model -> {
 				String userNotes = model.getUserNotes();
 				return userNotes.isEmpty() ? "—" : userNotes;

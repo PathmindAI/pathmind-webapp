@@ -108,16 +108,14 @@ public class ProjectsView extends PathMindDefaultView
 				.setHeader("Created")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
-				.setResizable(true)
-				.setSortable(true);
+				.setResizable(true);
 
 		Grid.Column<Project> lastActivityColumn = projectGrid.addColumn(new ZonedDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Project::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
-				.setResizable(true)
-				.setSortable(true);
+				.setResizable(true);
 
 		projectGrid.addColumn(project -> {
 				String userNotes = project.getUserNotes();

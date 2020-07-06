@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.search;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
 
@@ -9,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.BeforeEvent;
@@ -105,30 +108,32 @@ public class SearchResultsView extends PathMindDefaultView implements HasUrlPara
                 .withProperty("name", SearchResult::getName)
                 .withProperty("archived", resultItem -> resultItem.getIsArchived() ? "Archived" : ""))
             .setHeader("Name")
+            .setComparator(Comparator.comparing(SearchResult::getName))
             .setAutoWidth(true)
             .setFlexGrow(0)
             .setResizable(true);
-        grid.addColumn(new LocalDateTimeRenderer<>(SearchResult::getCreateDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_FOMATTER))
+        Grid.Column<SearchResult> createdDateColumn = grid.addColumn(new LocalDateTimeRenderer<>(SearchResult::getCreateDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_FOMATTER))
             .setComparator(Comparator.comparing(SearchResult::getCreateDate))
             .setHeader("Created")
             .setAutoWidth(true)
             .setFlexGrow(0)
-            .setResizable(true)
-            .setSortable(true);
-        grid.addColumn(new LocalDateTimeRenderer<>(SearchResult::getUpdateDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_FOMATTER))
+            .setResizable(true);
+        Grid.Column<SearchResult> lastActivityColumn = grid.addColumn(new LocalDateTimeRenderer<>(SearchResult::getUpdateDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_FOMATTER))
             .setComparator(Comparator.comparing(SearchResult::getUpdateDate))
             .setHeader("Last Activity")
             .setAutoWidth(true)
             .setFlexGrow(0)
-            .setResizable(true)
-            .setSortable(true);
-        grid.addColumn(SearchResult::getNotes)
+            .setResizable(true);
+        grid.addColumn(searchResult -> {
+            String notes = searchResult.getNotes();
+            return notes.isEmpty() ? "—" : notes;
+        })
+            .setClassNameGenerator(column -> "grid-notes-column")
             .setHeader("Notes")
-            .setAutoWidth(true)
-            .setFlexGrow(1)
             .setResizable(true);
         grid.setSizeFull();
         grid.setDataProvider(dataProvider);
+        grid.sort(Arrays.asList(new GridSortOrder<>(lastActivityColumn, SortDirection.DESCENDING)));
         return grid;
     }
 
