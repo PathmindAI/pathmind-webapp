@@ -73,6 +73,27 @@ Feature: Experiment page
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
 
+  Scenario: Check experiment side bar when an experiment is created in other tab
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Click project start run button
+    When Duplicate current tab
+    When Click in 'New Experiment' button
+    When Open tab 0
+    Then Check that Experiment #2 Draft exist on the experiment page
+    When Click in 'New Experiment' button
+    Then Click project start run button
+    When Open tab 1
+    Then Check that Experiment #3 Draft exist on the experiment page
+    When Open tab 0
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
+    When Click in 'Experiment #1' button
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
+
   Scenario: Check copy reward function button 1 line reward
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
