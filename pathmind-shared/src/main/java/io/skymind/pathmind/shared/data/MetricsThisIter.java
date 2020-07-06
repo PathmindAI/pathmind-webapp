@@ -14,4 +14,10 @@ public class MetricsThisIter implements Serializable {
     private Double max;
     private Double min;
     private Double mean;
+    private Integer iteration;
+
+    public MetricsThisIter(Integer index, Double max, Double min, Double mean) {
+        this(index, max, min, mean, null);
+    }
+
 }
