@@ -117,11 +117,11 @@ class ExperimentRepository
 				.execute();
 	}
 
-	protected static long createNewExperiment(DSLContext ctx, long modelId) {
+	protected static Experiment createNewExperiment(DSLContext ctx, long modelId) {
         return createNewExperiment(ctx, modelId, "1", "");
 	}
 	
-	protected static long createNewExperiment(DSLContext ctx, long modelId, String experimentName, String rewardFunction) {
+	protected static Experiment createNewExperiment(DSLContext ctx, long modelId, String experimentName, String rewardFunction) {
 		final ExperimentRecord ex = EXPERIMENT.newRecord();
 		ex.attach(ctx.configuration());
 		ex.setDateCreated(LocalDateTime.now());
@@ -129,7 +129,7 @@ class ExperimentRepository
 		ex.setName(experimentName);
 		ex.setRewardFunction(rewardFunction);
 		ex.store();
-		return ex.key().get(EXPERIMENT.ID);
+        return ex.into(EXPERIMENT).into(Experiment.class);
 	}
 
 	protected static int getExperimentCount(DSLContext ctx, long modelId) {
