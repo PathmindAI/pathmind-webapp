@@ -93,7 +93,7 @@ public class ExperimentDAO
 		return ExperimentRepository.countDashboardItemsForUser(ctx, userId);
 	}
 
-	public long createNewExperiment(long modelId) {
+	public Experiment createNewExperiment(long modelId) {
 		String experimentName = Integer.toString(ExperimentRepository.getExperimentCount(ctx, modelId) + 1);
 		Experiment lastExperiment = ExperimentRepository.getLastExperimentForModel(ctx, modelId);
 		String rewardFunction = lastExperiment != null ? lastExperiment.getRewardFunction() : ""; 

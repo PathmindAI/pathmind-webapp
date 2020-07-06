@@ -58,7 +58,7 @@
 }
 
 :host([theme~="primary"]:hover) {
-    box-shadow: inset 0 0 32px rgba(0,0,0,0.2);
+    box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.2);
 }
 
 :host([theme~="primary"]:hover)::before {
@@ -83,16 +83,19 @@
 }
 
 :host(:hover) {
-    box-shadow: inset 0 0 32px rgba(0,0,0,0.08);
+    box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.08);
 }
 
-:host([theme~="tertiary"]), :host([theme~="tertiary-inline"]),
-:host([theme~="tertiary"][disabled]), :host([theme~="tertiary-inline"][disabled]) {
+:host([theme~="tertiary"]),
+:host([theme~="tertiary-inline"]),
+:host([theme~="tertiary"][disabled]),
+:host([theme~="tertiary-inline"][disabled]) {
     font-weight: normal;
     border: none;
 }
 
-:host([theme~="tertiary"]:hover), :host([theme~="tertiary-inline"]:hover) {
+:host([theme~="tertiary"]:hover),
+:host([theme~="tertiary-inline"]:hover) {
     color: var(--lumo-body-text-color);
     box-shadow: none;
 }
