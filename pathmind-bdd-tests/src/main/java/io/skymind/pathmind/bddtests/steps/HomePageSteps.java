@@ -123,4 +123,9 @@ public class HomePageSteps {
     public void checkSearchResultPageProjectNameContainsDraftTag(String name) {
         homePage.checkSearchResultPageProjectNameContainsDraftTag(name);
     }
+
+    @Step
+    public void checkSearchResultsForValueIs(String value) {
+        homePage.checkSearchResultsForValueIs(value);
+    }
 }

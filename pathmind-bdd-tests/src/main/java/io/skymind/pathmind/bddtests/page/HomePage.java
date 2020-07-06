@@ -173,4 +173,9 @@ public class HomePage extends PageObject {
     public void checkSearchResultPageProjectNameContainsDraftTag(String name) {
         assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+name+" ']/span")).getText(), is("Archived"));
     }
+
+    public void checkSearchResultsForValueIs(String value) {
+        String[] text = getDriver().findElement(By.xpath("//*[@class='section-title-label truncated-label']")).getText().split(": ",2);
+        assertThat(text[1], is(value));
+    }
 }

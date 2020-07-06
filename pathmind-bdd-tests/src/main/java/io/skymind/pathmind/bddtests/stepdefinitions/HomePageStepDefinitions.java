@@ -136,4 +136,9 @@ public class HomePageStepDefinitions {
     public void checkSearchResultPageProjectNameContainsDraftTag() {
         homePageSteps.checkSearchResultPageProjectNameContainsDraftTag("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
     }
+
+    @Then("^Check Search Results for value is '(.*)'$")
+    public void checkSearchResultsForValueIs(String value) {
+        homePageSteps.checkSearchResultsForValueIs(value);
+    }
 }
