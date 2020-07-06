@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
@@ -94,6 +95,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private SegmentIntegrator segmentIntegrator;
 	@Autowired
 	private RewardValidationService rewardValidationService;
+	@Autowired
+    private ProjectFileCheckService projectFileCheckService;
 
 	private Breadcrumbs pageBreadcrumbs;
 	private Binder<Experiment> binder;
@@ -261,7 +264,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		segmentIntegrator.rewardFuntionCreated();
 		
 		if (!ModelUtils.isTupleModel(experiment.getModel())) {
-		    NotificationUtils.showError(ModelUtils.NONTUPLE_ERROR_MESSAGE);
+		    NotificationUtils.showError(projectFileCheckService.getNonTupleErrorMessage());
 		    return;
 		}
 

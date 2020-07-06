@@ -11,9 +11,6 @@ import static io.skymind.pathmind.shared.utils.ZipUtils.entryContentExtractor;
 
 @Slf4j
 public class ModelUtils {
-
-    public static String NONTUPLE_ERROR_MESSAGE = "Model needs to be updated. You can take a look at <a target='_blank' href='http://help.pathmind.com/en/articles/4219921-converting-models-to-support-tuples'>this article</a> for upgrade instructions.";
-    
     private ModelUtils() {
         throw new IllegalAccessError("Static usage only");
     }
