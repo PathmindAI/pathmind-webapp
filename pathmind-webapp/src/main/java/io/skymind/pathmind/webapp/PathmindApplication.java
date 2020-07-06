@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SpringBootApplication(scanBasePackages = "io.skymind.pathmind", exclude = ErrorMvcAutoConfiguration.class)
-@PropertySource({"application.properties", "shared.properties"})
+@PropertySource({"classpath:application.properties", "classpath:shared.properties"})
 @EnableCaching
 @EnableScheduling
 public class PathmindApplication
