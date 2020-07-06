@@ -44,6 +44,9 @@ public class MailHelper
 	@Value("${sendgrid.trainingfailed-mail.id}")
 	private String trainingFailedTemplateId;
 
+    @Value("${sendgrid.quotareached-mail.id}")
+    private String quotaReachedTemplateId;
+
 	@Value("${sendgrid.newemailaddressverification-mail.id}")
 	private String newEmailAddressVerificationTemplateId;
 
@@ -191,13 +194,15 @@ public class MailHelper
         }
         Mail mail = new Mail();
         mail.setFrom(createFromEmail());
-        // TODO -> How do I link this to Sendgrid?
-        // mail.setTemplateId();
+        mail.setTemplateId(quotaReachedTemplateId);
         Personalization personalization = new Personalization();
         // TODO -> How do I use the userCap type and the percentageReached?
         personalization.addDynamicTemplateData("subject", "(" + percentageReached + "%) + " + userCap.name().toLowerCase() + " cap limit reached by user");
         // TODO -> How do I include the user's account? What is better, email address, account id, etc?
-        personalization.addDynamicTemplateData("user", userEmail);
+        personalization.addDynamicTemplateData("email", "the.user@email.com");
+        personalization.addDynamicTemplateData("accountId", "User account id");
+        personalization.addDynamicTemplateData("name", "User name");
+        personalization.addDynamicTemplateData("quota", "90%");
         personalization.addTo(new Email(PATHMIND_SUPPORT));
         mail.addPersonalization(personalization);
         return mail;
