@@ -78,4 +78,9 @@ public class ExperimentPageSteps {
     public void clickCopyRewardFunctionBtn() {
         experimentPage.clickCopyRewardFunctionBtn();
     }
+
+    @Step
+    public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
+        experimentPage.checkThatExperimentExistOnTheExperimentPage(experiment);
+    }
 }
