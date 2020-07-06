@@ -135,6 +135,7 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
             Button archiveExperimentButton = new Button(VaadinIcon.ARCHIVE.create());
             archiveExperimentButton.getElement().addEventListener("click", click -> archiveExperimentHandler.accept(experiment)).addEventData("event.stopPropagation()");
             archiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+            archiveExperimentButton.addClassName("action-button");
 			VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
 				add(createExperimentText(experiment.getName(), DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId), isDraft));
                 add(archiveExperimentButton);
