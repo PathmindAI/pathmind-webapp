@@ -18,6 +18,8 @@ import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
@@ -41,10 +43,11 @@ import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.ui.views.search.dataprovider.SearchResultsDataProvider;
 
 @Route(value= Routes.SEARCHRESULTS_URL, layout = MainLayout.class)
-public class SearchResultsView extends PathMindDefaultView implements HasUrlParameter<String>{
+public class SearchResultsView extends PathMindDefaultView implements AfterNavigationObserver, HasUrlParameter<String>{
 
     private ConfigurableFilterDataProvider<SearchResult, Void, String> dataProvider;
     private ExperimentDAO experimentDao;
+    private String titleText = "Search Results";
     
     @Autowired
     public SearchResultsView(SearchResultsDataProvider searchResultsDataProvider, ExperimentDAO experimentDao) {
@@ -58,10 +61,15 @@ public class SearchResultsView extends PathMindDefaultView implements HasUrlPara
     }
 
     @Override
+    public void afterNavigation(AfterNavigationEvent event) {
+        getMainLayout().ifPresent(MainLayout::clearSearchBoxValue);
+    }
+
+    @Override
     protected Component getMainContent() {
         addClassName("search-results-view");
         
-        Span title = LabelFactory.createLabel("Search results", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.TRUNCATED_LABEL);
+        Span title = LabelFactory.createLabel(titleText, CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.TRUNCATED_LABEL);
         HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullHorizontal(title);
         Grid<SearchResult> grid = createSearchResultsGrid();
         grid.addSelectionListener(evt -> navigateToSelectedRecord(evt.getFirstSelectedItem()));
@@ -73,7 +81,6 @@ public class SearchResultsView extends PathMindDefaultView implements HasUrlPara
 
     private void navigateToSelectedRecord(Optional<SearchResult> selectedItem) {
         selectedItem.ifPresent(item -> {
-            getMainLayout().ifPresent(MainLayout::clearSearchBoxValue);
             switch (item.getItemType()) {
                 case PROJECT :
                     getUI().ifPresent(ui -> ui.navigate(ProjectView.class, item.getItemId()));
@@ -139,7 +146,9 @@ public class SearchResultsView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     public void setParameter(BeforeEvent event, String keyword) {
-        dataProvider.setFilter(URLDecoder.decode(keyword, StandardCharsets.UTF_8));
+        String decodedKeyword = URLDecoder.decode(keyword, StandardCharsets.UTF_8);
+        dataProvider.setFilter(decodedKeyword);
+        titleText = "Search Results for: " + decodedKeyword;
     }
 
 }
