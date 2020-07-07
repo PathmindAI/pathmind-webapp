@@ -50,6 +50,8 @@ spec:
               value: tcp://localhost:2375
             - name: S3BUCKET
               value: {{ .Values.env.S3BUCKET }}
+            - name: JENKINS_URL
+              value: {{ .Values.env.JENKINS_URL }}
             - name: AWS_DEFAULT_REGION
               value: "us-east-1"
             - name: AWS_ACCESS_KEY_ID
