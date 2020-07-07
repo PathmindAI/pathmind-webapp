@@ -2,6 +2,7 @@ package io.skymind.pathmind.bddtests;
 
 import io.restassured.response.Response;
 import net.serenitybdd.core.Serenity;
+import net.serenitybdd.core.exceptions.SerenityManagedException;
 import net.serenitybdd.core.pages.PageObject;
 import net.serenitybdd.rest.SerenityRest;
 
@@ -54,18 +55,28 @@ public class EmailApi extends PageObject {
     }
 
     private int getInboxCount() {
-        Response getInboxCount = SerenityRest
-            .given()
-            .cookie("PHPSESSID", Serenity.sessionVariableCalled("sessId"))
-            .queryParam("f", "get_email_list")
-            .queryParam("offset", "0")
-            .when()
-            .get(emailApiUrl);
-        getInboxCount
-            .then()
-            .log()
-            .all()
-            .statusCode(200);
+        int attempts = 0;
+        Response getInboxCount = null;
+        while (attempts < 5) {
+            try {
+                getInboxCount = SerenityRest
+                    .given()
+                    .cookie("PHPSESSID", Serenity.sessionVariableCalled("sessId"))
+                    .queryParam("f", "get_email_list")
+                    .queryParam("offset", "0")
+                    .when()
+                    .get(emailApiUrl);
+                getInboxCount
+                    .then()
+                    .log()
+                    .all()
+                    .statusCode(200);
+                break;
+            } catch (SerenityManagedException e) {
+                waitABit(2000);
+            }
+            attempts++;
+        }
 
         return Integer.parseInt(getInboxCount.jsonPath().get("count"));
     }

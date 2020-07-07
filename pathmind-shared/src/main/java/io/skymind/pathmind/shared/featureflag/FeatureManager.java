@@ -23,9 +23,10 @@ public class FeatureManager {
         log.info("Toggles: {}", this);
     }
 
-
     public boolean isEnabled(Feature feature) {
         switch (feature) {
+            case SEARCH:
+                return true;
             case MULTI_AGENT_TRAINING:
                 return multiAgentEnabled;
             case ACCOUNT_UPGRADE:
