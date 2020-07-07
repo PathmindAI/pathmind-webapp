@@ -1396,4 +1396,28 @@
             </delete>
         </rollback>
     </changeSet>
+
+    <changeSet id="20200707-01" author="daniel.jaramillo@toptal.com">
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="Job crashed more than 3 times, job is killed"/>
+            <column name="DESCRIPTION" value="The job was stopped because it crashed more than 3 times."/>
+            <column name="RESTARTABLE" value="true"/>
+        </insert>
+        <rollback>
+            <delete tableName="TRAINING_ERROR">
+                <where>KEYWORD='Job crashed more than 3 times, job is killed'</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200707-02" author="daniel.jaramillo@toptal.com">
+        <addColumn tableName="TRAINER_JOB">
+            <column name="RESTARTS" type="INT" defaultValue=0/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="TRAINER_JOB" columnName="RESTARTS"  />
+        </rollback>
+    </changeSet>
+
+
 </databaseChangeLog>
