@@ -45,15 +45,6 @@ public class SearchResultsDataProvider extends AbstractBackEndDataProvider<Searc
         }
     }
 
-    public Comparator<SearchResult> getSortComparator() {
-        return sortOrder;
-    }
-
-    public void setSortComparator(Comparator<SearchResult> comparator) {
-        this.sortOrder = comparator;
-        refreshAll();
-    }
-
     @Override
     protected int sizeInBackEnd(Query<SearchResult, String> query) {
         if (query.getFilter().isPresent()) {
@@ -62,6 +53,5 @@ public class SearchResultsDataProvider extends AbstractBackEndDataProvider<Searc
             return 0;
         }
     }
-
 
 }
