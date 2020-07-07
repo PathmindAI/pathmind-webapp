@@ -4,12 +4,11 @@ import io.skymind.pathmind.db.jooq.tables.Experiment;
 import io.skymind.pathmind.db.utils.JooqUtils;
 import io.skymind.pathmind.shared.data.Metrics;
 import io.skymind.pathmind.shared.data.MetricsThisIter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.Query;
-import org.jooq.Record6;
-import org.jooq.RecordMapper;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,6 +17,15 @@ import static io.skymind.pathmind.db.jooq.tables.Run.RUN;
 import static org.jooq.impl.DSL.max;
 
 class MetricsRepository {
+
+    // this is a temporary class to help MetricsRepository convert data into appropriate data types
+    @AllArgsConstructor
+    @Data
+    static class MetricsAndIter {
+        private MetricsThisIter metricsThisIter;
+        private Integer iteration;
+    }
+
     protected static Map<Long, Integer> getMaxMetricsIterationForPolicies(DSLContext ctx, List<Long> policyIds) {
         return ctx.select(METRICS.POLICY_ID, max(METRICS.ITERATION))
             .from(METRICS)
@@ -27,37 +35,34 @@ class MetricsRepository {
     }
 
     protected static Map<Long, List<Metrics>> getMetricsForPolicies(DSLContext ctx, List<Long> policyIds) {
-        Map<Long, List<MetricsThisIter>> subresult = ctx.select(METRICS.POLICY_ID, METRICS.ITERATION, METRICS.INDEX, METRICS.MAX, METRICS.MIN, METRICS.MEAN)
-                .from(METRICS)
-                .where(METRICS.POLICY_ID.in(policyIds))
-                .orderBy(METRICS.POLICY_ID, METRICS.ITERATION, METRICS.INDEX)
-                .fetchGroups(METRICS.POLICY_ID, new RecordMapper<Record6<Long, Integer, Integer, BigDecimal, BigDecimal, BigDecimal>, MetricsThisIter>() {
-                    @Override
-                    public MetricsThisIter map(Record6<Long, Integer, Integer, BigDecimal, BigDecimal, BigDecimal> record) {
-                        return new MetricsThisIter(
-                                record.get(METRICS.INDEX),
-                                JooqUtils.getSafeDouble(record.get(METRICS.MAX)),
-                                JooqUtils.getSafeDouble(record.get(METRICS.MIN)),
-                                JooqUtils.getSafeDouble(record.get(METRICS.MEAN)),
-                                record.get(METRICS.ITERATION)
-                        );
-                    }
-                });
+        Map<Long, List<MetricsAndIter>> subresult = ctx.select(METRICS.POLICY_ID, METRICS.ITERATION, METRICS.INDEX, METRICS.MAX, METRICS.MIN, METRICS.MEAN)
+            .from(METRICS)
+            .where(METRICS.POLICY_ID.in(policyIds))
+            .orderBy(METRICS.POLICY_ID, METRICS.ITERATION, METRICS.INDEX)
+            .fetchGroups(METRICS.POLICY_ID, record -> new MetricsAndIter(
+                new MetricsThisIter(
+                        record.get(METRICS.INDEX),
+                        JooqUtils.getSafeDouble(record.get(METRICS.MAX)),
+                        JooqUtils.getSafeDouble(record.get(METRICS.MIN)),
+                        JooqUtils.getSafeDouble(record.get(METRICS.MEAN))),
+                record.get(METRICS.ITERATION)
+            ));
 
         Map<Long, List<Metrics>> result = new HashMap<>();
 
-        for (Map.Entry<Long, List<MetricsThisIter>> metricsIterEntry: subresult.entrySet()) {
+        subresult.entrySet().stream().forEach(e -> {
+            Map<Integer, List<MetricsAndIter>> groupByIteration
+                = e.getValue().stream().collect(Collectors.groupingBy(MetricsAndIter::getIteration));
 
-            Map<Integer, List<MetricsThisIter>> groupByIteration
-                    = metricsIterEntry.getValue().stream().collect(Collectors.groupingBy(MetricsThisIter::getIteration));
 
-            List<Metrics> metrics = groupByIteration.entrySet().stream()
-                            .map(entry -> new Metrics(entry.getKey(), entry.getValue()))
-                            .sorted(Comparator.comparing(Metrics::getIteration))
-                            .collect(Collectors.toList());
+                List<Metrics> metrics = groupByIteration.entrySet().stream()
+                    .map(entry -> new Metrics(entry.getKey(), entry.getValue().stream().map(MetricsAndIter::getMetricsThisIter).collect(Collectors.toList())))
+                    .sorted(Comparator.comparing(Metrics::getIteration))
+                    .collect(Collectors.toList());
 
-            result.put(metricsIterEntry.getKey(), metrics);
-        }
+                result.put(e.getKey(), metrics);
+        });
+
         return result;
     }
 
