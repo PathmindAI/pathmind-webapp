@@ -29,10 +29,20 @@ public class ExperimentDAO
 
 	public Optional<Experiment> getExperiment(long experimentId) {
 		var experiment = ExperimentRepository.getExperiment(ctx, experimentId);
-		return Optional.ofNullable(experiment);
+        return Optional.ofNullable(experiment);
 	}
 
-	public Optional<Experiment> getExperimentIfAllowed(long experimentId, long userId) {
+    public Optional<Experiment> getExperimentWithRuns(long experimentId) {
+        var experiment = ExperimentRepository.getExperiment(ctx, experimentId);
+        Optional<Experiment> result = Optional.ofNullable(experiment);
+        result.ifPresent(e -> {
+            List<Run> runsForExperiment = RunRepository.getRunsForExperiment(ctx, experiment.getId());
+            e.setRuns(runsForExperiment);
+        });
+        return result;
+    }
+
+    public Optional<Experiment> getExperimentIfAllowed(long experimentId, long userId) {
 		return Optional.ofNullable(ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId));
 	}
 
@@ -83,7 +93,7 @@ public class ExperimentDAO
 		return ExperimentRepository.countDashboardItemsForUser(ctx, userId);
 	}
 
-	public long createNewExperiment(long modelId) {
+	public Experiment createNewExperiment(long modelId) {
 		String experimentName = Integer.toString(ExperimentRepository.getExperimentCount(ctx, modelId) + 1);
 		Experiment lastExperiment = ExperimentRepository.getLastExperimentForModel(ctx, modelId);
 		String rewardFunction = lastExperiment != null ? lastExperiment.getRewardFunction() : ""; 

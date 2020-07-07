@@ -53,4 +53,6 @@ public class Routes {
     public static final String DASHBOARD_URL = "dashboard";
 
     public static final String SETTINGS_URL = "settings";
+
+    public static final String SEARCHRESULTS_URL = "search-results";
 }

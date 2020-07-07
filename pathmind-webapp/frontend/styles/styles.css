@@ -307,7 +307,8 @@ hr {
 .model-view .view-section,
 .projects-view .page-content,
 .project-view .page-content,
-.model-view .page-content {
+.model-view .page-content,
+.search-results-view .page-content {
     box-sizing: border-box;
     flex: 1 1 auto;
     padding: var(--lumo-space-m);
@@ -319,6 +320,14 @@ hr {
     min-width: unset;
     line-height: 1.6em;
     overflow: auto;
+}
+
+.search-results-view {
+    padding: 0 var(--lumo-space-m) var(--lumo-space-m);
+}
+
+.search-results-view .view-section {
+    margin-top: var(--lumo-space-m);
 }
 
 .card p,
