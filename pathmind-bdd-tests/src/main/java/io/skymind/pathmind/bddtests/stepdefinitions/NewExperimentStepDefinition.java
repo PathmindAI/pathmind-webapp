@@ -3,13 +3,18 @@ package io.skymind.pathmind.bddtests.stepdefinitions;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.NewExperimentSteps;
+import io.skymind.pathmind.bddtests.steps.ProjectsPageSteps;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
+
+import java.util.Date;
 
 public class NewExperimentStepDefinition {
 
     @Steps
     private NewExperimentSteps newExperimentSteps;
+    @Steps
+    private ProjectsPageSteps projectsPageSteps;
 
     @Then("^Check that new experiment (.*) page is opened$")
     public void checkThatExperimentPageIsOpened(String projectName) {
@@ -59,5 +64,11 @@ public class NewExperimentStepDefinition {
     @Then("^Check that Notes saved! msg shown$")
     public void checkThatNotesSavedMsgShown() {
         newExperimentSteps.checkThatNotesSavedMsgShown();
+    }
+
+    @When("^Input unique experiment page note$")
+    public void inputUniqueExperimentPageNoteNote() {
+        Serenity.setSessionVariable("noteRandomNumber").to(new Date().getTime());
+        projectsPageSteps.inputExperimentNotes("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo" + Serenity.sessionVariableCalled("noteRandomNumber"));
     }
 }

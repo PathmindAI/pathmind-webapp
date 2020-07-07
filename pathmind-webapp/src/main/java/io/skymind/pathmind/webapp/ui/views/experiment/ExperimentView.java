@@ -10,6 +10,8 @@ import java.util.stream.IntStream;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.ExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
@@ -113,6 +115,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private RewardVariablesTable rewardVariablesTable;
     private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
     private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
+    private final ExperimentViewExperimentCreatedSubscriber experimentCreatedSubscriber;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -139,18 +142,21 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         addClassName("experiment-view");
         policyUpdateSubscriber = new ExperimentViewPolicyUpdateSubscriber();
         runUpdateSubscriber = new ExperimentViewRunUpdateSubscriber();
+        experimentCreatedSubscriber = new ExperimentViewExperimentCreatedSubscriber();
     }
 
     @Override
     protected void onDetach(DetachEvent event) {
         EventBus.unsubscribe(policyUpdateSubscriber);
         EventBus.unsubscribe(runUpdateSubscriber);
+        EventBus.unsubscribe(experimentCreatedSubscriber);
     }
 
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(policyUpdateSubscriber);
         EventBus.subscribe(runUpdateSubscriber);
+        EventBus.subscribe(experimentCreatedSubscriber);
     }
 
     @Override
@@ -248,7 +254,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         stopTrainingButton = new Button("Stop Training", click -> {
             showStopTrainingConfirmationDialog();
         });
-        stopTrainingButton.addThemeName("secondary");
         stopTrainingButton.setVisible(true);
 
         unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
@@ -509,6 +514,19 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             .forEach(policy -> policy.setRun(run));
     }
 
+    private boolean isNewExperimentForThisViewModel(Experiment eventExperiment, long modelId) {
+        return isSameModel(modelId) && !experiments.contains(eventExperiment);
+    }
+
+    private void updateNavBarExperiments() {
+        experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+        PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
+    }
+
+    private boolean isSameModel(long modelId) {
+        return experiment != null && experiment.getModelId() == modelId;
+    }
+
     class ExperimentViewPolicyUpdateSubscriber implements PolicyUpdateSubscriber
     {
         @Override
@@ -553,17 +571,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     setPolicyChartVisibility();
                     updateDetailsForExperiment();
                 });
-            } else if (isSameModel(event)) {
-                if (!experiments.contains(event.getRun().getExperiment())) {
-                    experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-                    PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
-                }
+            } else if (isNewExperimentForThisViewModel(event.getRun().getExperiment(), event.getModelId())) {
+                updateNavBarExperiments();
             }
         }
 
         @Override
         public boolean filterBusEvent(RunUpdateBusEvent event) {
-            return isSameExperiment(event) || isSameModel(event);
+            return isSameExperiment(event) || isSameModel(event.getModelId());
         }
 
         @Override
@@ -574,9 +589,20 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         private boolean isSameExperiment(RunUpdateBusEvent event) {
             return experiment != null && experiment.getId() == event.getRun().getExperiment().getId();
         }
-        
-        private boolean isSameModel(RunUpdateBusEvent event) {
-            return experiment != null && experiment.getModelId() == event.getRun().getModel().getId();
+    }
+
+    class ExperimentViewExperimentCreatedSubscriber implements ExperimentCreatedSubscriber {
+
+        @Override
+        public void handleBusEvent(ExperimentCreatedBusEvent event) {
+            if (isNewExperimentForThisViewModel(event.getExperiment(), event.getModelId())) {
+                updateNavBarExperiments();
+            }
+        }
+
+        @Override
+        public boolean isAttached() {
+            return ExperimentView.this.getUI().isPresent();
         }
     }
 }
