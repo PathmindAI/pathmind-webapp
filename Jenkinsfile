@@ -51,6 +51,7 @@ pipeline {
         // Build auto timeout
         timeout(time: 60, unit: 'MINUTES')
         disableConcurrentBuilds()
+        buildDiscarder(logRotator(daysToKeepStr: '15', artifactDaysToKeepStr: '15'))
     }
 
     // Some global default variables
