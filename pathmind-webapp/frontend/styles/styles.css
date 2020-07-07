@@ -24,6 +24,7 @@ html {
     --pm-blue-color-darkest-25pct: rgba(26, 41, 73, 0.25);
     --pm-blue-color: #1900ff;
     --pm-green-color: #00a60b;
+    --pm-yellow-color: #fff51f;
 
     /* pathmind reward variable colors */
     --variable-color-0: #67ea93;
@@ -199,6 +200,10 @@ hr {
     text-overflow: ellipsis;
 }
 
+.highlight-label {
+    background-color: var(--pm-yellow-color);
+}
+
 .hint-label,
 .fade-out-hint-label {
     font-size: var(--lumo-font-size-s);
@@ -264,7 +269,7 @@ hr {
 }
 
 .projects-view .project-name-column span {
-    max-width: 200px;
+    max-width: 13rem;
 }
 
 .projects-view .project-name-column vaadin-button {
@@ -303,6 +308,20 @@ hr {
     margin-top: var(--lumo-space-m);
 }
 
+.search-results-view .section-title-label {
+    line-height: 1;
+}
+
+.search-results-view .highlighted-text-wrapper {
+    width: 20rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.search-results-view .grid-notes-column.highlighted-text-wrapper {
+    width: auto;
+}
+
 .card p,
 .card p + div {
     margin: var(--lumo-space-m) 0 0;
@@ -318,7 +337,8 @@ hr {
 }
 
 .project-view .section-subtitle-label,
-.model-view .section-subtitle-label {
+.model-view .section-subtitle-label,
+.search-results-view .section-subtitle-label {
     color: var(--lumo-secondary-text-color);
 }
 

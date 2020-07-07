@@ -11,13 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
+import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEvent;
@@ -47,7 +48,10 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
 
     private ConfigurableFilterDataProvider<SearchResult, Void, String> dataProvider;
     private ExperimentDAO experimentDao;
+    private String decodedKeyword;
     private String titleText = "Search Results";
+    private String numberOfResultsText;
+    private Span numberOfResults;
     
     @Autowired
     public SearchResultsView(SearchResultsDataProvider searchResultsDataProvider, ExperimentDAO experimentDao) {
@@ -63,15 +67,18 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
         getMainLayout().ifPresent(MainLayout::clearSearchBoxValue);
+        numberOfResultsText = "Showing " + dataProvider.size(new Query<>()) + " results";
+        numberOfResults.setText(numberOfResultsText);
     }
 
     @Override
     protected Component getMainContent() {
         addClassName("search-results-view");
-        
-        Span title = LabelFactory.createLabel(titleText, CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.TRUNCATED_LABEL);
-        HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullHorizontal(title);
+
         Grid<SearchResult> grid = createSearchResultsGrid();
+        Span title = LabelFactory.createLabel(titleText, CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.TRUNCATED_LABEL);
+        numberOfResults = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
+        VerticalLayout headerWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(title, numberOfResults);
         grid.addSelectionListener(evt -> navigateToSelectedRecord(evt.getFirstSelectedItem()));
         
         FlexLayout gridWrapper = new ViewSection(headerWrapper, grid);
@@ -104,6 +111,30 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         return getParent().map(p -> (MainLayout) p);
     }
 
+    private Div highlightSearchResult(SearchResult searchResult, String columnText) {
+        Div searchResultColumn = new Div();
+        Boolean isArchived = searchResult.getIsArchived();
+        String[] parts = columnText.split(decodedKeyword);
+        for (int i = 0; i < parts.length; i++) {
+            if (i > 0) {
+                searchResultColumn.add(
+                    LabelFactory.createLabel(decodedKeyword, CssPathmindStyles.HIGHLIGHT_LABEL)
+                );
+            }
+            searchResultColumn.add(parts[i]);
+        }
+        if (parts.length == 0) {
+            searchResultColumn.add(
+                LabelFactory.createLabel(decodedKeyword, CssPathmindStyles.HIGHLIGHT_LABEL)
+            );
+        }
+        if (isArchived) {
+            searchResultColumn.add(LabelFactory.createLabel("Archived", CssPathmindStyles.TAG_LABEL));
+        }
+        searchResultColumn.addClassName("highlighted-text-wrapper");
+        return searchResultColumn;
+    }
+
     private Grid<SearchResult> createSearchResultsGrid() {
         Grid<SearchResult> grid = new Grid<>();
         grid.addColumn(SearchResult::getItemType)
@@ -111,9 +142,9 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
             .setAutoWidth(true)
             .setFlexGrow(0)
             .setResizable(true);
-        grid.addColumn(TemplateRenderer.<SearchResult> of("[[item.name]] <span class='tag'>[[item.archived]]</span>")
-                .withProperty("name", SearchResult::getName)
-                .withProperty("archived", resultItem -> resultItem.getIsArchived() ? "Archived" : ""))
+        grid.addComponentColumn(
+                searchResult -> highlightSearchResult(searchResult, searchResult.getName())
+            )
             .setHeader("Name")
             .setComparator(Comparator.comparing(SearchResult::getName))
             .setAutoWidth(true)
@@ -131,11 +162,18 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
             .setAutoWidth(true)
             .setFlexGrow(0)
             .setResizable(true);
-        grid.addColumn(searchResult -> {
-            String notes = searchResult.getNotes();
-            return notes.isEmpty() ? "—" : notes;
-        })
-            .setClassNameGenerator(column -> "grid-notes-column")
+        grid.addComponentColumn(
+                searchResult -> {
+                    String notes = searchResult.getNotes();
+                    if (notes.isEmpty()) {
+                        return new Span("—");
+                    } else {
+                        Div notesColumn = highlightSearchResult(searchResult, notes);
+                        notesColumn.addClassName("grid-notes-column");
+                        return notesColumn;
+                    }
+                }
+            )
             .setHeader("Notes")
             .setResizable(true);
         grid.setSizeFull();
@@ -146,7 +184,7 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
 
     @Override
     public void setParameter(BeforeEvent event, String keyword) {
-        String decodedKeyword = URLDecoder.decode(keyword, StandardCharsets.UTF_8);
+        decodedKeyword = URLDecoder.decode(keyword, StandardCharsets.UTF_8);
         dataProvider.setFilter(decodedKeyword);
         titleText = "Search Results for: " + decodedKeyword;
     }
