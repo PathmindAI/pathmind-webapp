@@ -9,6 +9,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -177,5 +178,10 @@ public class HomePage extends PageObject {
     public void checkSearchResultsForValueIs(String value) {
         String[] text = getDriver().findElement(By.xpath("//*[@class='section-title-label truncated-label']")).getText().split(": ",2);
         assertThat(text[1], is(value));
+    }
+
+    public void checkThatSearchCounterIs(String counter) {
+        String[] text = getDriver().findElement(By.xpath("//*[@class='section-subtitle-label']")).getText().split(" ", 3);
+        assertThat(text[1], is(counter));
     }
 }

@@ -141,4 +141,14 @@ public class HomePageStepDefinitions {
     public void checkSearchResultsForValueIs(String value) {
         homePageSteps.checkSearchResultsForValueIs(value);
     }
+
+    @When("^Input '(.*)' to the notes search field with unique number$")
+    public void inputSearchTestToTheNotesSearchField(String text) {
+        homePageSteps.inputToTheNotesSearchField(text + Serenity.sessionVariableCalled("searchRandomNumber"));
+    }
+
+    @Then("^Check that search counter is '(\\d+)'$")
+    public void checkThatSearchCounterIs(String counter) {
+        homePageSteps.checkThatSearchCounterIs(counter);
+    }
 }

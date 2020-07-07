@@ -128,4 +128,9 @@ public class HomePageSteps {
     public void checkSearchResultsForValueIs(String value) {
         homePage.checkSearchResultsForValueIs(value);
     }
+
+    @Step
+    public void checkThatSearchCounterIs(String counter) {
+        homePage.checkThatSearchCounterIs(counter);
+    }
 }

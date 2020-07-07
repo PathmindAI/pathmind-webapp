@@ -58,6 +58,23 @@ Feature: Nav bar search
     When Click notes search btn
     Then Check notes search field text is ''
 
+  Scenario: Check search result counter
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Open projects page
+    When Generate unique number 'searchRandomNumber'
+    When Click edit AutotestProject project icon from projects page
+    When Rename project name to 1_SearchTest
+    When Click in 'Rename Project' button
+    When Create new CoffeeShop project with single reward function
+    When Open projects page
+    When Click edit AutotestProject project icon from projects page
+    When Rename project name to 2_SearchTest
+    When Click in 'Rename Project' button
+    When Input 'SearchTest' to the notes search field with unique number
+    When Click notes search btn
+    Then Check that search counter is '2'
+
   Scenario: Check search field empty case
     Given Login to the pathmind
     When Click notes search btn
