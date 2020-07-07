@@ -52,6 +52,12 @@ Feature: Nav bar search
     When Click notes clear btn
     Then Check notes search field text is ''
 
+  Scenario: Check search field clear after loupe btn click
+    Given Login to the pathmind
+    When Input 'AutotestNoteSearch' to the notes search field
+    When Click notes search btn
+    Then Check notes search field text is ''
+
   Scenario: Check search field empty case
     Given Login to the pathmind
     When Click notes search btn
