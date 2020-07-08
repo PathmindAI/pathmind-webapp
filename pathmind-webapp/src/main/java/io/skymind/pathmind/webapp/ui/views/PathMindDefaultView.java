@@ -11,6 +11,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.shared.communication.PushMode;
+import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
@@ -33,8 +34,8 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
     @Autowired
     private SegmentIntegrator segmentIntegrator;
 
-    @Value("${pathmind.aws.mock_cycle}")
-    private int mockCycle;
+    @Autowired
+    private AWSApiClient awsApiClient;
 
 	private int previousWindowWidth = 0;
 
@@ -91,7 +92,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
 	private void addScreens(){
 		removeAll();
-		if (mockCycle != 0) {
+		if (awsApiClient.isUsingMockBackend()) {
             add(getWarningMessage());
         }
 		final Component titlePanel = getTitlePanel();
