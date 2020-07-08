@@ -34,6 +34,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.shared.constants.RunStatus.Error;
+import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.var;
+import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.varExp;
+import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.varCondition;
 
 @Service
 @Slf4j
@@ -432,18 +435,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
                     varExp("CHECKPOINT", "$(find checkpoint -name \"checkpoint-*\" ! -name \"checkpoint-*.*\")")
             );
         }
-    }
-
-    private String var(String name, String value) {
-        return "export " + name + "='" + value.replace("'", "\\'") + "'";
-    }
-
-    private String varExp(String name, String value) {
-        return "export " + name + "=" + value.replace("'", "\\'");
-    }
-
-    private String varCondition(String name, String value) {
-        return "export " + name + "=${" + name + ":='" + value.replace("'", "\\'") + "'}";
     }
 
     private void setupVariables(JobSpec job, List<String> instructions) {
