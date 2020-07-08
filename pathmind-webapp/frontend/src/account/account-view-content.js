@@ -15,6 +15,9 @@ class AccountViewContent extends PolymerElement {
                 .small:empty {
                     display: none;
                 }
+                vaadin-button {
+                    min-width: auto;
+                }
             </style>
             <div class="content">
                 <span class="section-title-label">Account</span>

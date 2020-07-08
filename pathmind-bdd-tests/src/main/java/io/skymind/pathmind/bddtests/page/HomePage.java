@@ -9,6 +9,9 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -36,6 +39,8 @@ public class HomePage extends PageObject {
     private WebElement accountMenuBtn;
     @FindBy(xpath = "//vaadin-context-menu-item[@role='menuitem' and text()='Account']")
     private WebElement accountBtn;
+    @FindBy(css = ".search-box_text-field")
+    private WebElement searchBoxShadow;
 
     public void checkNavAccLinkVisible(String name) {
         assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@id='nav-main-links']//a[2]")).getText(), is("Dashboard"));
@@ -98,5 +103,68 @@ public class HomePage extends PageObject {
 
     public void clickGettingStartedGuideButton() {
         getDriver().findElement(By.xpath("//a[text()='Getting Started Guide']")).click();
+    }
+
+    public void checkThatProjectsButtonHighlightIs(Boolean status) {
+        if (status){
+            assertThat(getDriver().findElement(By.xpath("//a[text()='Projects']")).getAttribute("highlight"), is(""));
+        }else {
+            assertThat(getDriver().findElement(By.xpath("//a[text()='Projects']")).getAttribute("highlight"), is(nullValue()));
+        }
+    }
+
+    public void inputToTheNotesSearchField(String text) {
+        WebElement e = utils.expandRootElement(searchBoxShadow);
+        WebElement input = e.findElement(By.cssSelector("input"));
+        input.click();
+        input.sendKeys(text);
+    }
+
+    public void clickNotesSearchBtn() {
+        getDriver().findElement(By.cssSelector(".search-box_button")).click();
+    }
+
+    public void checkSearchResultPageNotesContainsSearch(String text) {
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-grid-cell-content[contains(@slot, 'vaadin-grid-cell-content-')]"))) {
+            actual.add(webElement.getText());
+        }
+        actual.subList(0, 4).clear();
+
+        List<String> result =  IntStream.range(0, actual.size())
+            .filter(n -> n % 5 == 0)
+            .mapToObj(actual::get)
+            .collect(Collectors.toList());
+
+        result.subList(result.size() - 4, result.size()).clear();
+
+        for (String string : result) {
+            assertThat(string, containsString(text));
+        }
+    }
+
+    public void clickNotesClearBtn() {
+        WebElement e = utils.expandRootElement(searchBoxShadow);
+        e.findElement(By.id("clearButton")).click();
+    }
+
+    public void checkNotesSearchFieldIs(String text) {
+        assertThat(searchBoxShadow.getText(),is(text));
+    }
+
+    public void checkSearchResultPageContainsProjectName(String name) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[@slot='vaadin-grid-cell-content-2']")).getText(), is(name));
+    }
+
+    public void checkSearchResultPageContainsModelName(String name) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[contains(text(),'Model')]/following::vaadin-grid-cell-content[1]")).getText(), is(name));
+    }
+
+    public void clickAutotestProjectFromSearchPage(String name) {
+        getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+ name +"']")).click();
+    }
+
+    public void clickToTheUniqueNoteOnTheSearchResultPage(String text) {
+        getDriver().findElement(By.xpath("//*[text()='"+text+"']")).click();
     }
 }
