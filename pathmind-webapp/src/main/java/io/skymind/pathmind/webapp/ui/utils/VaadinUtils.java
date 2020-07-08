@@ -1,7 +1,10 @@
 package io.skymind.pathmind.webapp.ui.utils;
 
+import java.util.Optional;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.server.InitialPageSettings;
 
 public class VaadinUtils
@@ -27,5 +30,11 @@ public class VaadinUtils
 
 	public static void setupFavIcon(InitialPageSettings settings) {
 		settings.addFavIcon("icon", "frontend/images/favicon.png", "32x32");
-	}
+    }
+    
+    public static Optional<Element> getElementById(UI ui, String id) {
+        if (id == null) return Optional.empty();
+        return ui.getElement().getChildren()
+                .filter((element) -> id.equals(element.getAttribute("id"))).findFirst();
+    }
 }
