@@ -279,6 +279,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		segmentIntegrator.rewardFuntionCreated();
 
 		trainingService.startRun(experiment);
+        EventBus.post(new ExperimentUpdatedBusEvent(experiment));
 		segmentIntegrator.discoveryRunStarted();
 
 		unsavedChanges.setVisible(false);
