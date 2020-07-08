@@ -356,6 +356,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_7_6:
             case VERSION_0_8_1:
             case VERSION_0_8_5:
+            case VERSION_0_8_6:
                 instructions.addAll(Arrays.asList(
                         // Setup Anaconda
                         "mkdir -p conda",
