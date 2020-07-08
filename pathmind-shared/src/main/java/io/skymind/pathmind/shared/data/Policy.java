@@ -28,6 +28,7 @@ public class Policy extends Data
 	private Model model;
 	private Experiment experiment;
 	private Run run;
+	private List<Metrics> metrics;
 
     public List<RewardScore> getScores() {
         return scores == null ? Collections.emptyList() : scores;
