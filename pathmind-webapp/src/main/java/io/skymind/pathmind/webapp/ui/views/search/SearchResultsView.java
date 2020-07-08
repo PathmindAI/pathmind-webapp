@@ -35,6 +35,7 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
@@ -52,7 +53,10 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
     private String titleText = "Search Results";
     private String numberOfResultsText;
     private Span numberOfResults;
-    
+
+    @Autowired
+    private SegmentIntegrator segmentIntegrator;
+
     @Autowired
     public SearchResultsView(SearchResultsDataProvider searchResultsDataProvider, ExperimentDAO experimentDao) {
         dataProvider = searchResultsDataProvider.withConfigurableFilter();
@@ -69,6 +73,7 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         getMainLayout().ifPresent(MainLayout::clearSearchBoxValue);
         numberOfResultsText = "Showing " + dataProvider.size(new Query<>()) + " results";
         numberOfResults.setText(numberOfResultsText);
+        segmentIntegrator.performedSearch();
     }
 
     @Override
