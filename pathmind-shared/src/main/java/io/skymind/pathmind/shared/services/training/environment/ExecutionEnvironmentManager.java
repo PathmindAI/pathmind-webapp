@@ -19,12 +19,12 @@ import java.util.Map;
 public class ExecutionEnvironmentManager {
     private final FeatureManager featureManager;
 
-    @Value("${pathmind.nativerl-version}")
-    private String nativeRLVersion;
+    private final String nativeRLVersion;
 
     @Autowired
-    public ExecutionEnvironmentManager(FeatureManager featureManager) {
+    public ExecutionEnvironmentManager(FeatureManager featureManager, @Value("${pathmind.nativerl-version}") String nativeRLVersion) {
         this.featureManager = featureManager;
+        this.nativeRLVersion = nativeRLVersion;
     }
 
     // todo need to save this to DB
