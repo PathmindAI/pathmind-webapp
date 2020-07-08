@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/trainer
-  tag: prodeks
+  tag: prod
   pullPolicy: Always
 
 #service:
@@ -14,11 +14,11 @@ image:
 #  port: 80
 
 env:
-  SQS_URL: https://queue.amazonaws.com/839270835622/productioneks-training-queue.fifo
+  SQS_URL: https://queue.amazonaws.com/839270835622/production-training-queue.fifo
   ENVIRONMENT: prod
   NAME: prod-pathmind.k8s.local
   KOPS_STATE_STORE: s3://prod-pathmind-kops-state/k8s.prod-pathmind.k8s.local
-  RL_IMAGE: 839270835622.dkr.ecr.us-east-1.amazonaws.com/rl_training:prodeks
+  RL_IMAGE: 839270835622.dkr.ecr.us-east-1.amazonaws.com/rl_training:prod
 
   
 
