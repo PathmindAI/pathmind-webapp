@@ -184,6 +184,7 @@ public class UpdaterService {
             trainingErrorDAO.getErrorByKeyword(KILLED_TRAINING_KEYWORD).ifPresent(error -> {
                 run.setTrainingErrorId(error.getId());
             });
+            getDescriptionStartingWithPrefix(descriptions, RLLIB_ERROR_PREFIX).ifPresent(run::setRllibError);
         } else if (status == RunStatus.Completed) {
             getDescriptionStartingWithPrefix(descriptions, SUCCESS_MESSAGE_PREFIX).ifPresent(run::setSuccessMessage);
             getDescriptionStartingWithPrefix(descriptions, WARNING_MESSAGE_PREFIX).ifPresent(run::setWarningMessage);
