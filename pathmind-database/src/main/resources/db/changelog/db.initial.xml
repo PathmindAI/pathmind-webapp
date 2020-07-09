@@ -1407,4 +1407,17 @@
             <dropTable tableName="METRICS"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="20200709-01" author="bruno.rezende@ext.vaadin.com">
+        <addColumn tableName="RUN">
+            <column name="SUCCESS_MESSAGE" type="VARCHAR(1024)" />
+        </addColumn>
+        <addColumn tableName="RUN">
+            <column name="WARNING_MESSAGE" type="VARCHAR(1024)" />
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="RUN" columnName="SUCCESS_MESSAGE" />
+            <dropColumn tableName="RUN" columnName="WARNING_MESSAGE" />
+        </rollback>
+    </changeSet>
 </databaseChangeLog>

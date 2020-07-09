@@ -7,6 +7,7 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
@@ -51,6 +52,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.*;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
+import org.springframework.beans.factory.annotation.Value;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -60,6 +62,9 @@ import java.util.stream.IntStream;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.ERROR_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SUCCESS_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.WARNING_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
@@ -97,7 +102,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private PolicyChartPanel policyChartPanel;
     private ExperimentsNavbar experimentsNavbar;
     private NotesField notesField;
-    private Span errorDescriptionLabel;
+    private Span reasonWhyTheTrainingStoppedLabel;
     private RewardVariablesTable rewardVariablesTable;
     private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
     private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
@@ -119,6 +124,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private SegmentIntegrator segmentIntegrator;
     @Autowired
     private FeatureManager featureManager;
+    @Value("${pathmind.early-stopping.url}")
+    private String earlyStoppingUrl;
 
     private Breadcrumbs pageBreadcrumbs;
     private Button restartTraining;
@@ -157,11 +164,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
         experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment), experimentToArchive -> archiveExperiment(experimentToArchive));
         setupExperimentContentPanel();
-	    errorDescriptionLabel = LabelFactory.createLabel("", "tag", "error-label");
+	    reasonWhyTheTrainingStoppedLabel = LabelFactory.createLabel("", "tag", "reason-why-the-training-stopped");
 
         VerticalLayout experimentContent = WrapperUtils.wrapWidthFullVertical(
                 WrapperUtils.wrapWidthFullHorizontal(panelTitle, trainingStatusDetailsPanel, getButtonsWrapper()),
-                errorDescriptionLabel,
+                reasonWhyTheTrainingStoppedLabel,
                 middlePanel,
                 getBottomPanel());
         experimentContent.addClassName("view-section");
@@ -463,16 +470,29 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 .orElse(null);
     }
 
-    private void updateUIForError(TrainingError error) {
-        errorDescriptionLabel.setText(error.getDescription());
-		errorDescriptionLabel.setVisible(true);
+    private void updateUIForError(TrainingError error, String errorText) {
+        showTheReasonWhyTheTrainingStopped(errorText, ERROR_LABEL, false);
         restartTraining.setVisible(error.isRestartable());
         restartTraining.setEnabled(error.isRestartable());
     }
 
+    private void showTheReasonWhyTheTrainingStopped(String text, String labelClass, boolean showEarlyStoppingLink) {
+        reasonWhyTheTrainingStoppedLabel.removeClassNames(SUCCESS_LABEL, WARNING_LABEL, ERROR_LABEL);
+        reasonWhyTheTrainingStoppedLabel.addClassName(labelClass);
+        reasonWhyTheTrainingStoppedLabel.setText(text);
+        if (showEarlyStoppingLink) {
+            reasonWhyTheTrainingStoppedLabel.add(". See more info at ");
+            Anchor earlyStopping = new Anchor(earlyStoppingUrl, "Early Stopping");
+            earlyStopping.setTarget("_blank");
+            reasonWhyTheTrainingStoppedLabel.add(earlyStopping);
+            reasonWhyTheTrainingStoppedLabel.add(".");
+        }
+        reasonWhyTheTrainingStoppedLabel.setVisible(true);
+    }
+
     private void clearErrorState() {
-        errorDescriptionLabel.setText(null);
-		errorDescriptionLabel.setVisible(false);
+        reasonWhyTheTrainingStoppedLabel.setText(null);
+		reasonWhyTheTrainingStoppedLabel.setVisible(false);
         updateButtonEnablement();
     }
 
@@ -504,9 +524,24 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experiment.getRuns().stream()
                     .filter(r -> r.getStatusEnum() == RunStatus.Error || r.getStatusEnum() == RunStatus.Killed)
                     .findAny()
-                    .map(Run::getTrainingErrorId)
-                    .flatMap(trainingErrorDAO::getErrorById)
-                    .ifPresent(this::updateUIForError);
+                    .ifPresent(run -> {
+                        trainingErrorDAO.getErrorById(run.getTrainingErrorId())
+                                .ifPresent(trainingError -> this.updateUIForError(trainingError, run.getRllibError() != null ?
+                                        run.getRllibError() : trainingError.getDescription()));
+                    });
+        }
+        else {
+            experiment.getRuns().stream()
+                    .filter(r -> StringUtils.isNotBlank(r.getSuccessMessage()) || StringUtils.isNotBlank(r.getWarningMessage()))
+                    .findAny()
+                    .ifPresent(r -> {
+                        if (StringUtils.isNotBlank(r.getSuccessMessage())) {
+                            this.showTheReasonWhyTheTrainingStopped(r.getSuccessMessage(), SUCCESS_LABEL, true);
+                        }
+                        else {
+                            this.showTheReasonWhyTheTrainingStopped(r.getWarningMessage(), WARNING_LABEL, true);
+                        }
+                    });
         }
     }
 
