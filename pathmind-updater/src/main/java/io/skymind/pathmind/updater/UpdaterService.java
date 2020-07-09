@@ -150,11 +150,14 @@ public class UpdaterService {
         final Map<String, String> rawProgress = provider.progress(jobHandle, validExternalIds);
 
         return rawProgress.entrySet().stream()
-                .map(e -> {
-                    List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
-                    return ProgressInterpreter.interpret(e, previousScores);
-                })
-                .collect(Collectors.toList());
+            .map(e -> {
+                List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
+                List<Metrics> previousMetrics = runDAO.getMetrics(runId, e.getKey());
+                int numReward = runDAO.getRewardNumForRun(runId);
+
+                return ProgressInterpreter.interpret(e, previousScores, previousMetrics, numReward);
+            })
+            .collect(Collectors.toList());
     }
 
     private void setRunError(Run run, ProviderJobStatus jobStatus) {
