@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.vaadin.flow.component.html.Span;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
-	
+
+	@Autowired
+    private NonTupleModelService nonTupleModelService;
+
 	private Model model;
 
 	private List<RewardVariable> rewardVariables = new ArrayList<>();
@@ -97,7 +101,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		modelBinder = new Binder<>(Model.class);
 
 		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode);
-		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload());
+		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload(), ModelUtils.isTupleModel(model));
 		rewardVariablesPanel = new RewardVariablesPanel();
 
 		modelBinder.readBean(model);
@@ -126,11 +130,20 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		);
 		sectionTitleWrapper.addClassName(PROJECT_TITLE);
 
-		VerticalLayout wrapper = new VerticalLayout(
-				sectionTitleWrapper,
-				uploadModelWizardPanel,
-				modelDetailsWizardPanel,
-				rewardVariablesPanel);
+        Span nonTupleErrorLabel = nonTupleModelService.createNonTupleErrorLabel(model);
+        nonTupleErrorLabel.getStyle().set("margin-top", "10px");
+        nonTupleErrorLabel.getStyle().set("margin-bottom", "10px");
+
+        List<Component> sections = new ArrayList<>();
+        sections.add(sectionTitleWrapper);
+        sections.add(uploadModelWizardPanel);
+        if (isResumeUpload()) {
+            sections.add(nonTupleErrorLabel);
+        }
+        sections.add(modelDetailsWizardPanel);
+        sections.add(rewardVariablesPanel);
+        VerticalLayout wrapper = new VerticalLayout(
+                sections.toArray(new Component[0]));
 
 		wrapper.addClassName("view-section");
 		wrapper.setSpacing(false);

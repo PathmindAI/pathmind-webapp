@@ -55,6 +55,8 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
     private RewardVariableDAO rewardVariableDAO;
     @Autowired
     private SegmentIntegrator segmentIntegrator;
+    @Autowired
+    private NonTupleModelService nonTupleModelService;
 
     private long modelId;
     private Model model;
@@ -103,6 +105,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
     private FlexLayout createRightPanel() {
         Span panelTitle = LabelFactory.createLabel("Model Details", CssMindPathStyles.SECTION_TITLE_LABEL);
+        Span errorMessage = nonTupleModelService.createNonTupleErrorLabel(model);
         packageNameText = new Paragraph(LabelFactory.createLabel("Package Name", CssMindPathStyles.BOLD_LABEL));
         actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssMindPathStyles.BOLD_LABEL));
         observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssMindPathStyles.BOLD_LABEL));
@@ -112,6 +115,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
         NotesField notesField = createViewNotesField();
         FlexLayout rightPanelCard = new ViewSection(
                 panelTitle,
+                errorMessage,
                 packageNameText,
                 actionsText,
                 observationsText,

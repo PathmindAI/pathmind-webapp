@@ -34,13 +34,14 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
-	public ModelDetailsWizardPanel(Binder<Model> binder, boolean isResumeUpload)
+	public ModelDetailsWizardPanel(Binder<Model> binder, boolean isResumeUpload, boolean isTupleModel)
 	{
 		setupFields();
 		setupForm();
 		setupNotesFieldTextArea();
 		nextStepButton.setIconAfterText(true);
 		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		nextStepButton.setEnabled(isTupleModel);
 
 		Icon checkmarkIcon = new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE);
 		checkmarkIcon.setColor("var(--pm-friendly-color)");

@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.skymind.pathmind.services.project.ProjectFileCheckService;
+import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
@@ -96,7 +96,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	@Autowired
 	private RewardValidationService rewardValidationService;
 	@Autowired
-    private ProjectFileCheckService projectFileCheckService;
+    private NonTupleModelService nonTupleModelService;
 
 	private Breadcrumbs pageBreadcrumbs;
 	private Binder<Experiment> binder;
@@ -148,6 +148,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		VerticalLayout rewardFnPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Reward Function", CssMindPathStyles.BOLD_LABEL), getRewardFnEditorPanel());
 		rewardFnPanel.addClassName("reward-fn-editor-panel");
 
+        Span errorDescriptionLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
+
 		HorizontalLayout rewardFunctionWrapper = WrapperUtils.wrapSizeFullBetweenHorizontal(
 				rewardFnPanel, 
 				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), getRewardVariableNamesPanel()));
@@ -163,7 +165,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		HorizontalLayout buttonsWrapper = new HorizontalLayout(saveButtonAndHintsWrapper, startRunButton, unarchiveExperimentButton);
 		buttonsWrapper.setWidth(null);
 
-		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper), rewardFunctionWrapper, errorAndNotesContainer);
+		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper), errorDescriptionLabel, rewardFunctionWrapper, errorAndNotesContainer);
 		mainPanel.setClassName("view-section");
 
 		HorizontalLayout panelsWrapper = WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, mainPanel);
@@ -210,7 +212,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private boolean canStartTraining() {
-		return errorMessageWrapper.hasClassName("noError") && canSaveDataInDB();
+		return ModelUtils.isTupleModel(experiment.getModel()) && errorMessageWrapper.hasClassName("noError") && canSaveDataInDB();
 	}
 
 	private boolean canSaveDataInDB() {
@@ -263,11 +265,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.rewardFuntionCreated();
 		
-		if (!ModelUtils.isTupleModel(experiment.getModel())) {
-		    NotificationUtils.showError(projectFileCheckService.getNonTupleErrorMessage());
-		    return;
-		}
-
 		trainingService.startRun(experiment);
 		segmentIntegrator.discoveryRunStarted();
 

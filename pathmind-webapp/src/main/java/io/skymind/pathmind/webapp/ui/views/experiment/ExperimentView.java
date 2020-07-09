@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
@@ -24,6 +25,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPane
 import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyHighlightPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -130,6 +132,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private SegmentIntegrator segmentIntegrator;
     @Autowired
     private FeatureManager featureManager;
+    @Autowired
+    private NonTupleModelService nonTupleModelService;
 
     private Breadcrumbs pageBreadcrumbs;
     private Button restartTraining;
@@ -166,10 +170,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment), experimentToArchive -> archiveExperiment(experimentToArchive));
         setupExperimentContentPanel();
 	    errorDescriptionLabel = LabelFactory.createLabel("", "tag", "error-label");
+        Span modelNeedToBeUpdatedLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
+        modelNeedToBeUpdatedLabel.getStyle().set("margin-top", "2px");
 
         VerticalLayout experimentContent = WrapperUtils.wrapWidthFullVertical(
                 WrapperUtils.wrapWidthFullHorizontal(panelTitle, trainingStatusDetailsPanel, getButtonsWrapper()),
                 errorDescriptionLabel,
+                modelNeedToBeUpdatedLabel,
                 middlePanel,
                 getBottomPanel());
         experimentContent.addClassName("view-section");
@@ -449,8 +456,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void updateUIForError(TrainingError error) {
         errorDescriptionLabel.setText(error.getDescription());
 		errorDescriptionLabel.setVisible(true);
-        restartTraining.setVisible(error.isRestartable());
-        restartTraining.setEnabled(error.isRestartable());
+
+        boolean allowRestart = error.isRestartable() && ModelUtils.isTupleModel(experiment.getModel());
+        restartTraining.setVisible(allowRestart);
+        restartTraining.setEnabled(allowRestart);
     }
 
     private void clearErrorState() {
