@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PathmindUser extends TableImpl<PathmindUserRecord> {
 
-    private static final long serialVersionUID = -783608722;
+    private static final long serialVersionUID = 363906254;
 
     /**
      * The reference instance of <code>public.pathmind_user</code>
