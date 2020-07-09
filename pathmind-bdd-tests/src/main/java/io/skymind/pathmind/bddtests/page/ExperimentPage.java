@@ -143,4 +143,9 @@ public class ExperimentPage extends PageObject {
         experimentNotes.sendKeys(Keys.CONTROL + "V");
         getDriver().findElement(By.xpath("//*[text()='Save']")).click();
     }
+
+    public void checkThatExperimentNotExistOnTheExperimentPage(String experiment) {
+        waitABit(4000);
+        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='experiment-name']/p[1]")), not(hasItem(experiment)));
+    }
 }

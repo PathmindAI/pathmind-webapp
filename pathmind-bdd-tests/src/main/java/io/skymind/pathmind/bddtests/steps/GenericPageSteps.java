@@ -100,6 +100,6 @@ public class GenericPageSteps {
 
     @Step
     public void openTab(int tab) {
-        genericPage.opeTab(tab);
+        genericPage.openTab(tab);
     }
 }

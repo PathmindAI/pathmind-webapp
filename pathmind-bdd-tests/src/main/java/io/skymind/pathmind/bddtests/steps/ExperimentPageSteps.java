@@ -83,4 +83,9 @@ public class ExperimentPageSteps {
     public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
         experimentPage.checkThatExperimentExistOnTheExperimentPage(experiment);
     }
+
+    @Step
+    public void checkThatExperimentNotExistOnTheExperimentPage(String experiment) {
+        experimentPage.checkThatExperimentNotExistOnTheExperimentPage(experiment);
+    }
 }

@@ -80,11 +80,11 @@ Feature: Experiment page
     When Duplicate current tab
     When Click in 'New Experiment' button
     When Open tab 0
-    Then Check that Experiment #2 Draft exist on the experiment page
+    Then Check that 'Experiment #2 Draft' exist on the experiment page
     When Click in 'New Experiment' button
     Then Click project start run button
     When Open tab 1
-    Then Check that Experiment #3 Draft exist on the experiment page
+    Then Check that 'Experiment #3 Draft' exist on the experiment page
     When Open tab 0
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
@@ -93,6 +93,37 @@ Feature: Experiment page
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
+
+  Scenario: Check experiment side bar when an experiment is created and started in other tab
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Click project save draft btn
+    When Duplicate current tab
+    When Click in 'New Experiment' button
+    When Click project start run button
+    When Open tab 0
+    Then Check that 'Experiment #2' exist on the experiment page
+    When Click in 'Experiment #2' button
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
+
+  Scenario: Check experiment side bar when an experiment is archived in other tab
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Click project save draft btn
+    When Duplicate current tab
+    When Click in 'New Experiment' button
+    When Click side nav archive button for 'Experiment #2'
+    When In confirmation dialog click in 'Archive' button
+    When Open tab 0
+    Then Check that 'Experiment #2 Draft' NOT exist on the experiment page
+    When Click model breadcrumb btn
+    When Open projects/model/experiment archived tab
+    When Click experiment unarchive button
+    When In confirmation dialog click in 'Unarchive' button
+    When Open tab 1
+    Then Check that 'Experiment #2 Draft' exist on the experiment page
 
   Scenario: Check copy reward function button 1 line reward
     Given Login to the pathmind
