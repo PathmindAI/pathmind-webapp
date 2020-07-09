@@ -13,7 +13,7 @@
 }
 
 :host(:not(.dashboard)) #items [part~="row"]:hover [part~="body-cell"] {
-    background: var(--lumo-shade-10pct);
+    background: var(--lumo-shade-5pct);
 }
 
 :host {
@@ -52,4 +52,12 @@ vaadin-grid-cell-content vaadin-grid-sorter[direction] {
 }
 :host(.dashboard) [part~="body-cell"] {
     background: transparent;
+}
+
+:host(.search-results) [part~="cell"] ::slotted(vaadin-grid-cell-content) {
+    padding: var(--lumo-space-m);
+}
+
+:host(.search-results) #items [part~="row"]:last-child [part~="cell"] {
+    border-bottom: none;
 }

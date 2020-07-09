@@ -285,8 +285,7 @@ hr {
 .model-view .view-section,
 .projects-view .page-content,
 .project-view .page-content,
-.model-view .page-content,
-.search-results-view .page-content {
+.model-view .page-content {
     box-sizing: border-box;
     flex: 1 1 auto;
     padding: var(--lumo-space-m);
@@ -305,7 +304,13 @@ hr {
 }
 
 .search-results-view .view-section {
+    max-width: 960px;
+    padding: 0;
     margin-top: var(--lumo-space-m);
+}
+
+.search-results-view .view-section > vaadin-vertical-layout {
+    border-bottom: 1px solid var(--pm-gray-color-lighter);
 }
 
 .search-results-view .section-title-label {
@@ -313,13 +318,26 @@ hr {
 }
 
 .search-results-view .highlighted-text-wrapper {
-    width: 20rem;
-    overflow-x: auto;
-    overflow-y: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    white-space: pre-wrap;
+    overflow: auto;
 }
 
-.search-results-view .grid-notes-column.highlighted-text-wrapper {
-    width: auto;
+.search-results-view .search-result-item vaadin-horizontal-layout {
+    align-items: center;
+}
+
+.search-results-view .search-result-item .name-row {
+    font-size: var(--lumo-font-size-m);
+    color: var(--lumo-body-text-color);
+    margin-bottom: var(--lumo-space-s);
+}
+
+.search-results-view .search-result-item .name-row .tag {
+    font-size: var(--lumo-font-size-s);
+    padding: 2px 4px;
 }
 
 .card p,

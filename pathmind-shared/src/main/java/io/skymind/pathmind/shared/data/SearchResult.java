@@ -16,11 +16,13 @@ public class SearchResult {
 	
     private SearchResultItemType itemType;
     private long itemId;
-    private String name;
     private Boolean isArchived;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
     private String notes;
+    private String projectName;
+    private String modelName;
+    private String experimentName;
 
 	@Override
  	public boolean equals(Object o) {
@@ -52,12 +54,28 @@ public class SearchResult {
         this.itemType = itemType;
     }
 
-    public String getName() {
-        return name;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public String getModelName() {
+        return modelName;
+    }
+
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+
+    public String getExperimentName() {
+        return experimentName;
+    }
+
+    public void setExperimentName(String experimentName) {
+        this.experimentName = experimentName;
     }
 
     public String getNotes() {
