@@ -4,8 +4,9 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
+import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.data.Run;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -123,16 +124,32 @@ public class EmailNotificationService
 		return applicationURL + "/" + Routes.RESET_PASSWORD_URL + "/" + pathmindUser.getEmailVerificationToken();
 	}
 
-	public void sendTrainingCompletedEmail(Long userId, Experiment experiment, Project project, boolean isSuccessful) {
-		sendTrainingCompletedEmail(userDAO.findById(userId), experiment, project, isSuccessful);
-	}
+    public void sendTrainingCompletedEmail(Run run, RunStatus jobStatus) {
+        MailHelper.TrainingCompletedStatus trainingCompletedStatus = getTrainingCompletedStatus(run, jobStatus);
+        long userId = run.getProject().getPathmindUserId();
+        sendTrainingCompletedEmail(userDAO.findById(userId), run.getExperiment(), run.getProject(), trainingCompletedStatus);
+    }
+
+    private MailHelper.TrainingCompletedStatus getTrainingCompletedStatus(Run run, RunStatus jobStatus) {
+        if (jobStatus == RunStatus.Completed) {
+            if (StringUtils.isNotBlank(run.getWarningMessage())) {
+                return MailHelper.TrainingCompletedStatus.SUCCESS_WITH_WARNING;
+            }
+            else {
+                return MailHelper.TrainingCompletedStatus.SUCCESS;
+            }
+        }
+        else {
+            return MailHelper.TrainingCompletedStatus.ERROR;
+        }
+    }
 
 	/**
 	 * Sends training completed email to a Pathmind user.
 	 *
 	 * @param pathmindUser
 	 */
-	public void sendTrainingCompletedEmail(PathmindUser pathmindUser, Experiment experiment, Project project, boolean isSuccessful)
+	private void sendTrainingCompletedEmail(PathmindUser pathmindUser, Experiment experiment, Project project, MailHelper.TrainingCompletedStatus trainingCompletedStatus)
 	{
 		Objects.requireNonNull(pathmindUser);
 		if (!isEmailSendingEnabled) {
@@ -144,7 +161,7 @@ public class EmailNotificationService
 		Mail trainingCompletedMail;
 		try {
 			String username = StringUtils.isBlank(pathmindUser.getName()) ? pathmindUser.getEmail() : StringUtils.capitalize(pathmindUser.getName());
-			trainingCompletedMail = mailHelper.createTrainingCompletedEmail(pathmindUser.getEmail(), username, project.getName(), experimentPageLink, isSuccessful);
+			trainingCompletedMail = mailHelper.createTrainingCompletedEmail(pathmindUser.getEmail(), username, project.getName(), experimentPageLink, trainingCompletedStatus);
 		} catch (PathMindException e) {
 			log.warn("Could not create email due to missing data in the PathmindUser object");
 			return;
@@ -152,9 +169,8 @@ public class EmailNotificationService
 		mailHelper.sendMail(trainingCompletedMail);
 	}
 
-	
-
 	private String createExperimentPageLink(Experiment experiment) {
 		return applicationURL + "/" + Routes.EXPERIMENT_URL + "/" + experiment.getId();
 	}
+
 }

@@ -30,22 +30,26 @@ public class NotificationUtils {
         notification.open();
     }
 
-    public static void showPersistentNotification(String html, String buttonText, Command buttonListenerHandler) {
+    public static void showPersistentNotification(String html, String buttonText, String componentId, Command buttonListenerHandler) {
         Button button = new Button(buttonText);
         button.getStyle().set("min-width", "fit-content");
         button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         button.addClickListener(e -> buttonListenerHandler.execute());
 
         CloseableNotification notification = new CloseableNotification(html, false, button);
+        notification.setId(componentId);
         notification.open();
     }
 
 	public static void showNewVersionAvailableNotification(UI ui) {
-		String text = "Pathmind has been updated. Please log in again to get the latest improvements.";
-		showPersistentNotification(text, "Sign out", () -> {
-			CookieUtils.deleteAWSCanCookie();
-			ui.getSession().getSession().invalidate();
-			ui.getPage().reload();
-        });
+        String notificationDialogId = "new-version-notification";
+        String text = "Pathmind has been updated. Please log in again to get the latest improvements.";
+        if (VaadinUtils.getElementById(ui, notificationDialogId).isEmpty()) {
+            showPersistentNotification(text, "Sign out", notificationDialogId, () -> {
+                CookieUtils.deleteAWSCanCookie();
+                ui.getSession().getSession().invalidate();
+                ui.getPage().reload();
+            });
+        };
 	}
 }
