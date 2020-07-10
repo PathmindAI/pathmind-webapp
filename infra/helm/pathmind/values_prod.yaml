@@ -28,14 +28,14 @@ env:
   PATHMIND_LOG_FILE_PATH: /tmp/
   SCM_COMMAND_IDLE_TIMEOUT: 1800
   ENVIRONMENT: prod
-  SQS_URL: https://queue.amazonaws.com/839270835622/production-training-queue.fifo
+  SQS_URL: https://queue.amazonaws.com/839270835622/prod-training-queue.fifo
   S3_BUCKET: prod-training-dynamic-files.pathmind.com
   DB_SECRET_NAME: dburl
   DB_SECRET_KEY: DB_URL
   MODEL_ANALYZER_URL: https://ma.devpathmind.com
   MULTI_AGENT: false
   JOB_MOCK_CYCLE: 0
-  SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/production-updater-queue
+  SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/prod-updater-queue
   SNS_UPDATER_SQS_FILTER_ATTR: prod
 
 readinessprobe:
