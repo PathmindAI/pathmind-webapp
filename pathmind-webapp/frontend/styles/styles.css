@@ -65,6 +65,8 @@ html {
     --lumo-space-m: 1.125rem;
     --lumo-space-s: 0.75rem;
     --lumo-space-xs: 0.375rem;
+    --lumo-space-xxs: 0.25rem;
+    --lumo-space-xxxs: 0.125rem;
     --lumo-icon-size-l: 1.75rem;
     --lumo-success-color-50pct: rgba(53, 151, 106, 0.5);
     --lumo-success-color-10pct: rgba(53, 151, 106, 0.1);
@@ -317,6 +319,11 @@ hr {
     line-height: 1;
 }
 
+.search-results-view .section-subtitle-label {
+    line-height: 1;
+    margin-top: var(--lumo-space-xxs);
+}
+
 .search-results-view .highlighted-text-wrapper {
     white-space: pre-wrap;
 }
@@ -335,10 +342,15 @@ hr {
     margin-left: var(--lumo-space-m);
 }
 
+.search-results-view .search-result-item .info-row vaadin-horizontal-layout:last-child span {
+    width: 12rem;
+    margin-left: var(--lumo-space-xs);
+}
+
 .search-results-view .search-result-item .name-row {
     font-size: var(--lumo-font-size-m);
     color: var(--lumo-body-text-color);
-    margin: var(--lumo-space-xs) 0;
+    margin: var(--lumo-space-xxxs) 0 var(--lumo-space-xs) 0;
 }
 
 .card p,
