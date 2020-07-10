@@ -10,6 +10,9 @@ public class CssMindPathStyles
 	public static final String READONLY_LABEL = "readonly-label";
 	public static final String NO_TOP_MARGIN_LABEL = "no-top-margin-label";
 	public static final String TRUNCATED_LABEL = "truncated-label";
+    public static final String ERROR_LABEL = "error-label";
+    public static final String SUCCESS_LABEL = "success-label";
+    public static final String WARNING_LABEL = "warning-label";
 
 	public static final String WELCOME_TEXT = "welcome-text";
 

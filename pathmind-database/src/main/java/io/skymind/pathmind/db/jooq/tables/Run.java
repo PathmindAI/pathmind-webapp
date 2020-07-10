@@ -21,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row12;
+import org.jooq.Row14;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = 1530603400;
+    private static final long serialVersionUID = -1471160193;
 
     /**
      * The reference instance of <code>public.run</code>
@@ -117,6 +117,16 @@ public class Run extends TableImpl<RunRecord> {
      * The column <code>public.run.ec2_created_at</code>.
      */
     public final TableField<RunRecord, LocalDateTime> EC2_CREATED_AT = createField(DSL.name("ec2_created_at"), org.jooq.impl.SQLDataType.LOCALDATETIME, this, "");
+
+    /**
+     * The column <code>public.run.success_message</code>.
+     */
+    public final TableField<RunRecord, String> SUCCESS_MESSAGE = createField(DSL.name("success_message"), org.jooq.impl.SQLDataType.VARCHAR(1024), this, "");
+
+    /**
+     * The column <code>public.run.warning_message</code>.
+     */
+    public final TableField<RunRecord, String> WARNING_MESSAGE = createField(DSL.name("warning_message"), org.jooq.impl.SQLDataType.VARCHAR(1024), this, "");
 
     /**
      * Create a <code>public.run</code> table reference
@@ -216,11 +226,11 @@ public class Run extends TableImpl<RunRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row12 type methods
+    // Row14 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<Long, Long, String, Integer, LocalDateTime, LocalDateTime, Integer, LocalDateTime, Long, String, String, LocalDateTime> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row14<Long, Long, String, Integer, LocalDateTime, LocalDateTime, Integer, LocalDateTime, Long, String, String, LocalDateTime, String, String> fieldsRow() {
+        return (Row14) super.fieldsRow();
     }
 }
