@@ -56,7 +56,7 @@ class CodeViewer extends PolymerElement {
     setValue(codeSnippet, rewardVariables = {}) {
         const codeElement = this.shadowRoot.querySelector("code");
         const operatorRe = /([\+\-\%\>\<\&\=\!\|]\=?)(?!(.+\*\/))|(?!\/)\/(?![\/\*]|\*(?![\/]))/g;
-        const commentRe = /(\/\*([^\*\/]+)*.+\*\/)|(\/\/.+)/g;
+        const commentRe = /\/\*(.|[\r\n])*?\*\/|(\/\/.+)/g;
         const indexNumberRe = /\[[0-9]+\]/g;
         codeSnippet = renderToken(operatorRe, "operator");
         codeSnippet = renderToken(commentRe, "comment");
@@ -137,7 +137,8 @@ class CodeViewer extends PolymerElement {
                 .token-index {
                     color: var(--pm-blue-color);
                 }
-                .token-comment {
+                .token-comment,
+                .token-comment * {
                     color: rgb(113, 150, 130);
                 }
                 span[class|="variable-color"] {
