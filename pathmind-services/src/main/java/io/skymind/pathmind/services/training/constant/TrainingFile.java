@@ -10,4 +10,7 @@ public abstract class TrainingFile {
 
     public static final String RESTARTING = "restarting";
     public static final String RESTARTED = "restarted";
+
+    public static final String SUCCESS_MESSAGE = "success_message.txt";
+    public static final String WARNING_MESSAGE = "warning_message.txt";
 }
