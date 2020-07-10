@@ -54,6 +54,10 @@ vaadin-grid-cell-content vaadin-grid-sorter[direction] {
     background: transparent;
 }
 
+:host(.search-results) [part~="cell"]:not([part~="details-cell"]) {
+    white-space: normal;
+}
+
 :host(.search-results) [part~="cell"] ::slotted(vaadin-grid-cell-content) {
     padding: var(--lumo-space-m);
 }

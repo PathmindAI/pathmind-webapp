@@ -29,10 +29,10 @@ public class SearchResultItem extends VerticalLayout {
         this.isArchived = searchResult.getIsArchived();
         searchResultType = searchResult.getItemType();
         createdDateComponent = new Span("Created");
-        lastActivityDateComponent = new Span(" Last Activity");
+        lastActivityDateComponent = new Span("Last Activity");
         notesComponent = createSearchResultsNotesComponent();
         add(
-            WrapperUtils.wrapWidthFullBetweenHorizontal(createdDateComponent, lastActivityDateComponent),
+            createInfoRow(),
             createNameRow(),
             WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(new Span("Notes: "), notesComponent)
         );
@@ -41,20 +41,29 @@ public class SearchResultItem extends VerticalLayout {
         setClassName("search-result-item");
     }
 
-    private HorizontalLayout createNameRow() {
-        VerticalLayout itemName = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-            highlightSearchResult(searchResult, searchResult.getProjectName())
-        );
-        if (!searchResultType.equals(SearchResultItemType.PROJECT)) {
-            itemName.add(highlightSearchResult(searchResult, "Model #"+searchResult.getModelName()));
-        }
-        if (searchResultType.equals(SearchResultItemType.EXPERIMENT)) {
-            itemName.add(highlightSearchResult(searchResult, "Experiment #"+searchResult.getExperimentName()));
-        }
-        HorizontalLayout nameRow = new HorizontalLayout();
-        nameRow.add(itemName);
+    private HorizontalLayout createInfoRow() {
+        HorizontalLayout infoRow = WrapperUtils.wrapWidthFullBetweenHorizontal();
+        HorizontalLayout tags = new HorizontalLayout(LabelFactory.createLabel(searchResultType.getName(), CssMindPathStyles.TAG_LABEL, CssMindPathStyles.TAG_OUTLINE_LABEL));
+        HorizontalLayout dates = new HorizontalLayout(createdDateComponent, lastActivityDateComponent);
+        
         if (isArchived) {
-            nameRow.add(LabelFactory.createLabel("Archived", CssMindPathStyles.TAG_LABEL));
+            tags.add(LabelFactory.createLabel("Archived", CssMindPathStyles.TAG_LABEL));
+        }
+        infoRow.add(tags, dates);
+        infoRow.addClassName("info-row");
+        return infoRow;
+    }
+
+    private VerticalLayout createNameRow() {
+        Boolean resultTypeModel = searchResultType.equals(SearchResultItemType.MODEL);
+        Boolean resultTypeExperiment = searchResultType.equals(SearchResultItemType.EXPERIMENT);
+        Div projectName = highlightSearchResult(searchResult.getProjectName());
+        VerticalLayout nameRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(projectName);
+        if (resultTypeModel || resultTypeExperiment) {
+            nameRow.add(highlightSearchResult("Model #"+searchResult.getModelName()));
+        }
+        if (resultTypeExperiment) {
+            nameRow.add(highlightSearchResult("Experiment #"+searchResult.getExperimentName()));
         }
         nameRow.addClassName("name-row");
         return nameRow;
@@ -65,27 +74,23 @@ public class SearchResultItem extends VerticalLayout {
         if (notes.isEmpty()) {
             return new Div(new Span("—"));
         } else {
-            Div notesColumn = highlightSearchResult(searchResult, notes);
+            Div notesColumn = highlightSearchResult(notes);
             notesColumn.addClassName("grid-notes-column");
             return notesColumn;
         }
     }
 
-    private Div highlightSearchResult(SearchResult searchResult, String columnText) {
+    private Div highlightSearchResult(String columnText) {
         Div searchResultColumn = new Div();
-        String[] parts = columnText.split(decodedKeyword);
+        String[] parts = columnText.split("((?<="+decodedKeyword+")|(?="+decodedKeyword+"))");
         for (int i = 0; i < parts.length; i++) {
-            if (i > 0) {
+            if (parts[i].equals(decodedKeyword)) {
                 searchResultColumn.add(
                     LabelFactory.createLabel(decodedKeyword, CssMindPathStyles.HIGHLIGHT_LABEL)
                 );
+            } else {
+                searchResultColumn.add(parts[i]);
             }
-            searchResultColumn.add(parts[i]);
-        }
-        if (parts.length == 0) {
-            searchResultColumn.add(
-                LabelFactory.createLabel(decodedKeyword, CssMindPathStyles.HIGHLIGHT_LABEL)
-            );
         }
         searchResultColumn.addClassName("highlighted-text-wrapper");
         return searchResultColumn;

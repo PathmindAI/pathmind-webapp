@@ -318,26 +318,27 @@ hr {
 }
 
 .search-results-view .highlighted-text-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
     white-space: pre-wrap;
-    overflow: auto;
 }
 
-.search-results-view .search-result-item vaadin-horizontal-layout {
-    align-items: center;
+.search-results-view .search-result-item .info-row .tag {
+    padding: 0 4px;
+    margin-left: var(--lumo-space-xs);
+    border-radius: var(--lumo-border-radius-s);
+}
+
+.search-results-view .search-result-item .info-row .tag-outline {
+    color: var(--lumo-primary-color);
+}
+
+.search-results-view .search-result-item .info-row .tag:first-child {
+    margin-left: var(--lumo-space-m);
 }
 
 .search-results-view .search-result-item .name-row {
     font-size: var(--lumo-font-size-m);
     color: var(--lumo-body-text-color);
-    margin-bottom: var(--lumo-space-s);
-}
-
-.search-results-view .search-result-item .name-row .tag {
-    font-size: var(--lumo-font-size-s);
-    padding: 2px 4px;
+    margin: var(--lumo-space-xs) 0;
 }
 
 .card p,
@@ -496,8 +497,13 @@ account-view {
     color: var(--pm-gray-color-dark);
     padding: 4px 8px;
     background: var(--lumo-contrast-10pct);
+    border: 1px solid transparent;
     border-radius: var(--lumo-border-radius);
     margin: 0 2px;
+}
+.tag-outline {
+    background: transparent;
+    border: 1px solid;
 }
 .tag:empty {
     display: none;
