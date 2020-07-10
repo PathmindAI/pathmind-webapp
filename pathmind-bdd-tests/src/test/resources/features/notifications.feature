@@ -44,3 +44,10 @@ Feature: Notifications
     When Check that new version notification is shown
     When Refresh page
     Then Check that new version notification is shown
+
+  Scenario: Check that there are only one notification
+    Given Login to the pathmind
+    When Trigger API new version notification
+    When Trigger API new version notification
+    When Trigger API new version notification
+    Then Check that new version notification is shown
