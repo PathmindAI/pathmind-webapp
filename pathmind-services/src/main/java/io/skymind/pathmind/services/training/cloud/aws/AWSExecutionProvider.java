@@ -18,6 +18,7 @@ import io.skymind.pathmind.shared.services.training.environment.ExecutionEnviron
 import io.skymind.pathmind.shared.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
@@ -47,6 +48,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private static final String AWS_JOB_ID_PREFIX = "id";
     public static final String RLLIB_ERROR_PREFIX = "x-rllib_error";
+    public static final String SUCCESS_MESSAGE_PREFIX = "x-success_message";
+    public static final String WARNING_MESSAGE_PREFIX = "x-warning_message";
     private static final Predicate<String> ERROR_KEY_MATCH = // todo: possible even get a date of error as second match group
             Pattern.compile("(.)*error_(.*)txt$", Pattern.CASE_INSENSITIVE).asMatchPredicate();
 
@@ -146,8 +149,14 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 return new ProviderJobStatus(Error, knownErrsCheck);
             }
 
-            if (experimentState != null && experimentState.getCheckpoints() != null && experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L)) {
-                return ProviderJobStatus.COMPLETED.addExperimentState(experimentState);
+            if (experimentState != null && experimentState.getCheckpoints() != null && (experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L))) {
+                // this is ugly, yes, but it is better to not rely on changing the state of a static object
+                ProviderJobStatus completedStatus = new ProviderJobStatus(ProviderJobStatus.COMPLETED.getRunStatus(), new ArrayList<>());
+                completedStatus.addExperimentState(experimentState);
+                // let's follow what is being done with rlib and add a prefix to the message and add it to description
+                getSuccessMessage(jobHandle).ifPresent(m -> completedStatus.getDescription().add(SUCCESS_MESSAGE_PREFIX + m));
+                getWarningMessage(jobHandle).ifPresent(m -> completedStatus.getDescription().add(WARNING_MESSAGE_PREFIX  + m));
+                return completedStatus;
             }
 
             return ProviderJobStatus.RUNNING.addExperimentState(experimentState);
@@ -266,6 +275,16 @@ public class AWSExecutionProvider implements ExecutionProvider {
                                 return null;
                             }
                         });
+    }
+
+    public Optional<String> getSuccessMessage(String jobHandle) {
+        return getFile(jobHandle, TrainingFile.SUCCESS_MESSAGE)
+                .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
+    }
+
+    public Optional<String> getWarningMessage(String jobHandle) {
+        return getFile(jobHandle, TrainingFile.WARNING_MESSAGE)
+                .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
     }
 
     public Map<String, LocalDateTime> getTerminatedTrials(ExperimentState experimentState) {

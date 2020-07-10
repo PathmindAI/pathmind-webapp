@@ -1383,4 +1383,41 @@
             <dropColumn tableName="PATHMIND_USER" columnName="NEW_EMAIL_TO_VERIFY"  />
         </rollback>
     </changeSet>
+
+    <changeSet id="20200625-01" author="daehyun@skymind.io">
+        <createTable tableName="METRICS">
+            <column name="POLICY_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_METRICS_POLICY" references="POLICY(ID)"/>
+            </column>
+            <column name="INDEX" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MIN" type="DECIMAL(32,17)"/>
+            <column name="MEAN" type="DECIMAL(32,17)"/>
+            <column name="MAX" type="DECIMAL(32,17)"/>
+            <column name="ITERATION" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="METRICS" indexName="METRICS_POLICY_ID_INDEX">
+            <column name="POLICY_ID"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="METRICS" indexName="METRICS_POLICY_ID_INDEX"/>
+            <dropTable tableName="METRICS"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200709-01" author="bruno.rezende@ext.vaadin.com">
+        <addColumn tableName="RUN">
+            <column name="SUCCESS_MESSAGE" type="VARCHAR(1024)" />
+        </addColumn>
+        <addColumn tableName="RUN">
+            <column name="WARNING_MESSAGE" type="VARCHAR(1024)" />
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="RUN" columnName="SUCCESS_MESSAGE" />
+            <dropColumn tableName="RUN" columnName="WARNING_MESSAGE" />
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
