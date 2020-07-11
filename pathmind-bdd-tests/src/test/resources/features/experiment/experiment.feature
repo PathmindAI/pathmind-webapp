@@ -84,7 +84,7 @@ Feature: Experiment page
     When Click in 'New Experiment' button
     Then Click project start run button
     When Open tab 1
-    Then Check that 'Experiment #3 Draft' exist on the experiment page
+    Then Check that 'Experiment #3' exist on the experiment page
     When Open tab 0
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
