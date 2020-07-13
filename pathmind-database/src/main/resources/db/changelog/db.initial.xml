@@ -1449,7 +1449,7 @@
 
     <changeSet id="20200710-03" author="daniel.jaramillo@toptal.com">
         <addColumn tableName="TRAINER_JOB">
-            <column name="RESTARTS" type="INT" defaultValue=0/>
+            <column name="RESTARTS" type="INT" defaultValue="0" />
         </addColumn>
         <rollback>
             <dropColumn tableName="TRAINER_JOB" columnName="RESTARTS"  />
