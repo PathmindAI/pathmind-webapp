@@ -126,6 +126,7 @@ public class HomePage extends PageObject {
     }
 
     public void checkSearchResultPageNotesContainsSearch(String text) {
+        waitABit(3500);
         List<String> actual = new ArrayList<>();
         for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-grid-cell-content[contains(@slot, 'vaadin-grid-cell-content-')]"))) {
             actual.add(webElement.getText());
