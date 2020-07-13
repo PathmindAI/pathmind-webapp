@@ -433,7 +433,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
-                                .sorted(Comparator.comparing(Experiment::getDateCreated).reversed())
                                 .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
         }
     }

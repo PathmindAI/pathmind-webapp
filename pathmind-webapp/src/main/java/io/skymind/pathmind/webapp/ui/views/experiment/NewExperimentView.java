@@ -412,7 +412,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
 		if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
-                                    .sorted(Comparator.comparing(Experiment::getDateCreated).reversed())
                                     .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
 		}
 	}

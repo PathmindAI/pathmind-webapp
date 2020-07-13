@@ -88,6 +88,7 @@ class ExperimentRepository
 				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
 				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
 				.where(EXPERIMENT.MODEL_ID.eq(modelId))
+                .orderBy(EXPERIMENT.DATE_CREATED.desc())
 				.fetch();
 
 		return result.stream().map(record -> {
