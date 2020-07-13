@@ -279,7 +279,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		segmentIntegrator.rewardFuntionCreated();
 
 		trainingService.startRun(experiment);
-        EventBus.post(new ExperimentUpdatedBusEvent(experiment));
+        EventBus.post(new ExperimentUpdatedBusEvent(experiment, true));
 		segmentIntegrator.discoveryRunStarted();
 
 		unsavedChanges.setVisible(false);
@@ -376,6 +376,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		}
 	}
 
+	private void navigateToExperimentView(Experiment experiment) {
+	    PushUtils.push(getUI(), ui -> {
+            ui.navigate(ExperimentView.class, experiment.getId());
+        });
+    }
+
 	private void triggerSaveDraft(Command cancelListener) {
 		if (unsavedChanges.isVisible()) {
 			if (saveDraftButton.isEnabled()) {
@@ -439,6 +445,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         unarchiveExperimentButton.setVisible(experiment.isArchived());
 	}
 
+    private boolean isSameExperiment(Experiment eventExperiment) {
+        return isSameModel(eventExperiment.getModelId()) && experiment.equals(eventExperiment);
+    }
+
     // Note: these 3 methods were copied and pasted from ExperimentView. Duplication will be gone when #1697 is implemented.
     private boolean isNewExperimentForThisViewModel(Experiment eventExperiment, long modelId) {
         return isSameModel(modelId) && !experiments.contains(eventExperiment);
@@ -476,7 +486,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         @Override
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
-            if (isSameModel(event.getModelId())) {
+            if (isSameExperiment(event.getExperiment())) {
+                navigateToExperimentView(event.getExperiment());
+            }
+            else if (isSameModel(event.getModelId())) {
                 updateNavBarExperiments();
             }
         }

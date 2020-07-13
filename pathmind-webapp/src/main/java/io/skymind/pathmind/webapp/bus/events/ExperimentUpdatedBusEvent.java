@@ -6,9 +6,15 @@ import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 
 public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
     private Experiment experiment;
+    private boolean startedTraining = false;
 
     public ExperimentUpdatedBusEvent(Experiment experiment) {
         this.experiment = experiment;
+    }
+
+    public ExperimentUpdatedBusEvent(Experiment experiment, boolean startedTraining) {
+        this.experiment = experiment;
+        this.startedTraining = startedTraining;
     }
 
     @Override
@@ -22,5 +28,9 @@ public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
 
     public long getModelId() {
         return experiment.getModelId();
+    }
+
+    public boolean isStartedTraining() {
+        return startedTraining;
     }
 }
