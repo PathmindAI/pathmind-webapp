@@ -49,6 +49,7 @@ public class HomePage extends PageObject {
     public void openProjectsPage() {
         projectsBtn.click();
         waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label truncated-label' and text()='Projects']")));
     }
 
     public void logoutFromPathmind() {
