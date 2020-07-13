@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class RewardVariable extends Data {
+    private static final long serialVersionUID = 1963529929934242024L;
     private long modelId;
     private int arrayIndex;
 
