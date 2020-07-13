@@ -48,4 +48,9 @@ public class ProjectsPageStepDefinitions {
     public void clickEditProjectIconFromProjectsPage(String projectName) {
         projectsPageSteps.clickEditProjectIconFromProjectsPage(projectName + Serenity.sessionVariableCalled("randomNumber"));
     }
+
+    @Then("^Check page title is (.*)$")
+    public void checkPageTitleIsProjects(String title) {
+        projectsPageSteps.checkPageTitleIsProjects(title);
+    }
 }

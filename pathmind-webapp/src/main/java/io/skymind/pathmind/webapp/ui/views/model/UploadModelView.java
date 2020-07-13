@@ -10,7 +10,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.skymind.pathmind.shared.data.Action;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ModelUtils;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -66,6 +70,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	@Autowired
 	private ProjectDAO projectDAO;
+
+	@Autowired
+    private ExperimentDAO experimentDAO;
 
 	@Autowired
 	private ModelService modelService;
@@ -281,6 +288,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 	
 	private void saveAndNavigateToNewExperiment() {
+		Experiment experiment = modelService.resumeModelCreation(model, modelNotes);
+		experimentId = experiment.getId();
+        EventBus.post(new ExperimentCreatedBusEvent(experiment));
+
         rewardVariables = rewardVariablesPanel.getRewardVariables();
         rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
         if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
@@ -290,7 +301,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             observationDAO.updateModelObservations(model.getId(), observations);
         }
 
-        experimentId = modelService.resumeModelCreation(model, modelNotes);
 		getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
 	}
 

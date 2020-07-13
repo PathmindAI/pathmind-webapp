@@ -6,6 +6,7 @@ package io.skymind.pathmind.db.jooq;
 
 import io.skymind.pathmind.db.jooq.tables.Action;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
+import io.skymind.pathmind.db.jooq.tables.Metrics;
 import io.skymind.pathmind.db.jooq.tables.Model;
 import io.skymind.pathmind.db.jooq.tables.Observation;
 import io.skymind.pathmind.db.jooq.tables.PathmindUser;
@@ -59,6 +60,11 @@ public class Public extends SchemaImpl {
      * The table <code>public.experiment</code>.
      */
     public final Experiment EXPERIMENT = io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
+
+    /**
+     * The table <code>public.metrics</code>.
+     */
+    public final Metrics METRICS = io.skymind.pathmind.db.jooq.tables.Metrics.METRICS;
 
     /**
      * The table <code>public.model</code>.
@@ -160,6 +166,7 @@ public class Public extends SchemaImpl {
         return Arrays.<Table<?>>asList(
             Action.ACTION,
             Experiment.EXPERIMENT,
+            Metrics.METRICS,
             Model.MODEL,
             Observation.OBSERVATION,
             PathmindUser.PATHMIND_USER,

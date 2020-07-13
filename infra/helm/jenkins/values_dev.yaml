@@ -20,6 +20,7 @@ fullnameOverride: ""
 
 env:
   S3BUCKET: dev-model-analyzer-static-files.pathmind.com
+  JENKINS_URL: https://jenkins.dev.devpathmind.com
 
 service:
   type: NodePort

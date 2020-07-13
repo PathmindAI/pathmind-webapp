@@ -64,6 +64,13 @@ public class CreateProjectStepDefinitions {
         newExperimentSteps.clickProjectSaveDraftBtn();
     }
 
+    @When("^Create new CoffeeShop project with 4 variables reward function$")
+    public void createNewProjectWithModelAnd4VariablesReward() {
+        createNewProjectWithModelAndDraftExperiment();
+        newExperimentSteps.inputRewardFunctionFile("Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt");
+        newExperimentSteps.clickProjectSaveDraftBtn();
+    }
+
     @When("^Create new CoffeeShop project with experiment note '(.*)'$")
     public void createNewProjectWitExperimentNote(String note) {
         createNewProjectWithModelAndDraftExperiment();

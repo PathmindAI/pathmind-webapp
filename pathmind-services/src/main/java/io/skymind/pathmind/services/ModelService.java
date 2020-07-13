@@ -1,5 +1,10 @@
 package io.skymind.pathmind.services;
 
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.RewardVariable;
+
+import java.util.List;
 import java.util.Optional;
 
 import io.skymind.pathmind.shared.data.Model;
@@ -10,6 +15,6 @@ public interface ModelService {
     byte[] getModelFile(long modelId);
     void addDraftModelToProject(Model model, long id, String modelNotes);
     void updateDraftModel(Model model, String modelNotes);
-    long resumeModelCreation(Model model, String modelNotes);
+    Experiment resumeModelCreation(Model model, String modelNotes);
     String buildModelPath(long modelId);
 }

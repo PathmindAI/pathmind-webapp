@@ -1,5 +1,4 @@
-@experiment
-@Skip
+@experimentSimulationMetrics
 Feature: Experiment page Simulation Metrics
 
   Scenario: Check reward variables on experiment page

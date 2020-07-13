@@ -6,6 +6,7 @@ package io.skymind.pathmind.db.jooq;
 
 import io.skymind.pathmind.db.jooq.tables.Action;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
+import io.skymind.pathmind.db.jooq.tables.Metrics;
 import io.skymind.pathmind.db.jooq.tables.Model;
 import io.skymind.pathmind.db.jooq.tables.Observation;
 import io.skymind.pathmind.db.jooq.tables.PathmindUser;
@@ -47,6 +48,7 @@ public class Indexes {
     public static final Index ACTION_PKEY = Indexes0.ACTION_PKEY;
     public static final Index EXPERIMENT_MODEL_FK_INDEX = Indexes0.EXPERIMENT_MODEL_FK_INDEX;
     public static final Index EXPERIMENT_PKEY = Indexes0.EXPERIMENT_PKEY;
+    public static final Index METRICS_POLICY_ID_INDEX = Indexes0.METRICS_POLICY_ID_INDEX;
     public static final Index MODEL_PKEY = Indexes0.MODEL_PKEY;
     public static final Index MODEL_PROJECT_FK_INDEX = Indexes0.MODEL_PROJECT_FK_INDEX;
     public static final Index OBSERVATION_MODEL_FK_INDEX = Indexes0.OBSERVATION_MODEL_FK_INDEX;
@@ -81,6 +83,7 @@ public class Indexes {
         public static Index ACTION_PKEY = Internal.createIndex("action_pkey", Action.ACTION, new OrderField[] { Action.ACTION.ID }, true);
         public static Index EXPERIMENT_MODEL_FK_INDEX = Internal.createIndex("experiment_model_fk_index", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.MODEL_ID }, false);
         public static Index EXPERIMENT_PKEY = Internal.createIndex("experiment_pkey", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.ID }, true);
+        public static Index METRICS_POLICY_ID_INDEX = Internal.createIndex("metrics_policy_id_index", Metrics.METRICS, new OrderField[] { Metrics.METRICS.POLICY_ID }, false);
         public static Index MODEL_PKEY = Internal.createIndex("model_pkey", Model.MODEL, new OrderField[] { Model.MODEL.ID }, true);
         public static Index MODEL_PROJECT_FK_INDEX = Internal.createIndex("model_project_fk_index", Model.MODEL, new OrderField[] { Model.MODEL.PROJECT_ID }, false);
         public static Index OBSERVATION_MODEL_FK_INDEX = Internal.createIndex("observation_model_fk_index", Observation.OBSERVATION, new OrderField[] { Observation.OBSERVATION.MODEL_ID }, false);

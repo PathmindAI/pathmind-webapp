@@ -6,6 +6,7 @@ package io.skymind.pathmind.db.jooq;
 
 import io.skymind.pathmind.db.jooq.tables.Action;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
+import io.skymind.pathmind.db.jooq.tables.Metrics;
 import io.skymind.pathmind.db.jooq.tables.Model;
 import io.skymind.pathmind.db.jooq.tables.Observation;
 import io.skymind.pathmind.db.jooq.tables.PathmindUser;
@@ -19,6 +20,7 @@ import io.skymind.pathmind.db.jooq.tables.TrainerJob;
 import io.skymind.pathmind.db.jooq.tables.TrainingError;
 import io.skymind.pathmind.db.jooq.tables.records.ActionRecord;
 import io.skymind.pathmind.db.jooq.tables.records.ExperimentRecord;
+import io.skymind.pathmind.db.jooq.tables.records.MetricsRecord;
 import io.skymind.pathmind.db.jooq.tables.records.ModelRecord;
 import io.skymind.pathmind.db.jooq.tables.records.ObservationRecord;
 import io.skymind.pathmind.db.jooq.tables.records.PathmindUserRecord;
@@ -98,6 +100,7 @@ public class Keys {
 
     public static final ForeignKey<ActionRecord, ModelRecord> ACTION__PM_FK_ACTION_MODEL = ForeignKeys0.ACTION__PM_FK_ACTION_MODEL;
     public static final ForeignKey<ExperimentRecord, ModelRecord> EXPERIMENT__PM_FK_EXPERIMENT_MODEL = ForeignKeys0.EXPERIMENT__PM_FK_EXPERIMENT_MODEL;
+    public static final ForeignKey<MetricsRecord, PolicyRecord> METRICS__PM_FK_METRICS_POLICY = ForeignKeys0.METRICS__PM_FK_METRICS_POLICY;
     public static final ForeignKey<ModelRecord, ProjectRecord> MODEL__PM_FK_MODEL_PROJECT = ForeignKeys0.MODEL__PM_FK_MODEL_PROJECT;
     public static final ForeignKey<ObservationRecord, ModelRecord> OBSERVATION__PM_FK_OBSERVATION_MODEL = ForeignKeys0.OBSERVATION__PM_FK_OBSERVATION_MODEL;
     public static final ForeignKey<PolicyRecord, RunRecord> POLICY__PM_FK_POLICY_RUN = ForeignKeys0.POLICY__PM_FK_POLICY_RUN;
@@ -150,6 +153,7 @@ public class Keys {
     private static class ForeignKeys0 {
         public static final ForeignKey<ActionRecord, ModelRecord> ACTION__PM_FK_ACTION_MODEL = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.MODEL_PKEY, Action.ACTION, "action__pm_fk_action_model", Action.ACTION.MODEL_ID);
         public static final ForeignKey<ExperimentRecord, ModelRecord> EXPERIMENT__PM_FK_EXPERIMENT_MODEL = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.MODEL_PKEY, Experiment.EXPERIMENT, "experiment__pm_fk_experiment_model", Experiment.EXPERIMENT.MODEL_ID);
+        public static final ForeignKey<MetricsRecord, PolicyRecord> METRICS__PM_FK_METRICS_POLICY = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.POLICY_PKEY, Metrics.METRICS, "metrics__pm_fk_metrics_policy", Metrics.METRICS.POLICY_ID);
         public static final ForeignKey<ModelRecord, ProjectRecord> MODEL__PM_FK_MODEL_PROJECT = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.PROJECT_PKEY, Model.MODEL, "model__pm_fk_model_project", Model.MODEL.PROJECT_ID);
         public static final ForeignKey<ObservationRecord, ModelRecord> OBSERVATION__PM_FK_OBSERVATION_MODEL = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.MODEL_PKEY, Observation.OBSERVATION, "observation__pm_fk_observation_model", Observation.OBSERVATION.MODEL_ID);
         public static final ForeignKey<PolicyRecord, RunRecord> POLICY__PM_FK_POLICY_RUN = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.RUN_PKEY, Policy.POLICY, "policy__pm_fk_policy_run", Policy.POLICY.RUN_ID);
