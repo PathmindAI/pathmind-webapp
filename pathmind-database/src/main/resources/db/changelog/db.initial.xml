@@ -1407,4 +1407,54 @@
             <dropTable tableName="METRICS"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="20200709-01" author="bruno.rezende@ext.vaadin.com">
+        <addColumn tableName="RUN">
+            <column name="SUCCESS_MESSAGE" type="VARCHAR(1024)" />
+        </addColumn>
+        <addColumn tableName="RUN">
+            <column name="WARNING_MESSAGE" type="VARCHAR(1024)" />
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="RUN" columnName="SUCCESS_MESSAGE" />
+            <dropColumn tableName="RUN" columnName="WARNING_MESSAGE" />
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200710-01" author="bruno.rezende@ext.vaadin.com">
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="Job running for more than 24 hours, job is killed"/>
+            <column name="DESCRIPTION" value="The job was stopped because it exceeded the maximum training time of 24 hours."/>
+            <column name="RESTARTABLE" value="true"/>
+        </insert>
+        <rollback>
+            <delete tableName="TRAINING_ERROR">
+                <where>KEYWORD='Job running for more than 24 hours, job is killed'</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200710-02" author="daniel.jaramillo@toptal.com">
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="Job crashed more than 3 times, job is killed"/>
+            <column name="DESCRIPTION" value="The job was stopped because it crashed more than 3 times."/>
+            <column name="RESTARTABLE" value="true"/>
+        </insert>
+        <rollback>
+            <delete tableName="TRAINING_ERROR">
+                <where>KEYWORD='Job crashed more than 3 times, job is killed'</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200710-03" author="daniel.jaramillo@toptal.com">
+        <addColumn tableName="TRAINER_JOB">
+            <column name="RESTARTS" type="INT" defaultValue="0" />
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="TRAINER_JOB" columnName="RESTARTS"  />
+        </rollback>
+    </changeSet>
+
+
 </databaseChangeLog>

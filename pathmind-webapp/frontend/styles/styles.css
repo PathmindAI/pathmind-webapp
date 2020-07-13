@@ -513,7 +513,14 @@ account-view {
     background: var(--lumo-error-color-10pct);
     color: var(--lumo-error-color);
 }
-
+.success-label {
+    background: var(--lumo-success-color-10pct);
+    color: var(--lumo-success-color);
+}
+.warning-label {
+    background: #FFC038;
+    color: var(--lumo-body-text-color);
+}
 /* Primary Button Styles */
 .button-link {
     box-sizing: border-box;
