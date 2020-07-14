@@ -486,7 +486,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         @Override
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
-            if (isSameExperiment(event.getExperiment())) {
+            if (isSameExperiment(event.getExperiment()) && event.isStartedTraining()) {
                 navigateToExperimentView(event.getExperiment());
             }
             else if (isSameModel(event.getModelId())) {
