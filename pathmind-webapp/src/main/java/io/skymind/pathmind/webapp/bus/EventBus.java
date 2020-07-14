@@ -43,12 +43,11 @@ import java.util.concurrent.Executors;
  */
 public class EventBus {
     private static final EventBus EVENT_BUS = new EventBus();
-
-    private Map<BusEventType, List<EventBusSubscriber>> subscribers;
-
     private static ConcurrentHashMap<Component, EventBusSubscriber[]> componentSubscribers = new ConcurrentHashMap<>();
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
+
+    private Map<BusEventType, List<EventBusSubscriber>> subscribers;
 
     private EventBus() {
         Map<BusEventType, List<EventBusSubscriber>> subscribersModifiable = new HashMap<>();
@@ -70,21 +69,27 @@ public class EventBus {
 
     public static void subscribe(Component component, EventBusSubscriber... subscribers) {
         componentSubscribers.put(component, subscribers);
-        Arrays.stream(subscribers)
-                .forEach(subscriber -> subscribe(subscriber));
+        // Check to see if the component is a subscriber and if so subscribe itself.
+        if(component instanceof EventBusSubscriber)
+            subscribe((EventBusSubscriber)component);
+        Arrays.stream(subscribers).forEach(subscriber -> subscribe(subscriber));
     }
 
-    public static void subscribe(EventBusSubscriber subscriber) {
+    private static void subscribe(EventBusSubscriber subscriber) {
         EVENT_BUS.subscribers.get(subscriber.getEventType()).add(subscriber);
     }
 
     public static void unsubscribe(Component component) {
-        Arrays.stream(componentSubscribers.get(component))
-                .forEach(subscriber -> unsubscribe(subscriber));
         componentSubscribers.remove(component);
+        EventBusSubscriber[] subscribers = componentSubscribers.get(component);
+        // If there are no subscribers then assume the component may also be a subscriber itself (confirming it)
+        if(component instanceof EventBusSubscriber)
+            unsubscribe((EventBusSubscriber)component);
+        if(subscribers != null)
+            Arrays.stream(subscribers).forEach(subscriber -> unsubscribe(subscriber));
     }
 
-    public static void unsubscribe(EventBusSubscriber subscriber) {
+    private static void unsubscribe(EventBusSubscriber subscriber) {
         EVENT_BUS.subscribers.get(subscriber.getEventType()).remove(subscriber);
     }
 
