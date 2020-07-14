@@ -25,7 +25,7 @@ import java.util.stream.Stream;
  * This changeset is to be able to automatically reset the S3 bucket for the developers
  */
 @Slf4j
-public class UpdatePolicy_ChangeSet_20200624_01 implements CustomTaskChange
+public class UpdatePolicy_ChangeSet_20200714_01 implements CustomTaskChange
 {
     private static final String RESET_S3_BUCKET_ON_DATABASE_RESET = "RESET_S3_BUCKET_ON_DATABASE_RESET";
 

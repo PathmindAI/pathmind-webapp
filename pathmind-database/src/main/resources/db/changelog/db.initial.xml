@@ -1457,7 +1457,7 @@
     </changeSet>
 
     <changeSet id="20200714-01" author="steph@followsteph.com">
-        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200624_01"/>
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200714_01"/>
     </changeSet>
 
 </databaseChangeLog>
