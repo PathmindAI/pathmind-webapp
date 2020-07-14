@@ -1,13 +1,5 @@
 package io.skymind.pathmind.services.notificationservice;
 
-import java.io.IOException;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -15,20 +7,20 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Email;
 import com.sendgrid.helpers.mail.objects.Personalization;
-
 import io.skymind.pathmind.shared.exception.PathMindException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.Objects;
 
 @Component
 @Slf4j
 public class MailHelper
 {
-	public static final String PATHMIND_VERIFICATION_EMAIL_SUBJECT = "Pathmind verification email";
-	public static final String PATHMIND_NEW_ADDRESS_VERIFICATION_EMAIL_SUBJECT = "Pathmind new address verification";
-	public static final String PATHMIND_RESET_PASSWORD_EMAIL_SUBJECT = "Pathmind reset password email";
-	public static final String PATHMIND_TRAINING_COMPLETED_EMAIL_SUBJECT = "Pathmind training completed successfully email";
-	public static final String PATHMIND_TRAINING_FAILED_EMAIL_SUBJECT = "Pathmind training failed email";
-
 	@Value("${sendgrid.verification-mail.id}")
 	private String verificationEmailTemplateId;
 
@@ -93,7 +85,6 @@ public class MailHelper
 		mail.setTemplateId(verificationEmailTemplateId);
 
 		Personalization personalization = new Personalization();
-		personalization.addDynamicTemplateData("subject", PATHMIND_VERIFICATION_EMAIL_SUBJECT);
 		personalization.addDynamicTemplateData("name", name);
 		personalization.addDynamicTemplateData("emailVerificationLink", emailVerificationLink);
 		personalization.addTo(new Email(to));
@@ -120,7 +111,6 @@ public class MailHelper
 		mail.setTemplateId(newEmailAddressVerificationTemplateId);
 		
 		Personalization personalization = new Personalization();
-		personalization.addDynamicTemplateData("subject", PATHMIND_NEW_ADDRESS_VERIFICATION_EMAIL_SUBJECT);
 		personalization.addDynamicTemplateData("name", name);
 		personalization.addDynamicTemplateData("emailVerificationLink", emailVerificationLink);
 		personalization.addTo(new Email(to));
@@ -138,7 +128,6 @@ public class MailHelper
 		mail.setTemplateId(resetPasswordTemplateId);
 
 		Personalization personalization = new Personalization();
-		personalization.addDynamicTemplateData("subject", PATHMIND_RESET_PASSWORD_EMAIL_SUBJECT);
 		personalization.addDynamicTemplateData("name", name);
 		personalization.addDynamicTemplateData("resetPasswordLink", resetPasswordLink);
 		personalization.addDynamicTemplateData("hours", hours);
@@ -168,7 +157,6 @@ public class MailHelper
 		mail.setTemplateId(isSuccessful ? trainingCompletedTemplateId : trainingFailedTemplateId);
 		
 		Personalization personalization = new Personalization();
-		personalization.addDynamicTemplateData("subject", isSuccessful ? PATHMIND_TRAINING_COMPLETED_EMAIL_SUBJECT : PATHMIND_TRAINING_FAILED_EMAIL_SUBJECT);
 		personalization.addDynamicTemplateData("name", name);
 		personalization.addDynamicTemplateData("projectName", projectName);
 		personalization.addDynamicTemplateData("experimentPageLink", experimentPageLink);
