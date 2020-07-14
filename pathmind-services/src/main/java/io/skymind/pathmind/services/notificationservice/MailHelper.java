@@ -30,6 +30,9 @@ public class MailHelper
 	@Value("${sendgrid.trainingcompleted-mail.id}")
 	private String trainingCompletedTemplateId;
 
+    @Value("${sendgrid.trainingcompletedwithwarning-mail.id}")
+    private String trainingCompletedWithWarningTemplateId;
+
 	@Value("${sendgrid.trainingfailed-mail.id}")
 	private String trainingFailedTemplateId;
 
@@ -139,22 +142,22 @@ public class MailHelper
 	/**
 	 * Creates training completed notification mail
 	 *
-	 * @param to                    The email address of the mail recipient (the user)
-	 * @param name                  The name of the user
-	 * @param projectName           The name of the project
-	 * @param experimentPageLink 	The link to the experiments page
-	 * @param isSuccessful 			The training is completed successfully or failed
+	 * @param to                      The email address of the mail recipient (the user)
+	 * @param name                    The name of the user
+	 * @param projectName             The name of the project
+	 * @param experimentPageLink 	  The link to the experiments page
+	 * @param trainingCompletedStatus The status of the training
 	 * @return The ready made Mail object
 	 * @throws PathMindException Exception is thrown if any of the arguments is null or empty
 	 */
-	public Mail createTrainingCompletedEmail(String to, String name, String projectName, String experimentPageLink, boolean isSuccessful) throws PathMindException
+	public Mail createTrainingCompletedEmail(String to, String name, String projectName, String experimentPageLink, TrainingCompletedStatus trainingCompletedStatus) throws PathMindException
 	{
 		if (StringUtils.isAnyEmpty(to, name, projectName, experimentPageLink)) {
 			throw new PathMindException("Email fields are missing");
 		}
 		Mail mail = new Mail();
 		mail.setFrom(createFromEmail());
-		mail.setTemplateId(isSuccessful ? trainingCompletedTemplateId : trainingFailedTemplateId);
+		mail.setTemplateId(getTemplateId(trainingCompletedStatus));
 		
 		Personalization personalization = new Personalization();
 		personalization.addDynamicTemplateData("name", name);
@@ -164,9 +167,22 @@ public class MailHelper
 		mail.addPersonalization(personalization);
 		return mail;
 	}
-	
-	
+
+    private String getTemplateId(TrainingCompletedStatus trainingCompletedStatus) {
+        switch (trainingCompletedStatus) {
+            case ERROR: return trainingFailedTemplateId;
+            case SUCCESS: return trainingCompletedTemplateId;
+            case SUCCESS_WITH_WARNING: return trainingCompletedWithWarningTemplateId;
+            default:
+                throw new RuntimeException("it is impossible to reach this point.");
+        }
+    }
+
 	private Email createFromEmail() {
 		return new Email(fromEmail, fromName);
 	}
+
+  public enum TrainingCompletedStatus {
+    ERROR, SUCCESS, SUCCESS_WITH_WARNING;
+  }
 }
