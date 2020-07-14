@@ -20,7 +20,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row13;
+import org.jooq.Row14;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrainerJob extends TableImpl<TrainerJobRecord> {
 
-    private static final long serialVersionUID = -1827274023;
+    private static final long serialVersionUID = -1397369003;
 
     /**
      * The reference instance of <code>public.trainer_job</code>
@@ -121,6 +121,11 @@ public class TrainerJob extends TableImpl<TrainerJobRecord> {
      * The column <code>public.trainer_job.update_date</code>.
      */
     public final TableField<TrainerJobRecord, LocalDateTime> UPDATE_DATE = createField(DSL.name("update_date"), org.jooq.impl.SQLDataType.LOCALDATETIME.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
+
+    /**
+     * The column <code>public.trainer_job.restarts</code>.
+     */
+    public final TableField<TrainerJobRecord, Integer> RESTARTS = createField(DSL.name("restarts"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>public.trainer_job</code> table reference
@@ -202,11 +207,11 @@ public class TrainerJob extends TableImpl<TrainerJobRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row13 type methods
+    // Row14 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, LocalDateTime, Integer, String, LocalDateTime> fieldsRow() {
-        return (Row13) super.fieldsRow();
+    public Row14<String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, LocalDateTime, Integer, String, LocalDateTime, Integer> fieldsRow() {
+        return (Row14) super.fieldsRow();
     }
 }

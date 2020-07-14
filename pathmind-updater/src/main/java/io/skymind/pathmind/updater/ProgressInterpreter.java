@@ -122,6 +122,7 @@ public class ProgressInterpreter {
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
         settings.selectFields(RAY_PROGRESS.values());
+        settings.getFormat().setLineSeparator("\n");
 
         CsvParser parser = new CsvParser(settings);
         List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
