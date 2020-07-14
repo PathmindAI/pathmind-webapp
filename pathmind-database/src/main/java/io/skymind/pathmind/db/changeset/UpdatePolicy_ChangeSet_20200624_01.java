@@ -27,10 +27,19 @@ import java.util.stream.Stream;
 @Slf4j
 public class UpdatePolicy_ChangeSet_20200624_01 implements CustomTaskChange
 {
+    private static final String RESET_S3_BUCKET_ON_DATABASE_RESET = "RESET_S3_BUCKET_ON_DATABASE_RESET";
+
     private static final List<String> DO_NOT_EMPTY_BUCKETS = List.of("dev", "prod", "test");
 
     @Override
     public void execute(Database database) throws CustomChangeException {
+
+        // Check that RESET_S3_BUCKET_ON_DATABASE_RESET is enabled otherwise skip this whole changeset
+        if(!isResetS3EnabledEnvironmentVariable()) {
+            log.info("S3 bucket has NOT been reset.");
+            return;
+        }
+
         // Liquibase will stop if the environment variable is missing. This is so that developers get notified to update their environment variables
         // to be able to properly delete their S3 buckets as part of a database reset.
         String region = getEnvironmentVariable("AWS_DEFAULT_REGION");
@@ -38,7 +47,7 @@ public class UpdatePolicy_ChangeSet_20200624_01 implements CustomTaskChange
         String secretAccessKey = getEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
         String bucket = getEnvironmentVariable("S3_BUCKET");
 
-        log.info("Emptying bucket : " + bucket);
+        log.info("Emptying S3 bucket : " + bucket);
 
         // Extra security precaution. I'm not throwing an exception because in those cases we just want to stop.
         if(DO_NOT_EMPTY_BUCKETS.stream().anyMatch(specialBuckets -> bucket.startsWith(specialBuckets))) {
@@ -59,6 +68,11 @@ public class UpdatePolicy_ChangeSet_20200624_01 implements CustomTaskChange
             objectListing = s3Client.listNextBatchOfObjects(objectListing);
             deleteObjects(objectListing, s3Client, bucket);
         }
+    }
+
+    private boolean isResetS3EnabledEnvironmentVariable() throws CustomChangeException {
+        return Boolean.parseBoolean(Optional.ofNullable(
+                System.getenv(RESET_S3_BUCKET_ON_DATABASE_RESET)).orElse(Boolean.FALSE.toString()));
     }
 
     private String getEnvironmentVariable(String name) throws CustomChangeException {
