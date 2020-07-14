@@ -14,14 +14,14 @@ public class PathmindStringUtils
 	}
 
 	public static String toCamelCase(String str) {
-		if (str == null){
+		if (org.apache.commons.lang3.StringUtils.isEmpty(str)){
 			return "—";
 		}
 		return WordUtils.capitalizeFully(str).replaceAll(" ", "");
     }
     
     public static String toCapitalize(String str) {
-		if (str == null){
+		if (org.apache.commons.lang3.StringUtils.isEmpty(str)){
 			return "—";
 		}
         return WordUtils.capitalizeFully(str);
