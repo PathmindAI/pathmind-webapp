@@ -37,13 +37,8 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
-      {{- with .Values.readinessprobe }}
-          readinessProbe:
-            {{- toYaml . | nindent 12 }}
-      {{- end }}
-      {{- with .Values.livenessprobe }}
-          livenessProbe:
-            {{- toYaml . | nindent 12 }}
+      {{- with .Values.probes }}
+        {{- toYaml . | nindent 10 }}
       {{- end }}
           env:
             - name: APPLICATION_URL
