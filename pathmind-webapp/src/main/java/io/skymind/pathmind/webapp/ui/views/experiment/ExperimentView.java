@@ -104,9 +104,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private NotesField notesField;
     private Span reasonWhyTheTrainingStoppedLabel;
     private RewardVariablesTable rewardVariablesTable;
-    private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
-    private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
-    private final ExperimentViewExperimentCreatedSubscriber experimentCreatedSubscriber;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -133,23 +130,19 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     public ExperimentView() {
         super();
         addClassName("experiment-view");
-        policyUpdateSubscriber = new ExperimentViewPolicyUpdateSubscriber();
-        runUpdateSubscriber = new ExperimentViewRunUpdateSubscriber();
-        experimentCreatedSubscriber = new ExperimentViewExperimentCreatedSubscriber();
-    }
-
-    @Override
-    protected void onDetach(DetachEvent event) {
-        EventBus.unsubscribe(policyUpdateSubscriber);
-        EventBus.unsubscribe(runUpdateSubscriber);
-        EventBus.unsubscribe(experimentCreatedSubscriber);
     }
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(policyUpdateSubscriber);
-        EventBus.subscribe(runUpdateSubscriber);
-        EventBus.subscribe(experimentCreatedSubscriber);
+        EventBus.subscribe(this,
+                new ExperimentViewPolicyUpdateSubscriber(),
+                new ExperimentViewRunUpdateSubscriber(),
+                new ExperimentViewExperimentCreatedSubscriber());
+    }
+
+    @Override
+    protected void onDetach(DetachEvent event) {
+        EventBus.unsubscribe(this);
     }
 
     @Override

@@ -1,11 +1,13 @@
 package io.skymind.pathmind.webapp.bus;
 
+import com.vaadin.flow.component.Component;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,6 +46,8 @@ public class EventBus {
 
     private Map<BusEventType, List<EventBusSubscriber>> subscribers;
 
+    private static ConcurrentHashMap<Component, EventBusSubscriber[]> componentSubscribers = new ConcurrentHashMap<>();
+
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
     private EventBus() {
@@ -64,8 +68,20 @@ public class EventBus {
         });
     }
 
+    public static void subscribe(Component component, EventBusSubscriber... subscribers) {
+        componentSubscribers.put(component, subscribers);
+        Arrays.stream(subscribers)
+                .forEach(subscriber -> subscribe(subscriber));
+    }
+
     public static void subscribe(EventBusSubscriber subscriber) {
         EVENT_BUS.subscribers.get(subscriber.getEventType()).add(subscriber);
+    }
+
+    public static void unsubscribe(Component component) {
+        Arrays.stream(componentSubscribers.get(component))
+                .forEach(subscriber -> unsubscribe(subscriber));
+        componentSubscribers.remove(component);
     }
 
     public static void unsubscribe(EventBusSubscriber subscriber) {
