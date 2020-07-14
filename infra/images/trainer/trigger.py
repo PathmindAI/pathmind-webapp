@@ -104,7 +104,7 @@ def process_message(message):
     if hw_type not in hw_type_list:
         app_logger.info('hw type {hw_type} not found using default'\
             .format(hw_type=hw_type))
-        hw_type='36cpu_72gb'
+        hw_type='16cpu_32gb'
     job_id=s3path
     ReceiptHandle=message['ReceiptHandle']
 
