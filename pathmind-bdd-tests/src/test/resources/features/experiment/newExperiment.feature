@@ -54,7 +54,7 @@ Feature: New experiment page
     When Click project save draft btn
     When Click back button
     Then Click the experiment name 1
-    Then Check reward function is reward -= after[3] - before[3];
+    Then Check reward function is reward -= after[3 var-3] - before[3 var-3];
 
   @reward-variables
   Scenario: Naming reward function variables
