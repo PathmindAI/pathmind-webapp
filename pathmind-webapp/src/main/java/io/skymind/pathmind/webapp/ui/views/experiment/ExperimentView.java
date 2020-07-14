@@ -1,9 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -357,16 +354,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void archiveExperiment(Experiment experimentToArchive) {
         ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
-            experiments.remove(experimentToArchive);
-            if (experiments.isEmpty()) {
-                getUI().ifPresent(ui -> ui.navigate(ModelView.class, experimentToArchive.getModelId()));
-            } else {
-                Experiment currentExperiment = (experimentToArchive.getId() == experimentId) ? experiments.get(0) : experiment;
-                if (experimentToArchive.getId() == experimentId) {
-                    selectExperiment(currentExperiment);
-                }
-                getUI().ifPresent(ui -> experimentsNavbar.setExperiments(ui, experiments, currentExperiment));
-            }
         });
     }
 
@@ -415,6 +402,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             } else {
                 getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
             }
+        }
+    }
+
+    private void navigateToExperiment(UI ui, Experiment targetExperiment) {
+        if (ExperimentUtils.isDraftRunType(targetExperiment)) {
+            ui.navigate(NewExperimentView.class, targetExperiment.getId());
+        } else {
+            ui.navigate(ExperimentView.class, targetExperiment.getId());
         }
     }
 
@@ -572,7 +567,23 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void updateNavBarExperiments() {
         experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-        PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
+
+        if (experiments.isEmpty()) {
+            PushUtils.push(getUI(), ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+        } else {
+            boolean selectedExperimentWasArchived = experiments.stream()
+                    .noneMatch(e -> e.getId() == experimentId);
+            if (selectedExperimentWasArchived) {
+                Experiment newSelectedExperiment = experiments.get(0);
+                PushUtils.push(getUI(), ui -> navigateToExperiment(ui, newSelectedExperiment));
+            }
+            else {
+                PushUtils.push(getUI(), ui ->  {
+                    selectExperiment(experiment);
+                    experimentsNavbar.setExperiments(ui, experiments, experiment);
+                });
+            }
+        }
     }
 
     private boolean isSameModel(long modelId) {

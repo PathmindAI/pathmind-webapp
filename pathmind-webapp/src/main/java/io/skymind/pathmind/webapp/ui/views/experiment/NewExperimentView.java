@@ -1,10 +1,10 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.ExperimentUpdatedSubscriber;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -304,16 +304,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private void archiveExperiment(Experiment experimentToArchive) {
         ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
-            experiments.remove(experimentToArchive);
-            if (experiments.isEmpty()) {
-                getUI().ifPresent(ui -> ui.navigate(ModelView.class, experimentToArchive.getModelId()));
-            } else {
-                Experiment currentExperiment = (experimentToArchive.getId() == experimentId) ? experiments.get(0) : experiment;
-                if (experimentToArchive.getId() == experimentId) {
-                    selectExperiment(currentExperiment);
-                }
-                getUI().ifPresent(ui -> experimentsNavbar.setExperiments(ui, experiments, currentExperiment));
-            }
         });
     }
 
@@ -354,7 +344,15 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			navigateToAnotherDraftExperiment(selectedExperiment);
 		}
 	}
-	
+
+	private void navigateToAnotherExperiment(UI ui, Experiment targetExperiment) {
+        if (ExperimentUtils.isDraftRunType(targetExperiment)) {
+            ui.navigate(NewExperimentView.class, targetExperiment.getId());
+        } else {
+            ui.navigate(ExperimentView.class, targetExperiment.getId());
+        }
+    }
+
 	private void navigateToAnotherDraftExperiment(Experiment selectedExperiment) {
 		// The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
 		// same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
@@ -456,7 +454,23 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private void updateNavBarExperiments() {
         experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-        PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
+
+        if (experiments.isEmpty()) {
+            PushUtils.push(getUI(), ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+        } else {
+            boolean selectedExperimentWasArchived = experiments.stream()
+                    .noneMatch(e -> e.getId() == experimentId);
+            if (selectedExperimentWasArchived) {
+                Experiment newSelectedExperiment = experiments.get(0);
+                PushUtils.push(getUI(), ui -> navigateToAnotherExperiment(ui, newSelectedExperiment));
+            }
+            else {
+                PushUtils.push(getUI(), ui -> {
+                    selectExperiment(experiment);
+                    experimentsNavbar.setExperiments(ui, experiments, experiment);
+                });
+            }
+        }
     }
 
     private boolean isSameModel(long modelId) {
@@ -486,7 +500,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         @Override
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
-            if (isSameExperiment(event.getExperiment())) {
+            if (isSameExperiment(event.getExperiment()) && event.isStartedTraining()) {
                 navigateToExperimentView(event.getExperiment());
             }
             else if (isSameModel(event.getModelId())) {
