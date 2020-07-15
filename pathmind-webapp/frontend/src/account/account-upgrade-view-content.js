@@ -1,5 +1,4 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "@vaadin/vaadin-ordered-layout/src/vaadin-horizontal-layout.js";
 
 class AccountUpgradeViewContent extends PolymerElement {
   static get template() {

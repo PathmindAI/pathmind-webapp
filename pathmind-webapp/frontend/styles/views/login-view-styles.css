@@ -6,15 +6,6 @@
   overflow: auto;
 }
 
-landing-page {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  justify-content: center;
-  padding: var(--lumo-space-l);
-  box-sizing: border-box;
-}
-
 .login-panel-cont .content {
   padding: 0;
   margin: var(--lumo-space-xxl) auto 0;
