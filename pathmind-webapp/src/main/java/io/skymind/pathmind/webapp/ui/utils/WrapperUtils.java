@@ -53,13 +53,6 @@ public class WrapperUtils
 		return verticalLayout;
 	}
 
-	// TODO -> CSS styles
-	public static VerticalLayout wrapFormCenterBorderedVertical(Component... components) {
-		VerticalLayout verticalLayout = wrapFormCenterVertical(components);
-		verticalLayout.getStyle().set("border", "solid 1px #ccc");
-		return verticalLayout;
-	}
-
 	public static HorizontalLayout wrapWidthFullHorizontal(Component... components) {
 		HorizontalLayout wrapper = new HorizontalLayout(components);
 		wrapper.setWidthFull();
@@ -95,12 +88,6 @@ public class WrapperUtils
 		return wrapper;
 	}
 
-	public static HorizontalLayout wrapFormCenterHorizontal(Component... components) {
-		HorizontalLayout horizontalLayout = new HorizontalLayout(components);
-		horizontalLayout.setWidth(UIConstants.CENTERED_FORM_WIDTH);
-		return horizontalLayout;
-	}
-
 	/**
 	 * TODO -> The only way it seems to work is if you setup the style, the HorizontalLayout otherwise doesn't
 	 * seem to want to respect the right alignment of the rightComponent:
@@ -118,14 +105,6 @@ public class WrapperUtils
 		HorizontalLayout horizontalLayout = wrapWidthFullHorizontal(components);
 		horizontalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 		return horizontalLayout;
-	}
-
-	public static SplitLayout wrapCenterAlignmentFullSplitLayoutVertical(Component primaryComponent, Component secondaryComponent) {
-		return wrapCenterAlignmentFullSplitLayoutVertical(primaryComponent, secondaryComponent, 50);
-	}
-
-	public static SplitLayout wrapCenterAlignmentFullSplitLayoutVertical(Component primaryComponent, Component secondaryComponent, double splitterPosition) {
-		return wrapCenterAlignmentFullSplitLayout(primaryComponent, secondaryComponent, splitterPosition, SplitLayout.Orientation.VERTICAL);
 	}
 
 	public static SplitLayout wrapCenterAlignmentFullSplitLayoutHorizontal(Component primaryComponent, Component secondaryComponent) {

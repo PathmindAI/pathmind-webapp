@@ -92,7 +92,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private HorizontalLayout simulationMetricsWrapper;
     private VerticalLayout metricsWrapper;
     private VerticalLayout sparklinesWrapper;
-    private PolicyHighlightPanel policyHighlightPanel;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private Span panelTitle;
     private VerticalLayout rewardVariablesGroup;
@@ -306,7 +305,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private HorizontalLayout getBottomPanel() {
         policyChartPanel = new PolicyChartPanel();
         trainingStartingPlaceholder = new TrainingStartingPlaceholder();
-        policyHighlightPanel = new PolicyHighlightPanel();
 
         VerticalLayout chartWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                         trainingStartingPlaceholder,
@@ -314,7 +312,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         chartWrapper.addClassName("row-2-of-3");
 
         HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
-                policyHighlightPanel,
                 chartWrapper,
                 notesField);
         bottomPanel.addClassName("bottom-panel");
