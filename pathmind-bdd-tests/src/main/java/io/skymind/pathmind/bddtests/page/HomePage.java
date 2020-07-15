@@ -49,6 +49,7 @@ public class HomePage extends PageObject {
     public void openProjectsPage() {
         projectsBtn.click();
         waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label truncated-label' and text()='Projects']")));
     }
 
     public void logoutFromPathmind() {
@@ -125,6 +126,7 @@ public class HomePage extends PageObject {
     }
 
     public void checkSearchResultPageNotesContainsSearch(String text) {
+        waitABit(3500);
         List<String> actual = new ArrayList<>();
         for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-grid-cell-content[contains(@slot, 'vaadin-grid-cell-content-')]"))) {
             actual.add(webElement.getText());
