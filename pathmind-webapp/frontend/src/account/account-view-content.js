@@ -5,7 +5,7 @@ class AccountViewContent extends PolymerElement {
         return html`
             <style include="shared-styles pathmind-dialog-view">
                 .small {
-                    font-size: small;
+                    font-size: var(--lumo-font-size-s);
                 }
                 .small:empty {
                     display: none;

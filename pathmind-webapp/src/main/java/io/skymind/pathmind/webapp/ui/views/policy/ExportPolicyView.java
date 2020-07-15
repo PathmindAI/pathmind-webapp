@@ -17,7 +17,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -31,7 +30,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 
 import io.skymind.pathmind.db.dao.PolicyDAO;
-import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.security.Routes;
@@ -46,8 +44,6 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	private PolicyDAO policyDAO;
 	@Autowired
 	private PolicyFileService policyFileService;
-	@Autowired
-	private UserDAO userDAO;
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
@@ -61,9 +60,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	@Autowired
 	private ProjectDAO projectDAO;
-
-	@Autowired
-    private ExperimentDAO experimentDAO;
 
 	@Autowired
 	private ModelService modelService;

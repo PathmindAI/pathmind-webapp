@@ -21,8 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
-import java.util.List;
-
 @Tag("change-password-view-content")
 @JsModule("./src/account/change-password-view-content.js")
 @SpringComponent
