@@ -11,8 +11,6 @@
     stroke-dasharray: 4 4;
 }
 
-.highcharts-point {
-}
 .pm-active-series {
     opacity: 1;
     fill: var(--pm-text-color);
