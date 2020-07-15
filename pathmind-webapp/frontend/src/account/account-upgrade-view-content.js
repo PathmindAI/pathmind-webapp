@@ -28,7 +28,7 @@ class AccountUpgradeViewContent extends PolymerElement {
         }
 
         .professional-cont {
-          margin: 0 6px;
+          margin: 0 var(--lumo-space-xs);
         }
 
         .card-header {
