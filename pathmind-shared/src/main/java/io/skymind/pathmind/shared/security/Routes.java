@@ -9,10 +9,6 @@ public class Routes {
     public static final String LOGIN_PROCESSING_URL = "sign-in";
     
     public static final String LOGOUT_URL = "sign-out";
-
-    // Need to pass a x-ms-routing-name GET param on logout to make sure that after a logout
-    // the browser will be redirected to the latest version of the application when using
-    // canary deployments and slots. Param value can be anything.
     public static final String LOGOUT_SUCCESS_URL = "sign-out";
     public static final String SESSION_EXPIRED = "session-expired";
     public static final String BAD_CREDENTIALS = "bad-credentials";
