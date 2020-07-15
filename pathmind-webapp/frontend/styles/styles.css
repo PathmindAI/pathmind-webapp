@@ -171,17 +171,6 @@ hr {
     color: var(--pm-orange-color);
 }
 
-.logo-label {
-    font-size: 24px;
-}
-
-.form-component {
-    border: 1px solid black;
-}
-
-.form-label {
-    border: 1px solid black;
-}
 .bold-label {
     font-weight: bold;
 }
@@ -203,13 +192,6 @@ hr {
     color: var(--pm-text-color);
 }
 
-.section-status-panel {
-    min-width: 520px;
-}
-
-.centered-field-label {
-    width: 100px;
-}
 .truncated-label {
     width: 100%;
     overflow: hidden;
@@ -452,24 +434,6 @@ account-view {
 
 .projects-view .page-title {
     width: calc(var(--lumo-space-m) * 2 + 100%) !important;
-}
-
-.readonly-label {
-    align-self: flex-start;
-    color: var(--lumo-secondary-text-color);
-    font-weight: 500;
-    font-size: var(--lumo-font-size-s);
-    margin-left: calc(var(--lumo-border-radius-m) / 4);
-    transition: color 0.2s;
-    line-height: 1;
-    padding-bottom: 0.5em;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    position: relative;
-    max-width: 100%;
-    box-sizing: border-box;
-    min-height: 18px;
 }
 
 .create-project-button {
