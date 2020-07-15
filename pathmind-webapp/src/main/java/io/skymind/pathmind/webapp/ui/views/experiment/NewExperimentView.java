@@ -1,12 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
@@ -29,17 +22,16 @@ import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.user.UserMetrics;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.ExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
@@ -327,13 +319,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     // is that this should be extremely rare, and if it does happen then it's more cost effective for now than creating
     // a whole infrastructure for it. Worse case we could just push this to 90% rather than 75%. That being said if enough
     // people hit the 75% threshold then our caps are too low.
+    // NOTICE -> I'm casting to integer since it's close enough for what we need here.
     private void capLimitEmailNotificationCheckForType(UserMetrics.UserCapType userCapType, int experimentCount, int maxAllowed) {
-        if(experimentCount >= maxAllowed)
-            emailNotificationService.sendCapLimitNotification(getPathmindUser(), userCapType, 100);
-        else if(experimentCount >= maxAllowed * 0.90)
-            emailNotificationService.sendCapLimitNotification(getPathmindUser(), userCapType, 90);
-        else if(experimentCount >= maxAllowed * 0.75)
-            emailNotificationService.sendCapLimitNotification(getPathmindUser(), userCapType, 75);
+        int percentage = (int)(experimentCount * 100f / maxAllowed);
+        if(percentage >= 75)
+            segmentIntegrator.userExperimentCapLimitReached(getPathmindUser(), userCapType, percentage);
     }
 
     // Implemented as a method because we only need it if the right conditions are met.
