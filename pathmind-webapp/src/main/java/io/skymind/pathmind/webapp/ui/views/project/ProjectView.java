@@ -133,7 +133,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 				"Models",
 				modelGrid,
 				this::getModels,
-				(modelId, isArchivable) -> modelDAO.archive(modelId, isArchivable));
+				(model, isArchivable) -> modelDAO.archive(model.getId(), isArchivable));
 	}
 
 	private void setupGrid()

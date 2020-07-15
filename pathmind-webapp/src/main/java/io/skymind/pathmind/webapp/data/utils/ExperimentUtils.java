@@ -162,8 +162,4 @@ public class ExperimentUtils
 	    experimentDAO.archive(experiment.getId(), isArchive);
 	    EventBus.post(new ExperimentUpdatedBusEvent(experiment));
     }
-
-    public static void archiveExperiment(ExperimentDAO experimentDAO, long experimentId, boolean isArchive) {
-	    archiveExperiment(experimentDAO, experimentDAO.getExperiment(experimentId).get(), isArchive);
-    }
 }
