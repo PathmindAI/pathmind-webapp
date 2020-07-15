@@ -103,10 +103,25 @@ Feature: Experiment page
     When Click project start run button
     When Open tab 0
     Then Check that 'Experiment #2' exist on the experiment page
+    Then Check that 'Experiment #2' status icon is 'icon-loading-spinner'
     When Click in 'Experiment #2' button
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
+
+  Scenario: Check experiment side bar when an experiment is created and stopped in other tab
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Click project save draft btn
+    When Duplicate current tab
+    When Click in 'New Experiment' button
+    When Click project start run button
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
+    When Open tab 0
+    Then Check that 'Experiment #2' exist on the experiment page
+    Then Check that 'Experiment #2' status icon is 'icon-stopped'
 
   Scenario: Check experiment side bar when an experiment is archived in other tab
     Given Login to the pathmind

@@ -32,6 +32,7 @@ public class ModelUploadPage extends PageObject {
     }
 
     public void checkThatModelUploadPageOpened() {
+        waitABit(2500);
         assertThat(getDriver().getCurrentUrl(), containsString("uploadModel"));
         assertThat(getDriver().findElement(By.xpath("//span[@class='no-top-margin-label']")).getText(), is("Upload Model"));
     }

@@ -148,4 +148,8 @@ public class ExperimentPage extends PageObject {
         waitABit(4000);
         assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='experiment-name']/p[1]")), not(hasItem(experiment)));
     }
+
+    public void checkThatExperimentStatusIconIs(String experiment, String icon) {
+        assertThat(getDriver().findElement(By.xpath("//p[text()='" + experiment + "']/parent::div/preceding-sibling::div")).getAttribute("class"),is(icon));
+    }
 }
