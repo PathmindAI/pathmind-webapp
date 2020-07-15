@@ -31,6 +31,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.RLLIB_ERROR_PREFIX;
+import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.SUCCESS_MESSAGE_PREFIX;
+import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.WARNING_MESSAGE_PREFIX;
 import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.*;
 import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.KILLED_TRAINING_KEYWORD;
 import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.UNKNOWN_ERROR_KEYWORD;
@@ -86,7 +88,7 @@ public class UpdaterService {
                 jobHandle, experimentState);
 
         setStoppedAtForFinishedPolicies(policies, experimentState);
-        setRunError(run, providerJobStatus);
+        setEventualInformationAboutWhyTheRunEnded(run, providerJobStatus);
 
         List<PolicyUpdateInfo> policiesUpdateInfo = getPoliciesUpdateInfo(stoppedPoliciesNames, run.getId(), jobHandle,
                 providerJobStatus);
@@ -150,14 +152,17 @@ public class UpdaterService {
         final Map<String, String> rawProgress = provider.progress(jobHandle, validExternalIds);
 
         return rawProgress.entrySet().stream()
-                .map(e -> {
-                    List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
-                    return ProgressInterpreter.interpret(e, previousScores);
-                })
-                .collect(Collectors.toList());
+            .map(e -> {
+                List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
+                List<Metrics> previousMetrics = runDAO.getMetrics(runId, e.getKey());
+                int numReward = runDAO.getRewardNumForRun(runId);
+
+                return ProgressInterpreter.interpret(e, previousScores, previousMetrics, numReward);
+            })
+            .collect(Collectors.toList());
     }
 
-    private void setRunError(Run run, ProviderJobStatus jobStatus) {
+    private void setEventualInformationAboutWhyTheRunEnded(Run run, ProviderJobStatus jobStatus) {
         final var status = jobStatus.getRunStatus();
         Collection<String> descriptions = CollectionUtils.emptyIfNull(jobStatus.getDescription());
         if (status == RunStatus.Error && !CollectionUtils.isEmpty(descriptions)) {
@@ -176,14 +181,22 @@ public class UpdaterService {
             foundError.ifPresent(
                     e -> run.setTrainingErrorId(e.getId())
             );
+            getDescriptionStartingWithPrefix(descriptions, RLLIB_ERROR_PREFIX).ifPresent(run::setRllibError);
         } else if (status == RunStatus.Killed && run.getStatusEnum() != RunStatus.Stopping) {
             // Stopping status is set, when user wants to stop training. So, don't assign an error in this case
             trainingErrorDAO.getErrorByKeyword(KILLED_TRAINING_KEYWORD).ifPresent(error -> {
                 run.setTrainingErrorId(error.getId());
             });
+            getDescriptionStartingWithPrefix(descriptions, RLLIB_ERROR_PREFIX).ifPresent(run::setRllibError);
+        } else if (status == RunStatus.Completed) {
+            getDescriptionStartingWithPrefix(descriptions, SUCCESS_MESSAGE_PREFIX).ifPresent(run::setSuccessMessage);
+            getDescriptionStartingWithPrefix(descriptions, WARNING_MESSAGE_PREFIX).ifPresent(run::setWarningMessage);
         }
-        descriptions.stream().filter(e -> e.startsWith(RLLIB_ERROR_PREFIX)).findAny()
-                .map(e -> e.replace(RLLIB_ERROR_PREFIX, "")).ifPresent(run::setRLibError);
+    }
+
+    private Optional<String> getDescriptionStartingWithPrefix(Collection<String> descriptions, String prefix) {
+        return descriptions.stream()
+                .filter(e -> e.startsWith(prefix)).findAny().map(e -> e.replace(prefix, ""));
     }
 
     private void fireEventUpdates(Run run, List<Policy> policies) {

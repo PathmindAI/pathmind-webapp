@@ -98,4 +98,14 @@ public class GenericPageStepDefinitions {
     public void refreshPage() {
         genericPageSteps.refreshPage();
     }
+
+    @Then("^Duplicate current tab$")
+    public void duplicateCurrentTab() {
+        genericPageSteps.duplicateCurrentTab();
+    }
+
+    @When("^Open tab (\\d+)$")
+    public void openTab(int tab) {
+        genericPageSteps.openTab(tab);
+    }
 }

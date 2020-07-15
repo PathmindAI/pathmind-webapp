@@ -9,7 +9,7 @@ import static org.hamcrest.Matchers.is;
 public class Notifications extends PageObject {
 
     public void checkThatNewVersionNotificationIsShown() {
-        assertThat(getDriver().findElement(By.id("vaadin-notification-card")).isDisplayed(), is(true));
+        assertThat(getDriver().findElements(By.xpath("//vaadin-notification-card[@aria-label='Pathmind has been updated. Please log in again to get the latest improvements.']")).size(), is(1));
     }
 
     public void checkThatNewVersionNotificationTextIs(String text) {

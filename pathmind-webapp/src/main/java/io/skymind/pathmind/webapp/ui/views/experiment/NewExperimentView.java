@@ -1,6 +1,15 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -26,8 +35,11 @@ import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.user.UserMetrics;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.ExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
@@ -36,10 +48,7 @@ import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
-import io.skymind.pathmind.webapp.ui.utils.FormUtils;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
-import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.utils.*;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavbar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
@@ -56,7 +65,8 @@ import java.util.stream.Collectors;
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>, BeforeLeaveObserver {
 
-	// We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
+    private final NewExperimentViewExperimentCreatedSubscriber experimentCreatedSubscriber;
+    // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
 	// on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
 	private Object experimentLock = new Object();
 
@@ -92,8 +102,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private SegmentIntegrator segmentIntegrator;
 	@Autowired
 	private RewardValidationService rewardValidationService;
-	@Autowired
-    private EmailNotificationService emailNotificationService;
 
 	private Breadcrumbs pageBreadcrumbs;
 	private Binder<Experiment> binder;
@@ -101,7 +109,18 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	public NewExperimentView() {
 		super();
 		addClassName("new-experiment-view");
+        experimentCreatedSubscriber = new NewExperimentViewExperimentCreatedSubscriber();
 	}
+
+    @Override
+    protected void onDetach(DetachEvent event) {
+        EventBus.unsubscribe(experimentCreatedSubscriber);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent event) {
+        EventBus.subscribe(experimentCreatedSubscriber);
+    }
 
     @Override
     protected Component getTitlePanel() {
@@ -474,4 +493,34 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         notesSavedHint.setVisible(false);
         unarchiveExperimentButton.setVisible(experiment.isArchived());
 	}
+
+    // Note: these 3 methods were copied and pasted from ExperimentView. Duplication will be gone when #1697 is implemented.
+    private boolean isNewExperimentForThisViewModel(Experiment eventExperiment, long modelId) {
+        return isSameModel(modelId) && !experiments.contains(eventExperiment);
+    }
+
+    private void updateNavBarExperiments() {
+        experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+        PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
+    }
+
+    private boolean isSameModel(long modelId) {
+        return experiment != null && experiment.getModelId() == modelId;
+    }
+
+    class NewExperimentViewExperimentCreatedSubscriber implements ExperimentCreatedSubscriber {
+
+        @Override
+        public void handleBusEvent(ExperimentCreatedBusEvent event) {
+            if (isNewExperimentForThisViewModel(event.getExperiment(), event.getModelId())) {
+                updateNavBarExperiments();
+            }
+        }
+
+        @Override
+        public boolean isAttached() {
+            return NewExperimentView.this.getUI().isPresent();
+        }
+    }
+
 }

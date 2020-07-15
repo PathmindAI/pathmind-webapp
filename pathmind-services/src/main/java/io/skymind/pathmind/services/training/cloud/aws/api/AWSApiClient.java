@@ -63,11 +63,15 @@ public class AWSApiClient {
         this.objectMapper = objectMapper;
 
         this.mockCycle = mockCycle;
-        if (mockCycle != 0) {
+        if (isUsingMockBackend()) {
             Assert.isTrue(mockCycle > 0, "Mock Cycle should be greater than zero");
             log.warn("Running with mock cycle {}", mockCycle);
         }
 
+    }
+
+    public boolean isUsingMockBackend() {
+        return this.mockCycle != 0;
     }
 
     public List<Bucket> listBuckets() {
