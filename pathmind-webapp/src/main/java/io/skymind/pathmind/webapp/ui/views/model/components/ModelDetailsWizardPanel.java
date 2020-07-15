@@ -21,7 +21,7 @@ import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.binders.ModelBinders;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.components.PathmindTextArea;
+import com.vaadin.flow.component.textfield.TextArea;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
@@ -30,7 +30,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 {
 	private VerticalLayout formPanel = new VerticalLayout();
 
-	private PathmindTextArea notesFieldTextArea;
+	private TextArea notesFieldTextArea;
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
@@ -81,7 +81,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private void setupFields()
 	{
-		notesFieldTextArea = new PathmindTextArea();
+		notesFieldTextArea = new TextArea();
 		notesFieldTextArea.setPlaceholder("Add your notes here");
 	}
 
