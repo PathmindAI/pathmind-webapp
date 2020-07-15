@@ -1,7 +1,9 @@
-/* Unscalable way to center number fields in vaadin-grid
-   due to inability to flag particular vaadin-grid-cell-content
-   as a numbered field with a class or directly style in Java */
-.dashboard-view vaadin-grid-cell-content:nth-of-type(3),
-.dashboard-view vaadin-grid-cell-content:nth-of-type(4) {
-  text-align: center;
+.dashboard-view .view-section {
+    flex: 1;
+    max-width: 1480px;
+    align-self: center;
+}
+
+.dashboard-view .create-project-link {
+    margin-left: 0.4em;
 }

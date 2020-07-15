@@ -242,16 +242,6 @@ hr {
     flex: 1;
 }
 
-.dashboard-view .view-section {
-    flex: 1;
-    max-width: 1480px;
-    align-self: center;
-}
-
-.dashboard-view .create-project-link {
-    margin-left: 0.4em;
-}
-
 .page-content-header {
     margin-bottom: var(--lumo-space-m);
 }

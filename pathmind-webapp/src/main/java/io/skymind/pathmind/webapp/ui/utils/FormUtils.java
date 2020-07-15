@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.utils;
 
-import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;

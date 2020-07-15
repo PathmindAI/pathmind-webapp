@@ -22,7 +22,6 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.data.Data;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
@@ -54,8 +53,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	private ModelDAO modelDAO;
 	@Autowired
 	private ProjectDAO projectDAO;
-	@Autowired
-	private UserDAO userDAO;
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 
