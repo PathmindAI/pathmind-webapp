@@ -36,7 +36,7 @@ public class UpdatePolicy_ChangeSet_20200714_01 implements CustomTaskChange
 
         // Check that RESET_S3_BUCKET_ON_DATABASE_RESET is enabled otherwise skip this whole changeset
         if(!isResetS3EnabledEnvironmentVariable()) {
-            log.info("S3 bucket has NOT been reset.");
+            log.info("S3 bucket NOT reset.");
             return;
         }
 
