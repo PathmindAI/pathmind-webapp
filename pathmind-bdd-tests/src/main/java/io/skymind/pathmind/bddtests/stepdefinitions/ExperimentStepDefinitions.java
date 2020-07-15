@@ -99,4 +99,9 @@ public class ExperimentStepDefinitions {
     public void checkThatExperimentNotExistOnTheExperimentPage(String experiment) {
         experimentPageSteps.checkThatExperimentNotExistOnTheExperimentPage(experiment);
     }
+
+    @Then("^Check that '(.*)' status icon is '(.*)'$")
+    public void checkThatExperimentStatusIconIs(String experiment, String icon) {
+        experimentPageSteps.checkThatExperimentStatusIconIs(experiment, icon);
+    }
 }
