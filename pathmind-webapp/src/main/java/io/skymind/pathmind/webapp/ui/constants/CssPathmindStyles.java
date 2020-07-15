@@ -1,6 +1,6 @@
 package io.skymind.pathmind.webapp.ui.constants;
 
-public class CssMindPathStyles
+public class CssPathmindStyles
 {
 	public static final String ACTION_BUTTON = "action-button";
 

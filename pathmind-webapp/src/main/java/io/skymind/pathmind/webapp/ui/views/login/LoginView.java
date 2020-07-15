@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.vaadin.flow.component.AttachEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -73,7 +73,7 @@ public class LoginView extends HorizontalLayout
 					 @Value("${pathmind.terms-of-use.url}") String termsOfUseUrl)
 	{
 		addClassName("login-panel-cont");
-		Span welcome = LabelFactory.createLabel("Welcome to", CssMindPathStyles.WELCOME_TEXT);
+		Span welcome = LabelFactory.createLabel("Welcome to", CssPathmindStyles.WELCOME_TEXT);
 		Image img = new Image("frontend/images/pathmind-logo.png", "Pathmind logo");
 		img.setClassName("logo");
 		img.setWidth("200px");

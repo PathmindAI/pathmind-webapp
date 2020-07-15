@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.NO_TOP_MARGIN_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
@@ -24,7 +24,7 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTextArea;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 
 public class ModelDetailsWizardPanel extends VerticalLayout
 {
@@ -109,7 +109,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private Component getNotesFieldPanel() {
 		VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
-				LabelFactory.createLabel("Notes", CssMindPathStyles.BOLD_LABEL),
+				LabelFactory.createLabel("Notes", CssPathmindStyles.BOLD_LABEL),
 				LabelFactory.createLabel("Add any notes for yourself about the model you're uploading."),
 				notesFieldTextArea);
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
