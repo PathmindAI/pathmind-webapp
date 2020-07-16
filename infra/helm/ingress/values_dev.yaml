@@ -50,6 +50,8 @@ ingress:
       paths: [/:8080:pathmind-ma-dev]
     - host: ma.test.devpathmind.com
       paths: [/:8080:pathmind-ma-test]
+    - host: deepkit.devpathmind.com
+      paths: [/:80:deepkit-web]
 
   tls: 
     - secretName: letsencrypt-dev
@@ -65,6 +67,7 @@ ingress:
         - zalenium.dev.devpathmind.com
         - ma.dev.devpathmind.com
         - ma.test.devpathmind.com
+        - deepkit.devpathmind.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
