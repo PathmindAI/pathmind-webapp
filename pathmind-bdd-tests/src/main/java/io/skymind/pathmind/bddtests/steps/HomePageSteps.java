@@ -120,8 +120,8 @@ public class HomePageSteps {
     }
 
     @Step
-    public void checkSearchResultPageProjectNameContainsDraftTag(String name) {
-        homePage.checkSearchResultPageProjectNameContainsDraftTag(name);
+    public void checkSearchResultPageProjectNameContainsArchivedTag(String name) {
+        homePage.checkSearchResultPageProjectNameContainsArchivedTag(name);
     }
 
     @Step

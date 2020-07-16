@@ -128,21 +128,8 @@ public class HomePage extends PageObject {
 
     public void checkSearchResultPageNotesContainsSearch(String text) {
         waitABit(3500);
-        List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-grid-cell-content[contains(@slot, 'vaadin-grid-cell-content-')]"))) {
-            actual.add(webElement.getText());
-        }
-        actual.subList(0, 4).clear();
-
-        List<String> result =  IntStream.range(0, actual.size())
-            .filter(n -> n % 5 == 0)
-            .mapToObj(actual::get)
-            .collect(Collectors.toList());
-
-        result.subList(result.size() - 4, result.size()).clear();
-
-        for (String string : result) {
-            assertThat(string, containsString(text));
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='grid-notes-column']//span[@class='highlight-label']"))) {
+            assertThat(webElement.getText(), containsString(text));
         }
     }
 
@@ -156,23 +143,23 @@ public class HomePage extends PageObject {
     }
 
     public void checkSearchResultPageContainsProjectName(String name) {
-        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[@slot='vaadin-grid-cell-content-2']")).getText(), is(name));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='highlighted-text-wrapper']//span[@class='highlight-label']")).getText(), is(name));
     }
 
     public void checkSearchResultPageContainsModelName(String name) {
-        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[contains(text(),'Model')]/following::vaadin-grid-cell-content[1]")).getText(), is(name));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='highlighted-text-wrapper' and contains(text(), 'Model #')]//span[@class='highlight-label' and contains(text(),'"+name+"')]")).getText(), is(name));
     }
 
     public void clickAutotestProjectFromSearchPage(String name) {
-        getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+ name + " " + "']")).click();
+        getDriver().findElement(By.xpath("//*[@class='highlighted-text-wrapper']//span[@class='highlight-label' and contains(text(), '"+name+"')]")).click();
     }
 
     public void clickToTheUniqueNoteOnTheSearchResultPage(String text) {
-        getDriver().findElement(By.xpath("//*[text()='"+text+"']")).click();
+        getDriver().findElement(By.xpath("//*[@class='highlighted-text-wrapper grid-notes-column']//span[@class='highlight-label' and contains(text(),'"+text+"')]")).click();
     }
 
-    public void checkSearchResultPageProjectNameContainsDraftTag(String name) {
-        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+name+" ']/span")).getText(), is("Archived"));
+    public void checkSearchResultPageProjectNameContainsArchivedTag(String name) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='highlight-label' and contains(text(), '"+name+"')]/parent::div/parent::vaadin-vertical-layout[@class='name-row']/preceding-sibling::vaadin-horizontal-layout[@class='info-row']//vaadin-horizontal-layout[1]//span[@class='tag' and contains(text(), 'Archived')]")).getText(), is("Archived"));
     }
 
     public void checkSearchResultsForValueIs(String value) {

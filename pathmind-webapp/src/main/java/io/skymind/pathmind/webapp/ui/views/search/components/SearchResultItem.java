@@ -9,6 +9,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.constants.SearchResultItemType;
 import io.skymind.pathmind.shared.data.SearchResult;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
+import io.skymind.pathmind.shared.utils.PathmindStringUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -82,11 +83,12 @@ public class SearchResultItem extends VerticalLayout {
 
     private Div highlightSearchResult(String columnText) {
         Div searchResultColumn = new Div();
-        String[] parts = columnText.split("((?<="+decodedKeyword+")|(?="+decodedKeyword+"))");
+        String[] parts = columnText.split("(?i)((?<="+decodedKeyword+")|(?=(?i)"+decodedKeyword+"))");
+
         for (int i = 0; i < parts.length; i++) {
-            if (parts[i].equals(decodedKeyword)) {
+            if (parts[i].toLowerCase().equals(decodedKeyword.toLowerCase())) {
                 searchResultColumn.add(
-                    LabelFactory.createLabel(decodedKeyword, CssMindPathStyles.HIGHLIGHT_LABEL)
+                    LabelFactory.createLabel(parts[i], CssMindPathStyles.HIGHLIGHT_LABEL)
                 );
             } else {
                 searchResultColumn.add(parts[i]);

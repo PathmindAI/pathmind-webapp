@@ -133,8 +133,8 @@ public class HomePageStepDefinitions {
     }
 
     @Then("^Check search result page project name contains archived tag$")
-    public void checkSearchResultPageProjectNameContainsDraftTag() {
-        homePageSteps.checkSearchResultPageProjectNameContainsDraftTag("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
+    public void checkSearchResultPageProjectNameContainsArchivedTag() {
+        homePageSteps.checkSearchResultPageProjectNameContainsArchivedTag("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
     }
 
     @Then("^Check Search Results for value is '(.*)'$")
