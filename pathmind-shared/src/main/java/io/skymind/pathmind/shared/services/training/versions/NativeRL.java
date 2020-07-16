@@ -24,7 +24,8 @@ public enum NativeRL implements VersionEnum{
     VERSION_1_0_5,
     VERSION_1_0_6,
     VERSION_1_0_7,
-    VERSION_1_1_0;
+    VERSION_1_1_0,
+    VERSION_1_1_1;
 
     @Override
     public List<String> fileNames() {
