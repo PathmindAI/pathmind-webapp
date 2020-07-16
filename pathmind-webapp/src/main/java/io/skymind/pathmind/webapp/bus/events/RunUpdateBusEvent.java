@@ -32,4 +32,8 @@ public class RunUpdateBusEvent implements PathmindBusEvent
 	public void setRun(Run run) {
 		this.run = run;
 	}
+
+	public long getModelId() {
+	    return this.getRun().getModel().getId();
+    }
 }

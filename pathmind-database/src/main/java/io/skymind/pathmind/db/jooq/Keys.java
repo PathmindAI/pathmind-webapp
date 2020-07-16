@@ -5,6 +5,7 @@ package io.skymind.pathmind.db.jooq;
 
 
 import io.skymind.pathmind.db.jooq.tables.Experiment;
+import io.skymind.pathmind.db.jooq.tables.Metrics;
 import io.skymind.pathmind.db.jooq.tables.Model;
 import io.skymind.pathmind.db.jooq.tables.PathmindUser;
 import io.skymind.pathmind.db.jooq.tables.Policy;
@@ -16,6 +17,7 @@ import io.skymind.pathmind.db.jooq.tables.RunAdminNote;
 import io.skymind.pathmind.db.jooq.tables.TrainerJob;
 import io.skymind.pathmind.db.jooq.tables.TrainingError;
 import io.skymind.pathmind.db.jooq.tables.records.ExperimentRecord;
+import io.skymind.pathmind.db.jooq.tables.records.MetricsRecord;
 import io.skymind.pathmind.db.jooq.tables.records.ModelRecord;
 import io.skymind.pathmind.db.jooq.tables.records.PathmindUserRecord;
 import io.skymind.pathmind.db.jooq.tables.records.PolicyRecord;
@@ -87,6 +89,7 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final ForeignKey<ExperimentRecord, ModelRecord> EXPERIMENT__PM_FK_EXPERIMENT_MODEL = ForeignKeys0.EXPERIMENT__PM_FK_EXPERIMENT_MODEL;
+    public static final ForeignKey<MetricsRecord, PolicyRecord> METRICS__PM_FK_METRICS_POLICY = ForeignKeys0.METRICS__PM_FK_METRICS_POLICY;
     public static final ForeignKey<ModelRecord, ProjectRecord> MODEL__PM_FK_MODEL_PROJECT = ForeignKeys0.MODEL__PM_FK_MODEL_PROJECT;
     public static final ForeignKey<PolicyRecord, RunRecord> POLICY__PM_FK_POLICY_RUN = ForeignKeys0.POLICY__PM_FK_POLICY_RUN;
     public static final ForeignKey<ProjectRecord, PathmindUserRecord> PROJECT__PM_FK_PROJECT_PATHMIND_USER = ForeignKeys0.PROJECT__PM_FK_PROJECT_PATHMIND_USER;
@@ -131,6 +134,7 @@ public class Keys {
 
     private static class ForeignKeys0 {
         public static final ForeignKey<ExperimentRecord, ModelRecord> EXPERIMENT__PM_FK_EXPERIMENT_MODEL = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.MODEL_PKEY, Experiment.EXPERIMENT, "experiment__pm_fk_experiment_model", Experiment.EXPERIMENT.MODEL_ID);
+        public static final ForeignKey<MetricsRecord, PolicyRecord> METRICS__PM_FK_METRICS_POLICY = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.POLICY_PKEY, Metrics.METRICS, "metrics__pm_fk_metrics_policy", Metrics.METRICS.POLICY_ID);
         public static final ForeignKey<ModelRecord, ProjectRecord> MODEL__PM_FK_MODEL_PROJECT = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.PROJECT_PKEY, Model.MODEL, "model__pm_fk_model_project", Model.MODEL.PROJECT_ID);
         public static final ForeignKey<PolicyRecord, RunRecord> POLICY__PM_FK_POLICY_RUN = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.RUN_PKEY, Policy.POLICY, "policy__pm_fk_policy_run", Policy.POLICY.RUN_ID);
         public static final ForeignKey<ProjectRecord, PathmindUserRecord> PROJECT__PM_FK_PROJECT_PATHMIND_USER = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.PATHMIND_USER_PKEY, Project.PROJECT, "project__pm_fk_project_pathmind_user", Project.PROJECT.PATHMIND_USER_ID);

@@ -5,6 +5,7 @@ import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -46,7 +47,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkExperimentNotesIs(String note) {
-        assertThat(experimentNotes.getAttribute("value"), is(note));
+        assertThat(experimentNotes.getAttribute("value"), is(note.replaceAll("/n", "\n")));
     }
 
     public void checkExperimentStatusCompletedWithLimitHours(int limit) {
@@ -95,7 +96,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickSideNavArchiveButtonFor(String experimentName) {
-        getDriver().findElement(By.xpath("//p[text()='"+experimentName+"']/ancestor::vaadin-horizontal-layout[contains(@class,'experiment-navbar-item')]/vaadin-button")).click();
+        getDriver().findElement(By.xpath("//p[text()='" + experimentName + "']/ancestor::vaadin-horizontal-layout[contains(@class,'experiment-navbar-item')]/vaadin-button")).click();
     }
 
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
@@ -128,5 +129,18 @@ public class ExperimentPage extends PageObject {
 
     public void checkThatSimulationMetricsBlockIsShown() {
         assertThat(getDriver().findElement(By.xpath("//span[text()='Simulation Metrics']/parent::vaadin-vertical-layout")).isDisplayed(), is(true));
+    }
+
+    public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
+        waitABit(4000);
+        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='experiment-name']/p[1]")), hasItem(experiment));
+    }
+
+    public void clickCopyRewardFunctionBtn() {
+        WebElement e = utils.expandRootElement(rewardFunction);
+        e.findElement(By.cssSelector("vaadin-button")).click();
+        experimentNotes.click();
+        experimentNotes.sendKeys(Keys.CONTROL + "V");
+        getDriver().findElement(By.xpath("//*[text()='Save']")).click();
     }
 }

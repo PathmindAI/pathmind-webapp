@@ -1,5 +1,6 @@
 package io.skymind.pathmind.db.dao;
 
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
@@ -47,7 +48,7 @@ public class ModelDAO {
 		ModelRepository.updateUserNotes(ctx, modelId, userNotes);
 	}
 
-	public long resumeModelCreation(Model model, String modelNotes) {
+	public Experiment resumeModelCreation(Model model, String modelNotes) {
 		return ctx.transactionResult(configuration ->
 		{
 			DSLContext transactionCtx = DSL.using(configuration);
