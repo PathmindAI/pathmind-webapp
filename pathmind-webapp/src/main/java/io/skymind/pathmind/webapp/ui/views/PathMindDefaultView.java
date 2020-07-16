@@ -1,21 +1,26 @@
 package io.skymind.pathmind.webapp.ui.views;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.shared.communication.PushMode;
+import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Do NOT implement any default methods for this interface because a large part of it's goal is to remind
@@ -28,6 +33,9 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
     @Autowired
     private SegmentIntegrator segmentIntegrator;
+
+    @Autowired
+    private AWSApiClient awsApiClient;
 
 	private int previousWindowWidth = 0;
 
@@ -84,13 +92,25 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
 	private void addScreens(){
 		removeAll();
+		if (awsApiClient.isUsingMockBackend()) {
+            add(getWarningMessage());
+        }
 		final Component titlePanel = getTitlePanel();
 		if(titlePanel != null) add(titlePanel);
 		final Component mainContent = getMainContent();
 		if(mainContent != null) add(mainContent);
 	}
 
-	// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/217 Implement a security framework on the views.
+    private  Component getWarningMessage() {
+        Div message = new Div();
+        message.add(LabelFactory.createLabel("Using Mock Backend"));
+        HorizontalLayout result = WrapperUtils.wrapWidthFullCenterHorizontal(message);
+        result.getStyle().set("color", "var(--lumo-body-text-color)");
+        result.getStyle().set("background-color", "#FFC038");
+        return result;
+    }
+
+    // TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/217 Implement a security framework on the views.
 	// NOTE -> This is a janky solution for https://github.com/SkymindIO/pathmind-webapp/issues/217 until we decide exactly
 	// what we want to implement.
 	protected boolean isAccessAllowedForUser() {
