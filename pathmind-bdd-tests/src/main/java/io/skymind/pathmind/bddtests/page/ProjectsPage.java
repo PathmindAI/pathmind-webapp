@@ -25,7 +25,8 @@ public class ProjectsPage extends PageObject {
     private final By byTextarea = By.cssSelector("textarea");
 
     public void clickCreateNewProjectBtn() {
-        waitABit(2000);
+        waitABit(3500);
+        waitFor(ExpectedConditions.elementToBeClickable(getDriver().findElement(By.xpath("//vaadin-button[text()='New Project']"))));
         getDriver().findElement(By.xpath("//vaadin-button[text()='New Project']")).click();
     }
 
