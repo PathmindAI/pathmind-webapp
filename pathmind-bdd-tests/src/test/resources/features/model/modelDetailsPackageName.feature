@@ -21,5 +21,5 @@ Feature: Check Model Details package name field
     Examples:
       | project name    | model                                       | reward function file                                             | package name            |
       | AutotestProject | tuple_models/CallCenterTuples.zip           | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt | interconnected_cc_tuple |
-      | AutotestProject | tuple_models/CoffeeShopTuple.zip            | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | coffeeshop              |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip            | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | coffeeshop_v1           |
       | AutotestProject | tuple_models/SimpleSchedulingTuplesTest.zip | Production_Single_Agent/Production_Single_Agent_Reward.txt       | simplescheduling_tuple  |

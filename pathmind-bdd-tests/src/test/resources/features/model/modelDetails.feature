@@ -7,6 +7,7 @@ Feature: Models details
     When Click create new project button
     When Input name of the new project <project name> and click Create project button
     When Upload model <model>
+    When Check that model successfully uploaded
     When Click wizard model details next btn
     When Input reward variable names <variables>
     When Click wizard reward variables next btn
