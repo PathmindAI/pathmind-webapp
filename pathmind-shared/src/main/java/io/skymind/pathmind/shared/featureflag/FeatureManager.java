@@ -15,7 +15,7 @@ public class FeatureManager {
 
     public FeatureManager(
             @Value("${pathmind.toggle.multiagent:false}") boolean multiAgentEnabled,
-            @Value("${pathmind.toggle.simulation-metrics:false}") boolean simulationMetrics
+            @Value("${pathmind.toggle.simulation-metrics:true}") boolean simulationMetrics
             ) {
         this.multiAgentEnabled = multiAgentEnabled;
         this.simulationMetrics = simulationMetrics;

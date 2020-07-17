@@ -7,7 +7,7 @@ import com.vaadin.flow.router.RouterLink;
 
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindGreetingComponent;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.project.NewProjectView;
 
@@ -25,7 +25,7 @@ public class EmptyDashboardPlaceholder extends VerticalLayout {
 
         VerticalLayout placeholderContent = WrapperUtils.wrapFormCenterVertical(
                 WrapperUtils.wrapSizeFullCenterHorizontal(
-                    LabelFactory.createLabel("Let's begin by opening the", CssMindPathStyles.SECTION_TITLE_LABEL),
+                    LabelFactory.createLabel("Let's begin by opening the", CssPathmindStyles.SECTION_TITLE_LABEL),
                     gettingStartedButton),
                 WrapperUtils.wrapSizeFullCenterHorizontal(
                     new Span("or skip ahead to "),

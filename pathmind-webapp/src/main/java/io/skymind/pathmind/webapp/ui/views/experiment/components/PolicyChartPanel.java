@@ -29,7 +29,7 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
 public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubscriber
 {
