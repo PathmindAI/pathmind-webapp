@@ -1,6 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.TAG_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.TAG_LABEL;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;

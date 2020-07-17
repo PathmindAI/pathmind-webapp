@@ -11,7 +11,7 @@ import io.skymind.pathmind.shared.data.SearchResult;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.shared.utils.PathmindStringUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
@@ -44,11 +44,11 @@ public class SearchResultItem extends VerticalLayout {
 
     private HorizontalLayout createInfoRow() {
         HorizontalLayout infoRow = WrapperUtils.wrapWidthFullBetweenHorizontal();
-        HorizontalLayout tags = new HorizontalLayout(LabelFactory.createLabel(searchResultType.getName(), CssMindPathStyles.TAG_LABEL, CssMindPathStyles.TAG_OUTLINE_LABEL));
+        HorizontalLayout tags = new HorizontalLayout(LabelFactory.createLabel(searchResultType.getName(), CssPathmindStyles.TAG_LABEL, CssPathmindStyles.TAG_OUTLINE_LABEL));
         HorizontalLayout dates = new HorizontalLayout(createdDateComponent, lastActivityDateComponent);
         
         if (isArchived) {
-            tags.add(LabelFactory.createLabel("Archived", CssMindPathStyles.TAG_LABEL));
+            tags.add(LabelFactory.createLabel("Archived", CssPathmindStyles.TAG_LABEL));
         }
         infoRow.add(tags, dates);
         infoRow.addClassName("info-row");
@@ -89,7 +89,7 @@ public class SearchResultItem extends VerticalLayout {
         for (int i = 0; i < parts.length; i++) {
             if (parts[i].toLowerCase().equals(decodedKeyword.toLowerCase())) {
                 searchResultColumn.add(
-                    LabelFactory.createLabel(parts[i], CssMindPathStyles.HIGHLIGHT_LABEL)
+                    LabelFactory.createLabel(parts[i], CssPathmindStyles.HIGHLIGHT_LABEL)
                 );
             } else {
                 searchResultColumn.add(parts[i]);
