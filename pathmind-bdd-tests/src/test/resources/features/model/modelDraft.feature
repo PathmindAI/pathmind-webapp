@@ -21,7 +21,7 @@ Feature: Save Model draft
     When Open projects page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
-    When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
+    When Upload model tuple_models/CoffeeShopTuple.zip
     Then Click wizard model details next btn
     When Open projects page
     When Open project AutotestProject on projects page
