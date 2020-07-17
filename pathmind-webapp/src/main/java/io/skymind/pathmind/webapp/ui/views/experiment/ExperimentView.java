@@ -59,11 +59,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.ERROR_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SUCCESS_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.WARNING_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
@@ -91,7 +91,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private HorizontalLayout simulationMetricsWrapper;
     private VerticalLayout metricsWrapper;
     private VerticalLayout sparklinesWrapper;
-    private PolicyHighlightPanel policyHighlightPanel;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private Span panelTitle;
     private VerticalLayout rewardVariablesGroup;
@@ -309,7 +308,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private HorizontalLayout getBottomPanel() {
         policyChartPanel = new PolicyChartPanel();
         trainingStartingPlaceholder = new TrainingStartingPlaceholder();
-        policyHighlightPanel = new PolicyHighlightPanel();
 
         VerticalLayout chartWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                         trainingStartingPlaceholder,
@@ -317,7 +315,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         chartWrapper.addClassName("row-2-of-3");
 
         HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
-                policyHighlightPanel,
                 chartWrapper,
                 notesField);
         bottomPanel.addClassName("bottom-panel");

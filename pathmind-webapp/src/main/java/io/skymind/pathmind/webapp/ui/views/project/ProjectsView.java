@@ -30,7 +30,7 @@ import io.skymind.pathmind.webapp.ui.components.TooltipContainer;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -61,7 +61,7 @@ public class ProjectsView extends PathMindDefaultView
 
 		addClassName("projects-view");
 
-		Span projectsTitle = LabelFactory.createLabel("Projects", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
+		Span projectsTitle = LabelFactory.createLabel("Projects", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.TRUNCATED_LABEL);
 
 		HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle, new NewProjectButton());
 		headerWrapper.addClassName("page-content-header");

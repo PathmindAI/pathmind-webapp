@@ -4,7 +4,6 @@ import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.Optional;
@@ -64,7 +63,8 @@ public class ProjectFileCheckService {
     }
 
     private Optional<String> verifyAnalysisResult(HyperparametersDTO analysisResult) {
-        if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null || analysisResult.getRewardVariablesCount() == null) {
+        if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null 
+                || analysisResult.getRewardVariablesCount() == null || analysisResult.getActionTupleSize() == null) {
             return Optional.of("Unable to analyze the model.");
         }
         else if (analysisResult.getActions() != null && Integer.parseInt(analysisResult.getActions()) == 0) {
@@ -82,6 +82,7 @@ public class ProjectFileCheckService {
     	fileCheckResult.setNumObservation(Integer.parseInt(params.getObservations()));
     	fileCheckResult.setRewardVariablesCount(Integer.parseInt(params.getRewardVariablesCount()));
     	fileCheckResult.setRewardVariableFunction(params.getRewardFunction());
+    	fileCheckResult.setActionTupleSize(Integer.parseInt(params.getActionTupleSize()));
     }
 
 }
