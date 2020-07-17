@@ -11,6 +11,7 @@ import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.ui.layouts.components.AccountHeaderPanel;
 import io.skymind.pathmind.webapp.ui.layouts.components.SectionsHeaderPanel;
@@ -28,8 +29,6 @@ import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
 @CssImport(value = "./styles/components/vaadin-tabs.css", themeFor = "vaadin-tabs")
 @CssImport(value = "./styles/components/vaadin-tab.css", themeFor = "vaadin-tab")
 @CssImport(value = "./styles/components/vaadin-text-area.css", themeFor = "vaadin-text-area")
-@CssImport(value = "./styles/components/vaadin-custom-field.css", themeFor = "vaadin-custom-field")
-@CssImport(value = "./styles/components/vaadin-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 @CssImport(value = "./styles/components/override/vaadin-grid.css")
 @CssImport(value = "./styles/layouts/vaadin-app-layout.css", themeFor = "vaadin-app-layout")
 @CssImport(value = "./styles/views/experiment-view.css")
@@ -40,14 +39,15 @@ import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
 @Theme(Lumo.class)
 public class MainLayout extends AppLayout implements PageConfigurator
 {
-
-	public MainLayout(CurrentUser user)
+    private AccountHeaderPanel accountHeaderPanel;
+	public MainLayout(CurrentUser user, FeatureManager featureManager)
 	{
 		setId("pathmind-app-layout");
 		boolean hasLoginUser = user != null && user.getUser() != null;
 		addToNavbar(new SectionsHeaderPanel(hasLoginUser));
 		if (hasLoginUser) {
-			addToNavbar(new AccountHeaderPanel(user.getUser()));
+            accountHeaderPanel = new AccountHeaderPanel(user.getUser(), featureManager);
+			addToNavbar(accountHeaderPanel);
 		}
 
 		// Added a message just in case there's ever a failure.
@@ -58,4 +58,10 @@ public class MainLayout extends AppLayout implements PageConfigurator
 	public void configurePage(InitialPageSettings settings) {
 		VaadinUtils.setupFavIcon(settings);
 	}
+
+	public void clearSearchBoxValue() {
+	    if (accountHeaderPanel != null) {
+	        accountHeaderPanel.clearSearchBoxValue();
+        }
+    }
 }

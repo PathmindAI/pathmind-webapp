@@ -36,7 +36,7 @@ import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -83,8 +83,8 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
         addClassName("model-view");
 
-        modelName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL);
-        createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+        modelName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL);
+        createdDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
 
         HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(
             WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(modelName, createdDate),
@@ -104,11 +104,11 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
     }
 
     private FlexLayout createRightPanel() {
-        Span panelTitle = LabelFactory.createLabel("Model Details", CssMindPathStyles.SECTION_TITLE_LABEL);
+        Span panelTitle = LabelFactory.createLabel("Model Details", CssPathmindStyles.SECTION_TITLE_LABEL);
         Span errorMessage = nonTupleModelService.createNonTupleErrorLabel(model);
-        packageNameText = new Paragraph(LabelFactory.createLabel("Package Name", CssMindPathStyles.BOLD_LABEL));
-        actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssMindPathStyles.BOLD_LABEL));
-        observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssMindPathStyles.BOLD_LABEL));
+        packageNameText = new Paragraph(LabelFactory.createLabel("Package Name", CssPathmindStyles.BOLD_LABEL));
+        actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssPathmindStyles.BOLD_LABEL));
+        observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssPathmindStyles.BOLD_LABEL));
         rewardVariableNamesText = new Div();
         rewardVariableNamesText.addClassName("model-reward-variables");
 
@@ -119,7 +119,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
                 packageNameText,
                 actionsText,
                 observationsText,
-                new Div(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), rewardVariableNamesText),
+                new Div(LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL), rewardVariableNamesText),
                 notesField);
         rightPanelCard.addClassName("card");
 

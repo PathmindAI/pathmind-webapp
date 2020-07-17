@@ -60,8 +60,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     private void sendNotificationMail(RunStatus jobStatus, Run run) {
         // Do not send notification if there is another run with same run type still executing or the notification is already been sent
         if (RunStatus.isFinished(jobStatus) && !RunUtils.isStoppedByUser(run) && runDAO.shouldSendNotification(run.getExperimentId(), run.getRunType())) {
-            boolean isSuccessful = jobStatus == RunStatus.Completed;
-            emailNotificationService.sendTrainingCompletedEmail(run.getProject().getPathmindUserId(), run.getExperiment(), run.getProject(), isSuccessful);
+            emailNotificationService.sendTrainingCompletedEmail(run, jobStatus);
             runDAO.markAsNotificationSent(run.getId());
         }
     }

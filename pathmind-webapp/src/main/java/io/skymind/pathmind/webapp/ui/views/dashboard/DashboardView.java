@@ -1,9 +1,9 @@
 package io.skymind.pathmind.webapp.ui.views.dashboard;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.Experiment;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -25,11 +25,9 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.shared.data.DashboardItem;
-import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
-import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
@@ -66,8 +64,6 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     private EmptyDashboardPlaceholder placeholder;
 
     private HorizontalLayout newProjectButtonWrapper;
-
-    private ScreenTitlePanel titlePanel = new ScreenTitlePanel("Dashboard");
 
     private long loggedUserId;
 
@@ -182,7 +178,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
     @Override
     protected Component getTitlePanel() {
-        return titlePanel;
+        return null;
     }
 
     @Override
@@ -194,7 +190,6 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     protected void initScreen(BeforeEnterEvent event) {
         boolean emptyDashboard = dataProvider.isEmpty();
         placeholder.setVisible(emptyDashboard);
-        titlePanel.setVisible(!emptyDashboard);
         dashboardGrid.setVisible(!emptyDashboard);
         newProjectButtonWrapper.setVisible(!emptyDashboard);
         VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
@@ -204,24 +199,24 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     }
 
     @Override
-     protected void onAttach(AttachEvent attachEvent) {
-         EventBus.subscribe(this);
-     }
+    protected void onAttach(AttachEvent attachEvent) {
+        EventBus.subscribe(this);
+    }
 
-     @Override
-     protected void onDetach(DetachEvent detachEvent) {
-         EventBus.unsubscribe(this);
-     }
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        EventBus.unsubscribe(this);
+    }
 
-     @Override
-     public void handleBusEvent(RunUpdateBusEvent event) {
-         PushUtils.push(this, () -> dataProvider.refreshItemByExperiment(event.getRun().getExperimentId()));
-     }
+    @Override
+    public void handleBusEvent(RunUpdateBusEvent event) {
+        PushUtils.push(this, () -> dataProvider.refreshItemByExperiment(event.getRun().getExperimentId()));
+    }
 
-     @Override
-     public boolean filterBusEvent(RunUpdateBusEvent event) {
-         return event.getRun().getProject().getPathmindUserId() == loggedUserId;
-     }
+    @Override
+    public boolean filterBusEvent(RunUpdateBusEvent event) {
+        return event.getRun().getProject().getPathmindUserId() == loggedUserId;
+    }
 
     @Override
     public boolean isAttached() {

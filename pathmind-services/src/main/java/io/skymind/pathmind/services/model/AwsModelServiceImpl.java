@@ -1,6 +1,7 @@
 package io.skymind.pathmind.services.model;
 
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.services.ModelService;
@@ -58,7 +59,7 @@ class AwsModelServiceImpl implements ModelService {
     }
 
     @Override
-    public long resumeModelCreation(Model model, String modelNotes) {
+    public Experiment resumeModelCreation(Model model, String modelNotes) {
         Assert.notNull(model, "Model should be provided");
         Assert.isTrue(model.getId() != -1, "Model id should be provided");
         return modelDAO.resumeModelCreation(model, modelNotes);

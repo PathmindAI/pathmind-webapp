@@ -10,6 +10,7 @@ import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -28,7 +29,7 @@ public class GenericPage extends PageObject {
     private List<WebElement> experimentModelsNames;
     @FindBy(xpath = "//vaadin-text-area[@theme='notes']")
     private WebElement notesField;
-    @FindBy(xpath = "//vaadin-text-field")
+    @FindBy(xpath = "(//vaadin-text-field)[2]")
     private WebElement editProjectNameInputShadow;
 
     public void checkThatButtonExists(String buttonText) {
@@ -149,5 +150,18 @@ public class GenericPage extends PageObject {
 
     public void checkThatCheckmarkIsShown() {
         assertThat(getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:check' and @class='fade-in']")).isDisplayed(), is(true));
+    }
+
+    public void duplicateCurrentTab() {
+        String url = getDriver().getCurrentUrl();
+        ((JavascriptExecutor)getDriver()).executeScript("window.open()");
+        ArrayList<String> tabs = new ArrayList<String>(getDriver().getWindowHandles());
+        getDriver().switchTo().window(tabs.get(1));
+        getDriver().get(url);
+    }
+
+    public void opeTab(int tab) {
+        ArrayList<String> tabs = new ArrayList<String>(getDriver().getWindowHandles());
+        getDriver().switchTo().window(tabs.get(tab));
     }
 }

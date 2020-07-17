@@ -1,16 +1,19 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.SECTION_SUBTITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.PROJECT_TITLE;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_SUBTITLE_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.PROJECT_TITLE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import com.vaadin.flow.component.html.Span;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ModelUtils;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -236,9 +239,11 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 	
 	private void saveAndNavigateToNewExperiment() {
-		experimentId = modelService.resumeModelCreation(model, modelNotes);
+		Experiment experiment = modelService.resumeModelCreation(model, modelNotes);
+		experimentId = experiment.getId();
+        EventBus.post(new ExperimentCreatedBusEvent(experiment));
 
-		List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
+        List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
 		modelService.updateModelRewardVariables(model, rewardVariableList);
 
 		getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
