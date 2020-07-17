@@ -140,7 +140,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         List<Component> sections = new ArrayList<>();
         sections.add(sectionTitleWrapper);
         sections.add(uploadModelWizardPanel);
-        if (isResumeUpload()) {
+        if (isResumeUpload() && !ModelUtils.isTupleModel(model)) {
             sections.add(nonTupleErrorLabel);
         }
         sections.add(modelDetailsWizardPanel);
