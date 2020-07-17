@@ -293,6 +293,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 				model.setRewardVariablesCount(((AnylogicFileCheckResult) (result)).getRewardVariablesCount());
 				model.setActionTupleSize(((AnylogicFileCheckResult) (result)).getActionTupleSize());
 			}
+			modelDetailsWizardPanel.setIsTupleModel(ModelUtils.isTupleModel(model));
 
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");

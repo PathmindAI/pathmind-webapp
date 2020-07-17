@@ -43,6 +43,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		nextStepButton.setEnabled(isTupleModel);
 
+
 		Icon checkmarkIcon = new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE);
 		checkmarkIcon.setColor("var(--pm-friendly-color)");
 
@@ -79,6 +80,10 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		setPadding(false);
 		setSpacing(false);
 	}
+
+	public void setIsTupleModel(boolean isTupleModel) {
+        nextStepButton.setEnabled(isTupleModel);
+    }
 
 	private void setupFields()
 	{
