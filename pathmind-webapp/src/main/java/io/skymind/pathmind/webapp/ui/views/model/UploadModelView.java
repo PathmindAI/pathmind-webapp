@@ -282,6 +282,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 				model.setNumberOfPossibleActions(((AnylogicFileCheckResult) (result)).getNumAction());
 				model.setNumberOfObservations(((AnylogicFileCheckResult) (result)).getNumObservation());
 				model.setRewardVariablesCount(((AnylogicFileCheckResult) (result)).getRewardVariablesCount());
+				model.setActionTupleSize(((AnylogicFileCheckResult) (result)).getActionTupleSize());
 			}
 
 			modelBinder.readBean(model);
