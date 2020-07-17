@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;

@@ -47,7 +47,7 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.*;
@@ -145,8 +145,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 		VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
 		mainPanel.setSpacing(true);
-		VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Write your reward function", CssMindPathStyles.SECTION_TITLE_LABEL),
-				LabelFactory.createLabel("To judge if an action is a good one, we calculate a reward score. " + "The reward score is based on the reward function.", CssMindPathStyles.SECTION_SUBTITLE_LABEL));
+		VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Write your reward function", CssPathmindStyles.SECTION_TITLE_LABEL),
+				LabelFactory.createLabel("To judge if an action is a good one, we calculate a reward score. " + "The reward score is based on the reward function.", CssPathmindStyles.SECTION_SUBTITLE_LABEL));
 		panelTitle.setClassName("panel-title");
 
 		unsavedChanges = LabelFactory.createLabel("Unsaved changes!", "hint-label");
@@ -154,12 +154,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		notesSavedHint = LabelFactory.createLabel("Notes saved!", "fade-out-hint-label");
 		notesSavedHint.setVisible(false);
 
-		VerticalLayout rewardFnPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Reward Function", CssMindPathStyles.BOLD_LABEL), getRewardFnEditorPanel());
+		VerticalLayout rewardFnPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL), getRewardFnEditorPanel());
 		rewardFnPanel.addClassName("reward-fn-editor-panel");
 
 		HorizontalLayout rewardFunctionWrapper = WrapperUtils.wrapSizeFullBetweenHorizontal(
 				rewardFnPanel, 
-				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), getRewardVariableNamesPanel()));
+				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL), getRewardVariableNamesPanel()));
 		rewardFunctionWrapper.setClassName("reward-function-wrapper");
 		rewardFunctionWrapper.setPadding(false);
 		rewardFunctionWrapper.setSpacing(true);
@@ -229,7 +229,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Component getErrorsPanel() {
 		errorMessageWrapper = new Div();
 		errorMessageWrapper.addClassName("error-message-wrapper");
-		Div errorsPanel = new Div(LabelFactory.createLabel("Errors", CssMindPathStyles.BOLD_LABEL), errorMessageWrapper);
+		Div errorsPanel = new Div(LabelFactory.createLabel("Errors", CssPathmindStyles.BOLD_LABEL), errorMessageWrapper);
 		errorsPanel.addClassName("errors-wrapper");
 		return errorsPanel;
 	}
