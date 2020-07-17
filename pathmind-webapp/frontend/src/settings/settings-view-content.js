@@ -1,22 +1,9 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "@vaadin/vaadin-tabs/src/vaadin-tabs.js";
-import "@vaadin/vaadin-tabs/src/vaadin-tab.js";
-import "@vaadin/vaadin-ordered-layout/src/vaadin-horizontal-layout.js";
-import "@vaadin/vaadin-combo-box/src/vaadin-combo-box.js";
-import "@vaadin/vaadin-button/src/vaadin-button.js";
-import "@vaadin/vaadin-ordered-layout/src/vaadin-vertical-layout.js";
 
 class SettingsViewContent extends PolymerElement {
     static get template() {
         return html`
-            <style include="shared-styles pathmind-dialog-view">
-                .small {
-                    font-size: small;
-                }
-                .small:empty {
-                    display: none;
-                }
-            </style>
+            <style include="shared-styles pathmind-dialog-view"></style>
             <div class="content">
                 <vaadin-vertical-layout style="width: 100%;" class="inner-content">
                         <vaadin-vertical-layout style="width: 100%; height: 100%;">

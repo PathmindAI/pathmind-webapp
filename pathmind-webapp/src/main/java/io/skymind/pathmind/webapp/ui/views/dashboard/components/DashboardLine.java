@@ -1,6 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.dashboard.components;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.PROJECT_TITLE;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.PROJECT_TITLE;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Html;

@@ -31,7 +31,7 @@ public class ExecutionEnvironmentManager {
     private static Map<Long, ExecutionEnvironment> environmentMap= new HashMap();
 
     private ExecutionEnvironment defaultEnvironment() {
-        PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_1_0_1;
+        PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_1_0_2;
         if (featureManager.isEnabled(Feature.MULTI_AGENT_TRAINING)) {
             pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
         }
@@ -41,7 +41,7 @@ public class ExecutionEnvironmentManager {
                 pathmindHelperVersion,
                 nativeRLVersion,
                 JDK.VERSION_8_222,
-                Conda.VERSION_0_7_6,
+                Conda.VERSION_0_8_6,
                 EC2InstanceType.IT_36CPU_72GB);
     }
 
