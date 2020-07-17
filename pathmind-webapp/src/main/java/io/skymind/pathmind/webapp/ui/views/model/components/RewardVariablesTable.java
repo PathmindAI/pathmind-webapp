@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 import com.vaadin.flow.component.AbstractCompositeField;
@@ -31,14 +30,21 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 
     private boolean isReadOnly = false;
 
-	public RewardVariablesTable() {
+    private final boolean requireVars;
+
+	public RewardVariablesTable(boolean requireVars) {
+	    this.requireVars = requireVars;
 		container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
 		container.setClassName("reward-variables-table");
 
 		add(container);
 	}
 
-	public void setCodeEditorMode() {
+    public RewardVariablesTable() {
+	    this(true);
+    }
+
+    public void setCodeEditorMode() {
 		setClassName("with-container-border");
 	}
 
@@ -65,7 +71,7 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 		RowField rewardVariableNameField = new RowField(rowNumber, isReadOnly);
         rewardVariableNameFields.add(rewardVariableNameField);
         if (!isReadOnly) {
-            FormUtils.addValidator(rewardVariableNameField, new RowValidator());
+            FormUtils.addValidator(rewardVariableNameField, new RowValidator(requireVars));
         }
 		return rewardVariableNameField;
     }
@@ -94,9 +100,20 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 		private final StringLengthValidator nameValidator = new StringLengthValidator("Variable name must not exceed 100 characters", 0, 100);
 		private final StringLengthValidator requiredValidator = new StringLengthValidator("Variable name is required", 1, 100);
 
+		private final Collection<Validator<String>> validators;
+
+		public RowValidator(boolean requireVars) {
+		    if (requireVars) {
+		        validators = Arrays.asList(nameValidator, requiredValidator);
+            }
+		    else {
+		        validators = Collections.singletonList(nameValidator);
+            }
+        }
+
 		@Override
 		public ValidationResult apply(RewardVariable rewardVariable, ValueContext valueContext) {
-            return Stream.of(nameValidator, requiredValidator)
+            return validators.stream()
                     .map(v -> v.apply(rewardVariable.getName(), valueContext))
                     .filter(r -> r.isError())
                     .findAny()

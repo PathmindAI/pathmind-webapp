@@ -59,7 +59,7 @@ public class RewardVariablesPanel extends VerticalLayout
 	}
 
 	public void setupRewardVariablesTable(int rewardVariablesCount, List<RewardVariable> rewardVariables) {
-		rewardVariablesTable = new RewardVariablesTable();
+		rewardVariablesTable = new RewardVariablesTable(false);
 		rewardVariablesTable.setVariableSize(Math.max(rewardVariablesCount, rewardVariables.size()));
 		if (!rewardVariables.isEmpty()) {
 			rewardVariablesTable.setValue(rewardVariables);
