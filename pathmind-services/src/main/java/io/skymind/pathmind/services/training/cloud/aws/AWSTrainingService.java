@@ -56,7 +56,8 @@ public class AWSTrainingService extends TrainingService {
                 featureManager.isEnabled(Feature.MULTI_AGENT_TRAINING),
                 false,
                 50,
-                false
+                false,
+                model.getActionTupleSize()
         );
 
         return executionProvider.execute(spec);        

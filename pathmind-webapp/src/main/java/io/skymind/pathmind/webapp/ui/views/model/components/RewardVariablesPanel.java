@@ -1,7 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.BOLD_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.NO_TOP_MARGIN_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
 import java.util.List;
 
