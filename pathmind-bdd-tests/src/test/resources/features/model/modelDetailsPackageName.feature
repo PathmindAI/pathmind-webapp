@@ -20,5 +20,5 @@ Feature: Check Model Details package name field
     Examples:
       | project name    | model                                                            | reward function file                                                        | package name |
       | AutotestProject | Production_Single_Agent/CheeseChasing_6Observations_4Actions.zip | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt            | icebreaker   |
-      | AutotestProject | Production_Single_Agent/CoffeeShopPathmindDemo.zip               | Production_Single_Agent/CoffeeShopPathmindDemo.txt                          | coffeeshop   |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip                                 | Production_Single_Agent/CoffeeShopPathmindDemo.txt                          | coffeeshop   |
       | AutotestProject | Production_Single_Agent/FAST_RailModel_4Observation_3Actions.zip | Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt | railmodel    |

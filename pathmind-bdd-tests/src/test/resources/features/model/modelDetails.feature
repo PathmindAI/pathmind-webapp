@@ -42,6 +42,6 @@ Feature: Models details
     Then Check model page model details reward variable 3 name is last_long_long_long_long_variable_3
 
     Examples:
-      | project name    | model                                              | reward function file                               | variables                                                               |
-      | AutotestProject | Production_Single_Agent/CoffeeShopPathmindDemo.zip | Production_Single_Agent/CoffeeShopPathmindDemo.txt | kitchen_cleanliness,customers_served,balked_customers,avg_response_time |
-      | AutotestProject | Production_Single_Agent/CoffeeShopPathmindDemo.zip |                                                    | zero_variable,first_variable,second_variable,third_variable             |
+      | project name    | model                            | reward function file                               | variables                                                               |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip | Production_Single_Agent/CoffeeShopPathmindDemo.txt | kitchen_cleanliness,customers_served,balked_customers,avg_response_time |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip |                                                    | zero_variable,first_variable,second_variable,third_variable             |

@@ -17,4 +17,4 @@ Feature: E2E
     Examples:
       | project name    | model                                                            | reward function file                                             | limit |
       | AutotestProject | Production_Single_Agent/CheeseChasing_6Observations_4Actions.zip | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt | 15    |
-      | AutotestProject | Production_Single_Agent/CoffeeShopPathmindDemo.zip               | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | 15    |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip               | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | 15    |
