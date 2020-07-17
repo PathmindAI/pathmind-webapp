@@ -34,4 +34,12 @@ public class PathmindStringUtils
     public static String replaceHyphenWithSpace(String str) {
         return str.replaceAll("[-]"," ");
     }
+
+    public static String escapeNonAlphanumericalCharacters(String str) {
+        return str.replaceAll("[^a-zA-Z\\d\\s]", "\\\\$0");
+    }
+
+    public static String escapeBackslash(String str) {
+        return str.replace("\\", "\\\\");
+    }
 }

@@ -83,7 +83,8 @@ public class SearchResultItem extends VerticalLayout {
 
     private Div highlightSearchResult(String columnText) {
         Div searchResultColumn = new Div();
-        String[] parts = columnText.split("(?i)((?<="+decodedKeyword+")|(?=(?i)"+decodedKeyword+"))");
+        String escapedKeyword = PathmindStringUtils.escapeNonAlphanumericalCharacters(decodedKeyword);
+        String[] parts = columnText.split("(?i)((?<="+escapedKeyword+")|(?=(?i)"+escapedKeyword+"))");
 
         for (int i = 0; i < parts.length; i++) {
             if (parts[i].toLowerCase().equals(decodedKeyword.toLowerCase())) {

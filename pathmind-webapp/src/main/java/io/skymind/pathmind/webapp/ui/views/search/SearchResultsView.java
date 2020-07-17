@@ -19,12 +19,14 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.SearchResult;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.utils.PathmindStringUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
@@ -126,10 +128,16 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
     }
 
     @Override
-    public void setParameter(BeforeEvent event, String keyword) {
-        decodedKeyword = URLDecoder.decode(keyword, StandardCharsets.UTF_8);
-        dataProvider.setFilter(decodedKeyword);
-        titleText = "Search Results for: " + decodedKeyword;
+    public void setParameter(BeforeEvent event, @OptionalParameter String keyword) {
+        if (keyword == null) {
+            decodedKeyword = "";
+            titleText = "You did not search for anything.";
+        } else {
+            decodedKeyword = URLDecoder.decode(keyword, StandardCharsets.UTF_8);
+            String escapedBackslashDecodedKeyword = PathmindStringUtils.escapeBackslash(decodedKeyword);
+            dataProvider.setFilter(escapedBackslashDecodedKeyword);
+            titleText = "Search Results for: " + decodedKeyword;
+        }
     }
 
 }
