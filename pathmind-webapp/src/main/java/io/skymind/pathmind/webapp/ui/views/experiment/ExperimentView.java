@@ -49,10 +49,15 @@ import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.*;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
+import io.skymind.pathmind.shared.utils.ModelUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavbar;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
 import org.springframework.beans.factory.annotation.Value;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,6 +129,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private SegmentIntegrator segmentIntegrator;
     @Autowired
     private FeatureManager featureManager;
+    @Autowired
+    private NonTupleModelService nonTupleModelService;
     @Value("${pathmind.early-stopping.url}")
     private String earlyStoppingUrl;
 
@@ -164,11 +171,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
         experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment), experimentToArchive -> archiveExperiment(experimentToArchive));
         setupExperimentContentPanel();
+
+        Span modelNeedToBeUpdatedLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
+        modelNeedToBeUpdatedLabel.getStyle().set("margin-top", "2px");
+
 	    reasonWhyTheTrainingStoppedLabel = LabelFactory.createLabel("", "tag", "reason-why-the-training-stopped");
 
         VerticalLayout experimentContent = WrapperUtils.wrapWidthFullVertical(
                 WrapperUtils.wrapWidthFullHorizontal(panelTitle, trainingStatusDetailsPanel, getButtonsWrapper()),
                 reasonWhyTheTrainingStoppedLabel,
+                modelNeedToBeUpdatedLabel,
                 middlePanel,
                 getBottomPanel());
         experimentContent.addClassName("view-section");
@@ -470,8 +482,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void updateUIForError(TrainingError error, String errorText) {
         showTheReasonWhyTheTrainingStopped(errorText, ERROR_LABEL, false);
-        restartTraining.setVisible(error.isRestartable());
-        restartTraining.setEnabled(error.isRestartable());
+
+        boolean allowRestart = error.isRestartable() && ModelUtils.isTupleModel(experiment.getModel());
+        restartTraining.setVisible(allowRestart);
+        restartTraining.setEnabled(allowRestart);
     }
 
     private void showTheReasonWhyTheTrainingStopped(String text, String labelClass, boolean showEarlyStoppingLink) {

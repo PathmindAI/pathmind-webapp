@@ -108,4 +108,14 @@ public class GenericPageStepDefinitions {
     public void openTab(int tab) {
         genericPageSteps.openTab(tab);
     }
+
+    @Then("^Check page url is (.*)$")
+    public void checkPageUrlIs(String url) {
+        genericPageSteps.checkPageUrlIs(url);
+    }
+
+    @Then("^Check page title tag text is (.*)$")
+    public void checkPageTitleTagTextIs(String text) {
+        genericPageSteps.checkPageTitleTagTextIs(text);
+    }
 }
