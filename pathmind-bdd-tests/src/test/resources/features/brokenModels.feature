@@ -19,7 +19,8 @@ Feature: Broken Models tests
     And Check that error message in model check panel is "<Error Message>"
 
     Examples:
-      | Model File                                      | Error Message                            |
-      | problematic_models/AModelWithNoActions.zip      | Number of actions found to be zero.      |
-      | problematic_models/AModelWithNoObservations.zip | Number of observations found to be zero. |
-      | problematic_models/ProblemModel#1480.zip        | Unable to analyze the model.             |
+      | Model File                                      | Error Message                                                                            |
+      | problematic_models/AModelWithNoActions.zip      | Number of actions found to be zero.                                                      |
+      | problematic_models/AModelWithNoObservations.zip | Number of observations found to be zero.                                                 |
+      | problematic_models/ProblemModel#1480.zip        | Unable to analyze the model.                                                             |
+      | problematic_models/NonTupleModel.zip            | Model needs to be updated. You can take a look at this article for upgrade instructions. |

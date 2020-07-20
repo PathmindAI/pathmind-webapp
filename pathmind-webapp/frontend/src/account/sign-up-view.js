@@ -1,6 +1,4 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "@polymer/iron-icon/iron-icon.js";
-import "@vaadin/vaadin-icons/vaadin-icons.js";
 
 class SignUpView extends PolymerElement {
   static get template() {

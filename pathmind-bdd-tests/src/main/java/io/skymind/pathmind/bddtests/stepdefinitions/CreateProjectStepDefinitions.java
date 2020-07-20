@@ -45,7 +45,7 @@ public class CreateProjectStepDefinitions {
     @When("^Create new CoffeeShop project with draft model$")
     public void createNewCoffeeShopProjectWithDraftModel() {
         createNewEmptyProject();
-        modelUploadSteps.uploadModelFile("Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip");
+        modelUploadSteps.uploadModelFile("tuple_models/CoffeeShopTuple.zip");
         modelDetailsSteps.checkThatModelSuccessfullyUploaded();
     }
 

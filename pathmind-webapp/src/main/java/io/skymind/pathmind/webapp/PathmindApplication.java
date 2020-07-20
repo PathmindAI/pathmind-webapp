@@ -62,10 +62,11 @@ public class PathmindApplication
 		return objectMapper;
 	}
 
-	@Bean
-	public ProjectFileCheckService projectFileCheckService(ExecutorService executorService, ModelAnalyzerApiClient modelAnalyzerApiClient) {
-		return new ProjectFileCheckService(executorService, modelAnalyzerApiClient);
-	}
+    @Bean
+    public ProjectFileCheckService projectFileCheckService(ExecutorService executorService, ModelAnalyzerApiClient modelAnalyzerApiClient,
+                                                           @Value("${pathmind.convert-models-to-support-tuples.url}") String convertModelsToSupportTuplesURL) {
+        return new ProjectFileCheckService(executorService, modelAnalyzerApiClient, convertModelsToSupportTuplesURL);
+    }
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void lookForTransactionalAnnotations() {

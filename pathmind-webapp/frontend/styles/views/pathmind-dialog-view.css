@@ -77,7 +77,7 @@ vaadin-password-field {
 }
 
 #buttonsCont {
-    margin-top: 60px;
+    margin-top: var(--lumo-space-xxl);
     width: 100%;
 }
 
