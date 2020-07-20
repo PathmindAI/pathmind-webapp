@@ -7,6 +7,7 @@ Feature: Check Model Details package name field
     When Click create new project button
     When Input name of the new project <project name> and click Create project button
     When Upload model <model>
+    Then Check that model successfully uploaded
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment <project name> page is opened
@@ -18,7 +19,7 @@ Feature: Check Model Details package name field
     Then Check model page model details package name is <package name>
 
     Examples:
-      | project name    | model                                                            | reward function file                                                        | package name |
-      | AutotestProject | Production_Single_Agent/CheeseChasing_6Observations_4Actions.zip | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt            | icebreaker   |
-      | AutotestProject | Production_Single_Agent/CoffeeShopPathmindDemo.zip               | Production_Single_Agent/CoffeeShopPathmindDemo.txt                          | coffeeshop   |
-      | AutotestProject | Production_Single_Agent/FAST_RailModel_4Observation_3Actions.zip | Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt | railmodel    |
+      | project name    | model                                       | reward function file                                             | package name            |
+      | AutotestProject | tuple_models/CallCenterTuples.zip           | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt | interconnected_cc_tuple |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip            | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | coffeeshop_v1           |
+      | AutotestProject | tuple_models/SimpleSchedulingTuplesTest.zip | Production_Single_Agent/Production_Single_Agent_Reward.txt       | simplescheduling_tuple  |

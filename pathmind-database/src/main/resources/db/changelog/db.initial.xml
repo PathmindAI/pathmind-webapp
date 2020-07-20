@@ -1384,17 +1384,6 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="20200617-01" author="onur@vaadin.com">
-        <addColumn tableName="MODEL">
-            <column name="ACTION_TUPLE_SIZE" type="INT" defaultValue="0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-        <rollback>
-            <dropColumn tableName="MODEL" columnName="ACTION_TUPLE_SIZE" />
-        </rollback>
-    </changeSet>
-
     <changeSet id="20200625-01" author="daehyun@skymind.io">
         <createTable tableName="METRICS">
             <column name="POLICY_ID" type="BIGINT">
@@ -1467,6 +1456,17 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20200617-01" author="onur@vaadin.com">
+        <addColumn tableName="MODEL">
+            <column name="ACTION_TUPLE_SIZE" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="MODEL" columnName="ACTION_TUPLE_SIZE" />
+        </rollback>
+    </changeSet>
+
     <changeSet id="20200713-01" author="bruno.rezende@ext.vaadin.com">
         <createTable tableName="OBSERVATION">
             <column autoIncrement="true" name="ID" type="BIGINT">
@@ -1530,5 +1530,4 @@
             <dropTable tableName="ACTION"/>
         </rollback>
     </changeSet>
-
 </databaseChangeLog>
