@@ -102,4 +102,14 @@ public class GenericPageSteps {
     public void openTab(int tab) {
         genericPage.openTab(tab);
     }
+
+    @Step
+    public void checkPageUrlIs(String url) {
+        genericPage.checkPageUrlIs(url);
+    }
+
+    @Step
+    public void checkPageTitleTagTextIs(String text) {
+        genericPage.checkPageTitleTagTextIs(text);
+    }
 }
