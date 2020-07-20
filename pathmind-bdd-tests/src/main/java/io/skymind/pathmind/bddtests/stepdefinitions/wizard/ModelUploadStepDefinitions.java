@@ -2,6 +2,7 @@ package io.skymind.pathmind.bddtests.stepdefinitions.wizard;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.skymind.pathmind.bddtests.steps.wizard.ModelDetailsSteps;
 import io.skymind.pathmind.bddtests.steps.wizard.ModelUploadSteps;
 import net.thucydides.core.annotations.Steps;
 
@@ -9,6 +10,8 @@ public class ModelUploadStepDefinitions {
 
     @Steps
     ModelUploadSteps modelUploadSteps;
+    @Steps
+    ModelDetailsSteps modelDetailsSteps;
 
     @When("^Upload model (.*)$")
     public void uploadModelFile(String model) {
