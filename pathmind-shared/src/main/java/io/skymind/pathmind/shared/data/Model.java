@@ -26,5 +26,6 @@ public class Model extends ArchivableData
 	private boolean draft;
 	private int rewardVariablesCount;
 	private String packageName;
+	private int actionTupleSize;
 
 }
