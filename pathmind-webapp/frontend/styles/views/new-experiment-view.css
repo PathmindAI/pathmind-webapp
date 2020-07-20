@@ -119,3 +119,9 @@
 .reward-editor-error + * {
     margin-top: 0px;
 }
+
+
+.new-experiment-view .error-label {
+    box-sizing: border-box;
+    width: 100%;
+}

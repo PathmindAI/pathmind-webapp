@@ -15,6 +15,6 @@ Feature: E2E
     Then Check experiment status completed with <limit> hours
 
     Examples:
-      | project name    | model                                                            | reward function file                                             | limit |
-      | AutotestProject | Production_Single_Agent/CheeseChasing_6Observations_4Actions.zip | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt | 15    |
-      | AutotestProject | Production_Single_Agent/CoffeeShopPathmindDemo.zip               | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | 15    |
+      | project name    | model                             | reward function file                                       | limit |
+      | AutotestProject | tuple_models/CallCenterTuples.zip | Production_Single_Agent/Production_Single_Agent_Reward.txt | 15    |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip  | Production_Single_Agent/CoffeeShopPathmindDemo.txt         | 15    |
