@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.login;
 
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Tag("reset-password-view")
 @JsModule("./src/account/reset-password-view.js")
