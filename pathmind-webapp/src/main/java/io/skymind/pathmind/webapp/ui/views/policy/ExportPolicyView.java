@@ -8,7 +8,7 @@ import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -17,7 +17,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -31,7 +30,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 
 import io.skymind.pathmind.db.dao.PolicyDAO;
-import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.security.Routes;
@@ -46,8 +44,6 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	private PolicyDAO policyDAO;
 	@Autowired
 	private PolicyFileService policyFileService;
-	@Autowired
-	private UserDAO userDAO;
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 
@@ -93,7 +89,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 		cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 		VerticalLayout wrapperContent = WrapperUtils.wrapFormCenterVertical(
-						LabelFactory.createLabel("Export Policy", CssMindPathStyles.SECTION_TITLE_LABEL),
+						LabelFactory.createLabel("Export Policy", CssPathmindStyles.SECTION_TITLE_LABEL),
 						new Image("/frontend/images/exportPolicyIcon.gif", "Export Policy"),
 						LabelFactory.createLabel(policyFileName),
 						createInstructionsDiv(),

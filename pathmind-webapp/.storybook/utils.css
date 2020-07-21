@@ -2,8 +2,11 @@
     font-family: var(--lumo-font-family);
     padding: var(--lumo-space-m);
 }
-h1 {
-    margin: 0;
+h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 var(--lumo-space-m) 0;
+}
+.block-wrapper {
+    margin-bottom: var(--lumo-space-xxl);
 }
 .row-wrapper {
     display: flex;
@@ -19,4 +22,14 @@ h1 {
 .col-wrapper > :last-child {
     width: 100%;
     margin-bottom: 0;
+}
+.col-wrapper > :last-child code {
+    padding: var(--lumo-space-m);
+}
+h2 + .col-wrapper,
+h3 + .col-wrapper {
+    margin-top: 0;
+}
+.block-wrapper h3 {
+    margin: var(--lumo-space-l) 0 0;
 }

@@ -1456,5 +1456,14 @@
         </rollback>
     </changeSet>
 
-
+    <changeSet id="20200617-01" author="onur@vaadin.com">
+        <addColumn tableName="MODEL">
+            <column name="ACTION_TUPLE_SIZE" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="MODEL" columnName="ACTION_TUPLE_SIZE" />
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
