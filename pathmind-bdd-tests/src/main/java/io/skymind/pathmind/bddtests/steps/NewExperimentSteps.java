@@ -63,4 +63,9 @@ public class NewExperimentSteps {
     public void checkThatNotesSavedMsgShown() {
         newExperimentPage.checkThatNotesSavedMsgShown();
     }
+
+    @Step
+    public void checkThatBeforeYouLeavePopUpIsShownWithError(String error) {
+        newExperimentPage.checkThatBeforeYouLeavePopUpIsShownWithError(error);
+    }
 }

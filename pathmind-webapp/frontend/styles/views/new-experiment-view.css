@@ -73,6 +73,7 @@
     width: 100%;
     white-space: pre;
     font-family: var(--code-font-family);
+    background-color: var(--pm-app-bg-color);
     padding: var(--lumo-space-xs) var(--lumo-space-s);
     border: 1px solid var(--pm-gray-color);
     border-radius: var(--lumo-border-radius);
@@ -110,6 +111,10 @@
     align-self: flex-end;
     color: var(--pm-danger-color);
     margin-top: 0px;
+}
+
+.new-experiment-view .reward-editor-error {
+    margin-bottom: var(--lumo-space-xs);
 }
 
 .reward-editor-error[hidden="true"] + * {
