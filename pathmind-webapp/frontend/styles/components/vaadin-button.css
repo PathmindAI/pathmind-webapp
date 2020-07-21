@@ -71,10 +71,10 @@
 
 /* Default (Secondary) Button Styles */
 :host {
+    --_lumo-button-background-color: var(--pm-gray-color-lightest);
     font-weight: bold;
     min-width: 14rem;
     height: var(--lumo-size-l);
-    background-color: var(--pm-gray-color-lightest);
     border: 1px solid var(--pm-primary-color);
 }
 

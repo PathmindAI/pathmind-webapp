@@ -71,4 +71,14 @@ public class NewExperimentStepDefinition {
         Serenity.setSessionVariable("noteRandomNumber").to(new Date().getTime());
         projectsPageSteps.inputExperimentNotes("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo" + Serenity.sessionVariableCalled("noteRandomNumber"));
     }
+
+    @Then("^Check newExperiment page reward variable error is shown (.*)$")
+    public void checkNewExperimentPageRewardVariableErrorIsShown(String error) {
+        projectsPageSteps.checkNewExperimentPageRewardVariableErrorIsShown(error);
+    }
+
+    @Then("^Check that Before you leave\\.\\.\\.\\. pop-up is shown with error (.*)$")
+    public void checkThatBeforeYouLeavePopUpIsShownWithError(String error) {
+        newExperimentSteps.checkThatBeforeYouLeavePopUpIsShownWithError(error);
+    }
 }
