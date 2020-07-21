@@ -18,6 +18,8 @@ import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
@@ -42,7 +44,7 @@ import io.skymind.pathmind.webapp.ui.views.search.components.SearchResultItem;
 import io.skymind.pathmind.webapp.ui.views.search.dataprovider.SearchResultsDataProvider;
 
 @Route(value= Routes.SEARCHRESULTS_URL, layout = MainLayout.class)
-public class SearchResultsView extends PathMindDefaultView implements AfterNavigationObserver, HasUrlParameter<String>{
+public class SearchResultsView extends PathMindDefaultView implements AfterNavigationObserver, BeforeLeaveObserver, HasUrlParameter<String>{
 
     private ConfigurableFilterDataProvider<SearchResult, Void, String> dataProvider;
     private ExperimentDAO experimentDao;
@@ -67,10 +69,22 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
 
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
-        getMainLayout().ifPresent(MainLayout::clearSearchBoxValue);
         numberOfResultsText = "Showing " + dataProvider.size(new Query<>()) + " results";
         numberOfResults.setText(numberOfResultsText);
         segmentIntegrator.performedSearch();
+        getMainLayout().ifPresent(mainLayout -> {
+            if (mainLayout.getSearchBoxValue() != decodedKeyword) {
+                mainLayout.setSearchBoxValue(decodedKeyword);
+            }
+        });
+    }
+
+    @Override
+    public void beforeLeave(BeforeLeaveEvent event) {
+        Class navigationTarget = event.getNavigationTarget();
+        if (navigationTarget != SearchResultsView.class) {
+            getMainLayout().ifPresent(MainLayout::clearSearchBoxValue);
+        }
     }
 
     @Override

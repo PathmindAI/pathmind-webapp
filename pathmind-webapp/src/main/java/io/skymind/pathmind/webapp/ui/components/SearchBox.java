@@ -10,7 +10,6 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.value.ValueChangeMode;
 
 import io.skymind.pathmind.webapp.ui.views.search.SearchResultsView;
 
@@ -25,7 +24,6 @@ public class SearchBox extends HorizontalLayout
 
 		searchTextField.setWidthFull();
 		searchTextField.setClearButtonVisible(true);
-		searchTextField.setValueChangeMode(ValueChangeMode.ON_CHANGE);
 		searchButton.addClickListener(click -> search());
     	searchTextField.addValueChangeListener(change -> search());
 
@@ -45,5 +43,13 @@ public class SearchBox extends HorizontalLayout
 
 	public void clearSearchValue() {
 	    searchTextField.setValue("");
+    }
+
+	public void setValue(String text) {
+	    searchTextField.setValue(text);
+    }
+
+	public String getValue() {
+	    return searchTextField.getValue();
     }
 }
