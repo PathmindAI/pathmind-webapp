@@ -113,6 +113,10 @@
     margin-top: 0px;
 }
 
+.new-experiment-view .reward-editor-error {
+    margin-bottom: var(--lumo-space-xs);
+}
+
 .reward-editor-error[hidden="true"] + * {
     margin-top: auto;
 }
