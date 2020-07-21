@@ -240,7 +240,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         IntStream.range(0, simulationMetrics.size())
                 .forEach(idx -> {
-                    metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx)).toString()));
+                    metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx))));
                     SparkLine sparkLine = new SparkLine();
                     sparkLine.setSparkLine(sparklinesData.get(idx), idx);
                     sparklinesWrapper.add(sparkLine);
