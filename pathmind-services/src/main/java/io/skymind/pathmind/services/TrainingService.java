@@ -48,7 +48,7 @@ public abstract class TrainingService {
         this.ctx = ctx;
 
     }
-    
+
     public void startRun(Experiment exp){
         startRun(exp,
                 RunConstants.PBT_RUN_ITERATIONS,
@@ -76,7 +76,7 @@ public abstract class TrainingService {
         List<Run> runs = experiment.getRuns().stream()
                 .filter(r -> RunStatus.isRunning(r.getStatusEnum()))
                 .collect(Collectors.toList());
-        
+
         runs.stream().map(Run::getJobId).forEach(executionProvider::stop);
 
         // immediately mark the job as stopping so that the user doesn't have to wait the updater to update the run

@@ -104,6 +104,18 @@
     box-shadow: none;
 }
 
+:host([theme~="success"]) {
+    border-color: var(--lumo-success-color);
+}
+
+:host([theme~="error"]) {
+    border-color: var(--lumo-error-color);
+}
+
+:host([theme~="icon"]) {
+    border-color: transparent;
+}
+
 :host(.action-button) {
     color: var(--pm-gray-color);
 }

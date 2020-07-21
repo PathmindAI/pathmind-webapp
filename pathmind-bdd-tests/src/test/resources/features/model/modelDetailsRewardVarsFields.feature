@@ -7,6 +7,7 @@ Feature: Check Model Details Reward Variables fields
     When Click create new project button
     When Input name of the new project <project name> and click Create project button
     When Upload model <model>
+    When Check that model successfully uploaded
     When Click wizard model details next btn
     When Input reward variable names <variables>
     When Click wizard reward variables next btn
@@ -19,7 +20,7 @@ Feature: Check Model Details Reward Variables fields
     Then Check model page model details reward variables is <variables>
 
     Examples:
-      | project name    | model                                                            | reward function file                                                        | variables                                                               |
-      | AutotestProject | Production_Single_Agent/CheeseChasing_6Observations_4Actions.zip | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt            | cheese_var                                                              |
-      | AutotestProject | Production_Single_Agent/CoffeeShopPathmindDemo.zip               | Production_Single_Agent/CoffeeShopPathmindDemo.txt                          | kitchen_cleanliness,customers_served,balked_customers,avg_response_time |
-      | AutotestProject | Production_Single_Agent/FAST_RailModel_4Observation_3Actions.zip | Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt | rail_var,train_var                                                      |
+      | project name    | model                                       | reward function file                                             | variables                                                               |
+      | AutotestProject | tuple_models/CallCenterTuples.zip           | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt | cheese_var                                                              |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip            | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | kitchen_cleanliness,customers_served,balked_customers,avg_response_time |
+      | AutotestProject | tuple_models/SimpleSchedulingTuplesTest.zip | Production_Single_Agent/Production_Single_Agent_Reward.txt       | rail_var,train_var                                                      |

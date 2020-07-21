@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -40,14 +41,15 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.ExperimentCreatedSubscriber;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.shared.utils.ModelUtils;
+import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.*;
@@ -96,6 +98,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private SegmentIntegrator segmentIntegrator;
 	@Autowired
 	private RewardValidationService rewardValidationService;
+	@Autowired
+    private NonTupleModelService nonTupleModelService;
 
 	private Breadcrumbs pageBreadcrumbs;
 	private Binder<Experiment> binder;
@@ -145,8 +149,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 		VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
 		mainPanel.setSpacing(true);
-		VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Write your reward function", CssMindPathStyles.SECTION_TITLE_LABEL),
-				LabelFactory.createLabel("To judge if an action is a good one, we calculate a reward score. " + "The reward score is based on the reward function.", CssMindPathStyles.SECTION_SUBTITLE_LABEL));
+		VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Write your reward function", CssPathmindStyles.SECTION_TITLE_LABEL),
+				LabelFactory.createLabel("To judge if an action is a good one, we calculate a reward score. " + "The reward score is based on the reward function.", CssPathmindStyles.SECTION_SUBTITLE_LABEL));
 		panelTitle.setClassName("panel-title");
 
 		unsavedChanges = LabelFactory.createLabel("Unsaved changes!", "hint-label");
@@ -154,12 +158,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		notesSavedHint = LabelFactory.createLabel("Notes saved!", "fade-out-hint-label");
 		notesSavedHint.setVisible(false);
 
-		VerticalLayout rewardFnPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Reward Function", CssMindPathStyles.BOLD_LABEL), getRewardFnEditorPanel());
+		VerticalLayout rewardFnPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL), getRewardFnEditorPanel());
 		rewardFnPanel.addClassName("reward-fn-editor-panel");
+
+        Span errorDescriptionLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
 
 		HorizontalLayout rewardFunctionWrapper = WrapperUtils.wrapSizeFullBetweenHorizontal(
 				rewardFnPanel, 
-				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Reward Variables", CssMindPathStyles.BOLD_LABEL), getRewardVariableNamesPanel()));
+				WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL), getRewardVariableNamesPanel()));
 		rewardFunctionWrapper.setClassName("reward-function-wrapper");
 		rewardFunctionWrapper.setPadding(false);
 		rewardFunctionWrapper.setSpacing(true);
@@ -172,7 +178,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		HorizontalLayout buttonsWrapper = new HorizontalLayout(saveButtonAndHintsWrapper, startRunButton, unarchiveExperimentButton);
 		buttonsWrapper.setWidth(null);
 
-		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper), rewardFunctionWrapper, errorAndNotesContainer);
+		mainPanel.add(WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper), errorDescriptionLabel, rewardFunctionWrapper, errorAndNotesContainer);
 		mainPanel.setClassName("view-section");
 
 		HorizontalLayout panelsWrapper = WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, mainPanel);
@@ -219,7 +225,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private boolean canStartTraining() {
-		return errorMessageWrapper.hasClassName("noError") && canSaveDataInDB();
+		return ModelUtils.isTupleModel(experiment.getModel()) && errorMessageWrapper.hasClassName("noError") && canSaveDataInDB();
 	}
 
 	private boolean canSaveDataInDB() {
@@ -229,7 +235,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Component getErrorsPanel() {
 		errorMessageWrapper = new Div();
 		errorMessageWrapper.addClassName("error-message-wrapper");
-		Div errorsPanel = new Div(LabelFactory.createLabel("Errors", CssMindPathStyles.BOLD_LABEL), errorMessageWrapper);
+		Div errorsPanel = new Div(LabelFactory.createLabel("Errors", CssPathmindStyles.BOLD_LABEL), errorMessageWrapper);
 		errorsPanel.addClassName("errors-wrapper");
 		return errorsPanel;
 	}
@@ -271,7 +277,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		}
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.rewardFuntionCreated();
-
+		
 		trainingService.startRun(experiment);
 		segmentIntegrator.discoveryRunStarted();
 
