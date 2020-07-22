@@ -3,11 +3,13 @@ package io.skymind.pathmind.services;
 import io.skymind.pathmind.shared.data.Action;
 import io.skymind.pathmind.shared.data.Observation;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@Component
 public class PolicyServerFilesCreator {
 
     public String createOutputYaml(List<Action> actions) {
