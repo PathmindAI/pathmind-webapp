@@ -80,8 +80,8 @@ public class EventBus {
     }
 
     public static void unsubscribe(Component component) {
-        componentSubscribers.remove(component);
         EventBusSubscriber[] subscribers = componentSubscribers.get(component);
+        componentSubscribers.remove(component);
         // Check that the component may also be a subscriber itself (confirming it)
         if(component instanceof EventBusSubscriber)
             unsubscribe((EventBusSubscriber)component);
