@@ -135,9 +135,25 @@ public class AWSApiClient {
                 .withMessageGroupId("training")
                 .withMessageBody(objectMapper.writeValueAsString(job));
 
-        sqsClient.sendMessage(send_msg_request);
+        int retryCount = 3;
+
+        SendMessageResult sendMessageResult = sqsClient.sendMessage(send_msg_request);
+        while(!isValidResponse(sendMessageResult) && retryCount-- > 0) {
+            log.info("retry submit job for " + jobId);
+             sendMessageResult = sqsClient.sendMessage(send_msg_request);
+        }
+
+        if (isValidResponse(sendMessageResult)) {
+            throw new RuntimeException("failure on submitting the job for " + jobId);
+        }
+
         return jobId;
     }
+
+    private boolean isValidResponse(SendMessageResult sendMessageResult) {
+        return sendMessageResult.getMessageId() != null && !sendMessageResult.getMessageId().isEmpty() && sendMessageResult.getSdkHttpMetadata().getHttpStatusCode() == 200;
+    }
+
 
     public String jobStop(String jobId) throws JsonProcessingException {
         Job job = new Job(bucketName, jobId, true, mockCycle);
