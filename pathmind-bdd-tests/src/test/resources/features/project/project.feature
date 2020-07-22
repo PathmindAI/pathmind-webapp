@@ -16,6 +16,7 @@ Feature: Project page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
     When Upload model tuple_models/CoffeeShopTuple.zip
+    When Check that model successfully uploaded
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
