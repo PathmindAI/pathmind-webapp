@@ -161,9 +161,7 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 
 		private Div createExperimentText(String experimentNumber, String experimentDateCreated, Boolean isFavorite) {
 			Paragraph experimentNameLine = new Paragraph("Experiment #" + experimentNumber);
-			if (isFavorite) {
-                experimentNameLine.add(new FavoriteStar(isFavorite, () -> System.out.println("After clicking the star, toggle the Boolean value in DB.")));
-            }
+            experimentNameLine.add(new FavoriteStar(isFavorite, () -> System.out.println("After clicking the star, toggle the Boolean value in DB.")));
 			Div experimentNameWrapper = new Div();
 			experimentNameWrapper.add(experimentNameLine);
 			experimentNameWrapper.add(new Paragraph("Created " + experimentDateCreated));
