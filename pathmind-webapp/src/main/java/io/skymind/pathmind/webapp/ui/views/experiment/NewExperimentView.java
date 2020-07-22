@@ -11,6 +11,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -164,7 +165,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		notesSavedHint = LabelFactory.createLabel("Notes saved!", "fade-out-hint-label");
 		notesSavedHint.setVisible(false);
 
-		VerticalLayout rewardFnPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL), getRewardFnEditorPanel());
+		VerticalLayout rewardFnPanel = getRewardFnEditorPanel();
 		rewardFnPanel.addClassName("reward-fn-editor-panel");
 
         Span errorDescriptionLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
@@ -222,8 +223,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		});
 		rewardEditorErrorLabel = LabelFactory.createLabel("Reward Function must not exceed " + REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
 		rewardEditorErrorLabel.setVisible(false);
-		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapSizeFullVertical(rewardEditorErrorLabel, rewardFunctionEditor);
-        rewardFnEditorPanel.setPadding(false);
+		VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                WrapperUtils.wrapWidthFullBetweenHorizontal(
+                        LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL), rewardEditorErrorLabel),
+                rewardFunctionEditor);
         if (experiment.isArchived()) {
             rewardFnEditorPanel.setEnabled(false);
         }
@@ -391,12 +394,31 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			if (saveDraftButton.isEnabled()) {
 				handleSaveDraftClicked(cancelListener);
 			} else {
-				ConfirmationUtils.leavePage(cancelListener);
+				errorPopup(cancelListener);
 			}
 		} else {
 			cancelListener.execute();
 		}
-	}
+    }
+    
+    private void errorPopup(Command cancelAction) {
+        Boolean isRewardFunctionTooLong = rewardFunctionEditor.getValue().length() > REWARD_FUNCTION_MAX_LENGTH;
+        Boolean isRewardVariablesTableInvalid = rewardVariablesTable.isInvalid();
+        String header = "Before you leave....";
+        String text = "";
+        if (isRewardFunctionTooLong && !isRewardVariablesTableInvalid) {
+            text += "Your changes in the reward function cannot be saved because it has exceeded "+REWARD_FUNCTION_MAX_LENGTH+" characters. ";
+        } else if (!isRewardFunctionTooLong && isRewardVariablesTableInvalid) {
+            text += "Your changes in the reward variables cannot be saved. ";
+        } else if (isRewardFunctionTooLong && isRewardVariablesTableInvalid) {
+            text += "Your changes cannot be saved because the reward function has exceeded "+REWARD_FUNCTION_MAX_LENGTH+" characters and the reward variables are invalid. ";
+        }
+        text += "Please check and fix the errors.";
+        String confirmText = "Stay";
+        ConfirmDialog dialog = new ConfirmDialog(header, text, confirmText, evt -> evt.getSource().close());
+        dialog.setCancelButton("Leave", evt -> cancelAction.execute(), UIConstants.DEFAULT_BUTTON_THEME);
+        dialog.open();
+    }
 
 	@Override
 	public void beforeLeave(BeforeLeaveEvent event) {
