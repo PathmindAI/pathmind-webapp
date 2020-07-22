@@ -147,6 +147,7 @@ public class AWSApiClient {
         }
 
         if (!isValidResponse(sendMessageResult)) {
+            log.info("failure on submitting the job for " + jobId + ", " + sendMessageResult);
             throw new RuntimeException("failure on submitting the job for " + jobId);
         }
 
