@@ -17,7 +17,7 @@ public class MyCapabilityEnhancer implements BeforeAWebdriverScenario {
 //				+ " - "
 //				+ testOutcome.getTitle()
         );
-        capabilities.setCapability("idleTimeout", 200);
+        capabilities.setCapability("idleTimeout", 400);
         return capabilities;
     }
 }
