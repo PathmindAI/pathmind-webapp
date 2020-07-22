@@ -4,7 +4,6 @@ import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.Optional;
@@ -14,12 +13,16 @@ import java.util.concurrent.ExecutorService;
 @Slf4j
 public class ProjectFileCheckService {
 
+    private static final String NONTUPLE_ERROR_MESSAGE = "Model needs to be updated. You can take a look at <a target='_blank' href='%s'>this article</a> for upgrade instructions.";
+
     private final ExecutorService checkerExecutorService;
     private final ModelAnalyzerApiClient client;
+    private final String convertModelsToSupportTuplesURL;
 
-    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client) {
+    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportTuplesURL) {
         this.checkerExecutorService = checkerExecutorService;
         this.client = client;
+        this.convertModelsToSupportTuplesURL = convertModelsToSupportTuplesURL;
     }
 
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
@@ -64,7 +67,8 @@ public class ProjectFileCheckService {
     }
 
     private Optional<String> verifyAnalysisResult(HyperparametersDTO analysisResult) {
-        if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null || analysisResult.getRewardVariablesCount() == null) {
+        if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null 
+                || analysisResult.getRewardVariablesCount() == null || analysisResult.getActionTupleSize() == null) {
             return Optional.of("Unable to analyze the model.");
         }
         else if (analysisResult.getActions() != null && Integer.parseInt(analysisResult.getActions()) == 0) {
@@ -72,6 +76,9 @@ public class ProjectFileCheckService {
         }
         else if (analysisResult.getObservations() != null && Integer.parseInt(analysisResult.getObservations()) == 0) {
             return Optional.of("Number of observations found to be zero.");
+        }
+        else if (analysisResult.getActionTupleSize() != null && Integer.parseInt(analysisResult.getActionTupleSize()) == 0) {
+            return Optional.of(getNonTupleErrorMessage());
         }
         return Optional.empty();
     }
@@ -82,6 +89,10 @@ public class ProjectFileCheckService {
     	fileCheckResult.setNumObservation(Integer.parseInt(params.getObservations()));
     	fileCheckResult.setRewardVariablesCount(Integer.parseInt(params.getRewardVariablesCount()));
     	fileCheckResult.setRewardVariableFunction(params.getRewardFunction());
+    	fileCheckResult.setActionTupleSize(Integer.parseInt(params.getActionTupleSize()));
     }
 
+    public String getNonTupleErrorMessage() {
+        return String.format(NONTUPLE_ERROR_MESSAGE, convertModelsToSupportTuplesURL);
+    }
 }

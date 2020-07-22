@@ -1,16 +1,11 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "@vaadin/vaadin-tabs/src/vaadin-tabs.js";
-import "@vaadin/vaadin-tabs/src/vaadin-tab.js";
-import "@vaadin/vaadin-ordered-layout/src/vaadin-horizontal-layout.js";
-import "@vaadin/vaadin-button/src/vaadin-button.js";
-import "@vaadin/vaadin-ordered-layout/src/vaadin-vertical-layout.js";
 
 class AccountViewContent extends PolymerElement {
     static get template() {
         return html`
             <style include="shared-styles pathmind-dialog-view">
                 .small {
-                    font-size: small;
+                    font-size: var(--lumo-font-size-s);
                 }
                 .small:empty {
                     display: none;

@@ -77,4 +77,8 @@ public class ProjectsPage extends PageObject {
     public void checkPageTitleIsProjects(String title) {
         assertThat(getDriver().findElement(By.xpath("//span[contains(@class,'section-title-label')]")).getText(), is(title));
     }
+
+    public void checkNewExperimentPageRewardVariableErrorIsShown(String error) {
+        assertThat(getDriver().findElement(By.cssSelector(".reward-variable-name-field")).getText(), is(error));
+    }
 }

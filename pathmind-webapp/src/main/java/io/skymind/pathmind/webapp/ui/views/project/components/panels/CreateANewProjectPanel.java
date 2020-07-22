@@ -12,7 +12,7 @@ import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.webapp.ui.binders.ProjectBinders;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
 public class CreateANewProjectPanel extends VerticalLayout
@@ -24,10 +24,10 @@ public class CreateANewProjectPanel extends VerticalLayout
 	{
 		projectNameTextField.setWidthFull();
 		createProjectButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		createProjectButton.setClassName(CssMindPathStyles.CREATE_PROJECT_BUTTON);
+		createProjectButton.setClassName(CssPathmindStyles.CREATE_PROJECT_BUTTON);
 
-		add(	LabelFactory.createLabel("Start a New Project!", CssMindPathStyles.SECTION_TITLE_LABEL),
-				LabelFactory.createLabel("Projects organize your Pathmind Experiments based on your AnyLogic model", CssMindPathStyles.SECTION_SUBTITLE_LABEL),
+		add(	LabelFactory.createLabel("Start a New Project!", CssPathmindStyles.SECTION_TITLE_LABEL),
+				LabelFactory.createLabel("Projects organize your Pathmind Experiments based on your AnyLogic model", CssPathmindStyles.SECTION_SUBTITLE_LABEL),
 				projectNameTextField,
 				WrapperUtils.wrapWidthFullCenterHorizontal(createProjectButton));
 

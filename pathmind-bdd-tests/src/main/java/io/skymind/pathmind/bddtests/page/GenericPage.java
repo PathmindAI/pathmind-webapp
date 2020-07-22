@@ -164,4 +164,12 @@ public class GenericPage extends PageObject {
         ArrayList<String> tabs = new ArrayList<String>(getDriver().getWindowHandles());
         getDriver().switchTo().window(tabs.get(tab));
     }
+
+    public void checkPageUrlIs(String url) {
+        assertThat(getDriver().getCurrentUrl(), is(url));
+    }
+
+    public void checkPageTitleTagTextIs(String text) {
+        assertThat(getDriver().getTitle(), is(text));
+    }
 }
