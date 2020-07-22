@@ -4,6 +4,9 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -59,8 +62,19 @@ public class EventBus {
      */
     public static void post(PathmindBusEvent event) {
         EVENT_BUS.subscribers.get(event.getEventType()).stream().forEach(subscriber -> {
-            if (subscriber != null && subscriber.filterBusEvent(event) && subscriber.isAttached())
-                EXECUTOR_SERVICE.execute(() -> subscriber.handleBusEvent(event));
+            if (subscriber != null && subscriber.filterBusEvent(event) && subscriber.isAttached()) {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                EXECUTOR_SERVICE.execute(() -> {
+                    try {
+                        SecurityContext ctx = SecurityContextHolder.createEmptyContext();
+                        ctx.setAuthentication(authentication);
+                        SecurityContextHolder.setContext(ctx);
+                        subscriber.handleBusEvent(event);
+                    } finally {
+                        SecurityContextHolder.clearContext();
+                    }
+                });
+            }
         });
     }
 
