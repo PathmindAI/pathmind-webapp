@@ -25,17 +25,17 @@ public class ArchivesTabPanel<T extends ArchivableData> extends TabPanel
 	// These need to be here for the same reason as the init() method.
 	private Grid<T> grid;
 	private Supplier<List<T>> getItems;
-	private BiConsumer<Long, Boolean> archiveDAO;
+	private BiConsumer<T, Boolean> archiveDAO;
 
-	public ArchivesTabPanel(String tabName, Grid<T> grid, Supplier<List<T>> getItems, BiConsumer<Long, Boolean> archiveDAO) {
+	public ArchivesTabPanel(String tabName, Grid<T> grid, Supplier<List<T>> getItems, BiConsumer<T, Boolean> archiveDAO) {
 		this(tabName, true, grid, getItems, archiveDAO);
-	}
+ 	}
 	
 	/**
 	 * By default ArchivesTabPanel creates an component column, you can set
 	 * isAutoAppendColumn to false, in order to disable this feature
 	 */
-	public ArchivesTabPanel(String tabName, boolean isAutoCreateActionColumn, Grid<T> grid, Supplier<List<T>> getItems, BiConsumer<Long, Boolean> archiveDAO)
+	public ArchivesTabPanel(String tabName, boolean isAutoCreateActionColumn, Grid<T> grid, Supplier<List<T>> getItems, BiConsumer<T, Boolean> archiveDAO)
 	{
 		super(tabName, ARCHIVES_TAB);
 
