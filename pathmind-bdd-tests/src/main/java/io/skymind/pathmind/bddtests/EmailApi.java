@@ -15,20 +15,31 @@ public class EmailApi extends PageObject {
     private static String emailApiUrl = "http://api.guerrillamail.com/ajax.php";
 
     public String getEmail() {
-        Response response = SerenityRest
-            .given()
-            .queryParam("f", "get_email_address")
-            .when()
-            .get(emailApiUrl);
-        response
-            .then()
-            .log()
-            .all()
-            .statusCode(200);
-        Serenity.setSessionVariable("email").to(response.jsonPath().get("email_addr"));
-        Serenity.setSessionVariable("sessId").to(response.getCookie("PHPSESSID"));
-        waitABit(2000);
-        deleteEmail(1);
+
+        int attempts = 0;
+        Response response = null;
+        while (attempts < 10) {
+            try {
+                response = SerenityRest
+                    .given()
+                    .queryParam("f", "get_email_address")
+                    .when()
+                    .get(emailApiUrl);
+                response
+                    .then()
+                    .log()
+                    .all()
+                    .statusCode(200);
+                Serenity.setSessionVariable("email").to(response.jsonPath().get("email_addr"));
+                Serenity.setSessionVariable("sessId").to(response.getCookie("PHPSESSID"));
+                waitABit(2000);
+                deleteEmail(1);
+                break;
+            } catch (Exception e) {
+                waitABit(10000);
+            }
+            attempts++;
+        }
         return response.jsonPath().get("email_addr");
     }
 
