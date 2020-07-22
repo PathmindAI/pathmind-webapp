@@ -10,7 +10,7 @@ public class CookieUtils {
 		Cookie cookie = new Cookie(cookieName, "");
 		// A cookie will be deleted when maxAge is 0
 		cookie.setMaxAge(0);
-		VaadinService.getCurrentResponse().addCookie(cookie);
+		if (VaadinService.getCurrentResponse() != null) VaadinService.getCurrentResponse().addCookie(cookie);
 	}
 
 	public static void deleteAWSCanCookie() {
