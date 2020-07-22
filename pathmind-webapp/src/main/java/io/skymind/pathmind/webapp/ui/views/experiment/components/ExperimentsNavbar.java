@@ -22,6 +22,7 @@ import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
@@ -161,7 +162,7 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 		private Div createExperimentText(String experimentNumber, String experimentDateCreated, Boolean isFavorite) {
 			Paragraph experimentNameLine = new Paragraph("Experiment #" + experimentNumber);
 			if (isFavorite) {
-                experimentNameLine.add(new Icon(VaadinIcon.STAR));
+                experimentNameLine.add(new FavoriteStar(isFavorite, () -> System.out.println("After clicking the star, toggle the Boolean value in DB.")));
             }
 			Div experimentNameWrapper = new Div();
 			experimentNameWrapper.add(experimentNameLine);
