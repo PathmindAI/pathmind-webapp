@@ -90,8 +90,18 @@ public class ExperimentStepDefinitions {
         projectsPageSteps.inputExperimentNotes(note);
     }
 
-    @Then("^Check that (.*) exist on the experiment page$")
+    @Then("^Check that '(.*)' exist on the experiment page$")
     public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
         experimentPageSteps.checkThatExperimentExistOnTheExperimentPage(experiment);
+    }
+
+    @Then("^Check that '(.*)' NOT exist on the experiment page$")
+    public void checkThatExperimentNotExistOnTheExperimentPage(String experiment) {
+        experimentPageSteps.checkThatExperimentNotExistOnTheExperimentPage(experiment);
+    }
+
+    @Then("^Check that '(.*)' status icon is '(.*)'$")
+    public void checkThatExperimentStatusIconIs(String experiment, String icon) {
+        experimentPageSteps.checkThatExperimentStatusIconIs(experiment, icon);
     }
 }

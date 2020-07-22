@@ -80,7 +80,7 @@ public class ProjectsView extends PathMindDefaultView
 				"Active",
 				projectGrid,
 				this::getProjects,
-				(projectId, isArchive) -> projectDAO.archive(projectId, isArchive));
+				(project, isArchive) -> projectDAO.archive(project.getId(), isArchive));
 	}
 
 	private void setupProjectGrid()
