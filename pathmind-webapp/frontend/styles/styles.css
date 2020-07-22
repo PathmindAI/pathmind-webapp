@@ -11,6 +11,7 @@ html {
     --pm-danger-color: #d80947;
 
     /* pathmind color palette */
+    --pm-gold-color: #FFC038;
     --pm-orange-color: #ed7820;
     --pm-gray-color-darkest: #404040;
     --pm-gray-color-darker: #707070;
@@ -128,6 +129,10 @@ hr {
 [tooltip-content] span {
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+[icon="vaadin:star"] {
+    color: var(--pm-gold-color);
 }
 
 #nav-main-links,
@@ -543,7 +548,7 @@ account-view {
     color: var(--lumo-success-color);
 }
 .warning-label {
-    background: #FFC038;
+    background: var(--pm-gold-color);
     color: var(--lumo-body-text-color);
 }
 /* Primary Button Styles */

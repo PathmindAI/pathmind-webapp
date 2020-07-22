@@ -39,7 +39,11 @@ public class ExperimentUtils
 	}
 
 	public static boolean isDraftRunType(Experiment experiment) {
-		return experiment.getRuns() == null || experiment.getRuns().isEmpty();
+		return experiment.isDraft();
+	}
+
+	public static boolean isFavorite(Experiment experiment) {
+		return true; //experiment.isFavorite();
 	}
 
 	public static String getProjectName(Experiment experiment) {

@@ -2,14 +2,12 @@
     width: auto !important;
     height: calc(100vh - 8rem);
     min-height: 100%;
-    background: white;
     border-radius: var(--lumo-border-radius);
-    padding-top: var(--lumo-space-s);
 }
 
 .experiments-navbar > vaadin-button {
     min-width: 15.5rem;
-    margin: 0 var(--lumo-space-s) var(--lumo-space-s);
+    margin: 0 0 var(--lumo-space-s);
 }
 
 .experiments-navbar-items {
@@ -21,10 +19,14 @@
     align-items: center;
     flex-shrink: 0;
     width: 100%;
-    height: 65px;
-    padding: 0 var(--lumo-space-s);
-    border-top: 1px solid var(--pm-gray-color-lighter);
+    padding: var(--lumo-space-s) var(--lumo-space-xs);
     cursor: pointer;
+    border: 1px solid transparent;
+    margin-top: -1px;
+}
+
+.experiment-navbar-item:first-of-type {
+    margin-top: 0;
 }
 
 .experiment-navbar-item vaadin-button {
@@ -32,28 +34,16 @@
     margin-left: auto;
 }
 
-.experiment-navbar-item:last-child {
-    border-bottom: 1px solid var(--pm-gray-color-lighter);
-}
-
-.experiment-navbar-item:not(.current):hover {
-    background-color: var(--pm-highlight-medium);
+.experiment-navbar-item.current,
+.experiment-navbar-item:hover {
+    background-color: white;
+    border-color: var(--pm-gray-color-lighter);
 }
 
 .experiments-navbar iron-icon[icon="vaadin:pencil"] {
-    width: 18px;
-    height: 18px;
-    margin: 3px;
-}
-
-.experiments-navbar .tag {
-    font-size: var(--lumo-font-size-xs);
-    padding: 1px 3px;
-    margin: 0 4px;
-}
-
-.current {
-    background-color: var(--pm-app-bg-color);
+    --iron-icon-width: 1.125rem;
+    --iron-icon-height: 1.125rem;
+    margin: 0.1875rem;
 }
 
 .icon-loading-spinner,
@@ -134,16 +124,14 @@ iron-icon[icon="vaadin:exclamation-circle-o"] {
     margin: 0;
 }
 
-.current .experiment-name p:first-child {
-    font-weight: bold;
-}
-
-.current .experiment-name p:first-child .tag {
-    font-weight: normal;
+.experiment-name [icon="vaadin:star"] {
+    --iron-icon-width: var(--lumo-font-size-m);
+    --iron-icon-height: var(--lumo-font-size-m);
+    margin: -.16em 0 0 .4em;
 }
 
 .experiment-name p:last-child {
-    font-size: var(--lumo-font-size-s);
+    font-size: var(--lumo-font-size-xs);
     color: var(--pm-gray-color-dark);
-    margin-top: var(--lumo-space-xs);
+    margin-top: 2px;
 }

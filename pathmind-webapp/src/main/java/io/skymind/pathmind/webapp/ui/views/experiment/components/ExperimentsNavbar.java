@@ -1,7 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.TAG_LABEL;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
@@ -24,7 +22,6 @@ import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
@@ -129,6 +126,7 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 		ExperimentsNavBarItem(UI ui, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler) {
 			this.experiment = experiment;
 			Boolean isDraft = ExperimentUtils.isDraftRunType(experiment);
+			Boolean isFavorite = ExperimentUtils.isFavorite(experiment);
 			RunStatus overallExperimentStatus = ExperimentUtils.getTrainingStatus(experiment);
 			statusComponent = isDraft ? new Icon(VaadinIcon.PENCIL) : createStatusIcon(overallExperimentStatus);
 			add(statusComponent);
@@ -140,7 +138,7 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
             archiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
             archiveExperimentButton.addClassName("action-button");
 			VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
-				add(createExperimentText(experiment.getName(), DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId), isDraft));
+				add(createExperimentText(experiment.getName(), DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId), isFavorite));
                 add(archiveExperimentButton);
 			});
 		}
@@ -160,12 +158,11 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 			return new Icon(VaadinIcon.EXCLAMATION_CIRCLE_O);
 		}
 
-		private Div createExperimentText(String experimentNumber, String experimentDateCreated, Boolean isDraft) {
+		private Div createExperimentText(String experimentNumber, String experimentDateCreated, Boolean isFavorite) {
 			Paragraph experimentNameLine = new Paragraph("Experiment #" + experimentNumber);
-			if (isDraft) {
-				experimentNameLine.add(LabelFactory.createLabel("Draft", TAG_LABEL));
-			}
-			
+			if (isFavorite) {
+                experimentNameLine.add(new Icon(VaadinIcon.STAR));
+            }
 			Div experimentNameWrapper = new Div();
 			experimentNameWrapper.add(experimentNameLine);
 			experimentNameWrapper.add(new Paragraph("Created " + experimentDateCreated));
