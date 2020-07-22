@@ -37,6 +37,7 @@ import static io.skymind.pathmind.shared.constants.RunStatus.Error;
 import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.var;
 import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.varExp;
 import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.varCondition;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 @Slf4j
@@ -105,7 +106,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public ProviderJobStatus status(String jobHandle) {
-        if (outputExist(jobHandle)){
+        if (outputExist(jobHandle)) {
             boolean killed = getFile(jobHandle, TrainingFile.KILLED).isPresent();
             if (killed) {
                 return ProviderJobStatus.KILLED;
@@ -138,11 +139,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 log.warn("{} error(s) detected for the AWS jobHandle {}: {}", knownErrsCheck.size(), jobHandle, knownErrsCheck);
             }
 
-            Optional<String> rlLibError = getRLlibError(jobHandle);
-            if (rlLibError.isPresent()) {
-                String error = rlLibError.get();
-                log.warn("rlLib error detected for the AWS jobHandle {}: {}", jobHandle, rlLibError.get());
-                knownErrsCheck.add(RLLIB_ERROR_PREFIX + error);
+            String rlLibError = getRLlibError(jobHandle);
+            if (StringUtils.isNotEmpty(rlLibError)) {
+                log.warn("rlLib error detected for the AWS jobHandle {}: {}", jobHandle, rlLibError);
+                knownErrsCheck.add(RLLIB_ERROR_PREFIX + rlLibError);
             }
 
             if (!knownErrsCheck.isEmpty()) {
@@ -155,7 +155,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 completedStatus.addExperimentState(experimentState);
                 // let's follow what is being done with rlib and add a prefix to the message and add it to description
                 getSuccessMessage(jobHandle).ifPresent(m -> completedStatus.getDescription().add(SUCCESS_MESSAGE_PREFIX + m));
-                getWarningMessage(jobHandle).ifPresent(m -> completedStatus.getDescription().add(WARNING_MESSAGE_PREFIX  + m));
+                getWarningMessage(jobHandle).ifPresent(m -> completedStatus.getDescription().add(WARNING_MESSAGE_PREFIX + m));
                 return completedStatus;
             }
 
@@ -201,7 +201,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     @Override
     public Map.Entry<@NotNull String, byte[]> snapshot(String jobHandle, String trainingRun) {
         Optional<byte[]> optional = getFile(jobHandle, "checkpoint.zip");
-        return optional.isPresent() ? Map.entry(jobHandle, optional.get()): null;
+        return optional.isPresent() ? Map.entry(jobHandle, optional.get()) : null;
     }
 
     @Override
@@ -231,7 +231,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             String contents = new String(listOpt.get());
             if (!contents.isEmpty()) {
                 return Arrays.stream(contents.split("\n"))
-                    .collect(Collectors.toList());
+                        .collect(Collectors.toList());
             }
         }
 
@@ -249,32 +249,45 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         return objectMapper.readValue(client.fileContents(it), ExperimentState.class);
                     } catch (IOException e) {
                         log.error(e.getMessage(), e);
-                        return  null;
+                        return null;
                     }
                 });
 
         return expOpt != null && expOpt.isPresent() ? expOpt.get() : null;
     }
 
-    public Optional<String> getRLlibError(String jobHandle) {
+    public String getRLlibError(String jobHandle) {
         return client.listObjects(jobHandle + "/output/")
                         .getObjectSummaries().parallelStream()
                         .map(S3ObjectSummary::getKey)
-                        .filter(ERROR_KEY_MATCH).findAny()
+                        .filter(ERROR_KEY_MATCH)
                         .map(it -> {
                             byte[] bytes = client.fileContents(it);
                             try (BufferedReader r = new BufferedReader(new InputStreamReader(
-                                            new ByteArrayInputStream(bytes), StandardCharsets.UTF_8))
+                                    new ByteArrayInputStream(bytes), StandardCharsets.UTF_8))
                             ) {
-                                String last = null;
-                                for (String line = r.readLine(); line != null; line = r.readLine()) {
-                                    last = line;
-                                }
-                                return last;
+                                List<String> lines = r.lines().collect(Collectors.toList());
+                                return findLineWithException(lines);
                             } catch (Exception e) {
                                 return null;
                             }
-                        });
+                        })
+                        .collect(toSet())
+                        .stream().collect(Collectors.joining(";\n"));
+    }
+
+    private static final Predicate<String> ERROR_STRING_MATCH = Pattern.compile("^(\\w+\\.)*\\w+:(.*)$", Pattern.CASE_INSENSITIVE).asMatchPredicate();
+
+    static String findLineWithException(List<String> lines) {
+        String exceptionLine = null;
+        ListIterator<String> stringListIterator = lines.listIterator(lines.size());
+        while (exceptionLine == null && stringListIterator.hasPrevious()) {
+            String line = stringListIterator.previous();
+            if (ERROR_STRING_MATCH.test(line)) {
+                exceptionLine = line;
+            }
+        }
+        return exceptionLine;
     }
 
     public Optional<String> getSuccessMessage(String jobHandle) {

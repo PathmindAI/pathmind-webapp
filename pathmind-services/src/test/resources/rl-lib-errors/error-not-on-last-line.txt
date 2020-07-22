@@ -1,0 +1,25 @@
+Traceback (most recent call last):
+  File "/app/conda/lib/python3.7/site-packages/ray/tune/trial_runner.py", line 515, in _process_trial
+    result = self.trial_executor.fetch_result(trial)
+  File "/app/conda/lib/python3.7/site-packages/ray/tune/ray_trial_executor.py", line 351, in fetch_result
+    result = ray.get(trial_future[0])
+  File "/app/conda/lib/python3.7/site-packages/ray/worker.py", line 2121, in get
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(RayOutOfMemoryError): [36mray_worker[39m (pid=297, host=id5274-6fbc7b6fcc-crbv6)
+  File "/app/conda/lib/python3.7/site-packages/ray/memory_monitor.py", line 130, in raise_if_low_memory
+    self.error_threshold))
+ray.memory_monitor.RayOutOfMemoryError: More than 95% of the memory on node id5274-6fbc7b6fcc-crbv6 is used (56.19 / 58.97 GB). The top 10 memory consumers are:
+
+PID	MEM	COMMAND
+294	8.64GiB	/app/conda/bin/python3 /app/conda/lib/python3.7/site-packages/ray/workers/default_worker.py --node-i
+318	8.59GiB	/app/conda/bin/python3 /app/conda/lib/python3.7/site-packages/ray/workers/default_worker.py --node-i
+290	7.82GiB	/app/conda/bin/python3 /app/conda/lib/python3.7/site-packages/ray/workers/default_worker.py --node-i
+528	7.58GiB	/app/conda/bin/python3 /app/conda/lib/python3.7/site-packages/ray/workers/default_worker.py --node-i
+287	7.52GiB	/app/conda/bin/python3 /app/conda/lib/python3.7/site-packages/ray/workers/default_worker.py --node-i
+300	7.44GiB	/app/conda/bin/python3 /app/conda/lib/python3.7/site-packages/ray/workers/default_worker.py --node-i
+522	0.5GiB	/app/conda/bin/python3 /app/conda/lib/python3.7/site-packages/ray/workers/default_worker.py --node-i
+319	0.38GiB	/app/conda/bin/python3 /app/conda/lib/python3.7/site-packages/ray/workers/default_worker.py --node-i
+286	0.35GiB	/app/conda/bin/python3 /app/conda/lib/python3.7/site-packages/ray/workers/default_worker.py --node-i
+312	0.35GiB	/app/conda/bin/python3 /app/conda/lib/python3.7/site-packages/ray/workers/default_worker.py --node-i
+
+In addition, up to 0.02 GiB of shared memory is currently being used by the Ray object store. You can set the object store size with the `object_store_memory` parameter when starting Ray, and the max Redis size with `redis_max_memory`. Note that Ray assumes all system memory is available for use by workers. If your system has other applications running, you should manually set these memory limits to a lower value.
