@@ -25,7 +25,7 @@ import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -56,7 +56,7 @@ public class SearchResultsView extends PathMindDefaultView implements HasUrlPara
     protected Component getMainContent() {
         addClassName("search-results-view");
         
-        Span title = LabelFactory.createLabel("Search results", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
+        Span title = LabelFactory.createLabel("Search results", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.TRUNCATED_LABEL);
         HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullHorizontal(title);
         Grid<SearchResult> grid = createSearchResultsGrid();
         grid.addSelectionListener(evt -> navigateToSelectedRecord(evt.getFirstSelectedItem()));
