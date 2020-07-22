@@ -140,10 +140,13 @@ public class AWSApiClient {
         SendMessageResult sendMessageResult = sqsClient.sendMessage(send_msg_request);
         while(!isValidResponse(sendMessageResult) && retryCount-- > 0) {
             log.info("retry submit job for " + jobId);
-             sendMessageResult = sqsClient.sendMessage(send_msg_request);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {}
+            sendMessageResult = sqsClient.sendMessage(send_msg_request);
         }
 
-        if (isValidResponse(sendMessageResult)) {
+        if (!isValidResponse(sendMessageResult)) {
             throw new RuntimeException("failure on submitting the job for " + jobId);
         }
 
