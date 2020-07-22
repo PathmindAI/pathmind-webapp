@@ -306,4 +306,12 @@ class ExperimentRepository
 				.where(Tables.EXPERIMENT.ID.eq(experimentId))
 				.execute();
 	}
+
+    protected static void markAsFavorite(DSLContext ctx, long experimentId, boolean isFavorite) {
+        ctx.update(Tables.EXPERIMENT)
+                .set(Tables.EXPERIMENT.IS_FAVORITE, isFavorite)
+                .where(Tables.EXPERIMENT.ID.eq(experimentId))
+                .execute();
+    }
+
 }
