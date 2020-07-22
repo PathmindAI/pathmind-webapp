@@ -30,6 +30,8 @@ public class NewExperimentPage extends PageObject {
     private WebElement startDiscoveryRunBtn;
     @FindBy(xpath = "//vaadin-text-field[contains(@class,'reward-variable-name-field')]")
     private List<WebElement> rewardVariableNameInputs;
+    @FindBy(xpath = "//vaadin-dialog-overlay")
+    private WebElement overlay;
     private final By byInput = By.cssSelector("input");
 
     public void checkThatExperimentPageOpened(String projectName) {
@@ -67,6 +69,7 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void clickProjectSaveDraftBtn() {
+        waitABit(5000);
         Actions action = new Actions(getDriver());
         WebElement we = getDriver().findElement(By.xpath("//vaadin-button[text()='Save']"));
         JavascriptExecutor executor = (JavascriptExecutor) getDriver();
@@ -108,6 +111,7 @@ public class NewExperimentPage extends PageObject {
         variableNameInputField.click();
         variableNameInputField.clear();
         variableNameInputField.sendKeys(variableName);
+        variableNameInputField.sendKeys(Keys.ENTER);
     }
 
     public void checkRewardFunctionDefaultValue(String reward) {
@@ -117,5 +121,13 @@ public class NewExperimentPage extends PageObject {
 
     public void checkThatNotesSavedMsgShown() {
         assertThat(getDriver().findElement(By.xpath("//span[text()='Notes saved!' and @class='fade-out-hint-label fade-in']")).isDisplayed(), is(true));
+    }
+
+    public void checkThatBeforeYouLeavePopUpIsShownWithError(String error) {
+        WebElement e = utils.expandRootElement(overlay);
+        WebElement contentShadow = e.findElement(By.cssSelector("#content"));
+        WebElement popUp = utils.expandRootElement(contentShadow);
+        assertThat(popUp.findElement(By.cssSelector("h3")).getText(), is("Before you leave...."));
+        assertThat(popUp.findElement(By.cssSelector("#message")).getText(), is(error));
     }
 }
