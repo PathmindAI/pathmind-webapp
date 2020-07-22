@@ -72,13 +72,15 @@ public class NewExperimentPage extends PageObject {
         JavascriptExecutor executor = (JavascriptExecutor) getDriver();
         executor.executeScript("arguments[0].click();", we);
         try {
-            WebElement closePopUp = getDriver().findElement(By.xpath("//vaadin-button[@theme='icon']"));
+            WebElement closePopUp = getDriver().findElement(By.xpath("//span[text()='Draft successfully saved']/following-sibling::vaadin-button[@theme='icon']"));
             waitFor(ExpectedConditions.visibilityOf(closePopUp));
             waitFor(ExpectedConditions.elementToBeClickable(closePopUp));
+            closePopUp.click();
             action.moveToElement(closePopUp).click().perform();
         } catch (Exception e) {
             System.out.println("Button not exist");
         }
+        waitABit(2000);
     }
 
     public void checkRewardFunctionIs(String rewardFunction) {
