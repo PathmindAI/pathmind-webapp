@@ -3,6 +3,8 @@ package io.skymind.pathmind.bddtests.steps;
 import io.skymind.pathmind.bddtests.page.GenericPage;
 import net.thucydides.core.annotations.Step;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
+
 public class GenericPageSteps {
 
     private GenericPage genericPage;
@@ -44,7 +46,9 @@ public class GenericPageSteps {
 
     @Step
     public void waitForTextToDisappear(String text) {
+        genericPage.setImplicitTimeout(300, SECONDS);
         genericPage.waitForTextToDisappear(text);
+        genericPage.resetImplicitTimeout();
     }
 
     @Step
@@ -100,7 +104,7 @@ public class GenericPageSteps {
 
     @Step
     public void openTab(int tab) {
-        genericPage.opeTab(tab);
+        genericPage.openTab(tab);
     }
 
     @Step

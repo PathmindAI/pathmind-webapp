@@ -1,9 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -29,9 +26,11 @@ import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.ExperimentCreatedSubscriber;
+import io.skymind.pathmind.webapp.bus.subscribers.ExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
@@ -70,6 +69,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.TAG_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
@@ -111,6 +111,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
     private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
     private final ExperimentViewExperimentCreatedSubscriber experimentCreatedSubscriber;
+    private final ExperimentViewExperimentUpdatedSubscriber experimentUpdatedSubscriber;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -142,6 +143,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         policyUpdateSubscriber = new ExperimentViewPolicyUpdateSubscriber();
         runUpdateSubscriber = new ExperimentViewRunUpdateSubscriber();
         experimentCreatedSubscriber = new ExperimentViewExperimentCreatedSubscriber();
+        experimentUpdatedSubscriber = new ExperimentViewExperimentUpdatedSubscriber();
     }
 
     @Override
@@ -149,6 +151,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         EventBus.unsubscribe(policyUpdateSubscriber);
         EventBus.unsubscribe(runUpdateSubscriber);
         EventBus.unsubscribe(experimentCreatedSubscriber);
+        EventBus.unsubscribe(experimentUpdatedSubscriber);
     }
 
     @Override
@@ -156,6 +159,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         EventBus.subscribe(policyUpdateSubscriber);
         EventBus.subscribe(runUpdateSubscriber);
         EventBus.subscribe(experimentCreatedSubscriber);
+        EventBus.subscribe(experimentUpdatedSubscriber);
     }
 
     @Override
@@ -174,7 +178,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         Span modelNeedToBeUpdatedLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
         modelNeedToBeUpdatedLabel.getStyle().set("margin-top", "2px");
 
-	    reasonWhyTheTrainingStoppedLabel = LabelFactory.createLabel("", "tag", "reason-why-the-training-stopped");
+	    reasonWhyTheTrainingStoppedLabel = LabelFactory.createLabel("", TAG_LABEL, "reason-why-the-training-stopped");
 
         VerticalLayout experimentContent = WrapperUtils.wrapWidthFullVertical(
                 WrapperUtils.wrapWidthFullHorizontal(panelTitle, trainingStatusDetailsPanel, getButtonsWrapper()),
@@ -359,23 +363,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void archiveExperiment(Experiment experimentToArchive) {
         ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
-            experimentDAO.archive(experimentToArchive.getId(), true);
-            experiments.remove(experimentToArchive);
-            if (experiments.isEmpty()) {
-                getUI().ifPresent(ui -> ui.navigate(ModelView.class, experimentToArchive.getModelId()));
-            } else {
-                Experiment currentExperiment = (experimentToArchive.getId() == experimentId) ? experiments.get(0) : experiment;
-                if (experimentToArchive.getId() == experimentId) {
-                    selectExperiment(currentExperiment);
-                }
-                getUI().ifPresent(ui -> experimentsNavbar.setExperiments(ui, experiments, currentExperiment));
-            }
+            ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
         });
     }
 
     private void unarchiveExperiment() {
         ConfirmationUtils.unarchive("experiment", () -> {
-            experimentDAO.archive(experiment.getId(), false);
+            ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
             getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
         });
     }
@@ -421,6 +415,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
     }
 
+    private void navigateToExperiment(UI ui, Experiment targetExperiment) {
+        if (ExperimentUtils.isDraftRunType(targetExperiment)) {
+            ui.navigate(NewExperimentView.class, targetExperiment.getId());
+        } else {
+            ui.navigate(ExperimentView.class, targetExperiment.getId());
+        }
+    }
+
     @Override
     protected void initLoadData() throws InvalidDataException {
         experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
@@ -436,7 +438,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
-                                .sorted(Comparator.comparing(Experiment::getDateCreated).reversed())
                                 .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
         }
     }
@@ -578,11 +579,31 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void updateNavBarExperiments() {
         experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-        PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
+
+        if (experiments.isEmpty()) {
+            PushUtils.push(getUI(), ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+        } else {
+            boolean selectedExperimentWasArchived = experiments.stream()
+                    .noneMatch(e -> e.getId() == experimentId);
+            if (selectedExperimentWasArchived) {
+                Experiment newSelectedExperiment = experiments.get(0);
+                PushUtils.push(getUI(), ui -> navigateToExperiment(ui, newSelectedExperiment));
+            }
+            else {
+                PushUtils.push(getUI(), ui ->  {
+                    selectExperiment(experiment);
+                    experimentsNavbar.setExperiments(ui, experiments, experiment);
+                });
+            }
+        }
     }
 
     private boolean isSameModel(long modelId) {
         return experiment != null && experiment.getModelId() == modelId;
+    }
+
+    private boolean isViewAttached() {
+        return getUI().isPresent();
     }
 
     class ExperimentViewPolicyUpdateSubscriber implements PolicyUpdateSubscriber
@@ -618,7 +639,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         @Override
         public boolean isAttached() {
-            return ExperimentView.this.getUI().isPresent();
+            return isViewAttached();
         }
     }
 
@@ -644,7 +665,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         @Override
         public boolean isAttached() {
-            return ExperimentView.this.getUI().isPresent();
+            return isViewAttached();
         }
         
         private boolean isSameExperiment(RunUpdateBusEvent event) {
@@ -663,7 +684,21 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         @Override
         public boolean isAttached() {
-            return ExperimentView.this.getUI().isPresent();
+            return isViewAttached();
+        }
+    }
+
+    class ExperimentViewExperimentUpdatedSubscriber implements ExperimentUpdatedSubscriber {
+        @Override
+        public void handleBusEvent(ExperimentUpdatedBusEvent event) {
+            if (isSameModel(event.getModelId())) {
+                updateNavBarExperiments();
+            }
+        }
+
+        @Override
+        public boolean isAttached() {
+            return isViewAttached();
         }
     }
 }
