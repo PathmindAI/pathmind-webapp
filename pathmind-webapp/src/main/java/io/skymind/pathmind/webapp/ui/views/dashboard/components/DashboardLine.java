@@ -91,7 +91,7 @@ public class DashboardLine extends HorizontalLayout {
 	@Override
 	protected void onAttach(AttachEvent evt) {
 		VaadinDateAndTimeUtils.withUserTimeZoneId(evt.getUI(), timeZoneId -> {
-			timestamp.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(dashboardItem.getLatestUpdateTime(), timeZoneId));
+			timestamp.setText("Last Activity: "+DateAndTimeUtils.formatDateAndTimeShortFormatter(dashboardItem.getLatestUpdateTime(), timeZoneId));
 		});
 	}
 
