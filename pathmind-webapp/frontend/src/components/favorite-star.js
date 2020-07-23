@@ -25,9 +25,12 @@ class FavoriteStar extends PolymerElement {
                     margin: 0 0 0 .4em;
                 }
                 vaadin-button {
+                    width: var(--lumo-font-size-m);
+                    height: var(--lumo-font-size-m);
                     color: var(--pm-gold-color);
                 }
                 iron-icon {
+                    vertical-align: text-top;
                     width: var(--lumo-font-size-m);
                     height: var(--lumo-font-size-m);
                     padding: 0;

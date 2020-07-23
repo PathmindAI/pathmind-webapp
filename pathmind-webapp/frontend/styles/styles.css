@@ -135,6 +135,12 @@ hr {
     color: var(--pm-gold-color);
 }
 
+.model-view [icon="vaadin:star"] {
+    --iron-icon-width: var(--lumo-font-size-s);
+    --iron-icon-height: var(--lumo-font-size-s);
+    vertical-align: text-top;
+}
+
 #nav-main-links,
 #nav-main-links a,
 .nav-account-links a {

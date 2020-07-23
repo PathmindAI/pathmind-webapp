@@ -166,4 +166,9 @@ public class ExperimentUtils
 	    experimentDAO.archive(experiment.getId(), isArchive);
 	    EventBus.post(new ExperimentUpdatedBusEvent(experiment));
     }
+
+    public static void favoriteExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean newIsFavorite) {
+        experimentDAO.markAsFavorite(experiment.getId(), newIsFavorite);
+	    EventBus.post(new ExperimentUpdatedBusEvent(experiment));
+    }
 }
