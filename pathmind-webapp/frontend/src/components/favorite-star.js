@@ -22,7 +22,7 @@ class FavoriteStar extends PolymerElement {
         return html`
             <style>
                 :host {
-                    margin: -.1em 0 0 .4em;
+                    margin: 0 0 0 .4em;
                 }
                 vaadin-button {
                     color: var(--pm-gold-color);
