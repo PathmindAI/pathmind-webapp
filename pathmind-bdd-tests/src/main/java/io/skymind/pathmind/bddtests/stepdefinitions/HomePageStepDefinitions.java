@@ -131,4 +131,24 @@ public class HomePageStepDefinitions {
     public void clickToTheUniqueNoteOnTheSearchResultPage() {
         homePageSteps.clickToTheUniqueNoteOnTheSearchResultPage("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo" + Serenity.sessionVariableCalled("noteRandomNumber"));
     }
+
+    @Then("^Check search result page project name contains archived tag$")
+    public void checkSearchResultPageProjectNameContainsArchivedTag() {
+        homePageSteps.checkSearchResultPageProjectNameContainsArchivedTag("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
+    }
+
+    @Then("^Check Search Results for value is '(.*)'$")
+    public void checkSearchResultsForValueIs(String value) {
+        homePageSteps.checkSearchResultsForValueIs(value);
+    }
+
+    @When("^Input '(.*)' to the notes search field with unique number$")
+    public void inputSearchTestToTheNotesSearchField(String text) {
+        homePageSteps.inputToTheNotesSearchField(text + Serenity.sessionVariableCalled("searchRandomNumber"));
+    }
+
+    @Then("^Check that search counter is '(\\d+)'$")
+    public void checkThatSearchCounterIs(String counter) {
+        homePageSteps.checkThatSearchCounterIs(counter);
+    }
 }
