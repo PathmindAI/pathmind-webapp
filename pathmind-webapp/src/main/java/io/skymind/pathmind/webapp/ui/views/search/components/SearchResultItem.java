@@ -58,7 +58,7 @@ public class SearchResultItem extends VerticalLayout {
             if (experiment != null) {
                 boolean isFavorite = ExperimentUtils.isFavorite(experiment);
                 tags.add(new FavoriteStar(isFavorite, newIsFavorite -> 
-                experimentDAO.markAsFavorite(experiment.getId(), newIsFavorite)));
+                        ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite)));
             }
         }
         tags.add(LabelFactory.createLabel(searchResultType.getName(), CssPathmindStyles.TAG_LABEL, CssPathmindStyles.TAG_OUTLINE_LABEL));
