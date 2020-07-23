@@ -1,50 +1,6 @@
-Feature: Nav bar buttons
+@search
+Feature: Nav bar search
 
-  Scenario: Click dashboard btn and check that dashboard opened
-    Given Login to the pathmind
-    When Open projects page
-    When Click create new project button
-    When Input name of the new project AutotestProject and click Create project button
-    When Open projects page
-    When Open dashboard page
-    Then Check that dashboard page opened
-
-  Scenario: Click projects btn and check that projects page opened
-    Given Login to the pathmind
-    When Open projects page
-    Then Check that projects page opened
-
-  Scenario: Open home page and check Learn btn
-    Given Login to the pathmind
-    When Click learn btn
-    Then Check that learn page https://help.pathmind.com/en/ opened
-    Then Close browser tab
-
-  Scenario: Click user account btn and check that account page opened
-    Given Login to the pathmind
-    When Open user account page
-    Then Check that user account page opened
-
-  Scenario: Check nav bar Projects highlighted button
-    Given Login to the pathmind
-    Then Check that projects button highlight is false
-    When Create new CoffeeShop project with single reward function
-    Then Check that projects button highlight is false
-    When Click project start run button
-    Then Check that projects button highlight is false
-    When Open projects page
-    Then Check that projects button highlight is true
-    When Open project AutotestProject on projects page
-    Then Check that projects button highlight is false
-    Then Click the model name 1
-    Then Check that projects button highlight is false
-    Then Click the experiment name 1
-    Then Check that projects button highlight is false
-    When Click in 'Stop Training' button
-    Then Check that the 'Stop Training' confirmation dialog is shown
-    When In confirmation dialog click in 'Stop Training' button
-
-  @notesSearch
   Scenario: Check notes search
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
@@ -57,7 +13,6 @@ Feature: Nav bar buttons
     When Check that new experiment AutotestProject page is opened
     Then Check notes search field text is ''
 
-  @notesSearch
   Scenario: Check project name search
     Given Login to the pathmind
     When Create new CoffeeShop project with draft model
@@ -67,7 +22,6 @@ Feature: Nav bar buttons
     Then Click AutotestProject from search page
     Then Check that project AutotestProject page is opened
 
-  @notesSearch
   Scenario: Check project name archived tag
     Given Login to the pathmind
     When Create new CoffeeShop project with draft model
@@ -78,7 +32,6 @@ Feature: Nav bar buttons
     When Click notes search btn
     Then Check search result page project name contains archived tag
 
-  @notesSearch
   Scenario: Check model name search
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
@@ -86,7 +39,6 @@ Feature: Nav bar buttons
     When Click notes search btn
     When Check search result page contains model name '1'
 
-  @notesSearch
   Scenario: Check experiment name search
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
@@ -94,22 +46,48 @@ Feature: Nav bar buttons
     When Click notes search btn
     When Check search result page contains model name '1'
 
-  @notesSearch
   Scenario: Check search field clear button
     Given Login to the pathmind
     When Input 'AutotestNoteSearch' to the notes search field
     When Click notes clear btn
     Then Check notes search field text is ''
 
-  @notesSearch
+  Scenario: Check search field clear after loupe btn click
+    Given Login to the pathmind
+    When Input 'AutotestNoteSearch' to the notes search field
+    When Click notes search btn
+    Then Check notes search field text is ''
+
+  Scenario: Check search result counter
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Open projects page
+    When Generate unique number 'searchRandomNumber'
+    When Click edit AutotestProject project icon from projects page
+    When Rename project name to 1_SearchTest
+    When Click in 'Rename Project' button
+    When Create new CoffeeShop project with single reward function
+    When Open projects page
+    When Click edit AutotestProject project icon from projects page
+    When Rename project name to 2_SearchTest
+    When Click in 'Rename Project' button
+    When Input 'SearchTest' to the notes search field with unique number
+    When Click notes search btn
+    Then Check that search counter is '2'
+
   Scenario: Check search field empty case
     Given Login to the pathmind
     When Click notes search btn
     Then Check that dashboard page opened
 
-  @notesSearch
   Scenario: Check search field empty case
     Given Login to the pathmind
     When Input ' ' to the notes search field
     When Click notes search btn
     Then Check that dashboard page opened
+
+  Scenario: Check Search Results for value
+    Given Login to the pathmind
+    When Input 'AutotestNoteSearch' to the notes search field
+    When Click notes search btn
+    Then Check Search Results for value is 'AutotestNoteSearch'
