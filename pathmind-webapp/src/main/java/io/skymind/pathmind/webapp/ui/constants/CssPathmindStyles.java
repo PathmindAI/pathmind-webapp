@@ -21,5 +21,10 @@ public class CssPathmindStyles
 
 	public static final String PROJECT_TITLE = "project-title-label";
 	
-	public static final String CREATE_PROJECT_BUTTON = "create-project-button";
+    public static final String CREATE_PROJECT_BUTTON = "create-project-button";
+    
+    public static final String TAG_LABEL = "tag";
+    public static final String TAG_OUTLINE_LABEL = "tag-outline";
+
+    public static final String HIGHLIGHT_LABEL = "highlight-label";
 }
