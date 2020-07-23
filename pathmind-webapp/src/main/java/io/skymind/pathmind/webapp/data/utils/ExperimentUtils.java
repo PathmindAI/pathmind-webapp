@@ -158,8 +158,8 @@ public class ExperimentUtils
         ui.navigate(NewExperimentView.class, experiment.getId());
     }
 
-    public static void archiveExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean isArchive) {
+    public static void archiveExperiment(UI ui, ExperimentDAO experimentDAO, Experiment experiment, boolean isArchive) {
 	    experimentDAO.archive(experiment.getId(), isArchive);
-	    EventBus.post(new ExperimentUpdatedBusEvent(experiment));
+	    EventBus.post(new ExperimentUpdatedBusEvent(ui, experiment));
     }
 }

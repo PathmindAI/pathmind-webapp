@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -288,12 +289,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		segmentIntegrator.rewardFuntionCreated();
 		
 		trainingService.startRun(experiment);
-        EventBus.post(new ExperimentUpdatedBusEvent(experiment, true));
+        getUI().ifPresent(ui -> EventBus.post(new ExperimentUpdatedBusEvent(ui, experiment, true)));
 		segmentIntegrator.discoveryRunStarted();
 
 		unsavedChanges.setVisible(false);
 
-		getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experimentId));
+		navigateToExperimentView(experiment);
 	}
 
 	private void handleSaveDraftClicked(Command afterClickedCallback) {
@@ -312,14 +313,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private void archiveExperiment(Experiment experimentToArchive) {
         ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
-            ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
+            getUI().ifPresent(ui -> ExperimentUtils.archiveExperiment(ui, experimentDAO, experimentToArchive, true));
+            checkExperimentsAndUpdateUI();
         });
     }
 
     private void unarchiveExperiment() {
         ConfirmationUtils.unarchive("experiment", () -> {
-            ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
-            getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
+            getUI().ifPresent(ui -> {
+                ExperimentUtils.archiveExperiment(ui, experimentDAO, experiment, false);
+                ui.navigate(ExperimentView.class, experiment.getId());
+            });
         });
     }
 
@@ -354,7 +358,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		}
 	}
 
-	private void navigateToAnotherExperiment(UI ui, Experiment targetExperiment) {
+	private void navigateToExperiment(UI ui, Experiment targetExperiment) {
         if (ExperimentUtils.isDraftRunType(targetExperiment)) {
             ui.navigate(NewExperimentView.class, targetExperiment.getId());
         } else {
@@ -480,7 +484,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         return isSameModel(modelId) && !experiments.contains(eventExperiment);
     }
 
-    private void updateNavBarExperiments() {
+    private void checkExperimentsAndUpdateUI() {
         experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
 
         if (experiments.isEmpty()) {
@@ -490,15 +494,50 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                     .noneMatch(e -> e.getId() == experimentId);
             if (selectedExperimentWasArchived) {
                 Experiment newSelectedExperiment = experiments.get(0);
-                PushUtils.push(getUI(), ui -> navigateToAnotherExperiment(ui, newSelectedExperiment));
+                PushUtils.push(getUI(), ui -> navigateToExperiment(ui, newSelectedExperiment));
             }
             else {
-                PushUtils.push(getUI(), ui -> {
+                PushUtils.push(getUI(), ui ->  {
                     selectExperiment(experiment);
                     experimentsNavbar.setExperiments(ui, experiments, experiment);
                 });
             }
         }
+    }
+
+    private void updateNavBarExperimentsInEventHandling() {
+        experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+
+        if (experiments.isEmpty()) {
+            alertAndThen("Experiment Archived", "The experiment was archived.",
+                    ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+        } else {
+            boolean selectedExperimentWasArchived = experiments.stream()
+                    .noneMatch(e -> e.getId() == experimentId);
+            if (selectedExperimentWasArchived) {
+                Experiment newSelectedExperiment = experiments.get(0);
+                alertAndThen("Experiment Archived", "The experiment was archived.",
+                        ui -> navigateToExperiment(ui, newSelectedExperiment));
+            }
+            else {
+                // a new experiment was created, let's just show it in nav bar
+                PushUtils.push(getUI(), ui ->  {
+                    selectExperiment(experiment);
+                    experimentsNavbar.setExperiments(ui, experiments, experiment);
+                });
+            }
+        }
+    }
+
+    private void alertAndThen(String header, String text, Consumer<UI> consumer) {
+        PushUtils.push(getUI(), ui -> {
+            ConfirmDialog confirmDialog = new ConfirmDialog(
+                    header,
+                    text,
+                    "Ok", evt -> PushUtils.push(getUI(), consumer::accept)
+            );
+            confirmDialog.open();
+        });
     }
 
     private boolean isSameModel(long modelId) {
@@ -514,7 +553,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         @Override
         public void handleBusEvent(ExperimentCreatedBusEvent event) {
             if (isNewExperimentForThisViewModel(event.getExperiment(), event.getModelId())) {
-                updateNavBarExperiments();
+                updateNavBarExperimentsInEventHandling();
             }
         }
 
@@ -529,11 +568,19 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         @Override
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
             if (isSameExperiment(event.getExperiment()) && event.isStartedTraining()) {
-                navigateToExperimentView(event.getExperiment());
+                alertAndThen("Training started", "The experiment training started.",
+                        ui -> navigateToExperimentView(event.getExperiment()));
             }
             else if (isSameModel(event.getModelId())) {
-                updateNavBarExperiments();
+                updateNavBarExperimentsInEventHandling();
             }
+        }
+
+        @Override
+        public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
+            // will check if the object reference is the same, if it is, then the current view generated the event
+            // and we shouldn't deal with it
+            return getUI().isPresent() && event.getUi() != getUI().get();
         }
 
         @Override

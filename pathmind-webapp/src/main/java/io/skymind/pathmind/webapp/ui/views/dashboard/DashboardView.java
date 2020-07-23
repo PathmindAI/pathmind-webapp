@@ -157,7 +157,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
     private void archiveExperiment(DashboardItem item) {
         ConfirmationUtils.archive("this experiment", () -> {
-            ExperimentUtils.archiveExperiment(experimentDAO, item.getExperiment(), true);
+            getUI().ifPresent(ui -> ExperimentUtils.archiveExperiment(ui, experimentDAO, item.getExperiment(), true));
             dataProvider.refreshAll();
         });
     }

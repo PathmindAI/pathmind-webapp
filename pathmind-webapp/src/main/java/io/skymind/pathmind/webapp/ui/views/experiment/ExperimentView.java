@@ -46,6 +46,7 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
+import io.skymind.pathmind.webapp.ui.utils.UIConstants;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
@@ -57,11 +58,13 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPane
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
+import liquibase.pro.packaged.C;
 import org.springframework.beans.factory.annotation.Value;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -364,14 +367,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void archiveExperiment(Experiment experimentToArchive) {
         ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
-            ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
+            getUI().ifPresent(ui -> ExperimentUtils.archiveExperiment(ui, experimentDAO, experimentToArchive, true));
+            checkExperimentsAndUpdateUI();
         });
     }
 
     private void unarchiveExperiment() {
         ConfirmationUtils.unarchive("experiment", () -> {
-            ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
-            getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
+            getUI().ifPresent(ui -> {
+                ExperimentUtils.archiveExperiment(ui, experimentDAO, experiment, false);
+                ui.navigate(ExperimentView.class, experiment.getId());
+            });
         });
     }
 
@@ -578,7 +584,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return isSameModel(modelId) && !experiments.contains(eventExperiment);
     }
 
-    private void updateNavBarExperiments() {
+    private void checkExperimentsAndUpdateUI() {
         experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
 
         if (experiments.isEmpty()) {
@@ -597,6 +603,41 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 });
             }
         }
+    }
+
+    private void updateNavBarExperimentsInEventHandling() {
+        experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+
+        if (experiments.isEmpty()) {
+            alertAndThen("Experiment Archived", "The experiment was archived.",
+                    ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+        } else {
+            boolean selectedExperimentWasArchived = experiments.stream()
+                    .noneMatch(e -> e.getId() == experimentId);
+            if (selectedExperimentWasArchived) {
+                Experiment newSelectedExperiment = experiments.get(0);
+                alertAndThen("Experiment Archived", "The experiment was archived.",
+                        ui -> navigateToExperiment(ui, newSelectedExperiment));
+            }
+            else {
+                // a new experiment was created, let's just show it in nav bar
+                PushUtils.push(getUI(), ui ->  {
+                    selectExperiment(experiment);
+                    experimentsNavbar.setExperiments(ui, experiments, experiment);
+                });
+            }
+        }
+    }
+
+    private void alertAndThen(String header, String text, Consumer<UI> consumer) {
+        PushUtils.push(getUI(), ui -> {
+            ConfirmDialog confirmDialog = new ConfirmDialog(
+                    header,
+                    text,
+                    "Ok", evt -> PushUtils.push(getUI(), consumer::accept)
+            );
+            confirmDialog.open();
+        });
     }
 
     private boolean isSameModel(long modelId) {
@@ -655,7 +696,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     updateDetailsForExperiment();
                 });
             } else if (isNewExperimentForThisViewModel(event.getRun().getExperiment(), event.getModelId())) {
-                updateNavBarExperiments();
+                updateNavBarExperimentsInEventHandling();
             }
         }
 
@@ -679,7 +720,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         @Override
         public void handleBusEvent(ExperimentCreatedBusEvent event) {
             if (isNewExperimentForThisViewModel(event.getExperiment(), event.getModelId())) {
-                updateNavBarExperiments();
+                updateNavBarExperimentsInEventHandling();
             }
         }
 
@@ -693,8 +734,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         @Override
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
             if (isSameModel(event.getModelId())) {
-                updateNavBarExperiments();
+                updateNavBarExperimentsInEventHandling();
             }
+        }
+
+        @Override
+        public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
+            // will check if the object reference is the same, if it is, then the current view generated the event
+            // and we shouldn't deal with it
+            return getUI().isPresent() && event.getUi() != getUI().get();
         }
 
         @Override
