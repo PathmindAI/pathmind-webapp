@@ -17,6 +17,7 @@ import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.router.RouterLink;
 
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -45,13 +46,14 @@ public class DashboardLine extends HorizontalLayout {
 	private static String INPROGRESS_INDICATOR = "...";
 	private String experimentNotes = "—";
 	
-	public DashboardLine(DashboardItem item, SerializableConsumer<DashboardItem> clickHandler, SerializableConsumer<DashboardItem> archiveAction) {
+	public DashboardLine(ExperimentDAO experimentDAO, DashboardItem item, SerializableConsumer<DashboardItem> clickHandler, SerializableConsumer<DashboardItem> archiveAction) {
         this.dashboardItem = item;
         Experiment experiment = item.getExperiment();
 		setClassName("dashboard-line");
         breadcrumb = new Breadcrumbs(item.getProject(), item.getModel(), experiment, false);
         if (experiment != null) {
-            favoriteStar = new FavoriteStar(ExperimentUtils.isFavorite(experiment), () -> System.out.println("After clicking the star, toggle the Boolean value in DB."));
+            favoriteStar = new FavoriteStar(ExperimentUtils.isFavorite(experiment), newIsFavorite -> 
+                experimentDAO.markAsFavorite(experiment.getId(), newIsFavorite));
         }
 		timestamp = new Span();
 		

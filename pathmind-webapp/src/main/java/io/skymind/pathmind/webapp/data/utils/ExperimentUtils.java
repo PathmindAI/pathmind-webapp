@@ -34,7 +34,7 @@ public class ExperimentUtils
 		newExperiment.setDateCreated(LocalDateTime.now());
 		newExperiment.setModelId(modelId);
 		newExperiment.setName(name);
-		newExperiment.setRewardFunction(rewardFunction);
+        newExperiment.setRewardFunction(rewardFunction);
 		return newExperiment;
 	}
 
@@ -43,7 +43,7 @@ public class ExperimentUtils
 	}
 
 	public static boolean isFavorite(Experiment experiment) {
-		return true; //experiment.isFavorite();
+		return experiment.isFavorite();
 	}
 
 	public static String getProjectName(Experiment experiment) {

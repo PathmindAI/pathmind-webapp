@@ -43,9 +43,8 @@ public class ExperimentDAO
         return result;
     }
 
-    public Optional<Experiment> markAsFavorite(long experimentId, boolean isFavorite) {
+    public void markAsFavorite(long experimentId, boolean isFavorite) {
 	    ExperimentRepository.markAsFavorite(ctx, experimentId, isFavorite);
-		return getExperiment(experimentId);
 	}
 
     public Optional<Experiment> getExperimentIfAllowed(long experimentId, long userId) {

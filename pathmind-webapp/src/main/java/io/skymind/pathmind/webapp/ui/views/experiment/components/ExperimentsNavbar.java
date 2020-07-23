@@ -40,11 +40,13 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 	private Consumer<Experiment> selectExperimentConsumer;
 	private Consumer<Experiment> archiveExperimentHandler;
     private ExperimentsNavBarItem currentExperimentNavItem;
+    private ExperimentDAO experimentDAO;
 
 	public ExperimentsNavbar(ExperimentDAO experimentDAO, long modelId, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler)
 	{
         this.selectExperimentConsumer = selectExperimentConsumer;
         this.archiveExperimentHandler = archiveExperimentHandler;
+        this.experimentDAO = experimentDAO;
 		rowsWrapper = new VerticalLayout();
 		rowsWrapper.addClassName("experiments-navbar-items");
 		rowsWrapper.setPadding(false);
@@ -63,7 +65,7 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 		
 		experiments.stream()
 			.forEach(experiment -> {
-				ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(ui, experiment, selectExperimentConsumer, archiveExperimentHandler);
+				ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(experimentDAO, ui, experiment, selectExperimentConsumer, archiveExperimentHandler);
 				experimentsNavBarItems.add(navBarItem);
 				if(experiment.equals(currentExperiment)) {
 					navBarItem.setAsCurrent();
@@ -124,7 +126,7 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 		private Experiment experiment;
 		private Component statusComponent;
 
-		ExperimentsNavBarItem(UI ui, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler) {
+		ExperimentsNavBarItem(ExperimentDAO experimentDAO, UI ui, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler) {
 			this.experiment = experiment;
 			Boolean isDraft = ExperimentUtils.isDraftRunType(experiment);
 			Boolean isFavorite = ExperimentUtils.isFavorite(experiment);
@@ -139,7 +141,10 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
             archiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
             archiveExperimentButton.addClassName("action-button");
 			VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
-				add(createExperimentText(experiment.getName(), DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId), isFavorite));
+				add(createExperimentText(
+                    experiment.getName(),
+                    DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId),
+                    new FavoriteStar(isFavorite, newIsFavorite -> experimentDAO.markAsFavorite(experiment.getId(), newIsFavorite))));
                 add(archiveExperimentButton);
 			});
 		}
@@ -159,9 +164,9 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 			return new Icon(VaadinIcon.EXCLAMATION_CIRCLE_O);
 		}
 
-		private Div createExperimentText(String experimentNumber, String experimentDateCreated, Boolean isFavorite) {
+		private Div createExperimentText(String experimentNumber, String experimentDateCreated, FavoriteStar favoriteStar) {
 			Paragraph experimentNameLine = new Paragraph("Experiment #" + experimentNumber);
-            experimentNameLine.add(new FavoriteStar(isFavorite, () -> System.out.println("After clicking the star, toggle the Boolean value in DB.")));
+            experimentNameLine.add(favoriteStar);
 			Div experimentNameWrapper = new Div();
 			experimentNameWrapper.add(experimentNameLine);
 			experimentNameWrapper.add(new Paragraph("Created " + experimentDateCreated));
