@@ -38,5 +38,4 @@ public class SearchResultsDataProvider extends AbstractBackEndDataProvider<Searc
         }
     }
 
-
 }

@@ -14,7 +14,12 @@ public class PathmindUtils
 	 * we can keep the same standard and just add a String to the same method signature.
 	 */
 	public static final String getPageTitle() {
-		return getPageTitle(PathmindStringUtils.camelCaseToWords(VaadinUtils.getViewName()));
+        String viewName = VaadinUtils.getViewName();
+        if (viewName.contains("-")) {
+            viewName = PathmindStringUtils.replaceHyphenWithSpace(viewName);
+            return getPageTitle(PathmindStringUtils.toCapitalize(viewName));
+        }
+        return getPageTitle(PathmindStringUtils.camelCaseToWords(viewName));
 	}
 
 	public static final String getPageTitle(String title) {
