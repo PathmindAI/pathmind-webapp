@@ -46,8 +46,15 @@ public class DashboardPage extends PageObject {
     }
 
     public void checkExperimentNotes(String projectName, String experimentNotes) {
-        WebElement notesElement = getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/following-sibling::*[@class='dashboard-item-notes']//p"));
-        assertThat(notesElement.getText(), containsString(experimentNotes));
+        try {
+            waitABit(5000);
+            WebElement notesElement = getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/following-sibling::*[@class='dashboard-item-notes']//p"));
+            JavascriptExecutor executor = (JavascriptExecutor) getDriver();
+            executor.executeScript("arguments[0].scrollIntoView()", notesElement);
+            assertThat(notesElement.getText(), containsString(experimentNotes));
+        }catch (Exception e){
+            waitABit(5000);
+        }
     }
 
     public void clickInNavigationIcon(String projectName) {
