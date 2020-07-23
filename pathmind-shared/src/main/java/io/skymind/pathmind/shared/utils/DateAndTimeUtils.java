@@ -10,13 +10,13 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class DateAndTimeUtils {
-    public static final DateTimeFormatter STANDARD_DATE_ONLY_FOMATTER = DateTimeFormatter.ofPattern("MMM d yyyy");
-    public static final DateTimeFormatter STANDARD_DATE_AND_TIME_FOMATTER = DateTimeFormatter.ofPattern("MMM d yyyy H:mm");
-    public static final DateTimeFormatter STANDARD_DATE_AND_TIME_SHORT_FOMATTER = DateTimeFormatter.ofPattern("MMM d H:mm");
+    public static final DateTimeFormatter STANDARD_DATE_ONLY_FOMATTER = DateTimeFormatter.ofPattern("MMM d, yyyy");
+    public static final DateTimeFormatter STANDARD_DATE_AND_TIME_FOMATTER = DateTimeFormatter.ofPattern("MMM d, yyyy h:mm a");
+    public static final DateTimeFormatter STANDARD_DATE_AND_TIME_SHORT_FOMATTER = DateTimeFormatter.ofPattern("MMM d h:mm a");
 
     public static final String formatDateAndTimeShortFormatter(LocalDateTime localDateTime, String userZoneId) {
         if (localDateTime == null) {
-            return "-";
+            return "—";
         }
         if (userZoneId == null) {
             return STANDARD_DATE_AND_TIME_SHORT_FOMATTER.format(localDateTime);

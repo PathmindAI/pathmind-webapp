@@ -22,6 +22,7 @@ Feature: Save Model draft
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
     When Upload model tuple_models/CoffeeShopTuple.zip
+    When Check that model successfully uploaded
     Then Click wizard model details next btn
     When Open projects page
     When Open project AutotestProject on projects page
@@ -35,6 +36,7 @@ Feature: Save Model draft
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
     When Upload model tuple_models/CoffeeShopTuple.zip
+    When Check that model successfully uploaded
     When Click wizard model details next btn
     When Input reward variable names kitchen_cleanliness
     When Open projects page

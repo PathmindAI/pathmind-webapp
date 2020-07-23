@@ -1,54 +1,3 @@
-/* Search box button*/
-:host(.search-box_button) {
-    background: transparent;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    box-shadow: inset 0px 0px 0px 1px rgba(26, 41, 73, 1);
-    margin-left: 1px;
-    height: auto;
-
-    --iron-icon-fill-color: var(--pm-text-color);
-}
-
-/* Large image button*/
-:host(.large-image-btn) {
-    margin: 0;
-    height: auto;
-    background: transparent;
-    padding: var(--lumo-space-s) var(--lumo-space-l);
-}
-:host(.large-image-btn):host([disabled]) {
-    background-color: transparent !important;
-    opacity: 0.5;
-}
-:host(.large-image-btn:hover)::before {
-    opacity: 0;
-}
-:host(.large-image-btn:hover) {
-    font-weight: bold;
-}
-
-:host(.large-image-btn) .vaadin-button-container {
-    display: flex;
-    flex-direction: column;
-}
-
-:host(.large-image-btn) .vaadin-button-container:before {
-    height: 0;
-}
-
-:host(.large-image-btn) [part="prefix"] {
-    margin: 0;
-}
-
-:host(.large-image-btn.run) {
-    color: var(--pm-friendly-color);
-}
-
-:host(.large-image-btn.stop) {
-    color: var(--pm-danger-color);
-}
-
 /* Primary Button Styles */
 :host([theme~="primary"]) {
     font-weight: bold;
@@ -127,4 +76,55 @@
 :host(.action-button[title="Archive"]) [part] ::slotted(iron-icon) {
     width: var(--lumo-icon-size-l);
     height: var(--lumo-icon-size-l);
+}
+
+/* Search box button*/
+:host(.search-box_button) {
+    background: transparent;
+    border: 1px solid var(--pm-gray-color);
+    border-left: none;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    height: auto;
+
+    --iron-icon-fill-color: var(--pm-text-color);
+}
+
+/* Large image button*/
+:host(.large-image-btn) {
+    margin: 0;
+    height: auto;
+    background: transparent;
+    padding: var(--lumo-space-s) var(--lumo-space-l);
+}
+:host(.large-image-btn):host([disabled]) {
+    background-color: transparent !important;
+    opacity: 0.5;
+}
+:host(.large-image-btn:hover)::before {
+    opacity: 0;
+}
+:host(.large-image-btn:hover) {
+    font-weight: bold;
+}
+
+:host(.large-image-btn) .vaadin-button-container {
+    display: flex;
+    flex-direction: column;
+}
+
+:host(.large-image-btn) .vaadin-button-container:before {
+    height: 0;
+}
+
+:host(.large-image-btn) [part="prefix"] {
+    margin: 0;
+}
+
+:host(.large-image-btn.run) {
+    color: var(--pm-friendly-color);
+}
+
+:host(.large-image-btn.stop) {
+    color: var(--pm-danger-color);
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -41,7 +42,6 @@ import io.skymind.pathmind.webapp.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentViewNavigationUtils;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
@@ -119,7 +119,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
                 break;
             case WriteRewardFunction:
                 if (item.getExperiment() == null) {
-                    getUI().ifPresent(ui -> ExperimentViewNavigationUtils.createAndNavigateToNewExperiment(ui, experimentDAO, item.getModel().getId()));
+                    getUI().ifPresent(ui -> ExperimentUtils.createAndNavigateToNewExperiment(ui, experimentDAO, item.getModel().getId()));
                 } else {
                     getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, item.getExperiment().getId()));
                 }
@@ -157,7 +157,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
     private void archiveExperiment(DashboardItem item) {
         ConfirmationUtils.archive("this experiment", () -> {
-            experimentDAO.archive(item.getExperiment().getId(), true);
+            ExperimentUtils.archiveExperiment(experimentDAO, item.getExperiment(), true);
             dataProvider.refreshAll();
         });
     }

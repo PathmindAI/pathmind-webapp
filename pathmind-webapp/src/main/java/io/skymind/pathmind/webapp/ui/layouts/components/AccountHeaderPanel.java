@@ -103,4 +103,12 @@ public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSu
 	        searchBox.clearSearchValue();
         }
     }
+
+    public void setSearchBoxValue(String text) {
+	    searchBox.setValue(text);
+    }
+
+    public String getSearchBoxValue() {
+	    return searchBox.getValue();
+    }
 }
