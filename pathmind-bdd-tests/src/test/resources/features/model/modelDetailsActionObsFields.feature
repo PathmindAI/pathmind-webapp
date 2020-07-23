@@ -7,6 +7,7 @@ Feature: Check Model Details Actions/Observations fields
     When Click create new project button
     When Input name of the new project <project name> and click Create project button
     When Upload model <model>
+    When Check that model successfully uploaded
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment <project name> page is opened
@@ -18,7 +19,7 @@ Feature: Check Model Details Actions/Observations fields
     Then Check model page model details observations is <observations>
 
     Examples:
-      | project name    | model                                                            | reward function file                                             | actions | observations |
-      | AutotestProject | Production_Single_Agent/CheeseChasing_6Observations_4Actions.zip | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt | 4       | 6            |
-      | AutotestProject | Production_Single_Agent/CoffeeShopPathmindDemo.zip               | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | 4       | 5            |
-      | AutotestProject | Production_Single_Agent/FAST_RailModel_4Observation_3Actions.zip | Production_Single_Agent/Two_Variables_Reward_Function.txt        | 3       | 4            |
+      | project name    | model                                       | reward function file                                             | actions | observations |
+      | AutotestProject | tuple_models/CallCenterTuples.zip           | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt | 5       | 60            |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip            | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | 4       | 5            |
+      | AutotestProject | tuple_models/SimpleSchedulingTuplesTest.zip | Production_Single_Agent/Two_Variables_Reward_Function.txt        | 6       | 21            |

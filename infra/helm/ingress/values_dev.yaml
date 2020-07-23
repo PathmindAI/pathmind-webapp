@@ -50,6 +50,10 @@ ingress:
       paths: [/:8080:pathmind-ma-dev]
     - host: ma.test.devpathmind.com
       paths: [/:8080:pathmind-ma-test]
+    - host: zinc-factory.devpathmind.com
+      paths: [/:8080:policy-server-zinc-factory]
+    - host: leuphana.devpathmind.com
+      paths: [/:8080:policy-server-leuphana]
 
   tls: 
     - secretName: letsencrypt-dev
@@ -65,6 +69,8 @@ ingress:
         - zalenium.dev.devpathmind.com
         - ma.dev.devpathmind.com
         - ma.test.devpathmind.com
+        - zinc-factory.devpathmind.com
+        - leuphana.devpathmind.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

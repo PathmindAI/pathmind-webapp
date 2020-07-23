@@ -153,15 +153,25 @@ public class GenericPage extends PageObject {
     }
 
     public void duplicateCurrentTab() {
+        waitABit(3000);
         String url = getDriver().getCurrentUrl();
         ((JavascriptExecutor)getDriver()).executeScript("window.open()");
-        ArrayList<String> tabs = new ArrayList<String>(getDriver().getWindowHandles());
+        ArrayList<String> tabs = new ArrayList<>(getDriver().getWindowHandles());
         getDriver().switchTo().window(tabs.get(1));
         getDriver().get(url);
     }
 
-    public void opeTab(int tab) {
-        ArrayList<String> tabs = new ArrayList<String>(getDriver().getWindowHandles());
+    public void openTab(int tab) {
+        waitABit(3000);
+        ArrayList<String> tabs = new ArrayList<>(getDriver().getWindowHandles());
         getDriver().switchTo().window(tabs.get(tab));
+    }
+
+    public void checkPageUrlIs(String url) {
+        assertThat(getDriver().getCurrentUrl(), is(url));
+    }
+
+    public void checkPageTitleTagTextIs(String text) {
+        assertThat(getDriver().getTitle(), is(text));
     }
 }

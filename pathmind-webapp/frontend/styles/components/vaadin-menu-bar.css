@@ -1,13 +1,12 @@
 :host(.account-menu) span {
-  align-self: center;
   color: var(--pm-text-color);
+  margin-left: var(--lumo-space-xs);
 }
 
 :host(.account-menu) iron-icon {
   --iron-icon-height: 1rem;
   --iron-icon-width: 1rem;
   fill: var(--pm-text-color);
-  align-self: center;
 }
 
 :host(.account-menu) [part="menu-bar-button"],
