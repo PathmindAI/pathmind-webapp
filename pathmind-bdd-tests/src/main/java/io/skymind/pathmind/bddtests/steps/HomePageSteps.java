@@ -118,4 +118,19 @@ public class HomePageSteps {
     public void clickToTheUniqueNoteOnTheSearchResultPage(String text) {
         homePage.clickToTheUniqueNoteOnTheSearchResultPage(text);
     }
+
+    @Step
+    public void checkSearchResultPageProjectNameContainsArchivedTag(String name) {
+        homePage.checkSearchResultPageProjectNameContainsArchivedTag(name);
+    }
+
+    @Step
+    public void checkSearchResultsForValueIs(String value) {
+        homePage.checkSearchResultsForValueIs(value);
+    }
+
+    @Step
+    public void checkThatSearchCounterIs(String counter) {
+        homePage.checkThatSearchCounterIs(counter);
+    }
 }
