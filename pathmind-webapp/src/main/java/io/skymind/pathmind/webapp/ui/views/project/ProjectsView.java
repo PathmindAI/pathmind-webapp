@@ -80,7 +80,7 @@ public class ProjectsView extends PathMindDefaultView
 				"Active",
 				projectGrid,
 				this::getProjects,
-				(projectId, isArchive) -> projectDAO.archive(projectId, isArchive));
+				(project, isArchive) -> projectDAO.archive(project.getId(), isArchive));
 	}
 
 	private void setupProjectGrid()
@@ -103,21 +103,19 @@ public class ProjectsView extends PathMindDefaultView
 				.setResizable(true)
 				.setSortable(true);
 
-		projectGrid.addColumn(new ZonedDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+		projectGrid.addColumn(new ZonedDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Project::getDateCreated))
 				.setHeader("Created")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
-				.setResizable(true)
-				.setSortable(true);
+				.setResizable(true);
 
-		Grid.Column<Project> lastActivityColumn = projectGrid.addColumn(new ZonedDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+		Grid.Column<Project> lastActivityColumn = projectGrid.addColumn(new ZonedDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Project::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
-				.setResizable(true)
-				.setSortable(true);
+				.setResizable(true);
 
 		projectGrid.addColumn(project -> {
 				String userNotes = project.getUserNotes();
