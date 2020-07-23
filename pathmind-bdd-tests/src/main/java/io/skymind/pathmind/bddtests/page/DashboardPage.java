@@ -36,8 +36,13 @@ public class DashboardPage extends PageObject {
     }
 
     public void checkStageStatus(String projectName, String stage, String stageStatus) {
-        WebElement stageElement = getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::span[text()='" + stage + "']"));
-        assertThat(stageElement.getAttribute("class"), containsString(stageStatus));
+        waitABit(5000);
+        try {
+            WebElement stageElement = getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::span[text()='" + stage + "']"));
+            assertThat(stageElement.getAttribute("class"), containsString(stageStatus));
+        } catch (Exception e) {
+            waitABit(5000);
+        }
     }
 
     public void checkExperimentNotesNotExist(String projectName) {
@@ -52,7 +57,7 @@ public class DashboardPage extends PageObject {
             JavascriptExecutor executor = (JavascriptExecutor) getDriver();
             executor.executeScript("arguments[0].scrollIntoView()", notesElement);
             assertThat(notesElement.getText(), containsString(experimentNotes));
-        }catch (Exception e){
+        } catch (Exception e) {
             waitABit(5000);
         }
     }
