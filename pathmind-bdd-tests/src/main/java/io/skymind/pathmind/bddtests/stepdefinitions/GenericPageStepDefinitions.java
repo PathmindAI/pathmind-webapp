@@ -6,6 +6,7 @@ import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
 import io.skymind.pathmind.bddtests.steps.GenericPageSteps;
 
+import java.io.IOException;
 import java.util.Date;
 
 public class GenericPageStepDefinitions {
@@ -127,5 +128,10 @@ public class GenericPageStepDefinitions {
     @When("^Generate unique number '(.*)'$")
     public void generateUniqueNumber(String name) {
         Serenity.setSessionVariable(name).to(new Date().getTime());
+    }
+
+    @When("^Generate big model with name (.*)$")
+    public void generateBigModelWithName(String name) throws IOException {
+        genericPageSteps.generateBigModelWithName(name);
     }
 }
