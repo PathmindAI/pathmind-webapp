@@ -96,6 +96,7 @@ public class DashboardPage extends PageObject {
     }
 
     public void clickStageWriteRewardFunctionFromDashboard(String projectName) {
-        getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/following-sibling::*[@class='stages-container']/descendant::span[text()='Write reward function']")).click();
+        waitABit(5000);
+        utils.clickElementRepeatIfStaleException(By.xpath("//span[text()='" + projectName + "']/following-sibling::*[@class='stages-container']/descendant::span[text()='Write reward function']"));
     }
 }
