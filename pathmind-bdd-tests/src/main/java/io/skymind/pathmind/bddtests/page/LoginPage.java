@@ -172,7 +172,7 @@ public class LoginPage extends PageObject {
     }
 
     public void checkThatLoginPageOpened() {
-        assertThat(getDriver().getTitle(), containsString("Pathmind | Sign - in"));
+        assertThat(getDriver().getTitle(), containsString("Pathmind | Sign In"));
         assertThat(getDriver().getCurrentUrl(), containsString("/sign-in"));
     }
 
