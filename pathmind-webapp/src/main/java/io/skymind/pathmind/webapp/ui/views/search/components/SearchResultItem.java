@@ -73,13 +73,13 @@ public class SearchResultItem extends VerticalLayout {
     private VerticalLayout createNameRow() {
         Boolean resultTypeModel = searchResultType.equals(SearchResultItemType.MODEL);
         Boolean resultTypeExperiment = searchResultType.equals(SearchResultItemType.EXPERIMENT);
-        Div projectName = highlightSearchResult(searchResult.getProjectName());
+        Div projectName = highlightSearchResult(searchResult.getProjectName(), null);
         VerticalLayout nameRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(projectName);
         if (resultTypeModel || resultTypeExperiment) {
-            nameRow.add(highlightSearchResult("Model #"+searchResult.getModelName()));
+            nameRow.add(highlightSearchResult("Model #"+searchResult.getModelName(), "(?i)Model\\s#?"+searchResult.getModelName()));
         }
         if (resultTypeExperiment) {
-            nameRow.add(highlightSearchResult("Experiment #"+searchResult.getExperimentName()));
+            nameRow.add(highlightSearchResult("Experiment #"+searchResult.getExperimentName(), "(?i)Experiment\\s#?"+searchResult.getExperimentName()));
         }
         nameRow.addClassName("name-row");
         return nameRow;
@@ -90,13 +90,13 @@ public class SearchResultItem extends VerticalLayout {
         if (notes.isEmpty()) {
             return new Div(new Span("—"));
         } else {
-            Div notesColumn = highlightSearchResult(notes);
+            Div notesColumn = highlightSearchResult(notes, null);
             notesColumn.addClassName("grid-notes-column");
             return notesColumn;
         }
     }
 
-    private Div highlightSearchResult(String columnText) {
+    private Div highlightSearchResult(String columnText, String toMatch) {
         Div searchResultColumn = new Div();
         String escapedKeyword = PathmindStringUtils.escapeNonAlphanumericalCharacters(decodedKeyword);
         String[] parts = columnText.split("(?i)((?<="+escapedKeyword+")|(?=(?i)"+escapedKeyword+"))");
@@ -105,6 +105,10 @@ public class SearchResultItem extends VerticalLayout {
             if (parts[i].toLowerCase().equals(decodedKeyword.toLowerCase())) {
                 searchResultColumn.add(
                     LabelFactory.createLabel(parts[i], CssPathmindStyles.HIGHLIGHT_LABEL)
+                );
+            } else if (toMatch != null && escapedKeyword.matches(toMatch)) {
+                searchResultColumn.add(
+                    LabelFactory.createLabel(columnText, CssPathmindStyles.HIGHLIGHT_LABEL)
                 );
             } else {
                 searchResultColumn.add(parts[i]);
