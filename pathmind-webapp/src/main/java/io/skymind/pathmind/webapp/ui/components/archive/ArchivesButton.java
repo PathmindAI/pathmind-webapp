@@ -4,22 +4,22 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 
 import io.skymind.pathmind.shared.data.ArchivableData;
-import io.skymind.pathmind.webapp.ui.components.PathmindButton;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 
 /**
  * Button is used because if we directly use the Icon then when we click on the icon it also results in
  * the grid's row selection listener being called which is not what we want.
  */
-public class ArchivesButton<T> extends PathmindButton
+public class ArchivesButton<T extends ArchivableData> extends Button
 {
-	public ArchivesButton(Grid<T> grid, ArchivableData data, Function<Boolean, List<T>> getFilteredData, BiConsumer<Long, Boolean> archiveDAO)
+	public ArchivesButton(Grid<T> grid, T data, Function<Boolean, List<T>> getFilteredData, BiConsumer<T, Boolean> archiveDAO)
 	{
 		super();
 
@@ -41,13 +41,13 @@ public class ArchivesButton<T> extends PathmindButton
 		setIcon(archiveIcon);
 		addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 		setClassName("action-button");
-		setTitle(data.isArchived() ? "Unarchive" : "Archive");
+        getElement().setAttribute("title", data.isArchived() ? "Unarchive" : "Archive");
 	}
 
 	// Weird looking logic but it's so that we stay on the same page once you reverse the archive value. We also
 	// need to set the items here so that the item is removed from the table.
-	private void changeArchiveStatus(Grid<T> grid, ArchivableData data, Function<Boolean, List<T>> getFilteredData, BiConsumer<Long, Boolean> archiveDAO) {
-		archiveDAO.accept(data.getId(), !data.isArchived());
+	private void changeArchiveStatus(Grid<T> grid, T data, Function<Boolean, List<T>> getFilteredData, BiConsumer<T, Boolean> archiveDAO) {
+		archiveDAO.accept(data, !data.isArchived());
 		data.setArchived(!data.isArchived());
 		grid.setItems(getFilteredData.apply(!data.isArchived()));
 	}

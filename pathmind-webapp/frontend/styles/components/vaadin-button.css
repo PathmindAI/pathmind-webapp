@@ -1,10 +1,90 @@
+/* Primary Button Styles */
+:host([theme~="primary"]) {
+    font-weight: bold;
+    min-width: 14rem;
+    height: var(--lumo-size-l);
+    border: 1px solid var(--pm-primary-color);
+}
+
+:host([theme~="primary"]:hover) {
+    box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.2);
+}
+
+:host([theme~="primary"]:hover)::before {
+    opacity: 0;
+}
+
+:host {
+    cursor: pointer; /* This is to override all Vaadin-Button on the webapp */
+}
+
+/* Default (Secondary) Button Styles */
+:host {
+    --_lumo-button-background-color: var(--pm-gray-color-lightest);
+    font-weight: bold;
+    min-width: 14rem;
+    height: var(--lumo-size-l);
+    border: 1px solid var(--pm-primary-color);
+}
+
+:host([disabled]) {
+    border-color: var(--lumo-primary-color-50pct);
+}
+
+:host(:hover) {
+    box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.08);
+}
+
+:host([theme~="tertiary"]),
+:host([theme~="tertiary-inline"]),
+:host([theme~="tertiary"][disabled]),
+:host([theme~="tertiary-inline"][disabled]) {
+    font-weight: normal;
+    border: none;
+}
+
+:host([theme~="tertiary"]:hover),
+:host([theme~="tertiary-inline"]:hover) {
+    color: var(--lumo-body-text-color);
+    box-shadow: none;
+}
+
+:host([focus-ring][theme~="tertiary"]) {
+    box-shadow: none;
+}
+
+:host([theme~="success"]) {
+    border-color: var(--lumo-success-color);
+}
+
+:host([theme~="error"]) {
+    border-color: var(--lumo-error-color);
+}
+
+:host([theme~="icon"]) {
+    border-color: transparent;
+}
+
+:host(.action-button) {
+    color: var(--pm-gray-color);
+}
+
+:host(.action-button:hover) {
+    color: var(--pm-primary-color);
+}
+
+:host(.action-button[title="Archive"]) [part] ::slotted(iron-icon) {
+    width: var(--lumo-icon-size-l);
+    height: var(--lumo-icon-size-l);
+}
+
 /* Search box button*/
 :host(.search-box_button) {
     background: transparent;
+    border: 1px solid var(--pm-gray-color);
+    border-left: none;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-    box-shadow: inset 0px 0px 0px 1px rgba(26, 41, 73, 1);
-    margin-left: 1px;
     height: auto;
 
     --iron-icon-fill-color: var(--pm-text-color);
@@ -47,72 +127,4 @@
 
 :host(.large-image-btn.stop) {
     color: var(--pm-danger-color);
-}
-
-/* Primary Button Styles */
-:host([theme~="primary"]) {
-    font-weight: bold;
-    min-width: 14rem;
-    height: var(--lumo-size-l);
-    border: 1px solid var(--pm-primary-color);
-}
-
-:host([theme~="primary"]:hover) {
-    box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.2);
-}
-
-:host([theme~="primary"]:hover)::before {
-    opacity: 0;
-}
-
-:host {
-    cursor: pointer; /* This is to override all Vaadin-Button on the webapp */
-}
-
-/* Default (Secondary) Button Styles */
-:host {
-    font-weight: bold;
-    min-width: 14rem;
-    height: var(--lumo-size-l);
-    background-color: var(--pm-gray-color-lightest);
-    border: 1px solid var(--pm-primary-color);
-}
-
-:host([disabled]) {
-    border-color: var(--lumo-primary-color-50pct);
-}
-
-:host(:hover) {
-    box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.08);
-}
-
-:host([theme~="tertiary"]),
-:host([theme~="tertiary-inline"]),
-:host([theme~="tertiary"][disabled]),
-:host([theme~="tertiary-inline"][disabled]) {
-    font-weight: normal;
-    border: none;
-}
-
-:host([theme~="tertiary"]:hover),
-:host([theme~="tertiary-inline"]:hover) {
-    color: var(--lumo-body-text-color);
-    box-shadow: none;
-}
-
-:host([focus-ring][theme~="tertiary"]) {
-    box-shadow: none;
-}
-
-:host(.action-button) {
-    color: var(--pm-gray-color);
-}
-
-:host(.action-button:hover) {
-    color: var(--pm-primary-color);
-}
-
-:host(.action-button[title="Archive"]) [part] ::slotted(iron-icon) {
-    width: var(--lumo-icon-size-l);
-    height: var(--lumo-icon-size-l);
 }

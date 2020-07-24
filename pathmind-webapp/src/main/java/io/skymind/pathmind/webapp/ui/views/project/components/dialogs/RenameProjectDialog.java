@@ -13,7 +13,7 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.webapp.ui.binders.ProjectBinders;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 
 public class RenameProjectDialog extends Dialog {
 	private TextField projectName;
@@ -35,7 +35,7 @@ public class RenameProjectDialog extends Dialog {
 		HorizontalLayout footer = new HorizontalLayout(cancel, rename);
 		footer.setClassName("dialog-footer");
 
-		add(LabelFactory.createLabel("Rename project", CssMindPathStyles.SECTION_TITLE_LABEL), projectName, footer);
+		add(LabelFactory.createLabel("Rename project", CssPathmindStyles.SECTION_TITLE_LABEL), projectName, footer);
 
 		projectName.focus();
 		ProjectBinders.bindProjectName(binder, projectDao, projectName, project.getId());

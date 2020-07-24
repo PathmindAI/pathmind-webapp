@@ -22,7 +22,6 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.data.Data;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
@@ -35,11 +34,10 @@ import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
@@ -55,8 +53,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	private ModelDAO modelDAO;
 	@Autowired
 	private ProjectDAO projectDAO;
-	@Autowired
-	private UserDAO userDAO;
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 
@@ -81,8 +77,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		
 		addClassName("project-view");
 
-		projectName = LabelFactory.createLabel("", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.PROJECT_TITLE);
-		createdDate = LabelFactory.createLabel("", CssMindPathStyles.SECTION_SUBTITLE_LABEL);
+		projectName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.PROJECT_TITLE);
+		createdDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
 		Button edit = new Button("Rename", evt -> renameProject());
 		edit.setClassName("no-shrink");
 
@@ -133,7 +129,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 				"Models",
 				modelGrid,
 				this::getModels,
-				(modelId, isArchivable) -> modelDAO.archive(modelId, isArchivable));
+				(model, isArchivable) -> modelDAO.archive(model.getId(), isArchivable));
 	}
 
 	private void setupGrid()
@@ -148,23 +144,20 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 				.setComparator(Comparator.comparingLong(model -> Long.parseLong(model.getName())))
 				.setAutoWidth(true)
 				.setFlexGrow(0)
-				.setResizable(true)
-				.setSortable(true);
+				.setResizable(true);
 		Grid.Column<Model> createdColumn = modelGrid
-				.addColumn(new ZonedDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+				.addColumn(new ZonedDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getDateCreated))
 				.setHeader("Created")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
-				.setResizable(true)
-				.setSortable(true);
-		modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+				.setResizable(true);
+		modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
-				.setResizable(true)
-				.setSortable(true);
+				.setResizable(true);
 		modelGrid.addColumn(model -> {
 				String userNotes = model.getUserNotes();
 				return userNotes.isEmpty() ? "—" : userNotes;

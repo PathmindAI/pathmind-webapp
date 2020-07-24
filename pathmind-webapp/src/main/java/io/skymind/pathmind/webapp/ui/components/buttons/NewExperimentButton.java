@@ -6,7 +6,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentViewNavigationUtils;
+import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 
 public class NewExperimentButton extends Button
 {
@@ -15,7 +15,7 @@ public class NewExperimentButton extends Button
 		super("New Experiment");
 		setIcon(new Icon(VaadinIcon.PLUS));
 
-        addClickListener(evt -> getUI().ifPresent(ui -> ExperimentViewNavigationUtils.createAndNavigateToNewExperiment(ui, experimentDAO, modelId)));
+        addClickListener(evt -> getUI().ifPresent(ui -> ExperimentUtils.createAndNavigateToNewExperiment(ui, experimentDAO, modelId)));
 			
 		addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 	}

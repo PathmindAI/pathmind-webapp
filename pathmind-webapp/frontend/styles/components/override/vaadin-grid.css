@@ -1,5 +1,0 @@
-/* grid header when the column is being sorted */
-vaadin-grid-cell-content vaadin-grid-sorter[direction] {
-  color: var(--pm-text-color);
-  font-weight: bold;
-}
