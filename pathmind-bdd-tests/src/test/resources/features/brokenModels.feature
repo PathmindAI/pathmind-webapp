@@ -14,8 +14,8 @@ Feature: Broken Models tests
     When Open projects page
     When Click create new project button
     When Input name of the new project AutotestProject and click Create project button
-    When Generate big model with name WarehouseModelBig220MB.zip
-    When Upload model problematic_models/WarehouseModelBig220MB.zip
+    When Generate big model with name 215mbFile
+    When Upload model problematic_models/215mbFile
     Then Check that error message in model check panel is "The file is too big. Please contact support@pathmind.com."
 
   Scenario Outline: Upload model file without the required info
