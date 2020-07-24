@@ -1,13 +1,13 @@
-#Training Workstations
+# Training Workstations
 
 We need a way to create a Linux Virtual Machine on SPOT market that will be use by developers to run trainings and this VM needs to be recreated automatically once the SPOT instance is taken and keep the same filesystem. The developer will be notified via slack if there is a restart so he can connect and start the training again.
 
-##Prerequisites
+## Prerequisites
 
 1. Install kubectl https://kubernetes.io/docs/tasks/tools/install-kubectl/
 2. Install AWS CLI https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
 
-##Starting the VM
+## Starting the VM
 
 1. Setup AWS:
 
@@ -31,7 +31,7 @@ Give you AWS keys
 
 `kubectl exec -it <pod_name> -- bash`
 
-##Stoping the VM
+## Stopping the VM
 
 `kubectl delete -f deployment_<user>.yaml`
 
