@@ -23,7 +23,7 @@ public class ApiService extends PageObject {
                 when().
                 post(PATHMIND_URL + "api/newVersionAvailable").
                 then().log().body().statusCode(200);
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
