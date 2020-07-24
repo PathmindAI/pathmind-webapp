@@ -16,10 +16,6 @@ spec:
         app.kubernetes.io/name: {{ include "postgres.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
-      volumes:
-        - name: postgres-storage
-          persistentVolumeClaim:
-            claimName: {{ .Values.pvc.claimName }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -28,10 +24,6 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          volumeMounts:
-            - name: postgres-storage
-              mountPath: /var/lib/postgresql/data
-              subPath: postgres
           env:
             - name: POSTGRES_USER
               value: "{{ .Values.env.POSTGRES_USER }}"
