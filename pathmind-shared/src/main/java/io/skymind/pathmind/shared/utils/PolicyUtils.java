@@ -36,28 +36,6 @@ public class PolicyUtils
             return policy.getStoppedAt();
         return null;
     }
-    
-    /**
-     * If abs(score) > 1, show one decimal point
-     * else show 6 decimal points
-     */
-    private static DecimalFormat getLastScoreFormatter(Double score) {
- 		DecimalFormat decimalFormat = new DecimalFormat();
- 		if (Math.abs(score) > 1) {
- 			decimalFormat.setMaximumFractionDigits(1);
- 		} else {
- 			decimalFormat.setMaximumFractionDigits(6);
- 		}
- 		return decimalFormat;
- 	}
-
- 	public static String getFormattedLastScore(Policy policy) {
- 		Double score = getLastScore(policy);
- 		if(score == null || score.isNaN()) {
- 			return "-";
- 		}
- 		return getLastScoreFormatter(score).format(score);
- 	}
 
     public static Double getLastScore(Policy policy) {
         if(policy == null || policy.getScores() == null || policy.getScores().isEmpty())

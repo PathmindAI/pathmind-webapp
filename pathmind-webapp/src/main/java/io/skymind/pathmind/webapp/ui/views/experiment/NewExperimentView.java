@@ -1,11 +1,9 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -22,6 +20,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -59,6 +58,9 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavb
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
+import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.ExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
@@ -116,7 +118,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, new NewExperimentViewExperimentCreatedSubscriber());
+        EventBus.subscribe(this,
+                new NewExperimentViewExperimentCreatedSubscriber(),
+                new NewExperimentViewExperimentUpdatedSubscriber());
     }
 
     @Override
@@ -280,6 +284,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		segmentIntegrator.rewardFuntionCreated();
 		
 		trainingService.startRun(experiment);
+        EventBus.post(new ExperimentUpdatedBusEvent(experiment, true));
 		segmentIntegrator.discoveryRunStarted();
 
 		unsavedChanges.setVisible(false);
@@ -303,23 +308,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private void archiveExperiment(Experiment experimentToArchive) {
         ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
-            experimentDAO.archive(experimentToArchive.getId(), true);
-            experiments.remove(experimentToArchive);
-            if (experiments.isEmpty()) {
-                getUI().ifPresent(ui -> ui.navigate(ModelView.class, experimentToArchive.getModelId()));
-            } else {
-                Experiment currentExperiment = (experimentToArchive.getId() == experimentId) ? experiments.get(0) : experiment;
-                if (experimentToArchive.getId() == experimentId) {
-                    selectExperiment(currentExperiment);
-                }
-                getUI().ifPresent(ui -> experimentsNavbar.setExperiments(ui, experiments, currentExperiment));
-            }
+            ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
         });
     }
 
     private void unarchiveExperiment() {
         ConfirmationUtils.unarchive("experiment", () -> {
-            experimentDAO.archive(experiment.getId(), false);
+            ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
             getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
         });
     }
@@ -354,7 +349,15 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			navigateToAnotherDraftExperiment(selectedExperiment);
 		}
 	}
-	
+
+	private void navigateToAnotherExperiment(UI ui, Experiment targetExperiment) {
+        if (ExperimentUtils.isDraftRunType(targetExperiment)) {
+            ui.navigate(NewExperimentView.class, targetExperiment.getId());
+        } else {
+            ui.navigate(ExperimentView.class, targetExperiment.getId());
+        }
+    }
+
 	private void navigateToAnotherDraftExperiment(Experiment selectedExperiment) {
 		// The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
 		// same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
@@ -375,6 +378,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			}
 		}
 	}
+
+	private void navigateToExperimentView(Experiment experiment) {
+	    PushUtils.push(getUI(), ui -> {
+            ui.navigate(ExperimentView.class, experiment.getId());
+        });
+    }
 
 	private void triggerSaveDraft(Command cancelListener) {
 		if (unsavedChanges.isVisible()) {
@@ -431,7 +440,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
 		if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
-                                    .sorted(Comparator.comparing(Experiment::getDateCreated).reversed())
                                     .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
 		}
 	}
@@ -459,6 +467,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         unarchiveExperimentButton.setVisible(experiment.isArchived());
 	}
 
+    private boolean isSameExperiment(Experiment eventExperiment) {
+        return isSameModel(eventExperiment.getModelId()) && experiment.equals(eventExperiment);
+    }
+
     // Note: these 3 methods were copied and pasted from ExperimentView. Duplication will be gone when #1697 is implemented.
     private boolean isNewExperimentForThisViewModel(Experiment eventExperiment, long modelId) {
         return isSameModel(modelId) && !experiments.contains(eventExperiment);
@@ -466,11 +478,31 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private void updateNavBarExperiments() {
         experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-        PushUtils.push(getUI(), ui -> experimentsNavbar.setExperiments(ui, experiments, experiment));
+
+        if (experiments.isEmpty()) {
+            PushUtils.push(getUI(), ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+        } else {
+            boolean selectedExperimentWasArchived = experiments.stream()
+                    .noneMatch(e -> e.getId() == experimentId);
+            if (selectedExperimentWasArchived) {
+                Experiment newSelectedExperiment = experiments.get(0);
+                PushUtils.push(getUI(), ui -> navigateToAnotherExperiment(ui, newSelectedExperiment));
+            }
+            else {
+                PushUtils.push(getUI(), ui -> {
+                    selectExperiment(experiment);
+                    experimentsNavbar.setExperiments(ui, experiments, experiment);
+                });
+            }
+        }
     }
 
     private boolean isSameModel(long modelId) {
         return experiment != null && experiment.getModelId() == modelId;
+    }
+
+    private boolean isViewAttached() {
+        return getUI().isPresent();
     }
 
     class NewExperimentViewExperimentCreatedSubscriber implements ExperimentCreatedSubscriber {
@@ -484,8 +516,25 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         @Override
         public boolean isAttached() {
-            return NewExperimentView.this.getUI().isPresent();
+            return isViewAttached();
         }
     }
 
+    class NewExperimentViewExperimentUpdatedSubscriber implements ExperimentUpdatedSubscriber {
+
+        @Override
+        public void handleBusEvent(ExperimentUpdatedBusEvent event) {
+            if (isSameExperiment(event.getExperiment()) && event.isStartedTraining()) {
+                navigateToExperimentView(event.getExperiment());
+            }
+            else if (isSameModel(event.getModelId())) {
+                updateNavBarExperiments();
+            }
+        }
+
+        @Override
+        public boolean isAttached() {
+            return isViewAttached();
+        }
+    }
 }
