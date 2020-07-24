@@ -90,7 +90,8 @@ Feature: New experiment page
     Then Click the experiment name 1
     Then Add note This is the experiment notes for this Coffee Shop project to the experiment page
     Then Click project save draft btn
-    Then Check that Notes saved! msg shown
+    Then Refresh page
+    Then Check experiment notes is This is the experiment notes for this Coffee Shop project
 
   Scenario: Check that reward variable with 99 chars saved
     Given Login to the pathmind
