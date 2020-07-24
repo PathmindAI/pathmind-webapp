@@ -16,13 +16,15 @@ public class ApiService extends PageObject {
     private static final String PATHMIND_API_KEY = EnvironmentSpecificConfiguration.from(VARIABLES).getProperty("pathmind.api.key");
 
     public void sendLatestVersionNotification() {
+        waitABit(5000);
         try {
+            System.out.println(PATHMIND_URL + "api/newVersionAvailable");
             SerenityRest.
                 given().
                 header("Authorization", "Basic " + DatatypeConverter.printBase64Binary(("api:" + PATHMIND_API_KEY).getBytes("UTF-8"))).
                 when().
                 post(PATHMIND_URL + "api/newVersionAvailable").
-                then().log().body().statusCode(200);
+                then().log().all().statusCode(200);
         } catch (Exception e) {
             e.printStackTrace();
         }
