@@ -31,12 +31,12 @@ public class Utils extends PageObject {
 
     public void clickElementRepeatIfStaleException(By by) {
         int attempts = 0;
-        while (attempts < 3) {
+        while (attempts < 5) {
             try {
                 getDriver().findElement(by).click();
                 break;
             } catch (org.openqa.selenium.StaleElementReferenceException ex) {
-                waitABit(2000);
+                waitABit(5000);
             }
             attempts++;
         }
