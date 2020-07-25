@@ -47,6 +47,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionE
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -82,6 +83,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
 
+    private int newExperimentDailyLimit;
+    private int newExperimentMonthlyLimit;
+    private int newExperimentNotificationThreshold;
+
 	@Autowired
 	private ExperimentDAO experimentDAO;
 	@Autowired
@@ -98,8 +103,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Breadcrumbs pageBreadcrumbs;
 	private Binder<Experiment> binder;
 
-	public NewExperimentView() {
+	public NewExperimentView(
+            @Value("${pathmind.notification.newExperimentDailyLimit}") int newExperimentDailyLimit,
+            @Value("${pathmind.notification.newExperimentMonthlyLimit}") int newExperimentMonthlyLimit,
+            @Value("${pathmind.notification.newExperimentNotificationThreshold}") int newExperimentNotificationThreshold) {
 		super();
+        this.newExperimentDailyLimit = newExperimentDailyLimit;
+        this.newExperimentMonthlyLimit = newExperimentMonthlyLimit;
+        this.newExperimentNotificationThreshold = newExperimentNotificationThreshold;
 		addClassName("new-experiment-view");
         experimentCreatedSubscriber = new NewExperimentViewExperimentCreatedSubscriber();
 	}
@@ -283,16 +294,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private boolean isUserWithinCapLimits() {
         UserMetrics userMetrics = experimentDAO.getExperimentUsageDataForUser(SecurityUtils.getUserId());
-        // Criteria for our own email notifications and the user's on screen notifications are slightly different.
-        capLimitEmailNotificationCheck(userMetrics);
+        // Criteria for our own notifications (the user's on screen notifications are slightly different).
+        capLimitPathmindNotificationCheck(userMetrics);
+        // Criteria for presenting the user with notifications.
         return capLimitUserNotificationCheck(userMetrics);
     }
 
     private boolean capLimitUserNotificationCheck(UserMetrics userMetrics) {
-        if(userMetrics.getExperimentsCreatedToday() >= UserMetrics.MAX_EXPERIMENTS_ALLOWED_PER_DAY) {
+        if(userMetrics.getExperimentsCreatedToday() >= newExperimentDailyLimit) {
             showUserCapLimitNotification(UserMetrics.UserCapType.Daily);
             return false;
-        } else if(userMetrics.getExperimentsCreatedThisMonth() >= UserMetrics.MAX_EXPERIMENTS_ALLOWED_PER_MONTH) {
+        } else if(userMetrics.getExperimentsCreatedThisMonth() >= newExperimentMonthlyLimit) {
             showUserCapLimitNotification(UserMetrics.UserCapType.Monthly);
             return false;
         } else {
@@ -310,19 +322,19 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
      * even if it isWithinCap(userMetrics) we may want to send ourselves a notification (such as 75%, 90%, and of course when they reach the cap at 100%). These
      * checks have to be done for all cap types (which as of right now are daily and monthly).
      */
-    private void capLimitEmailNotificationCheck(UserMetrics userMetrics) {
-        capLimitEmailNotificationCheckForType(UserMetrics.UserCapType.Daily, userMetrics.getExperimentsCreatedToday(), UserMetrics.MAX_EXPERIMENTS_ALLOWED_PER_DAY);
-        capLimitEmailNotificationCheckForType(UserMetrics.UserCapType.Monthly, userMetrics.getExperimentsCreatedThisMonth(), UserMetrics.MAX_EXPERIMENTS_ALLOWED_PER_MONTH);
+    private void capLimitPathmindNotificationCheck(UserMetrics userMetrics) {
+        capLimitPathmindNotificationCheckForType(UserMetrics.UserCapType.Daily, userMetrics.getExperimentsCreatedToday(), newExperimentDailyLimit);
+        capLimitPathmindNotificationCheckForType(UserMetrics.UserCapType.Monthly, userMetrics.getExperimentsCreatedThisMonth(), newExperimentMonthlyLimit);
     }
 
-    // IMPORTANT -> This will send ourselves an email notifications every time the user creates a new experiment above 75% but the assumption
+    // IMPORTANT -> This will send ourselves notifications EVERY time the user creates a new experiment above newExperimentLowThreshold but the assumption
     // is that this should be extremely rare, and if it does happen then it's more cost effective for now than creating
     // a whole infrastructure for it. Worse case we could just push this to 90% rather than 75%. That being said if enough
-    // people hit the 75% threshold then our caps are too low.
-    // NOTICE -> I'm casting to integer since it's close enough for what we need here.
-    private void capLimitEmailNotificationCheckForType(UserMetrics.UserCapType userCapType, int experimentCount, int maxAllowed) {
+    // people hit the newExperimentLowThreshold threshold then our caps are too low.
+    // PS: I'm casting to integer since it's close enough for what we need here.
+    private void capLimitPathmindNotificationCheckForType(UserMetrics.UserCapType userCapType, int experimentCount, int maxAllowed) {
         int percentage = (int)(experimentCount * 100f / maxAllowed);
-        if(percentage >= 75)
+        if(percentage >= newExperimentNotificationThreshold)
             segmentIntegrator.userExperimentCapLimitReached(getPathmindUser(), userCapType, percentage);
     }
 

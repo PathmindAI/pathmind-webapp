@@ -19,9 +19,6 @@ public class UserMetrics {
         Monthly
     }
 
-    public static int MAX_EXPERIMENTS_ALLOWED_PER_DAY = 100;
-    public static int MAX_EXPERIMENTS_ALLOWED_PER_MONTH = 1000;
-
     private int experimentsCreatedToday;
     private int experimentsCreatedThisMonth;
 }
