@@ -306,11 +306,17 @@ class ExperimentRepository
 
 	protected static UserMetrics getExperimentUsageDataForUser(DSLContext ctx, long userId) {
 	    Table<?> nestedToday = ctx.select(count().as("experimentsToday")).from(EXPERIMENT)
+                .rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID)).and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
+                .rightJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID)).and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
+                .leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
                 .where(DSL.day(EXPERIMENT.DATE_CREATED).eq(DSL.day(LocalDateTime.now())))
                 .and(DSL.month(EXPERIMENT.DATE_CREATED).eq(DSL.month(LocalDateTime.now())))
                 .and(DSL.year(EXPERIMENT.DATE_CREATED).eq(DSL.year(LocalDateTime.now())))
                 .asTable("today");
         Table<?> nestedThisMonth = ctx.select(count().as("experimentsThisMonth")).from(EXPERIMENT)
+                .rightJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID)).and(EXPERIMENT.ARCHIVED.isFalse().or(EXPERIMENT.ARCHIVED.isNull()))
+                .rightJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID)).and(MODEL.ARCHIVED.isFalse().or(MODEL.ARCHIVED.isNull()))
+                .leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
                 .where(DSL.month(EXPERIMENT.DATE_CREATED).eq(DSL.month(LocalDateTime.now())))
                 .and(DSL.year(EXPERIMENT.DATE_CREATED).eq(DSL.year(LocalDateTime.now())))
                 .asTable("thisMonday");
