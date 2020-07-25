@@ -168,6 +168,8 @@ public class GenericPage extends PageObject {
     }
 
     public void checkPageUrlIs(String url) {
+        waitABit(4000);
+        waitFor(ExpectedConditions.urlMatches(url));
         assertThat(getDriver().getCurrentUrl(), is(url));
     }
 

@@ -45,24 +45,24 @@ Feature: Experiment page
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
 
-  Scenario: Stop experiment
-    Given Login to the pathmind
-    When Create new CoffeeShop project with single reward function
-    Then Click project start run button
-    And Check that button 'Stop Training' exists
-    And Check that button 'Export Policy' doesn't exist
-    When Click in 'Stop Training' button
-    Then Check that the 'Stop Training' confirmation dialog is shown
-    When In confirmation dialog click in 'Cancel' button
-    Then Check that no confirmation dialog is shown
-    And Check that the experiment status is different from 'Stopping'
-    When Click in 'Stop Training' button
-    Then Check that the 'Stop Training' confirmation dialog is shown
-    When In confirmation dialog click in 'Stop Training' button
-    Then Check that no confirmation dialog is shown
-    And Check that the experiment status is 'Stopping'
-    And Check that button 'Stop Training' doesn't exist
-    And Check that button 'Export Policy' doesn't exist
+#  Scenario: Stop experiment
+#    Given Login to the pathmind
+#    When Create new CoffeeShop project with single reward function
+#    Then Click project start run button
+#    And Check that button 'Stop Training' exists
+#    And Check that button 'Export Policy' doesn't exist
+#    When Click in 'Stop Training' button
+#    Then Check that the 'Stop Training' confirmation dialog is shown
+#    When In confirmation dialog click in 'Cancel' button
+#    Then Check that no confirmation dialog is shown
+#    And Check that the experiment status is different from 'Stopping'
+#    When Click in 'Stop Training' button
+#    Then Check that the 'Stop Training' confirmation dialog is shown
+#    When In confirmation dialog click in 'Stop Training' button
+#    Then Check that no confirmation dialog is shown
+#    And Check that the experiment status is 'Stopping'
+#    And Check that button 'Stop Training' doesn't exist
+#    And Check that button 'Export Policy' doesn't exist
 
   Scenario: Check reward function on started experiment
     Given Login to the pathmind
