@@ -22,6 +22,7 @@ import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
@@ -49,6 +50,7 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.*;
+import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
@@ -87,6 +89,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private List<Double> simulationMetrics = new ArrayList<>();
     private List<double[]> sparklinesData = new ArrayList<>();
     private Boolean showSimulationMetrics;
+
+    private UserCaps userCaps;
 
     private HorizontalLayout middlePanel;
     private HorizontalLayout simulationMetricsWrapper;
@@ -130,8 +134,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Breadcrumbs pageBreadcrumbs;
     private Button restartTraining;
 
-    public ExperimentView() {
+    public ExperimentView(
+            @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
+            @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
+            @Value("${pathmind.notification.newRunNotificationThreshold}") int newRunNotificationThreshold) {
         super();
+        this.userCaps = new UserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
         addClassName("experiment-view");
         policyUpdateSubscriber = new ExperimentViewPolicyUpdateSubscriber();
         runUpdateSubscriber = new ExperimentViewRunUpdateSubscriber();
@@ -268,6 +276,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Div getButtonsWrapper() {
         restartTraining = new Button("Restart Training", new Image("frontend/images/start.svg", "run"), click -> {
             synchronized (experimentLock) {
+                if(!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator))
+                    return;
                 trainingService.startRun(experiment);
                 segmentIntegrator.discoveryRunStarted();
                 initLoadData();

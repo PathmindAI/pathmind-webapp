@@ -19,13 +19,13 @@ import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.data.user.UserMetrics;
+import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
@@ -44,6 +44,7 @@ import io.skymind.pathmind.webapp.ui.utils.*;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavbar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
+import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,16 +84,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
 
-    private int newExperimentDailyLimit;
-    private int newExperimentMonthlyLimit;
-    private int newExperimentNotificationThreshold;
+    private UserCaps userCaps;
 
 	@Autowired
 	private ExperimentDAO experimentDAO;
+    @Autowired
+    private RunDAO runDAO;
 	@Autowired
 	private RewardVariableDAO rewardVariableDAO;
-    @Autowired
-    private UserDAO userDAO;
 	@Autowired
 	private TrainingService trainingService;
 	@Autowired
@@ -104,13 +103,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Binder<Experiment> binder;
 
 	public NewExperimentView(
-            @Value("${pathmind.notification.newExperimentDailyLimit}") int newExperimentDailyLimit,
-            @Value("${pathmind.notification.newExperimentMonthlyLimit}") int newExperimentMonthlyLimit,
-            @Value("${pathmind.notification.newExperimentNotificationThreshold}") int newExperimentNotificationThreshold) {
+            @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
+            @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
+            @Value("${pathmind.notification.newRunNotificationThreshold}") int newRunNotificationThreshold) {
 		super();
-        this.newExperimentDailyLimit = newExperimentDailyLimit;
-        this.newExperimentMonthlyLimit = newExperimentMonthlyLimit;
-        this.newExperimentNotificationThreshold = newExperimentNotificationThreshold;
+        this.userCaps = new UserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
 		addClassName("new-experiment-view");
         experimentCreatedSubscriber = new NewExperimentViewExperimentCreatedSubscriber();
 	}
@@ -269,12 +266,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private void handleStartRunButtonClicked() {
-		if (!FormUtils.isValidForm(binder, experiment)) {
+		if (!FormUtils.isValidForm(binder, experiment))
 			return;
-		}
-		if(!isUserWithinCapLimits()) {
+		if(!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator))
             return;
-        }
 
 		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();
 		if (rewardVariables != null) {
@@ -291,57 +286,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 		getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experimentId));
 	}
-
-    private boolean isUserWithinCapLimits() {
-        UserMetrics userMetrics = experimentDAO.getExperimentUsageDataForUser(SecurityUtils.getUserId());
-        // Criteria for our own notifications (the user's on screen notifications are slightly different).
-        capLimitPathmindNotificationCheck(userMetrics);
-        // Criteria for presenting the user with notifications.
-        return capLimitUserNotificationCheck(userMetrics);
-    }
-
-    private boolean capLimitUserNotificationCheck(UserMetrics userMetrics) {
-        if(userMetrics.getExperimentsCreatedToday() >= newExperimentDailyLimit) {
-            showUserCapLimitNotification(UserMetrics.UserCapType.Daily);
-            return false;
-        } else if(userMetrics.getExperimentsCreatedThisMonth() >= newExperimentMonthlyLimit) {
-            showUserCapLimitNotification(UserMetrics.UserCapType.Monthly);
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    private void showUserCapLimitNotification(UserMetrics.UserCapType userCapType) {
-        NotificationUtils.showError("Maximum number of " + userCapType.name().toLowerCase() + " experiments run has been reached.<br>" +
-                                            "Please contact Pathmind support for assistance.");
-    }
-
-    /**
-     * This is a notification for us to be able to reach out ot the customer before they reach the caps and as a result the checks are different. For example
-     * even if it isWithinCap(userMetrics) we may want to send ourselves a notification (such as 75%, 90%, and of course when they reach the cap at 100%). These
-     * checks have to be done for all cap types (which as of right now are daily and monthly).
-     */
-    private void capLimitPathmindNotificationCheck(UserMetrics userMetrics) {
-        capLimitPathmindNotificationCheckForType(UserMetrics.UserCapType.Daily, userMetrics.getExperimentsCreatedToday(), newExperimentDailyLimit);
-        capLimitPathmindNotificationCheckForType(UserMetrics.UserCapType.Monthly, userMetrics.getExperimentsCreatedThisMonth(), newExperimentMonthlyLimit);
-    }
-
-    // IMPORTANT -> This will send ourselves notifications EVERY time the user creates a new experiment above newExperimentLowThreshold but the assumption
-    // is that this should be extremely rare, and if it does happen then it's more cost effective for now than creating
-    // a whole infrastructure for it. Worse case we could just push this to 90% rather than 75%. That being said if enough
-    // people hit the newExperimentLowThreshold threshold then our caps are too low.
-    // PS: I'm casting to integer since it's close enough for what we need here.
-    private void capLimitPathmindNotificationCheckForType(UserMetrics.UserCapType userCapType, int experimentCount, int maxAllowed) {
-        int percentage = (int)(experimentCount * 100f / maxAllowed);
-        if(percentage >= newExperimentNotificationThreshold)
-            segmentIntegrator.userExperimentCapLimitReached(getPathmindUser(), userCapType, percentage);
-    }
-
-    // Implemented as a method because we only need it if the right conditions are met.
-    private PathmindUser getPathmindUser() {
-        return userDAO.findById(SecurityUtils.getUserId());
-    }
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
 		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();

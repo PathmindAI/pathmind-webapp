@@ -12,13 +12,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserMetrics {
-
-    public enum UserCapType {
-        Daily,
-        Monthly
-    }
-
-    private int runsCreatedToday;
-    private int runsCreatedThisMonth;
+public class UserCaps {
+    private int newRunDailyLimit;
+    private int newRunMonthlyLimit;
+    private int newRunNotificationThreshold;
 }

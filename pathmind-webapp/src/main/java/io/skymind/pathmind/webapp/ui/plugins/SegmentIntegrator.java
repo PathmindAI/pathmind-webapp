@@ -52,7 +52,7 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	private static final String EVENT_UPDATED_NOTES_EXPERIMENT_VIEW = "Updated Notes on Experiment View";
 	private static final String EVENT_ADDED_NOTES_UPLOAD_MODEL_VIEW = "Added Notes on Upload Model View";
 	private static final String EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW = "Added Notes on New Experiment View";
-	private static final String EVENT_USER_EXPERIMENT_CAP_LIMIT = "User Experiment Cap Limit";
+	private static final String EVENT_USER_RUN_CAP_LIMIT = "User Run Cap Limit";
 
 	public SegmentIntegrator(@Value("${skymind.segment.website.source.key}") String key,
 			@Value("${skymind.segment.enabled}") Boolean enabled) {
@@ -138,14 +138,14 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 		track(EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW);
 	}
 
-    public void userExperimentCapLimitReached(PathmindUser user, UserMetrics.UserCapType userCapType, int percentage) {
+    public void userRunCapLimitReached(PathmindUserDetails user, UserMetrics.UserCapType userCapType, int percentage) {
         JsonObject additionalInfo = Json.createObject();
         additionalInfo.put("userId", user.getId());
         additionalInfo.put("userName", user.getName());
         additionalInfo.put("userEmail", user.getEmail());
         additionalInfo.put("userCapType", userCapType.name());
         additionalInfo.put("percentage", percentage);
-        track(EVENT_USER_EXPERIMENT_CAP_LIMIT, additionalInfo);
+        track(EVENT_USER_RUN_CAP_LIMIT, additionalInfo);
     }
 
 	private void track(String event) {

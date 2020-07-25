@@ -104,8 +104,4 @@ public class ExperimentDAO
 	public void updateUserNotes(long experimentId, String userNotes) {
 		ExperimentRepository.updateUserNotes(ctx, experimentId, userNotes);
 	}
-
-    public UserMetrics getExperimentUsageDataForUser(long userId) {
-	    return ExperimentRepository.getExperimentUsageDataForUser(ctx, userId);
-    }
 }
