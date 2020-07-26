@@ -15,7 +15,7 @@ public class ExperimentCapLimitVerifier {
     public static boolean isUserWithinCapLimits(RunDAO runDAO, UserCaps userCaps, SegmentIntegrator segmentIntegrator) {
         // Get the data user metrics. We need to get the runs rather then experiments, and specifically when they were run rather than created.
         UserMetrics userMetrics = runDAO.getRunUsageDataForUser(SecurityUtils.getUserId());
-        // Criteria for our own notifications (the user's on screen notifications are slightly different).
+        // Criteria for our own notifications (the user's on screen criteria and notifications are slightly different).
         capLimitPathmindNotificationCheck(userMetrics, userCaps, segmentIntegrator);
         // Criteria for presenting the user with notifications.
         return capLimitUserNotificationCheck(userMetrics, userCaps);
