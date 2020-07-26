@@ -167,9 +167,12 @@ pipeline {
                 script {
                     echo "Updating helm chart"
                     sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} ${DOCKER_TAG} ${WORKSPACE}"
-                    sh "sleep 60"
                     echo "Deploying updater helm chart"
                     sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml -n ${DOCKER_TAG}"
+                    sh "sleep 60"
+                    echo "Wait for webapp to be available"
+                    sh "timeout 300 bash -c 'while ! curl http://pathmind-${DOCKER_TAG}; do sleep 5; done'"
+                    sh "timeout 300 bash -c 'while ! curl http://pathmind-slot-${DOCKER_TAG}; do sleep 5; done'"
                 }
             }
         }

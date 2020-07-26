@@ -150,6 +150,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkThatExperimentStatusIconIs(String experiment, String icon) {
+        waitABit(10000);
         assertThat(getDriver().findElement(By.xpath("//p[text()='" + experiment + "']/parent::div/preceding-sibling::div")).getAttribute("class"),is(icon));
     }
 }

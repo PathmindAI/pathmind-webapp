@@ -23,6 +23,7 @@ import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
@@ -243,7 +244,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         IntStream.range(0, simulationMetrics.size())
                 .forEach(idx -> {
-                    metricsWrapper.add(new Span(simulationMetrics.get(idx).toString()));
+                    metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx))));
                     SparkLine sparkLine = new SparkLine();
                     sparkLine.setSparkLine(sparklinesData.get(idx), idx);
                     sparklinesWrapper.add(sparkLine);
