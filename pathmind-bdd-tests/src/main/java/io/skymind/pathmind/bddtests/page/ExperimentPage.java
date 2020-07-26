@@ -143,4 +143,14 @@ public class ExperimentPage extends PageObject {
         experimentNotes.sendKeys(Keys.CONTROL + "V");
         getDriver().findElement(By.xpath("//*[text()='Save']")).click();
     }
+
+    public void checkThatExperimentNotExistOnTheExperimentPage(String experiment) {
+        waitABit(4000);
+        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='experiment-name']/p[1]")), not(hasItem(experiment)));
+    }
+
+    public void checkThatExperimentStatusIconIs(String experiment, String icon) {
+        waitABit(10000);
+        assertThat(getDriver().findElement(By.xpath("//p[text()='" + experiment + "']/parent::div/preceding-sibling::div")).getAttribute("class"),is(icon));
+    }
 }
