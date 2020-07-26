@@ -298,7 +298,7 @@ pipeline {
                                                title      : "Test_PRs » Build #${env.BUILD_NUMBER} - Failed",
                                                title_link : "${env.BUILD_URL}",
                                                color      : "#CF0000",
-                                               text       : "@UGH39HL4E",
+                                               text       : "<@UGH39HL4E>",
                                                "mrkdwn_in": ["fields"],
                                                fields     : [
                                                    [
