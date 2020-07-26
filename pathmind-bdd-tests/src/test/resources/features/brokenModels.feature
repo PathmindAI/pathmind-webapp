@@ -20,7 +20,7 @@ Feature: Broken Models tests
 
     Examples:
       | Model File                                      | Error Message                                                                            |
-      | problematic_models/AModelWithNoActions.zip      | Number of actions found to be zero.                                                      |
+      | problematic_models/AModelWithNoActions.zip      | TEST_Number of actions found to be zero.                                                      |
       | problematic_models/AModelWithNoObservations.zip | Number of observations found to be zero.                                                 |
       | problematic_models/ProblemModel#1480.zip        | Unable to analyze the model.                                                             |
       | problematic_models/NonTupleModel.zip            | Model needs to be updated. You can take a look at this article for upgrade instructions. |
