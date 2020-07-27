@@ -433,7 +433,7 @@ hr {
 
 .model-view .model-reward-variables span:last-child {
     padding: 0.12em 0.3em;
-    border-radius: 4px;
+    border-radius: var(--lumo-border-radius-s);
 }
 
 .project-view .notes-field-wrapper,
