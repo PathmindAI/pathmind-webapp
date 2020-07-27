@@ -33,11 +33,8 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.*;
 import static io.skymind.pathmind.shared.constants.RunStatus.Error;
-import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.var;
-import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.varExp;
-import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.varCondition;
-import static java.util.stream.Collectors.toSet;
 
 @Service
 @Slf4j
@@ -272,8 +269,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                                 return null;
                             }
                         })
-                        .collect(toSet())
-                        .stream().collect(Collectors.joining(";\n"));
+                        .distinct()
+                .collect(Collectors.joining(";\n"));
     }
 
     private static final Predicate<String> ERROR_STRING_MATCH = Pattern.compile("^(\\w+\\.)*\\w+:(.*)$", Pattern.CASE_INSENSITIVE).asMatchPredicate();
