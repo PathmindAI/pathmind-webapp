@@ -93,6 +93,8 @@ public class ExperimentPage extends PageObject {
         WebElement inputShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='reward-variables-table']/descendant::span[text()='" + variableNumber + "']/following-sibling::vaadin-text-field")));
         inputShadow.findElement(By.cssSelector("input")).click();
         inputShadow.findElement(By.cssSelector("input")).sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
+        inputShadow.findElement(By.cssSelector("input")).sendKeys(Keys.ENTER);
+        waitABit(3500);
         inputShadow.findElement(By.cssSelector("input")).sendKeys(variableName);
         inputShadow.findElement(By.cssSelector("input")).sendKeys(Keys.ENTER);
     }

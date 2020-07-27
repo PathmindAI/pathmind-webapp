@@ -28,7 +28,7 @@ Feature: Models details
     When Click project save draft btn
     When Click model breadcrumb <project name> from dashboard
     Then Check model page model details reward variables order
-    Then Check model page model details reward variable '1' name is 'SOME_NEW_VARIABLE'
+    Then Check model page model details reward variable 1 name is SOME_NEW_VARIABLE
     When Click the experiment name 1
     When Change reward variable on experiment view '2' to 'Another One Variable 001'
     When Click project save draft btn
