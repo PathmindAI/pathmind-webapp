@@ -38,7 +38,7 @@ ingress:
     - host: jenkins.devpathmind.com
       paths: [/:8080:jenkins]
     - host: grafana.devpathmind.com
-      paths: [/:80:prometheus-grafana]
+      paths: [/:80:prometheus-operator-grafana]
     - host: kibana.devpathmind.com
       paths: [/:5601:kibana-kb-http]
     - host: pgadmin.devpathmind.com
