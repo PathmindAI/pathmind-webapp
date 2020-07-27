@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 public class Policy extends Data
 {
+    private static final long serialVersionUID = -2089053095112497536L;
 	private long runId;
 	private String externalId;
 
