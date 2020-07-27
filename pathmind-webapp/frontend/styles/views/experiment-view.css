@@ -58,6 +58,7 @@
 .experiment-view .metrics-wrapper,
 .experiment-view .sparklines-wrapper {
     flex: 0;
+    line-height: 2rem;
 }
 
 .experiment-view .metrics-wrapper {
