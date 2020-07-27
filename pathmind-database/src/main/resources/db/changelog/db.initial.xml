@@ -1466,4 +1466,9 @@
             <dropColumn tableName="MODEL" columnName="ACTION_TUPLE_SIZE" />
         </rollback>
     </changeSet>
+
+    <changeSet id="20200724-01" author="steph@followsteph.com">
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200724_01"/>
+    </changeSet>
+
 </databaseChangeLog>
