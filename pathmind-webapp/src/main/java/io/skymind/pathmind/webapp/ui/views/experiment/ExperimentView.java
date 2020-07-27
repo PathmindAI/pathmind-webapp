@@ -212,6 +212,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private HorizontalLayout getSimulationMetricsTable() {
         HorizontalLayout tableWrapper = new HorizontalLayout();
+        tableWrapper.setSpacing(false);
         tableWrapper.addClassName("simulation-metrics-table-wrapper");
 
         rewardVariablesTable = new RewardVariablesTable();
