@@ -71,6 +71,7 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 
     public void setIsReadOnly(boolean readOnly) {
         isReadOnly = readOnly;
+        container.getElement().setAttribute("readonly", readOnly);
     }
 
 	private RowField createRow(int rowNumber) {

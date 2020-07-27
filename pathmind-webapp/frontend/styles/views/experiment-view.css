@@ -36,17 +36,8 @@
     overflow: auto;
 }
 
-.experiment-view .reward-variables-table .header-row {
-    display: none;
-}
 .experiment-view .reward-variables-table span:first-child {
     display: none;
-}
-.experiment-view .reward-variables-table span:last-child {
-    line-height: 1;
-    padding: .3em;
-    border-radius: var(--lumo-border-radius-s);
-    box-shadow: none;
 }
 .experiment-view .reward-variable-name-field {
     height: 1.75rem;
