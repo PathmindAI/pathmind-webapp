@@ -48,6 +48,5 @@ Feature: Wizard page
     Then Wait for text "Checking your model" to disappear
     When Click in 'this article' button
     When Open tab 1
-    Then Check page title tag text is Converting models to support Tuples | Pathmind Knowledge Base
     Then Check page url is https://help.pathmind.com/en/articles/4219921-converting-models-to-support-tuples
     Then Check Converting models to support Tuples page elements
