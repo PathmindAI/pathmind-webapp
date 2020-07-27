@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 public class Project extends ArchivableData
 {
+    private static final long serialVersionUID = -8482276917940795086L;
 	private LocalDateTime dateCreated;
 	private LocalDateTime lastActivityDate;
 	private String userNotes;

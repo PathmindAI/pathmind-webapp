@@ -104,7 +104,7 @@ public class Indexes {
         public static Index RUN_EXPERIMENT_FK_INDEX = Internal.createIndex("run_experiment_fk_index", Run.RUN, new OrderField[] { Run.RUN.EXPERIMENT_ID }, false);
         public static Index RUN_PKEY = Internal.createIndex("run_pkey", Run.RUN, new OrderField[] { Run.RUN.ID }, true);
         public static Index PM_RUN_ADMIN_NOTES_RUN_ID_UNQ = Internal.createIndex("pm_run_admin_notes_run_id_unq", RunAdminNote.RUN_ADMIN_NOTE, new OrderField[] { RunAdminNote.RUN_ADMIN_NOTE.RUN_ID }, true);
-        public static Index TRAINER_JOB_PKEY = Internal.createIndex("trainer_job_pkey", TrainerJob.TRAINER_JOB, new OrderField[] { TrainerJob.TRAINER_JOB.JOB_ID }, true);
+        public static Index TRAINER_JOB_PKEY = Internal.createIndex("trainer_job_pkey", TrainerJob.TRAINER_JOB, new OrderField[] { TrainerJob.TRAINER_JOB.JOB_ID, TrainerJob.TRAINER_JOB.S3BUCKET }, true);
         public static Index UNIQUE_JOB_ID_S3BUCKET = Internal.createIndex("unique_job_id_s3bucket", TrainerJob.TRAINER_JOB, new OrderField[] { TrainerJob.TRAINER_JOB.JOB_ID, TrainerJob.TRAINER_JOB.S3BUCKET }, true);
         public static Index TRAINING_ERROR_PKEY = Internal.createIndex("training_error_pkey", TrainingError.TRAINING_ERROR, new OrderField[] { TrainingError.TRAINING_ERROR.ID }, true);
     }

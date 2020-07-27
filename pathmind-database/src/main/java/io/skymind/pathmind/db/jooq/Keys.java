@@ -145,7 +145,7 @@ public class Keys {
         public static final UniqueKey<RewardVariableRecord> REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY = Internal.createUniqueKey(RewardVariable.REWARD_VARIABLE, "reward_variable_model_id_array_index_key", RewardVariable.REWARD_VARIABLE.MODEL_ID, RewardVariable.REWARD_VARIABLE.ARRAY_INDEX);
         public static final UniqueKey<RunRecord> RUN_PKEY = Internal.createUniqueKey(Run.RUN, "run_pkey", Run.RUN.ID);
         public static final UniqueKey<RunAdminNoteRecord> PM_RUN_ADMIN_NOTES_RUN_ID_UNQ = Internal.createUniqueKey(RunAdminNote.RUN_ADMIN_NOTE, "pm_run_admin_notes_run_id_unq", RunAdminNote.RUN_ADMIN_NOTE.RUN_ID);
-        public static final UniqueKey<TrainerJobRecord> TRAINER_JOB_PKEY = Internal.createUniqueKey(TrainerJob.TRAINER_JOB, "trainer_job_pkey", TrainerJob.TRAINER_JOB.JOB_ID);
+        public static final UniqueKey<TrainerJobRecord> TRAINER_JOB_PKEY = Internal.createUniqueKey(TrainerJob.TRAINER_JOB, "trainer_job_pkey", TrainerJob.TRAINER_JOB.JOB_ID, TrainerJob.TRAINER_JOB.S3BUCKET);
         public static final UniqueKey<TrainerJobRecord> UNIQUE_JOB_ID_S3BUCKET = Internal.createUniqueKey(TrainerJob.TRAINER_JOB, "unique_job_id_s3bucket", TrainerJob.TRAINER_JOB.JOB_ID, TrainerJob.TRAINER_JOB.S3BUCKET);
         public static final UniqueKey<TrainingErrorRecord> TRAINING_ERROR_PKEY = Internal.createUniqueKey(TrainingError.TRAINING_ERROR, "training_error_pkey", TrainingError.TRAINING_ERROR.ID);
     }

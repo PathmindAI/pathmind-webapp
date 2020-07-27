@@ -1,5 +1,8 @@
 package io.skymind.pathmind.webapp.utils;
 
+import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
+import org.apache.commons.io.FileUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -12,16 +15,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.FileUtils;
-
-import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
-
 
 public class UploadUtils {
 	
 	private static String MODEL = "model.jar";
-	private static String[] WHITE_LIST = {"model.jar", "database/db.script", "database/db.properties", "database/db.data"};
-	
+	private static String[] WHITE_LIST = {"model.jar", "database/db.script", "database/db.properties", "database/db.data", "cache/giscache", "cache/giscache.p", "cache/giscache.t"};
+
 	public static byte[] createZipFileFromBuffer(MultiFileMemoryBuffer buffer) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(baos);
