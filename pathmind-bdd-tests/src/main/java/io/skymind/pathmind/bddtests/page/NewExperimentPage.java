@@ -50,6 +50,7 @@ public class NewExperimentPage extends PageObject {
                 e.printStackTrace();
             }
         }
+        waitABit(5000);
     }
 
     public void clickProjectStartDiscoveryRunButton() {
@@ -83,7 +84,7 @@ public class NewExperimentPage extends PageObject {
         } catch (Exception e) {
             System.out.println("Button not exist");
         }
-        waitABit(2000);
+        waitABit(5000);
     }
 
     public void checkRewardFunctionIs(String rewardFunction) {
