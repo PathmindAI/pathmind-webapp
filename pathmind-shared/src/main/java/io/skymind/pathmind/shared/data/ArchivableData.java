@@ -5,6 +5,7 @@ package io.skymind.pathmind.shared.data;
  */
 public class ArchivableData extends Data
 {
+    private static final long serialVersionUID = -1337915604505664839L;
 	// TODO -> DH -> Please hook up the value archived value in the database.
 	private boolean archived = false;
 

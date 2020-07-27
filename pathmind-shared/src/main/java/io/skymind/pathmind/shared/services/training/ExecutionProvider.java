@@ -86,10 +86,4 @@ public interface ExecutionProvider {
      */
     String console(String jobHandle);
 
-    /**
-     * get current Execution Provider class enum
-     *
-     * @return
-     */
-    ExecutionProviderClass executionProviderClass();
 }
