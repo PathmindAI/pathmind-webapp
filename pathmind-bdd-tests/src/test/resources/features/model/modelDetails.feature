@@ -18,25 +18,25 @@ Feature: Models details
     When Click the model name 1
     Then Check model page model details reward variables order
     When Click the experiment name 1
-    When Change reward variable on experiment view 0 to test_variable
+    When Change reward variable on experiment view '0' to 'test_variable'
     When Click project save draft btn
     When Click model breadcrumb <project name> from dashboard
     Then Check model page model details reward variables order
     Then Check model page model details reward variable 0 name is test_variable
     When Click the experiment name 1
-    When Change reward variable on experiment view 1 to SOME_NEW_VARIABLE
+    When Change reward variable on experiment view '1' to 'SOME_NEW_VARIABLE'
     When Click project save draft btn
     When Click model breadcrumb <project name> from dashboard
     Then Check model page model details reward variables order
-    Then Check model page model details reward variable 1 name is SOME_NEW_VARIABLE
+    Then Check model page model details reward variable '1' name is 'SOME_NEW_VARIABLE'
     When Click the experiment name 1
-    When Change reward variable on experiment view 2 to Another One Variable 001
+    When Change reward variable on experiment view '2' to 'Another One Variable 001'
     When Click project save draft btn
     When Click model breadcrumb <project name> from dashboard
     Then Check model page model details reward variables order
     Then Check model page model details reward variable 2 name is Another One Variable 001
     When Click the experiment name 1
-    When Change reward variable on experiment view 3 to last_long_long_long_long_variable_3
+    When Change reward variable on experiment view '3' to 'last_long_long_long_long_variable_3'
     When Click project save draft btn
     When Click model breadcrumb <project name> from dashboard
     Then Check model page model details reward variables order

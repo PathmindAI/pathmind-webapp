@@ -50,7 +50,7 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.clickCurrentExperimentArchiveButton();
     }
 
-    @When("^Change reward variable on experiment view (.*) to (.*)$")
+    @When("^Change reward variable on experiment view '(.*)' to '(.*)'$")
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
         experimentPageSteps.changeRewardVariableOnExperimentView(variableNumber, variableName);
     }

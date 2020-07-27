@@ -177,4 +177,8 @@ public class GenericPage extends PageObject {
         waitABit(5000);
         assertThat(getDriver().getTitle(), is(text));
     }
+
+    public void waitABitMs(int time) {
+        waitABit(time);
+    }
 }
