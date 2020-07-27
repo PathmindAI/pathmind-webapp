@@ -36,11 +36,9 @@ public class MailHelperTest
 
 		final Mail verificationEmail = mailHelper.createVerificationEmail(pathmindUser.getEmail(), pathmindUser.getName(), emailLink);
 		final Personalization personalization = verificationEmail.getPersonalization().get(0);
-		final String subject = (String) personalization.getDynamicTemplateData().get("subject");
 		final String name = (String) personalization.getDynamicTemplateData().get("name");
 		final String emailVerificationLink = (String) personalization.getDynamicTemplateData().get("emailVerificationLink");
 
-		assertEquals(MailHelper.PATHMIND_VERIFICATION_EMAIL_SUBJECT, subject);
 		assertEquals("Test User", name);
 		assertEquals(emailLink, emailVerificationLink);
 	}
@@ -74,12 +72,10 @@ public class MailHelperTest
 
 		final Mail verificationEmail = mailHelper.createResetPasswordEmail(test_email, test_user, emailLink, hours);
 		final Personalization personalization = verificationEmail.getPersonalization().get(0);
-		final String subject = (String) personalization.getDynamicTemplateData().get("subject");
 		final String name = (String) personalization.getDynamicTemplateData().get("name");
 		final String resetPasswordLink = (String) personalization.getDynamicTemplateData().get("resetPasswordLink");
 		final String emailHours = (String) personalization.getDynamicTemplateData().get("hours");
 
-		assertEquals(MailHelper.PATHMIND_RESET_PASSWORD_EMAIL_SUBJECT, subject);
 		assertEquals(test_user, name);
 		assertEquals(emailLink, resetPasswordLink);
 		assertEquals(hours, emailHours);
