@@ -12,13 +12,11 @@ import io.skymind.pathmind.shared.data.rllib.CheckPoint;
 import io.skymind.pathmind.shared.data.rllib.ExperimentState;
 import io.skymind.pathmind.shared.exception.PathMindException;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
-import io.skymind.pathmind.shared.services.training.ExecutionProviderClass;
 import io.skymind.pathmind.shared.services.training.JobSpec;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
@@ -204,11 +202,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
     @Override
     public String console(String jobHandle) {
         throw new UnsupportedOperationException("Not currently supported");
-    }
-
-    @Override
-    public ExecutionProviderClass executionProviderClass() {
-        return ExecutionProviderClass.AWS;
     }
 
     public Optional<byte[]> getFile(String jobHandle, String fileName) {
