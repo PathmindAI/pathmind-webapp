@@ -168,10 +168,13 @@ public class GenericPage extends PageObject {
     }
 
     public void checkPageUrlIs(String url) {
+        waitABit(4000);
+        waitFor(ExpectedConditions.urlMatches(url));
         assertThat(getDriver().getCurrentUrl(), is(url));
     }
 
     public void checkPageTitleTagTextIs(String text) {
+        waitABit(5000);
         assertThat(getDriver().getTitle(), is(text));
     }
 }
