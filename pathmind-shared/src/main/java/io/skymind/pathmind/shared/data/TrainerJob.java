@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 public class TrainerJob extends Data {
+    private static final long serialVersionUID = -7545940987287812131L;
     private String jobId;
     private String sqsUrl;
     private String s3Path;

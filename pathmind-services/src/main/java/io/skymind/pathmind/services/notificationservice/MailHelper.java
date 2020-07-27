@@ -1,13 +1,5 @@
 package io.skymind.pathmind.services.notificationservice;
 
-import java.io.IOException;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -15,21 +7,20 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Email;
 import com.sendgrid.helpers.mail.objects.Personalization;
-
 import io.skymind.pathmind.shared.exception.PathMindException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.Objects;
 
 @Component
 @Slf4j
 public class MailHelper
 {
-	public static final String PATHMIND_VERIFICATION_EMAIL_SUBJECT = "Pathmind verification email";
-	public static final String PATHMIND_NEW_ADDRESS_VERIFICATION_EMAIL_SUBJECT = "Pathmind new address veri ";
-	public static final String PATHMIND_RESET_PASSWORD_EMAIL_SUBJECT = "Pathmind reset password email";
-	public static final String PATHMIND_TRAINING_COMPLETED_EMAIL_SUBJECT = "Pathmind training completed successfully email";
-    public static final String PATHMIND_TRAINING_COMPLETED_WITH_WARNING_EMAIL_SUBJECT = "Pathmind training completed with warning email";
-	public static final String PATHMIND_TRAINING_FAILED_EMAIL_SUBJECT = "Pathmind training failed email";
-
 	@Value("${sendgrid.verification-mail.id}")
 	private String verificationEmailTemplateId;
 
@@ -97,7 +88,6 @@ public class MailHelper
 		mail.setTemplateId(verificationEmailTemplateId);
 
 		Personalization personalization = new Personalization();
-		personalization.addDynamicTemplateData("subject", PATHMIND_VERIFICATION_EMAIL_SUBJECT);
 		personalization.addDynamicTemplateData("name", name);
 		personalization.addDynamicTemplateData("emailVerificationLink", emailVerificationLink);
 		personalization.addTo(new Email(to));
@@ -124,7 +114,6 @@ public class MailHelper
 		mail.setTemplateId(newEmailAddressVerificationTemplateId);
 		
 		Personalization personalization = new Personalization();
-		personalization.addDynamicTemplateData("subject", PATHMIND_NEW_ADDRESS_VERIFICATION_EMAIL_SUBJECT);
 		personalization.addDynamicTemplateData("name", name);
 		personalization.addDynamicTemplateData("emailVerificationLink", emailVerificationLink);
 		personalization.addTo(new Email(to));
@@ -142,7 +131,6 @@ public class MailHelper
 		mail.setTemplateId(resetPasswordTemplateId);
 
 		Personalization personalization = new Personalization();
-		personalization.addDynamicTemplateData("subject", PATHMIND_RESET_PASSWORD_EMAIL_SUBJECT);
 		personalization.addDynamicTemplateData("name", name);
 		personalization.addDynamicTemplateData("resetPasswordLink", resetPasswordLink);
 		personalization.addDynamicTemplateData("hours", hours);
@@ -172,7 +160,6 @@ public class MailHelper
 		mail.setTemplateId(getTemplateId(trainingCompletedStatus));
 		
 		Personalization personalization = new Personalization();
-		personalization.addDynamicTemplateData("subject", getEmailSubject(trainingCompletedStatus));
 		personalization.addDynamicTemplateData("name", name);
 		personalization.addDynamicTemplateData("projectName", projectName);
 		personalization.addDynamicTemplateData("experimentPageLink", experimentPageLink);
@@ -181,18 +168,8 @@ public class MailHelper
 		return mail;
 	}
 
-    private String getEmailSubject(TrainingCompletedStatus trainingCompletedStatus) {
-        switch (trainingCompletedStatus) {
-            case ERROR: return PATHMIND_TRAINING_FAILED_EMAIL_SUBJECT;
-            case SUCCESS: return PATHMIND_TRAINING_COMPLETED_EMAIL_SUBJECT;
-            case SUCCESS_WITH_WARNING: return PATHMIND_TRAINING_COMPLETED_WITH_WARNING_EMAIL_SUBJECT;
-            default:
-                throw new RuntimeException("it is impossible to reach this point.");
-        }
-    }
-
     private String getTemplateId(TrainingCompletedStatus trainingCompletedStatus) {
-	    switch (trainingCompletedStatus) {
+        switch (trainingCompletedStatus) {
             case ERROR: return trainingFailedTemplateId;
             case SUCCESS: return trainingCompletedTemplateId;
             case SUCCESS_WITH_WARNING: return trainingCompletedWithWarningTemplateId;
@@ -201,12 +178,11 @@ public class MailHelper
         }
     }
 
-
-    private Email createFromEmail() {
+	private Email createFromEmail() {
 		return new Email(fromEmail, fromName);
 	}
 
-    public enum TrainingCompletedStatus {
-        ERROR, SUCCESS, SUCCESS_WITH_WARNING;
-}
+  public enum TrainingCompletedStatus {
+    ERROR, SUCCESS, SUCCESS_WITH_WARNING;
+  }
 }
