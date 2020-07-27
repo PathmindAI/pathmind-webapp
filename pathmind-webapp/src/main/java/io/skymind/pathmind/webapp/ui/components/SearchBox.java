@@ -8,10 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.value.ValueChangeMode;
 
 import io.skymind.pathmind.webapp.ui.views.search.SearchResultsView;
 
@@ -23,11 +21,9 @@ public class SearchBox extends HorizontalLayout
 
 	public SearchBox(){
 		setSpacing(false);
-		setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 
 		searchTextField.setWidthFull();
 		searchTextField.setClearButtonVisible(true);
-		searchTextField.setValueChangeMode(ValueChangeMode.ON_CHANGE);
 		searchButton.addClickListener(click -> search());
     	searchTextField.addValueChangeListener(change -> search());
 
@@ -41,11 +37,19 @@ public class SearchBox extends HorizontalLayout
 	public void search(){
 	    if (StringUtils.isNotBlank(searchTextField.getValue())) {
             String searchTerm = URLEncoder.encode(searchTextField.getValue(), StandardCharsets.UTF_8);
-	        getUI().ifPresent(ui -> ui.navigate(SearchResultsView.class, searchTerm));
-	    }
+            getUI().ifPresent(ui -> ui.navigate(SearchResultsView.class, searchTerm));
+        }
 	}
 
 	public void clearSearchValue() {
 	    searchTextField.setValue("");
+    }
+
+	public void setValue(String text) {
+	    searchTextField.setValue(text);
+    }
+
+	public String getValue() {
+	    return searchTextField.getValue();
     }
 }

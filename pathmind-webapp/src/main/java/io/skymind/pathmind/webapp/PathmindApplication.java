@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SpringBootApplication(scanBasePackages = "io.skymind.pathmind", exclude = ErrorMvcAutoConfiguration.class)
-@PropertySource({"application.properties", "shared.properties"})
+@PropertySource({"classpath:application.properties", "classpath:shared.properties"})
 @EnableCaching
 @EnableScheduling
 public class PathmindApplication
@@ -62,10 +62,11 @@ public class PathmindApplication
 		return objectMapper;
 	}
 
-	@Bean
-	public ProjectFileCheckService projectFileCheckService(ExecutorService executorService, ModelAnalyzerApiClient modelAnalyzerApiClient) {
-		return new ProjectFileCheckService(executorService, modelAnalyzerApiClient);
-	}
+    @Bean
+    public ProjectFileCheckService projectFileCheckService(ExecutorService executorService, ModelAnalyzerApiClient modelAnalyzerApiClient,
+                                                           @Value("${pathmind.convert-models-to-support-tuples.url}") String convertModelsToSupportTuplesURL) {
+        return new ProjectFileCheckService(executorService, modelAnalyzerApiClient, convertModelsToSupportTuplesURL);
+    }
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void lookForTransactionalAnnotations() {

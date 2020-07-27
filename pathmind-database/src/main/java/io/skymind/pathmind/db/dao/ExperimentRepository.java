@@ -81,6 +81,7 @@ class ExperimentRepository
 				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
 				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
 				.where(EXPERIMENT.MODEL_ID.eq(modelId))
+                .orderBy(EXPERIMENT.DATE_CREATED.desc())
 				.fetch();
 
 		return result.stream().map(record -> {
@@ -261,7 +262,9 @@ class ExperimentRepository
 		model = model.getId() == 0 ? null : model;
 		run = run.getId() == 0 ? null : run;
 		experiment = experiment.getId() == 0 ? null : experiment;
-
+		if (experiment != null && model != null) {
+		    experiment.setModelId(model.getId());
+        }
 
 		return DashboardItem.builder()
 				.experiment(experiment)

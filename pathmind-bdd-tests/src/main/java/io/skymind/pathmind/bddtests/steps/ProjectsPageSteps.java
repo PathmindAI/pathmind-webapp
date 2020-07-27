@@ -51,4 +51,9 @@ public class ProjectsPageSteps {
     public void checkPageTitleIsProjects(String title) {
         projectsPage.checkPageTitleIsProjects(title);
     }
+
+    @Step
+    public void checkNewExperimentPageRewardVariableErrorIsShown(String error) {
+        projectsPage.checkNewExperimentPageRewardVariableErrorIsShown(error);
+    }
 }
