@@ -167,9 +167,9 @@ pipeline {
                 script {
                     echo "Updating helm chart"
                     sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} ${DOCKER_TAG} ${WORKSPACE}"
+                    sh "sleep 90"
                     echo "Deploying updater helm chart"
                     sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml -n ${DOCKER_TAG}"
-                    sh "sleep 60"
                     echo "Wait for webapp to be available"
                     sh "timeout 300 bash -c 'while ! curl http://pathmind-${DOCKER_TAG}; do sleep 5; done'"
                     sh "timeout 300 bash -c 'while ! curl http://pathmind-slot-${DOCKER_TAG}; do sleep 5; done'"
@@ -187,8 +187,6 @@ pipeline {
             steps {
                 script {
                     try {
-                        echo "Running tests"
-                        sh "sleep 120"
                         echo "CLean s3 bucket for tests"
                         sh "aws s3 rm s3://${DOCKER_TAG}-training-dynamic-files.pathmind.com/id2 --recursive"
                         sh "aws s3 rm s3://${DOCKER_TAG}-training-dynamic-files.pathmind.com/id3 --recursive"
@@ -196,7 +194,7 @@ pipeline {
                         sh "aws s3 rm s3://${DOCKER_TAG}-training-dynamic-files.pathmind.com/id5 --recursive"
                         sh "aws s3 rm s3://${DOCKER_TAG}-training-dynamic-files.pathmind.com/id6 --recursive"
                         sh "aws s3 rm s3://${DOCKER_TAG}-training-dynamic-files.pathmind.com/id7 --recursive"
-                        sh "sleep 120"
+                        echo "Running tests"
                         TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true  -Denvironments.default.base.url=https://${DOCKER_TAG}.devpathmind.com/ -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n dev |  base64 --decode` -f pom.xml -P bdd-tests")
                         script {
                             if (TEST_STATUS != 0) {
@@ -257,7 +255,7 @@ pipeline {
                 script {
                     echo "Updating helm chart"
                     sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
-                    sh "sleep 60"
+                    sh "sleep 90"
                     echo "Deploying updater helm chart"
                     sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml"
                 }
