@@ -4,9 +4,7 @@ import net.serenitybdd.core.environment.EnvironmentSpecificConfiguration;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.util.EnvironmentVariables;
 import net.thucydides.core.util.SystemEnvironmentVariables;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -35,7 +33,8 @@ public class Utils extends PageObject {
             try {
                 getDriver().findElement(by).click();
                 break;
-            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
+            } catch (StaleElementReferenceException | ElementClickInterceptedException ex) {
+                getDriver().navigate().refresh();
                 waitABit(5000);
             }
             attempts++;
