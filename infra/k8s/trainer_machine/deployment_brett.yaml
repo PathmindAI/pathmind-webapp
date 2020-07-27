@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trainer-machine-brett
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trainer-machine-brett
+  template:
+    metadata:
+      labels:
+        app: trainer-machine-brett
+    spec:
+      volumes:
+      - name: training-machine
+        persistentVolumeClaim:
+          claimName: training-machine-pvc
+      containers:
+      - name: trainer-machine-brett
+        volumeMounts:
+        - name: training-machine
+          mountPath: /var/trainer-machine
+        image: 839270835622.dkr.ecr.us-east-1.amazonaws.com/training_machine:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 16
+            memory: 32G
+          requests:
+            cpu: 12
+            memory: 28G
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "SPOT-16cpu_32gb"
+        effect: "NoSchedule"
+      nodeSelector:
+        dedicated: SPOT-16cpu_32gb
