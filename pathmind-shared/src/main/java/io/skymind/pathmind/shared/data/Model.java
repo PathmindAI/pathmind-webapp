@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 @Setter
 public class Model extends ArchivableData
 {
+    private static final long serialVersionUID = 3143001029296125340L;
+
 	public static final int DEFAULT_NUMBER_OF_OBSERVATIONS = 1;
 	public static final int DEFAULT_NUMBER_OF_POSSIBLE_ACTIONS = 1;
 
