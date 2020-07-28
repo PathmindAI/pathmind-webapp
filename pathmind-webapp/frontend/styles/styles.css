@@ -465,6 +465,9 @@ hr {
     border-radius: var(--lumo-border-radius);
     overflow-y: auto;
 }
+.upload-model-view .observations-table {
+    max-height: 560px;
+}
 
 account-view {
     background: var(--pm-app-bg-color);

@@ -1,12 +1,12 @@
 package io.skymind.pathmind.db.dao;
 
-import io.skymind.pathmind.db.utils.DBUtils;
-import io.skymind.pathmind.shared.data.RewardVariable;
+import java.util.List;
+
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import io.skymind.pathmind.shared.data.RewardVariable;
 
 @Repository
 public class RewardVariableDAO {
@@ -16,21 +16,15 @@ public class RewardVariableDAO {
         this.ctx = ctx;
     }
 
-    public void saveRewardVariables(List<RewardVariable> rewardVariables) {
-        ctx.transaction(configuration ->
-        {
-            DSLContext transactionCtx = DSL.using(configuration);
-            DBUtils.setLockTimeout(transactionCtx, 4);
+    public void updateModelRewardVariables(long modelId, List<RewardVariable> rewardVariables) {
+        rewardVariables.forEach(rv -> rv.setModelId(modelId));
+        ctx.transaction(conf -> {
+            DSLContext transactionCtx = DSL.using(conf);
             RewardVariableRepository.insertOrUpdateRewardVariables(transactionCtx, rewardVariables);
         });
-
     }
 
     public List<RewardVariable> getRewardVariablesForModel(long modelId) {
         return RewardVariableRepository.getRewardVariablesForModel(ctx, modelId);
-    }
-
-    public void deleteModelRewardVariables(long modelId) {
-        RewardVariableRepository.deleteModelRewardsVariables(ctx, modelId);
     }
 }
