@@ -61,4 +61,8 @@ public class ProjectPage extends PageObject {
     public void checkThatProjectNameBreadcrumbOnProjectPage(String name) {
         assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='page-title']/descendant::span[@class='breadcrumb']")).getText(), is(name));
     }
+
+    public void checkProjectPageModelPackageNameIs(String modelId, String packageName) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + modelId + " " + "']/following-sibling::vaadin-grid-cell-content[1]")).getText(), is(packageName));
+    }
 }

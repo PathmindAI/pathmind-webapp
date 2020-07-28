@@ -42,4 +42,9 @@ public class ProjectPageSteps {
         projectPage.checkThatProjectNameDetailsOnProjectPage(name);
         projectPage.checkThatProjectNameBreadcrumbOnProjectPage(name);
     }
+
+    @Step
+    public void checkProjectPageModelPackageNameIs(String modelId, String packageName) {
+        projectPage.checkProjectPageModelPackageNameIs(modelId, packageName);
+    }
 }

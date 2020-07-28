@@ -111,4 +111,8 @@ public class DashboardPage extends PageObject {
         waitABit(5000);
         utils.clickElementRepeatIfStaleException(By.xpath("//span[text()='" + projectName + "']/following-sibling::*[@class='stages-container']/descendant::span[text()='Write reward function']"));
     }
+
+    public void checkDashboardModelBreadcrumb(String projectName, String packageName) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/following-sibling::a[contains(text(),'Model #1')]")).getText(), is("Model #1 (" + packageName + ")"));
+    }
 }
