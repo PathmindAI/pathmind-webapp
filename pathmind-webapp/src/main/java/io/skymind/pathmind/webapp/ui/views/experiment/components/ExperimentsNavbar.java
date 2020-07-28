@@ -76,7 +76,9 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 	}
 
 	public void setCurrentExperiment(Experiment newCurrentExperiment) {
-		currentExperimentNavItem.removeAsCurrent();
+	    if (currentExperimentNavItem != null) {
+	        currentExperimentNavItem.removeAsCurrent();
+	    }
 		experimentsNavBarItems.stream().forEach(experimentsNavBarItem -> {
 			if (experimentsNavBarItem.getExperiment().equals(newCurrentExperiment)) {
 				experimentsNavBarItem.setAsCurrent();
