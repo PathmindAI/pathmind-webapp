@@ -85,7 +85,7 @@ module "cluster" {
       spot_instance_pools     = 4
       asg_min_size            = 1
       asg_max_size            = 50
-      asg_desired_capacity    = 0
+      asg_desired_capacity    = 1
       kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot --node-labels=dedicated=SPOT-36cpu_72gb --register-with-taints=dedicated=SPOT-36cpu_72gb:NoSchedule"
       tags = [
         {
