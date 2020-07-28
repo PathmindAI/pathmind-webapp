@@ -83,7 +83,7 @@ module "cluster" {
       name                    = "SPOT-36cpu_72gb"
       override_instance_types = ["c4.8xlarge", "c5.9xlarge", "c5d.9xlarge", "c5n.9xlarge"]
       spot_instance_pools     = 4
-      asg_min_size            = 0
+      asg_min_size            = 1
       asg_max_size            = 50
       asg_desired_capacity    = 0
       kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot --node-labels=dedicated=SPOT-36cpu_72gb --register-with-taints=dedicated=SPOT-36cpu_72gb:NoSchedule"
