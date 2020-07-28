@@ -113,7 +113,7 @@ public class ModelPage extends PageObject {
         }
         assertThat(strings, hasItem("Projects"));
         assertThat(strings, hasItem("AutotestProject" + Serenity.sessionVariableCalled("randomNumber")));
-        assertThat(strings, hasItem("Model #1"));
+        assertThat(strings, hasItem("Model #1 (coffeeshop_v1)"));
     }
 
     public void checkExperimentModelStatusIsStarting(String status) {

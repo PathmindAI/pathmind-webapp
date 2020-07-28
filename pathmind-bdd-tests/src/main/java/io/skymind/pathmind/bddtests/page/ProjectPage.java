@@ -45,7 +45,7 @@ public class ProjectPage extends PageObject {
 
     public void clickModelArchiveButton(String model) {
         waitABit(4000);
-        WebElement archiveBtn = getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + model + " " + "']/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button"));
+        WebElement archiveBtn = getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + model + " " + "']/following-sibling::vaadin-grid-cell-content[5]/descendant::vaadin-button"));
         archiveBtn.click();
     }
 

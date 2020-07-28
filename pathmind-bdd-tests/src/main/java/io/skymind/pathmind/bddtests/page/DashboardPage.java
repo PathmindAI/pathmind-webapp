@@ -25,7 +25,7 @@ public class DashboardPage extends PageObject {
     }
 
     public void clickModelBreadcrumbFromDashboard(String projectName) {
-        utils.clickElementRepeatIfStaleException(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/following-sibling::a[text()='Model #1']"));
+        utils.clickElementRepeatIfStaleException(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/following-sibling::a[contains(text(),'Model #1')]"));
         waitABit(2500);
     }
 
