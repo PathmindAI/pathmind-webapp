@@ -36,3 +36,20 @@
 :host(.reward-variable-name-field[readonly]) [part="input-field"]::after {
     content: none;
 }
+
+:host(.action-name-field) [part="value"] {
+    min-height: auto;
+    padding: 0;
+}
+
+:host(.action-name-field) [part="input-field"] {
+    height: 1.75rem;
+    padding: 0.4em;
+    border-radius: 0 3px 3px 0;
+    border: 1px solid var(--pm-gray-color);
+}
+
+:host([theme~="code"]){
+    font-size: var(--lumo-font-size-s);
+    font-family: var(--code-font-family);
+}

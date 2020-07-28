@@ -34,9 +34,4 @@ class RewardVariableRepository {
                 .where(REWARD_VARIABLE.MODEL_ID.eq(modelId))
                 .fetchInto(RewardVariable.class);
     }
-
-    static void deleteModelRewardsVariables(DSLContext ctx, long modelId) {
-        ctx.deleteFrom(REWARD_VARIABLE)
-                .where(REWARD_VARIABLE.MODEL_ID.equal(modelId));
-    }
 }
