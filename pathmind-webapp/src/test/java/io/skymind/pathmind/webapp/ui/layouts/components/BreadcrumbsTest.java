@@ -5,6 +5,8 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.RouterLink;
 
+import io.skymind.pathmind.webapp.ui.views.model.ModelView;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,8 +56,9 @@ public class BreadcrumbsTest {
 
     @Test
     public void breadcrumbsWithoutRoot() {
+        KaribuUtils.setupRoutes(ProjectView.class, ModelView.class);
         Breadcrumbs breadcrumbsWithoutRoot = new Breadcrumbs(mockProject, mockModel, mockExperiment, false);
-        ui = KaribuUtils.setup(breadcrumbsWithoutRoot);
+//        ui = KaribuUtils.setup(breadcrumbsWithoutRoot);
         RouterLink textLink = (RouterLink) breadcrumbsWithoutRoot.getChildren().findFirst().orElse(null);
         assertNotEquals("Projects", textLink.getText());
     }
