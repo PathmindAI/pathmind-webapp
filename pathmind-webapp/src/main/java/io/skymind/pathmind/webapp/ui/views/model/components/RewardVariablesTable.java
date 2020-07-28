@@ -1,7 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.AbstractCompositeField;
 import com.vaadin.flow.component.HasStyle;
@@ -78,16 +78,11 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 
 	@Override
 	protected List<RewardVariable> generateModelValue() {
-		List<RewardVariable> modelValue = new ArrayList<>();
-		for (int i = 0; i < rewardVariableNameFields.size(); i++) {
-			modelValue.add(rewardVariableNameFields.get(i).getValue());
-		}
-		return modelValue;
+	    return rewardVariableNameFields.stream().map(RowField::getValue).collect(Collectors.toList());
 	}
 
 	@Override
 	public void setPresentationValue(List<RewardVariable> newPresentationValue) {
-		setVariableSize(newPresentationValue.size());
 		newPresentationValue.forEach(rv -> rewardVariableNameFields.get(rv.getArrayIndex()).setValue(rv));
 	}
 

@@ -17,8 +17,8 @@ public class HelpPage extends PageObject {
         assertThat(getDriver().findElement(By.xpath("//article/p/b")).getText(), is("This only applies to models with a single action output. aka, non-tuple"));
         assertThat(getDriver().findElement(By.xpath("(//article/ol/li)[1]")).getText(), is("Upgrade to the latest version of Pathmind Helper in AnyLogic. (version >= 1.1.0)"));
         assertThat(getDriver().findElement(By.xpath("(//article/ol/li)[2]")).getText(), is("Update their doAction() function. Instead of accepting an int, it now takes long[]. A simple way to change this is :"));
-        assertThat(getDriver().findElement(By.xpath("(//article/p)[2]")).getText(), is("Before:"));
-        assertThat(getDriver().findElement(By.xpath("(//article/p)[3]")).getText(), is("After:"));
+        assertThat(getDriver().findElement(By.xpath("(//article/p)[3]")).getText(), is("Before:"));
+        assertThat(getDriver().findElement(By.xpath("(//article/p)[4]")).getText(), is("After:"));
         assertThat(getDriver().findElement(By.xpath("(//article/pre)[1]")).getText(), is("doAction(action) { \n" +
             "  if (action == 0) { \n" +
             "    foo();\n" +
