@@ -4,7 +4,7 @@ resource "aws_iam_role_policy_attachment" "kube2iam" {
 }
 
 resource "aws_iam_policy" "kube2iam_policy" {
-  name        = "kube2iam_policy"
+  name        = "kube2iam_policy-${var.cluster_name}"
   path        = "/"
   description = "kube2iam_policy"
 
@@ -25,7 +25,7 @@ EOF
 }
 
 resource "aws_iam_role" "eks" {
-  name = "eks"
+  name = "eks-${var.cluster_name}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -56,7 +56,7 @@ resource "aws_iam_role_policy_attachment" "eks-eks" {
 }
 
 resource "aws_iam_policy" "eks-policy" {
-  name        = "eks-policy"
+  name        = "eks-policy-${var.cluster_name}"
   path        = "/"
   description = "Policy for eks"
 

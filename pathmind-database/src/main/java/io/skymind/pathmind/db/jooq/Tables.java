@@ -4,9 +4,11 @@
 package io.skymind.pathmind.db.jooq;
 
 
+import io.skymind.pathmind.db.jooq.tables.Action;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
 import io.skymind.pathmind.db.jooq.tables.Metrics;
 import io.skymind.pathmind.db.jooq.tables.Model;
+import io.skymind.pathmind.db.jooq.tables.Observation;
 import io.skymind.pathmind.db.jooq.tables.PathmindUser;
 import io.skymind.pathmind.db.jooq.tables.Policy;
 import io.skymind.pathmind.db.jooq.tables.Project;
@@ -34,6 +36,11 @@ import javax.annotation.processing.Generated;
 public class Tables {
 
     /**
+     * The table <code>public.action</code>.
+     */
+    public static final Action ACTION = Action.ACTION;
+
+    /**
      * The table <code>public.experiment</code>.
      */
     public static final Experiment EXPERIMENT = Experiment.EXPERIMENT;
@@ -47,6 +54,11 @@ public class Tables {
      * The table <code>public.model</code>.
      */
     public static final Model MODEL = Model.MODEL;
+
+    /**
+     * The table <code>public.observation</code>.
+     */
+    public static final Observation OBSERVATION = Observation.OBSERVATION;
 
     /**
      * The table <code>public.pathmind_user</code>.
