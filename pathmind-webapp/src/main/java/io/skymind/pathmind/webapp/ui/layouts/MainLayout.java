@@ -51,7 +51,11 @@ public class MainLayout extends AppLayout implements PageConfigurator
 
 		// Added a message just in case there's ever a failure.
 		setContent(new Span("Error. Please contact Pathmind for assistance"));
-	}
+    }
+
+    /* This is for Karibu Tests to initialize the views */
+    public MainLayout() {
+    }
 
 	@Override
 	public void configurePage(InitialPageSettings settings) {

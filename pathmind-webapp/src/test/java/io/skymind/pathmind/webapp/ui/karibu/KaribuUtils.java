@@ -38,6 +38,17 @@ public class KaribuUtils {
         return ui;
     }
 
+    public static void setupRoutes() {
+        Routes routes = new Routes().autoDiscoverViews("io.skymind.pathmind");
+        MockVaadin.setup(routes);
+    }
+
+    public static UI setupUI(Component component) {
+        MockedUI ui = Mockito.spy(new MockedUI());
+        new ParentComponent(ui, component);
+        return ui;
+    }
+
 	public static Class<? extends HasElement> getActiveViewClass() {
 		return UI.getCurrent().getInternals().getActiveRouterTargetsChain().get(0).getClass();
 	}
