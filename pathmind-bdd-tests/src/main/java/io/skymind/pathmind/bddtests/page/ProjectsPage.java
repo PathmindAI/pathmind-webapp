@@ -1,8 +1,7 @@
 package io.skymind.pathmind.bddtests.page;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -26,7 +25,8 @@ public class ProjectsPage extends PageObject {
     private final By byTextarea = By.cssSelector("textarea");
 
     public void clickCreateNewProjectBtn() {
-        waitABit(2000);
+        waitABit(3500);
+        waitFor(ExpectedConditions.elementToBeClickable(getDriver().findElement(By.xpath("//vaadin-button[text()='New Project']"))));
         getDriver().findElement(By.xpath("//vaadin-button[text()='New Project']")).click();
     }
 
@@ -72,5 +72,13 @@ public class ProjectsPage extends PageObject {
         actions.click();
         actions.perform();
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label' and text()='Rename project']")));
+    }
+
+    public void checkPageTitleIsProjects(String title) {
+        assertThat(getDriver().findElement(By.xpath("//span[contains(@class,'section-title-label')]")).getText(), is(title));
+    }
+
+    public void checkNewExperimentPageRewardVariableErrorIsShown(String error) {
+        assertThat(getDriver().findElement(By.cssSelector(".reward-variable-name-field")).getText(), is(error));
     }
 }

@@ -26,12 +26,11 @@ import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.TooltipContainer;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -62,7 +61,7 @@ public class ProjectsView extends PathMindDefaultView
 
 		addClassName("projects-view");
 
-		Span projectsTitle = LabelFactory.createLabel("Projects", CssMindPathStyles.SECTION_TITLE_LABEL, CssMindPathStyles.TRUNCATED_LABEL);
+		Span projectsTitle = LabelFactory.createLabel("Projects", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.TRUNCATED_LABEL);
 
 		HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle, new NewProjectButton());
 		headerWrapper.addClassName("page-content-header");
@@ -81,7 +80,7 @@ public class ProjectsView extends PathMindDefaultView
 				"Active",
 				projectGrid,
 				this::getProjects,
-				(projectId, isArchive) -> projectDAO.archive(projectId, isArchive));
+				(project, isArchive) -> projectDAO.archive(project.getId(), isArchive));
 	}
 
 	private void setupProjectGrid()
@@ -92,6 +91,7 @@ public class ProjectsView extends PathMindDefaultView
                 String projectName = project.getName();
 				Button renameProjectButton = new Button(new Icon(VaadinIcon.EDIT), evt -> renameProject(project));
                 renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+                renameProjectButton.addClassName("action-button");
                 HorizontalLayout projectNameColumn = new TooltipContainer(projectName, projectName, renameProjectButton);
 				projectNameColumn.addClassName("project-name-column");
                 projectNameColumn.setSpacing(false);
@@ -103,21 +103,19 @@ public class ProjectsView extends PathMindDefaultView
 				.setResizable(true)
 				.setSortable(true);
 
-		projectGrid.addColumn(new ZonedDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+		projectGrid.addColumn(new ZonedDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Project::getDateCreated))
 				.setHeader("Created")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
-				.setResizable(true)
-				.setSortable(true);
+				.setResizable(true);
 
-		Grid.Column<Project> lastActivityColumn = projectGrid.addColumn(new ZonedDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+		Grid.Column<Project> lastActivityColumn = projectGrid.addColumn(new ZonedDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
 				.setComparator(Comparator.comparing(Project::getLastActivityDate))
 				.setHeader("Last Activity")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
-				.setResizable(true)
-				.setSortable(true);
+				.setResizable(true);
 
 		projectGrid.addColumn(project -> {
 				String userNotes = project.getUserNotes();
@@ -150,7 +148,7 @@ public class ProjectsView extends PathMindDefaultView
 
 	@Override
 	protected Component getTitlePanel() {
-		return new ScreenTitlePanel("Projects");
+		return null;
 	}
 
 	@Override

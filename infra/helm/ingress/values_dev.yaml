@@ -35,7 +35,7 @@ ingress:
     - host: jenkins.dev.devpathmind.com
       paths: [/:8080:jenkins]
     - host: grafana.dev.devpathmind.com
-      paths: [/:80:prometheus-grafana]
+      paths: [/:80:prometheus-operator-grafana]
     - host: kibana.dev.devpathmind.com
       paths: [/:5601:kibana-kb-http]
     - host: pgadmin.dev.devpathmind.com
@@ -46,6 +46,14 @@ ingress:
       paths: [/:9091:pathmind-admin-server]
     - host: zalenium.dev.devpathmind.com
       paths: [/:80:zalenium]
+    - host: ma.dev.devpathmind.com
+      paths: [/:8080:pathmind-ma-dev]
+    - host: ma.test.devpathmind.com
+      paths: [/:8080:pathmind-ma-test]
+    - host: zinc-factory.devpathmind.com
+      paths: [/:8080:policy-server-zinc-factory]
+    - host: leuphana.devpathmind.com
+      paths: [/:8080:policy-server-leuphana]
 
   tls: 
     - secretName: letsencrypt-dev
@@ -59,6 +67,10 @@ ingress:
         - admin.dev.devpathmind.com
         - admin-server.dev.devpathmind.com
         - zalenium.dev.devpathmind.com
+        - ma.dev.devpathmind.com
+        - ma.test.devpathmind.com
+        - zinc-factory.devpathmind.com
+        - leuphana.devpathmind.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

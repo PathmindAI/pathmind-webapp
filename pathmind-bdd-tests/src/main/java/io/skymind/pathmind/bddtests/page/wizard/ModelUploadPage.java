@@ -32,14 +32,15 @@ public class ModelUploadPage extends PageObject {
     }
 
     public void checkThatModelUploadPageOpened() {
+        waitABit(2500);
         assertThat(getDriver().getCurrentUrl(), containsString("uploadModel"));
         assertThat(getDriver().findElement(By.xpath("//span[@class='no-top-margin-label']")).getText(), is("Upload Model"));
     }
 
     public void checkErrorMessageInModelCheckPanel(String errorMessage) {
-        setImplicitTimeout(90, SECONDS);
-        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-vertical-layout[normalize-space(text())='" + errorMessage + "']")));
-        By xpath = By.xpath("//vaadin-progress-bar/parent::*");
+        setImplicitTimeout(240, SECONDS);
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-progress-bar[@theme='error']/following-sibling::span")));
+        By xpath = By.xpath("//vaadin-progress-bar[@theme='error']/following-sibling::span");
         assertThat(getDriver().findElement(xpath).getText(), is(errorMessage));
         resetImplicitTimeout();
     }

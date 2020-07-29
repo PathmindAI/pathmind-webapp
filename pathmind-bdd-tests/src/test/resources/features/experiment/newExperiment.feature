@@ -54,7 +54,7 @@ Feature: New experiment page
     When Click project save draft btn
     When Click back button
     Then Click the experiment name 1
-    Then Check reward function is reward -= after[3] - before[3];
+    Then Check reward function is reward -= after[3 var-3] - before[3 var-3];
 
   @reward-variables
   Scenario: Naming reward function variables
@@ -90,4 +90,64 @@ Feature: New experiment page
     Then Click the experiment name 1
     Then Add note This is the experiment notes for this Coffee Shop project to the experiment page
     Then Click project save draft btn
-    Then Check that Notes saved! msg shown
+    Then Refresh page
+    Then Check experiment notes is This is the experiment notes for this Coffee Shop project
+
+  Scenario: Check that reward variable with 99 chars saved
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model tuple_models/CoffeeShopTuple.zip
+    When Check that model successfully uploaded
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    Then Input reward variable names Lorem ipsum dolor sit amet consectetuer adipiscing elit Aenean commodo ligula eget dolor Aenean mass
+    Then Click project save draft btn
+    When Open projects page
+    When Open project AutotestProject on projects page
+    Then Click the model name 1
+    Then Click the experiment name 1
+    Then Check experiment page reward variables is Lorem ipsum dolor sit amet consectetuer adipiscing elit Aenean commodo ligula eget dolor Aenean mass
+
+  Scenario: Check confirmation popup is shown when reward variable is more than 100 characters
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model tuple_models/CoffeeShopTuple.zip
+    When Check that model successfully uploaded
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    Then Input reward variable names Lorem ipsum dolor sit amet consectetuer adipiscing elit Aenean commodo ligula eget dolor Aenean massa
+    Then Check newExperiment page reward variable error is shown Variable name must not exceed 100 characters
+    When Click in 'Projects' button
+    Then Check that Before you leave.... pop-up is shown with error Your changes in the reward variables cannot be saved. Please check and fix the errors.
+    Then In confirmation dialog click in 'Stay' button
+    Then Check that new experiment AutotestProject page is opened
+    When Click in 'Projects' button
+    Then In confirmation dialog click in 'Leave' button
+    Then Check that projects page opened
+
+  Scenario: Check confirmation popup is shown when reward variable is empty
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model tuple_models/CoffeeShopTuple.zip
+    When Check that model successfully uploaded
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    When Wait a bit 3500 ms
+    Then Change reward variable on experiment view '0' to ''
+    Then Check newExperiment page reward variable error is shown Variable name is required
+    When Click in 'Projects' button
+    Then Check that Before you leave.... pop-up is shown with error Your changes in the reward variables cannot be saved. Please check and fix the errors.
+    Then In confirmation dialog click in 'Stay' button
+    Then Check that new experiment AutotestProject page is opened
+    When Click in 'Projects' button
+    Then In confirmation dialog click in 'Leave' button
+    Then Check that projects page opened

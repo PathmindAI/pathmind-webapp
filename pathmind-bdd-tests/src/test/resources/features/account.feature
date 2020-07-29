@@ -82,3 +82,15 @@ Feature: User accounts tests
     When In confirmation dialog click in 'Update' button
     When In confirmation dialog click in 'OK' button
     When Check user verification email
+
+  Scenario: Check account edit breadcrumb
+    Given Login to the pathmind
+    When Open page account/edit
+    When Click account breadcrumb btn
+    Then Check that user account page opened
+
+  Scenario: Check Change Password breadcrumb
+    Given Login to the pathmind
+    When Open page account/change-password
+    When Click account breadcrumb btn
+    Then Check that user account page opened

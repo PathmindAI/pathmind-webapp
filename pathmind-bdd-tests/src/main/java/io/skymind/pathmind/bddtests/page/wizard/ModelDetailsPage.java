@@ -41,6 +41,8 @@ public class ModelDetailsPage extends PageObject {
     }
 
     public void checkThatModelSuccessfullyUploaded() {
+        setImplicitTimeout(300, SECONDS);
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Your model was successfully uploaded!']")));
+        resetImplicitTimeout();
     }
 }

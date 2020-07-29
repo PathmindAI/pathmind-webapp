@@ -1,7 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.AbstractCompositeField;
 import com.vaadin.flow.component.HasStyle;
@@ -30,14 +30,21 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 
     private boolean isReadOnly = false;
 
-	public RewardVariablesTable() {
+    private final boolean requireVars;
+
+	public RewardVariablesTable(boolean requireVars) {
+	    this.requireVars = requireVars;
 		container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
 		container.setClassName("reward-variables-table");
 
 		add(container);
 	}
 
-	public void setCodeEditorMode() {
+    public RewardVariablesTable() {
+	    this(true);
+    }
+
+    public void setCodeEditorMode() {
 		setClassName("with-container-border");
 	}
 
@@ -64,37 +71,48 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 		RowField rewardVariableNameField = new RowField(rowNumber, isReadOnly);
         rewardVariableNameFields.add(rewardVariableNameField);
         if (!isReadOnly) {
-            FormUtils.addValidator(rewardVariableNameField, new RowValidator());
+            FormUtils.addValidator(rewardVariableNameField, new RowValidator(requireVars));
         }
 		return rewardVariableNameField;
     }
 
 	@Override
 	protected List<RewardVariable> generateModelValue() {
-		List<RewardVariable> modelValue = new ArrayList<>();
-		for (int i = 0; i < rewardVariableNameFields.size(); i++) {
-			modelValue.add(rewardVariableNameFields.get(i).getValue());
-		}
-		return modelValue;
+	    return rewardVariableNameFields.stream().map(RowField::getValue).collect(Collectors.toList());
 	}
 
 	@Override
 	public void setPresentationValue(List<RewardVariable> newPresentationValue) {
-		setVariableSize(newPresentationValue.size());
 		newPresentationValue.forEach(rv -> rewardVariableNameFields.get(rv.getArrayIndex()).setValue(rv));
 	}
 
 	@Override
 	public boolean isInvalid() {
-		return rewardVariableNameFields.stream().anyMatch(f -> f.isInvalid());
+		return rewardVariableNameFields.stream().anyMatch(RowField::isInvalid);
 	}
 
 	private static class RowValidator implements Validator<RewardVariable> {
 		private final StringLengthValidator nameValidator = new StringLengthValidator("Variable name must not exceed 100 characters", 0, 100);
+		private final StringLengthValidator requiredValidator = new StringLengthValidator("Variable name is required", 1, 100);
+
+		private final Collection<Validator<String>> validators;
+
+		public RowValidator(boolean requireVars) {
+		    if (requireVars) {
+		        validators = Arrays.asList(nameValidator, requiredValidator);
+            }
+		    else {
+		        validators = Collections.singletonList(nameValidator);
+            }
+        }
 
 		@Override
 		public ValidationResult apply(RewardVariable rewardVariable, ValueContext valueContext) {
-			return nameValidator.apply(rewardVariable.getName(), valueContext);
+            return validators.stream()
+                    .map(v -> v.apply(rewardVariable.getName(), valueContext))
+                    .filter(r -> r.isError())
+                    .findAny()
+                    .orElse(ValidationResult.ok());
 		}
 	}
 

@@ -11,7 +11,7 @@ public class ConfirmationUtils {
 		String confirmText = String.format("Archive");
 		
 		ConfirmDialog dialog = new ConfirmDialog(header, text, confirmText, evt -> confirmAction.execute());
-		dialog.setCancelButton("Cancel", evt -> dialog.close(), "secondary");
+		dialog.setCancelButton("Cancel", evt -> dialog.close(), UIConstants.DEFAULT_BUTTON_THEME);
 		dialog.open();
 	}
 	
@@ -21,16 +21,7 @@ public class ConfirmationUtils {
 		String confirmText = String.format("Unarchive");
 		
 		ConfirmDialog dialog = new ConfirmDialog(header, text, confirmText, evt -> confirmAction.execute());
-		dialog.setCancelButton("Cancel", evt -> dialog.close(), "secondary");
-		dialog.open();
-	}
-
-	public static void leavePage(Command cancelAction) {
-		String header = "Before you leave....";
-		String text = "You have unsaved changes on this page that cannot be automatically saved. Please check and fix the invalid fields.";
-		String confirmText = "Stay";
-		ConfirmDialog dialog = new ConfirmDialog(header, text, confirmText, evt -> evt.getSource().close());
-		dialog.setCancelButton("Leave", evt -> cancelAction.execute(), "secondary");
+		dialog.setCancelButton("Cancel", evt -> dialog.close(), UIConstants.DEFAULT_BUTTON_THEME);
 		dialog.open();
 	}
 

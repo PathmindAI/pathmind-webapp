@@ -4,8 +4,11 @@
 package io.skymind.pathmind.db.jooq;
 
 
+import io.skymind.pathmind.db.jooq.tables.Action;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
+import io.skymind.pathmind.db.jooq.tables.Metrics;
 import io.skymind.pathmind.db.jooq.tables.Model;
+import io.skymind.pathmind.db.jooq.tables.Observation;
 import io.skymind.pathmind.db.jooq.tables.PathmindUser;
 import io.skymind.pathmind.db.jooq.tables.Policy;
 import io.skymind.pathmind.db.jooq.tables.Project;
@@ -40,10 +43,17 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
+    public static final Index ACTION_MODEL_FK_INDEX = Indexes0.ACTION_MODEL_FK_INDEX;
+    public static final Index ACTION_MODEL_ID_ARRAY_INDEX_KEY = Indexes0.ACTION_MODEL_ID_ARRAY_INDEX_KEY;
+    public static final Index ACTION_PKEY = Indexes0.ACTION_PKEY;
     public static final Index EXPERIMENT_MODEL_FK_INDEX = Indexes0.EXPERIMENT_MODEL_FK_INDEX;
     public static final Index EXPERIMENT_PKEY = Indexes0.EXPERIMENT_PKEY;
+    public static final Index METRICS_POLICY_ID_INDEX = Indexes0.METRICS_POLICY_ID_INDEX;
     public static final Index MODEL_PKEY = Indexes0.MODEL_PKEY;
     public static final Index MODEL_PROJECT_FK_INDEX = Indexes0.MODEL_PROJECT_FK_INDEX;
+    public static final Index OBSERVATION_MODEL_FK_INDEX = Indexes0.OBSERVATION_MODEL_FK_INDEX;
+    public static final Index OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY = Indexes0.OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY;
+    public static final Index OBSERVATION_PKEY = Indexes0.OBSERVATION_PKEY;
     public static final Index PATHMIND_USER_EMAIL_KEY = Indexes0.PATHMIND_USER_EMAIL_KEY;
     public static final Index PATHMIND_USER_PKEY = Indexes0.PATHMIND_USER_PKEY;
     public static final Index POLICY_PKEY = Indexes0.POLICY_PKEY;
@@ -68,10 +78,17 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     private static class Indexes0 {
+        public static Index ACTION_MODEL_FK_INDEX = Internal.createIndex("action_model_fk_index", Action.ACTION, new OrderField[] { Action.ACTION.MODEL_ID }, false);
+        public static Index ACTION_MODEL_ID_ARRAY_INDEX_KEY = Internal.createIndex("action_model_id_array_index_key", Action.ACTION, new OrderField[] { Action.ACTION.MODEL_ID, Action.ACTION.ARRAY_INDEX }, true);
+        public static Index ACTION_PKEY = Internal.createIndex("action_pkey", Action.ACTION, new OrderField[] { Action.ACTION.ID }, true);
         public static Index EXPERIMENT_MODEL_FK_INDEX = Internal.createIndex("experiment_model_fk_index", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.MODEL_ID }, false);
         public static Index EXPERIMENT_PKEY = Internal.createIndex("experiment_pkey", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.ID }, true);
+        public static Index METRICS_POLICY_ID_INDEX = Internal.createIndex("metrics_policy_id_index", Metrics.METRICS, new OrderField[] { Metrics.METRICS.POLICY_ID }, false);
         public static Index MODEL_PKEY = Internal.createIndex("model_pkey", Model.MODEL, new OrderField[] { Model.MODEL.ID }, true);
         public static Index MODEL_PROJECT_FK_INDEX = Internal.createIndex("model_project_fk_index", Model.MODEL, new OrderField[] { Model.MODEL.PROJECT_ID }, false);
+        public static Index OBSERVATION_MODEL_FK_INDEX = Internal.createIndex("observation_model_fk_index", Observation.OBSERVATION, new OrderField[] { Observation.OBSERVATION.MODEL_ID }, false);
+        public static Index OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY = Internal.createIndex("observation_model_id_array_index_key", Observation.OBSERVATION, new OrderField[] { Observation.OBSERVATION.MODEL_ID, Observation.OBSERVATION.ARRAY_INDEX }, true);
+        public static Index OBSERVATION_PKEY = Internal.createIndex("observation_pkey", Observation.OBSERVATION, new OrderField[] { Observation.OBSERVATION.ID }, true);
         public static Index PATHMIND_USER_EMAIL_KEY = Internal.createIndex("pathmind_user_email_key", PathmindUser.PATHMIND_USER, new OrderField[] { PathmindUser.PATHMIND_USER.EMAIL }, true);
         public static Index PATHMIND_USER_PKEY = Internal.createIndex("pathmind_user_pkey", PathmindUser.PATHMIND_USER, new OrderField[] { PathmindUser.PATHMIND_USER.ID }, true);
         public static Index POLICY_PKEY = Internal.createIndex("policy_pkey", Policy.POLICY, new OrderField[] { Policy.POLICY.ID }, true);
@@ -87,7 +104,7 @@ public class Indexes {
         public static Index RUN_EXPERIMENT_FK_INDEX = Internal.createIndex("run_experiment_fk_index", Run.RUN, new OrderField[] { Run.RUN.EXPERIMENT_ID }, false);
         public static Index RUN_PKEY = Internal.createIndex("run_pkey", Run.RUN, new OrderField[] { Run.RUN.ID }, true);
         public static Index PM_RUN_ADMIN_NOTES_RUN_ID_UNQ = Internal.createIndex("pm_run_admin_notes_run_id_unq", RunAdminNote.RUN_ADMIN_NOTE, new OrderField[] { RunAdminNote.RUN_ADMIN_NOTE.RUN_ID }, true);
-        public static Index TRAINER_JOB_PKEY = Internal.createIndex("trainer_job_pkey", TrainerJob.TRAINER_JOB, new OrderField[] { TrainerJob.TRAINER_JOB.JOB_ID }, true);
+        public static Index TRAINER_JOB_PKEY = Internal.createIndex("trainer_job_pkey", TrainerJob.TRAINER_JOB, new OrderField[] { TrainerJob.TRAINER_JOB.JOB_ID, TrainerJob.TRAINER_JOB.S3BUCKET }, true);
         public static Index UNIQUE_JOB_ID_S3BUCKET = Internal.createIndex("unique_job_id_s3bucket", TrainerJob.TRAINER_JOB, new OrderField[] { TrainerJob.TRAINER_JOB.JOB_ID, TrainerJob.TRAINER_JOB.S3BUCKET }, true);
         public static Index TRAINING_ERROR_PKEY = Internal.createIndex("training_error_pkey", TrainingError.TRAINING_ERROR, new OrderField[] { TrainingError.TRAINING_ERROR.ID }, true);
     }

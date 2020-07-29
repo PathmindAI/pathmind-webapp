@@ -46,4 +46,14 @@ public class ProjectsPageSteps {
     public void clickEditProjectIconFromProjectsPage(String projectName) {
         projectsPage.clickEditProjectIconFromProjectsPage(projectName);
     }
+
+    @Step
+    public void checkPageTitleIsProjects(String title) {
+        projectsPage.checkPageTitleIsProjects(title);
+    }
+
+    @Step
+    public void checkNewExperimentPageRewardVariableErrorIsShown(String error) {
+        projectsPage.checkNewExperimentPageRewardVariableErrorIsShown(error);
+    }
 }

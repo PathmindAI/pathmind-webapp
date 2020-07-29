@@ -6,18 +6,9 @@
   overflow: auto;
 }
 
-landing-page {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  justify-content: center;
-  padding: var(--lumo-space-l);
-  box-sizing: border-box;
-}
-
 .login-panel-cont .content {
   padding: 0;
-  margin: 50px auto 0;
+  margin: var(--lumo-space-xxl) auto 0;
 }
 
 .login-panel-cont .inner-content {
@@ -38,7 +29,7 @@ landing-page {
 
 .welcome-text {
   color: var(--pm-orange-color);
-  font-size: 16px;
+  font-size: var(--lumo-font-size-m);
 }
 
 .logo {
@@ -76,6 +67,7 @@ vaadin-button[part="vaadin-login-submit"] {
 .policy {
   font-size: var(--lumo-font-size-xs);
   color: var(--lumo-secondary-text-color);
+  margin-top: var(--lumo-space-s);
 }
 
 .policy a {

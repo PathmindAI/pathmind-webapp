@@ -3,6 +3,7 @@ package io.skymind.pathmind.bddtests.stepdefinitions;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.ExperimentPageSteps;
+import io.skymind.pathmind.bddtests.steps.ProjectsPageSteps;
 import net.thucydides.core.annotations.Steps;
 
 import java.io.IOException;
@@ -11,6 +12,8 @@ public class ExperimentStepDefinitions {
 
     @Steps
     private ExperimentPageSteps experimentPageSteps;
+    @Steps
+    private ProjectsPageSteps projectsPageSteps;
 
     @Then("^Check experiment page reward function (.*)$")
     public void checkExperimentPageRewardFunction(String rewardFnFile) throws IOException {
@@ -47,7 +50,7 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.clickCurrentExperimentArchiveButton();
     }
 
-    @When("^Change reward variable on experiment view (.*) to (.*)$")
+    @When("^Change reward variable on experiment view '(.*)' to '(.*)'$")
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
         experimentPageSteps.changeRewardVariableOnExperimentView(variableNumber, variableName);
     }
@@ -75,5 +78,30 @@ public class ExperimentStepDefinitions {
     @Then("^Check that simulation metrics block is shown$")
     public void checkThatSimulationMetricsBlockIsShown() {
         experimentPageSteps.checkThatSimulationMetricsBlockIsShown();
+    }
+
+    @Then("^Click copy reward function btn and paste text to the notes field$")
+    public void clickCopyRewardFunctionBtn() {
+        experimentPageSteps.clickCopyRewardFunctionBtn();
+    }
+
+    @When("^Input experiment page note (.*)$")
+    public void inputExperimentPageNote(String note) {
+        projectsPageSteps.inputExperimentNotes(note);
+    }
+
+    @Then("^Check that '(.*)' exist on the experiment page$")
+    public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
+        experimentPageSteps.checkThatExperimentExistOnTheExperimentPage(experiment);
+    }
+
+    @Then("^Check that '(.*)' NOT exist on the experiment page$")
+    public void checkThatExperimentNotExistOnTheExperimentPage(String experiment) {
+        experimentPageSteps.checkThatExperimentNotExistOnTheExperimentPage(experiment);
+    }
+
+    @Then("^Check that '(.*)' status icon is '(.*)'$")
+    public void checkThatExperimentStatusIconIs(String experiment, String icon) {
+        experimentPageSteps.checkThatExperimentStatusIconIs(experiment, icon);
     }
 }

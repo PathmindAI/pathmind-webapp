@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 public class Run extends Data
 {
+    private static final long serialVersionUID = 2452255564251125071L;
 	private int runType;
 	private long experimentId;
 	private int status;
@@ -21,7 +22,9 @@ public class Run extends Data
 	private LocalDateTime ec2CreatedAt;
 	private long trainingErrorId;
 	private String jobId;
-    private String rLibError;
+    private String rllibError;
+    private String successMessage;
+    private String warningMessage;
 
 	// Helper attributes
 	private Experiment experiment;

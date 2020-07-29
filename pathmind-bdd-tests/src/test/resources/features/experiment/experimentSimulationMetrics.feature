@@ -1,5 +1,4 @@
-@experiment
-@Skip
+@experimentSimulationMetrics
 Feature: Experiment page Simulation Metrics
 
   Scenario: Check reward variables on experiment page
@@ -20,6 +19,7 @@ Feature: Experiment page Simulation Metrics
     When Click create new project button
     When Input name of the new project <project name> and click Create project button
     When Upload model <model>
+    When Check that model successfully uploaded
     When Click wizard model details next btn
     When Input reward variable names <variables>
     When Click wizard reward variables next btn
@@ -32,5 +32,5 @@ Feature: Experiment page Simulation Metrics
     Examples:
       | project name    | model                                                            | reward function file                                             | variables                                                               | simulation metrics count |
       | AutotestProject | Production_Single_Agent/CheeseChasing_6Observations_4Actions.zip | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt | cheese_var                                                              | 1                        |
-      | AutotestProject | Production_Single_Agent/CoffeeShopPathmindDemo.zip               | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | kitchen_cleanliness,customers_served,balked_customers,avg_response_time | 4                        |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip                                 | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | kitchen_cleanliness,customers_served,balked_customers,avg_response_time | 4                        |
       | AutotestProject | Production_Single_Agent/FAST_RailModel_4Observation_3Actions.zip | Production_Single_Agent/Two_Variables_Reward_Function.txt        | rail_var,train_var                                                      | 2                        |

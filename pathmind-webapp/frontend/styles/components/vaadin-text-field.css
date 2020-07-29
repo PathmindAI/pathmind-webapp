@@ -8,15 +8,12 @@
 }
 
 /* Search box text field */
-:host(.search-box_text-field) vaadin-text-field-container {
-    border: 1px solid var(--pm-text-color);
-}
-
 :host(.search-box_text-field) [part="input-field"] {
     background: transparent;
+    border: 1px solid var(--pm-gray-color);
+    border-right: none;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-    box-shadow: inset 0px 0px 0px 1px rgba(26, 41, 73, 1);
 }
 
 :host(.reward-variable-name-field) [part="value"] {
@@ -38,4 +35,21 @@
 
 :host(.reward-variable-name-field[readonly]) [part="input-field"]::after {
     content: none;
+}
+
+:host(.action-name-field) [part="value"] {
+    min-height: auto;
+    padding: 0;
+}
+
+:host(.action-name-field) [part="input-field"] {
+    height: 1.75rem;
+    padding: 0.4em;
+    border-radius: 0 3px 3px 0;
+    border: 1px solid var(--pm-gray-color);
+}
+
+:host([theme~="code"]){
+    font-size: var(--lumo-font-size-s);
+    font-family: var(--code-font-family);
 }

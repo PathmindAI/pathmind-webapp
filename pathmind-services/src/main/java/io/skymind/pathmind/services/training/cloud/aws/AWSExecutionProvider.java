@@ -12,12 +12,12 @@ import io.skymind.pathmind.shared.data.rllib.CheckPoint;
 import io.skymind.pathmind.shared.data.rllib.ExperimentState;
 import io.skymind.pathmind.shared.exception.PathMindException;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
-import io.skymind.pathmind.shared.services.training.ExecutionProviderClass;
 import io.skymind.pathmind.shared.services.training.JobSpec;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.versions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
@@ -32,6 +32,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.*;
 import static io.skymind.pathmind.shared.constants.RunStatus.Error;
 
 @Service
@@ -44,6 +45,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private static final String AWS_JOB_ID_PREFIX = "id";
     public static final String RLLIB_ERROR_PREFIX = "x-rllib_error";
+    public static final String SUCCESS_MESSAGE_PREFIX = "x-success_message";
+    public static final String WARNING_MESSAGE_PREFIX = "x-warning_message";
     private static final Predicate<String> ERROR_KEY_MATCH = // todo: possible even get a date of error as second match group
             Pattern.compile("(.)*error_(.*)txt$", Pattern.CASE_INSENSITIVE).asMatchPredicate();
 
@@ -99,7 +102,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public ProviderJobStatus status(String jobHandle) {
-        if (outputExist(jobHandle)){
+        if (outputExist(jobHandle)) {
             boolean killed = getFile(jobHandle, TrainingFile.KILLED).isPresent();
             if (killed) {
                 return ProviderJobStatus.KILLED;
@@ -132,19 +135,24 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 log.warn("{} error(s) detected for the AWS jobHandle {}: {}", knownErrsCheck.size(), jobHandle, knownErrsCheck);
             }
 
-            Optional<String> rlLibError = getRLlibError(jobHandle);
-            if (rlLibError.isPresent()) {
-                String error = rlLibError.get();
-                log.warn("rlLib error detected for the AWS jobHandle {}: {}", jobHandle, rlLibError.get());
-                knownErrsCheck.add(RLLIB_ERROR_PREFIX + error);
+            String rlLibError = getRLlibError(jobHandle);
+            if (StringUtils.isNotEmpty(rlLibError)) {
+                log.warn("rlLib error detected for the AWS jobHandle {}: {}", jobHandle, rlLibError);
+                knownErrsCheck.add(RLLIB_ERROR_PREFIX + rlLibError);
             }
 
             if (!knownErrsCheck.isEmpty()) {
                 return new ProviderJobStatus(Error, knownErrsCheck);
             }
 
-            if (experimentState != null && experimentState.getCheckpoints() != null && experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L)) {
-                return ProviderJobStatus.COMPLETED.addExperimentState(experimentState);
+            if (experimentState != null && experimentState.getCheckpoints() != null && (experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L))) {
+                // this is ugly, yes, but it is better to not rely on changing the state of a static object
+                ProviderJobStatus completedStatus = new ProviderJobStatus(ProviderJobStatus.COMPLETED.getRunStatus(), new ArrayList<>());
+                completedStatus.addExperimentState(experimentState);
+                // let's follow what is being done with rlib and add a prefix to the message and add it to description
+                getSuccessMessage(jobHandle).ifPresent(m -> completedStatus.getDescription().add(SUCCESS_MESSAGE_PREFIX + m));
+                getWarningMessage(jobHandle).ifPresent(m -> completedStatus.getDescription().add(WARNING_MESSAGE_PREFIX + m));
+                return completedStatus;
             }
 
             return ProviderJobStatus.RUNNING.addExperimentState(experimentState);
@@ -189,17 +197,12 @@ public class AWSExecutionProvider implements ExecutionProvider {
     @Override
     public Map.Entry<@NotNull String, byte[]> snapshot(String jobHandle, String trainingRun) {
         Optional<byte[]> optional = getFile(jobHandle, "checkpoint.zip");
-        return optional.isPresent() ? Map.entry(jobHandle, optional.get()): null;
+        return optional.isPresent() ? Map.entry(jobHandle, optional.get()) : null;
     }
 
     @Override
     public String console(String jobHandle) {
         throw new UnsupportedOperationException("Not currently supported");
-    }
-
-    @Override
-    public ExecutionProviderClass executionProviderClass() {
-        return ExecutionProviderClass.AWS;
     }
 
     public Optional<byte[]> getFile(String jobHandle, String fileName) {
@@ -219,7 +222,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             String contents = new String(listOpt.get());
             if (!contents.isEmpty()) {
                 return Arrays.stream(contents.split("\n"))
-                    .collect(Collectors.toList());
+                        .collect(Collectors.toList());
             }
         }
 
@@ -237,32 +240,55 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         return objectMapper.readValue(client.fileContents(it), ExperimentState.class);
                     } catch (IOException e) {
                         log.error(e.getMessage(), e);
-                        return  null;
+                        return null;
                     }
                 });
 
         return expOpt != null && expOpt.isPresent() ? expOpt.get() : null;
     }
 
-    public Optional<String> getRLlibError(String jobHandle) {
+    public String getRLlibError(String jobHandle) {
         return client.listObjects(jobHandle + "/output/")
                         .getObjectSummaries().parallelStream()
                         .map(S3ObjectSummary::getKey)
-                        .filter(ERROR_KEY_MATCH).findAny()
+                        .filter(ERROR_KEY_MATCH)
                         .map(it -> {
                             byte[] bytes = client.fileContents(it);
                             try (BufferedReader r = new BufferedReader(new InputStreamReader(
-                                            new ByteArrayInputStream(bytes), StandardCharsets.UTF_8))
+                                    new ByteArrayInputStream(bytes), StandardCharsets.UTF_8))
                             ) {
-                                String last = null;
-                                for (String line = r.readLine(); line != null; line = r.readLine()) {
-                                    last = line;
-                                }
-                                return last;
+                                List<String> lines = r.lines().collect(Collectors.toList());
+                                return findLineWithException(lines);
                             } catch (Exception e) {
                                 return null;
                             }
-                        });
+                        })
+                        .distinct()
+                .collect(Collectors.joining(";\n"));
+    }
+
+    private static final Predicate<String> ERROR_STRING_MATCH = Pattern.compile("^(\\w+\\.)*\\w+:(.*)$", Pattern.CASE_INSENSITIVE).asMatchPredicate();
+
+    static String findLineWithException(List<String> lines) {
+        String exceptionLine = null;
+        ListIterator<String> stringListIterator = lines.listIterator(lines.size());
+        while (exceptionLine == null && stringListIterator.hasPrevious()) {
+            String line = stringListIterator.previous();
+            if (ERROR_STRING_MATCH.test(line)) {
+                exceptionLine = line;
+            }
+        }
+        return exceptionLine;
+    }
+
+    public Optional<String> getSuccessMessage(String jobHandle) {
+        return getFile(jobHandle, TrainingFile.SUCCESS_MESSAGE)
+                .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
+    }
+
+    public Optional<String> getWarningMessage(String jobHandle) {
+        return getFile(jobHandle, TrainingFile.WARNING_MESSAGE)
+                .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
     }
 
     public Map<String, LocalDateTime> getTerminatedTrials(ExperimentState experimentState) {
@@ -292,6 +318,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_0_5:
             case VERSION_1_0_6:
             case VERSION_1_0_7:
+            case VERSION_1_1_0:
+            case VERSION_1_1_1:
                 instructions.addAll(Arrays.asList(
                         // Setup NativeRL
                         "mkdir -p work",
@@ -354,6 +382,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_7_0:
             case VERSION_0_7_6:
             case VERSION_0_8_1:
+            case VERSION_0_8_5:
+            case VERSION_0_8_6:
                 instructions.addAll(Arrays.asList(
                         // Setup Anaconda
                         "mkdir -p conda",
@@ -378,6 +408,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_0_25:
             case VERSION_0_0_25_Multi:
             case VERSION_1_0_1:
+            case VERSION_1_0_2:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));
@@ -415,18 +446,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
         }
     }
 
-    private String var(String name, String value) {
-        return "export " + name + "='" + value.replace("'", "\\'") + "'";
-    }
-
-    private String varExp(String name, String value) {
-        return "export " + name + "=" + value.replace("'", "\\'");
-    }
-
-    private String varCondition(String name, String value) {
-        return "export " + name + "=${" + name + ":='" + value.replace("'", "\\'") + "'}";
-    }
-
     private void setupVariables(JobSpec job, List<String> instructions) {
         instructions.addAll(Arrays.asList(
                 var("CLASS_SNIPPET", job.getVariables()),
@@ -451,7 +470,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("ENTROPY_SLOPE", "0.01"),
                 var("VF_LOSS_RANGE", "0.1"),
                 var("VALUE_PRED", "1"), // disabled for now
-                var("USER_LOG", String.valueOf(job.isUserLog()))
+                var("USER_LOG", String.valueOf(job.isUserLog())),
+                var("ACTION_TUPLE_SIZE", String.valueOf(job.getActionTupleSize()))
         ));
     }
 

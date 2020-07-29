@@ -58,6 +58,7 @@
 .experiment-view .metrics-wrapper,
 .experiment-view .sparklines-wrapper {
     flex: 0;
+    line-height: 2rem;
 }
 
 .experiment-view .metrics-wrapper {
@@ -139,7 +140,7 @@
     font-size: var(--lumo-font-size-l);
     font-weight: bold;
     line-height: 1;
-    padding-left: 32px;
+    padding-left: 2rem;
     margin-bottom: 0.75em;
 }
 
@@ -171,7 +172,7 @@
     margin: var(--lumo-space-xs) 0;
 }
 
-.experiment-view .error-label {
+.experiment-view .reason-why-the-training-stopped {
     box-sizing: border-box;
     width: 100%;
 }

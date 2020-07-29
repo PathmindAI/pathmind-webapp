@@ -45,7 +45,7 @@ public class CreateProjectStepDefinitions {
     @When("^Create new CoffeeShop project with draft model$")
     public void createNewCoffeeShopProjectWithDraftModel() {
         createNewEmptyProject();
-        modelUploadSteps.uploadModelFile("Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip");
+        modelUploadSteps.uploadModelFile("tuple_models/CoffeeShopTuple.zip");
         modelDetailsSteps.checkThatModelSuccessfullyUploaded();
     }
 
@@ -61,6 +61,13 @@ public class CreateProjectStepDefinitions {
     public void createNewProjectWithModel() {
         createNewProjectWithModelAndDraftExperiment();
         newExperimentSteps.inputRewardFunctionFile("Production_Single_Agent/Production_Single_Agent_Reward.txt");
+        newExperimentSteps.clickProjectSaveDraftBtn();
+    }
+
+    @When("^Create new CoffeeShop project with 4 variables reward function$")
+    public void createNewProjectWithModelAnd4VariablesReward() {
+        createNewProjectWithModelAndDraftExperiment();
+        newExperimentSteps.inputRewardFunctionFile("Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt");
         newExperimentSteps.clickProjectSaveDraftBtn();
     }
 

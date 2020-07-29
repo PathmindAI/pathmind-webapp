@@ -98,7 +98,7 @@ h3 + vaadin-password-field {
 
 .do-not-share-url iron-icon {
   width: 16px;
-  margin-right: 6px;
+  margin-right: var(--lumo-space-xs);
 }
 
 .policy {

@@ -73,4 +73,24 @@ public class ExperimentPageSteps {
     public void checkThatSimulationMetricsBlockIsShown() {
         experimentPage.checkThatSimulationMetricsBlockIsShown();
     }
+
+    @Step
+    public void clickCopyRewardFunctionBtn() {
+        experimentPage.clickCopyRewardFunctionBtn();
+    }
+
+    @Step
+    public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
+        experimentPage.checkThatExperimentExistOnTheExperimentPage(experiment);
+    }
+
+    @Step
+    public void checkThatExperimentNotExistOnTheExperimentPage(String experiment) {
+        experimentPage.checkThatExperimentNotExistOnTheExperimentPage(experiment);
+    }
+
+    @Step
+    public void checkThatExperimentStatusIconIs(String experiment, String icon) {
+        experimentPage.checkThatExperimentStatusIconIs(experiment, icon);
+    }
 }

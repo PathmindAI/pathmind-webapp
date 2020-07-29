@@ -1,4 +1,74 @@
 #!/bin/bash
+
+NAMESPACE="default"
+if [ "${ENVIRONMENT}" != "prod" ]
+then
+	NAMESPACE=${ENVIRONMENT}
+fi
+
+#Increase the restrats count
+psql "$DB_URL_CLI" << EOF
+update public.trainer_job
+set restarts=restarts+1
+where job_id='${S3PATH}';
+commit;
+EOF
+
+#Checked if pod crashed more than 3 times already
+CRASHES=`kubectl get pods -n ${ENVIRONMENT} | grep ${S3PATH} | grep Evicted | wc -l`
+if [ $CRASHES -ge 3 ]
+then
+        description="Job crashed more than 3 times, job is killed"
+        curl -X POST -H 'Content-type: application/json' \
+        --data "{'text':':x:Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
+        https://hooks.slack.com/services/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
+        echo "Job crashed more than 3 times, job is killed"
+        #Set the status in trainer_job
+        psql "$DB_URL_CLI" << EOF
+update public.trainer_job
+set status=5,ec2_end_date=now(),update_date=NOW(),description='${description}'
+where job_id='${S3PATH}';
+commit;
+EOF
+        aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
+        echo ${description} > errors.log
+        aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null
+        aws sqs send-message \
+                --queue-url ${SQS_URL} \
+                --message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
+                --message-group-id training
+        sleep 1h
+fi
+
+#Check training age and kill it if is older than 24 hours
+AGE=`psql -t "$DB_URL_CLI" << EOF
+select extract(hour from age(NOW(),create_date))  from public.trainer_job where job_id='${S3PATH}'
+EOF`
+
+if [ $AGE -ge 24 ]
+then
+	description="Job running for more than 24 hours, job is killed"
+	curl -X POST -H 'Content-type: application/json' \
+	--data "{'text':':x:Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
+	https://hooks.slack.com/services/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
+	echo "Killing on timeout"
+	#Set the status in trainer_job
+	psql "$DB_URL_CLI" << EOF
+update public.trainer_job
+set status=5,ec2_end_date=now(),update_date=NOW(),description='${description}'
+where job_id='${S3PATH}';
+commit;
+EOF
+	aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
+	echo ${description} > errors.log
+	aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null
+	aws sqs send-message \
+		--queue-url ${SQS_URL} \
+		--message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
+		--message-group-id training
+	sleep 1h
+fi
+
 sleep_time=60
 training_update_timeout=3600
 s3_url="s3://${S3BUCKET}/${S3PATH}"
@@ -22,17 +92,9 @@ EOF`
 bash check_spot.sh "${S3PATH}" "${ENVIRONMENT}" "${EMAIL}" "${s3_url_link}" "${s3_url}" &
 
 #Get the instance type and cost
-instanceid=`aws ec2 describe-instances --filters "Name=tag:Name,Values=${S3PATH}.${NAME}"  | jq -r '.[] | .[] | .Instances | .[] | select(.State.Name == "running").InstanceId'`
+instanceid=`curl http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId'`
 instance_type=`aws ec2 describe-spot-instance-requests | jq -r ".SpotInstanceRequests | .[] | select (.InstanceId ==\"${instanceid}\").LaunchSpecification.InstanceType"`
 instance_price=`aws ec2 describe-spot-instance-requests | jq -r ".SpotInstanceRequests | .[] | select (.InstanceId ==\"${instanceid}\").SpotPrice"`
-
-#Set the status in trainer_job
-psql "$DB_URL_CLI" << EOF
-update public.trainer_job
-set status=3,ec2_create_date=now(),update_date=NOW(),ec2_instance_type='${instance_type}',ec2_max_price='${instance_price}'
-where job_id='${S3PATH}';
-commit;
-EOF
 
 #Check if we need to resume the training
 aws s3 sync ${s3_url}/output/ /tmp/PPO/
@@ -56,6 +118,15 @@ then
 	touch restarted
 	aws s3 cp restarted ${s3_url}/output/
 	set +e
+fi
+else
+	#Set the status in trainer_job
+	psql "$DB_URL_CLI" << EOF
+update public.trainer_job
+set status=3,ec2_create_date=now(),update_date=NOW(),ec2_instance_type='${instance_type}',ec2_max_price='${instance_price}',restarts=0
+where job_id='${S3PATH}';
+commit;
+EOF
 fi
 
 bash script.sh > ${log_file} 2>&1 &
@@ -107,7 +178,7 @@ EOF
 			--queue-url ${SQS_URL} \
 			--message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
 			--message-group-id training
-                sleep 12h
+                sleep 1h
         fi
         sleep $sleep_time
 done
@@ -200,4 +271,4 @@ aws sqs send-message \
 kill -9 $pid_tail
 
 #Sleep until is destroyed
-sleep 12h
+sleep 1h

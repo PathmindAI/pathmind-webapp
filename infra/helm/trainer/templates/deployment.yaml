@@ -19,10 +19,12 @@ spec:
     metadata:
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
+        iam.amazonaws.com/role: eks
       labels:
         app.kubernetes.io/name: {{ include "trainer.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      serviceAccountName: {{ include "trainer.fullname" . }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -55,6 +57,17 @@ spec:
               secretKeyRef:
                 name: dburlcli
                 key: DB_URL_CLI
-
-
-
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

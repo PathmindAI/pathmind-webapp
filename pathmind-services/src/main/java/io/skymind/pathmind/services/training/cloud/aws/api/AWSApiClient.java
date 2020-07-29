@@ -63,11 +63,15 @@ public class AWSApiClient {
         this.objectMapper = objectMapper;
 
         this.mockCycle = mockCycle;
-        if (mockCycle != 0) {
+        if (isUsingMockBackend()) {
             Assert.isTrue(mockCycle > 0, "Mock Cycle should be greater than zero");
             log.warn("Running with mock cycle {}", mockCycle);
         }
 
+    }
+
+    public boolean isUsingMockBackend() {
+        return this.mockCycle != 0;
     }
 
     public List<Bucket> listBuckets() {
@@ -131,9 +135,29 @@ public class AWSApiClient {
                 .withMessageGroupId("training")
                 .withMessageBody(objectMapper.writeValueAsString(job));
 
-        sqsClient.sendMessage(send_msg_request);
+        int retryCount = 3;
+
+        SendMessageResult sendMessageResult = sqsClient.sendMessage(send_msg_request);
+        while(!isValidResponse(sendMessageResult) && retryCount-- > 0) {
+            log.info("retry submit job for " + jobId);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {}
+            sendMessageResult = sqsClient.sendMessage(send_msg_request);
+        }
+
+        if (!isValidResponse(sendMessageResult)) {
+            log.info("failure on submitting the job for " + jobId + ", " + sendMessageResult);
+            throw new RuntimeException("failure on submitting the job for " + jobId);
+        }
+
         return jobId;
     }
+
+    private boolean isValidResponse(SendMessageResult sendMessageResult) {
+        return sendMessageResult.getMessageId() != null && !sendMessageResult.getMessageId().isEmpty() && sendMessageResult.getSdkHttpMetadata().getHttpStatusCode() == 200;
+    }
+
 
     public String jobStop(String jobId) throws JsonProcessingException {
         Job job = new Job(bucketName, jobId, true, mockCycle);

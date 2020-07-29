@@ -1,6 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.dashboard.components;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles.PROJECT_TITLE;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.PROJECT_TITLE;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Html;
@@ -91,7 +91,7 @@ public class DashboardLine extends HorizontalLayout {
 	@Override
 	protected void onAttach(AttachEvent evt) {
 		VaadinDateAndTimeUtils.withUserTimeZoneId(evt.getUI(), timeZoneId -> {
-			timestamp.setText(DateAndTimeUtils.formatDateAndTimeShortFormatter(dashboardItem.getLatestUpdateTime(), timeZoneId));
+			timestamp.setText("Last Activity: "+DateAndTimeUtils.formatDateAndTimeShortFormatter(dashboardItem.getLatestUpdateTime(), timeZoneId));
 		});
 	}
 

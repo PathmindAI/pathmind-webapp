@@ -32,8 +32,49 @@ Feature: Wizard page
     When Open projects page
     When Click create new project button
     When Input name of the new project AutotestProject and click Create project button
-    When Upload model Production_Single_Agent/FAST_CoffeeShop_Database_5Observations_4Actions.zip
+    When Upload model tuple_models/CoffeeShopTuple.zip
+    When Check that model successfully uploaded
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
     Then Check Reward Function default value <>
+
+  Scenario: Check tuple article link on model upload step
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model problematic_models/NonTupleModel.zip
+    Then Wait for text "Checking your model" to disappear
+    When Click in 'this article' button
+    When Open tab 1
+    Then Check page url is https://help.pathmind.com/en/articles/4219921-converting-models-to-support-tuples
+    Then Check Converting models to support Tuples page elements
+
+  Scenario: Check wizard Reward Variables not required
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model tuple_models/CoffeeShopTuple.zip
+    When Check that model successfully uploaded
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    Then Check experiment page reward variables is var-0,var-1,var-2,var-3
+
+  Scenario: Check wizard Reward Variables not required after edit
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model tuple_models/CoffeeShopTuple.zip
+    When Check that model successfully uploaded
+    When Click wizard model details next btn
+    When Input reward variable names ,text, ,error
+    When Wait a bit 1500 ms
+    When Input reward variable names , ,,test
+    When Wait a bit 3500 ms
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    Then Check experiment page reward variables is var-0,var-1,var-2,test

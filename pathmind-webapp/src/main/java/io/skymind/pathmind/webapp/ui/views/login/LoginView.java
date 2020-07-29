@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.vaadin.flow.component.AttachEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.constants.CssMindPathStyles;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
@@ -38,13 +37,11 @@ import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
 import io.skymind.pathmind.shared.data.PathmindUser;
-import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.webapp.ui.views.dashboard.DashboardView;
-import io.skymind.pathmind.webapp.ui.views.project.NewProjectView;
 
 @Route(Routes.LOGIN_URL)
 @Theme(Lumo.class)
@@ -58,9 +55,6 @@ public class LoginView extends HorizontalLayout
 	private Div badCredentials = new Div();
 	private HorizontalLayout emailNotVerified = WrapperUtils.wrapWidthFullHorizontal();
 	private Div sessionExpired = new Div();
-
-	@Autowired
-	private ProjectDAO projectDAO;
 
 	@Autowired
 	private EmailNotificationService emailNotificationService;
@@ -78,7 +72,7 @@ public class LoginView extends HorizontalLayout
 					 @Value("${pathmind.terms-of-use.url}") String termsOfUseUrl)
 	{
 		addClassName("login-panel-cont");
-		Span welcome = LabelFactory.createLabel("Welcome to", CssMindPathStyles.WELCOME_TEXT);
+		Span welcome = LabelFactory.createLabel("Welcome to", CssPathmindStyles.WELCOME_TEXT);
 		Image img = new Image("frontend/images/pathmind-logo.png", "Pathmind logo");
 		img.setClassName("logo");
 		img.setWidth("200px");
@@ -218,12 +212,6 @@ public class LoginView extends HorizontalLayout
 
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
-		deleteAWSCanCookie();
-	}
-
-	private void deleteAWSCanCookie() {
-		// Deleting the cookie on the login page load to make sure new user sessions
-		// won't be using old webapp instances in the case of canary deployments.
-		CookieUtils.deleteCookie("Can");
+		CookieUtils.deleteAWSCanCookie();
 	}
 }

@@ -25,7 +25,7 @@ public class DashboardPage extends PageObject {
     }
 
     public void clickModelBreadcrumbFromDashboard(String projectName) {
-        utils.clickElementRepeatIfStaleException(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/following-sibling::a[text()='Model #1']"));
+        utils.clickElementRepeatIfStaleException(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/following-sibling::a[contains(text(),'Model #1')]"));
         waitABit(2500);
     }
 
@@ -36,8 +36,13 @@ public class DashboardPage extends PageObject {
     }
 
     public void checkStageStatus(String projectName, String stage, String stageStatus) {
-        WebElement stageElement = getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::span[text()='" + stage + "']"));
-        assertThat(stageElement.getAttribute("class"), containsString(stageStatus));
+        waitABit(5000);
+        try {
+            WebElement stageElement = getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::span[text()='" + stage + "']"));
+            assertThat(stageElement.getAttribute("class"), containsString(stageStatus));
+        } catch (Exception e) {
+            waitABit(5000);
+        }
     }
 
     public void checkExperimentNotesNotExist(String projectName) {
@@ -46,8 +51,15 @@ public class DashboardPage extends PageObject {
     }
 
     public void checkExperimentNotes(String projectName, String experimentNotes) {
-        WebElement notesElement = getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/following-sibling::*[@class='dashboard-item-notes']//p"));
-        assertThat(notesElement.getText(), containsString(experimentNotes));
+        try {
+            waitABit(5000);
+            WebElement notesElement = getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/following-sibling::*[@class='dashboard-item-notes']//p"));
+            JavascriptExecutor executor = (JavascriptExecutor) getDriver();
+            executor.executeScript("arguments[0].scrollIntoView()", notesElement);
+            assertThat(notesElement.getText(), containsString(experimentNotes));
+        } catch (Exception e) {
+            waitABit(5000);
+        }
     }
 
     public void clickInNavigationIcon(String projectName) {
@@ -96,6 +108,11 @@ public class DashboardPage extends PageObject {
     }
 
     public void clickStageWriteRewardFunctionFromDashboard(String projectName) {
-        getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/following-sibling::*[@class='stages-container']/descendant::span[text()='Write reward function']")).click();
+        waitABit(5000);
+        utils.clickElementRepeatIfStaleException(By.xpath("//span[text()='" + projectName + "']/following-sibling::*[@class='stages-container']/descendant::span[text()='Write reward function']"));
+    }
+
+    public void checkDashboardModelBreadcrumb(String projectName, String packageName) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/following-sibling::a[contains(text(),'Model #1')]")).getText(), is("Model #1 (" + packageName + ")"));
     }
 }

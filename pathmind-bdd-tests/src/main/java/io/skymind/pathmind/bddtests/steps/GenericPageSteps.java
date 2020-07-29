@@ -3,6 +3,8 @@ package io.skymind.pathmind.bddtests.steps;
 import io.skymind.pathmind.bddtests.page.GenericPage;
 import net.thucydides.core.annotations.Step;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
+
 public class GenericPageSteps {
 
     private GenericPage genericPage;
@@ -44,7 +46,9 @@ public class GenericPageSteps {
 
     @Step
     public void waitForTextToDisappear(String text) {
+        genericPage.setImplicitTimeout(300, SECONDS);
         genericPage.waitForTextToDisappear(text);
+        genericPage.resetImplicitTimeout();
     }
 
     @Step
@@ -86,5 +90,35 @@ public class GenericPageSteps {
     @Step
     public void checkThatCheckmarkIsShown() {
         genericPage.checkThatCheckmarkIsShown();
+    }
+
+    @Step
+    public void refreshPage() {
+        genericPage.getDriver().navigate().refresh();
+    }
+
+    @Step
+    public void duplicateCurrentTab() {
+        genericPage.duplicateCurrentTab();
+    }
+
+    @Step
+    public void openTab(int tab) {
+        genericPage.openTab(tab);
+    }
+
+    @Step
+    public void checkPageUrlIs(String url) {
+        genericPage.checkPageUrlIs(url);
+    }
+
+    @Step
+    public void checkPageTitleTagTextIs(String text) {
+        genericPage.checkPageTitleTagTextIs(text);
+    }
+
+    @Step
+    public void waitABitMs(int time) {
+        genericPage.waitABitMs(time);
     }
 }

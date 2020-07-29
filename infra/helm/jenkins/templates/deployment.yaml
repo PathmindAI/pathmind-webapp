@@ -12,6 +12,9 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
+      annotations:
+        timestamp: "{{ date "20060102150405" .Release.Time }}"
+        iam.amazonaws.com/role: eks
       labels:
         app.kubernetes.io/name: {{ include "jenkins.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -22,6 +25,7 @@ spec:
             claimName: {{ .Values.pvc.claimName }}
         - name: docker-graph-storage
           emptyDir: {}
+      serviceAccountName: admin-user
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -46,6 +50,8 @@ spec:
               value: tcp://localhost:2375
             - name: S3BUCKET
               value: {{ .Values.env.S3BUCKET }}
+            - name: JENKINS_URL
+              value: {{ .Values.env.JENKINS_URL }}
             - name: AWS_DEFAULT_REGION
               value: "us-east-1"
             - name: AWS_ACCESS_KEY_ID
@@ -95,12 +101,17 @@ spec:
             mountPath: /var/lib/docker
           - name: jenkins-storage
             mountPath: /var/jenkins_home
-{{- if .Values.node }}
-      tolerations:
-        - key: "dedicated"
-          operator: "Equal"
-          value: "{{ .Values.node }}"
-          effect: "NoSchedule"
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-        dedicated: {{ .Values.node }}
-{{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

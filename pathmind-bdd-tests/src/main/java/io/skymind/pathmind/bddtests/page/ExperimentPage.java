@@ -5,6 +5,7 @@ import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -46,7 +47,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkExperimentNotesIs(String note) {
-        assertThat(experimentNotes.getAttribute("value"), is(note));
+        assertThat(experimentNotes.getAttribute("value"), is(note.replaceAll("/n", "\n")));
     }
 
     public void checkExperimentStatusCompletedWithLimitHours(int limit) {
@@ -88,14 +89,18 @@ public class ExperimentPage extends PageObject {
     }
 
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
+        waitABit(3500);
         WebElement inputShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='reward-variables-table']/descendant::span[text()='" + variableNumber + "']/following-sibling::vaadin-text-field")));
         inputShadow.findElement(By.cssSelector("input")).click();
-        inputShadow.findElement(By.cssSelector("input")).clear();
+        inputShadow.findElement(By.cssSelector("input")).sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
+        inputShadow.findElement(By.cssSelector("input")).sendKeys(Keys.ENTER);
+        waitABit(3500);
         inputShadow.findElement(By.cssSelector("input")).sendKeys(variableName);
+        inputShadow.findElement(By.cssSelector("input")).sendKeys(Keys.ENTER);
     }
 
     public void clickSideNavArchiveButtonFor(String experimentName) {
-        getDriver().findElement(By.xpath("//p[text()='"+experimentName+"']/ancestor::vaadin-horizontal-layout[contains(@class,'experiment-navbar-item')]/vaadin-button")).click();
+        getDriver().findElement(By.xpath("//p[text()='" + experimentName + "']/ancestor::vaadin-horizontal-layout[contains(@class,'experiment-navbar-item')]/vaadin-button")).click();
     }
 
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
@@ -128,5 +133,28 @@ public class ExperimentPage extends PageObject {
 
     public void checkThatSimulationMetricsBlockIsShown() {
         assertThat(getDriver().findElement(By.xpath("//span[text()='Simulation Metrics']/parent::vaadin-vertical-layout")).isDisplayed(), is(true));
+    }
+
+    public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
+        waitABit(4000);
+        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='experiment-name']/p[1]")), hasItem(experiment));
+    }
+
+    public void clickCopyRewardFunctionBtn() {
+        WebElement e = utils.expandRootElement(rewardFunction);
+        e.findElement(By.cssSelector("vaadin-button")).click();
+        experimentNotes.click();
+        experimentNotes.sendKeys(Keys.CONTROL + "V");
+        getDriver().findElement(By.xpath("//*[text()='Save']")).click();
+    }
+
+    public void checkThatExperimentNotExistOnTheExperimentPage(String experiment) {
+        waitABit(4000);
+        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='experiment-name']/p[1]")), not(hasItem(experiment)));
+    }
+
+    public void checkThatExperimentStatusIconIs(String experiment, String icon) {
+        waitABit(10000);
+        assertThat(getDriver().findElement(By.xpath("//p[text()='" + experiment + "']/parent::div/preceding-sibling::div")).getAttribute("class"),is(icon));
     }
 }

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -30,6 +31,8 @@ public class NewExperimentPage extends PageObject {
     private WebElement startDiscoveryRunBtn;
     @FindBy(xpath = "//vaadin-text-field[contains(@class,'reward-variable-name-field')]")
     private List<WebElement> rewardVariableNameInputs;
+    @FindBy(xpath = "//vaadin-dialog-overlay")
+    private WebElement overlay;
     private final By byInput = By.cssSelector("input");
 
     public void checkThatExperimentPageOpened(String projectName) {
@@ -48,6 +51,7 @@ public class NewExperimentPage extends PageObject {
                 e.printStackTrace();
             }
         }
+        waitABit(5000);
     }
 
     public void clickProjectStartDiscoveryRunButton() {
@@ -67,18 +71,23 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void clickProjectSaveDraftBtn() {
+        waitABit(5000);
         Actions action = new Actions(getDriver());
         WebElement we = getDriver().findElement(By.xpath("//vaadin-button[text()='Save']"));
         JavascriptExecutor executor = (JavascriptExecutor) getDriver();
         executor.executeScript("arguments[0].click();", we);
+        setImplicitTimeout(5, SECONDS);
         try {
-            WebElement closePopUp = getDriver().findElement(By.xpath("//vaadin-button[@theme='icon']"));
+            WebElement closePopUp = getDriver().findElement(By.xpath("//span[text()='Draft successfully saved']/following-sibling::vaadin-button[@theme='icon']"));
             waitFor(ExpectedConditions.visibilityOf(closePopUp));
             waitFor(ExpectedConditions.elementToBeClickable(closePopUp));
+            closePopUp.click();
             action.moveToElement(closePopUp).click().perform();
         } catch (Exception e) {
             System.out.println("Button not exist");
         }
+        resetImplicitTimeout();
+        waitABit(5000);
     }
 
     public void checkRewardFunctionIs(String rewardFunction) {
@@ -106,6 +115,7 @@ public class NewExperimentPage extends PageObject {
         variableNameInputField.click();
         variableNameInputField.clear();
         variableNameInputField.sendKeys(variableName);
+        variableNameInputField.sendKeys(Keys.ENTER);
     }
 
     public void checkRewardFunctionDefaultValue(String reward) {
@@ -115,5 +125,13 @@ public class NewExperimentPage extends PageObject {
 
     public void checkThatNotesSavedMsgShown() {
         assertThat(getDriver().findElement(By.xpath("//span[text()='Notes saved!' and @class='fade-out-hint-label fade-in']")).isDisplayed(), is(true));
+    }
+
+    public void checkThatBeforeYouLeavePopUpIsShownWithError(String error) {
+        WebElement e = utils.expandRootElement(overlay);
+        WebElement contentShadow = e.findElement(By.cssSelector("#content"));
+        WebElement popUp = utils.expandRootElement(contentShadow);
+        assertThat(popUp.findElement(By.cssSelector("h3")).getText(), is("Before you leave...."));
+        assertThat(popUp.findElement(By.cssSelector("#message")).getText(), is(error));
     }
 }

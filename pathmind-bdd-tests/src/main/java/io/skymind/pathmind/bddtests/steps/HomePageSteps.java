@@ -68,4 +68,69 @@ public class HomePageSteps {
     public void clickGettingStartedGuideButton() {
         homePage.clickGettingStartedGuideButton();
     }
+
+    @Step
+    public void inputToTheNotesSearchField(String text) {
+        homePage.inputToTheNotesSearchField(text);
+    }
+
+    @Step
+    public void clickNotesSearchBtn() {
+        homePage.clickNotesSearchBtn();
+    }
+
+    @Step
+    public void checkSearchResultPageNotesContainsSearch(String text) {
+        homePage.checkSearchResultPageNotesContainsSearch(text);
+    }
+
+    @Step
+    public void clickNotesClearBtn() {
+        homePage.clickNotesClearBtn();
+    }
+
+    @Step
+    public void checkNotesSearchFieldIs(String text) {
+        homePage.checkNotesSearchFieldIs(text);
+    }
+
+    @Step
+    public void checkThatProjectsButtonHighlightIs(Boolean status) {
+        homePage.checkThatProjectsButtonHighlightIs(status);
+    }
+
+    @Step
+    public void checkSearchResultPageContainsProjectName(String name) {
+        homePage.checkSearchResultPageContainsProjectName(name);
+    }
+
+    @Step
+    public void checkSearchResultPageContainsModelName(String name) {
+        homePage.checkSearchResultPageContainsModelName(name);
+    }
+
+    @Step
+    public void clickAutotestProjectFromSearchPage(String name) {
+        homePage.clickAutotestProjectFromSearchPage(name);
+    }
+
+    @Step
+    public void clickToTheUniqueNoteOnTheSearchResultPage(String text) {
+        homePage.clickToTheUniqueNoteOnTheSearchResultPage(text);
+    }
+
+    @Step
+    public void checkSearchResultPageProjectNameContainsArchivedTag(String name) {
+        homePage.checkSearchResultPageProjectNameContainsArchivedTag(name);
+    }
+
+    @Step
+    public void checkSearchResultsForValueIs(String value) {
+        homePage.checkSearchResultsForValueIs(value);
+    }
+
+    @Step
+    public void checkThatSearchCounterIs(String counter) {
+        homePage.checkThatSearchCounterIs(counter);
+    }
 }

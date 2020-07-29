@@ -1,3 +1,5 @@
+import groovy.json.JsonOutput
+
 def RELEASE_ID
 def TEST_STATUS = 0
 
@@ -24,7 +26,7 @@ def buildDockerImage(image_name) {
 */
 def createSecrets() {
     sh """
-    set + x
+    set +x
     kubectl create secret generic dburl --from-literal DB_URL='jdbc:postgresql://postgres/pathminddb?user=pathminddb&password=Asdf1234' -n ${env.BUILD_NUMBER}
     kubectl create secret generic awsaccesskey --from-literal AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID} -n ${env.BUILD_NUMBER}
     kubectl create secret generic awssecretaccesskey --from-literal AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY} -n ${env.BUILD_NUMBER}
@@ -71,12 +73,31 @@ def deleteDockerImage(image_name) {
 }
 
 /*
+    Send slack notification
+*/
+def notifySlack(text, channel, attachments) {
+    def slackURL = 'https://hooks.slack.com/services/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'
+    def jenkinsIcon = 'https://jenkins.io/images/logos/actor/actor.png'
+
+    def payload = JsonOutput.toJson([text       : text,
+                                     channel    : channel,
+                                     username   : "Jenkins Test_PRs Build #${env.BUILD_NUMBER}",
+                                     icon_url   : jenkinsIcon,
+                                     link_names : 1,
+                                     attachments: attachments
+    ])
+
+    sh "curl -X POST --data-urlencode \'payload=${payload}\' ${slackURL}"
+}
+
+/*
     This is the main pipeline section with the stages of the CI/CD
  */
 pipeline {
     options {
         // Build auto timeout
         timeout(time: 1440, unit: 'MINUTES')
+        buildDiscarder(logRotator(daysToKeepStr: '15', artifactDaysToKeepStr: '15'))
     }
 
     // Some global default variables
@@ -221,7 +242,7 @@ pipeline {
                 script {
                     try {
                         echo "Running tests"
-                        TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234 -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -f pom.xml -P bdd-tests")
+                        TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234 -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n dev |  base64 --decode` -f pom.xml -P bdd-tests")
                     } catch (err) {
                     } finally {
                         publishHTML(target: [
@@ -269,6 +290,25 @@ pipeline {
             sh "aws sqs delete-queue --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_NUMBER}-updater-queue"
             sh "aws sns unsubscribe --subscription-arn `aws sns list-subscriptions | jq -r \".[] | .[] |  select(.Endpoint ==\\\"arn:aws:sqs:us-east-1:839270835622:${env.BUILD_ID}-updater-queue\\\").SubscriptionArn\"`"
             sh "/usr/bin/clean_test_s3.sh ${env.BUILD_NUMBER}"
+        }
+        unstable {
+            echo 'Send slack notification if build unstable'
+            script {
+                notifySlack("", "#tests", [[
+                                               title      : "Test_PRs » Build #${env.BUILD_NUMBER} - Failed",
+                                               title_link : "${env.BUILD_URL}",
+                                               color      : "#CF0000",
+                                               text       : "<@UGH39HL4E>",
+                                               "mrkdwn_in": ["fields"],
+                                               fields     : [
+                                                   [
+                                                       value: "<${env.BUILD_URL}Tests|Tests report>\nPull request <${env.ghprbPullLink}|${env.ghprbPullTitle}>",
+                                                       short: false
+                                                   ]
+                                               ]
+                                           ],
+                ])
+            }
         }
     }
 }

@@ -1,0 +1,104 @@
+.observations-table {
+    font-size: var(--lumo-font-size-s);
+}
+.reward-function-wrapper .observations-wrapper {
+    max-height: 100%;
+}
+
+.observations-wrapper .header-row {
+    position: sticky;
+    top: 0;
+    color: var(--pm-secondary-text-color);
+    background-color: white;
+    z-index: 1;
+}
+.observations-wrapper vaadin-horizontal-layout {
+    align-items: center;
+    margin-bottom: var(--lumo-space-m);
+}
+.observations-wrapper vaadin-horizontal-layout.invalid-action-row {
+    height: auto;
+}
+.observations-wrapper span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
+.observations-wrapper span:first-child {
+    box-sizing: border-box;
+    flex: 0 0 2rem;
+    color: var(--pm-gray-color-dark);
+    text-align: center;
+    padding: 0.5em;
+}
+.observations-wrapper :not(.header-row) span:first-child {
+    box-sizing: border-box;
+    align-self: stretch;
+    font-size: var(--lumo-font-size-s);
+    font-family: var(--code-font-family);
+    border-radius: 3px 0 0 3px;
+    border: 1px solid var(--pm-gray-color);
+    border-right: none;
+}
+.observations-wrapper vaadin-form-layout {
+    padding: 0.4em;
+    border-radius: 0 3px 3px 0;
+    border: 1px solid var(--pm-gray-color);
+}
+
+.observations-wrapper vaadin-text-field, 
+.observations-wrapper vaadin-number-field, 
+.observations-wrapper vaadin-combo-box { 
+    font-size: var(--lumo-font-size-s);
+    font-family: var(--code-font-family);
+}
+
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(2) span,
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(10n + 2) span {
+    color: #000;
+    background-color: #67ea93;
+}
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(3) span,
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(10n + 3) span {
+    color: #fff;
+    background-color: #214e96;
+}
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(4) span,
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(10n + 4) span {
+    color: #000;
+    background-color: #9bf7ec;
+}
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(5) span,
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(10n + 5) span {
+    color: #fff;
+    background-color: #7550e5;
+}
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(6) span,
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(10n + 6) span {
+    color: #000;
+    background-color: #b0f78c;
+}
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(7) span,
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(10n + 7) span {
+    color: #000;
+    background-color: #ef99a4;
+}
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(8) span,
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(10n + 8) span {
+    color: #000;
+    background-color: #9bc0f7;
+}
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(9) span,
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(10n + 9) span {
+    color: #fff;
+    background-color: #931901;
+}
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(10n) span {
+    color: #fff;
+    background-color: #f413bc;
+}
+.observations-wrapper vaadin-horizontal-layout:nth-of-type(10n + 1):not(.header-row) span {
+    color: #000;
+    background-color: #d1b112;
+}

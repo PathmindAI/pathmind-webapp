@@ -1383,4 +1383,216 @@
             <dropColumn tableName="PATHMIND_USER" columnName="NEW_EMAIL_TO_VERIFY"  />
         </rollback>
     </changeSet>
+
+    <changeSet id="20200625-01" author="daehyun@skymind.io">
+        <createTable tableName="METRICS">
+            <column name="POLICY_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_METRICS_POLICY" references="POLICY(ID)"/>
+            </column>
+            <column name="INDEX" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MIN" type="DECIMAL(32,17)"/>
+            <column name="MEAN" type="DECIMAL(32,17)"/>
+            <column name="MAX" type="DECIMAL(32,17)"/>
+            <column name="ITERATION" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="METRICS" indexName="METRICS_POLICY_ID_INDEX">
+            <column name="POLICY_ID"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="METRICS" indexName="METRICS_POLICY_ID_INDEX"/>
+            <dropTable tableName="METRICS"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200709-01" author="bruno.rezende@ext.vaadin.com">
+        <addColumn tableName="RUN">
+            <column name="SUCCESS_MESSAGE" type="VARCHAR(1024)" />
+        </addColumn>
+        <addColumn tableName="RUN">
+            <column name="WARNING_MESSAGE" type="VARCHAR(1024)" />
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="RUN" columnName="SUCCESS_MESSAGE" />
+            <dropColumn tableName="RUN" columnName="WARNING_MESSAGE" />
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200710-01" author="bruno.rezende@ext.vaadin.com">
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="Job running for more than 24 hours, job is killed"/>
+            <column name="DESCRIPTION" value="The job was stopped because it exceeded the maximum training time of 24 hours."/>
+            <column name="RESTARTABLE" value="true"/>
+        </insert>
+        <rollback>
+            <delete tableName="TRAINING_ERROR">
+                <where>KEYWORD='Job running for more than 24 hours, job is killed'</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200710-02" author="daniel.jaramillo@toptal.com">
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="Job crashed more than 3 times, job is killed"/>
+            <column name="DESCRIPTION" value="The job was stopped because it crashed more than 3 times."/>
+            <column name="RESTARTABLE" value="true"/>
+        </insert>
+        <rollback>
+            <delete tableName="TRAINING_ERROR">
+                <where>KEYWORD='Job crashed more than 3 times, job is killed'</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200710-03" author="daniel.jaramillo@toptal.com">
+        <addColumn tableName="TRAINER_JOB">
+            <column name="RESTARTS" type="INT" defaultValue="0" />
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="TRAINER_JOB" columnName="RESTARTS"  />
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200617-01" author="onur@vaadin.com">
+        <addColumn tableName="MODEL">
+            <column name="ACTION_TUPLE_SIZE" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="MODEL" columnName="ACTION_TUPLE_SIZE" />
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200724-01" author="steph@followsteph.com">
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200724_01"/>
+    </changeSet>
+  
+    <changeSet id="20200727-01" author="daehyun@skymind.io">
+        <dropPrimaryKey tableName="TRAINER_JOB"/>
+        <addPrimaryKey tableName="TRAINER_JOB" columnNames="JOB_ID, S3BUCKET"/>
+        <rollback>
+            <dropPrimaryKey tableName="TRAINER_JOB"/>
+            <addPrimaryKey tableName="TRAINER_JOB" columnNames="JOB_ID"/>
+        </rollback>
+    </changeSet>
+  
+    <changeSet id="20200713-01" author="bruno.rezende@ext.vaadin.com">
+        <createTable tableName="OBSERVATION">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="MODEL_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_OBSERVATION_MODEL" references="MODEL(ID)"/>
+            </column>
+            <column name="ARRAY_INDEX" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VARIABLE" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATA_TYPE" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="EXAMPLE" type="VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="MIN" type="DOUBLE">
+                <constraints nullable="true"/>
+            </column>
+            <column name="MAX" type="DOUBLE">
+                <constraints nullable="true"/>
+            </column>
+            <column name="MIN_ITEMS" type="INT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="MAX_ITEMS" type="INT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <createTable tableName="ACTION">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="MODEL_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_ACTION_MODEL" references="MODEL(ID)"/>
+            </column>
+            <column name="NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ARRAY_INDEX" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="OBSERVATION" columnNames="MODEL_ID, ARRAY_INDEX"/>
+        <addUniqueConstraint tableName="ACTION" columnNames="MODEL_ID, ARRAY_INDEX"/>
+        <createIndex tableName="ACTION" indexName="ACTION_MODEL_FK_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+        <createIndex tableName="OBSERVATION" indexName="OBSERVATION_MODEL_FK_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+        <rollback>
+            <dropTable tableName="OBSERVATION"/>
+            <dropTable tableName="ACTION"/>
+        </rollback>
+    </changeSet>
+
+
+    <changeSet id="20200727-02" author="bruno.rezende@ext.vaadin.com">
+        <createProcedure>
+            CREATE OR REPLACE FUNCTION new_reward_variables(model_id numeric, reward_variables_count numeric) RETURNS SETOF RECORD AS $BODY$
+            DECLARE
+            rec record;
+            BEGIN
+
+            FOR i IN 0 .. reward_variables_count - 1 LOOP
+            select model_id, concat('var-', i), i into rec;
+            RETURN NEXT rec;
+            END LOOP;
+            RETURN;
+
+            END $BODY$ language plpgsql;
+        </createProcedure>
+        <createProcedure>
+            CREATE OR REPLACE FUNCTION get_missing_reward_variables() RETURNS SETOF RECORD AS
+            $BODY$
+            DECLARE
+            item record;
+            new_var record;
+            BEGIN
+            FOR item IN
+            select m.id, m.reward_variables_count from model m
+            left join reward_variable r on r.model_id=m.id where r.model_id is null
+            LOOP
+            for new_var in select * from new_reward_variables(item.id, item.reward_variables_count) as x(a numeric, b text, c int)
+            LOOP
+            RETURN NEXT new_var;
+            END LOOP;
+            END LOOP;
+            RETURN;
+            END
+            $BODY$
+            LANGUAGE plpgsql;
+        </createProcedure>
+        <sql>
+            INSERT INTO reward_variable (model_id, name, array_index) select * from get_missing_reward_variables() as x(m numeric, n text, a int);
+            UPDATE reward_variable SET name = concat('var-', array_index) WHERE name = '';
+            DROP FUNCTION IF EXISTS get_missing_reward_variables();
+            DROP FUNCTION IF EXISTS new_reward_variables(model_id numeric, reward_variables_count numeric);
+        </sql>
+        <rollback>
+            <sql>
+                DROP FUNCTION IF EXISTS get_missing_reward_variables();
+                DROP FUNCTION IF EXISTS new_reward_variables(model_id numeric, reward_variables_count numeric);
+            </sql>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

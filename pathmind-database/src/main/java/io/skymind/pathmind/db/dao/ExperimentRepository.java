@@ -88,6 +88,7 @@ class ExperimentRepository
 				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
 				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
 				.where(EXPERIMENT.MODEL_ID.eq(modelId))
+                .orderBy(EXPERIMENT.DATE_CREATED.desc())
 				.fetch();
 
 		return result.stream().map(record -> {
@@ -117,11 +118,11 @@ class ExperimentRepository
 				.execute();
 	}
 
-	protected static long createNewExperiment(DSLContext ctx, long modelId) {
+	protected static Experiment createNewExperiment(DSLContext ctx, long modelId) {
         return createNewExperiment(ctx, modelId, "1", "");
 	}
 	
-	protected static long createNewExperiment(DSLContext ctx, long modelId, String experimentName, String rewardFunction) {
+	protected static Experiment createNewExperiment(DSLContext ctx, long modelId, String experimentName, String rewardFunction) {
 		final ExperimentRecord ex = EXPERIMENT.newRecord();
 		ex.attach(ctx.configuration());
 		ex.setDateCreated(LocalDateTime.now());
@@ -129,7 +130,7 @@ class ExperimentRepository
 		ex.setName(experimentName);
 		ex.setRewardFunction(rewardFunction);
 		ex.store();
-		return ex.key().get(EXPERIMENT.ID);
+        return ex.into(EXPERIMENT).into(Experiment.class);
 	}
 
 	protected static int getExperimentCount(DSLContext ctx, long modelId) {
@@ -218,7 +219,7 @@ class ExperimentRepository
 				DSL.greatest(MODEL.LAST_ACTIVITY_DATE,PROJECT.LAST_ACTIVITY_DATE));
 
 		final Result<?> result = ctx.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.USER_NOTES,
-				MODEL.ID, MODEL.NAME, MODEL.DRAFT,
+				MODEL.ID, MODEL.NAME, MODEL.DRAFT, MODEL.PACKAGE_NAME,
 				PROJECT.ID, PROJECT.NAME,
 				latestRun.asterisk(),
 				itemLastActivityDate.as("ITEM_LAST_ACTIVITY_DATE"),
@@ -268,7 +269,9 @@ class ExperimentRepository
 		model = model.getId() == 0 ? null : model;
 		run = run.getId() == 0 ? null : run;
 		experiment = experiment.getId() == 0 ? null : experiment;
-
+		if (experiment != null && model != null) {
+		    experiment.setModelId(model.getId());
+        }
 
 		return DashboardItem.builder()
 				.experiment(experiment)
