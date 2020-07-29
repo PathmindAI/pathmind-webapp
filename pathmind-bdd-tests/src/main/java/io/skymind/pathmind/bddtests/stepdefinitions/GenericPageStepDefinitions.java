@@ -128,4 +128,9 @@ public class GenericPageStepDefinitions {
     public void generateUniqueNumber(String name) {
         Serenity.setSessionVariable(name).to(new Date().getTime());
     }
+
+    @When("^Wait a bit (\\d+) ms$")
+    public void waitABitMs(int time) {
+        genericPageSteps.waitABitMs(time);
+    }
 }

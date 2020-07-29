@@ -15,6 +15,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -301,8 +302,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		experimentId = experiment.getId();
         EventBus.post(new ExperimentCreatedBusEvent(experiment));
 
-        rewardVariables = rewardVariablesPanel.getRewardVariables();
-        rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
+        List<RewardVariable> rewardVariableList = getRewardVariablesWithFallback();
+        rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariableList);
         if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
             actions = actionsPanel.getActions();
             actionDAO.updateModelActions(model.getId(), actions);
@@ -313,7 +314,26 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
 	}
 
-	private void handleUploadWizardClicked() {
+    private List<RewardVariable> getRewardVariablesWithFallback() {
+        List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
+        if (rewardVariableList == null || rewardVariableList.isEmpty()) {
+            rewardVariableList = new ArrayList<>();
+            for (int i = 0; i < model.getRewardVariablesCount(); i++) {
+                RewardVariable rewardVariable = new RewardVariable();
+                rewardVariable.setArrayIndex(i);
+                rewardVariableList.add(rewardVariable);
+            }
+        }
+        for (int i=0; i < rewardVariableList.size(); i++) {
+            RewardVariable rewardVariable = rewardVariableList.get(i);
+            if (StringUtils.isEmpty(rewardVariable.getName())) {
+                rewardVariable.setName("var-" + i);
+            }
+        }
+        return rewardVariableList;
+    }
+
+    private void handleUploadWizardClicked() {
 		uploadModelWizardPanel.showFileCheckPanel();
 		projectFileCheckService.checkFile(this, model.getFile());
 	}

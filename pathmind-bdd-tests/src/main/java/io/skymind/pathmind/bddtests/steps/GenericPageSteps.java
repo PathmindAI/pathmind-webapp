@@ -116,4 +116,9 @@ public class GenericPageSteps {
     public void checkPageTitleTagTextIs(String text) {
         genericPage.checkPageTitleTagTextIs(text);
     }
+
+    @Step
+    public void waitABitMs(int time) {
+        genericPage.waitABitMs(time);
+    }
 }
