@@ -40,11 +40,11 @@ create_hosted_zone=false
 
 # Subnet tags
 public_subnet_tags = {
-  "kubernetes.io/cluster/eks-production" = "shared",
+  "kubernetes.io/cluster/eks-prod" = "shared",
   "kubernetes.io/role/elb" = "1"
 }
 
 private_subnet_tags = {
-  "kubernetes.io/cluster/eks-production" = "shared",
+  "kubernetes.io/cluster/eks-prod" = "shared",
   "kubernetes.io/role/internal-elb" = "1"
 }

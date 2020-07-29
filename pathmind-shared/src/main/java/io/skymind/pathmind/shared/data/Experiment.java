@@ -11,6 +11,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Setter
 public class Experiment extends ArchivableData
 {
+    private static final long serialVersionUID = -5041305878245823921L;
 	private long modelId;
 	private String rewardFunction;
 	private LocalDateTime dateCreated;

@@ -89,6 +89,11 @@ public class GenericPageStepDefinitions {
         genericPageSteps.inputProjectNameToTheEditPopup(projectName + Serenity.sessionVariableCalled("randomNumber"));
     }
 
+    @When("^Rename project name to (.*)$")
+    public void renameProjectNameTo(String name) {
+        genericPageSteps.inputProjectNameToTheEditPopup(name + Serenity.sessionVariableCalled("searchRandomNumber"));
+    }
+
     @Then("^Check that checkmark is shown$")
     public void checkThatCheckmarkIsShown() {
         genericPageSteps.checkThatCheckmarkIsShown();
@@ -117,5 +122,10 @@ public class GenericPageStepDefinitions {
     @Then("^Check page title tag text is (.*)$")
     public void checkPageTitleTagTextIs(String text) {
         genericPageSteps.checkPageTitleTagTextIs(text);
+    }
+
+    @When("^Generate unique number '(.*)'$")
+    public void generateUniqueNumber(String name) {
+        Serenity.setSessionVariable(name).to(new Date().getTime());
     }
 }

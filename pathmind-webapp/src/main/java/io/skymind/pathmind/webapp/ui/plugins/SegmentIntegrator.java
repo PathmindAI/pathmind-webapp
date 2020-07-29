@@ -49,7 +49,8 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	private static final String EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW = "Updated Notes on Experiments View";
 	private static final String EVENT_UPDATED_NOTES_EXPERIMENT_VIEW = "Updated Notes on Experiment View";
 	private static final String EVENT_ADDED_NOTES_UPLOAD_MODEL_VIEW = "Added Notes on Upload Model View";
-	private static final String EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW = "Added Notes on New Experiment View";
+    private static final String EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW = "Added Notes on New Experiment View";
+    private static final String EVENT_SEARCHED_SITE = "Performed a search using search box";
 
 	public SegmentIntegrator(@Value("${skymind.segment.website.source.key}") String key,
 			@Value("${skymind.segment.enabled}") Boolean enabled) {
@@ -133,7 +134,11 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 
 	public void addedNotesNewExperimentView() {
 		track(EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW);
-	}
+    }
+    
+    public void performedSearch() {
+        track(EVENT_SEARCHED_SITE);
+    }
 
 	private void track(String event) {
 		track(event, Json.createObject());

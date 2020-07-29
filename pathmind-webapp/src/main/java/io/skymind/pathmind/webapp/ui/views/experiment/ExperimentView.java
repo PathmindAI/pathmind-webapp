@@ -23,6 +23,7 @@ import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
@@ -69,6 +70,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.TAG_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
@@ -177,7 +179,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         Span modelNeedToBeUpdatedLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
         modelNeedToBeUpdatedLabel.getStyle().set("margin-top", "2px");
 
-	    reasonWhyTheTrainingStoppedLabel = LabelFactory.createLabel("", "tag", "reason-why-the-training-stopped");
+	    reasonWhyTheTrainingStoppedLabel = LabelFactory.createLabel("", TAG_LABEL, "reason-why-the-training-stopped");
 
         VerticalLayout experimentContent = WrapperUtils.wrapWidthFullVertical(
                 WrapperUtils.wrapWidthFullHorizontal(panelTitle, trainingStatusDetailsPanel, getButtonsWrapper()),
@@ -242,7 +244,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         IntStream.range(0, simulationMetrics.size())
                 .forEach(idx -> {
-                    metricsWrapper.add(new Span(simulationMetrics.get(idx).toString()));
+                    metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx))));
                     SparkLine sparkLine = new SparkLine();
                     sparkLine.setSparkLine(sparklinesData.get(idx), idx);
                     sparklinesWrapper.add(sparkLine);
@@ -454,11 +456,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         panelTitle.setText("Experiment #"+experiment.getName());
         codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
         rewardVariablesTable.setIsReadOnly(true);
+        rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
         if (!rewardVariables.isEmpty()) {
             rewardVariablesTable.setValue(rewardVariables);
-        } else {
-            rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
-        }
+        } 
         if (showSimulationMetrics) {
             updateSimulationMetrics();
         }

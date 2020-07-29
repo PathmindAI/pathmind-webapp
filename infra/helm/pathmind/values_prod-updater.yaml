@@ -36,6 +36,10 @@ env:
   SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/prod-updater-queue
   SNS_UPDATER_TOPIC_ARN: arn:aws:sns:us-east-1:839270835622:prod-updater-topic
   SNS_UPDATER_SQS_FILTER_ATTR: prod
+
+readinessprobe: {}
+
+livenessprobe: {}
   
 name: pathmind-updater
 
@@ -60,9 +64,9 @@ resources:
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-   limits:
-     cpu: 2
-     memory: 2Gi
+#   limits:
+#     cpu: 2
+#     memory: 2Gi
    requests:
      cpu: 1
      memory: 1Gi

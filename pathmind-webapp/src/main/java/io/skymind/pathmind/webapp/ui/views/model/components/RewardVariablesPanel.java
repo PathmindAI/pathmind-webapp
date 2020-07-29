@@ -53,18 +53,16 @@ public class RewardVariablesPanel extends VerticalLayout
 	}
 
 	private void setupForm() {
+	    rewardVariablesTable = new RewardVariablesTable();
 		formPanel.add(new Paragraph("You have created a function to gather reward variables in your simulation. Let’s give them variable names to make it easier to remember what they reference."));
 		formPanel.add(getRewardVariablesPanel());
 		formPanel.setPadding(false);
+		formPanel.add(rewardVariablesTable);
 	}
 
 	public void setupRewardVariablesTable(int rewardVariablesCount, List<RewardVariable> rewardVariables) {
-		rewardVariablesTable = new RewardVariablesTable();
 		rewardVariablesTable.setVariableSize(Math.max(rewardVariablesCount, rewardVariables.size()));
-		if (!rewardVariables.isEmpty()) {
-			rewardVariablesTable.setValue(rewardVariables);
-		}
-		formPanel.add(rewardVariablesTable);
+		rewardVariablesTable.setValue(rewardVariables);
 	}
 
 	private Component getRewardVariablesPanel() {
@@ -76,14 +74,10 @@ public class RewardVariablesPanel extends VerticalLayout
 	}
 	
 	public List<RewardVariable> getRewardVariables(){
-		if (rewardVariablesTable == null) {
-			return null;
-		} else {
-			return rewardVariablesTable.getValue();
-		}
+		return rewardVariablesTable.getValue();
 	}
 
 	public boolean isInputValueValid() {
-		return !rewardVariablesTable.isInvalid();
+        return !rewardVariablesTable.isInvalid();
 	}
 }
