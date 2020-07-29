@@ -1,6 +1,6 @@
 @modelDetails
 Feature: Check Model Details package name field
-@debug
+
   Scenario Outline: Check Model Details package name field
     Given Login to the pathmind
     When Open projects page

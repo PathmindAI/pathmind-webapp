@@ -89,6 +89,6 @@ public class DashboardPageStepDefinitions {
 
     @Then("^Check dashboard (.*) model breadcrumb (.*)$")
     public void checkDashboardModelBreadcrumb(String projectName, String packageName) {
-        dashboardPageSteps.checkDashboardModelBreadcrumb(projectName, packageName);
+        dashboardPageSteps.checkDashboardModelBreadcrumb(projectName + Serenity.sessionVariableCalled("randomNumber"), packageName);
     }
 }
