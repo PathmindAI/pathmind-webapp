@@ -80,7 +80,8 @@ public class Breadcrumbs extends HorizontalLayout
 				items.add(new BreadcrumbItem("Model #" + model.getName(), UploadModelView.class, target));
 			}
 			else {
-				items.add(new BreadcrumbItem("Model #" + model.getName(), ModelView.class, model.getId()));
+                String packageName = model.getPackageName() != null ?  " ("+model.getPackageName()+")" : "";
+				items.add(new BreadcrumbItem("Model #" + model.getName() + packageName, ModelView.class, model.getId()));
 			}
 		}
 		if (experiment != null) {

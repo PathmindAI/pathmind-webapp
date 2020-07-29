@@ -70,8 +70,8 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		addScreens();
 		// Update the screen based on the parameters if need be.
 		initScreen(event);
-		// Segment plugin added
-		add(segmentIntegrator);
+        // Segment plugin added
+        add(segmentIntegrator);
 	}
 
 	public void recalculateGridColumnWidth(Page page, Grid grid) {

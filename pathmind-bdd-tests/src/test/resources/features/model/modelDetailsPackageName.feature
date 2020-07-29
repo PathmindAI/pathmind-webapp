@@ -11,12 +11,17 @@ Feature: Check Model Details package name field
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment <project name> page is opened
+    Then Check model page model breadcrumb package name is <package name>
     Then Input from file reward function <reward function file>
     When Click project save draft btn
+    When Open dashboard page
+    Then Check dashboard <project name> model breadcrumb <package name>
     When Open projects page
     When Open project <project name> on projects page
+    Then Check project page model '1' package name is <package name>
     When Click the model name 1
     Then Check model page model details package name is <package name>
+    Then Check model page model breadcrumb package name is <package name>
 
     Examples:
       | project name    | model                                       | reward function file                                             | package name            |

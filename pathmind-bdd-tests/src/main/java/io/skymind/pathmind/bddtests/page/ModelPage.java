@@ -113,7 +113,7 @@ public class ModelPage extends PageObject {
         }
         assertThat(strings, hasItem("Projects"));
         assertThat(strings, hasItem("AutotestProject" + Serenity.sessionVariableCalled("randomNumber")));
-        assertThat(strings, hasItem("Model #1"));
+        assertThat(strings, hasItem("Model #1 (coffeeshop_v1)"));
     }
 
     public void checkExperimentModelStatusIsStarting(String status) {
@@ -126,5 +126,9 @@ public class ModelPage extends PageObject {
 
     public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
         assertThat(utils.getStringRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[4]")), is(note));
+    }
+
+    public void checkModelPageModelBreadcrumbPackageNameIs(String packageName) {
+        assertThat(getDriver().findElement(By.xpath("//*[contains(text(),'Model') and @class='breadcrumb']")).getText(), is("Model #1 (" + packageName + ")"));
     }
 }

@@ -84,4 +84,9 @@ public class ModelStepDefinitions {
     public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
         modelPageSteps.checkOnTheModelPageExperimentNotesIs(experiment, note);
     }
+
+    @Then("^Check model page model breadcrumb package name is (.*)$")
+    public void checkModelPageModelBreadcrumbPackageNameIs(String packageName) {
+        modelPageSteps.checkModelPageModelBreadcrumbPackageNameIs(packageName);
+    }
 }
