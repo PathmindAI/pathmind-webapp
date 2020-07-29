@@ -66,8 +66,6 @@ import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>, BeforeLeaveObserver {
 
-    private final NewExperimentViewExperimentCreatedSubscriber experimentCreatedSubscriber;
-    private final NewExperimentViewExperimentUpdatedSubscriber experimentUpdatedSubscriber;
     // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
 	// on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
 	private Object experimentLock = new Object();
@@ -111,20 +109,18 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	public NewExperimentView() {
 		super();
 		addClassName("new-experiment-view");
-        experimentCreatedSubscriber = new NewExperimentViewExperimentCreatedSubscriber();
-        experimentUpdatedSubscriber = new NewExperimentViewExperimentUpdatedSubscriber();
 	}
 
     @Override
     protected void onDetach(DetachEvent event) {
-        EventBus.unsubscribe(experimentCreatedSubscriber);
-        EventBus.unsubscribe(experimentUpdatedSubscriber);
+        EventBus.unsubscribe(this);
     }
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(experimentCreatedSubscriber);
-        EventBus.subscribe(experimentUpdatedSubscriber);
+        EventBus.subscribe(this,
+                new NewExperimentViewExperimentCreatedSubscriber(),
+                new NewExperimentViewExperimentUpdatedSubscriber());
     }
 
     @Override
