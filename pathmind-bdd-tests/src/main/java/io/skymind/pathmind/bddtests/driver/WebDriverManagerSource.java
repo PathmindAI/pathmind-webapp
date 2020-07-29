@@ -11,6 +11,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 
+import java.util.Collections;
+
 public class WebDriverManagerSource implements DriverSource {
 
     @Override
@@ -32,6 +34,8 @@ public class WebDriverManagerSource implements DriverSource {
                 options.addArguments("--no-sandbox");
                 options.addArguments("--disable-dev-shm-usage");
                 options.addArguments("--verbose");
+                options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
+                options.setExperimentalOption("useAutomationExtension", false);
                 _driver = new ChromeDriver(options);
                 break;
             case FIREFOX:
