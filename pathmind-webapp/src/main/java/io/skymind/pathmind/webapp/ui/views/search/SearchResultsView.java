@@ -72,11 +72,6 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         numberOfResultsText = "Showing " + dataProvider.size(new Query<>()) + " results";
         numberOfResults.setText(numberOfResultsText);
         segmentIntegrator.performedSearch();
-        getMainLayout().ifPresent(mainLayout -> {
-            if (mainLayout.getSearchBoxValue() != decodedKeyword) {
-                mainLayout.setSearchBoxValue(decodedKeyword);
-            }
-        });
     }
 
     @Override
@@ -148,6 +143,7 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         } else {
             decodedKeyword = URLDecoder.decode(keyword, StandardCharsets.UTF_8);
             String escapedBackslashDecodedKeyword = PathmindStringUtils.escapeBackslash(decodedKeyword);
+            decodedKeyword = decodedKeyword.split(":", 2)[1];
             dataProvider.setFilter(escapedBackslashDecodedKeyword);
             titleText = "Search Results for: " + decodedKeyword;
         }

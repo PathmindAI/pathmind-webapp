@@ -17,46 +17,78 @@ public class SearchDAO {
         this.ctx = ctx;
     }
 
-    public List<SearchResult> findSearchResults(long userId, String keyword, int offset, int limit){
-        ProcessKeywordResult processedKeyword = processKeyword(keyword);
-        List<SearchResult> originalSearchResults = SearchRepository.findSearchResults(ctx, processedKeyword.itemsTypes,
-                userId, processedKeyword.keyword, offset, limit);
-        return originalSearchResults;
+    public List<SearchResult> findSearchResults(long userId, String keyword, int offset, int limit) {
+        List<SearchResult> searchResults = new ArrayList<>();
+        List<ProcessKeywordResult> processedKeywords = processKeyword(keyword);
+        processedKeywords.stream().forEach(processedKeyword -> {
+            final List<SearchResult> keywordSearchResults = SearchRepository.findSearchResults(ctx, processedKeyword.itemsTypes,
+                    userId, processedKeyword.keyword, offset, limit);
+            searchResults.addAll(keywordSearchResults);
+        });
+        Collections.sort(searchResults, Comparator.comparing(SearchResult::getUpdateDate));
+        return searchResults;
     }
     
-    public int countSearchResults(long userId, String keyword){
-        ProcessKeywordResult processedKeyword = processKeyword(keyword);
-        return SearchRepository.countSearchResults(ctx, processedKeyword.itemsTypes, userId, processedKeyword.keyword);
+    public int countSearchResults(long userId, String keyword) {
+        List<ProcessKeywordResult> processedKeywords = processKeyword(keyword);
+        List<Integer> count = new ArrayList<>();
+        processedKeywords.stream().forEach(processedKeyword -> {
+            int partialCount = SearchRepository.countSearchResults(ctx, processedKeyword.itemsTypes, userId, processedKeyword.keyword);
+            count.add(partialCount);
+        });
+        return count.stream().reduce(0, Integer::sum);
     }
 
-    private ProcessKeywordResult processKeyword(String originalKeyword) {
-
-        originalKeyword = originalKeyword.toLowerCase();
+    private List<ProcessKeywordResult> processKeyword(String originalKeyword) {
+        String projectName = SearchResultItemType.PROJECT.getName().toLowerCase();
         String modelName = SearchResultItemType.MODEL.getName().toLowerCase();
         String experimentName = SearchResultItemType.EXPERIMENT.getName().toLowerCase();
+        String[] splitTypeAndKeyword = originalKeyword.split(":", 2);
+        String searchType = splitTypeAndKeyword[0].toLowerCase();
+        originalKeyword = splitTypeAndKeyword[1];
+        originalKeyword = originalKeyword.toLowerCase();
 
-        if (findTypeInKeyword(modelName, originalKeyword) && !modelName.equals(originalKeyword)) {
+        if (searchType.equals(projectName)) {
+            return generateKeywordResult(SearchResultItemType.PROJECT, originalKeyword, projectName);
+        } else if (searchType.equals(modelName)) {
             return generateKeywordResult(SearchResultItemType.MODEL, originalKeyword, modelName);
-        } else if (findTypeInKeyword(SearchResultItemType.EXPERIMENT.getName(), originalKeyword) && !experimentName.equals(originalKeyword)) {
+        } else if (searchType.equals(experimentName)) {
             return generateKeywordResult(SearchResultItemType.EXPERIMENT, originalKeyword, experimentName);
         } else {
+            List<ProcessKeywordResult> resultList = new ArrayList<>();
             ProcessKeywordResult result = new ProcessKeywordResult();
-            result.itemsTypes = new HashSet<>(Arrays.asList(SearchResultItemType.values()));
+            HashSet originalKeywordTypes = new HashSet<>(Arrays.asList(SearchResultItemType.PROJECT));
+            
+            if (matchTypeInKeyword(modelName, originalKeyword)) {
+                resultList.addAll(generateKeywordResult(SearchResultItemType.MODEL, originalKeyword, modelName));
+            } else {
+                originalKeywordTypes.add(SearchResultItemType.MODEL);
+            }
+            if (matchTypeInKeyword(experimentName, originalKeyword)) {
+                resultList.addAll(generateKeywordResult(SearchResultItemType.EXPERIMENT, originalKeyword, experimentName));
+            } else {
+                originalKeywordTypes.add(SearchResultItemType.EXPERIMENT);
+            }
+            result.itemsTypes = originalKeywordTypes;
             result.keyword = originalKeyword;
-            return result;
+            resultList.add(result);
+            return resultList;
         }
     }
 
-    private ProcessKeywordResult generateKeywordResult(SearchResultItemType searchResultItemType, String originalKeyword, String name) {
+    private List<ProcessKeywordResult> generateKeywordResult(SearchResultItemType searchResultItemType, String originalKeyword, String name) {
         ProcessKeywordResult result = new ProcessKeywordResult();
         result.itemsTypes = Collections.singleton(searchResultItemType);
-        result.keyword = originalKeyword.replaceFirst(name + " #", "")
-                .replaceFirst(name + " ", "");
-        return result;
+        result.keyword = replaceTypeWord(originalKeyword, name);
+        return new ArrayList<>(Arrays.asList(result));
     }
 
-    private Boolean findTypeInKeyword(String typeName, String keyword) {
-        return Pattern.compile(Pattern.quote(typeName), Pattern.CASE_INSENSITIVE).matcher(keyword).find();
+    private String replaceTypeWord(String originalKeyword, String name) {
+        return originalKeyword.replaceFirst(name + " #", "").replaceFirst(name + " ", "");
+    }
+
+    private Boolean matchTypeInKeyword(String typeName, String keyword) {
+        return keyword.matches("(?i)"+typeName+"\\s#?\\d+");
     }
 
     private static class ProcessKeywordResult {
