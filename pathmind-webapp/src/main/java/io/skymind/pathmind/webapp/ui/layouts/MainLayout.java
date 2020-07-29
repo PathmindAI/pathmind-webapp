@@ -53,10 +53,6 @@ public class MainLayout extends AppLayout implements PageConfigurator
 		setContent(new Span("Error. Please contact Pathmind for assistance"));
     }
 
-    /* This is for Karibu Tests to initialize the views */
-    public MainLayout() {
-    }
-
 	@Override
 	public void configurePage(InitialPageSettings settings) {
 		VaadinUtils.setupFavIcon(settings);

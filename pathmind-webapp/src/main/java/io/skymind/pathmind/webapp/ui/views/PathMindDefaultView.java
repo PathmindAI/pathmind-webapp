@@ -71,9 +71,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		// Update the screen based on the parameters if need be.
 		initScreen(event);
         // Segment plugin added
-        if (segmentIntegrator != null) {
-            add(segmentIntegrator);
-        }
+        add(segmentIntegrator);
 	}
 
 	public void recalculateGridColumnWidth(Page page, Grid grid) {
@@ -93,7 +91,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
 	private void addScreens(){
 		removeAll();
-		if (awsApiClient != null && awsApiClient.isUsingMockBackend()) {
+		if (awsApiClient.isUsingMockBackend()) {
             add(getWarningMessage());
         }
 		final Component titlePanel = getTitlePanel();
