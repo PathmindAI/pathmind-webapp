@@ -114,4 +114,9 @@ public class ExperimentStepDefinitions {
     public void checkExperimentPageSideBarIsFavorite(String experimentName, Boolean favoriteStatus) {
         experimentPageSteps.checkExperimentPageSideBarIsFavorite(experimentName, favoriteStatus);
     }
+
+    @Then("^Check experiment page simulation metrics (.*)$")
+    public void checkExperimentPageSimulationMetrics(String commaSeparatedVariableNames) {
+        experimentPageSteps.checkExperimentPageSimulationMetrics(commaSeparatedVariableNames);
+    }
 }

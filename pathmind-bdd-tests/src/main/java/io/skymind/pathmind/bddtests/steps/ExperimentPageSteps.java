@@ -103,4 +103,8 @@ public class ExperimentPageSteps {
     public void checkExperimentPageSideBarIsFavorite(String experimentName, Boolean favoriteStatus) {
         experimentPage.checkExperimentPageSideBarIsFavorite(experimentName, favoriteStatus);
     }
+
+    public void checkExperimentPageSimulationMetrics(String commaSeparatedVariableNames) {
+        experimentPage.checkExperimentPageSimulationMetrics(commaSeparatedVariableNames);
+    }
 }
