@@ -53,7 +53,7 @@ public class RewardVariablesPanel extends VerticalLayout
 	}
 
 	private void setupForm() {
-	    rewardVariablesTable = new RewardVariablesTable();
+        rewardVariablesTable = new RewardVariablesTable(false);
 		formPanel.add(new Paragraph("You have created a function to gather reward variables in your simulation. Let’s give them variable names to make it easier to remember what they reference."));
 		formPanel.add(getRewardVariablesPanel());
 		formPanel.setPadding(false);
@@ -61,7 +61,6 @@ public class RewardVariablesPanel extends VerticalLayout
 	}
 
 	public void setupRewardVariablesTable(int rewardVariablesCount, List<RewardVariable> rewardVariables) {
-		rewardVariablesTable = new RewardVariablesTable(false);
 		rewardVariablesTable.setVariableSize(Math.max(rewardVariablesCount, rewardVariables.size()));
 		rewardVariablesTable.setValue(rewardVariables);
 	}
