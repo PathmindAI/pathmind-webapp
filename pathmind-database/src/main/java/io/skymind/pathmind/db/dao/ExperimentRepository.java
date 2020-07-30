@@ -13,15 +13,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.Record;
-import org.jooq.Record1;
-import org.jooq.Record7;
-import org.jooq.Record8;
-import org.jooq.Result;
-import org.jooq.Table;
+import io.skymind.pathmind.shared.data.user.UserMetrics;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 
 import io.skymind.pathmind.shared.data.DashboardItem;
