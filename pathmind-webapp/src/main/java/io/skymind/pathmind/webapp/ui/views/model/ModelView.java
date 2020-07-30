@@ -216,6 +216,10 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
                     )
                 );
             });
+            // For #1887
+            // rewardVariablesTable.setVariableSize(model.getRewardVariablesCount());
+            // rewardVariablesTable.setValue(rewardVariableNames);
+            // rewardVariableNamesText.add(rewardVariablesTable);
         } else {
             rewardVariableNamesText.add("All reward variables are unnamed. You can name them when you create a new experiment for this model.");
         }
