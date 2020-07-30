@@ -158,6 +158,24 @@ public class RunDAO {
             MetricsRepository.insertMetrics(transactionCtx, metricsMap);
         }
 
+        // Find max metric raw iteration in DB, and calculate new metrics to be inserted into db
+        Map<Long, Integer> maxMetricsRawIterations = MetricsRawRepository.getMaxMetricsRawIterationForPolicies(transactionCtx, policyIds);
+        Map<Long, List<MetricsRaw>> metricsRawMap = new HashMap<>();
+        policies.forEach(policy -> {
+            Integer maxMetricsRawIteration = maxMetricsRawIterations.containsKey(policy.getId()) ? maxMetricsRawIterations.get(policy.getId()) : 0;
+            if (policy.getMetricsRaws() != null) {
+                List<MetricsRaw> newMetricsRaw = policy.getMetricsRaws().stream()
+                    .filter(metricsRaw -> metricsRaw.getIteration() > maxMetricsRawIteration)
+                    .collect(Collectors.toList());
+                metricsRawMap.put(policy.getId(), newMetricsRaw);
+            }
+        });
+
+        // Insert all new metrics raw in a single batch
+        if (!metricsRawMap.isEmpty()) {
+            MetricsRawRepository.insertMetricsRaw(transactionCtx, metricsRawMap);
+        }
+
     }
 
     public List<RewardScore> getScores(long runId, String policyExtId) {
