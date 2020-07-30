@@ -134,4 +134,9 @@ public class GenericPageStepDefinitions {
     public void generateBigModelWithName(String name) throws IOException {
         genericPageSteps.generateBigModelWithName(name);
     }
+
+    @When("^Wait a bit (\\d+) ms$")
+    public void waitABitMs(int time) {
+        genericPageSteps.waitABitMs(time);
+    }
 }

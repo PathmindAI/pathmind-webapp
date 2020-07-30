@@ -8,8 +8,10 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.user.UserMetrics;
 import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.jooq.Table;
 import org.jooq.impl.DSL;
 
 import java.time.LocalDateTime;
@@ -17,11 +19,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static io.skymind.pathmind.db.jooq.Tables.PATHMIND_USER;
 import static io.skymind.pathmind.db.jooq.Tables.POLICY;
 import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
 import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
 import static io.skymind.pathmind.db.jooq.tables.Run.RUN;
+import static org.jooq.impl.DSL.count;
 
 class RunRepository
 {
@@ -149,4 +153,38 @@ class RunRepository
 			.where(Tables.RUN.EXPERIMENT_ID.eq(experimentId))
 			.execute();
 	}
+
+    protected static UserMetrics getRunUsageDataForUser(DSLContext ctx, long userId) {
+        Table<?> nestedToday = ctx.select(count().as("runsToday"))
+                .from(RUN)
+                    .leftJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
+                    .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+                    .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+                    .leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
+                .where(DSL.day(RUN.STARTED_AT).eq(DSL.day(LocalDateTime.now())))
+                    .and(DSL.month(RUN.STARTED_AT).eq(DSL.month(LocalDateTime.now())))
+                    .and(DSL.year(RUN.STARTED_AT).eq(DSL.year(LocalDateTime.now())))
+                .asTable("today");
+        Table<?> nestedThisMonth = ctx.select(count().as("runsThisMonth"))
+                .from(RUN)
+                    .leftJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
+                    .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+                    .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+                    .leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
+                .where(DSL.month(RUN.STARTED_AT).eq(DSL.month(LocalDateTime.now())))
+                    .and(DSL.year(RUN.STARTED_AT).eq(DSL.year(LocalDateTime.now())))
+                .asTable("thisMonday");
+        Record record = ctx.select(nestedToday.field("runsToday"), nestedThisMonth.field("runsThisMonth"))
+                .from(nestedToday, nestedThisMonth)
+                .fetchOne();
+
+        // Must be a customer with no experiments.
+        if(record == null) {
+            return new UserMetrics(0, 0);
+        }
+
+        return new UserMetrics(
+                (Integer)record.getValue("runsToday"),
+                (Integer)record.getValue("runsThisMonth"));
+    }
 }

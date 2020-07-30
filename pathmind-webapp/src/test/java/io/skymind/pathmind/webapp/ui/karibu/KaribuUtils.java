@@ -1,6 +1,6 @@
 package io.skymind.pathmind.webapp.ui.karibu;
 
-import java.util.Optional;
+import java.util.*;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.github.mvysny.kaributesting.v10.MockedUI;
@@ -36,6 +36,11 @@ public class KaribuUtils {
         MockVaadin.setup(new Routes(), () -> ui);
         new ParentComponent(ui, component);
         return ui;
+    }
+
+    public static void setupRoutes(Class<? extends Component>... routes) {
+        HashSet<Class<? extends Component>> routesSet = new HashSet<>(Arrays.asList(routes));
+        MockVaadin.setup(new Routes(routesSet, Collections.emptySet(), true), () -> Mockito.spy(new MockedUI()));
     }
 
 	public static Class<? extends HasElement> getActiveViewClass() {

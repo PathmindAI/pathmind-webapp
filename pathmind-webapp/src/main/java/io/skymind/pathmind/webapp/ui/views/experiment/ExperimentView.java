@@ -19,10 +19,12 @@ import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
@@ -48,29 +50,24 @@ import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.model.ModelView;
-import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
-import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
-import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavbar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
+import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
-import org.springframework.beans.factory.annotation.Value;
+import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
+import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.TAG_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.*;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
@@ -94,6 +91,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private List<double[]> sparklinesData = new ArrayList<>();
     private Boolean showSimulationMetrics;
 
+    private UserCaps userCaps;
+
     private HorizontalLayout middlePanel;
     private HorizontalLayout simulationMetricsWrapper;
     private VerticalLayout metricsWrapper;
@@ -109,10 +108,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private NotesField notesField;
     private Span reasonWhyTheTrainingStoppedLabel;
     private RewardVariablesTable rewardVariablesTable;
-    private ExperimentViewPolicyUpdateSubscriber policyUpdateSubscriber;
-    private ExperimentViewRunUpdateSubscriber runUpdateSubscriber;
-    private final ExperimentViewExperimentCreatedSubscriber experimentCreatedSubscriber;
-    private final ExperimentViewExperimentUpdatedSubscriber experimentUpdatedSubscriber;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -138,29 +133,27 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Breadcrumbs pageBreadcrumbs;
     private Button restartTraining;
 
-    public ExperimentView() {
+    public ExperimentView(
+            @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
+            @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
+            @Value("${pathmind.notification.newRunNotificationThreshold}") int newRunNotificationThreshold) {
         super();
+        this.userCaps = new UserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
         addClassName("experiment-view");
-        policyUpdateSubscriber = new ExperimentViewPolicyUpdateSubscriber();
-        runUpdateSubscriber = new ExperimentViewRunUpdateSubscriber();
-        experimentCreatedSubscriber = new ExperimentViewExperimentCreatedSubscriber();
-        experimentUpdatedSubscriber = new ExperimentViewExperimentUpdatedSubscriber();
-    }
-
-    @Override
-    protected void onDetach(DetachEvent event) {
-        EventBus.unsubscribe(policyUpdateSubscriber);
-        EventBus.unsubscribe(runUpdateSubscriber);
-        EventBus.unsubscribe(experimentCreatedSubscriber);
-        EventBus.unsubscribe(experimentUpdatedSubscriber);
     }
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(policyUpdateSubscriber);
-        EventBus.subscribe(runUpdateSubscriber);
-        EventBus.subscribe(experimentCreatedSubscriber);
-        EventBus.subscribe(experimentUpdatedSubscriber);
+        EventBus.subscribe(this,
+                new ExperimentViewPolicyUpdateSubscriber(),
+                new ExperimentViewRunUpdateSubscriber(),
+                new ExperimentViewExperimentCreatedSubscriber(),
+                new ExperimentViewExperimentUpdatedSubscriber());
+    }
+
+    @Override
+    protected void onDetach(DetachEvent event) {
+        EventBus.unsubscribe(this);
     }
 
     @Override
@@ -284,6 +277,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Div getButtonsWrapper() {
         restartTraining = new Button("Restart Training", new Image("frontend/images/start.svg", "run"), click -> {
             synchronized (experimentLock) {
+                if(!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator))
+                    return;
                 trainingService.startRun(experiment);
                 segmentIntegrator.discoveryRunStarted();
                 initLoadData();

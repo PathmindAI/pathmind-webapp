@@ -86,4 +86,9 @@ public class ModelPageSteps {
     public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
         modelPage.checkOnTheModelPageExperimentNotesIs(experiment, note);
     }
+
+    @Step
+    public void checkModelPageModelBreadcrumbPackageNameIs(String packageName) {
+        modelPage.checkModelPageModelBreadcrumbPackageNameIs(packageName);
+    }
 }

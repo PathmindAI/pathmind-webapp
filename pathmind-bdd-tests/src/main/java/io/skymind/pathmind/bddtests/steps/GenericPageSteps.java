@@ -122,6 +122,11 @@ public class GenericPageSteps {
     }
 
     @Step
+    public void waitABitMs(int time) {
+        genericPage.waitABitMs(time);
+    }
+
+    @Step
     public void generateBigModelWithName(String name) throws IOException {
         utils.generateBigModelWithName(name);
     }
