@@ -104,4 +104,14 @@ public class ExperimentStepDefinitions {
     public void checkThatExperimentStatusIconIs(String experiment, String icon) {
         experimentPageSteps.checkThatExperimentStatusIconIs(experiment, icon);
     }
+
+    @Then("^Click experiment page (.*) star button$")
+    public void clickExperimentPageStarButton(String experimentName) {
+        experimentPageSteps.clickExperimentPageStarButton(experimentName);
+    }
+
+    @Then("^Check experiment page side bar (.*) is favorite (.*)$")
+    public void checkExperimentPageSideBarIsFavorite(String experimentName, Boolean favoriteStatus) {
+        experimentPageSteps.checkExperimentPageSideBarIsFavorite(experimentName, favoriteStatus);
+    }
 }

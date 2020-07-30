@@ -91,4 +91,14 @@ public class DashboardPageStepDefinitions {
     public void checkDashboardModelBreadcrumb(String projectName, String packageName) {
         dashboardPageSteps.checkDashboardModelBreadcrumb(projectName + Serenity.sessionVariableCalled("randomNumber"), packageName);
     }
+
+    @Then("^Check dashboard page '(.*)' '(.*)' is favorite (.*)$")
+    public void checkDashboardPageIsFavoriteTrue(String projectName, String experimentName, Boolean favoriteStatus) {
+        dashboardPageSteps.checkDashboardPageProjectIsFavoriteTrue(projectName + Serenity.sessionVariableCalled("randomNumber"), experimentName, favoriteStatus);
+    }
+
+    @When("^Click dashboard page '(.*)' '(.*)' favorite button$")
+    public void clickDashboardPageFavoriteButton(String projectName, String experimentName) {
+        dashboardPageSteps.clickDashboardPageFavoriteButton(projectName + Serenity.sessionVariableCalled("randomNumber"), experimentName);
+    }
 }
