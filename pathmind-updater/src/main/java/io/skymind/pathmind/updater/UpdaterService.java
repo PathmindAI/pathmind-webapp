@@ -84,8 +84,7 @@ public class UpdaterService {
         ProviderJobStatus providerJobStatus = provider.status(jobHandle);
         ExperimentState experimentState = providerJobStatus.getExperimentState();
 
-        final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(),
-                jobHandle, experimentState);
+        final List<Policy> policies = getPoliciesFromProgressProvider(run.getId(), jobHandle, experimentState);
 
         setStoppedAtForFinishedPolicies(policies, experimentState);
         setEventualInformationAboutWhyTheRunEnded(run, providerJobStatus);
@@ -139,14 +138,15 @@ public class UpdaterService {
                 .forEach(policy -> policy.setStoppedAt(terminatedTrials.get(policy.getExternalId())));
     }
 
-    private List<Policy> getPoliciesFromProgressProvider(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String jobHandle, ExperimentState experimentState) {
+    private List<Policy> getPoliciesFromProgressProvider(Long runId, String jobHandle, ExperimentState experimentState) {
         if (experimentState == null) {
             return Collections.emptyList();
         }
 
+        // OnurI: Removed the filtering of stopped policies, RunDao.updatePolicies already compares rewardScores and metrics with DB,
+        // and insert only the ones doesn't exist in DB. See more at: https://github.com/SkymindIO/pathmind-webapp/issues/1866
         List<String> validExternalIds = experimentState.getCheckpoints().stream()
                 .map(CheckPoint::getId)
-                .filter(id -> !stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).contains(id))
                 .collect(Collectors.toList());
 
         final Map<String, String> rawProgress = provider.progress(jobHandle, validExternalIds);
