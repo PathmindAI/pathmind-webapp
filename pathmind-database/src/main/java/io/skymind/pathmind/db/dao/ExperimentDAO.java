@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.db.utils.DataUtils;
+import io.skymind.pathmind.shared.data.user.UserMetrics;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
