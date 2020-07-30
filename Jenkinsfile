@@ -43,6 +43,17 @@ def runMigrations(namespace) {
 }
 
 /*
+   Create db backup
+*/
+def backupDb(identifier) {
+    echo "Testing db backup"
+    sh """
+    aws rds create-db-snapshot --db-instance-identifier ${identifier} --db-snapshot-identifier ${identifier}-`date '+%Y%m%d'`-${env.BUILD_NUMBER}
+    timeout 900 bash -c "while ! aws rds describe-db-snapshots --db-snapshot-identifier ${identifier}-`date '+%Y%m%d'`-${env.BUILD_NUMBER}  | jq -r '.[][].Status' | grep available; do sleep 5; done"
+    """
+}
+
+/*
     This is the main pipeline section with the stages of the CI/CD
  */
 pipeline {
@@ -252,6 +263,7 @@ pipeline {
                     sh "cd ${WORKSPACE} && mvn clean install"
                 }
                 runMigrations("default")
+                backupDb("pathmind-prod")
                 script {
                     echo "Updating helm chart"
                     sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
