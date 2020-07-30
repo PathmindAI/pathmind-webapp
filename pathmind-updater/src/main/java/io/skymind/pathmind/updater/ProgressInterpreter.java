@@ -37,8 +37,8 @@ public class ProgressInterpreter {
         }
 
         static String[] metricsColumns(int numReward) {
-            List<RAY_PROGRESS> metricsColumn = List.of(TRAINING_ITERATION);
-            List<String> columns = metricsColumn.stream().map(e -> e.column).collect(Collectors.toList());
+            List<RAY_PROGRESS> metricsColumns = List.of(TRAINING_ITERATION);
+            List<String> columns = metricsColumns.stream().map(e -> e.column).collect(Collectors.toList());
             for (int i = 0; i < numReward; i++) {
                 columns.add(metricsMax(i));
                 columns.add(metricsMin(i));
@@ -46,6 +46,11 @@ public class ProgressInterpreter {
             }
 
             return columns.toArray(new String[0]);
+        }
+
+        static RAY_PROGRESS[] scoreColumns() {
+            List<RAY_PROGRESS> scoreColumns = List.of(EPISODE_REWARD_MAX, EPISODE_REWARD_MIN, EPISODE_REWARD_MEAN, EPISODES_THIS_ITER, TRAINING_ITERATION);
+            return scoreColumns.toArray(new RAY_PROGRESS[0]);
         }
 
         static final String metrics_max = "custom_metrics/metrics_%d_max";
@@ -122,7 +127,7 @@ public class ProgressInterpreter {
 
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
-        settings.selectFields(RAY_PROGRESS.values());
+        settings.selectFields(RAY_PROGRESS.scoreColumns());
         settings.getFormat().setLineSeparator("\n");
 
         CsvParser parser = new CsvParser(settings);
