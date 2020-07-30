@@ -446,6 +446,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
+        // The reward variables table should only be initialized once for the Experiment Page
+        // no matter which Experiment of the same model the user visits later on.
+        // This may have to be changed if we allow users to navigate Experiments of different models.
+	    rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
 		updateScreenComponents();
 		experimentsNavbar.setExperiments(event.getUI(), experiments, experiment);
 	}
@@ -455,8 +459,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		experimentsNavbar.setVisible(!experiment.isArchived());
 		startRunButton.setVisible(!experiment.isArchived());
 		saveDraftButton.setVisible(!experiment.isArchived());
-		rewardFunctionEditor.setValue(experiment.getRewardFunction());		
-	    rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
+		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		rewardVariablesTable.setValue(rewardVariables);
 		rewardFunctionEditor.setVariableNames(rewardVariables, experiment.getModel().getRewardVariablesCount());
 		unsavedChanges.setVisible(false);
