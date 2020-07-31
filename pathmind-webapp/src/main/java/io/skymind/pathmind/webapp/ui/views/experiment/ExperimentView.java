@@ -58,6 +58,7 @@ import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,6 +70,7 @@ import java.util.stream.IntStream;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.*;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
+@Slf4j
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 
@@ -88,6 +90,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private List<Experiment> experiments = new ArrayList<>();
     private List<Double> simulationMetrics = new ArrayList<>();
     private List<double[]> sparklinesData = new ArrayList<>();
+    private List<Double> uncertainty = new ArrayList<>();
     private Boolean showSimulationMetrics;
 
     private UserCaps userCaps;
@@ -96,6 +99,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private HorizontalLayout simulationMetricsWrapper;
     private VerticalLayout metricsWrapper;
     private VerticalLayout sparklinesWrapper;
+    private VerticalLayout uncertaintyWrapper;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private Span panelTitle;
     private VerticalLayout rewardVariablesGroup;
@@ -231,9 +235,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             metricsWrapper.addClassName("metrics-wrapper");
             sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
             sparklinesWrapper.addClassName("sparklines-wrapper");
+            uncertaintyWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+            uncertaintyWrapper.addClassName("metrics-wrapper");
 
             updateSimulationMetrics();
-            tableWrapper.add(metricsWrapper, sparklinesWrapper);
+            tableWrapper.add(metricsWrapper, sparklinesWrapper, uncertaintyWrapper);
         }
 
         return tableWrapper;
@@ -242,6 +248,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void updateSimulationMetrics() {
         metricsWrapper.removeAll();
         sparklinesWrapper.removeAll();
+        uncertaintyWrapper.removeAll();
 
         updateSimulationMetricsData();
 
@@ -251,6 +258,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     SparkLine sparkLine = new SparkLine();
                     sparkLine.setSparkLine(sparklinesData.get(idx), idx);
                     sparklinesWrapper.add(sparkLine);
+                    uncertaintyWrapper.add(new Span(PathmindNumberUtils.formatNumber(uncertainty.get(idx))));
                 });
     }
 
@@ -258,6 +266,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         List<Metrics> metricsList = policy == null ? null : policy.getMetrics();
         sparklinesData.clear();
         simulationMetrics.clear();
+        uncertainty.clear();
 
         if (metricsList != null && metricsList.size() > 0) {
             // set the last metrics
@@ -281,6 +290,33 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             sparkLineMap.entrySet().stream()
                 .map(e -> e.getValue().stream().mapToDouble(Double::doubleValue).toArray())
                 .forEach(arr -> sparklinesData.add(arr));
+        }
+
+        List<MetricsRaw> metricsRawList = policy == null ? null : policy.getMetricsRaws();
+        log.info("kepricondebug policy : " + policy.getExternalId());
+        if (metricsRawList != null && metricsRawList.size() > 0) {
+            int lastN = 10;
+
+            // index, metrcis raw data list
+            Map<Integer, List<Double>> uncertaintyMap = new HashMap<>();
+            metricsRawList.subList(Math.max(metricsRawList.size() - lastN, 0), metricsList.size()).stream()
+                .forEach(metricsRaw -> {
+                        List<List<MetricsRawThisEpisode>> episodeRawData = metricsRaw.getEpisodeRaw();
+                        for (int episode = 0; episode < episodeRawData.size(); episode++) {
+                            List<MetricsRawThisEpisode> indexRaw = episodeRawData.get(episode);
+                            for (int idx = 0; idx < indexRaw.size(); idx++) {
+                                log.info("iteration : " + metricsRaw.getIteration() + ", episode : " + episode + ", index : " + indexRaw.get(idx).getIndex() + ", reward var :" + indexRaw.get(idx).getValue());
+                                List<Double> data = uncertaintyMap.containsKey(idx) ? uncertaintyMap.get(idx) : new ArrayList<>();
+                                data.add(indexRaw.get(idx).getValue());
+                                uncertaintyMap.put(idx, data);
+                            }
+
+                        }
+                    }
+                );
+
+            uncertainty = uncertaintyMap.values().stream().map(list -> list.stream().mapToDouble(Double::doubleValue).average().getAsDouble()).collect(Collectors.toList());
+
         }
     }
 
