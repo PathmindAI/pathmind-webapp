@@ -599,6 +599,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private boolean isSameModel(long modelId) {
         return experiment != null && experiment.getModelId() == modelId;
     }
+    
+    private boolean isSameExperiment(Experiment eventExperiment) {
+        return experiment != null && experiment.getId() == eventExperiment.getId();
+    }
 
     private boolean isViewAttached() {
         return getUI().isPresent();
@@ -644,7 +648,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     class ExperimentViewRunUpdateSubscriber implements RunUpdateSubscriber {
         @Override
         public void handleBusEvent(RunUpdateBusEvent event) {
-            if (isSameExperiment(event)) {
+            if (isSameExperiment(event.getRun().getExperiment())) {
                 addOrUpdateRun(event.getRun());
                 updatedRunForPolicies(event.getRun());
                 PushUtils.push(getUI(), () -> {
@@ -658,7 +662,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         @Override
         public boolean filterBusEvent(RunUpdateBusEvent event) {
-            return isSameExperiment(event) || isSameModel(event.getModelId());
+            return isSameExperiment(event.getRun().getExperiment()) || isSameModel(event.getModelId());
         }
 
         @Override
@@ -666,18 +670,19 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             return isViewAttached();
         }
         
-        private boolean isSameExperiment(RunUpdateBusEvent event) {
-            return experiment != null && experiment.getId() == event.getRun().getExperiment().getId();
-        }
     }
 
     class ExperimentViewExperimentCreatedSubscriber implements ExperimentCreatedSubscriber {
 
         @Override
         public void handleBusEvent(ExperimentCreatedBusEvent event) {
-            if (isNewExperimentForThisViewModel(event.getExperiment(), event.getModelId())) {
-                updateNavBarExperiments();
-            }
+            updateNavBarExperiments();
+        }
+        
+        @Override
+        public boolean filterBusEvent(ExperimentCreatedBusEvent event) {
+            return experiment != null && !experiment.isArchived()
+                    && isNewExperimentForThisViewModel(event.getExperiment(), event.getModelId());
         }
 
         @Override
@@ -689,14 +694,24 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     class ExperimentViewExperimentUpdatedSubscriber implements ExperimentUpdatedSubscriber {
         @Override
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
-            if (isSameModel(event.getModelId())) {
-                updateNavBarExperiments();
-            }
+            updateNavBarExperiments();
         }
 
         @Override
         public boolean isAttached() {
             return isViewAttached();
+        }
+        
+        @Override
+        public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
+            if (experiment == null) {
+                return false;
+            }
+            if (experiment.isArchived()) {
+                return isSameExperiment(event.getExperiment());
+            } else {
+                return isSameModel(event.getModelId());
+            }
         }
     }
 }
