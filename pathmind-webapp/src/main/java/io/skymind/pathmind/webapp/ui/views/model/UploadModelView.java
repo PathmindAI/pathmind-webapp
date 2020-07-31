@@ -7,6 +7,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.PROJECT_
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import io.skymind.pathmind.shared.data.Action;
@@ -61,6 +62,8 @@ import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPa
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.unit.DataSize;
 
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
 public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<String>, BeforeLeaveObserver {
@@ -96,6 +99,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	@Autowired
     private NonTupleModelService nonTupleModelService;
 
+    @Value("${spring.servlet.multipart.max-file-size}")
+    private String maxFileSizeAsStr;
+
 	private Model model;
 
 	private List<RewardVariable> rewardVariables = new ArrayList<>();
@@ -129,7 +135,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	{
 		modelBinder = new Binder<>(Model.class);
 
-		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode);
+		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int)DataSize.parse(maxFileSizeAsStr).toBytes());
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload(), ModelUtils.isTupleModel(model));
 		rewardVariablesPanel = new RewardVariablesPanel();
 		actionsPanel = new ActionsPanel();
@@ -152,6 +158,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		}
 
 		uploadModelWizardPanel.addFileUploadCompletedListener(() -> handleUploadWizardClicked());
+		uploadModelWizardPanel.addFileUploadFailedListener(errors -> handleUploadFailed(errors));
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleModelDetailsClicked());
 		rewardVariablesPanel.addButtonClickListener(click -> handleRewardVariablesClicked());
 		actionsPanel.addButtonClickListener(click -> handleActionsClicked());
@@ -188,7 +195,12 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		return wrapper;
 	}
 
-	private void autosaveRewardVariables() {
+    private void handleUploadFailed(Collection<String> errors) {
+        uploadModelWizardPanel.showFileCheckPanel();
+	    this.updateError(errors.iterator().next());
+    }
+
+    private void autosaveRewardVariables() {
 		if (!rewardVariablesPanel.isInputValueValid()) {
 			return;
 		}

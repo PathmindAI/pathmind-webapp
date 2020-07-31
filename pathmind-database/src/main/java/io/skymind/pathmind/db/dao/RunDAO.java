@@ -4,6 +4,7 @@ import io.skymind.pathmind.db.utils.DBUtils;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.user.UserMetrics;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Configuration;
@@ -251,5 +252,9 @@ public class RunDAO {
      */
     public int getRewardNumForRun(long runId) {
         return MetricsRepository.getRewardNumForRun(ctx, runId);
+    }
+
+    public UserMetrics getRunUsageDataForUser(long userId) {
+        return RunRepository.getRunUsageDataForUser(ctx, userId);
     }
 }

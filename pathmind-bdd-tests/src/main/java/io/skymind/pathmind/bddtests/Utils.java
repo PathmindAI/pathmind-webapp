@@ -8,6 +8,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,5 +104,10 @@ public class Utils extends PageObject {
         } catch (org.openqa.selenium.NoSuchElementException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void generateBigModelWithName(String name) throws IOException {
+        RandomAccessFile f = new RandomAccessFile("models/problematic_models/" + name, "rw");
+        f.setLength(1024 * 1024 * 210);
     }
 }

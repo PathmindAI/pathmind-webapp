@@ -118,7 +118,6 @@ then
 	touch restarted
 	aws s3 cp restarted ${s3_url}/output/
 	set +e
-fi
 else
 	#Set the status in trainer_job
 	psql "$DB_URL_CLI" << EOF

@@ -134,4 +134,8 @@ public class NewExperimentPage extends PageObject {
         assertThat(popUp.findElement(By.cssSelector("h3")).getText(), is("Before you leave...."));
         assertThat(popUp.findElement(By.cssSelector("#message")).getText(), is(error));
     }
+
+    public void clickSideBarExperiment(String experimentName) {
+        getDriver().findElement(By.xpath("//div[@class='experiment-name']/p[text()='"+ experimentName +"']")).click();
+    }
 }

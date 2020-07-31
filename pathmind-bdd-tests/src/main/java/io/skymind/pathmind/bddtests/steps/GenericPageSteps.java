@@ -1,13 +1,17 @@
 package io.skymind.pathmind.bddtests.steps;
 
+import io.skymind.pathmind.bddtests.Utils;
 import io.skymind.pathmind.bddtests.page.GenericPage;
 import net.thucydides.core.annotations.Step;
+
+import java.io.IOException;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class GenericPageSteps {
 
     private GenericPage genericPage;
+    private Utils utils;
 
     @Step
     public void checkThatButtonExists(String buttonText) {
@@ -120,5 +124,10 @@ public class GenericPageSteps {
     @Step
     public void waitABitMs(int time) {
         genericPage.waitABitMs(time);
+    }
+
+    @Step
+    public void generateBigModelWithName(String name) throws IOException {
+        utils.generateBigModelWithName(name);
     }
 }
