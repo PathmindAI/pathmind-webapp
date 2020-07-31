@@ -37,6 +37,8 @@ env:
   JOB_MOCK_CYCLE: 0
   SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/dev-updater-queue
   SNS_UPDATER_SQS_FILTER_ATTR: dev
+  NEW_RUN_DAILY_LIMIT: 100
+  NEW_RUN_MONTHLY_LIMIT: 2000
 
 readinessprobe:
   httpGet:

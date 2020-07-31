@@ -86,4 +86,9 @@ public class DashboardPageStepDefinitions {
     public void clickStageWriteRewardFunctionFromDashboard(String projectName) {
         dashboardPageSteps.clickStageWriteRewardFunctionFromDashboard(projectName + Serenity.sessionVariableCalled("randomNumber"));
     }
+
+    @Then("^Check dashboard (.*) model breadcrumb (.*)$")
+    public void checkDashboardModelBreadcrumb(String projectName, String packageName) {
+        dashboardPageSteps.checkDashboardModelBreadcrumb(projectName + Serenity.sessionVariableCalled("randomNumber"), packageName);
+    }
 }

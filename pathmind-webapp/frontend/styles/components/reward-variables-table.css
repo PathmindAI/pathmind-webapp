@@ -28,7 +28,6 @@
 .reward-variables-table span:first-child {
     box-sizing: border-box;
     flex: 0 0 2rem;
-    color: var(--pm-gray-color-dark);
     text-align: center;
     padding: 0.5em;
 }

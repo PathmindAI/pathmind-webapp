@@ -49,4 +49,9 @@ public class ProjectPageStepDefinition {
     public void checkThatProjectNameOnProjectPage(String name) {
         projectPageSteps.checkThatProjectNameOnProjectPage(name + Serenity.sessionVariableCalled("randomNumber"));
     }
+
+    @Then("^Check project page model '(.*)' package name is (.*)$")
+    public void checkProjectPageModelPackageNameIs(String modelId, String packageName) {
+        projectPageSteps.checkProjectPageModelPackageNameIs(modelId, packageName);
+    }
 }

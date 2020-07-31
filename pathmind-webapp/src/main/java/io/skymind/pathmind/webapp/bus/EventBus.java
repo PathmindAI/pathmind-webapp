@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.bus;
 
+import com.vaadin.flow.component.Component;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
@@ -9,6 +10,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,10 +46,11 @@ import java.util.concurrent.Executors;
  */
 public class EventBus {
     private static final EventBus EVENT_BUS = new EventBus();
-
-    private Map<BusEventType, List<EventBusSubscriber>> subscribers;
+    private static ConcurrentHashMap<Component, EventBusSubscriber[]> componentSubscribers = new ConcurrentHashMap<>();
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
+
+    private Map<BusEventType, List<EventBusSubscriber>> subscribers;
 
     private EventBus() {
         Map<BusEventType, List<EventBusSubscriber>> subscribersModifiable = new HashMap<>();
@@ -78,11 +81,29 @@ public class EventBus {
         });
     }
 
-    public static void subscribe(EventBusSubscriber subscriber) {
+    public static void subscribe(Component component, EventBusSubscriber... subscribers) {
+        componentSubscribers.put(component, subscribers);
+        // Check to see if the component is a subscriber and if so subscribe itself.
+        if(component instanceof EventBusSubscriber)
+            subscribe((EventBusSubscriber)component);
+        Arrays.stream(subscribers).forEach(subscriber -> subscribe(subscriber));
+    }
+
+    private static void subscribe(EventBusSubscriber subscriber) {
         EVENT_BUS.subscribers.get(subscriber.getEventType()).add(subscriber);
     }
 
-    public static void unsubscribe(EventBusSubscriber subscriber) {
+    public static void unsubscribe(Component component) {
+        EventBusSubscriber[] subscribers = componentSubscribers.get(component);
+        componentSubscribers.remove(component);
+        // Check that the component may also be a subscriber itself (confirming it)
+        if(component instanceof EventBusSubscriber)
+            unsubscribe((EventBusSubscriber)component);
+        if(subscribers != null)
+            Arrays.stream(subscribers).forEach(subscriber -> unsubscribe(subscriber));
+    }
+
+    private static void unsubscribe(EventBusSubscriber subscriber) {
         EVENT_BUS.subscribers.get(subscriber.getEventType()).remove(subscriber);
     }
 

@@ -136,8 +136,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	{
 		modelGrid = new Grid<>();
 
-		Grid.Column<Model> nameColumn = modelGrid
-				.addColumn(TemplateRenderer.<Model> of("[[item.name]] <span class='tag'>[[item.draft]]</span>")
+		modelGrid.addColumn(TemplateRenderer.<Model> of("[[item.name]] <span class='tag'>[[item.draft]]</span>")
 						.withProperty("name", Data::getName)
 						.withProperty("draft", model -> model.isDraft() ? "Draft" : ""))
 				.setHeader("#")
@@ -145,6 +144,12 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true);
+        modelGrid.addColumn(Model::getPackageName)
+                .setHeader("Package Name")
+                .setComparator(Comparator.comparing(Model::getPackageName))
+                .setAutoWidth(true)
+                .setFlexGrow(0)
+                .setResizable(true);
 		Grid.Column<Model> createdColumn = modelGrid
 				.addColumn(new ZonedDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getDateCreated))

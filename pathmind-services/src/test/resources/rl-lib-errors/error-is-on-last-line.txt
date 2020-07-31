@@ -1,0 +1,31 @@
+Traceback (most recent call last):
+  File "/app/conda/lib/python3.7/site-packages/ray/tune/trial_runner.py", line 515, in _process_trial
+    result = self.trial_executor.fetch_result(trial)
+  File "/app/conda/lib/python3.7/site-packages/ray/tune/ray_trial_executor.py", line 351, in fetch_result
+    result = ray.get(trial_future[0])
+  File "/app/conda/lib/python3.7/site-packages/ray/worker.py", line 2121, in get
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(RuntimeError): [36mray_worker[39m (pid=1312, host=id5274-57669b7b5-rkjrm)
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/agents/trainer_template.py", line 90, in __init__
+    Trainer.__init__(self, config, env, logger_creator)
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/agents/trainer.py", line 372, in __init__
+    Trainable.__init__(self, config, logger_creator)
+  File "/app/conda/lib/python3.7/site-packages/ray/tune/trainable.py", line 96, in __init__
+    self._setup(copy.deepcopy(self.config))
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/agents/trainer.py", line 492, in _setup
+    self._init(self.config, self.env_creator)
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/agents/trainer_template.py", line 109, in _init
+    self.config["num_workers"])
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/agents/trainer.py", line 537, in _make_workers
+    logdir=self.logdir)
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/evaluation/worker_set.py", line 64, in __init__
+    RolloutWorker, env_creator, policy, 0, self._local_config)
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/evaluation/worker_set.py", line 220, in _make_worker
+    _fake_sampler=config.get("_fake_sampler", False))
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/evaluation/rollout_worker.py", line 271, in __init__
+    self.env = _validate_env(env_creator(env_context))
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/agents/trainer.py", line 836, in <lambda>
+    register_env(name, lambda config: env_object(config))
+  File "rllibtrain.py", line 17, in __init__
+    self.nativeEnv = nativerl.createEnvironment('coffeeshop.PathmindEnvironment')
+RuntimeError: java.lang.ClassNotFoundException: carbon_emissions.PathmindEnvironment

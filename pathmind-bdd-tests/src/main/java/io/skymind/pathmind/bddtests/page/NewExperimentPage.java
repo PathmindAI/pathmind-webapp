@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -75,6 +76,7 @@ public class NewExperimentPage extends PageObject {
         WebElement we = getDriver().findElement(By.xpath("//vaadin-button[text()='Save']"));
         JavascriptExecutor executor = (JavascriptExecutor) getDriver();
         executor.executeScript("arguments[0].click();", we);
+        setImplicitTimeout(5, SECONDS);
         try {
             WebElement closePopUp = getDriver().findElement(By.xpath("//span[text()='Draft successfully saved']/following-sibling::vaadin-button[@theme='icon']"));
             waitFor(ExpectedConditions.visibilityOf(closePopUp));
@@ -84,6 +86,7 @@ public class NewExperimentPage extends PageObject {
         } catch (Exception e) {
             System.out.println("Button not exist");
         }
+        resetImplicitTimeout();
         waitABit(5000);
     }
 
@@ -130,5 +133,9 @@ public class NewExperimentPage extends PageObject {
         WebElement popUp = utils.expandRootElement(contentShadow);
         assertThat(popUp.findElement(By.cssSelector("h3")).getText(), is("Before you leave...."));
         assertThat(popUp.findElement(By.cssSelector("#message")).getText(), is(error));
+    }
+
+    public void clickSideBarExperiment(String experimentName) {
+        getDriver().findElement(By.xpath("//div[@class='experiment-name']/p[text()='"+ experimentName +"']")).click();
     }
 }
