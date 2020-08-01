@@ -43,6 +43,17 @@ def runMigrations(namespace) {
 }
 
 /*
+   Create db backup
+*/
+def backupDb(identifier) {
+    echo "Testing db backup"
+    sh """
+    aws rds create-db-snapshot --db-instance-identifier ${identifier} --db-snapshot-identifier ${identifier}-`date '+%Y%m%d'`-${env.BUILD_NUMBER}
+    timeout 900 bash -c "while ! aws rds describe-db-snapshots --db-snapshot-identifier ${identifier}-`date '+%Y%m%d'`-${env.BUILD_NUMBER}  | jq -r '.[][].Status' | grep available; do sleep 5; done"
+    """
+}
+
+/*
     This is the main pipeline section with the stages of the CI/CD
  */
 pipeline {
@@ -195,7 +206,7 @@ pipeline {
                         sh "aws s3 rm s3://${DOCKER_TAG}-training-dynamic-files.pathmind.com/id6 --recursive"
                         sh "aws s3 rm s3://${DOCKER_TAG}-training-dynamic-files.pathmind.com/id7 --recursive"
                         echo "Running tests"
-                        TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true  -Denvironments.default.base.url=https://${DOCKER_TAG}.devpathmind.com/ -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n dev |  base64 --decode` -f pom.xml -P bdd-tests")
+                        TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true  -Denvironments.default.base.url=https://${DOCKER_TAG}.devpathmind.com/ -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dfailsafe.rerunFailingTestsCount=3 -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n dev |  base64 --decode` -f pom.xml -P bdd-tests")
                         script {
                             if (TEST_STATUS != 0) {
                                 echo "Some bdd tests failed ${TEST_STATUS}"
@@ -252,6 +263,7 @@ pipeline {
                     sh "cd ${WORKSPACE} && mvn clean install"
                 }
                 runMigrations("default")
+                backupDb("pathmind-prod")
                 script {
                     echo "Updating helm chart"
                     sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
