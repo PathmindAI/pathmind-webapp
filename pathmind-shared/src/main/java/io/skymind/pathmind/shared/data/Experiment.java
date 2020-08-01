@@ -16,7 +16,8 @@ public class Experiment extends ArchivableData
 	private String rewardFunction;
 	private LocalDateTime dateCreated;
 	private LocalDateTime lastActivityDate;
-	private String userNotes;
+    private String userNotes;
+    private boolean isFavorite;
 
 	// Helper GUI attributes not stored in the database
 	private Project project;

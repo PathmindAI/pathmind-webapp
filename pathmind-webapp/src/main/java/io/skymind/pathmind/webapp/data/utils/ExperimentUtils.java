@@ -35,12 +35,16 @@ public class ExperimentUtils
 		newExperiment.setDateCreated(LocalDateTime.now());
 		newExperiment.setModelId(modelId);
 		newExperiment.setName(name);
-		newExperiment.setRewardFunction(rewardFunction);
+        newExperiment.setRewardFunction(rewardFunction);
 		return newExperiment;
 	}
 
 	public static boolean isDraftRunType(Experiment experiment) {
-		return experiment.getRuns() == null || experiment.getRuns().isEmpty();
+		return experiment.isDraft();
+	}
+
+	public static boolean isFavorite(Experiment experiment) {
+		return experiment.isFavorite();
 	}
 
 	public static String getProjectName(Experiment experiment) {
@@ -162,6 +166,11 @@ public class ExperimentUtils
     public static void archiveExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean isArchive) {
 	    experimentDAO.archive(experiment.getId(), isArchive);
 	    EventBus.post(new ExperimentUpdatedBusEvent(experiment));
+    }
+
+    public static void favoriteExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean newIsFavorite) {
+        experimentDAO.markAsFavorite(experiment.getId(), newIsFavorite);
+        EventBus.post(new ExperimentUpdatedBusEvent(experiment));
     }
 
     public static boolean isNewExperimentForModel(Experiment experiment, List<Experiment> experiments, long modelId) {
