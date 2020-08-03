@@ -1,7 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.TAG_LABEL;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
@@ -24,7 +22,7 @@ import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
@@ -42,11 +40,13 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 	private Consumer<Experiment> selectExperimentConsumer;
 	private Consumer<Experiment> archiveExperimentHandler;
     private ExperimentsNavBarItem currentExperimentNavItem;
+    private ExperimentDAO experimentDAO;
 
 	public ExperimentsNavbar(ExperimentDAO experimentDAO, long modelId, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler)
 	{
         this.selectExperimentConsumer = selectExperimentConsumer;
         this.archiveExperimentHandler = archiveExperimentHandler;
+        this.experimentDAO = experimentDAO;
 		rowsWrapper = new VerticalLayout();
 		rowsWrapper.addClassName("experiments-navbar-items");
 		rowsWrapper.setPadding(false);
@@ -65,7 +65,7 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 		
 		experiments.stream()
 			.forEach(experiment -> {
-				ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(ui, experiment, selectExperimentConsumer, archiveExperimentHandler);
+				ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(experimentDAO, ui, experiment, selectExperimentConsumer, archiveExperimentHandler);
 				experimentsNavBarItems.add(navBarItem);
 				if(experiment.equals(currentExperiment)) {
 					navBarItem.setAsCurrent();
@@ -126,9 +126,10 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 		private Experiment experiment;
 		private Component statusComponent;
 
-		ExperimentsNavBarItem(UI ui, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler) {
+		ExperimentsNavBarItem(ExperimentDAO experimentDAO, UI ui, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler) {
 			this.experiment = experiment;
 			Boolean isDraft = ExperimentUtils.isDraftRunType(experiment);
+			Boolean isFavorite = ExperimentUtils.isFavorite(experiment);
 			RunStatus overallExperimentStatus = ExperimentUtils.getTrainingStatus(experiment);
 			statusComponent = isDraft ? new Icon(VaadinIcon.PENCIL) : createStatusIcon(overallExperimentStatus);
 			add(statusComponent);
@@ -140,7 +141,10 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
             archiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
             archiveExperimentButton.addClassName("action-button");
 			VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
-				add(createExperimentText(experiment.getName(), DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId), isDraft));
+				add(createExperimentText(
+                    experiment.getName(),
+                    DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId),
+                    new FavoriteStar(isFavorite, newIsFavorite -> ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite))));
                 add(archiveExperimentButton);
 			});
 		}
@@ -160,12 +164,9 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 			return new Icon(VaadinIcon.EXCLAMATION_CIRCLE_O);
 		}
 
-		private Div createExperimentText(String experimentNumber, String experimentDateCreated, Boolean isDraft) {
+		private Div createExperimentText(String experimentNumber, String experimentDateCreated, FavoriteStar favoriteStar) {
 			Paragraph experimentNameLine = new Paragraph("Experiment #" + experimentNumber);
-			if (isDraft) {
-				experimentNameLine.add(LabelFactory.createLabel("Draft", TAG_LABEL));
-			}
-			
+            experimentNameLine.add(favoriteStar);
 			Div experimentNameWrapper = new Div();
 			experimentNameWrapper.add(experimentNameLine);
 			experimentNameWrapper.add(new Paragraph("Created " + experimentDateCreated));

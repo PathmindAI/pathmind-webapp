@@ -36,10 +36,14 @@ public class PolicyDAO {
         List<Policy> policies = PolicyRepository.getPoliciesForExperiment(ctx, experimentId);
         Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(ctx, DataUtils.convertToIds(policies));
         policies.stream().forEach(policy -> policy.setScores(rewardScores.get(policy.getId())));
-        Map<Long, List<Metrics>> metricsMap = MetricsRepository.getMetricsForPolicies(ctx, DataUtils.convertToIds(policies));
+        Map<Long, List<Metrics>> metricsMap = getMetricsForPolicies(DataUtils.convertToIds(policies));
         policies.stream().forEach(policy -> policy.setMetrics(metricsMap.get(policy.getId())));
 
         return policies;
+    }
+
+    public Map<Long, List<Metrics>> getMetricsForPolicies(List<Long> policyIds) {
+        return MetricsRepository.getMetricsForPolicies(ctx, policyIds);
     }
 
     public Map<Long, Integer> getRewardScoresCountForExperiments(List<Long> experimentIds) {

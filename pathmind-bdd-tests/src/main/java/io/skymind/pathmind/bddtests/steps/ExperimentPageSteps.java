@@ -93,4 +93,14 @@ public class ExperimentPageSteps {
     public void checkThatExperimentStatusIconIs(String experiment, String icon) {
         experimentPage.checkThatExperimentStatusIconIs(experiment, icon);
     }
+
+    @Step
+    public void clickExperimentPageStarButton(String experimentName) {
+        experimentPage.clickExperimentPageStarButton(experimentName);
+    }
+
+    @Step
+    public void checkExperimentPageSideBarIsFavorite(String experimentName, Boolean favoriteStatus) {
+        experimentPage.checkExperimentPageSideBarIsFavorite(experimentName, favoriteStatus);
+    }
 }

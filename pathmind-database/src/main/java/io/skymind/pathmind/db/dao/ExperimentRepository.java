@@ -211,7 +211,7 @@ class ExperimentRepository
 		final Field<LocalDateTime> itemLastActivityDate = DSL.ifnull(DSL.field(EXPERIMENT.LAST_ACTIVITY_DATE),
 				DSL.greatest(MODEL.LAST_ACTIVITY_DATE,PROJECT.LAST_ACTIVITY_DATE));
 
-		final Result<?> result = ctx.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.USER_NOTES,
+		final Result<?> result = ctx.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.USER_NOTES, EXPERIMENT.IS_FAVORITE,
 				MODEL.ID, MODEL.NAME, MODEL.DRAFT, MODEL.PACKAGE_NAME,
 				PROJECT.ID, PROJECT.NAME,
 				latestRun.asterisk(),
@@ -306,4 +306,12 @@ class ExperimentRepository
 				.where(Tables.EXPERIMENT.ID.eq(experimentId))
 				.execute();
 	}
+
+    protected static void markAsFavorite(DSLContext ctx, long experimentId, boolean isFavorite) {
+        ctx.update(Tables.EXPERIMENT)
+                .set(Tables.EXPERIMENT.IS_FAVORITE, isFavorite)
+                .where(Tables.EXPERIMENT.ID.eq(experimentId))
+                .execute();
+    }
+
 }

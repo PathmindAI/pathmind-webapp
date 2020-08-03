@@ -1595,4 +1595,15 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20200731-01" author="alexander.makarov@toptal.com">
+        <addColumn tableName="EXPERIMENT">
+            <column name="IS_FAVORITE" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="EXPERIMENT" columnName="IS_FAVORITE" />
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
