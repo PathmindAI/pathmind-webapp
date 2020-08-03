@@ -2,7 +2,6 @@ package io.skymind.pathmind.webapp.ui.views.search;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Comparator;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +68,9 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
 
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
-        numberOfResultsText = "Showing " + dataProvider.size(new Query<>()) + " results";
+        int resultsCount = dataProvider.size(new Query<>());
+        numberOfResultsText = "Showing " + resultsCount;
+        numberOfResultsText += resultsCount == 1 ? " result" : " results";
         numberOfResults.setText(numberOfResultsText);
         segmentIntegrator.performedSearch();
     }
