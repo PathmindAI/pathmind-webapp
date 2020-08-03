@@ -84,7 +84,8 @@ public class UpdaterService {
         ProviderJobStatus providerJobStatus = provider.status(jobHandle);
         ExperimentState experimentState = providerJobStatus.getExperimentState();
 
-        final List<Policy> policies = getPoliciesFromProgressProvider(run.getId(), jobHandle, experimentState);
+        final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(),
+                jobHandle, experimentState);
 
         setStoppedAtForFinishedPolicies(policies, experimentState);
         setEventualInformationAboutWhyTheRunEnded(run, providerJobStatus);
@@ -101,11 +102,24 @@ public class UpdaterService {
 
     private void updateInfoInDB(Run run, ProviderJobStatus providerJobStatus, List<Policy> policies, List<PolicyUpdateInfo> policiesUpdateInfo) {
         
-        List<Policy> policiesToRaiseUpdateEvent =  runDAO.updateRun(run, providerJobStatus, policies, policiesUpdateInfo, getValidExternalIdsIfCompleted(providerJobStatus));
+        List<Policy> policiesToRaiseUpdateEvent = runDAO.updateRun(run, providerJobStatus, policies, policiesUpdateInfo, getValidExternalIdsIfCompleted(providerJobStatus));
+        ensurePolicyDataIfRunIsCompleted(run, providerJobStatus);
+        
         // The EventBus updates have to be done AFTER the transaction is completed and NOT during in case the transaction fails.
         fireEventUpdates(run, policies);
         policiesToRaiseUpdateEvent
                 .forEach(policy -> fireEventUpdates(null, Collections.singletonList(policy)));
+    }
+
+    // When the Run is completed, update policy data one more time just to ensure all data is saved to DB
+    // See https://github.com/SkymindIO/pathmind-webapp/issues/1866 for details.
+    private void ensurePolicyDataIfRunIsCompleted(Run run, ProviderJobStatus providerJobStatus) {
+        if (run.getStatusEnum() == RunStatus.Completed) {
+            List<Policy> policies = getPoliciesFromProgressProvider(Collections.emptyMap(), run.getId(),
+                    run.getJobId(), providerJobStatus.getExperimentState());
+            setStoppedAtForFinishedPolicies(policies, providerJobStatus.getExperimentState());
+            runDAO.updatePolicyData(run, policies);
+        }
     }
 
     private List<String> getValidExternalIdsIfCompleted(ProviderJobStatus providerJobStatus) {
@@ -138,15 +152,14 @@ public class UpdaterService {
                 .forEach(policy -> policy.setStoppedAt(terminatedTrials.get(policy.getExternalId())));
     }
 
-    private List<Policy> getPoliciesFromProgressProvider(Long runId, String jobHandle, ExperimentState experimentState) {
+    private List<Policy> getPoliciesFromProgressProvider(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String jobHandle, ExperimentState experimentState) {
         if (experimentState == null) {
             return Collections.emptyList();
         }
 
-        // OnurI: Removed the filtering of stopped policies, RunDao.updatePolicies already compares rewardScores and metrics with DB,
-        // and insert only the ones doesn't exist in DB. See more at: https://github.com/SkymindIO/pathmind-webapp/issues/1866
         List<String> validExternalIds = experimentState.getCheckpoints().stream()
                 .map(CheckPoint::getId)
+                .filter(id -> !stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).contains(id))
                 .collect(Collectors.toList());
 
         final Map<String, String> rawProgress = provider.progress(jobHandle, validExternalIds);
