@@ -26,7 +26,6 @@ public class ExperimentsNavbar extends VerticalLayout
 	private Consumer<Experiment> archiveExperimentHandler;
     private ExperimentsNavBarItem currentExperimentNavItem;
 
-    // REFACTOR -> Looks like there was a bug where modelID was never updated...
     private long modelId;
 
     public ExperimentsNavbar(ExperimentDAO experimentDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler)
