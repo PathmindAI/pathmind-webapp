@@ -258,7 +258,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     SparkLine sparkLine = new SparkLine();
                     sparkLine.setSparkLine(sparklinesData.get(idx), idx);
                     sparklinesWrapper.add(sparkLine);
-                    uncertaintyWrapper.add(new Span(PathmindNumberUtils.formatNumber(uncertainty.get(idx))));
+                    if (uncertainty != null && !uncertainty.isEmpty()) {
+                        uncertaintyWrapper.add(new Span(PathmindNumberUtils.formatNumber(uncertainty.get(idx))));
+                    }
                 });
     }
 
@@ -293,11 +295,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
 
         List<MetricsRaw> metricsRawList = policy == null ? null : policy.getMetricsRaws();
-        log.info("kepricondebug policy : " + policy.getExternalId());
         if (metricsRawList != null && metricsRawList.size() > 0) {
+            log.info("kepricondebug policy : " + policy.getExternalId());
             int lastN = 10;
 
-            // index, metrcis raw data list
+            // index, metrics raw data list
             Map<Integer, List<Double>> uncertaintyMap = new HashMap<>();
             metricsRawList.subList(Math.max(metricsRawList.size() - lastN, 0), metricsList.size()).stream()
                 .forEach(metricsRaw -> {
@@ -305,7 +307,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                         for (int episode = 0; episode < episodeRawData.size(); episode++) {
                             List<MetricsRawThisEpisode> indexRaw = episodeRawData.get(episode);
                             for (int idx = 0; idx < indexRaw.size(); idx++) {
-                                log.info("iteration : " + metricsRaw.getIteration() + ", episode : " + episode + ", index : " + indexRaw.get(idx).getIndex() + ", reward var :" + indexRaw.get(idx).getValue());
+//                                log.info("iteration : " + metricsRaw.getIteration() + ", episode : " + episode + ", index : " + indexRaw.get(idx).getIndex() + ", reward var :" + indexRaw.get(idx).getValue());
                                 List<Double> data = uncertaintyMap.containsKey(idx) ? uncertaintyMap.get(idx) : new ArrayList<>();
                                 data.add(indexRaw.get(idx).getValue());
                                 uncertaintyMap.put(idx, data);
