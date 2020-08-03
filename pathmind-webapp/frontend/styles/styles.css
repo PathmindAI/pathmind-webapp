@@ -107,6 +107,19 @@ hr {
     background-color: var(--pm-gray-color-darker);
 }
 
+/* Customized Scrollbar for WebKit Browsers */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+background-color: var(--pm-app-bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+background-color: var(--pm-gray-color-light);
+}
+
 .row-2-of-3 {
     width: calc(100% * 2 / 3) !important;
 }
@@ -242,6 +255,7 @@ hr {
 .default-view {
     background: var(--pm-app-bg-color);
     height: 100%;
+    border-top: 1px solid var(--pm-gray-color-lightest);
 }
 
 .default-view.project-view,
@@ -269,14 +283,6 @@ hr {
     margin: 0 0 0 var(--lumo-space-xxl);
 }
 
-.projects-view {
-    padding: 0 var(--lumo-space-m) var(--lumo-space-m);
-}
-
-.projects-view .view-section {
-    margin-top: var(--lumo-space-m);
-}
-
 .projects-view .project-name-column {
     align-items: center;
 }
@@ -301,7 +307,13 @@ hr {
 .model-view .page-content {
     box-sizing: border-box;
     flex: 1 1 auto;
-    padding: var(--lumo-space-m);
+}
+
+.projects-view .view-section,
+.project-view .view-section,
+.model-view .view-section {
+    padding: var(--lumo-space-m) var(--lumo-space-l);
+    border-radius: 0;
 }
 
 .project-view .view-section,
@@ -310,6 +322,12 @@ hr {
     min-width: unset;
     line-height: 1.6em;
     overflow: auto;
+}
+
+.projects-view .section-title-label,
+.project-view .section-title-label,
+.model-view .section-title-label {
+    line-height: 1;
 }
 
 .search-results-view {
@@ -496,7 +514,6 @@ account-view {
     color: var(--lumo-secondary-text-color);
     background-color: white;
     padding: 0 var(--lumo-space-m);
-    border-top: 1px solid var(--pm-gray-color-lightest);
     border-bottom: 1px solid var(--pm-gray-color-lightest);
 }
 

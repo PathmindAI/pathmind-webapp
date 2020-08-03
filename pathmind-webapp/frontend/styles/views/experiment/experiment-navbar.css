@@ -6,7 +6,8 @@
 }
 
 .experiments-navbar > vaadin-button {
-    margin: var(--lumo-space-s);
+    border-radius: 0; /* TODO -> add a CSS class to the vaadin button after navbar refactoring */
+    margin: 0;
 }
 
 .experiments-navbar-items {
