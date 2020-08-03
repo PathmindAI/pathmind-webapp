@@ -3,7 +3,7 @@ html {
     --pm-primary-color: #4f97aa;
     --pm-text-color: #1a2949;
     --pm-secondary-text-color: #888888;
-    --pm-app-bg-color: #f0f1f6;
+    --pm-app-bg-color: #f6f8fa;
     --pm-highlight-light: rgba(240, 241, 246, 0.25);
     --pm-highlight-medium: rgba(240, 241, 246, 0.5);
     --pm-highlight-strong: rgba(240, 241, 246, 0.5);
@@ -496,7 +496,8 @@ account-view {
     color: var(--lumo-secondary-text-color);
     background-color: white;
     padding: 0 var(--lumo-space-m);
-    margin-top: 1px;
+    border-top: 1px solid var(--pm-gray-color-lightest);
+    border-bottom: 1px solid var(--pm-gray-color-lightest);
 }
 
 .projects-view .page-title {
