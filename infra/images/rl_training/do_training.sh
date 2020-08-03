@@ -88,9 +88,6 @@ where id= (select project_id from model
 where id= (select model_id from experiment where id=(select experiment_id from run where id=${ID}))))
 EOF`
 
-#Monitor spot instance
-bash check_spot.sh "${S3PATH}" "${ENVIRONMENT}" "${EMAIL}" "${s3_url_link}" "${s3_url}" &
-
 #Get the instance type and cost
 instanceid=`curl http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId'`
 instance_type=`aws ec2 describe-spot-instance-requests | jq -r ".SpotInstanceRequests | .[] | select (.InstanceId ==\"${instanceid}\").LaunchSpecification.InstanceType"`
@@ -102,10 +99,6 @@ output_files=`ls  /tmp/PPO/experiment_state*json | wc -l`
 if [ "${output_files}" -ge 1 ]
 then
 	set -e
-	description="Training is resumed"
-	curl -X POST -H 'Content-type: application/json' \
-		--data "{'text':':heavy_plus_sign:Resuming Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
-		https://hooks.slack.com/services/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
 	echo "Resuming Training"
 	export RESUME=true
 	rm -rf /app/work/PPO/*
