@@ -68,4 +68,9 @@ public class NewExperimentSteps {
     public void checkThatBeforeYouLeavePopUpIsShownWithError(String error) {
         newExperimentPage.checkThatBeforeYouLeavePopUpIsShownWithError(error);
     }
+
+    @Step
+    public void clickSideBarExperiment(String experimentName) {
+        newExperimentPage.clickSideBarExperiment(experimentName);
+    }
 }

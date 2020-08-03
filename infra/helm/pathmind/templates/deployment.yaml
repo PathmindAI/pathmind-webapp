@@ -72,6 +72,10 @@ spec:
               value: "{{ .Values.env.ENVIRONMENT }}"
             - name: AWS_DEFAULT_REGION
               value: "us-east-1"
+            - name: NEW_RUN_DAILY_LIMIT
+              value: "{{ .Values.env.NEW_RUN_DAILY_LIMIT }}"
+            - name: NEW_RUN_MONTHLY_LIMIT
+              value: "{{ .Values.env.NEW_RUN_MONTHLY_LIMIT }}"
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:

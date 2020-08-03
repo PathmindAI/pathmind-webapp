@@ -48,6 +48,12 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 		setClassName("with-container-border");
 	}
 
+    /**
+     * Create Reward Variable Table Rows.
+     *
+     * @param numOfVariables
+     *            the number of reward variables, not <code>null</code>
+     */
 	public void setVariableSize(int numOfVariables) {
 		container.removeAll();
 		rewardVariableNameFields.clear();

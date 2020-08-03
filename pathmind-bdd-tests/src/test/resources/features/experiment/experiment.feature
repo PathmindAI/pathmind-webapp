@@ -80,7 +80,7 @@ Feature: Experiment page
     When Duplicate current tab
     When Click in 'New Experiment' button
     When Open tab 0
-    Then Check that 'Experiment #2 Draft' exist on the experiment page
+    Then Check that 'Experiment #2' exist on the experiment page
     When Click in 'New Experiment' button
     Then Click project start run button
     When Open tab 1
@@ -132,13 +132,13 @@ Feature: Experiment page
     When Click side nav archive button for 'Experiment #2'
     When In confirmation dialog click in 'Archive' button
     When Open tab 0
-    Then Check that 'Experiment #2 Draft' NOT exist on the experiment page
+    Then Check that 'Experiment #2' NOT exist on the experiment page
     When Click model breadcrumb btn
     When Open projects/model/experiment archived tab
     When Click experiment unarchive button
     When In confirmation dialog click in 'Unarchive' button
     When Open tab 1
-    Then Check that 'Experiment #2 Draft' exist on the experiment page
+    Then Check that 'Experiment #2' exist on the experiment page
 
   Scenario: Check copy reward function button 1 line reward
     Given Login to the pathmind
