@@ -49,6 +49,10 @@ public class PolicyDAO {
         return MetricsRepository.getMetricsForPolicies(ctx, policyIds);
     }
 
+    public Map<Long, List<MetricsRaw>> getMetricsRawForPolicies(List<Long> policyIds) {
+        return MetricsRawRepository.getMetricsRawForPolicies(ctx, policyIds);
+    }
+
     public Map<Long, Integer> getRewardScoresCountForExperiments(List<Long> experimentIds) {
         return RewardScoreRepository.getRewardScoresCountForExperiments(ctx, experimentIds);
     }

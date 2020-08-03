@@ -198,6 +198,16 @@ public class RunDAO {
         return MetricsRepository.getMetricsForPolicy(ctx, policy.getId());
     }
 
+    public List<MetricsRaw> getMetricsRaw(long runId, String policyExtId) {
+        Policy policy = PolicyRepository.getPolicy(ctx, runId, policyExtId);
+
+        if (policy == null) {
+            return null;
+        }
+
+        return MetricsRawRepository.getMetricsRawForPolicy(ctx, policy.getId());
+    }
+
     private void loadPersistedPolicies(DSLContext transactionCtx, List<Policy> policies, Run run) {
     	List<String> externalIds = policies.stream().map(Policy::getExternalId).collect(Collectors.toList());
 		List<Policy> persistedPolicies = PolicyRepository.getPoliciesForRunAndExternalIds(transactionCtx, run.getId(), externalIds);

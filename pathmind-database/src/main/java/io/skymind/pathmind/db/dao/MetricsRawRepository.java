@@ -8,10 +8,7 @@ import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.skymind.pathmind.db.jooq.Tables.METRICS;
 import static io.skymind.pathmind.db.jooq.Tables.METRICS_RAW;
@@ -36,6 +33,10 @@ public class MetricsRawRepository {
             .where(METRICS_RAW.POLICY_ID.in(policyIds))
             .groupBy(METRICS_RAW.POLICY_ID)
             .fetchMap(METRICS_RAW.POLICY_ID, max(METRICS_RAW.ITERATION));
+    }
+
+    protected static List<MetricsRaw> getMetricsRawForPolicy(DSLContext ctx, long policyId) {
+        return getMetricsRawForPolicies(ctx, Collections.singletonList(policyId)).getOrDefault(policyId, Collections.emptyList());
     }
 
     /**

@@ -122,8 +122,6 @@ public class ProgressInterpreter {
         final Policy policy = interpretKey(entry.getKey());
         interpretScores(entry, previousScores, policy);
         interpretMetrics(entry, previousMetrics, policy, numReward);
-        //todo remobe the code below, this is for debugging
-        interpretMetricsRaw(entry, policy, numReward);
         return policy;
     }
 
@@ -199,9 +197,9 @@ public class ProgressInterpreter {
         }
     }
 
-    private static void interpretMetricsRaw(Map.Entry<String, String> entry, Policy policy, int numReward) {
-        List<MetricsRaw> metricsRaws = new ArrayList<>();
-        final int lastIteration = 0;
+    public static void interpretMetricsRaw(Map.Entry<String, String> entry, Policy policy, List<MetricsRaw> previousMetricsRaw, int numReward) {
+        List<MetricsRaw> metricsRaws = previousMetricsRaw == null || previousMetricsRaw.size() == 0 ? new ArrayList<>() : previousMetricsRaw;
+        final int lastIteration = metricsRaws.size() == 0 ? -1 : metricsRaws.get(metricsRaws.size() - 1).getIteration();;
 
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
