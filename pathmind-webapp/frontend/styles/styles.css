@@ -512,9 +512,32 @@ account-view {
 .page-title {
     line-height: 2;
     color: var(--lumo-secondary-text-color);
+    font-size: var(--lumo-font-size-s);
     background-color: white;
     padding: 0 var(--lumo-space-m);
     border-bottom: 1px solid var(--pm-gray-color-lightest);
+    overflow: hidden;
+}
+
+.page-title .breadcrumb:hover {
+    text-decoration: none;
+}
+
+.page-title .breadcrumb + span {
+    position: relative;
+    color: white;
+}
+
+.page-title .breadcrumb + span:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    width: var(--lumo-space-m);
+    height: var(--lumo-space-m);
+    top: 50%;
+    right: 50%;
+    border-top: 1px solid var(--pm-gray-color-light);
+    border-right: 1px solid var(--pm-gray-color-light);
+    transform: rotateZ(45deg) skew(10deg, 10deg) translate(-20%, -40%);
 }
 
 .projects-view .page-title {
