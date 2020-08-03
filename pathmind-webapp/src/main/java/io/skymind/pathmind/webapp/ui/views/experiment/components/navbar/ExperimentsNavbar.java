@@ -25,11 +25,13 @@ public class ExperimentsNavbar extends VerticalLayout
 	private Consumer<Experiment> selectExperimentConsumer;
 	private Consumer<Experiment> archiveExperimentHandler;
     private ExperimentsNavBarItem currentExperimentNavItem;
+    private ExperimentDAO experimentDAO;
 
     private long modelId;
 
     public ExperimentsNavbar(ExperimentDAO experimentDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler)
 	{
+	    this.experimentDAO = experimentDAO;
 	    this.modelId = experiment.getModelId();
         this.selectExperimentConsumer = selectExperimentConsumer;
         this.archiveExperimentHandler = archiveExperimentHandler;
@@ -59,7 +61,7 @@ public class ExperimentsNavbar extends VerticalLayout
 		
 		experiments.stream()
 			.forEach(experiment -> {
-				ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(this, getUISupplier, experiment, selectExperimentConsumer, archiveExperimentHandler);
+				ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(this, experimentDAO, getUISupplier, experiment, selectExperimentConsumer, archiveExperimentHandler);
 				experimentsNavBarItems.add(navBarItem);
 				if(experiment.equals(currentExperiment)) {
 					navBarItem.setAsCurrent();

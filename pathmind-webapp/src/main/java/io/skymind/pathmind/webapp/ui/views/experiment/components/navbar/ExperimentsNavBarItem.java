@@ -10,20 +10,19 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarItemExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.TAG_LABEL;
 
 public class ExperimentsNavBarItem extends HorizontalLayout {
 
@@ -35,10 +34,14 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
     private Experiment experiment;
     private Component statusComponent;
 
-    ExperimentsNavBarItem(ExperimentsNavbar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler) {
+    private ExperimentDAO experimentDAO;
+
+    ExperimentsNavBarItem(ExperimentsNavbar experimentsNavbar, ExperimentDAO experimentDAO, Supplier<Optional<UI>> getUISupplier, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler) {
         this.experimentsNavbar = experimentsNavbar;
+        this.experimentDAO = experimentDAO;
         this.experiment = experiment;
         Boolean isDraft = ExperimentUtils.isDraftRunType(experiment);
+        Boolean isFavorite = ExperimentUtils.isFavorite(experiment);
         RunStatus overallExperimentStatus = ExperimentUtils.getTrainingStatus(experiment);
         statusComponent = isDraft ? new Icon(VaadinIcon.PENCIL) : createStatusIcon(overallExperimentStatus);
         add(statusComponent);
@@ -50,7 +53,10 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
         archiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         archiveExperimentButton.addClassName("action-button");
         VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier.get().get(), timeZoneId -> {
-            add(createExperimentText(experiment.getName(), DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId), isDraft));
+            add(createExperimentText(
+                    experiment.getName(),
+                    DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId),
+                    new FavoriteStar(isFavorite, newIsFavorite -> ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite))));
             add(archiveExperimentButton);
         });
 
@@ -81,12 +87,10 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
         return new Icon(VaadinIcon.EXCLAMATION_CIRCLE_O);
     }
 
-    private Div createExperimentText(String experimentNumber, String experimentDateCreated, Boolean isDraft) {
+    private Div createExperimentText(String experimentNumber, String experimentDateCreated, FavoriteStar favoriteStar) {
         Paragraph experimentNameLine = new Paragraph("Experiment #" + experimentNumber);
-        if (isDraft) {
-            experimentNameLine.add(LabelFactory.createLabel("Draft", TAG_LABEL));
-        }
 
+        experimentNameLine.add(favoriteStar);
         Div experimentNameWrapper = new Div();
         experimentNameWrapper.add(experimentNameLine);
         experimentNameWrapper.add(new Paragraph("Created " + experimentDateCreated));

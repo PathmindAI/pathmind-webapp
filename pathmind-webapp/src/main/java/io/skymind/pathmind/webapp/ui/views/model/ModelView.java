@@ -140,11 +140,11 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
                 true,
                 experimentGrid,
                 this::getExperiments,
-                (experimentId, isArchivable) -> ExperimentUtils.archiveExperiment(experimentDAO, experimentId, isArchivable));
+                (experiment, isArchivable) -> ExperimentUtils.archiveExperiment(experimentDAO, experiment, isArchivable));
     }
 
     private void setupExperimentListPanel() {
-        experimentGrid = new ExperimentGrid();
+        experimentGrid = new ExperimentGrid(experimentDAO);
         experimentGrid.addItemClickListener(event -> handleExperimentClick(event.getItem()));
     }
 

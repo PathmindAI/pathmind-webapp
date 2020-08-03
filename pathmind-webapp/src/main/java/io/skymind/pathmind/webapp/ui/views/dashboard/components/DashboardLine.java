@@ -17,9 +17,12 @@ import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.router.RouterLink;
 
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.DashboardItem;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
@@ -31,7 +34,8 @@ import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 public class DashboardLine extends HorizontalLayout {
 
 	private Span timestamp;
-	private Breadcrumbs breadcrumb;
+    private Breadcrumbs breadcrumb;
+    private FavoriteStar favoriteStar;
 	private HorizontalLayout stages;
 	private Button menuButton;
 	private ContextMenu contextMenu;
@@ -42,10 +46,15 @@ public class DashboardLine extends HorizontalLayout {
 	private static String INPROGRESS_INDICATOR = "...";
 	private String experimentNotes = "—";
 	
-	public DashboardLine(DashboardItem item, SerializableConsumer<DashboardItem> clickHandler, SerializableConsumer<DashboardItem> archiveAction) {
-		this.dashboardItem = item;
+	public DashboardLine(ExperimentDAO experimentDAO, DashboardItem item, SerializableConsumer<DashboardItem> clickHandler, SerializableConsumer<DashboardItem> archiveAction) {
+        this.dashboardItem = item;
+        Experiment experiment = item.getExperiment();
 		setClassName("dashboard-line");
-		breadcrumb = new Breadcrumbs(item.getProject(), item.getModel(), item.getExperiment(), false);
+        breadcrumb = new Breadcrumbs(item.getProject(), item.getModel(), experiment, false);
+        if (experiment != null) {
+            favoriteStar = new FavoriteStar(ExperimentUtils.isFavorite(experiment), newIsFavorite ->
+                    ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite));
+        }
 		timestamp = new Span();
 		
 		Span projectTitle = new Span(item.getProject().getName());
@@ -59,7 +68,12 @@ public class DashboardLine extends HorizontalLayout {
 		
 		currentStage = DashboardUtils.calculateStage(item);
 		stages = createStages();
-		VerticalLayout wrapper = new VerticalLayout(projectTitle, timestamp, breadcrumb, stages);
+        HorizontalLayout itemBreadcrumbsWrapper = new HorizontalLayout(breadcrumb);
+        itemBreadcrumbsWrapper.setSpacing(false);
+        if (experiment != null) {
+            itemBreadcrumbsWrapper.add(favoriteStar);
+        }
+        VerticalLayout wrapper = new VerticalLayout(projectTitle, timestamp, itemBreadcrumbsWrapper, stages);
 		wrapper.setPadding(false);
 		wrapper.addClassName("dashboard-item-main");
 		Span navigateIcon = new Span(VaadinIcon.CHEVRON_RIGHT.create());
