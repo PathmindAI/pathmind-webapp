@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -31,5 +32,11 @@ public class Experiment extends ArchivableData
 
     public boolean isDraft() {
         return getRuns() == null || getRuns().isEmpty();
+    }
+
+    public void addRun(Run run) {
+	    if(runs == null)
+	        runs = new ArrayList<>();
+	    runs.add(run);
     }
 }

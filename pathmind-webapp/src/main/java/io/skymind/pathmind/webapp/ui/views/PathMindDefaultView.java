@@ -127,4 +127,8 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 	public String getPageTitle() {
 		return PathmindUtils.getPageTitle();
 	}
+
+    protected boolean isViewAttached() {
+        return getUI().isPresent();
+    }
 }

@@ -48,7 +48,7 @@ import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavbar;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavbar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
@@ -169,7 +169,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     protected Component getMainContent() {
         panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
-        experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment), experimentToArchive -> archiveExperiment(experimentToArchive));
+        experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiment, selectedExperiment -> selectExperiment(selectedExperiment), experimentToArchive -> archiveExperiment(experimentToArchive));
         setupExperimentContentPanel();
 
         Span modelNeedToBeUpdatedLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
@@ -405,8 +405,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             updateScreenComponents();
             notesField.setNotesText(experiment.getUserNotes());
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-            experimentsNavbar.setCurrentExperiment(selectedExperiment);
-            
+
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
             } else {
@@ -562,7 +561,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         restartTraining.setVisible(false);
     }
 
-    public void updateNavBarExperiments() {
+    public void updateExperimentComponents() {
         // REFACTOR -> We will want to adjust this code as it's performing a database call on almost all eventbus events which is both
         // a potential performance issue as well as cause potential multi-threading issues (racing conditions).
         experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
@@ -580,14 +579,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             else {
                 PushUtils.push(getUI(), ui ->  {
                     selectExperiment(experiment);
-                    experimentsNavbar.setExperiments(ui, experiments, experiment);
                 });
             }
         }
-    }
-
-    private boolean isViewAttached() {
-        return getUI().isPresent();
     }
 
     class ExperimentViewPolicyUpdateSubscriber implements PolicyUpdateSubscriber
@@ -632,7 +626,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         @Override
         public void handleBusEvent(ExperimentCreatedBusEvent event) {
             if (ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, event.getModelId())) {
-                updateNavBarExperiments();
+                updateExperimentComponents();
             }
         }
 
@@ -646,7 +640,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         @Override
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
             if (ExperimentUtils.isSameModel(experiment, event.getModelId())) {
-                updateNavBarExperiments();
+                updateExperimentComponents();
             }
         }
 

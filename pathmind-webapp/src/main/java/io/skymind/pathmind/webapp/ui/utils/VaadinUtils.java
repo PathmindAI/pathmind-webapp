@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.utils;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -36,5 +37,9 @@ public class VaadinUtils
         if (id == null) return Optional.empty();
         return ui.getElement().getChildren()
                 .filter((element) -> id.equals(element.getAttribute("id"))).findFirst();
+    }
+
+    public static Supplier<Optional<UI>> convertUiToOptionalSupplier(UI ui) {
+	    return () -> Optional.<UI>of(ui);
     }
 }
