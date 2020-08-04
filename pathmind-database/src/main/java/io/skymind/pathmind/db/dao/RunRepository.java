@@ -181,14 +181,14 @@ class RunRepository
         // HOTFIX - TODO - remove this after debugging
         // Users are being prevented from running experiments
         return new UserMetrics(0, 0);
-
-        // Must be a customer with no experiments.
-        if(record == null) {
-            return new UserMetrics(0, 0);
-        }
-
-        return new UserMetrics(
-                (Integer)record.getValue("runsToday"),
-                (Integer)record.getValue("runsThisMonth"));
+//
+//        // Must be a customer with no experiments.
+//        if(record == null) {
+//            return new UserMetrics(0, 0);
+//        }
+//
+//        return new UserMetrics(
+//                (Integer)record.getValue("runsToday"),
+//                (Integer)record.getValue("runsThisMonth"));
     }
 }
