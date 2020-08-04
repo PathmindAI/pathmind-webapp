@@ -108,6 +108,7 @@ pipeline {
         HELM_FILE = 'values_dev.yaml'
         HELM_FILE_UPDATER = 'values_dev-updater.yaml'
         DEPLOY_PROD = false
+        BUILD_URL="${env.RUN_DISPLAY_URL}"
     }
     
     parameters {
