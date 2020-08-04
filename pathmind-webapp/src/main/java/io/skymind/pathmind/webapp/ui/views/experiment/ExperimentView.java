@@ -63,6 +63,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -90,7 +91,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private List<Experiment> experiments = new ArrayList<>();
     private List<Double> simulationMetrics = new ArrayList<>();
     private List<double[]> sparklinesData = new ArrayList<>();
-    private List<Double> uncertainty = new ArrayList<>();
+    private List<String> uncertainty = new ArrayList<>();
     private Boolean showSimulationMetrics;
 
     private UserCaps userCaps;
@@ -135,6 +136,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private Breadcrumbs pageBreadcrumbs;
     private Button restartTraining;
+
+    private static DecimalFormat df = new DecimalFormat("0.00");
+
 
     // REFACTOR -> Temporary placeholder until I finish the merging
     private ExperimentViewRunUpdateSubscriber experimentViewRunUpdateSubscriber;
@@ -259,7 +263,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     sparkLine.setSparkLine(sparklinesData.get(idx), idx);
                     sparklinesWrapper.add(sparkLine);
                     if (uncertainty != null && !uncertainty.isEmpty()) {
-                        uncertaintyWrapper.add(new Span(PathmindNumberUtils.formatNumber(uncertainty.get(idx))));
+//                        uncertaintyWrapper.add(new Span(PathmindNumberUtils.formatNumber(uncertainty.get(idx))));
+                        uncertaintyWrapper.add(new Span(uncertainty.get(idx)));
                     }
                 });
     }
@@ -296,18 +301,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         List<MetricsRaw> metricsRawList = policy == null ? null : policy.getMetricsRaws();
         if (metricsRawList != null && metricsRawList.size() > 0) {
-            log.info("kepricondebug policy : " + policy.getExternalId());
-            int lastN = 10;
-
             // index, metrics raw data list
             Map<Integer, List<Double>> uncertaintyMap = new HashMap<>();
-            metricsRawList.subList(Math.max(metricsRawList.size() - lastN, 0), metricsList.size()).stream()
+            metricsRawList.stream()
                 .forEach(metricsRaw -> {
                         List<List<MetricsRawThisEpisode>> episodeRawData = metricsRaw.getEpisodeRaw();
                         for (int episode = 0; episode < episodeRawData.size(); episode++) {
                             List<MetricsRawThisEpisode> indexRaw = episodeRawData.get(episode);
                             for (int idx = 0; idx < indexRaw.size(); idx++) {
-//                                log.info("iteration : " + metricsRaw.getIteration() + ", episode : " + episode + ", index : " + indexRaw.get(idx).getIndex() + ", reward var :" + indexRaw.get(idx).getValue());
                                 List<Double> data = uncertaintyMap.containsKey(idx) ? uncertaintyMap.get(idx) : new ArrayList<>();
                                 data.add(indexRaw.get(idx).getValue());
                                 uncertaintyMap.put(idx, data);
@@ -317,8 +318,18 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     }
                 );
 
-            uncertainty = uncertaintyMap.values().stream().map(list -> list.stream().mapToDouble(Double::doubleValue).average().getAsDouble()).collect(Collectors.toList());
+            uncertainty = uncertaintyMap.values().stream()
+                .map(list -> {
+                    DoubleSummaryStatistics stat = list.stream().mapToDouble(Double::doubleValue).summaryStatistics();
+                    double squareDiffToMeans = 0.0;
+                    for (int i = 0; i < stat.getCount(); i++) {
+                        squareDiffToMeans += Math.pow((list.get(i) - stat.getAverage()), 2);
+                    }
 
+                    double meanOfDiffs = squareDiffToMeans / (double) (stat.getCount() - 1);
+                    double sd = Math.sqrt(meanOfDiffs);
+                    return df.format(stat.getAverage()) + "+/-" + df.format(1.96 * sd);
+                }).collect(Collectors.toList());
         }
     }
 

@@ -179,7 +179,8 @@ public class UpdaterService {
                 Policy policy = ProgressInterpreter.interpret(e, previousScores, previousMetrics, numReward);
                 if (isFinalUpdate) {
                     List<MetricsRaw> previousMetricsRaw = runDAO.getMetricsRaw(runId, e.getKey());
-                    ProgressInterpreter.interpretMetricsRaw(e, policy, previousMetricsRaw, numReward);
+                    int lastIteration = policy.getMetrics().get(policy.getMetrics().size() - 1).getIteration();
+                    ProgressInterpreter.interpretMetricsRaw(e, policy, previousMetricsRaw, lastIteration - 10, numReward);
                 }
 
                 return policy;
