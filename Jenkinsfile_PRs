@@ -1,7 +1,7 @@
 import groovy.json.JsonOutput
 
 def RELEASE_ID
-def TEST_STATUS = 0
+def TEST_STATUS = 1
 
 /*
     pathmind-webapp pipeline
@@ -230,7 +230,7 @@ pipeline {
             }
         }
 
-        stage('Testing') {
+        /*stage('Testing') {
             when {
                 allOf{
                     expression { env.GIT_BRANCH != 'master' }
@@ -257,7 +257,7 @@ pipeline {
 
                 }
             }
-        }
+        }*/
         stage('Set pipeline status') {
             when {
                 allOf{
@@ -278,8 +278,6 @@ pipeline {
     }
     post {
         always {
-            echo 'Deleting workspace'
-            deleteDir()
             echo "Deleting image"
             deleteDockerImage("${RELEASE_ID}")
             echo "Deleting name space ${env.BUILD_NUMBER}"
