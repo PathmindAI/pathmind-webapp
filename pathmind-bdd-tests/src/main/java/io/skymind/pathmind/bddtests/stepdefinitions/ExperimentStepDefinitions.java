@@ -114,4 +114,9 @@ public class ExperimentStepDefinitions {
     public void checkExperimentPageSideBarIsFavorite(String experimentName, Boolean favoriteStatus) {
         experimentPageSteps.checkExperimentPageSideBarIsFavorite(experimentName, favoriteStatus);
     }
+
+    @Then("^Check that experiment page is opened$")
+    public void checkThatExperimentPageIsOpened() {
+        experimentPageSteps.checkThatExperimentPageIsOpened();
+    }
 }

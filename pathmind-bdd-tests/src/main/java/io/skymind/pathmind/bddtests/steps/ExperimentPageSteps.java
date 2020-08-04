@@ -103,4 +103,9 @@ public class ExperimentPageSteps {
     public void checkExperimentPageSideBarIsFavorite(String experimentName, Boolean favoriteStatus) {
         experimentPage.checkExperimentPageSideBarIsFavorite(experimentName, favoriteStatus);
     }
+
+    @Step
+    public void checkThatExperimentPageIsOpened() {
+        experimentPage.checkThatExperimentPageIsOpened();
+    }
 }

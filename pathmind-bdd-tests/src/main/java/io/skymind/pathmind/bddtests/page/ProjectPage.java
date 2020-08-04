@@ -65,4 +65,9 @@ public class ProjectPage extends PageObject {
     public void checkProjectPageModelPackageNameIs(String modelId, String packageName) {
         assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + modelId + " " + "']/following-sibling::vaadin-grid-cell-content[1]")).getText(), is(packageName));
     }
+
+    public void checkThatProjectPageIsOpened() {
+        assertThat(getDriver().getTitle(), is("Pathmind | Project"));
+        assertThat(getDriver().getCurrentUrl(), containsString("/project/"));
+    }
 }
