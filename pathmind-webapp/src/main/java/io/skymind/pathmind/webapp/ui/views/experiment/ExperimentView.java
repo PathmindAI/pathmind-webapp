@@ -325,7 +325,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                         squareDiffToMeans += Math.pow((list.get(i) - stat.getAverage()), 2);
                     }
 
-                    double meanOfDiffs = squareDiffToMeans / (double) (stat.getCount()) * (stat.getCount() - 1);
+                    double meanOfDiffs = squareDiffToMeans / (double) (stat.getCount() - 1);
                     double sd = Math.sqrt(meanOfDiffs);
                     return df.format(stat.getAverage())  +"\u2800\u00B1\u2800" + df.format(1.96 * sd);
                 }).collect(Collectors.toList());
