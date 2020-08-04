@@ -178,6 +178,10 @@ class RunRepository
                 .from(nestedToday, nestedThisMonth)
                 .fetchOne();
 
+        // HOTFIX - TODO - remove this after debugging
+        // Users are being prevented from running experiments
+        return new UserMetrics(0, 0);
+
         // Must be a customer with no experiments.
         if(record == null) {
             return new UserMetrics(0, 0);
