@@ -363,12 +363,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void archiveExperiment(Experiment experimentToArchive) {
         ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
+            segmentIntegrator.archived(Experiment.class, true);
         });
     }
 
     private void unarchiveExperiment() {
         ConfirmationUtils.unarchive("experiment", () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
+            segmentIntegrator.archived(Experiment.class, false);
             getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
         });
     }

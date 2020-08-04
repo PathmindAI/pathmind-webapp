@@ -140,7 +140,10 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
                 true,
                 experimentGrid,
                 this::getExperiments,
-                (experiment, isArchivable) -> ExperimentUtils.archiveExperiment(experimentDAO, experiment, isArchivable));
+                (experiment, isArchivable) -> { 
+                    ExperimentUtils.archiveExperiment(experimentDAO, experiment, isArchivable);
+                    segmentIntegrator.archived(Experiment.class, isArchivable);
+                });
     }
 
     private void setupExperimentListPanel() {
