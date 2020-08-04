@@ -48,10 +48,10 @@ import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavbar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
@@ -103,7 +103,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private CodeViewer codeViewer;
     private TrainingStartingPlaceholder trainingStartingPlaceholder;
     private PolicyChartPanel policyChartPanel;
-    private ExperimentsNavbar experimentsNavbar;
+    private ExperimentsNavBar experimentsNavbar;
     private NotesField notesField;
     private Span reasonWhyTheTrainingStoppedLabel;
     private RewardVariablesTable rewardVariablesTable;
@@ -169,7 +169,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     protected Component getMainContent() {
         panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
-        experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiment, selectedExperiment -> selectExperiment(selectedExperiment), experimentToArchive -> archiveExperiment(experimentToArchive));
+        experimentsNavbar = new ExperimentsNavBar(
+                () -> getUI(),
+                experimentDAO,
+                experiment,
+                selectedExperiment -> selectExperiment(selectedExperiment),
+                experimentToArchive -> archiveExperiment(experimentToArchive));
         setupExperimentContentPanel();
 
         Span modelNeedToBeUpdatedLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
@@ -451,7 +456,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         rewardVariablesTable.setIsReadOnly(true);
         rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
         updateScreenComponents();
-        experimentsNavbar.setExperiments(event.getUI(), experiments, experiment);
+        experimentsNavbar.setExperiments(() -> Optional.of(event.getUI()), experiments, experiment);
     }
 
     private void updateScreenComponents() {

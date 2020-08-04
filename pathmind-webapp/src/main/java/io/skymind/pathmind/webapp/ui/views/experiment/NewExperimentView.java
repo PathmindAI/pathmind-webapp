@@ -44,7 +44,7 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.*;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavbar;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionErrorPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
@@ -56,6 +56,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @CssImport("./styles/views/new-experiment-view.css")
@@ -75,7 +76,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private RewardFunctionEditor rewardFunctionEditor;
 	private RewardFunctionErrorPanel rewardFunctionErrorPanel;
-	private ExperimentsNavbar experimentsNavbar;
+	private ExperimentsNavBar experimentsNavbar;
 	private NotesField notesField;
 	private RewardVariablesTable rewardVariablesTable;
 	private Span unsavedChanges;
@@ -143,7 +144,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private HorizontalLayout createMainPanel() {
-		experimentsNavbar = new ExperimentsNavbar(experimentDAO, experiment, selectedExperiment -> selectExperiment(selectedExperiment), experimentToArchive -> archiveExperiment(experimentToArchive));
+		experimentsNavbar = new ExperimentsNavBar(
+		        () -> getUI(),
+                experimentDAO,
+                experiment,
+                selectedExperiment -> selectExperiment(selectedExperiment),
+                experimentToArchive -> archiveExperiment(experimentToArchive));
 
         unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
         unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -426,7 +432,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         // This may have to be changed if we allow users to navigate Experiments of different models.
 	    rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
 		updateScreenComponents();
-		experimentsNavbar.setExperiments(event.getUI(), experiments, experiment);
+		experimentsNavbar.setExperiments(() -> Optional.of(event.getUI()), experiments, experiment);
 	}
 
 	private void updateScreenComponents() {

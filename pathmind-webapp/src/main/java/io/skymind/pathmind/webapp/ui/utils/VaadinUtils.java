@@ -38,8 +38,4 @@ public class VaadinUtils
         return ui.getElement().getChildren()
                 .filter((element) -> id.equals(element.getAttribute("id"))).findFirst();
     }
-
-    public static Supplier<Optional<UI>> convertUiToOptionalSupplier(UI ui) {
-	    return () -> Optional.<UI>of(ui);
-    }
 }

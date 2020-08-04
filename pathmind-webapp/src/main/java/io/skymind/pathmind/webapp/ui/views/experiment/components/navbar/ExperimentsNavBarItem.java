@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.navbar;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
@@ -28,17 +29,15 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
 
     private static final String CURRENT = "current";
 
-    private NavBarItemExperimentUpdatedSubscriber navBarItemExperimentUpdatedSubscriber;
-    private ExperimentsNavbar experimentsNavbar;
+    private ExperimentsNavBar experimentsNavbar;
+    private Supplier<Optional<UI>> getUISupplier;
 
     private Experiment experiment;
     private Component statusComponent;
 
-    private ExperimentDAO experimentDAO;
-
-    ExperimentsNavBarItem(ExperimentsNavbar experimentsNavbar, ExperimentDAO experimentDAO, Supplier<Optional<UI>> getUISupplier, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler) {
+    ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler) {
         this.experimentsNavbar = experimentsNavbar;
-        this.experimentDAO = experimentDAO;
+        this.getUISupplier = getUISupplier;
         this.experiment = experiment;
         Boolean isDraft = ExperimentUtils.isDraftRunType(experiment);
         Boolean isFavorite = ExperimentUtils.isFavorite(experiment);
@@ -59,10 +58,11 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
                     new FavoriteStar(isFavorite, newIsFavorite -> ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite))));
             add(archiveExperimentButton);
         });
+    }
 
-        // Add eventbus listeners
-        navBarItemExperimentUpdatedSubscriber = new NavBarItemExperimentUpdatedSubscriber(getUISupplier, this);
-        EventBus.subscribe(this, navBarItemExperimentUpdatedSubscriber);
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        EventBus.subscribe(this, new NavBarItemExperimentUpdatedSubscriber(getUISupplier, this));
     }
 
     @Override
