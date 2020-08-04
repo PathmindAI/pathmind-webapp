@@ -263,7 +263,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     sparkLine.setSparkLine(sparklinesData.get(idx), idx);
                     sparklinesWrapper.add(sparkLine);
                     if (uncertainty != null && !uncertainty.isEmpty()) {
-//                        uncertaintyWrapper.add(new Span(PathmindNumberUtils.formatNumber(uncertainty.get(idx))));
                         uncertaintyWrapper.add(new Span(uncertainty.get(idx)));
                     }
                 });
@@ -328,7 +327,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
                     double meanOfDiffs = squareDiffToMeans / (double) (stat.getCount() - 1);
                     double sd = Math.sqrt(meanOfDiffs);
-                    return df.format(stat.getAverage()) + "+/-" + df.format(1.96 * sd);
+//                    return df.format(stat.getAverage()) + " \u00B1 " + df.format(1.96 * sd);
+                    return df.format(stat.getAverage())  +"\u2800\u00B1\u2800" + df.format(1.96 * sd);
                 }).collect(Collectors.toList());
         }
     }
