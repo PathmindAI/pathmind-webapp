@@ -1,4 +1,4 @@
-export const WHITE_LIST = [
+export const ALLOW_LIST = [
   "^model.jar",
   "^database/db.properties",
   "^database/db.script",

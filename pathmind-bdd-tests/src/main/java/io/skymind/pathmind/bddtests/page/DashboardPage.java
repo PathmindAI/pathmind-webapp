@@ -115,4 +115,22 @@ public class DashboardPage extends PageObject {
     public void checkDashboardModelBreadcrumb(String projectName, String packageName) {
         assertThat(getDriver().findElement(By.xpath("//*[@class='breadcrumb' and text()='" + projectName + "']/following-sibling::a[contains(text(),'Model #1')]")).getText(), is("Model #1 (" + packageName + ")"));
     }
+
+    public void checkDashboardPageProjectIsFavoriteTrue(String projectName, String experimentName, Boolean favoriteStatus) {
+        waitABit(3500);
+        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//span[@class='breadcrumb' and text()='"+experimentName+"']/preceding-sibling::a[@class='breadcrumb' and text()='"+projectName+"']/parent::vaadin-horizontal-layout/following-sibling::favorite-star")));
+        waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
+        if (favoriteStatus){
+            assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star"));
+        }else {
+            assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star-o"));
+        }
+    }
+
+    public void clickDashboardPageFavoriteButton(String projectName, String experimentName) {
+        waitABit(3500);
+        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//span[@class='breadcrumb' and text()='"+experimentName+"']/preceding-sibling::a[@class='breadcrumb' and text()='"+projectName+"']/parent::vaadin-horizontal-layout/following-sibling::favorite-star")));
+        waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
+        favoriteStarShadow.findElement(By.cssSelector("vaadin-button")).click();
+    }
 }

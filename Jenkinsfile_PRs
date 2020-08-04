@@ -278,8 +278,6 @@ pipeline {
     }
     post {
         always {
-            echo 'Deleting workspace'
-            deleteDir()
             echo "Deleting image"
             deleteDockerImage("${RELEASE_ID}")
             echo "Deleting name space ${env.BUILD_NUMBER}"

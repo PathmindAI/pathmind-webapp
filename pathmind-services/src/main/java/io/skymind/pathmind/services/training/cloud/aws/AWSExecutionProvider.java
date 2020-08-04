@@ -47,6 +47,11 @@ public class AWSExecutionProvider implements ExecutionProvider {
     public static final String RLLIB_ERROR_PREFIX = "x-rllib_error";
     public static final String SUCCESS_MESSAGE_PREFIX = "x-success_message";
     public static final String WARNING_MESSAGE_PREFIX = "x-warning_message";
+    
+    public static final int RLLIB_MAX_LEN = 1024;
+    public static final int SUCCESS_MAX_LEN = 1024;
+    public static final int WARNING_MAX_LEN = 1024;
+    
     private static final Predicate<String> ERROR_KEY_MATCH = // todo: possible even get a date of error as second match group
             Pattern.compile("(.)*error_(.*)txt$", Pattern.CASE_INSENSITIVE).asMatchPredicate();
 

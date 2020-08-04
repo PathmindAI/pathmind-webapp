@@ -98,7 +98,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
                     currentExperiment.setRuns(runsForExperiment);
                 }
             }
-            return new DashboardLine(item, itm -> navigateFromDashboard(itm), itm -> archiveItem(itm));
+            return new DashboardLine(experimentDAO, item, itm -> navigateFromDashboard(itm), itm -> archiveItem(itm));
         });
         dashboardGrid.setSelectionMode(SelectionMode.NONE);
         dashboardGrid.setPageSize(10);

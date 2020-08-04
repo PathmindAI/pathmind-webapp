@@ -2,11 +2,15 @@ package io.skymind.pathmind.webapp.ui.views.project.components.panels;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 
@@ -15,10 +19,20 @@ import java.util.Comparator;
 
 public class ExperimentGrid extends Grid<Experiment>
 {
-	public ExperimentGrid()
+	public ExperimentGrid(ExperimentDAO experimentDAO)
 	{
-		Grid.Column<Experiment> nameColumn = addColumn(
-				TemplateRenderer.<Experiment> of("[[item.name]] <span class='tag'>[[item.draft]]</span>")
+		addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
+                    ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
+                    Experiment refreshedExperiment = experiment;
+                    experiment.setFavorite(newIsFavorite);
+                    getDataProvider().refreshItem(refreshedExperiment);
+                }))
+				.setComparator(Comparator.comparing(Experiment::isFavorite))
+				.setHeader(new Icon(VaadinIcon.STAR))
+				.setAutoWidth(true)
+				.setFlexGrow(0)
+				.setResizable(true);
+		addColumn(TemplateRenderer.<Experiment> of("[[item.name]] <span class='tag'>[[item.draft]]</span>")
 					.withProperty("name", Experiment::getName)
 					.withProperty("draft", experiment -> experiment.isDraft() ? "Draft" : ""))
 				.setComparator(Comparator.comparingLong(experiment -> Long.parseLong(experiment.getName())))
