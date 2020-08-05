@@ -71,15 +71,20 @@ public class SearchResultItem extends VerticalLayout {
     }
 
     private VerticalLayout createNameRow() {
+        Boolean resultTypeProject = searchResultType.equals(SearchResultItemType.PROJECT);
         Boolean resultTypeModel = searchResultType.equals(SearchResultItemType.MODEL);
         Boolean resultTypeExperiment = searchResultType.equals(SearchResultItemType.EXPERIMENT);
-        Div projectName = highlightSearchResult(searchResult.getProjectName(), null);
-        VerticalLayout nameRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(projectName);
+        VerticalLayout nameRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+        String modelNameText = "Model #"+searchResult.getModelName();
+        String experimentNameText = "Experiment #"+searchResult.getExperimentName();
+        nameRow.add(highlightSearchResult(searchResult.getProjectName(), null, resultTypeProject));
         if (resultTypeModel || resultTypeExperiment) {
-            nameRow.add(highlightSearchResult("Model #"+searchResult.getModelName(), "(?i)Model\\s#?"+searchResult.getModelName()));
+            nameRow.add(highlightSearchResult(modelNameText, "(?i)Model\\s#?"+searchResult.getModelName(),
+                    resultTypeModel && decodedKeyword.equals(searchResult.getModelName())));
         }
         if (resultTypeExperiment) {
-            nameRow.add(highlightSearchResult("Experiment #"+searchResult.getExperimentName(), "(?i)Experiment\\s#?"+searchResult.getExperimentName()));
+            nameRow.add(highlightSearchResult(experimentNameText, "(?i)Experiment\\s#?"+searchResult.getExperimentName(),
+                    resultTypeExperiment && decodedKeyword.equals(searchResult.getExperimentName())));
         }
         nameRow.addClassName("name-row");
         return nameRow;
@@ -90,16 +95,21 @@ public class SearchResultItem extends VerticalLayout {
         if (notes.isEmpty()) {
             return new Div(new Span("—"));
         } else {
-            Div notesColumn = highlightSearchResult(notes, null);
+            Div notesColumn = highlightSearchResult(notes, null, true);
             notesColumn.addClassName("grid-notes-column");
             return notesColumn;
         }
     }
 
-    private Div highlightSearchResult(String columnText, String toMatch) {
+    private Div highlightSearchResult(String columnText, String toMatch, boolean isHighlightable) {
         Div searchResultColumn = new Div();
         String escapedKeyword = PathmindStringUtils.escapeNonAlphanumericalCharacters(decodedKeyword);
         String[] parts = columnText.split("(?i)((?<="+escapedKeyword+")|(?=(?i)"+escapedKeyword+"))");
+
+        if (!isHighlightable) {
+            searchResultColumn.add(new Span(columnText));
+            return searchResultColumn;
+        }
 
         for (int i = 0; i < parts.length; i++) {
             if (parts[i].toLowerCase().equals(decodedKeyword.toLowerCase())) {
