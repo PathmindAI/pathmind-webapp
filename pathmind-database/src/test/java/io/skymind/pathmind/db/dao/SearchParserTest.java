@@ -42,7 +42,7 @@ public class SearchParserTest {
     }
 
     @Test
-    public void testModelSearchWithMatch() {
+    public void testModelSearchWithTypeMatch() {
         assertParseResultWillBe("model:model 1", new SearchDescription()
                 .withModelClauses(
                         new OrClause(NAME, "1"),
@@ -50,13 +50,21 @@ public class SearchParserTest {
                 ));
     }
 
-
     @Test
-    public void testModelSearchWithMatchVariant() {
+    public void testModelSearchWithTypeAndHashMatch() {
         assertParseResultWillBe("model:model #1", new SearchDescription()
                 .withModelClauses(
                         new OrClause(NAME, "1"),
                         new OrClause(USERNOTES, "model #1")
+                ));
+    }
+
+    @Test
+    public void testModelSearchWithHashMatch() {
+        assertParseResultWillBe("model:#1", new SearchDescription()
+                .withModelClauses(
+                        new OrClause(NAME, "1"),
+                        new OrClause(USERNOTES, "#1")
                 ));
     }
 
@@ -70,7 +78,7 @@ public class SearchParserTest {
     }
 
     @Test
-    public void testExperimentSearchWithMatch() {
+    public void testExperimentSearchWithTypeMatch() {
         assertParseResultWillBe("experiment:experiment 1", new SearchDescription()
                 .withExperimentClauses(
                         new OrClause(NAME, "1"),
@@ -78,13 +86,21 @@ public class SearchParserTest {
                 ));
     }
 
-
     @Test
-    public void testExperimentSearchWithMatchVariant() {
+    public void testExperimentSearchWithTypeAndHashMatch() {
         assertParseResultWillBe("experiment:experiment #1", new SearchDescription()
                 .withExperimentClauses(
                         new OrClause(NAME, "1"),
                         new OrClause(USERNOTES, "experiment #1")
+                ));
+    }
+
+    @Test
+    public void testExperimentSearchWithHashMatch() {
+        assertParseResultWillBe("experiment:#1", new SearchDescription()
+                .withExperimentClauses(
+                        new OrClause(NAME, "1"),
+                        new OrClause(USERNOTES, "#1")
                 ));
     }
 

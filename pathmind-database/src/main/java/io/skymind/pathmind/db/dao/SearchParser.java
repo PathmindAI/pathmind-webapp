@@ -69,22 +69,33 @@ public class SearchParser {
         if (matchTypeInKeyword(itemType, searchKeyword)) {
             orClauses.add(new OrClause(NAME, removeTypeFromKeyword(itemType, searchKeyword)));
         }
+        else if (matchHashInKeyword(itemType, searchKeyword)) {
+            orClauses.add(new OrClause(NAME, removeHashFromKeyword(itemType, searchKeyword)));
+        }
         else {
             orClauses.add(new OrClause(NAME, searchKeyword));
         }
         return orClauses;
     }
 
-
     private String removeTypeFromKeyword(SearchResultItemType itemType, String originalKeyword) {
         String typeName = itemType.getName().toLowerCase();
         return originalKeyword.replaceFirst(typeName + " #", "").replaceFirst(typeName + " ", "");
     }
 
-
     private Boolean matchTypeInKeyword(SearchResultItemType itemType, String keyword) {
         String typeName = itemType.getName().toLowerCase();
         return keyword.matches("(?i)" + typeName + "\\s#?\\d+");
+    }
+
+    private String removeHashFromKeyword(SearchResultItemType itemType, String originalKeyword) {
+        String typeName = itemType.getName().toLowerCase();
+        return originalKeyword.replaceFirst("^#(\\d+)$", "\\1");
+    }
+
+    private Boolean matchHashInKeyword(SearchResultItemType itemType, String keyword) {
+        String typeName = itemType.getName().toLowerCase();
+        return keyword.matches("#\\d+");
     }
 
     private boolean isProjectSearch(String searchType) {
