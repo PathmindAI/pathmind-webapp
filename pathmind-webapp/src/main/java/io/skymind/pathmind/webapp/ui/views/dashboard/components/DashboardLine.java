@@ -53,7 +53,7 @@ public class DashboardLine extends HorizontalLayout {
         breadcrumb = new Breadcrumbs(item.getProject(), item.getModel(), experiment, false);
         if (experiment != null) {
             favoriteStar = new FavoriteStar(ExperimentUtils.isFavorite(experiment), newIsFavorite ->
-                    ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite));
+                    getUI().ifPresent(ui -> ExperimentUtils.favoriteExperiment(ui, experimentDAO, experiment, newIsFavorite)));
         }
 		timestamp = new Span();
 		

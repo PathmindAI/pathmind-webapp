@@ -22,10 +22,9 @@ public class ExperimentGrid extends Grid<Experiment>
 	public ExperimentGrid(ExperimentDAO experimentDAO)
 	{
 		addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
-                    ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
-                    Experiment refreshedExperiment = experiment;
+		            getUI().ifPresent(ui -> ExperimentUtils.favoriteExperiment(ui, experimentDAO, experiment, newIsFavorite));
                     experiment.setFavorite(newIsFavorite);
-                    getDataProvider().refreshItem(refreshedExperiment);
+                    getDataProvider().refreshItem(experiment);
                 }))
 				.setComparator(Comparator.comparing(Experiment::isFavorite))
 				.setHeader(new Icon(VaadinIcon.STAR))

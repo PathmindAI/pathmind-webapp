@@ -168,9 +168,9 @@ public class ExperimentUtils
 	    EventBus.post(new ExperimentUpdatedBusEvent(ui, experiment));
     }
 
-    public static void favoriteExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean newIsFavorite) {
+    public static void favoriteExperiment(UI ui, ExperimentDAO experimentDAO, Experiment experiment, boolean newIsFavorite) {
         experimentDAO.markAsFavorite(experiment.getId(), newIsFavorite);
-        EventBus.post(new ExperimentUpdatedBusEvent(experiment));
+        EventBus.post(new ExperimentUpdatedBusEvent(ui, experiment));
     }
 
     public static boolean isNewExperimentForModel(Experiment experiment, List<Experiment> experiments, long modelId) {

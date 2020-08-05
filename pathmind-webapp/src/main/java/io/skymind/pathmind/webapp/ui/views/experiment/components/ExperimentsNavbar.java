@@ -144,7 +144,7 @@ public class ExperimentsNavbar extends VerticalLayout implements RunUpdateSubscr
 				add(createExperimentText(
                     experiment.getName(),
                     DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId),
-                    new FavoriteStar(isFavorite, newIsFavorite -> ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite))));
+                    new FavoriteStar(isFavorite, newIsFavorite -> ExperimentUtils.favoriteExperiment(ui, experimentDAO, experiment, newIsFavorite))));
                 add(archiveExperimentButton);
 			});
 		}
