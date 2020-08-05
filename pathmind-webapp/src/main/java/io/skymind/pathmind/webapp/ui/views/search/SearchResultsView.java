@@ -144,9 +144,19 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         } else {
             decodedKeyword = URLDecoder.decode(keyword, StandardCharsets.UTF_8);
             String escapedBackslashDecodedKeyword = PathmindStringUtils.escapeBackslash(decodedKeyword);
-            decodedKeyword = decodedKeyword.split(":", 2)[1];
+            decodedKeyword = getActuaKeyword(decodedKeyword);
             dataProvider.setFilter(escapedBackslashDecodedKeyword);
             titleText = "Search Results for: " + decodedKeyword;
+        }
+    }
+
+    private String getActuaKeyword(String fullKeyword) {
+        String[] split = fullKeyword.split(":", 2);
+        if (split.length == 2) {
+            return split[1];
+        }
+        else {
+            return split[0];
         }
     }
 
