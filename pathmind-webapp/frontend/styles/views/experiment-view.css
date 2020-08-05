@@ -36,6 +36,10 @@
     overflow: auto;
 }
 
+.experiment-view .reward-variables-table {
+    font-size: var(--lumo-font-size-xs);
+}
+
 .experiment-view .reward-variables-table span:first-child {
     display: none;
 }
@@ -48,9 +52,11 @@
 .experiment-view .metrics-wrapper span {
     display: flex;
     align-items: center;
+    flex: 1 0 auto;
     height: 2rem;
-    font-size: var(--lumo-font-size-s);
-    margin-left: var(--lumo-space-m);
+    font-size: var(--lumo-font-size-xs);
+    line-height: 1;
+    margin-left: var(--lumo-space-s);
 }
 
 .experiment-view .metrics-wrapper,
