@@ -203,7 +203,7 @@ public class ProgressInterpreter {
 
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
-        settings.setMaxCharsPerColumn(8196);
+        settings.setMaxCharsPerColumn(-1);
         settings.selectFields((RAY_PROGRESS.metricsRawColumns()));
 
         CsvParser parser = new CsvParser(settings);
