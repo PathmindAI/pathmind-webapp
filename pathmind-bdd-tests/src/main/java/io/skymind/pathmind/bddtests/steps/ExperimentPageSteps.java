@@ -60,6 +60,11 @@ public class ExperimentPageSteps {
     }
 
     @Step
+    public void checkRunningExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
+        experimentPage.checkRunningExperimentPageRewardVariablesIs(commaSeparatedVariableNames);
+    }
+
+    @Step
     public void checkThatMetricsAreShownForRewardVariables(int metricsNumber) {
         experimentPage.checkThatMetricsAreShownForRewardVariables(metricsNumber);
     }
@@ -107,5 +112,10 @@ public class ExperimentPageSteps {
     @Step
     public void checkThatExperimentPageIsOpened() {
         experimentPage.checkThatExperimentPageIsOpened();
+    }
+
+    @Step
+    public void checkExperimentPageSimulationMetrics(String commaSeparatedVariableNames) {
+        experimentPage.checkExperimentPageSimulationMetrics(commaSeparatedVariableNames);
     }
 }

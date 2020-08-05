@@ -65,6 +65,11 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.checkExperimentPageRewardVariablesIs(commaSeparatedVariableNames);
     }
 
+    @Then("^Check running experiment page reward variables is (.*)$")
+    public void checkRunningExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
+        experimentPageSteps.checkRunningExperimentPageRewardVariablesIs(commaSeparatedVariableNames);
+    }
+
     @Then("^Check that (.*) metrics are shown for reward variables$")
     public void checkThatMetricsAreShownForRewardVariables(int metricsNumber) {
         experimentPageSteps.checkThatMetricsAreShownForRewardVariables(metricsNumber);
@@ -118,5 +123,10 @@ public class ExperimentStepDefinitions {
     @Then("^Check that experiment page is opened$")
     public void checkThatExperimentPageIsOpened() {
         experimentPageSteps.checkThatExperimentPageIsOpened();
+    }
+
+    @Then("^Check experiment page simulation metrics (.*)$")
+    public void checkExperimentPageSimulationMetrics(String commaSeparatedVariableNames) {
+        experimentPageSteps.checkExperimentPageSimulationMetrics(commaSeparatedVariableNames);
     }
 }

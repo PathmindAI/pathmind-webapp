@@ -50,7 +50,7 @@ public class ExperimentViewRunUpdateSubscriber implements RunUpdateSubscriber {
 
     @Override
     public boolean filterBusEvent(RunUpdateBusEvent event) {
-        return isSameExperiment(event) || ExperimentUtils.isSameModel(experiment, event.getModelId());
+        return isSameExperiment(event) || (!experiment.isArchived() && ExperimentUtils.isSameModel(experiment, event.getModelId()));
     }
 
     @Override

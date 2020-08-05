@@ -71,6 +71,7 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 
     public void setIsReadOnly(boolean readOnly) {
         isReadOnly = readOnly;
+        container.getElement().setAttribute("readonly", readOnly);
     }
 
 	private RowField createRow(int rowNumber) {
@@ -129,23 +130,29 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 
 		private final int rowNumber;
 
-		private final TextField rewardVariableNameField;
+        private final TextField rewardVariableNameField;
+        private final Span rewardVariableNameSpan;
+        private boolean readOnly = false;
 
 		private RowField(int rowNumber, boolean readOnly) {
-			super(null);
+            super(null);
+            this.readOnly = readOnly;
             this.rowNumber = rowNumber;
             this.rewardVariableNameField = new TextField();
-            rewardVariableNameField.addClassName("reward-variable-name-field");
-            rewardVariableNameField.addValueChangeListener(e -> {
-                ComponentValueChangeEvent<RowField, RewardVariable> newEvent = new ComponentValueChangeEvent<>(
-                        this, this, create(e.getOldValue()), e.isFromClient());
-                fireEvent(newEvent);
-            });
-            rewardVariableNameField.setReadOnly(readOnly);
+            this.rewardVariableNameSpan = new Span();
+            getContent().add(new Span("" + rowNumber));
             if (readOnly) {
-                rewardVariableNameField.addClassName("variable-color-"+rowNumber%10);
+                rewardVariableNameSpan.addClassName("variable-color-"+rowNumber%10);
+                getContent().add(rewardVariableNameSpan);
+            } else {
+                rewardVariableNameField.addClassName("reward-variable-name-field");
+                rewardVariableNameField.addValueChangeListener(e -> {
+                    ComponentValueChangeEvent<RowField, RewardVariable> newEvent = new ComponentValueChangeEvent<>(
+                            this, this, create(e.getOldValue()), e.isFromClient());
+                    fireEvent(newEvent);
+                });
+                getContent().add(rewardVariableNameField);
             }
-            getContent().add(new Span("" + rowNumber), rewardVariableNameField);
 			getContent().setWidthFull();
 			GuiUtils.removeMarginsPaddingAndSpacing(getContent());
 		}
@@ -161,8 +168,13 @@ public class RewardVariablesTable extends CustomField<List<RewardVariable>> impl
 
 		@Override
 		protected void setPresentationValue(RewardVariable newPresentationValue) {
-			modelId = newPresentationValue.getModelId();
-			rewardVariableNameField.setValue(newPresentationValue.getName());
+            String rewardVariableText = newPresentationValue.getName();
+            modelId = newPresentationValue.getModelId();
+            if (readOnly) {
+                rewardVariableNameSpan.setText(rewardVariableText);
+            } else {
+                rewardVariableNameField.setValue(rewardVariableText);
+            }
 		}
 
 		@Override

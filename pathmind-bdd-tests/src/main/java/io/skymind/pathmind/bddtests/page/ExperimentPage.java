@@ -114,6 +114,26 @@ public class ExperimentPage extends PageObject {
         assertThat(actual, containsInRelativeOrder(items.toArray()));
     }
 
+    public void checkRunningExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
+        List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='reward-variables-table']/descendant::vaadin-horizontal-layout/span[not(text()='Variable Name')][2]"))) {
+            actual.add(webElement.getText());
+        }
+
+        assertThat(actual, containsInRelativeOrder(items.toArray()));
+    }
+
+    public void checkExperimentPageSimulationMetrics(String commaSeparatedVariableNames) {
+        List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//span[contains(@class,'variable')]"))) {
+            actual.add(webElement.getText());
+        }
+
+        assertThat(actual, containsInRelativeOrder(items.toArray()));
+    }
+
     public void checkThatMetricsAreShownForRewardVariables(int metricsNumber) {
         List<String> actual = new ArrayList<>();
         for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='metrics-wrapper']/span"))) {
