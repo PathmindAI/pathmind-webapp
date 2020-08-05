@@ -273,7 +273,7 @@ pipeline {
                     if (TEST_STATUS != 0) {
                         echo "Some bdd tests failed ${TEST_STATUS}"
                         currentBuild.result = 'UNSTABLE'
-                        prName="${env.ghprbPullTitle}".replaceAll('\'', '').replaceAll('"', '').replaceAll('\(', '').replaceAll('\)', '')
+                        prName="${env.ghprbPullTitle}".replaceAll('\'', '').replaceAll('"', '').replaceAll('(', '').replaceAll(')', '')
                     }
                 }
             }
