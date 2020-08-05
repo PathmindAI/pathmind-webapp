@@ -45,6 +45,7 @@ import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
+import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -597,14 +598,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
 
         if (experiments.isEmpty()) {
-            alertAndThen("Experiment Archived", "The experiment was archived.",
+            NotificationUtils.alertAndThen(getUI(),"Experiment Archived", "The experiment was archived.",
                     ui -> ui.navigate(ModelView.class, experiment.getModelId()));
         } else {
             boolean selectedExperimentWasArchived = experiments.stream()
                     .noneMatch(e -> e.getId() == experimentId);
             if (selectedExperimentWasArchived) {
                 Experiment newSelectedExperiment = experiments.get(0);
-                alertAndThen("Experiment Archived", "The experiment was archived.",
+                NotificationUtils.alertAndThen(getUI(),"Experiment Archived", "The experiment was archived.",
                         ui -> navigateToExperiment(ui, newSelectedExperiment));
             }
             else {
@@ -615,17 +616,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 });
             }
         }
-    }
-
-    private void alertAndThen(String header, String text, Consumer<UI> consumer) {
-        PushUtils.push(getUI(), ui -> {
-            ConfirmDialog confirmDialog = new ConfirmDialog(
-                    header,
-                    text,
-                    "Ok", evt -> PushUtils.push(getUI(), consumer::accept)
-            );
-            confirmDialog.open();
-        });
     }
 
     private boolean isViewAttached() {

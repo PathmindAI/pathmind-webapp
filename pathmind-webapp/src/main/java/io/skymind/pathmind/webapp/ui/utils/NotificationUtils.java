@@ -1,8 +1,12 @@
 package io.skymind.pathmind.webapp.ui.utils;
 
+import java.util.Optional;
+import java.util.function.Consumer;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.server.Command;
 
@@ -52,4 +56,15 @@ public class NotificationUtils {
             });
         };
 	}
+
+	public static void alertAndThen(Optional<UI> optionalUI, String header, String text, Consumer<UI> consumer) {
+        PushUtils.push(optionalUI, ui -> {
+            ConfirmDialog confirmDialog = new ConfirmDialog(
+                    header,
+                    text,
+                    "Ok", evt -> PushUtils.push(optionalUI, consumer::accept)
+            );
+            confirmDialog.open();
+        });
+    }
 }

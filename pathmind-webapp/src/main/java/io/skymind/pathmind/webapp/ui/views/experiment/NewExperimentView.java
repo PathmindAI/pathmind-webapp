@@ -510,14 +510,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
 
         if (experiments.isEmpty()) {
-            alertAndThen("Experiment Archived", "The experiment was archived.",
+            NotificationUtils.alertAndThen(getUI(),"Experiment Archived", "The experiment was archived.",
                     ui -> ui.navigate(ModelView.class, experiment.getModelId()));
         } else {
             boolean selectedExperimentWasArchived = experiments.stream()
                     .noneMatch(e -> e.getId() == experimentId);
             if (selectedExperimentWasArchived) {
                 Experiment newSelectedExperiment = experiments.get(0);
-                alertAndThen("Experiment Archived", "The experiment was archived.",
+                NotificationUtils.alertAndThen(getUI(),"Experiment Archived", "The experiment was archived.",
                         ui -> navigateToExperiment(ui, newSelectedExperiment));
             }
             else {
@@ -528,17 +528,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 });
             }
         }
-    }
-
-    private void alertAndThen(String header, String text, Consumer<UI> consumer) {
-        PushUtils.push(getUI(), ui -> {
-            ConfirmDialog confirmDialog = new ConfirmDialog(
-                    header,
-                    text,
-                    "Ok", evt -> PushUtils.push(getUI(), consumer::accept)
-            );
-            confirmDialog.open();
-        });
     }
 
     private boolean isSameModel(long modelId) {
@@ -573,7 +562,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         @Override
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
             if (isSameExperiment(event.getExperiment()) && event.isStartedTraining()) {
-                alertAndThen("Training started", "The experiment training started.",
+                NotificationUtils.alertAndThen(getUI(),"Training started", "The experiment training started.",
                         ui -> navigateToExperimentView(event.getExperiment()));
             }
             else if (isSameModel(event.getModelId())) {
