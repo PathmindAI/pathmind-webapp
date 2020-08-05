@@ -17,7 +17,7 @@ public class NotFoundPage extends PageObject {
     private static final String PAGE_NOT_FOUND_TITLE = "Page not found";
     private static final String PAGE_NOT_FOUND_ERROR_MESSAGE = "The page you requested could not be found. Please contact Pathmind for assistance.";
     private static final String OOPS_TITLE = "Oops!";
-    private static final String OOPS_ERROR_MESSAGE = "An unexpected error occurred. Please contact Pathmind for assistance";
+    private static final String OOPS_ERROR_MESSAGE = "An unexpected error occurred. Try signing out of Pathmind and signing back in.";
     private static final String INVALID_DATA_ERROR_TITLE = "Invalid data error";
     private static final String INVALID_DATA_ERROR_ERROR_MESSAGE = "This link is invalid. Please contact Pathmind if you believe this is an error";
     private static final String STATUS_MESSAGE = "You can check the current Pathmind system status at status.pathmind.com";
