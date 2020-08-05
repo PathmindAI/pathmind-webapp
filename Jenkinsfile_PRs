@@ -1,7 +1,7 @@
 import groovy.json.JsonOutput
 
 def RELEASE_ID
-def TEST_STATUS = 0
+def TEST_STATUS = 1
 def prName
 
 /*
@@ -232,7 +232,7 @@ pipeline {
             }
         }
         
-        stage('Testing') {
+        /*stage('Testing') {
             when {
                 allOf{
                     expression { env.GIT_BRANCH != 'master' }
@@ -259,7 +259,7 @@ pipeline {
                     
                 }
             }
-        }
+        }*/
         stage('Set pipeline status') {
             when {
                 allOf{
@@ -273,7 +273,7 @@ pipeline {
                     if (TEST_STATUS != 0) {
                         echo "Some bdd tests failed ${TEST_STATUS}"
                         currentBuild.result = 'UNSTABLE'
-                        prName="${env.ghprbPullTitle}".replaceAll('\'', '').replaceAll('"', '').replaceAll('(', '').replaceAll(')', '')
+                        prName="${env.ghprbPullTitle}".replaceAll('\'', '').replaceAll('"', '').replaceAll('\(', '').replaceAll('\)', '')
                     }
                 }
             }
