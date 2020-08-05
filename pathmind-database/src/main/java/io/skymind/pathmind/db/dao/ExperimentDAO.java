@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.db.utils.DataUtils;
+import io.skymind.pathmind.shared.data.user.UserMetrics;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -41,6 +42,10 @@ public class ExperimentDAO
         });
         return result;
     }
+
+    public void markAsFavorite(long experimentId, boolean isFavorite) {
+	    ExperimentRepository.markAsFavorite(ctx, experimentId, isFavorite);
+	}
 
     public Optional<Experiment> getExperimentIfAllowed(long experimentId, long userId) {
 		return Optional.ofNullable(ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId));

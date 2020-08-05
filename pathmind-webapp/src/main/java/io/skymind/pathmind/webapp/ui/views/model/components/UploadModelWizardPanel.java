@@ -3,6 +3,8 @@ package io.skymind.pathmind.webapp.ui.views.model.components;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.function.Consumer;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -32,8 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 public class UploadModelWizardPanel extends VerticalLayout
 {
 	private final Model model;
+    private final int maxFileSize;
 
-	private VerticalLayout uploadModelPanel;
+    private VerticalLayout uploadModelPanel;
 	private PathmindModelUploader upload;
 
 	private ProgressBar fileCheckProgressBar = new ProgressBar();
@@ -46,11 +49,13 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private UploadModeSwitcherButton uploadModeSwitcher;
 	
 	private UploadMode mode;
+    private Consumer<Collection<String>> uploadFailedConsumer;
 
-	public UploadModelWizardPanel(Model model, UploadMode mode)
+    public UploadModelWizardPanel(Model model, UploadMode mode, int maxFileSize)
 	{
 		this.model = model;
 		this.mode = mode;
+		this.maxFileSize = maxFileSize;
 
 		setupLayout();
 		setWidthFull();
@@ -104,19 +109,20 @@ public class UploadModelWizardPanel extends VerticalLayout
 	{
 		upload = new PathmindModelUploader(mode);
 
-		// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/123
-//		upload.setMaxFileSize(PathmindConstants.MAX_UPLOAD_FILE_SIZE);
-//		upload.setAcceptedFileTypes("application/zip");
-//		upload.addFailedListener(event -> log.error("ERROR " + event.getReason().getMessage(), e.getReason().getMessage()));
+		upload.setMaxFileSize(maxFileSize);
 
-		addUploadSucceedListener();
+		addUploadsFinishedListener();
 		addUploadRemoveFileListener();
 
 		uploadModelPanel = WrapperUtils.wrapWidthFullCenterVertical(upload);
 	}
 
-	private void addUploadSucceedListener() {
-		upload.addAllFilesUploadedListener(() -> {
+	private void addUploadsFinishedListener() {
+		upload.addAllFilesUploadedListener((errors) -> {
+		    if (errors.size() > 0) {
+		        uploadFailedConsumer.accept(errors);
+		        return;
+            }
 			try {
 				Receiver receiver = upload.getReceiver();
 				// In folder upload mode, receiver is MultiFileMemoryBuffer, so a zip file should be created
@@ -150,8 +156,12 @@ public class UploadModelWizardPanel extends VerticalLayout
 	public void addFileUploadCompletedListener(Command command) {
 		fileCheckerCommand = command;
 	}
-	
-	private Div getInstructionsDiv() {
+
+    public void addFileUploadFailedListener(Consumer<Collection<String>> consumer) {
+        uploadFailedConsumer = consumer;
+    }
+
+    private Div getInstructionsDiv() {
 		Div div = new Div();
 		div.setWidthFull();
 		upload.isFolderUploadSupported(isFolderUploadSupported -> {

@@ -67,4 +67,19 @@ public class DashboardPageSteps {
     public void clickStageWriteRewardFunctionFromDashboard(String projectName) {
         dashboardPage.clickStageWriteRewardFunctionFromDashboard(projectName);
     }
+
+    @Step
+    public void checkDashboardModelBreadcrumb(String projectName, String packageName) {
+        dashboardPage.checkDashboardModelBreadcrumb(projectName, packageName);
+    }
+
+    @Step
+    public void checkDashboardPageProjectIsFavoriteTrue(String projectName, String experimentName, Boolean favoriteStatus) {
+        dashboardPage.checkDashboardPageProjectIsFavoriteTrue(projectName, experimentName, favoriteStatus);
+    }
+
+    @Step
+    public void clickDashboardPageFavoriteButton(String projectName, String experimentName) {
+        dashboardPage.clickDashboardPageFavoriteButton(projectName, experimentName);
+    }
 }

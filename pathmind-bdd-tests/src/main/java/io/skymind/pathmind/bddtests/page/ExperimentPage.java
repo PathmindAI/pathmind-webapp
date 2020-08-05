@@ -8,6 +8,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,10 +90,14 @@ public class ExperimentPage extends PageObject {
     }
 
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
+        waitABit(3500);
         WebElement inputShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='reward-variables-table']/descendant::span[text()='" + variableNumber + "']/following-sibling::vaadin-text-field")));
         inputShadow.findElement(By.cssSelector("input")).click();
-        inputShadow.findElement(By.cssSelector("input")).clear();
+        inputShadow.findElement(By.cssSelector("input")).sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
+        inputShadow.findElement(By.cssSelector("input")).sendKeys(Keys.ENTER);
+        waitABit(3500);
         inputShadow.findElement(By.cssSelector("input")).sendKeys(variableName);
+        inputShadow.findElement(By.cssSelector("input")).sendKeys(Keys.ENTER);
     }
 
     public void clickSideNavArchiveButtonFor(String experimentName) {
@@ -104,6 +109,26 @@ public class ExperimentPage extends PageObject {
         List<String> actual = new ArrayList<>();
         for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-text-field"))) {
             actual.add(webElement.getAttribute("value"));
+        }
+
+        assertThat(actual, containsInRelativeOrder(items.toArray()));
+    }
+
+    public void checkRunningExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
+        List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='reward-variables-table']/descendant::vaadin-horizontal-layout/span[not(text()='Variable Name')][2]"))) {
+            actual.add(webElement.getText());
+        }
+
+        assertThat(actual, containsInRelativeOrder(items.toArray()));
+    }
+
+    public void checkExperimentPageSimulationMetrics(String commaSeparatedVariableNames) {
+        List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//span[contains(@class,'variable')]"))) {
+            actual.add(webElement.getText());
         }
 
         assertThat(actual, containsInRelativeOrder(items.toArray()));
@@ -152,5 +177,23 @@ public class ExperimentPage extends PageObject {
     public void checkThatExperimentStatusIconIs(String experiment, String icon) {
         waitABit(10000);
         assertThat(getDriver().findElement(By.xpath("//p[text()='" + experiment + "']/parent::div/preceding-sibling::div")).getAttribute("class"),is(icon));
+    }
+
+    public void clickExperimentPageStarButton(String experimentName) {
+        waitABit(3500);
+        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='experiment-name']/p[text()='"+ experimentName +"']/favorite-star")));
+        waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
+        favoriteStarShadow.findElement(By.cssSelector("vaadin-button")).click();
+    }
+
+    public void checkExperimentPageSideBarIsFavorite(String experimentName, Boolean favoriteStatus) {
+        waitABit(3500);
+        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='experiment-name']/p[text()='"+ experimentName +"']/favorite-star")));
+        waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
+        if (favoriteStatus){
+            assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star"));
+        }else {
+            assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star-o"));
+        }
     }
 }

@@ -70,8 +70,8 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		addScreens();
 		// Update the screen based on the parameters if need be.
 		initScreen(event);
-		// Segment plugin added
-		add(segmentIntegrator);
+        // Segment plugin added
+        add(segmentIntegrator);
 	}
 
 	public void recalculateGridColumnWidth(Page page, Grid grid) {
@@ -105,7 +105,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
         message.add(LabelFactory.createLabel("Using Mock Backend"));
         HorizontalLayout result = WrapperUtils.wrapWidthFullCenterHorizontal(message);
         result.getStyle().set("color", "var(--lumo-body-text-color)");
-        result.getStyle().set("background-color", "#FFC038");
+        result.getStyle().set("background-color", "var(--pm-gold-color)");
         return result;
     }
 

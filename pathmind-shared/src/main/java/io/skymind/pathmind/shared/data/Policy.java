@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 public class Policy extends Data
 {
+    private static final long serialVersionUID = -2089053095112497536L;
 	private long runId;
 	private String externalId;
 
@@ -28,7 +29,7 @@ public class Policy extends Data
 	private Model model;
 	private Experiment experiment;
 	private Run run;
-	private List<Metrics> metrics;
+	private transient List<Metrics> metrics;
 
     public List<RewardScore> getScores() {
         return scores == null ? Collections.emptyList() : scores;

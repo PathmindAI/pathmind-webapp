@@ -1,4 +1,4 @@
-import { WHITE_LIST } from "./white-list.js";
+import { ALLOW_LIST } from "./allow-list.js";
 
 function filter(files) {
   Array.prototype.forEach.call(
@@ -12,7 +12,7 @@ function filter(files) {
 }
 
 function matchesFilter(filePath) {
-  if (WHITE_LIST.some(white_listed => filePath.match(white_listed))) {
+  if (ALLOW_LIST.some(allow_listed => filePath.match(allow_listed))) {
     return true;
   }
   return false;

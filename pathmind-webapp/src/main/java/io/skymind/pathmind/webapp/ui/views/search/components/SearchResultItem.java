@@ -6,10 +6,14 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.constants.SearchResultItemType;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.SearchResult;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.shared.utils.PathmindStringUtils;
+import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -23,11 +27,13 @@ public class SearchResultItem extends VerticalLayout {
     private Div notesComponent;
     private String decodedKeyword;
     private Boolean isArchived;
+    private ExperimentDAO experimentDAO;
 
-    public SearchResultItem(SearchResult item, String decodedKeyword) {
+    public SearchResultItem(ExperimentDAO experimentDAO, SearchResult item, String decodedKeyword) {
         this.searchResult = item;
         this.decodedKeyword = decodedKeyword;
         this.isArchived = searchResult.getIsArchived();
+        this.experimentDAO = experimentDAO;
         searchResultType = searchResult.getItemType();
         createdDateComponent = new Span("Created");
         lastActivityDateComponent = new Span("Last Activity");
@@ -44,9 +50,18 @@ public class SearchResultItem extends VerticalLayout {
 
     private HorizontalLayout createInfoRow() {
         HorizontalLayout infoRow = WrapperUtils.wrapWidthFullBetweenHorizontal();
-        HorizontalLayout tags = new HorizontalLayout(LabelFactory.createLabel(searchResultType.getName(), CssPathmindStyles.TAG_LABEL, CssPathmindStyles.TAG_OUTLINE_LABEL));
+        HorizontalLayout tags = new HorizontalLayout();
         HorizontalLayout dates = new HorizontalLayout(createdDateComponent, lastActivityDateComponent);
-        
+
+        if (searchResultType.equals(SearchResultItemType.EXPERIMENT)) {
+            Experiment experiment = experimentDAO.getExperiment(searchResult.getItemId()).orElse(null);
+            if (experiment != null) {
+                boolean isFavorite = ExperimentUtils.isFavorite(experiment);
+                tags.add(new FavoriteStar(isFavorite, newIsFavorite -> 
+                        ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite)));
+            }
+        }
+        tags.add(LabelFactory.createLabel(searchResultType.getName(), CssPathmindStyles.TAG_LABEL, CssPathmindStyles.TAG_OUTLINE_LABEL));
         if (isArchived) {
             tags.add(LabelFactory.createLabel("Archived", CssPathmindStyles.TAG_LABEL));
         }

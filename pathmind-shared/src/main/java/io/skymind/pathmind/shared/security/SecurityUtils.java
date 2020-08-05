@@ -3,6 +3,7 @@ package io.skymind.pathmind.shared.security;
 
 import javax.naming.AuthenticationException;
 
+import io.skymind.pathmind.shared.data.user.UserMetrics;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;

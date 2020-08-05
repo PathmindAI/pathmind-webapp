@@ -84,4 +84,24 @@ public class ModelStepDefinitions {
     public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
         modelPageSteps.checkOnTheModelPageExperimentNotesIs(experiment, note);
     }
+
+    @Then("^Check model page model breadcrumb package name is (.*)$")
+    public void checkModelPageModelBreadcrumbPackageNameIs(String packageName) {
+        modelPageSteps.checkModelPageModelBreadcrumbPackageNameIs(packageName);
+    }
+
+    @When("^Click model page experiment '(.*)' star button$")
+    public void clickModelPageExperimentStarButton(String experiment) {
+        modelPageSteps.clickModelPageExperimentStarButton(experiment);
+    }
+
+    @Then("^Check model page experiment '(.*)' is favorite (.*)$")
+    public void checkModelPageExperimentIsFavoriteTrue(String experiment, Boolean favoriteStatus) {
+        modelPageSteps.checkModelPageExperimentIsFavoriteTrue(experiment, favoriteStatus);
+    }
+
+    @When("^Click model page experiment '(.*)' archive/unarchive btn$")
+    public void clickModelPageExperimentArchiveBtn(String experiment) {
+        modelPageSteps.clickModelPageExperimentArchiveBtn(experiment);
+    }
 }

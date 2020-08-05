@@ -33,6 +33,9 @@ import java.util.stream.Collectors;
 import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.RLLIB_ERROR_PREFIX;
 import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.SUCCESS_MESSAGE_PREFIX;
 import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.WARNING_MESSAGE_PREFIX;
+import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.RLLIB_MAX_LEN;
+import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.SUCCESS_MAX_LEN;
+import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.WARNING_MAX_LEN;
 import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.*;
 import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.KILLED_TRAINING_KEYWORD;
 import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.UNKNOWN_ERROR_KEYWORD;
@@ -102,11 +105,27 @@ public class UpdaterService {
 
     private void updateInfoInDB(Run run, ProviderJobStatus providerJobStatus, List<Policy> policies, List<PolicyUpdateInfo> policiesUpdateInfo) {
         
-        List<Policy> policiesToRaiseUpdateEvent =  runDAO.updateRun(run, providerJobStatus, policies, policiesUpdateInfo, getValidExternalIdsIfCompleted(providerJobStatus));
+        List<Policy> policiesToRaiseUpdateEvent = runDAO.updateRun(run, providerJobStatus, policies, policiesUpdateInfo, getValidExternalIdsIfCompleted(providerJobStatus));
+        policiesToRaiseUpdateEvent.addAll(ensurePolicyDataIfRunIsCompleted(run, providerJobStatus));
+        
         // The EventBus updates have to be done AFTER the transaction is completed and NOT during in case the transaction fails.
         fireEventUpdates(run, policies);
         policiesToRaiseUpdateEvent
                 .forEach(policy -> fireEventUpdates(null, Collections.singletonList(policy)));
+    }
+
+    // When the Run is completed, update policy data one more time just to ensure all data is saved to DB
+    // See https://github.com/SkymindIO/pathmind-webapp/issues/1866 for details.
+    private List<Policy> ensurePolicyDataIfRunIsCompleted(Run run, ProviderJobStatus providerJobStatus) {
+        if (run.getStatusEnum() == RunStatus.Completed) {
+            log.debug("final DB updates for " + run.getJobId());
+            List<Policy> policies = getPoliciesFromProgressProvider(Collections.emptyMap(), run.getId(),
+                    run.getJobId(), providerJobStatus.getExperimentState());
+            setStoppedAtForFinishedPolicies(policies, providerJobStatus.getExperimentState());
+            runDAO.updatePolicyData(run, policies);
+            return policies;
+        }
+        return Collections.emptyList();
     }
 
     private List<String> getValidExternalIdsIfCompleted(ProviderJobStatus providerJobStatus) {
@@ -181,24 +200,30 @@ public class UpdaterService {
             foundError.ifPresent(
                     e -> run.setTrainingErrorId(e.getId())
             );
-            getDescriptionStartingWithPrefix(descriptions, RLLIB_ERROR_PREFIX).ifPresent(run::setRllibError);
+            getDescriptionStartingWithPrefix(descriptions, RLLIB_ERROR_PREFIX, RLLIB_MAX_LEN).ifPresent(run::setRllibError);
         } else if (status == RunStatus.Killed && run.getStatusEnum() != RunStatus.Stopping) {
             // Stopping status is set, when user wants to stop training. So, don't assign an error in this case
             trainingErrorDAO.getErrorByKeyword(KILLED_TRAINING_KEYWORD).ifPresent(error -> {
                 run.setTrainingErrorId(error.getId());
             });
-            getDescriptionStartingWithPrefix(descriptions, RLLIB_ERROR_PREFIX).ifPresent(run::setRllibError);
+            getDescriptionStartingWithPrefix(descriptions, RLLIB_ERROR_PREFIX, RLLIB_MAX_LEN).ifPresent(run::setRllibError);
         } else if (status == RunStatus.Completed) {
-            getDescriptionStartingWithPrefix(descriptions, SUCCESS_MESSAGE_PREFIX).ifPresent(run::setSuccessMessage);
-            getDescriptionStartingWithPrefix(descriptions, WARNING_MESSAGE_PREFIX).ifPresent(run::setWarningMessage);
+            getDescriptionStartingWithPrefix(descriptions, SUCCESS_MESSAGE_PREFIX, SUCCESS_MAX_LEN).ifPresent(run::setSuccessMessage);
+            getDescriptionStartingWithPrefix(descriptions, WARNING_MESSAGE_PREFIX, WARNING_MAX_LEN).ifPresent(run::setWarningMessage);
         }
     }
 
-    private Optional<String> getDescriptionStartingWithPrefix(Collection<String> descriptions, String prefix) {
+    private Optional<String> getDescriptionStartingWithPrefix(Collection<String> descriptions, String prefix, int maxLength) {
         return descriptions.stream()
-                .filter(e -> e.startsWith(prefix)).findAny().map(e -> e.replace(prefix, ""));
+                .filter(e -> e.startsWith(prefix)).findAny().map(e -> {
+                    e = e.replace(prefix, "");
+                    if (e.length() > maxLength) {
+                        e = e.substring(0, maxLength);
+                    }
+                    return e;
+                });
     }
-
+    
     private void fireEventUpdates(Run run, List<Policy> policies) {
         for (Policy policy : CollectionUtils.emptyIfNull(policies)) {
             serializeAndFireEvent(policy, TYPE_POLICY);

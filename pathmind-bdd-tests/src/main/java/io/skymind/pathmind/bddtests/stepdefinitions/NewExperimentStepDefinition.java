@@ -81,4 +81,9 @@ public class NewExperimentStepDefinition {
     public void checkThatBeforeYouLeavePopUpIsShownWithError(String error) {
         newExperimentSteps.checkThatBeforeYouLeavePopUpIsShownWithError(error);
     }
+
+    @When("^Click side bar experiment (.*)$")
+    public void clickSideBarExperiment(String experimentName) {
+        newExperimentSteps.clickSideBarExperiment(experimentName);
+    }
 }

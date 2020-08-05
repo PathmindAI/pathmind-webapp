@@ -21,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = 2123211123;
+    private static final long serialVersionUID = 1770296050;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -91,12 +91,17 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     /**
      * The column <code>public.experiment.archived</code>.
      */
-    public final TableField<ExperimentRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+    public final TableField<ExperimentRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.experiment.user_notes</code>.
      */
-    public final TableField<ExperimentRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR(1000).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<ExperimentRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>public.experiment.is_favorite</code>.
+     */
+    public final TableField<ExperimentRecord, Boolean> IS_FAVORITE = createField(DSL.name("is_favorite"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * Create a <code>public.experiment</code> table reference
@@ -192,11 +197,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row9<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }

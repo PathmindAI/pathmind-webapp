@@ -22,6 +22,7 @@ import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 
 public class ExperimentUtils
@@ -34,12 +35,16 @@ public class ExperimentUtils
 		newExperiment.setDateCreated(LocalDateTime.now());
 		newExperiment.setModelId(modelId);
 		newExperiment.setName(name);
-		newExperiment.setRewardFunction(rewardFunction);
+        newExperiment.setRewardFunction(rewardFunction);
 		return newExperiment;
 	}
 
 	public static boolean isDraftRunType(Experiment experiment) {
-		return experiment.getRuns() == null || experiment.getRuns().isEmpty();
+		return experiment.isDraft();
+	}
+
+	public static boolean isFavorite(Experiment experiment) {
+		return experiment.isFavorite();
 	}
 
 	public static String getProjectName(Experiment experiment) {
@@ -161,5 +166,37 @@ public class ExperimentUtils
     public static void archiveExperiment(UI ui, ExperimentDAO experimentDAO, Experiment experiment, boolean isArchive) {
 	    experimentDAO.archive(experiment.getId(), isArchive);
 	    EventBus.post(new ExperimentUpdatedBusEvent(ui, experiment));
+    }
+
+    public static void favoriteExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean newIsFavorite) {
+        experimentDAO.markAsFavorite(experiment.getId(), newIsFavorite);
+        EventBus.post(new ExperimentUpdatedBusEvent(experiment));
+    }
+
+    public static boolean isNewExperimentForModel(Experiment experiment, List<Experiment> experiments, long modelId) {
+        return isSameModel(experiment, modelId) && !experiments.contains(experiment);
+    }
+
+    public static boolean isSameModel(Experiment experiment, long modelId) {
+        return experiment != null && experiment.getModelId() == modelId;
+    }
+
+    public static boolean isSameExperiment(Experiment experiment, Experiment secondExperiment) {
+        return experiment != null && experiment.getId() == secondExperiment.getId();
+    }
+
+    public static void addOrUpdateRun(Experiment experiment, Run updatedRun) {
+        experiment.getRuns().stream()
+                .filter(run -> run.getId() == updatedRun.getId())
+                .findAny()
+                .ifPresentOrElse(
+                        run -> experiment.getRuns().set(experiment.getRuns().indexOf(run), updatedRun),
+                        () -> experiment.getRuns().add(updatedRun));
+    }
+
+    public static void updatedRunForPolicies(Experiment experiment, Run run) {
+        experiment.getPolicies().stream()
+                .filter(policy -> policy.getRunId() == run.getId())
+                .forEach(policy -> policy.setRun(run));
     }
 }

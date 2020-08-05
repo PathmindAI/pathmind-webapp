@@ -9,6 +9,7 @@ import java.util.Objects;
 @Getter
 @Setter
 public abstract class Data implements Serializable {
+    private static final long serialVersionUID = -3430522101432605914L;
 	private long id = -1;
 	private String name;
 

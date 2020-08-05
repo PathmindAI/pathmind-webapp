@@ -89,6 +89,12 @@ public class ModelPage extends PageObject {
         e.findElement(By.cssSelector("button")).click();
     }
 
+    public void clickModelPageExperimentArchiveBtn(String experiment) {
+        waitABit(2000);
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+"']/following-sibling::vaadin-grid-cell-content[5]/descendant::vaadin-button")));
+        e.findElement(By.cssSelector("button")).click();
+    }
+
     public void clickExperimentUnArchiveButton() {
         waitABit(2000);
         WebElement e = utils.expandRootElement(unarchiveBtnShadow);
@@ -113,7 +119,7 @@ public class ModelPage extends PageObject {
         }
         assertThat(strings, hasItem("Projects"));
         assertThat(strings, hasItem("AutotestProject" + Serenity.sessionVariableCalled("randomNumber")));
-        assertThat(strings, hasItem("Model #1"));
+        assertThat(strings, hasItem("Model #1 (coffeeshop_v1)"));
     }
 
     public void checkExperimentModelStatusIsStarting(String status) {
@@ -126,5 +132,27 @@ public class ModelPage extends PageObject {
 
     public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
         assertThat(utils.getStringRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[4]")), is(note));
+    }
+
+    public void checkModelPageModelBreadcrumbPackageNameIs(String packageName) {
+        assertThat(getDriver().findElement(By.xpath("//*[contains(text(),'Model') and @class='breadcrumb']")).getText(), is("Model #1 (" + packageName + ")"));
+    }
+
+    public void clickModelPageExperimentStarButton(String experiment) {
+        waitABit(3500);
+        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+"']/preceding-sibling::vaadin-grid-cell-content[1]/descendant::favorite-star")));
+        waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
+        favoriteStarShadow.findElement(By.cssSelector("vaadin-button")).click();
+    }
+
+    public void checkModelPageExperimentIsFavoriteTrue(String experiment, Boolean favoriteStatus) {
+        waitABit(3500);
+        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+"']/preceding-sibling::vaadin-grid-cell-content[1]/descendant::favorite-star")));
+        waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
+        if (favoriteStatus){
+            assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star"));
+        }else {
+            assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star-o"));
+        }
     }
 }

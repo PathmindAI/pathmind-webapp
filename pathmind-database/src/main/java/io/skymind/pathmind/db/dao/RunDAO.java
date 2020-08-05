@@ -4,6 +4,7 @@ import io.skymind.pathmind.db.utils.DBUtils;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.user.UserMetrics;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Configuration;
@@ -236,6 +237,13 @@ public class RunDAO {
             return policiesToRaiseUpdateEvent;
         });
     }
+    
+    public void updatePolicyData(Run run, List<Policy> policies) {
+        ctx.transaction(configuration -> {
+            DSLContext transactionCtx = DSL.using(configuration);
+            updatePolicies(run, policies, transactionCtx);
+        });
+    }
 
     private Policy getPolicy(DSLContext transactionCtx, long policyId) {
         Policy policy = PolicyRepository.getPolicy(transactionCtx, policyId);
@@ -251,5 +259,9 @@ public class RunDAO {
      */
     public int getRewardNumForRun(long runId) {
         return MetricsRepository.getRewardNumForRun(ctx, runId);
+    }
+
+    public UserMetrics getRunUsageDataForUser(long userId) {
+        return RunRepository.getRunUsageDataForUser(ctx, userId);
     }
 }

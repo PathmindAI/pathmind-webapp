@@ -174,6 +174,11 @@ public class GenericPage extends PageObject {
     }
 
     public void checkPageTitleTagTextIs(String text) {
+        waitABit(5000);
         assertThat(getDriver().getTitle(), is(text));
+    }
+
+    public void waitABitMs(int time) {
+        waitABit(time);
     }
 }

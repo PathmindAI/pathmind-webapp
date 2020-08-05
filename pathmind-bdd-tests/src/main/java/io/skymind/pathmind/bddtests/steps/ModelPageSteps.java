@@ -86,4 +86,24 @@ public class ModelPageSteps {
     public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
         modelPage.checkOnTheModelPageExperimentNotesIs(experiment, note);
     }
+
+    @Step
+    public void checkModelPageModelBreadcrumbPackageNameIs(String packageName) {
+        modelPage.checkModelPageModelBreadcrumbPackageNameIs(packageName);
+    }
+
+    @Step
+    public void clickModelPageExperimentStarButton(String experiment) {
+        modelPage.clickModelPageExperimentStarButton(experiment);
+    }
+
+    @Step
+    public void checkModelPageExperimentIsFavoriteTrue(String experiment, Boolean favoriteStatus) {
+        modelPage.checkModelPageExperimentIsFavoriteTrue(experiment, favoriteStatus);
+    }
+
+    @Step
+    public void clickModelPageExperimentArchiveBtn(String experiment) {
+        modelPage.clickModelPageExperimentArchiveBtn(experiment);
+    }
 }

@@ -50,7 +50,7 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.clickCurrentExperimentArchiveButton();
     }
 
-    @When("^Change reward variable on experiment view (.*) to (.*)$")
+    @When("^Change reward variable on experiment view '(.*)' to '(.*)'$")
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
         experimentPageSteps.changeRewardVariableOnExperimentView(variableNumber, variableName);
     }
@@ -63,6 +63,11 @@ public class ExperimentStepDefinitions {
     @Then("^Check experiment page reward variables is (.*)$")
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
         experimentPageSteps.checkExperimentPageRewardVariablesIs(commaSeparatedVariableNames);
+    }
+
+    @Then("^Check running experiment page reward variables is (.*)$")
+    public void checkRunningExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
+        experimentPageSteps.checkRunningExperimentPageRewardVariablesIs(commaSeparatedVariableNames);
     }
 
     @Then("^Check that (.*) metrics are shown for reward variables$")
@@ -103,5 +108,20 @@ public class ExperimentStepDefinitions {
     @Then("^Check that '(.*)' status icon is '(.*)'$")
     public void checkThatExperimentStatusIconIs(String experiment, String icon) {
         experimentPageSteps.checkThatExperimentStatusIconIs(experiment, icon);
+    }
+
+    @Then("^Click experiment page (.*) star button$")
+    public void clickExperimentPageStarButton(String experimentName) {
+        experimentPageSteps.clickExperimentPageStarButton(experimentName);
+    }
+
+    @Then("^Check experiment page side bar (.*) is favorite (.*)$")
+    public void checkExperimentPageSideBarIsFavorite(String experimentName, Boolean favoriteStatus) {
+        experimentPageSteps.checkExperimentPageSideBarIsFavorite(experimentName, favoriteStatus);
+    }
+
+    @Then("^Check experiment page simulation metrics (.*)$")
+    public void checkExperimentPageSimulationMetrics(String commaSeparatedVariableNames) {
+        experimentPageSteps.checkExperimentPageSimulationMetrics(commaSeparatedVariableNames);
     }
 }

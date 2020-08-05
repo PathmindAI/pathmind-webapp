@@ -47,7 +47,7 @@ import io.skymind.pathmind.webapp.ui.views.search.dataprovider.SearchResultsData
 public class SearchResultsView extends PathMindDefaultView implements AfterNavigationObserver, BeforeLeaveObserver, HasUrlParameter<String>{
 
     private ConfigurableFilterDataProvider<SearchResult, Void, String> dataProvider;
-    private ExperimentDAO experimentDao;
+    private ExperimentDAO experimentDAO;
     private String decodedKeyword;
     private String titleText = "Search Results";
     private String numberOfResultsText;
@@ -57,9 +57,9 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
     private SegmentIntegrator segmentIntegrator;
 
     @Autowired
-    public SearchResultsView(SearchResultsDataProvider searchResultsDataProvider, ExperimentDAO experimentDao) {
+    public SearchResultsView(SearchResultsDataProvider searchResultsDataProvider, ExperimentDAO experimentDAO) {
         dataProvider = searchResultsDataProvider.withConfigurableFilter();
-        this.experimentDao = experimentDao;
+        this.experimentDAO = experimentDAO;
     }
     
     @Override
@@ -113,7 +113,7 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
                     getUI().ifPresent(ui -> ui.navigate(ModelView.class, item.getItemId()));
                     break;
                 case EXPERIMENT:
-                    Experiment experiment = experimentDao.getExperimentWithRuns(item.getItemId()).get();
+                    Experiment experiment = experimentDAO.getExperimentWithRuns(item.getItemId()).get();
                     if (ExperimentUtils.isDraftRunType(experiment)) {
                         getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, item.getItemId()));
                     } else {
@@ -133,9 +133,8 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         grid.addClassName("search-results");
         grid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
         grid.addComponentColumn(
-                searchResult -> new SearchResultItem(searchResult, decodedKeyword)
-            )
-            .setComparator(Comparator.comparing(SearchResult::getUpdateDate));
+                searchResult -> new SearchResultItem(experimentDAO, searchResult, decodedKeyword)
+            );
         grid.setSizeFull();
         grid.setDataProvider(dataProvider);
         return grid;

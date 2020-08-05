@@ -6,8 +6,10 @@ import com.amazonaws.services.sqs.model.MessageAttributeValue;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent;
+import io.skymind.pathmind.shared.data.Metrics;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
@@ -36,14 +38,16 @@ public class UpdaterListener {
     private final ObjectMapper objectMapper;
     private final Integer sqsWaitSec;
     private final String sqsFilter;
+    private final PolicyDAO policyDAO;
 
-    public UpdaterListener(AWSApiClient awsApiClient, ObjectMapper objectMapper,
+    public UpdaterListener(AWSApiClient awsApiClient, ObjectMapper objectMapper, PolicyDAO policyDAO,
                            @Value("${pathmind.aws.sns.updater_sqs_filter}") String sqsFilter,
                            @Value("${pathmind.webapp.updater.sqs.wait.sec}") Integer sqsWaitSec) {
         this.awsApiClient = awsApiClient;
         this.objectMapper = objectMapper;
         this.sqsWaitSec = sqsWaitSec;
         this.sqsFilter = sqsFilter;
+        this.policyDAO = policyDAO;
     }
 
     @Scheduled(fixedDelayString = "${pathmind.webapp.updater.rate.msec}")
@@ -85,6 +89,11 @@ public class UpdaterListener {
                             switch (event.getType().toLowerCase()) {
                                 case TYPE_POLICY: {
                                     Policy policy = (Policy) in.readObject();
+                                    final long policyId = policy.getId();
+                                    List<Metrics> metrics =
+                                            policyDAO.getMetricsForPolicies(Collections.singletonList(policyId))
+                                                    .getOrDefault(policyId, Collections.emptyList());
+                                    policy.setMetrics(metrics);
                                     EventBus.post(new PolicyUpdateBusEvent(Collections.singletonList(policy)));
                                     break;
                                 }

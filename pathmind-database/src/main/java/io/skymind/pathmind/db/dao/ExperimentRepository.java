@@ -13,15 +13,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.Record;
-import org.jooq.Record1;
-import org.jooq.Record7;
-import org.jooq.Record8;
-import org.jooq.Result;
-import org.jooq.Table;
+import io.skymind.pathmind.shared.data.user.UserMetrics;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 
 import io.skymind.pathmind.shared.data.DashboardItem;
@@ -218,8 +211,8 @@ class ExperimentRepository
 		final Field<LocalDateTime> itemLastActivityDate = DSL.ifnull(DSL.field(EXPERIMENT.LAST_ACTIVITY_DATE),
 				DSL.greatest(MODEL.LAST_ACTIVITY_DATE,PROJECT.LAST_ACTIVITY_DATE));
 
-		final Result<?> result = ctx.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.USER_NOTES,
-				MODEL.ID, MODEL.NAME, MODEL.DRAFT,
+		final Result<?> result = ctx.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.USER_NOTES, EXPERIMENT.IS_FAVORITE,
+				MODEL.ID, MODEL.NAME, MODEL.DRAFT, MODEL.PACKAGE_NAME,
 				PROJECT.ID, PROJECT.NAME,
 				latestRun.asterisk(),
 				itemLastActivityDate.as("ITEM_LAST_ACTIVITY_DATE"),
@@ -313,4 +306,12 @@ class ExperimentRepository
 				.where(Tables.EXPERIMENT.ID.eq(experimentId))
 				.execute();
 	}
+
+    protected static void markAsFavorite(DSLContext ctx, long experimentId, boolean isFavorite) {
+        ctx.update(Tables.EXPERIMENT)
+                .set(Tables.EXPERIMENT.IS_FAVORITE, isFavorite)
+                .where(Tables.EXPERIMENT.ID.eq(experimentId))
+                .execute();
+    }
+
 }

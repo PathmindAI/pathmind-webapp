@@ -1466,4 +1466,144 @@
             <dropColumn tableName="MODEL" columnName="ACTION_TUPLE_SIZE" />
         </rollback>
     </changeSet>
+
+    <changeSet id="20200724-01" author="steph@followsteph.com">
+        <customChange class="io.skymind.pathmind.db.changeset.UpdatePolicy_ChangeSet_20200724_01"/>
+    </changeSet>
+  
+    <changeSet id="20200727-01" author="daehyun@skymind.io">
+        <dropPrimaryKey tableName="TRAINER_JOB"/>
+        <addPrimaryKey tableName="TRAINER_JOB" columnNames="JOB_ID, S3BUCKET"/>
+        <rollback>
+            <dropPrimaryKey tableName="TRAINER_JOB"/>
+            <addPrimaryKey tableName="TRAINER_JOB" columnNames="JOB_ID"/>
+        </rollback>
+    </changeSet>
+  
+    <changeSet id="20200713-01" author="bruno.rezende@ext.vaadin.com">
+        <createTable tableName="OBSERVATION">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="MODEL_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_OBSERVATION_MODEL" references="MODEL(ID)"/>
+            </column>
+            <column name="ARRAY_INDEX" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VARIABLE" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATA_TYPE" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="EXAMPLE" type="VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="MIN" type="DOUBLE">
+                <constraints nullable="true"/>
+            </column>
+            <column name="MAX" type="DOUBLE">
+                <constraints nullable="true"/>
+            </column>
+            <column name="MIN_ITEMS" type="INT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="MAX_ITEMS" type="INT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <createTable tableName="ACTION">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="MODEL_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_ACTION_MODEL" references="MODEL(ID)"/>
+            </column>
+            <column name="NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ARRAY_INDEX" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="OBSERVATION" columnNames="MODEL_ID, ARRAY_INDEX"/>
+        <addUniqueConstraint tableName="ACTION" columnNames="MODEL_ID, ARRAY_INDEX"/>
+        <createIndex tableName="ACTION" indexName="ACTION_MODEL_FK_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+        <createIndex tableName="OBSERVATION" indexName="OBSERVATION_MODEL_FK_INDEX">
+            <column name="MODEL_ID"/>
+        </createIndex>
+        <rollback>
+            <dropTable tableName="OBSERVATION"/>
+            <dropTable tableName="ACTION"/>
+        </rollback>
+    </changeSet>
+
+
+    <changeSet id="20200727-02" author="bruno.rezende@ext.vaadin.com">
+        <createProcedure>
+            CREATE OR REPLACE FUNCTION new_reward_variables(model_id numeric, reward_variables_count numeric) RETURNS SETOF RECORD AS $BODY$
+            DECLARE
+            rec record;
+            BEGIN
+
+            FOR i IN 0 .. reward_variables_count - 1 LOOP
+            select model_id, concat('var-', i), i into rec;
+            RETURN NEXT rec;
+            END LOOP;
+            RETURN;
+
+            END $BODY$ language plpgsql;
+        </createProcedure>
+        <createProcedure>
+            CREATE OR REPLACE FUNCTION get_missing_reward_variables() RETURNS SETOF RECORD AS
+            $BODY$
+            DECLARE
+            item record;
+            new_var record;
+            BEGIN
+            FOR item IN
+            select m.id, m.reward_variables_count from model m
+            left join reward_variable r on r.model_id=m.id where r.model_id is null
+            LOOP
+            for new_var in select * from new_reward_variables(item.id, item.reward_variables_count) as x(a numeric, b text, c int)
+            LOOP
+            RETURN NEXT new_var;
+            END LOOP;
+            END LOOP;
+            RETURN;
+            END
+            $BODY$
+            LANGUAGE plpgsql;
+        </createProcedure>
+        <sql>
+            INSERT INTO reward_variable (model_id, name, array_index) select * from get_missing_reward_variables() as x(m numeric, n text, a int);
+            UPDATE reward_variable SET name = concat('var-', array_index) WHERE name = '';
+            DROP FUNCTION IF EXISTS get_missing_reward_variables();
+            DROP FUNCTION IF EXISTS new_reward_variables(model_id numeric, reward_variables_count numeric);
+        </sql>
+        <rollback>
+            <sql>
+                DROP FUNCTION IF EXISTS get_missing_reward_variables();
+                DROP FUNCTION IF EXISTS new_reward_variables(model_id numeric, reward_variables_count numeric);
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200731-01" author="alexander.makarov@toptal.com">
+        <addColumn tableName="EXPERIMENT">
+            <column name="IS_FAVORITE" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="EXPERIMENT" columnName="IS_FAVORITE" />
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

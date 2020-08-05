@@ -3,11 +3,8 @@ package io.skymind.pathmind.webapp.ui.components;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -16,11 +13,11 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.upload.FileRejectedEvent;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.function.SerializableConsumer;
-import com.vaadin.flow.server.Command;
 
 import elemental.json.Json;
 import io.skymind.pathmind.webapp.ui.views.model.UploadMode;
@@ -46,8 +43,9 @@ import io.skymind.pathmind.webapp.ui.views.model.UploadMode;
 public class PathmindModelUploader extends Upload {
 
 	private int numOfFilesUploaded = 0;
+	private List<String> errors = new ArrayList<>();
 
-	private List<Command> allFilesCompletedListeners = new ArrayList<>();
+	private List<Consumer<Collection<String>>> allFilesCompletedListeners = new ArrayList<>();
 
 	private Boolean isFolderUploadSupported;
 	private UploadMode uploadMode;
@@ -66,21 +64,41 @@ public class PathmindModelUploader extends Upload {
 			setUploadButton(createUploadButton());
 		});
 		addUploadStartListener(this::uploadStarted);
-		addUploadErrorListener(evt -> {
+		addFailedListener(evt -> {
 			numOfFilesUploaded--;
-			if (numOfFilesUploaded == 0) {
-				triggerAllFilesCompletedListeners();
-			}
+			errors.add(evt.getReason().getLocalizedMessage());
+            if (numOfFilesUploaded == 0) {
+                triggerAllFilesCompletedListeners();
+            }
 		});
-		addUploadSuccessListener(evt -> {
+        addFileRejectedListener(evt -> {
+            errors.add(customizeErrorMessage(evt));
+            if (numOfFilesUploaded == 0) {
+                triggerAllFilesCompletedListeners();
+            }
+        });
+
+        addUploadSuccessListener(evt -> {
 			numOfFilesUploaded--;
 			if (numOfFilesUploaded == 0) {
-				triggerAllFilesCompletedListeners();
+                triggerAllFilesCompletedListeners();
 			}
 		});
 	}
 
-	private Button createUploadButton() {
+    private String customizeErrorMessage(FileRejectedEvent evt) {
+ 	    // I couldn't find an easy way to update only the 'file is too big' error message by using i18n, so I'll
+        // use this hack.
+        String errorMessage = evt.getErrorMessage();
+        if (errorMessage.equalsIgnoreCase("File is Too Big.")) {
+            return "The file is too big. Please contact support@pathmind.com.";
+        }
+        else {
+            return errorMessage;
+        }
+    }
+
+    private Button createUploadButton() {
 		Button uploadButton = new Button(VaadinIcon.UPLOAD.create());
 		uploadButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		uploadButton.setText(uploadMode == UploadMode.FOLDER ? "Upload exported folder" : "Upload zip file");
@@ -124,13 +142,14 @@ public class PathmindModelUploader extends Upload {
 		}
 	}
 
-	public void addAllFilesUploadedListener(Command command) {
-		allFilesCompletedListeners.add(command);
+	public void addAllFilesUploadedListener(Consumer<Collection<String>> consumer) {
+		allFilesCompletedListeners.add(consumer);
 	}
 	
 	private void triggerAllFilesCompletedListeners() {
 		getElement().setPropertyJson("files", Json.createArray());
-		allFilesCompletedListeners.forEach(listener -> listener.execute());
+		allFilesCompletedListeners.forEach(listener -> listener.accept(errors));
+		errors = new ArrayList<>();
 	}
 
 	public void setupFolderUpload() {
@@ -173,7 +192,7 @@ public class PathmindModelUploader extends Upload {
 	    /**
 	     * Get the output stream for file.
 	     *
-	     * @param fileName
+	     * @param filePath
 	     *            name of file to get stream for
 	     * @return file output stream or empty stream if no file found
 	     */
@@ -187,7 +206,7 @@ public class PathmindModelUploader extends Upload {
 	    /**
 	     * Get the input stream for file with filePath.
 	     *
-	     * @param filename
+	     * @param filePath
 	     *            name of file to get input stream for
 	     * @return input stream for file or empty stream if file not found
 	     */

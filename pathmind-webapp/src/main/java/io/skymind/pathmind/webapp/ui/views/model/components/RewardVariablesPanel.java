@@ -53,37 +53,33 @@ public class RewardVariablesPanel extends VerticalLayout
 	}
 
 	private void setupForm() {
+        rewardVariablesTable = new RewardVariablesTable(false);
 		formPanel.add(new Paragraph("You have created a function to gather reward variables in your simulation. Let’s give them variable names to make it easier to remember what they reference."));
 		formPanel.add(getRewardVariablesPanel());
 		formPanel.setPadding(false);
-	}
-
-	public void setupRewardVariablesTable(int rewardVariablesCount, List<RewardVariable> rewardVariables) {
-		rewardVariablesTable = new RewardVariablesTable();
-		rewardVariablesTable.setVariableSize(Math.max(rewardVariablesCount, rewardVariables.size()));
-		if (!rewardVariables.isEmpty()) {
-			rewardVariablesTable.setValue(rewardVariables);
-		}
 		formPanel.add(rewardVariablesTable);
 	}
 
+	public void setupRewardVariablesTable(int rewardVariablesCount, List<RewardVariable> rewardVariables) {
+	    rewardVariablesTable.setVariableSize(Math.max(rewardVariablesCount, rewardVariables.size()));
+		rewardVariablesTable.setValue(rewardVariables);
+	}
+
 	private Component getRewardVariablesPanel() {
-		VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
-				LabelFactory.createLabel("Let’s give each variable a name", BOLD_LABEL),
-				LabelFactory.createLabel("This will make it easier to understand when you’re creating reward functions."));
+        VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
+                LabelFactory.createLabel("Let’s give each variable a name", BOLD_LABEL),
+                LabelFactory.createLabel("This will make it easier to understand when you’re creating reward functions."),
+                LabelFactory.createLabel("If a name isn't provided, the reward variable will be named 'var-X', where 'X' is its index, e.g. 'var-0'.")
+        );
 		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
 		return wrapper;
 	}
 	
 	public List<RewardVariable> getRewardVariables(){
-		if (rewardVariablesTable == null) {
-			return null;
-		} else {
-			return rewardVariablesTable.getValue();
-		}
+		return rewardVariablesTable.getValue();
 	}
 
 	public boolean isInputValueValid() {
-		return !rewardVariablesTable.isInvalid();
+        return !rewardVariablesTable.isInvalid();
 	}
 }
