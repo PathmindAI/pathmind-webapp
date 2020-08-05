@@ -14,8 +14,8 @@
 }
 
 .experiment-view .middle-panel > vaadin-vertical-layout:first-child {
-    flex: 1 0 calc(30% + var(--lumo-space-m));
-    width: 30% !important;
+    flex: 0 0 auto;
+    width: auto !important;
 }
 
 .experiment-view .middle-panel > vaadin-vertical-layout + vaadin-vertical-layout {
@@ -36,10 +36,7 @@
     overflow: auto;
 }
 
-.experiment-view .reward-variables-table .header-row {
-    display: none;
-}
-.experiment-view .reward-variables-table span {
+.experiment-view .reward-variables-table span:first-child {
     display: none;
 }
 .experiment-view .reward-variable-name-field {
@@ -53,6 +50,7 @@
     align-items: center;
     height: 2rem;
     font-size: var(--lumo-font-size-s);
+    margin-left: var(--lumo-space-m);
 }
 
 .experiment-view .metrics-wrapper,

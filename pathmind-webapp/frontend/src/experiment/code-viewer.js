@@ -146,7 +146,7 @@ class CodeViewer extends PolymerElement {
                     -ms-user-select: none;
                     user-select: none;
                     padding: 0.12em 0.3em;
-                    border-radius: 4px;
+                    border-radius: var(--lumo-border-radius-s);
                     margin: 0 0 0 0.285em;
                     cursor: default;
                 }

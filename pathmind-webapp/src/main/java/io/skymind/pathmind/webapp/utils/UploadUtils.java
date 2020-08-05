@@ -19,7 +19,7 @@ import java.util.zip.ZipOutputStream;
 public class UploadUtils {
 	
 	private static String MODEL = "model.jar";
-	private static String[] WHITE_LIST = {"model.jar", "database/db.script", "database/db.properties", "database/db.data", "cache/giscache", "cache/giscache.p", "cache/giscache.t"};
+	private static String[] ALLOW_LIST = {"model.jar", "database/db.script", "database/db.properties", "database/db.data", "cache/giscache", "cache/giscache.p", "cache/giscache.t"};
 
 	public static byte[] createZipFileFromBuffer(MultiFileMemoryBuffer buffer) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -62,7 +62,7 @@ public class UploadUtils {
             	enu = zipFile.entries();
             	while (enu.hasMoreElements()) {
             		ZipEntry zipEntry = (ZipEntry) enu.nextElement();
-            		for (String dbfile: Arrays.asList(WHITE_LIST)) {
+            		for (String dbfile: Arrays.asList(ALLOW_LIST)) {
             			if (zipEntry.getName().length() > rootFolder.length()) {
             				String filename = zipEntry.getName().substring(rootFolder.length());
             				if (filename.equalsIgnoreCase(dbfile)) {

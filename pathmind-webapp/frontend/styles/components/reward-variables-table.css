@@ -25,13 +25,13 @@
     align-items: center;
     padding: 0.4em;
 }
-.reward-variables-table span:first-child {
+.reward-variables-table:not([readonly]) span:first-child {
     box-sizing: border-box;
     flex: 0 0 2rem;
     text-align: center;
     padding: 0.5em;
 }
-.reward-variables-table :not(.header-row) span:first-child {
+.reward-variables-table:not([readonly]) :not(.header-row) span:first-child {
     box-sizing: border-box;
     align-self: flex-start;
     height: 1.75rem;
@@ -40,6 +40,18 @@
     border-radius: 3px 0 0 3px;
     border: 1px solid var(--pm-gray-color);
     border-right: none;
+}
+.reward-variables-table[readonly] .header-row {
+    display: none;
+}
+.reward-variables-table[readonly] span:first-child {
+    background-color: transparent !important;
+}
+.reward-variables-table[readonly] span:last-child {
+    line-height: 1;
+    padding: .3em;
+    border-radius: var(--lumo-border-radius-s);
+    box-shadow: none;
 }
 .reward-variables-table vaadin-text-field {
     font-size: var(--lumo-font-size-s);

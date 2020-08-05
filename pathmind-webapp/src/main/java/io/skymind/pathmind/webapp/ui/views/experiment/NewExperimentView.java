@@ -509,9 +509,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         @Override
         public void handleBusEvent(ExperimentCreatedBusEvent event) {
-            if (isNewExperimentForThisViewModel(event.getExperiment(), event.getModelId())) {
-                updateNavBarExperiments();
-            }
+            updateNavBarExperiments();
+        }
+        
+        @Override
+        public boolean filterBusEvent(ExperimentCreatedBusEvent event) {
+            return experiment != null && !experiment.isArchived()
+                    && isNewExperimentForThisViewModel(event.getExperiment(), event.getModelId());
         }
 
         @Override
@@ -529,6 +533,18 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             }
             else if (isSameModel(event.getModelId())) {
                 updateNavBarExperiments();
+            }
+        }
+        
+        @Override
+        public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
+            if (experiment == null) {
+                return false;
+            }
+            if (experiment.isArchived()) {
+                return isSameExperiment(event.getExperiment());
+            } else {
+                return isSameModel(event.getModelId());
             }
         }
 
