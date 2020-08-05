@@ -166,4 +166,23 @@ public class SearchParserTest {
                 );
         Assert.assertEquals(expected, searchDescription);
     }
+
+    @Test
+    public void testSearchWithoutAType() {
+        // this shouldn't happen in practice, unless someone direct change the URL, but let's prevent anyway.
+        SearchParser searchParser = new SearchParser();
+        SearchDescription searchDescription = searchParser.parseKeyword("some search");
+        SearchDescription expected = searchParser.parseKeyword("all:some search");
+        Assert.assertEquals(expected, searchDescription);
+    }
+
+    @Test
+    public void testSearchWithATypeThatDoesntExist() {
+        // this shouldn't happen in practice, unless someone direct change the URL, but let's prevent anyway.
+        SearchParser searchParser = new SearchParser();
+        SearchDescription searchDescription = searchParser.parseKeyword("i dont exist:some search");
+        SearchDescription expected = searchParser.parseKeyword("all:some search");
+        Assert.assertEquals(expected, searchDescription);
+    }
+
 }

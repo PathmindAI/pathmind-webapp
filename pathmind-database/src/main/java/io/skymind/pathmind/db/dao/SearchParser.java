@@ -13,7 +13,7 @@ import static io.skymind.pathmind.db.dao.SearchDescription.Field.USERNOTES;
 
 public class SearchParser {
     public SearchDescription parseKeyword(String originalKeyword) {
-        String[] splitTypeAndKeyword = originalKeyword.split(":", 2);
+        String[] splitTypeAndKeyword = splitTypeAndKeyword(originalKeyword);
         String searchType = splitTypeAndKeyword[0].toLowerCase();
         String searchKeyword = splitTypeAndKeyword[1].toLowerCase();
 
@@ -34,6 +34,16 @@ public class SearchParser {
                     .withModelClauses(parseModelSearch(searchKeyword))
                     .withExperimentClauses(parseExperimentSearch(searchKeyword))
                     ;
+        }
+    }
+
+    private String[] splitTypeAndKeyword(String originalKeyword) {
+        String[] candidate = originalKeyword.split(":", 2);
+        if (candidate.length == 2) {
+            return candidate;
+        }
+        else {
+            return new String[]{"all", candidate[0]};
         }
     }
 
