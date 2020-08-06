@@ -117,6 +117,11 @@ public class GenericPageSteps {
     }
 
     @Step
+    public void checkPageUrlContains(String url) {
+        genericPage.checkPageUrlContains(url);
+    }
+
+    @Step
     public void checkPageTitleTagTextIs(String text) {
         genericPage.checkPageTitleTagTextIs(text);
     }
