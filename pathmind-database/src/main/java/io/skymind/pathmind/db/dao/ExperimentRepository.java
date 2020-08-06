@@ -91,7 +91,28 @@ class ExperimentRepository
 		}).collect(Collectors.toList());
 	}
 
-	private static void addParentDataModelObjects(Record record, Experiment experiment) {
+    protected static List<Experiment> getNonArchivedExperimentsForModel(DSLContext ctx, long modelId) {
+        Result<?> result = ctx
+                .select(EXPERIMENT.asterisk())
+                .select(MODEL.ID, MODEL.NAME)
+                .select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
+                .from(EXPERIMENT)
+                .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+                .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+                .where(EXPERIMENT.MODEL_ID.eq(modelId).and(EXPERIMENT.ARCHIVED.eq(false)))
+                .orderBy(EXPERIMENT.DATE_CREATED.desc())
+                .fetch();
+
+        return result.stream().map(record -> {
+            Experiment experiment = record.into(EXPERIMENT).into(Experiment.class);
+            addParentDataModelObjects(record, experiment);
+            return experiment;
+        }).collect(Collectors.toList());
+    }
+
+
+
+    private static void addParentDataModelObjects(Record record, Experiment experiment) {
 		experiment.setModel(record.into(MODEL).into(Model.class));
 		experiment.setProject(record.into(PROJECT).into(Project.class));
 	}

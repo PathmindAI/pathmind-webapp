@@ -595,7 +595,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     public void updateNavBarExperimentsInEventHandling() {
-        experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+        experiments = experimentDAO.getNonArchivedExperimentsForModel(modelId);
 
         if (experiments.isEmpty()) {
             NotificationUtils.alertAndThen(getUI(),"Experiment Archived", "The experiment was archived.",
@@ -611,7 +611,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             else {
                 // a new experiment was created, let's just show it in nav bar
                 PushUtils.push(getUI(), ui ->  {
-                    selectExperiment(experiment);
                     experimentsNavbar.setExperiments(ui, experiments, experiment);
                 });
             }
