@@ -323,7 +323,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             getUI().ifPresent(ui -> {
                 ExperimentUtils.archiveExperiment(ui, experimentDAO, experiment, false);
                 segmentIntegrator.archived(Experiment.class, false);
-                ui.navigate(ExperimentView.class, experiment.getId());
+                navigateToExperiment(ui, experiment);
             });
         });
     }
