@@ -64,7 +64,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -691,19 +690,21 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
             // will check if the object reference is the same, if it is, then the current view generated the event
             // and we shouldn't deal with it
-            if ( getUI().isPresent() && event.getUi() != getUI().get()) {
-                if (experiment == null) {
-                    return false;
-                }
-                if (experiment.isArchived()) {
-                    return ExperimentUtils.isSameExperiment(event.getExperiment(), experiment);
-                } else {
-                    return ExperimentUtils.isSameModel(experiment, event.getModelId());
-                }
-            }
-            else {
+            if (theEventWasGeneratedInThisTab(event)) {
                 return false;
             }
+            if (experiment == null) {
+                return false;
+            }
+            if (experiment.isArchived()) {
+                return ExperimentUtils.isSameExperiment(event.getExperiment(), experiment);
+            } else {
+                return ExperimentUtils.isSameModel(experiment, event.getModelId());
+            }
+        }
+
+        private boolean theEventWasGeneratedInThisTab(ExperimentUpdatedBusEvent event) {
+            return getUI().isPresent() && event.getUi() == getUI().get();
         }
     }
 }

@@ -571,19 +571,21 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         
         @Override
         public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
-            if (getUI().isPresent() && event.getUi() != getUI().get()) {
-                if (experiment == null) {
-                    return false;
-                }
-                if (experiment.isArchived()) {
-                    return isSameExperiment(event.getExperiment());
-                } else {
-                    return isSameModel(event.getModelId());
-                }
-            }
-            else {
+            if (theEventWasGeneratedInThisTab(event)) {
                 return false;
             }
+            if (experiment == null) {
+                return false;
+            }
+            if (experiment.isArchived()) {
+                return isSameExperiment(event.getExperiment());
+            } else {
+                return isSameModel(event.getModelId());
+            }
+        }
+
+        private boolean theEventWasGeneratedInThisTab(ExperimentUpdatedBusEvent event) {
+            return getUI().isPresent() && event.getUi() == getUI().get();
         }
 
         @Override
