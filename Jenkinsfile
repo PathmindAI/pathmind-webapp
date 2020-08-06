@@ -262,8 +262,8 @@ pipeline {
                     echo "Running db migrations"
                     sh "cd ${WORKSPACE} && mvn clean install"
                 }
-                runMigrations("default")
                 backupDb("pathmind-prod")
+                runMigrations("default")
                 script {
                     echo "Updating helm chart"
                     sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
