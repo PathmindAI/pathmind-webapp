@@ -16,11 +16,10 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row4;
+import org.jooq.Row5;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RewardVariable extends TableImpl<RewardVariableRecord> {
 
-    private static final long serialVersionUID = -1741413702;
+    private static final long serialVersionUID = -249485251;
 
     /**
      * The reference instance of <code>public.reward_variable</code>
@@ -60,7 +59,7 @@ public class RewardVariable extends TableImpl<RewardVariableRecord> {
     /**
      * The column <code>public.reward_variable.id</code>.
      */
-    public final TableField<RewardVariableRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('reward_variable_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
+    public final TableField<RewardVariableRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.reward_variable.model_id</code>.
@@ -76,6 +75,11 @@ public class RewardVariable extends TableImpl<RewardVariableRecord> {
      * The column <code>public.reward_variable.array_index</code>.
      */
     public final TableField<RewardVariableRecord, Integer> ARRAY_INDEX = createField(DSL.name("array_index"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.reward_variable.data_type</code>.
+     */
+    public final TableField<RewardVariableRecord, String> DATA_TYPE = createField(DSL.name("data_type"), org.jooq.impl.SQLDataType.VARCHAR(16), this, "");
 
     /**
      * Create a <code>public.reward_variable</code> table reference
@@ -118,11 +122,6 @@ public class RewardVariable extends TableImpl<RewardVariableRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.REWARD_VARIABLE_MODEL_FK_INDEX, Indexes.REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY, Indexes.REWARD_VARIABLE_PKEY);
-    }
-
-    @Override
-    public Identity<RewardVariableRecord, Long> getIdentity() {
-        return Keys.IDENTITY_REWARD_VARIABLE;
     }
 
     @Override
@@ -171,11 +170,11 @@ public class RewardVariable extends TableImpl<RewardVariableRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row4 type methods
+    // Row5 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<Long, Long, String, Integer> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row5<Long, Long, String, Integer, String> fieldsRow() {
+        return (Row5) super.fieldsRow();
     }
 }

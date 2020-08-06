@@ -22,186 +22,55 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
 @CssImport(value = "./styles/components/reward-variables-table.css")
-public class RewardVariablesTable extends CustomField<List<RewardVariable>> implements HasStyle {
+public class RewardVariablesTable extends VerticalLayout {
 
 	private List<RowField> rewardVariableNameFields = new ArrayList<>();
 
-    private VerticalLayout container;
-
-    private boolean isReadOnly = false;
-
-    private final boolean requireVars;
-
-	public RewardVariablesTable(boolean requireVars) {
-	    this.requireVars = requireVars;
-		container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-		container.setClassName("reward-variables-table");
-
-		add(container);
+	public RewardVariablesTable() {
+	    setPadding(false);
+        setSpacing(false);
+		setClassName("reward-variables-table");
+		getElement().setAttribute("readonly", true);
 	}
 
-    public RewardVariablesTable() {
-	    this(true);
-    }
-
-    public void setCodeEditorMode() {
-		setClassName("with-container-border");
-	}
-
-    /**
-     * Create Reward Variable Table Rows.
-     *
-     * @param numOfVariables
-     *            the number of reward variables, not <code>null</code>
-     */
-	public void setVariableSize(int numOfVariables) {
-		container.removeAll();
+	public void setRewardVariables(List<RewardVariable> rewardVariables) {
+		removeAll();
 		rewardVariableNameFields.clear();
 		HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("#"), new Span("Variable Name"));
 
 		headerRow.addClassName("header-row");
 		GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
 
-        container.add(headerRow);
+        add(headerRow);
 
-        for (int i = 0; i < numOfVariables; i++) {
-            container.add(createRow(i));
-        }
+        rewardVariables.forEach(rv -> add(createRow(rv)));
+    }
+	
+	public void setCodeEditorMode() {
+        setClassName("with-container-border");
     }
 
-    public void setIsReadOnly(boolean readOnly) {
-        isReadOnly = readOnly;
-        container.getElement().setAttribute("readonly", readOnly);
-    }
-
-	private RowField createRow(int rowNumber) {
-		RowField rewardVariableNameField = new RowField(rowNumber, isReadOnly);
+	private RowField createRow(RewardVariable rv) {
+		RowField rewardVariableNameField = new RowField(rv);
         rewardVariableNameFields.add(rewardVariableNameField);
-        if (!isReadOnly) {
-            FormUtils.addValidator(rewardVariableNameField, new RowValidator(requireVars));
-        }
 		return rewardVariableNameField;
     }
 
-	@Override
-	protected List<RewardVariable> generateModelValue() {
-	    return rewardVariableNameFields.stream().map(RowField::getValue).collect(Collectors.toList());
-	}
-
-	@Override
-	public void setPresentationValue(List<RewardVariable> newPresentationValue) {
-		newPresentationValue.forEach(rv -> rewardVariableNameFields.get(rv.getArrayIndex()).setValue(rv));
-	}
-
-	@Override
-	public boolean isInvalid() {
-		return rewardVariableNameFields.stream().anyMatch(RowField::isInvalid);
-	}
-
-	private static class RowValidator implements Validator<RewardVariable> {
-		private final StringLengthValidator nameValidator = new StringLengthValidator("Variable name must not exceed 100 characters", 0, 100);
-		private final StringLengthValidator requiredValidator = new StringLengthValidator("Variable name is required", 1, 100);
-
-		private final Collection<Validator<String>> validators;
-
-		public RowValidator(boolean requireVars) {
-		    if (requireVars) {
-		        validators = Arrays.asList(nameValidator, requiredValidator);
-            }
-		    else {
-		        validators = Collections.singletonList(nameValidator);
-            }
-        }
-
-		@Override
-		public ValidationResult apply(RewardVariable rewardVariable, ValueContext valueContext) {
-            return validators.stream()
-                    .map(v -> v.apply(rewardVariable.getName(), valueContext))
-                    .filter(r -> r.isError())
-                    .findAny()
-                    .orElse(ValidationResult.ok());
-		}
-	}
-
-	private static class RowField extends AbstractCompositeField<HorizontalLayout, RowField, RewardVariable> implements
-			HasValidation {
-
-		private long modelId = 0;
+	private static class RowField extends HorizontalLayout {
 
 		private final int rowNumber;
 
-        private final TextField rewardVariableNameField;
         private final Span rewardVariableNameSpan;
-        private boolean readOnly = false;
 
-		private RowField(int rowNumber, boolean readOnly) {
-            super(null);
-            this.readOnly = readOnly;
-            this.rowNumber = rowNumber;
-            this.rewardVariableNameField = new TextField();
+		private RowField(RewardVariable rv) {
+            this.rowNumber = rv.getArrayIndex();
             this.rewardVariableNameSpan = new Span();
-            getContent().add(new Span("" + rowNumber));
-            if (readOnly) {
-                rewardVariableNameSpan.addClassName("variable-color-"+rowNumber%10);
-                getContent().add(rewardVariableNameSpan);
-            } else {
-                rewardVariableNameField.addClassName("reward-variable-name-field");
-                rewardVariableNameField.addValueChangeListener(e -> {
-                    ComponentValueChangeEvent<RowField, RewardVariable> newEvent = new ComponentValueChangeEvent<>(
-                            this, this, create(e.getOldValue()), e.isFromClient());
-                    fireEvent(newEvent);
-                });
-                getContent().add(rewardVariableNameField);
-            }
-			getContent().setWidthFull();
-			GuiUtils.removeMarginsPaddingAndSpacing(getContent());
-		}
-
-		private RewardVariable create(String value) {
-			return new RewardVariable(modelId, value, rowNumber);
-		}
-
-		@Override
-		public RewardVariable getValue() {
-			return create(rewardVariableNameField.getValue().trim());
-		}
-
-		@Override
-		protected void setPresentationValue(RewardVariable newPresentationValue) {
-            String rewardVariableText = newPresentationValue.getName();
-            modelId = newPresentationValue.getModelId();
-            if (readOnly) {
-                rewardVariableNameSpan.setText(rewardVariableText);
-            } else {
-                rewardVariableNameField.setValue(rewardVariableText);
-            }
-		}
-
-		@Override
-		public void setErrorMessage(String errorMessage) {
-			rewardVariableNameField.setErrorMessage(errorMessage);
-		}
-
-		@Override
-		public String getErrorMessage() {
-			return rewardVariableNameField.getErrorMessage();
-		}
-
-		@Override
-		public void setInvalid(boolean invalid) {
-			rewardVariableNameField.setInvalid(invalid);
-			String className = "invalid-reward-variable-row";
-			if (invalid) {
-				getContent().addClassName(className);
-			}
-			else {
-				getContent().removeClassName(className);
-			}
-		}
-
-		@Override
-		public boolean isInvalid() {
-			return rewardVariableNameField.isInvalid();
+            add(new Span("" + rowNumber));
+            rewardVariableNameSpan.addClassName("variable-color-"+rowNumber%10);
+            rewardVariableNameSpan.setText(rv.getName());
+            add(rewardVariableNameSpan);
+			setWidthFull();
+			GuiUtils.removeMarginsPaddingAndSpacing(this);
 		}
 	}
 }

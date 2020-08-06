@@ -239,7 +239,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private boolean canSaveDataInDB() {
-		return rewardFunctionEditor.getValue().length() <= REWARD_FUNCTION_MAX_LENGTH && !rewardVariablesTable.isInvalid();
+		return rewardFunctionEditor.getValue().length() <= REWARD_FUNCTION_MAX_LENGTH;
 	}
 
 	private Component getErrorsPanel() {
@@ -260,19 +260,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		rewardVariablesTable = new RewardVariablesTable();
 		rewardVariablesTable.setCodeEditorMode();
         rewardVariablesTable.setSizeFull();
-        if (!experiment.isArchived()) {
-            rewardVariablesTable.addValueChangeListener(evt -> handleRewardVariableNameChanged(evt.getValue()));
-        } else {
-            rewardVariablesTable.setEnabled(false);
-        }
 		return rewardVariablesTable;
-	}
-
-	private void handleRewardVariableNameChanged(List<RewardVariable> updatedRewardVariables) {
-		unsavedChanges.setVisible(true);
-		rewardFunctionEditor.setVariableNames(updatedRewardVariables, experiment.getModel().getRewardVariablesCount());
-		startRunButton.setEnabled(canStartTraining());
-		saveDraftButton.setEnabled(canSaveDataInDB());
 	}
 
 	private void handleStartRunButtonClicked() {
@@ -281,8 +269,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		if(!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator))
             return;
 
-		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();
-		rewardVariableDAO.updateModelRewardVariables(experiment.getModelId(), rewardVariables);
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.rewardFuntionCreated();
 
@@ -296,8 +282,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
-		List<RewardVariable> rewardVariables = rewardVariablesTable.getValue();
-		rewardVariableDAO.updateModelRewardVariables(experiment.getModelId(), rewardVariables);
 		experimentDAO.updateExperiment(experiment);
 		segmentIntegrator.draftSaved();
 		unsavedChanges.setVisible(false);
@@ -401,15 +385,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private void errorPopup(Command cancelAction) {
         Boolean isRewardFunctionTooLong = rewardFunctionEditor.getValue().length() > REWARD_FUNCTION_MAX_LENGTH;
-        Boolean isRewardVariablesTableInvalid = rewardVariablesTable.isInvalid();
         String header = "Before you leave....";
         String text = "";
-        if (isRewardFunctionTooLong && !isRewardVariablesTableInvalid) {
-            text += "Your changes in the reward function cannot be saved because it has exceeded "+REWARD_FUNCTION_MAX_LENGTH+" characters. ";
-        } else if (!isRewardFunctionTooLong && isRewardVariablesTableInvalid) {
-            text += "Your changes in the reward variables cannot be saved. ";
-        } else if (isRewardFunctionTooLong && isRewardVariablesTableInvalid) {
-            text += "Your changes cannot be saved because the reward function has exceeded "+REWARD_FUNCTION_MAX_LENGTH+" characters and the reward variables are invalid. ";
+        if (isRewardFunctionTooLong) {
+            text += "Your changes in the reward function cannot be saved because it has exceeded "+REWARD_FUNCTION_MAX_LENGTH+" characters.";
         }
         text += "Please check and fix the errors.";
         String confirmText = "Stay";
@@ -448,10 +427,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
-        // The reward variables table should only be initialized once for the Experiment Page
-        // no matter which Experiment of the same model the user visits later on.
-        // This may have to be changed if we allow users to navigate Experiments of different models.
-	    rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
 		updateScreenComponents();
 		experimentsNavbar.setExperiments(event.getUI(), experiments, experiment);
 	}
@@ -462,8 +437,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		startRunButton.setVisible(!experiment.isArchived());
 		saveDraftButton.setVisible(!experiment.isArchived());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
-		rewardVariablesTable.setValue(rewardVariables);
 		rewardFunctionEditor.setVariableNames(rewardVariables, experiment.getModel().getRewardVariablesCount());
+		rewardVariablesTable.setRewardVariables(rewardVariables);
 		unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);
         unarchiveExperimentButton.setVisible(experiment.isArchived());

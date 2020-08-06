@@ -208,10 +208,8 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
         if (rewardVariableNames.size() > 0) {
             RewardVariablesTable rewardVariablesTable = new RewardVariablesTable();
-            rewardVariablesTable.setIsReadOnly(true);
             rewardVariableNames.sort(Comparator.comparingInt(RewardVariable::getArrayIndex));
-            rewardVariablesTable.setVariableSize(model.getRewardVariablesCount());
-            rewardVariablesTable.setValue(rewardVariableNames);
+            rewardVariablesTable.setRewardVariables(rewardVariableNames);
             rewardVariableNamesText.add(rewardVariablesTable);
         } else {
             rewardVariableNamesText.add("All reward variables are unnamed. You can name them when you create a new experiment for this model.");

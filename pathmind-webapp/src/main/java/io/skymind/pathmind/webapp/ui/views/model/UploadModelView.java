@@ -200,16 +200,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	    this.updateError(errors.iterator().next());
     }
 
-    private void autosaveRewardVariables() {
-		if (!rewardVariablesPanel.isInputValueValid()) {
-			return;
-		}
-
-		segmentIntegrator.modelDraftSaved();
-		rewardVariables = rewardVariablesPanel.getRewardVariables();
-		rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
-	}
-	
 	private void autosaveModelDetails() {
 		if(!FormUtils.isValidForm(modelBinder, model)) {
 			return;
@@ -230,9 +220,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         ContinueNavigationAction action = event.postpone();
         if (modelDetailsWizardPanel.isVisible()) {
             autosaveModelDetails();
-        }
-        if (rewardVariablesPanel.isVisible()) {
-            autosaveRewardVariables();
         }
 		action.proceed();
     }
@@ -263,12 +250,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	private void handleRewardVariablesClicked() {
-		if (!rewardVariablesPanel.isInputValueValid()) {
-		    return;
-		}
 		if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
-		    rewardVariables = rewardVariablesPanel.getRewardVariables();
-	        rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
             actionsPanel.setupActionsTable(model.getNumberOfPossibleActions(), actions);
             setVisibleWizardPanel(actionsPanel);
         } else {
@@ -314,8 +296,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		experimentId = experiment.getId();
         EventBus.post(new ExperimentCreatedBusEvent(experiment));
 
-        List<RewardVariable> rewardVariableList = getRewardVariablesWithFallback();
-        rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariableList);
         if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
             actions = actionsPanel.getActions();
             actionDAO.updateModelActions(model.getId(), actions);
@@ -325,25 +305,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 		getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
 	}
-
-    private List<RewardVariable> getRewardVariablesWithFallback() {
-        List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
-        if (rewardVariableList == null || rewardVariableList.isEmpty()) {
-            rewardVariableList = new ArrayList<>();
-            for (int i = 0; i < model.getRewardVariablesCount(); i++) {
-                RewardVariable rewardVariable = new RewardVariable();
-                rewardVariable.setArrayIndex(i);
-                rewardVariableList.add(rewardVariable);
-            }
-        }
-        for (int i=0; i < rewardVariableList.size(); i++) {
-            RewardVariable rewardVariable = rewardVariableList.get(i);
-            if (StringUtils.isEmpty(rewardVariable.getName())) {
-                rewardVariable.setName("var-" + i);
-            }
-        }
-        return rewardVariableList;
-    }
 
     private void handleUploadWizardClicked() {
 		uploadModelWizardPanel.showFileCheckPanel();
@@ -393,11 +354,26 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");
+			rewardVariables = createDummyRewardVariables(model.getId(), model.getRewardVariablesCount());
+			rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
 			segmentIntegrator.modelImported(true);
 		}));
 	}
 
-	@Override
+	private List<RewardVariable> createDummyRewardVariables(long modelId, int size) {
+        List<RewardVariable> rewardVariables = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            RewardVariable rv = new RewardVariable();
+            rv.setArrayIndex(i);
+            rv.setModelId(modelId);
+            rv.setName("var" + i);
+            rv.setDataType("double");
+            rewardVariables.add(rv);
+        }
+        return rewardVariables;
+    }
+
+    @Override
 	public void setParameter(BeforeEvent event, @WildcardParameter String parameter) {
  		String[] segments = parameter.split("/");
  		uploadMode = UploadMode.FOLDER;

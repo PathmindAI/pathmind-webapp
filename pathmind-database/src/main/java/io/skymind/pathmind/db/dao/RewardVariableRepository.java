@@ -18,8 +18,8 @@ class RewardVariableRepository {
         final List<Query> saveQueries = rewardVariables.stream()
                 .map(rewardVariable ->
                         ctx.insertInto(REWARD_VARIABLE)
-                                .columns(REWARD_VARIABLE.MODEL_ID, REWARD_VARIABLE.NAME, REWARD_VARIABLE.ARRAY_INDEX)
-                                .values(rewardVariable.getModelId(), rewardVariable.getName(), rewardVariable.getArrayIndex())
+                                .columns(REWARD_VARIABLE.MODEL_ID, REWARD_VARIABLE.NAME, REWARD_VARIABLE.ARRAY_INDEX, REWARD_VARIABLE.DATA_TYPE)
+                                .values(rewardVariable.getModelId(), rewardVariable.getName(), rewardVariable.getArrayIndex(), rewardVariable.getDataType())
                                 .onConflict(REWARD_VARIABLE.MODEL_ID, REWARD_VARIABLE.ARRAY_INDEX)
                                 .doUpdate()
                                 .set(REWARD_VARIABLE.NAME, rewardVariable.getName()))

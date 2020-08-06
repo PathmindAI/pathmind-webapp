@@ -1606,4 +1606,18 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20200805-01" author="onur@vaadin.com">
+        <addColumn tableName="REWARD_VARIABLE">
+            <column name="DATA_TYPE" type="VARCHAR(16)">
+            </column>
+        </addColumn>
+        <update tableName="REWARD_VARIABLE">
+            <!-- the data type of all current variables are double -->
+            <column name="DATA_TYPE" value="double"/>
+        </update>
+        <rollback>
+            <dropColumn tableName="REWARD_VARIABLE" columnName="DATA_TYPE" />
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
