@@ -92,6 +92,28 @@ def notifySlack(text, channel, attachments) {
 }
 
 /*
+Set the github status
+*/
+def setGitHubStatus(state) {
+    status="error"
+    if (state=="SUCCESS"){
+        status="success"
+    }
+    if (state=="PENDING"){
+        status="pending"
+    }
+    repoUrl = "https://api.github.com/repos/SkymindIO/pathmind-webapp"
+    commitSha = sh(returnStdout: true, script: 'git log --format=format:%H | sed -n 2,2p').trim()
+    token = sh(returnStdout: true, script: 'kubectl get secret githubtoken -o=jsonpath=\'{.data.GITHUBTOKEN}\' | base64 --decode')
+    sh """
+        set -x
+        curl \"${repoUrl}/statuses/${commitSha}?access_token=${token}\" \
+        -H \"Content-Type: application/json\"   \
+        -X POST -d '{\"state\": \"${status}\", \"description\": \"BDD tests\", \"target_url\": \"${env.RUN_DISPLAY_URL}\", \"context\": \"Jenkins\" }'
+    """
+}
+
+/*
 This is the main pipeline section with the stages of the CI/CD
 */
 pipeline {
@@ -100,7 +122,7 @@ pipeline {
         timeout(time: 1440, unit: 'MINUTES')
         buildDiscarder(logRotator(daysToKeepStr: '15', artifactDaysToKeepStr: '15'))
     }
-    
+
     // Some global default variables
     environment {
         IMAGE_NAME = 'pathmind'
@@ -108,7 +130,6 @@ pipeline {
         HELM_FILE = 'values_dev.yaml'
         HELM_FILE_UPDATER = 'values_dev-updater.yaml'
         DEPLOY_PROD = false
-        BUILD_URL="${env.RUN_DISPLAY_URL}"
     }
     
     parameters {
@@ -141,6 +162,7 @@ pipeline {
                 }
             }
             steps {
+                setGitHubStatus("PENDING")
                 echo "Check out code"
                 checkout scm
                 script {
@@ -273,11 +295,11 @@ pipeline {
                     if (TEST_STATUS != 0) {
                         echo "Some bdd tests failed ${TEST_STATUS}"
                         currentBuild.result = 'UNSTABLE'
-                        prName="${env.ghprbPullTitle}".replaceAll('\'', '').replaceAll('"', '').replaceAll('(', '').replaceAll(')', '')
+                        prName="${env.ghprbPullTitle}".replaceAll('\'', '').replaceAll('"', '')
                     }
                 }
             }
-        }
+        } 
     }
     post {
         always {
@@ -291,6 +313,7 @@ pipeline {
             sh "aws sqs delete-queue --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_NUMBER}-updater-queue"
             sh "aws sns unsubscribe --subscription-arn `aws sns list-subscriptions | jq -r \".[] | .[] |  select(.Endpoint ==\\\"arn:aws:sqs:us-east-1:839270835622:${env.BUILD_ID}-updater-queue\\\").SubscriptionArn\"`"
             sh "/usr/bin/clean_test_s3.sh ${env.BUILD_NUMBER}"
+            setGitHubStatus(currentBuild.result)
         }
         unstable {
             echo 'Send slack notification if build unstable'
