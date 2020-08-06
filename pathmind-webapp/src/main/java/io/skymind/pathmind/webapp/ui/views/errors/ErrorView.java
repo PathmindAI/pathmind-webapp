@@ -5,7 +5,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.ErrorParameter;
 import com.vaadin.flow.router.HasErrorParameter;
@@ -18,6 +22,7 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.utils.CookieUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -52,8 +57,18 @@ public class ErrorView extends PathMindDefaultView implements HasErrorParameter<
 
     @Override
     protected Component getMainContent() {
+        Button signOutButton = new Button("signing out");
+        signOutButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        signOutButton.addClickListener(evt -> {
+            getUI().ifPresent(ui -> {
+                CookieUtils.deleteAWSCanCookie();
+                ui.getSession().getSession().invalidate();
+                ui.getPage().reload(); 
+            });
+        });
+        
         return WrapperUtils.wrapWidthFullCenterVertical(
-                LabelFactory.createLabel("An unexpected error occurred. Try signing out of Pathmind and signing back in."),
+                new Span(new Text("An unexpected error occurred. Try "), signOutButton, new Text(" of Pathmind and signing back in.")),
                 LabelFactory.createLabel(String.format("If you still see this error, please contact Pathmind for assistance (#%s).", errorId), CssPathmindStyles.NO_TOP_MARGIN_LABEL),
                 StatusPageMessage.getMessage()
         );
