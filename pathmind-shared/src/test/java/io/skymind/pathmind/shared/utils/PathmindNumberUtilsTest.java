@@ -23,14 +23,18 @@ public class PathmindNumberUtilsTest {
         Assert.assertEquals("0.999", PathmindNumberUtils.setSigFigBasedOnAnotherDouble(0.9992, 0.013));
         Assert.assertEquals("0.0003", PathmindNumberUtils.setSigFigBasedOnAnotherDouble(0.00032, 0.0075));
         Assert.assertEquals("1.13", PathmindNumberUtils.setSigFigBasedOnAnotherDouble(1.134, 0.22));
-        Assert.assertEquals("145.1", PathmindNumberUtils.setSigFigBasedOnAnotherDouble(145.134, 0.2));
+        Assert.assertEquals("145.13", PathmindNumberUtils.setSigFigBasedOnAnotherDouble(145.134, 0.20));
         Assert.assertEquals("0.56", PathmindNumberUtils.setSigFigBasedOnAnotherDouble(0.55823, 0.23));
         Assert.assertEquals("0.040", PathmindNumberUtils.setSigFigBasedOnAnotherDouble(0.040, 0.051));
         Assert.assertEquals("50", PathmindNumberUtils.setSigFigBasedOnAnotherDouble((double) 50, (double) 30));
         Assert.assertEquals("123", PathmindNumberUtils.setSigFigBasedOnAnotherDouble((double) 123, (double) 30));
-        Assert.assertEquals("841", PathmindNumberUtils.setSigFigBasedOnAnotherDouble(840.58, (double) 37));
-        Assert.assertEquals("1234", PathmindNumberUtils.setSigFigBasedOnAnotherDouble(1234.5, (double) 6));
-        Assert.assertEquals("1236", PathmindNumberUtils.setSigFigBasedOnAnotherDouble(1235.5, (double) 6));
+        Assert.assertEquals("841", PathmindNumberUtils.setSigFigBasedOnAnotherDouble((double) 840.58, (double) 37));
+        Assert.assertEquals("1234.5", PathmindNumberUtils.setSigFigBasedOnAnotherDouble((double) 1234.5, (double) 6.0));
+        Assert.assertEquals("1235.5", PathmindNumberUtils.setSigFigBasedOnAnotherDouble((double) 1235.5, (double) 6.0));
+        Assert.assertEquals("1234", PathmindNumberUtils.setSigFigBasedOnAnotherDouble((double) 1234.5, (double) 16));
+        Assert.assertEquals("1236", PathmindNumberUtils.setSigFigBasedOnAnotherDouble((double) 1235.5, (double) 16));
+        Assert.assertEquals("12400", PathmindNumberUtils.setSigFigBasedOnAnotherDouble((double) 12353.5, (double) 600));
+        Assert.assertEquals("1250", PathmindNumberUtils.setSigFigBasedOnAnotherDouble((double) 1254.5, (double) 110));
     }
 
 	@Test
@@ -45,6 +49,9 @@ public class PathmindNumberUtilsTest {
         Assert.assertEquals("1000", PathmindNumberUtils.formatToSigFig(1149.33, 1));
         Assert.assertEquals("1100", PathmindNumberUtils.formatToSigFig(1149.33, 2));
         Assert.assertEquals("1150", PathmindNumberUtils.formatToSigFig(1149.33, 3));
+        Assert.assertEquals("0.0001", PathmindNumberUtils.formatToSigFig(.0001330, 1));
+        Assert.assertEquals("5432.1000", PathmindNumberUtils.formatToSigFig(5432.1, 8));
+        Assert.assertEquals("0.20", PathmindNumberUtils.formatToSigFig(0.2, 2));
     }
 
 }
