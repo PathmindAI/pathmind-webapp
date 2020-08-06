@@ -35,6 +35,9 @@ public class PathmindNumberUtilsTest {
         Assert.assertEquals("1236", PathmindNumberUtils.setSigFigBasedOnAnotherDouble((double) 1235.5, (double) 16));
         Assert.assertEquals("12400", PathmindNumberUtils.setSigFigBasedOnAnotherDouble((double) 12353.5, (double) 600));
         Assert.assertEquals("1250", PathmindNumberUtils.setSigFigBasedOnAnotherDouble((double) 1254.5, (double) 110));
+        Assert.assertEquals("0.0", PathmindNumberUtils.setSigFigBasedOnAnotherDouble(0.0, 0.0));
+        Assert.assertEquals("1.1340", PathmindNumberUtils.setSigFigBasedOnAnotherDouble(1.134, 0.0022));
+        Assert.assertEquals("840.6", PathmindNumberUtils.setSigFigBasedOnAnotherDouble((double) 840.58, (double) 3.7));
     }
 
 	@Test
