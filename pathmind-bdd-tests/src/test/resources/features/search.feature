@@ -151,6 +151,7 @@ Feature: Nav bar search
       | Model 1        | Model #1      |
       | model 1        | Model #1      |
       | 1              | Model #1      |
+      | #1             | Model #1      |
 
   Scenario Outline: Check search result experiment name
     Given Login to the pathmind
@@ -170,3 +171,4 @@ Feature: Nav bar search
       | Experiment 1   | Experiment #1 |
       | experiment 1   | Experiment #1 |
       | 1              | Experiment #1 |
+      | #1             | Experiment #1 |
