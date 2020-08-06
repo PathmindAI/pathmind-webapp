@@ -100,7 +100,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private HorizontalLayout simulationMetricsWrapper;
     private VerticalLayout metricsWrapper;
     private VerticalLayout sparklinesWrapper;
-    private VerticalLayout uncertaintyWrapper;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private Span panelTitle;
     private VerticalLayout rewardVariablesGroup;
@@ -239,11 +238,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             metricsWrapper.addClassName("metrics-wrapper");
             sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
             sparklinesWrapper.addClassName("sparklines-wrapper");
-            uncertaintyWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-            uncertaintyWrapper.addClassName("metrics-wrapper");
 
             updateSimulationMetrics();
-            tableWrapper.add(metricsWrapper, sparklinesWrapper, uncertaintyWrapper);
+            tableWrapper.add(metricsWrapper, sparklinesWrapper);
         }
 
         return tableWrapper;
@@ -252,18 +249,18 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void updateSimulationMetrics() {
         metricsWrapper.removeAll();
         sparklinesWrapper.removeAll();
-        uncertaintyWrapper.removeAll();
 
         updateSimulationMetricsData();
 
         IntStream.range(0, simulationMetrics.size())
                 .forEach(idx -> {
-                    metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx))));
                     SparkLine sparkLine = new SparkLine();
                     sparkLine.setSparkLine(sparklinesData.get(idx), idx);
                     sparklinesWrapper.add(sparkLine);
                     if (uncertainty != null && !uncertainty.isEmpty()) {
-                        uncertaintyWrapper.add(new Span(uncertainty.get(idx)));
+                        metricsWrapper.add(new Span(uncertainty.get(idx)));
+                    } else {
+                        metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx))));
                     }
                 });
     }
@@ -327,7 +324,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
                     double meanOfDiffs = squareDiffToMeans / (double) (stat.getCount() - 1);
                     double sd = Math.sqrt(meanOfDiffs);
-                    return df.format(stat.getAverage())  +"\u2800\u00B1\u2800" + df.format(1.96 * sd);
+                    double uncertainty = 2*sd;
+                    return PathmindNumberUtils.setSigFigBasedOnAnotherDouble(stat.getAverage(), uncertainty)  +"\u2800\u00B1\u2800" + PathmindNumberUtils.formatToSigFig(uncertainty, 2);
                 }).collect(Collectors.toList());
         }
     }
