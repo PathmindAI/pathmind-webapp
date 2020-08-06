@@ -108,11 +108,20 @@ public class AWSApiClient {
                 return null;
             }
         }
-        S3Object o = s3Client.getObject(bucketName, keyId);
+        String targetBucketName = bucketName;
+        String originalPath = s3Client.getObjectMetadata(bucketName, keyId).getUserMetaDataOf("path");
+        if (originalPath != null) {
+            // an example of originalPath : test-training-static-files.pathmind.com/mockup/2/trial_list
+            String[] split = originalPath.split("/", 2);
+            targetBucketName = split[0];
+            keyId = split[1];
+        }
+
+        S3Object o = s3Client.getObject(targetBucketName, keyId);
         try {
             return IOUtils.toByteArray(o.getObjectContent());
         } catch (IOException e) {
-            log.error("Failed to get content from {}/{}", bucketName, keyId, e);
+            log.error("Failed to get content from {}/{}", targetBucketName, keyId, e);
             throw new PathMindException("Failed to get model content");
         }
     }
