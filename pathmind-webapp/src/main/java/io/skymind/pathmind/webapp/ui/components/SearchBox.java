@@ -16,6 +16,7 @@ import io.skymind.pathmind.webapp.ui.views.search.SearchResultsView;
 
 public class SearchBox extends HorizontalLayout
 {
+    public static final int MAX_KEYWORD_LENGTH = 200;
     private String searchType = "All";
     private String CLASS_NAME = "search-box";
     private Select searchSelect = typeSelect();
@@ -35,6 +36,7 @@ public class SearchBox extends HorizontalLayout
 		addClassName(CLASS_NAME);
         searchSelect.addClassName(CLASS_NAME + "_select");
     	searchTextField.addClassName(CLASS_NAME + "_text-field");
+    	searchTextField.setMaxLength(MAX_KEYWORD_LENGTH);
         searchButton.addClassNames(CLASS_NAME + "_button");
 
 		add(searchSelect, searchTextField, searchButton);

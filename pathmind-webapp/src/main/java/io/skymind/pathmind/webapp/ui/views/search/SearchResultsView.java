@@ -4,6 +4,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
+import io.skymind.pathmind.webapp.ui.components.SearchBox;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
@@ -142,7 +143,8 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
             decodedKeyword = "";
             titleText = "You did not search for anything.";
         } else {
-            decodedKeyword = URLDecoder.decode(keyword, StandardCharsets.UTF_8);
+            // keyword limit + 11 for the type ('experiment:' has 11 letters)
+            decodedKeyword = URLDecoder.decode(keyword, StandardCharsets.UTF_8).substring(0, SearchBox.MAX_KEYWORD_LENGTH + 11);
             String escapedBackslashDecodedKeyword = PathmindStringUtils.escapeBackslash(decodedKeyword);
             decodedKeyword = getActuaKeyword(decodedKeyword);
             dataProvider.setFilter(escapedBackslashDecodedKeyword);
