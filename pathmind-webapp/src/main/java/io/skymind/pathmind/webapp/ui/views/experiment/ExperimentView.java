@@ -325,7 +325,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     double meanOfDiffs = squareDiffToMeans / (double) (stat.getCount() - 1);
                     double sd = Double.parseDouble(PathmindNumberUtils.formatToSigFig(Math.sqrt(meanOfDiffs), 2));
                     double uncertainty = 2*sd; // It may be changed to Inter-Quartile Range in the future
-                    return PathmindNumberUtils.setSigFigBasedOnAnotherDouble(stat.getAverage(), uncertainty)  +"\u2800\u00B1\u2800" + uncertainty;
+                    return PathmindNumberUtils.setSigFigBasedOnAnotherDouble(stat.getAverage(), uncertainty, 2)  +"\u2800\u00B1\u2800" + uncertainty;
                 }).collect(Collectors.toList());
         }
     }

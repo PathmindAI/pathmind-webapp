@@ -23,7 +23,7 @@ public class PathmindNumberUtils {
         return bd.setScale(newScale, RoundingMode.HALF_UP).toString();
     }
 
-    public static String setSigFigBasedOnAnotherDouble(Double originalNumber, Double refNumber) {
+    public static String setSigFigBasedOnAnotherDouble(Double originalNumber, Double refNumber, int refNumberSigFig) {
         BigDecimal bdRefNumber;
         BigDecimal bdOriginalNumber = BigDecimal.valueOf(originalNumber);
         String refNumber2SigFig = formatToSigFig(refNumber, 2);
@@ -32,14 +32,26 @@ public class PathmindNumberUtils {
         } else {
             bdRefNumber = BigDecimal.valueOf(Integer.parseInt(refNumber2SigFig));
         }
-        int sigFig = bdOriginalNumber.precision() - (bdOriginalNumber.scale() - bdRefNumber.scale());
-        int newScale = sigFig-bdOriginalNumber.precision()+bdOriginalNumber.scale();
-        return bdOriginalNumber.setScale(newScale, RoundingMode.HALF_EVEN).toString().replace(",", "");
+        int bdOriginalNumberPrecision = bdOriginalNumber.precision();
+        int bdOriginalNumberScale = bdOriginalNumber.scale();
+        int bdOriginalNumberNonDecimalDigits = bdOriginalNumberPrecision - bdOriginalNumberScale;
+        int bdRefNumberPrecision = bdRefNumber.precision();
+        int bdRefNumberScale = bdRefNumber.scale();
+        int bdRefNumberActualPrecision = bdRefNumberPrecision - refNumberSigFig;
+        int sigFig = bdOriginalNumberNonDecimalDigits + bdRefNumberScale - bdRefNumberActualPrecision;
+        int newScale = sigFig - bdOriginalNumberPrecision + bdOriginalNumberScale;
+        bdOriginalNumber = bdOriginalNumber.setScale(newScale, RoundingMode.HALF_EVEN);
+        return bdOriginalNumber.toPlainString().replace(",", "");
     }
 
     public static String formatToSigFig(Double originalNumber, int sigFig) {
         MathContext mathContext = new MathContext(sigFig, RoundingMode.HALF_EVEN);
         BigDecimal formatted = new BigDecimal(originalNumber, mathContext);
         return formatted.toPlainString();
+    }
+
+    public static int powerOfTen(int pow) {
+        final int[] POWERS_OF_10 = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
+        return POWERS_OF_10[pow];
     }
 }
