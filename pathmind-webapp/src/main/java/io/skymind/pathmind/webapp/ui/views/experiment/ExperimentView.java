@@ -49,6 +49,7 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
@@ -63,7 +64,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -135,9 +135,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private Breadcrumbs pageBreadcrumbs;
     private Button restartTraining;
-
-    private static DecimalFormat df = new DecimalFormat("0.00");
-
 
     // REFACTOR -> Temporary placeholder until I finish the merging
     private ExperimentViewRunUpdateSubscriber experimentViewRunUpdateSubscriber;
@@ -252,6 +249,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         updateSimulationMetricsData();
 
+        if (simulationMetrics.size() > 0) {
+            Div metricsHeader = new Div(new Span("Value"), new SimulationMetricsInfoLink());
+            metricsHeader.addClassName("header");
+            metricsWrapper.add(metricsHeader);
+
+            Div sparklineHeader = new Div(new Span("Overview"), new SimulationMetricsInfoLink());
+            sparklineHeader.addClassName("header");
+            sparklinesWrapper.add(sparklineHeader);
+        }
+
         IntStream.range(0, simulationMetrics.size())
                 .forEach(idx -> {
                     SparkLine sparkLine = new SparkLine();
@@ -325,7 +332,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     double meanOfDiffs = squareDiffToMeans / (double) (stat.getCount() - 1);
                     double sd = Double.parseDouble(PathmindNumberUtils.formatToSigFig(Math.sqrt(meanOfDiffs), 2));
                     double uncertainty = 2*sd; // It may be changed to Inter-Quartile Range in the future
-                    return PathmindNumberUtils.setSigFigBasedOnAnotherDouble(stat.getAverage(), uncertainty, 2)  +"\u2800\u00B1\u2800" + uncertainty;
+                    return PathmindNumberUtils.setSigFigBasedOnAnotherDouble(stat.getAverage(), uncertainty, 2)  +"\u2800\u00B1\u2800" + PathmindNumberUtils.formatToSigFig(uncertainty, 2);
                 }).collect(Collectors.toList());
         }
     }
