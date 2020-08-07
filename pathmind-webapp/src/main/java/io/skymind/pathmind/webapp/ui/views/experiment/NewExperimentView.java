@@ -196,31 +196,23 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private VerticalLayout getRewardFnEditorPanel() {
 		rewardFunctionEditor = new RewardFunctionEditor();
-		rewardFunctionEditor.addValidationListener(evt -> {
-		    errorMessageWrapper.removeAll();
-		    final List<String> errors = new ArrayList<>();
-		    if (!evt.isValid()) {
-		        evt.getInvalidLineVariableIndexPairs().forEach(pair -> errors.add(String.format("ERROR: Line %s: Invalid variable index:%s", pair.getFirst(), pair.getSecond())));
-		    } else {
-		        errors.addAll(rewardValidationService.validateRewardFunction(rewardFunctionEditor.getValue()));
-		    }
-		    final String errorText = String.join("\n", errors);
-		    final String wrapperClassName = (errorText.length() == 0) ? "noError" : "hasError";
-		    if ((errorText.length() == 0)) {
-		        errorMessageWrapper.add(new Icon(VaadinIcon.CHECK), new Span("No Errors"));
-		    } else {
-		        errorMessageWrapper.setText(errorText);
-		    }
-		    errorMessageWrapper.removeClassNames("hasError", "noError");
-		    errorMessageWrapper.addClassName(wrapperClassName);
-		    
-		    startRunButton.setEnabled(canStartTraining());
-		    saveDraftButton.setEnabled(canSaveDataInDB());
-		    
-		});
 		rewardFunctionEditor.addValueChangeListener(changeEvent -> {
 			unsavedChanges.setVisible(true);
 			rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > REWARD_FUNCTION_MAX_LENGTH);
+			errorMessageWrapper.removeAll();
+			final List<String> errors = rewardValidationService.validateRewardFunction(rewardFunctionEditor.getValue(), rewardVariables);
+			final String errorText = String.join("\n", errors);
+			final String wrapperClassName = (errorText.length() == 0) ? "noError" : "hasError";
+			if ((errorText.length() == 0)) {
+			    errorMessageWrapper.add(new Icon(VaadinIcon.CHECK), new Span("No Errors"));
+			} else {
+			    errorMessageWrapper.setText(errorText);
+			}
+			errorMessageWrapper.removeClassNames("hasError", "noError");
+			errorMessageWrapper.addClassName(wrapperClassName);
+			
+			startRunButton.setEnabled(canStartTraining());
+			saveDraftButton.setEnabled(canSaveDataInDB());
 		});
 		rewardEditorErrorLabel = LabelFactory.createLabel("Reward Function must not exceed " + REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
 		rewardEditorErrorLabel.setVisible(false);
