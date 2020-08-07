@@ -1,23 +1,14 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.vaadin.flow.component.AbstractCompositeField;
-import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.HasValidation;
-import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.ValidationResult;
-import com.vaadin.flow.data.binder.Validator;
-import com.vaadin.flow.data.binder.ValueContext;
-import com.vaadin.flow.data.validator.StringLengthValidator;
+
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
@@ -25,25 +16,28 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 public class RewardVariablesTable extends VerticalLayout {
 
 	private List<RowField> rewardVariableNameFields = new ArrayList<>();
+	private VerticalLayout container;
 
 	public RewardVariablesTable() {
 	    setPadding(false);
-        setSpacing(false);
-		setClassName("reward-variables-table");
-		getElement().setAttribute("readonly", true);
+	    setSpacing(false);
+	    container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+	    container.setClassName("reward-variables-table");
+	    container.getElement().setAttribute("readonly", true);
+	    add(container);
 	}
 
 	public void setRewardVariables(List<RewardVariable> rewardVariables) {
-		removeAll();
+	    container.removeAll();
 		rewardVariableNameFields.clear();
 		HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("#"), new Span("Variable Name"));
 
 		headerRow.addClassName("header-row");
 		GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
 
-        add(headerRow);
+		container.add(headerRow);
 
-        rewardVariables.forEach(rv -> add(createRow(rv)));
+        rewardVariables.forEach(rv -> container.add(createRow(rv)));
     }
 	
 	public void setCodeEditorMode() {

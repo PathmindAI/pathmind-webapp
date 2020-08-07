@@ -46,6 +46,9 @@
 }
 .reward-variables-table[readonly] span:first-child {
     background-color: transparent !important;
+    display: inline-block;
+    width: 30px;
+    color: var(--lumo-secondary-text-color);
 }
 .reward-variables-table[readonly] span:last-child {
     line-height: 1;
