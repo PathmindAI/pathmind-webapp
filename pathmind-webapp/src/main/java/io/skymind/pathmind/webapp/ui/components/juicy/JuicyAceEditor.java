@@ -30,7 +30,6 @@ import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
 @JavaScript("./src/juicy-ace-editor/ace/ext-beautify.js")
 @JavaScript("./src/juicy-ace-editor/ace/mode/mode-java.js")
 @JavaScript("./src/juicy-ace-editor/ace/theme/theme-pathmind.js")
-@JavaScript("./src/juicy-ace-editor/juicy-ace-editor-variable-names.js")
 @JsModule("./src/juicy-ace-editor/juicy-ace-editor-npm.min.js")
 public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, String> implements HasSize, Focusable<JuicyAceEditor> {
 	public JuicyAceEditor() {
@@ -89,50 +88,5 @@ public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, 
 	@Synchronize({"change"})
 	public String getValue() {
 		return this.getElement().getProperty("value");
-	}
-	
-	protected void addVariableNameSupport() {
-		getElement().executeJs("window.Pathmind.CodeEditor.addVariableNamesSupport($0)");
-	}
-	
-	protected void setVariableNames(JsonObject variableNames, int variableCount) {
-		getElement().executeJs("window.Pathmind.CodeEditor.setVariableNames($0, $1)", variableNames, variableCount);
-	}
-	
-	@DomEvent(value = "reward-function-validation", debounce = @DebounceSettings(timeout = 400, phases = DebouncePhase.TRAILING))
-    public static class RewardFunctionValidationEvent extends ComponentEvent<JuicyAceEditor> {
-        private boolean valid;
-        private List<Pair<String, String>> invalidLineVariableIndexPairs;
-
-        public RewardFunctionValidationEvent(JuicyAceEditor source, boolean fromClient, @EventData("event.detail.valid") boolean isValid,
-                @EventData("event.detail.invalidIndexes") JsonArray invalidIndexes) {
-            super(source, fromClient);
-            this.valid = isValid;
-            invalidLineVariableIndexPairs = new ArrayList<>();
-            for (int line = 0; line < invalidIndexes.length(); line++) {
-                JsonArray invalidIndexesForLine = invalidIndexes.getArray(line);
-                for (int i = 0; i < invalidIndexesForLine.length(); i++) {
-                    String invalidIndex = invalidIndexesForLine.getString(i);
-                    invalidLineVariableIndexPairs.add(new Pair<>(Integer.toString(line + 1), invalidIndex));
-                }
-            }
-        }
-
-        public boolean isValid() {
-            return valid;
-        }
-
-        public void setValid(boolean valid) {
-            this.valid = valid;
-        }
-
-        public List<Pair<String, String>> getInvalidLineVariableIndexPairs() {
-            return invalidLineVariableIndexPairs;
-        }
-
-        public void setInvalidLineVariableIndexPairs(List<Pair<String, String>> invalidLineVariableIndexPairs) {
-            this.invalidLineVariableIndexPairs = invalidLineVariableIndexPairs;
-        }
-
 	}
 }
