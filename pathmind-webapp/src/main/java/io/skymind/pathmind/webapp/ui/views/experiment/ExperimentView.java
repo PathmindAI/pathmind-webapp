@@ -678,7 +678,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     class ExperimentViewExperimentUpdatedSubscriber implements ExperimentUpdatedSubscriber {
         @Override
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
-            updateNavBarExperimentsInEventHandling();
+            if (ExperimentUtils.isSameExperiment(event.getExperiment(), experiment)
+                    && experiment.isArchived() && !event.getExperiment().isArchived()){
+                NotificationUtils.alertAndThen(getUI(), "Experiment Unarchived", "The experiment was unarchived.",
+                        ui -> navigateToExperiment(ui, event.getExperiment()));
+            }
+            else {
+                updateNavBarExperimentsInEventHandling();
+            }
         }
 
         @Override

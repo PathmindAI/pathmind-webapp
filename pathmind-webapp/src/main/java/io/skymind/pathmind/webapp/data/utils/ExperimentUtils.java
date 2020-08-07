@@ -165,6 +165,7 @@ public class ExperimentUtils
 
     public static void archiveExperiment(UI ui, ExperimentDAO experimentDAO, Experiment experiment, boolean isArchive) {
 	    experimentDAO.archive(experiment.getId(), isArchive);
+	    experiment.setArchived(isArchive);
 	    EventBus.post(new ExperimentUpdatedBusEvent(ui, experiment));
     }
 
