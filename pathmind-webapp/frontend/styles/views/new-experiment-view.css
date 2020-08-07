@@ -27,7 +27,7 @@
 .new-experiment-view .reward-function-wrapper .reward-fn-editor-panel {
     flex: 2 0 65.7%;
 }
-.new-experiment-view .reward-function-wrapper vaadin-custom-field {
+.new-experiment-view .with-container-border {
     box-sizing: border-box;
     flex: 1 1 19rem;
     line-height: 1;
