@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.components.navbar;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
@@ -18,7 +18,9 @@ import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarItemExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import java.util.Optional;
@@ -31,32 +33,52 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
 
     private ExperimentsNavBar experimentsNavbar;
     private Supplier<Optional<UI>> getUISupplier;
+    private ExperimentDAO experimentDAO;
 
     private Experiment experiment;
     private Component statusComponent;
 
-    ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler) {
+    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer) {
         this.experimentsNavbar = experimentsNavbar;
         this.getUISupplier = getUISupplier;
+        this.experimentDAO = experimentDAO;
         this.experiment = experiment;
+
         Boolean isDraft = ExperimentUtils.isDraftRunType(experiment);
-        Boolean isFavorite = ExperimentUtils.isFavorite(experiment);
         RunStatus overallExperimentStatus = ExperimentUtils.getTrainingStatus(experiment);
         statusComponent = isDraft ? new Icon(VaadinIcon.PENCIL) : createStatusIcon(overallExperimentStatus);
         add(statusComponent);
+
         addClickListener(event -> handleRowClicked(experiment, selectExperimentConsumer));
+
         addClassName("experiment-navbar-item");
         setSpacing(false);
+
+        UI.getCurrent().getUI().ifPresent(ui ->
+                addNavBarTextAndButton(ui, experimentDAO, experiment));
+    }
+
+    private Button createArchiveExperimentButton(Experiment experiment) {
         Button archiveExperimentButton = new Button(VaadinIcon.ARCHIVE.create());
-        archiveExperimentButton.getElement().addEventListener("click", click -> archiveExperimentHandler.accept(experiment)).addEventData("event.stopPropagation()");
+        archiveExperimentButton.getElement().addEventListener("click",
+                click -> archiveExperiment(experiment)).addEventData("event.stopPropagation()");
         archiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         archiveExperimentButton.addClassName("action-button");
-        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier.get().get(), timeZoneId -> {
+        return archiveExperimentButton;
+    }
+
+    private void archiveExperiment(Experiment experimentToArchive) {
+        ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(),
+                () -> ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true));
+    }
+
+    private void addNavBarTextAndButton(UI ui, ExperimentDAO experimentDAO, Experiment experiment) {
+        VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
             add(createExperimentText(
                     experiment.getName(),
                     DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId),
-                    new FavoriteStar(isFavorite, newIsFavorite -> ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite))));
-            add(archiveExperimentButton);
+                    new FavoriteStar(experiment.isFavorite(), newIsFavorite -> ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite))));
+            add(createArchiveExperimentButton(experiment));
         });
     }
 

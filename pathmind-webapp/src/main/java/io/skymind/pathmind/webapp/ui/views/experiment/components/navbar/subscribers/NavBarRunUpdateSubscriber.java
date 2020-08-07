@@ -4,7 +4,7 @@ import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBarItem;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.ExperimentsNavBarItem;
 
 import java.util.List;
 import java.util.Optional;

@@ -173,8 +173,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 () -> getUI(),
                 experimentDAO,
                 experiment,
-                selectedExperiment -> selectExperiment(selectedExperiment),
-                experimentToArchive -> archiveExperiment(experimentToArchive));
+                experiments,
+                selectedExperiment -> selectExperiment(selectedExperiment));
         setupExperimentContentPanel();
 
         Span modelNeedToBeUpdatedLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
@@ -365,12 +365,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         confirmDialog.open();
     }
 
-    private void archiveExperiment(Experiment experimentToArchive) {
-        ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
-            ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
-        });
-    }
-
     private void unarchiveExperiment() {
         ConfirmationUtils.unarchive("experiment", () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
@@ -456,7 +450,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         rewardVariablesTable.setIsReadOnly(true);
         rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
         updateScreenComponents();
-        experimentsNavbar.setExperiments(() -> Optional.of(event.getUI()), experiments, experiment);
     }
 
     private void updateScreenComponents() {

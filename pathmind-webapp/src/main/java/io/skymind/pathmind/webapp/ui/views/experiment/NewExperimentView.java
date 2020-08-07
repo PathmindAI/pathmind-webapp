@@ -148,8 +148,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		        () -> getUI(),
                 experimentDAO,
                 experiment,
-                selectedExperiment -> selectExperiment(selectedExperiment),
-                experimentToArchive -> archiveExperiment(experimentToArchive));
+                experiments,
+                selectedExperiment -> selectExperiment(selectedExperiment));
 
         unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
         unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -295,12 +295,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		afterClickedCallback.execute();
 	}
 
-    private void archiveExperiment(Experiment experimentToArchive) {
-        ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
-            ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
-        });
-    }
-
     private void unarchiveExperiment() {
         ConfirmationUtils.unarchive("experiment", () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
@@ -432,7 +426,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         // This may have to be changed if we allow users to navigate Experiments of different models.
 	    rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
 		updateScreenComponents();
-		experimentsNavbar.setExperiments(() -> Optional.of(event.getUI()), experiments, experiment);
 	}
 
 	private void updateScreenComponents() {

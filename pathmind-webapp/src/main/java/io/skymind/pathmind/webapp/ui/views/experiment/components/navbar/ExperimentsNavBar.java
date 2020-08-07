@@ -10,9 +10,12 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.ExperimentsNavBarItem;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentUpdatedSubscriber;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -22,10 +25,12 @@ import java.util.stream.Collectors;
 @CssImport("./styles/views/experiment/experiment-navbar.css")
 public class ExperimentsNavBar extends VerticalLayout
 {
-	private List<ExperimentsNavBarItem> experimentsNavBarItems = new ArrayList<>();
+    private List<Experiment> experiments;
+    private Experiment selectedExperiment;
+
+    private List<ExperimentsNavBarItem> experimentsNavBarItems = new ArrayList<>();
 	private VerticalLayout rowsWrapper;
 	private Consumer<Experiment> selectExperimentConsumer;
-	private Consumer<Experiment> archiveExperimentHandler;
     private ExperimentsNavBarItem currentExperimentNavItem;
 
     public long modelId;
@@ -33,13 +38,14 @@ public class ExperimentsNavBar extends VerticalLayout
     private ExperimentDAO experimentDAO;
     private Supplier<Optional<UI>> getUISupplier;
 
-    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, Consumer<Experiment> archiveExperimentHandler)
+    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment selectedExperiment, List<Experiment> experiments, Consumer<Experiment> selectExperimentConsumer)
 	{
-	    this.getUISupplier = getUISupplier;
+ 	    this.getUISupplier = getUISupplier;
 	    this.experimentDAO = experimentDAO;
-	    this.modelId = experiment.getModelId();
+	    this.experiments = experiments;
+	    this.selectedExperiment = selectedExperiment;
+	    this.modelId = selectedExperiment.getModelId();
         this.selectExperimentConsumer = selectExperimentConsumer;
-        this.archiveExperimentHandler = archiveExperimentHandler;
 		rowsWrapper = new VerticalLayout();
 		rowsWrapper.addClassName("experiments-navbar-items");
 		rowsWrapper.setPadding(false);
@@ -50,11 +56,14 @@ public class ExperimentsNavBar extends VerticalLayout
 		add(new NewExperimentButton(experimentDAO, modelId));
 		add(rowsWrapper);
 		addClassName("experiments-navbar");
+        addExperimentsToNavBar();
 	}
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this, new NavBarExperimentUpdatedSubscriber(getUISupplier, this));
+        EventBus.subscribe(this,
+                new NavBarExperimentUpdatedSubscriber(getUISupplier, this),
+                new NavBarExperimentCreatedSubscriber(getUISupplier, this));
     }
 
     @Override
@@ -65,6 +74,7 @@ public class ExperimentsNavBar extends VerticalLayout
     public long getModelId() {
         return modelId;
     }
+
     public void removeExperiment(Experiment experiment) {
         List<ExperimentsNavBarItem> toRemoveNavBarItems = experimentsNavBarItems.stream()
                 .filter(experimentsNavBarItem -> ExperimentUtils.isSameExperiment(experimentsNavBarItem.getExperiment(), experiment))
@@ -73,15 +83,32 @@ public class ExperimentsNavBar extends VerticalLayout
         toRemoveNavBarItems.forEach(navBarItem -> rowsWrapper.remove(navBarItem));
     }
 
-    public void setExperiments(Supplier<Optional<UI>> getUISupplier, List<Experiment> experiments, Experiment currentExperiment) {
+    public void addExperiment(Experiment experiment) {
+        experiments.add(experiment);
+        experiments.sort(Comparator.comparing(Experiment::getName, Comparator.reverseOrder()));
+        ExperimentsNavBarItem navBarItem = createExperimentNavBarItem(experiment);
+        experimentsNavBarItems.add(navBarItem);
+        experimentsNavBarItems.sort(Comparator.comparing(experimentsNavBarItem -> experimentsNavBarItem.getExperiment().getName(), Comparator.reverseOrder()));
+        // Remove and re-add the navbar items so that they are in sorted order.
+        rowsWrapper.removeAll();
+        experimentsNavBarItems.forEach(experimentsNavBarItem -> {
+                rowsWrapper.add(experimentsNavBarItem);
+        });
+    }
+
+    public List<Experiment> getExperiments() {
+        return experiments;
+    }
+
+    private void addExperimentsToNavBar() {
 		rowsWrapper.removeAll();
 		experimentsNavBarItems.clear();
 		
 		experiments.stream()
 			.forEach(experiment -> {
-				ExperimentsNavBarItem navBarItem = new ExperimentsNavBarItem(this, getUISupplier, experimentDAO, experiment, selectExperimentConsumer, archiveExperimentHandler);
-				experimentsNavBarItems.add(navBarItem);
-				if(experiment.equals(currentExperiment)) {
+                ExperimentsNavBarItem navBarItem = createExperimentNavBarItem(experiment);
+                experimentsNavBarItems.add(navBarItem);
+				if(experiment.equals(selectedExperiment)) {
 					navBarItem.setAsCurrent();
 					currentExperimentNavItem = navBarItem;
 				}
@@ -89,7 +116,11 @@ public class ExperimentsNavBar extends VerticalLayout
 		});
 	}
 
-	public void setCurrentExperiment(Experiment newCurrentExperiment) {
+    private ExperimentsNavBarItem createExperimentNavBarItem(Experiment experiment) {
+        return new ExperimentsNavBarItem(this, getUISupplier, experimentDAO, experiment, selectExperimentConsumer);
+    }
+
+    public void setCurrentExperiment(Experiment newCurrentExperiment) {
 	    if (currentExperimentNavItem != null) {
 	        currentExperimentNavItem.removeAsCurrent();
 	    }

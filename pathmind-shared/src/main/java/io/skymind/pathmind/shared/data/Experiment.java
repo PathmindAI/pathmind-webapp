@@ -35,6 +35,10 @@ public class Experiment extends ArchivableData
         return getRuns() == null || getRuns().isEmpty();
     }
 
+    public List<Run> getRuns() {
+        return runs == null ? new ArrayList<>() : runs;
+    }
+
     public void addRun(Run run) {
 	    if(runs == null)
 	        runs = new ArrayList<>();
