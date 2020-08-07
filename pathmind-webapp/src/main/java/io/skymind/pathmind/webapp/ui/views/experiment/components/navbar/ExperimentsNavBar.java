@@ -10,6 +10,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.ExperimentsNavBarItem;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentUpdatedSubscriber;
@@ -33,12 +34,14 @@ public class ExperimentsNavBar extends VerticalLayout
 	private Consumer<Experiment> selectExperimentConsumer;
     private ExperimentsNavBarItem currentExperimentNavItem;
 
+    private SegmentIntegrator segmentIntegrator;
+
     public long modelId;
 
     private ExperimentDAO experimentDAO;
     private Supplier<Optional<UI>> getUISupplier;
 
-    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment selectedExperiment, List<Experiment> experiments, Consumer<Experiment> selectExperimentConsumer)
+    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment selectedExperiment, List<Experiment> experiments, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator)
 	{
  	    this.getUISupplier = getUISupplier;
 	    this.experimentDAO = experimentDAO;
@@ -46,6 +49,8 @@ public class ExperimentsNavBar extends VerticalLayout
 	    this.selectedExperiment = selectedExperiment;
 	    this.modelId = selectedExperiment.getModelId();
         this.selectExperimentConsumer = selectExperimentConsumer;
+        this.segmentIntegrator = segmentIntegrator;
+
 		rowsWrapper = new VerticalLayout();
 		rowsWrapper.addClassName("experiments-navbar-items");
 		rowsWrapper.setPadding(false);
@@ -61,6 +66,8 @@ public class ExperimentsNavBar extends VerticalLayout
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
+        if(selectedExperiment.isArchived())
+            return;
         EventBus.subscribe(this,
                 new NavBarExperimentUpdatedSubscriber(getUISupplier, this),
                 new NavBarExperimentCreatedSubscriber(getUISupplier, this));
@@ -91,9 +98,8 @@ public class ExperimentsNavBar extends VerticalLayout
         experimentsNavBarItems.sort(Comparator.comparing(experimentsNavBarItem -> experimentsNavBarItem.getExperiment().getName(), Comparator.reverseOrder()));
         // Remove and re-add the navbar items so that they are in sorted order.
         rowsWrapper.removeAll();
-        experimentsNavBarItems.forEach(experimentsNavBarItem -> {
-                rowsWrapper.add(experimentsNavBarItem);
-        });
+        experimentsNavBarItems.forEach(experimentsNavBarItem ->
+                rowsWrapper.add(experimentsNavBarItem));
     }
 
     public List<Experiment> getExperiments() {
@@ -117,7 +123,7 @@ public class ExperimentsNavBar extends VerticalLayout
 	}
 
     private ExperimentsNavBarItem createExperimentNavBarItem(Experiment experiment) {
-        return new ExperimentsNavBarItem(this, getUISupplier, experimentDAO, experiment, selectExperimentConsumer);
+        return new ExperimentsNavBarItem(this, getUISupplier, experimentDAO, experiment, selectExperimentConsumer, segmentIntegrator);
     }
 
     public void setCurrentExperiment(Experiment newCurrentExperiment) {

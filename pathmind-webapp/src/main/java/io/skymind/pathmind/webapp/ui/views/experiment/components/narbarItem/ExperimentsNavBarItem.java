@@ -18,6 +18,7 @@ import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
@@ -38,11 +39,14 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
     private Experiment experiment;
     private Component statusComponent;
 
-    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer) {
+    private SegmentIntegrator segmentIntegrator;
+
+    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator) {
         this.experimentsNavbar = experimentsNavbar;
         this.getUISupplier = getUISupplier;
         this.experimentDAO = experimentDAO;
         this.experiment = experiment;
+        this.segmentIntegrator = segmentIntegrator;
 
         Boolean isDraft = ExperimentUtils.isDraftRunType(experiment);
         RunStatus overallExperimentStatus = ExperimentUtils.getTrainingStatus(experiment);
@@ -68,8 +72,10 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
     }
 
     private void archiveExperiment(Experiment experimentToArchive) {
-        ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(),
-                () -> ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true));
+        ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
+            ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
+            segmentIntegrator.archived(Experiment.class, true);
+        });
     }
 
     private void addNavBarTextAndButton(UI ui, ExperimentDAO experimentDAO, Experiment experiment) {
@@ -84,6 +90,8 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
+        if(experiment.isArchived())
+            return;
         EventBus.subscribe(this, new NavBarItemExperimentUpdatedSubscriber(getUISupplier, this));
     }
 

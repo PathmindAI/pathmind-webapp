@@ -174,7 +174,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 experimentDAO,
                 experiment,
                 experiments,
-                selectedExperiment -> selectExperiment(selectedExperiment));
+                selectedExperiment -> selectExperiment(selectedExperiment),
+                segmentIntegrator);
         setupExperimentContentPanel();
 
         Span modelNeedToBeUpdatedLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
