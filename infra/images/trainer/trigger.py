@@ -3,6 +3,7 @@ import os
 import sys
 import boto3
 import json
+import requests
 import sh
 import traceback
 import psycopg2
@@ -41,6 +42,24 @@ def execute_psql(sql_string):
     psql_cursor.close()
     psql_connection.close()
 
+def convert_to_seconds(s):
+    """
+    Convert time string expressed as <number>[m|h|d|s|w] to seconds
+    """
+    seconds_per_unit = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
+    return int(s[:-1]) * seconds_per_unit[s[-1]]
+
+def post_message_to_slack(text):
+    slack_url='https://hooks.slack.com/services/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'
+    slack_channel = '#training-errors'
+    slack_icon_url = 'https://a.slack-edge.com/production-standard-emoji-assets/10.2/google-medium/274c@2x.png'
+    slack_user_name = 'Pathmind Trainings'
+    return requests.post(slack_url, {
+        'channel': slack_channel,
+        'text': text,
+        'icon_url': slack_icon_url,
+        'username': slack_user_name,
+    }).json()
 
 def load_deployment_template(DEPLOYMENT_TEMPLATE):
     """
@@ -85,6 +104,36 @@ def send_mockup_data(s3bucket, s3path, cycle):
             target_key='/'.join(key.split('/')[2:])
             s3.meta.client.copy(copy_source, s3bucket, s3path+'/output/'+target_key)
         time.sleep(cycle)
+
+def th_monitor_job(message):
+    """
+    monitors if the pods for related to trainings are in Running mode
+    """
+    reported={}
+    start_threshold=900
+    while:
+        data=sh.kubectl('get','pods',\
+            '-n',NAMESPACE,\
+            '--field-selector','status.phase=Running',\
+            '-l','type=training')
+        for line in data.split('\n')[1:]:
+            pod=line.split()[0]
+            if pod not in reported and pod:
+                status=line.split()[2]
+                age=line.split()[4]
+                seconds=convert_to_seconds(age)
+                if age>start_threshold:
+                    text="Training {pod} is not able to start\
+                        \nStatus: {status}\
+                        \nElapsed Time: {age}\
+                        \nEnvironment: {ENVIRONMENT}"\
+                        .format(pod=pod,\
+                            status=status,\
+                            age=age,\
+                            ENVIRONMENT=ENVIRONMENT)
+                    post_message_to_slack(text)
+                reported[pod]=1
+        time.sleep(60)
 
 def process_message(message):
     """
@@ -170,10 +219,6 @@ def process_message(message):
                 line=line.replace('{{S3BUCKET}}',s3bucket)
                 line=line.replace('{{S3PATH}}',s3path)
                 line=line.replace('{{JOB_ID}}',job_id)
-                if ENVIRONMENT=='prod':
-                    NAMESPACE='default'
-                else:
-                    NAMESPACE=ENVIRONMENT
                 line=line.replace('{{NAMESPACE}}',NAMESPACE)
                 line=line.replace('{{ENVIRONMENT}}',ENVIRONMENT)
                 line=line.replace('{{SQS_URL}}',SQS_URL)
@@ -256,12 +301,15 @@ def main():
             for message in resp['Messages']:
                 process_message(message)
 
-
 if __name__ == "__main__":
     #Get env variables
     SQS_URL=os.environ['SQS_URL']
     NAME=os.environ['NAME']
     ENVIRONMENT=os.environ['ENVIRONMENT']
+    if ENVIRONMENT=='prod':
+        NAMESPACE='default'
+    else:
+        NAMESPACE=ENVIRONMENT
     RL_IMAGE=os.environ['RL_IMAGE']
     DEPLOYMENT_TEMPLATE="rl_training_deployment.yaml"
     DEPLOYMENT_FILE=DEPLOYMENT_TEMPLATE.replace('_template','')
@@ -274,5 +322,10 @@ if __name__ == "__main__":
     worker1 = Thread(target=main, args=())
     worker1.setDaemon(True)
     worker1.start()
+    #start monitoring
+    worker2 = Thread(target=th_monitor_job, args=())
+    worker2.setDaemon(True)
+    worker2.start()
     worker1.join()
+    worker2.join()
 

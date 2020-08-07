@@ -1,7 +1,5 @@
 package io.skymind.pathmind.webapp.ui.plugins;
 
-import io.skymind.pathmind.shared.data.PathmindUser;
-import io.skymind.pathmind.shared.data.user.UserMetrics;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -14,6 +12,8 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import elemental.json.Json;
 import elemental.json.JsonObject;
+import io.skymind.pathmind.shared.data.ArchivableData;
+import io.skymind.pathmind.shared.data.user.UserMetrics;
 import io.skymind.pathmind.shared.security.PathmindUserDetails;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +54,8 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
     private static final String EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW = "Added Notes on New Experiment View";
     private static final String EVENT_SEARCHED_SITE = "Performed a search using search box";
 	private static final String EVENT_USER_RUN_CAP_LIMIT = "User Run Cap Limit";
+	private static final String EVENT_ARCHIVED = "Archived";
+	private static final String EVENT_UNARCHIVED = "Unarchived";
 
 	public SegmentIntegrator(@Value("${skymind.segment.website.source.key}") String key,
 			@Value("${skymind.segment.enabled}") Boolean enabled) {
@@ -142,7 +144,14 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
     public void performedSearch() {
         track(EVENT_SEARCHED_SITE);
     }
-
+    
+    public void archived(Class<? extends ArchivableData> objectClass, boolean isArchived) {
+        JsonObject additionalInfo = Json.createObject();
+        additionalInfo.put("type", objectClass.getSimpleName().toLowerCase());
+        String event = isArchived ? EVENT_ARCHIVED : EVENT_UNARCHIVED; 
+        track(event, additionalInfo);
+    }
+    
     public void userRunCapLimitReached(PathmindUserDetails user, UserMetrics.UserCapType userCapType, int percentage) {
         JsonObject additionalInfo = Json.createObject();
         additionalInfo.put("userId", user.getId());

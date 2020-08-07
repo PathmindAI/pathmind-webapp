@@ -298,6 +298,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private void unarchiveExperiment() {
         ConfirmationUtils.unarchive("experiment", () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
+            segmentIntegrator.archived(Experiment.class, false);
             getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
         });
     }
@@ -440,7 +441,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         unarchiveExperimentButton.setVisible(experiment.isArchived());
 	}
 
-    // REFACTOR -> NO LONGER THE SAME -> Note: these 3 methods were copied and pasted from ExperimentView. Duplication will be gone when #1697 is implemented.
     private boolean isSameExperiment(Experiment eventExperiment) {
         return ExperimentUtils.isSameModel(experiment, eventExperiment.getModelId()) && experiment.equals(eventExperiment);
     }
@@ -489,7 +489,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     class NewExperimentViewExperimentUpdatedSubscriber implements ExperimentUpdatedSubscriber {
-
 
         @Override
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {

@@ -217,6 +217,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private HorizontalLayout getSimulationMetricsTable() {
         HorizontalLayout tableWrapper = new HorizontalLayout();
+        tableWrapper.setSpacing(false);
         tableWrapper.addClassName("simulation-metrics-table-wrapper");
 
         rewardVariablesTable = new RewardVariablesTable();
@@ -368,6 +369,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void unarchiveExperiment() {
         ConfirmationUtils.unarchive("experiment", () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
+            segmentIntegrator.archived(Experiment.class, false);
             getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
         });
     }

@@ -413,16 +413,7 @@ hr {
 .model-view .model-reward-variables {
     max-height: 180px;
     color: var(--lumo-secondary-text-color);
-    line-height: 1.3em;
     overflow-y: auto;
-}
-
-.model-view .model-reward-variables div {
-    margin-bottom: 0.2em;
-}
-
-.model-view .model-reward-variables span {
-    font-size: var(--lumo-font-size-s);
 }
 
 .model-view .model-reward-variables span:first-child {
@@ -430,10 +421,9 @@ hr {
     width: 30px;
     color: var(--lumo-secondary-text-color);
 }
-
-.model-view .model-reward-variables span:last-child {
-    padding: 0.12em 0.3em;
-    border-radius: 4px;
+.model-view .model-reward-variables .reward-variables-table[readonly] vaadin-horizontal-layout {
+    height: auto;
+    line-height: 1.1;
 }
 
 .project-view .notes-field-wrapper,

@@ -2,18 +2,19 @@ import groovy.json.JsonOutput
 
 def RELEASE_ID
 def TEST_STATUS = 0
+def prName
 
 /*
-    pathmind-webapp pipeline
-    The pipeline is made up of following steps
-    1. Git clone and setup
-    2. Build and local tests
-    3. Publish Docker and Helm
-    4. Optionally deploy to production and test
- */
+pathmind-webapp pipeline
+The pipeline is made up of following steps
+1. Git clone and setup
+2. Build and local tests
+3. Publish Docker and Helm
+4. Optionally deploy to production and test
+*/
 
 /*
-    Build a docker image
+Build a docker image
 */
 def buildDockerImage(image_name) {
     echo "Building the pathmind Docker Image"
@@ -22,7 +23,7 @@ def buildDockerImage(image_name) {
 }
 
 /*
-    Build a docker image
+Build a docker image
 */
 def createSecrets() {
     sh """
@@ -36,7 +37,7 @@ def createSecrets() {
 }
 
 /*
-    run migrations
+run migrations
 */
 def runMigrations() {
     sh """
@@ -50,7 +51,7 @@ def runMigrations() {
 
 
 /*
-    Publish a docker image
+Publish a docker image
 */
 def publishDockerImage(image_name, DOCKER_TAG) {
     echo "Logging to aws ecr"
@@ -63,7 +64,7 @@ def publishDockerImage(image_name, DOCKER_TAG) {
 }
 
 /*
-    Delete docker image
+Delete docker image
 */
 def deleteDockerImage(image_name) {
     echo "Logging to aws ecr"
@@ -73,26 +74,48 @@ def deleteDockerImage(image_name) {
 }
 
 /*
-    Send slack notification
+Send slack notification
 */
 def notifySlack(text, channel, attachments) {
     def slackURL = 'https://hooks.slack.com/services/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'
     def jenkinsIcon = 'https://jenkins.io/images/logos/actor/actor.png'
-
+    
     def payload = JsonOutput.toJson([text       : text,
-                                     channel    : channel,
-                                     username   : "Jenkins Test_PRs Build #${env.BUILD_NUMBER}",
-                                     icon_url   : jenkinsIcon,
-                                     link_names : 1,
-                                     attachments: attachments
+        channel    : channel,
+        username   : "Jenkins Test_PRs Build #${env.BUILD_NUMBER}",
+        icon_url   : jenkinsIcon,
+        link_names : 1,
+        attachments: attachments
     ])
-
+    
     sh "curl -X POST --data-urlencode \'payload=${payload}\' ${slackURL}"
 }
 
 /*
-    This is the main pipeline section with the stages of the CI/CD
- */
+Set the github status
+*/
+def setGitHubStatus(state) {
+    status="error"
+    if (state=="SUCCESS"){
+        status="success"
+    }
+    if (state=="PENDING"){
+        status="pending"
+    }
+    repoUrl = "https://api.github.com/repos/SkymindIO/pathmind-webapp"
+    commitSha = sh(returnStdout: true, script: 'git log --format=format:%H | sed -n 2,2p').trim()
+    token = sh(returnStdout: true, script: 'kubectl get secret githubtoken -o=jsonpath=\'{.data.GITHUBTOKEN}\' | base64 --decode')
+    sh """
+        set -x
+        curl \"${repoUrl}/statuses/${commitSha}?access_token=${token}\" \
+        -H \"Content-Type: application/json\"   \
+        -X POST -d '{\"state\": \"${status}\", \"description\": \"BDD tests\", \"target_url\": \"${env.RUN_DISPLAY_URL}\", \"context\": \"Jenkins\" }'
+    """
+}
+
+/*
+This is the main pipeline section with the stages of the CI/CD
+*/
 pipeline {
     options {
         // Build auto timeout
@@ -108,13 +131,13 @@ pipeline {
         HELM_FILE_UPDATER = 'values_dev-updater.yaml'
         DEPLOY_PROD = false
     }
-
+    
     parameters {
         string(name: 'GIT_BRANCH', defaultValue: 'test', description: 'Git branch to build')
         booleanParam(name: 'DEPLOY_TO_PROD', defaultValue: false, description: 'If build and tests are good, proceed and deploy to production without manual approval')
-
+        
     }
-
+    
     //all is built and run from the master
     agent {
         node {
@@ -122,7 +145,7 @@ pipeline {
             customWorkspace "${env.BUILD_NUMBER}"
         }
     }
-
+    
     // Pipeline stages
     stages {
         stage('Initialize') {
@@ -139,6 +162,7 @@ pipeline {
                 }
             }
             steps {
+                setGitHubStatus("PENDING")
                 echo "Check out code"
                 checkout scm
                 script {
@@ -150,7 +174,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Build Docker Images') {
             when {
                 allOf{
@@ -167,7 +191,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Publish Docker Images') {
             when {
                 allOf{
@@ -184,7 +208,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Deploying helm chart') {
             when {
                 allOf{
@@ -199,7 +223,7 @@ pipeline {
                     sh "kubectl create namespace ${env.BUILD_NUMBER}"
                     echo "Installing postgresql postgres-${env.BUILD_NUMBER}"
                     sh "helm upgrade --install postgres ${WORKSPACE}/infra/helm/postgres --set namespace=${env.BUILD_NUMBER} -n ${env.BUILD_NUMBER}"
-
+                    
                     echo "Waiting for psql to come up"
                     sh "timeout 900 bash -c 'while ! pg_isready  -h postgres-${env.BUILD_NUMBER} -q; do sleep 5; done'"
                 }
@@ -211,7 +235,7 @@ pipeline {
                     sh "aws sqs set-queue-attributes --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_NUMBER}-updater-queue --attributes file:///tmp/${env.BUILD_NUMBER}-sqs_policy.json"
                     sh "rm /tmp/${env.BUILD_NUMBER}-sqs_policy.json"
                     sh "aws sns subscribe --topic-arn arn:aws:sns:us-east-1:839270835622:dev-updater-topic --protocol sqs --notification-endpoint arn:aws:sqs:us-east-1:839270835622:${env.BUILD_ID}-updater-queue --attributes \"{\\\"RawMessageDelivery\\\":\\\"true\\\"}\""
-
+                    
                     echo "Creating S3 bucket for tests"
                     sh "aws s3api create-bucket --bucket ${env.BUILD_ID}-training-dynamic-files.pathmind.com --region us-east-1"
                     echo "Running db migrations"
@@ -225,11 +249,11 @@ pipeline {
                     echo "Installing updater ${RELEASE_ID}"
                     sh "helm upgrade --install ${RELEASE_ID}-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/${HELM_FILE_UPDATER} --set image.repository=${DOCKER_REG}/${RELEASE_ID} --set image.tag=latest --set env.APPLICATION_URL=http://${RELEASE_ID} --set namespace=${env.BUILD_NUMBER} --set env.JOB_MOCK_CYCLE=3 --set env.SQS_UPDATER_URL=https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_ID}-updater-queue --set env.S3_BUCKET=${env.BUILD_ID}-training-dynamic-files.pathmind.com --set env.SNS_UPDATER_SQS_FILTER_ATTR=${env.BUILD_NUMBER}prtest -n ${env.BUILD_NUMBER}"
                     sh "sleep 30"
-
+                    
                 }
             }
         }
-
+        
         stage('Testing') {
             when {
                 allOf{
@@ -254,7 +278,7 @@ pipeline {
                             allowMissing: false
                         ])
                     }
-
+                    
                 }
             }
         }
@@ -271,15 +295,14 @@ pipeline {
                     if (TEST_STATUS != 0) {
                         echo "Some bdd tests failed ${TEST_STATUS}"
                         currentBuild.result = 'UNSTABLE'
+                        prName="${env.ghprbPullTitle}".replaceAll('\'', '').replaceAll('"', '')
                     }
                 }
             }
-        }
+        } 
     }
     post {
         always {
-            echo 'Deleting workspace'
-            deleteDir()
             echo "Deleting image"
             deleteDockerImage("${RELEASE_ID}")
             echo "Deleting name space ${env.BUILD_NUMBER}"
@@ -290,24 +313,24 @@ pipeline {
             sh "aws sqs delete-queue --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_NUMBER}-updater-queue"
             sh "aws sns unsubscribe --subscription-arn `aws sns list-subscriptions | jq -r \".[] | .[] |  select(.Endpoint ==\\\"arn:aws:sqs:us-east-1:839270835622:${env.BUILD_ID}-updater-queue\\\").SubscriptionArn\"`"
             sh "/usr/bin/clean_test_s3.sh ${env.BUILD_NUMBER}"
+            setGitHubStatus(currentBuild.result)
         }
         unstable {
             echo 'Send slack notification if build unstable'
             script {
                 notifySlack("", "#tests", [[
-                                               title      : "Test_PRs » Build #${env.BUILD_NUMBER} - Failed",
-                                               title_link : "${env.BUILD_URL}",
-                                               color      : "#CF0000",
-                                               text       : "<@UGH39HL4E>",
-                                               "mrkdwn_in": ["fields"],
-                                               fields     : [
-                                                   [
-                                                       value: "<${env.BUILD_URL}Tests|Tests report>\nPull request <${env.ghprbPullLink}|${env.ghprbPullTitle}>",
-                                                       short: false
-                                                   ]
-                                               ]
-                                           ],
-                ])
+                    title      : "Test_PRs » Build #${env.BUILD_NUMBER} - Failed",
+                    title_link : "${env.BUILD_URL}",
+                    color      : "#CF0000",
+                    text       : "<@UGH39HL4E>",
+                    "mrkdwn_in": ["fields"],
+                    fields     : [
+                        [
+                            value: "<${env.BUILD_URL}Tests|Tests report>\nPull request <${env.ghprbPullLink}|${prName}>",
+                            short: false
+                        ]
+                    ]
+                ],])
             }
         }
     }

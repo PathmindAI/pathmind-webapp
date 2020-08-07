@@ -32,6 +32,7 @@ import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -44,6 +45,8 @@ public class ProjectsView extends PathMindDefaultView
 {
 	@Autowired
 	private ProjectDAO projectDAO;
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
 	private List<Project> projects;
 	private Grid<Project> projectGrid;
@@ -80,7 +83,10 @@ public class ProjectsView extends PathMindDefaultView
 				"Active",
 				projectGrid,
 				this::getProjects,
-				(project, isArchive) -> projectDAO.archive(project.getId(), isArchive));
+				(project, isArchive) ->  {
+				    projectDAO.archive(project.getId(), isArchive);
+				    segmentIntegrator.archived(Project.class, isArchive);
+				});
 	}
 
 	private void setupProjectGrid()

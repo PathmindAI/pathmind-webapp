@@ -11,6 +11,8 @@ import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
@@ -140,7 +142,10 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
                 true,
                 experimentGrid,
                 this::getExperiments,
-                (experiment, isArchivable) -> ExperimentUtils.archiveExperiment(experimentDAO, experiment, isArchivable));
+                (experiment, isArchivable) -> { 
+                    ExperimentUtils.archiveExperiment(experimentDAO, experiment, isArchivable);
+                    segmentIntegrator.archived(Experiment.class, isArchivable);
+                });
     }
 
     private void setupExperimentListPanel() {
@@ -200,26 +205,14 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
         packageNameText.add(packageName);
         actionsText.add(""+model.getNumberOfPossibleActions());
         observationsText.add(""+model.getNumberOfObservations());
+
         if (rewardVariableNames.size() > 0) {
+            RewardVariablesTable rewardVariablesTable = new RewardVariablesTable();
+            rewardVariablesTable.setIsReadOnly(true);
             rewardVariableNames.sort(Comparator.comparingInt(RewardVariable::getArrayIndex));
-            rewardVariableNames.forEach(rv -> {
-            String rvName = rv.getName();
-                if (rvName == null || rvName.length() == 0) {
-                    rvName = "—";
-                }
-                Span rvSpan = new Span(rvName);
-                rvSpan.addClassName("variable-color-"+rv.getArrayIndex()%10);
-                rewardVariableNamesText.add(
-                    new Div(
-                        new Span(""+rv.getArrayIndex()),
-                        rvSpan
-                    )
-                );
-            });
-            // For #1887
-            // rewardVariablesTable.setVariableSize(model.getRewardVariablesCount());
-            // rewardVariablesTable.setValue(rewardVariableNames);
-            // rewardVariableNamesText.add(rewardVariablesTable);
+            rewardVariablesTable.setVariableSize(model.getRewardVariablesCount());
+            rewardVariablesTable.setValue(rewardVariableNames);
+            rewardVariableNamesText.add(rewardVariablesTable);
         } else {
             rewardVariableNamesText.add("All reward variables are unnamed. You can name them when you create a new experiment for this model.");
         }

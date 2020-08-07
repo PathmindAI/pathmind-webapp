@@ -164,6 +164,7 @@ class RunRepository
                 .where(DSL.day(RUN.STARTED_AT).eq(DSL.day(LocalDateTime.now())))
                     .and(DSL.month(RUN.STARTED_AT).eq(DSL.month(LocalDateTime.now())))
                     .and(DSL.year(RUN.STARTED_AT).eq(DSL.year(LocalDateTime.now())))
+                    .and(PATHMIND_USER.ID.eq(userId))
                 .asTable("today");
         Table<?> nestedThisMonth = ctx.select(count().as("runsThisMonth"))
                 .from(RUN)
@@ -173,6 +174,7 @@ class RunRepository
                     .leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
                 .where(DSL.month(RUN.STARTED_AT).eq(DSL.month(LocalDateTime.now())))
                     .and(DSL.year(RUN.STARTED_AT).eq(DSL.year(LocalDateTime.now())))
+                    .and(PATHMIND_USER.ID.eq(userId))
                 .asTable("thisMonday");
         Record record = ctx.select(nestedToday.field("runsToday"), nestedThisMonth.field("runsThisMonth"))
                 .from(nestedToday, nestedThisMonth)

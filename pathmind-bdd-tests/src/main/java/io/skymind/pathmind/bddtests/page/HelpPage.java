@@ -14,7 +14,7 @@ public class HelpPage extends PageObject {
 
     public void checkConvertingModelsToSupportTuplesPageElements() {
         waitABit(5000);
-        assertThat(getDriver().getTitle(), is("Converting models to support Tuples | Pathmind Knowledge Base"));
+        assertThat(getDriver().findElement(By.cssSelector("h1")).getText(), is("Converting models to support Tuples"));
 
     }
 }
