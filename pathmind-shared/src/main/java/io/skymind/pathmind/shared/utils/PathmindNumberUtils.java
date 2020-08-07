@@ -23,10 +23,17 @@ public class PathmindNumberUtils {
         return bd.setScale(newScale, RoundingMode.HALF_UP).toString();
     }
 
+    /**
+     * @param refNumberSigFig
+     *             is used for determining the actual sig. fig. of figures ending with 0 at its last position.
+     */
     public static String setSigFigBasedOnAnotherDouble(Double originalNumber, Double refNumber, int refNumberSigFig) {
         BigDecimal bdRefNumber;
         BigDecimal bdOriginalNumber = BigDecimal.valueOf(originalNumber);
         String refNumber2SigFig = formatToSigFig(refNumber, 2);
+        if (refNumberSigFig < 1) {
+            return "";
+        }
         if (refNumber2SigFig.contains(".")) {
             bdRefNumber = BigDecimal.valueOf(Double.parseDouble(refNumber2SigFig));
         } else {
@@ -34,11 +41,15 @@ public class PathmindNumberUtils {
         }
         int bdOriginalNumberPrecision = bdOriginalNumber.precision();
         int bdOriginalNumberScale = bdOriginalNumber.scale();
-        int bdOriginalNumberNonDecimalDigits = bdOriginalNumberPrecision - bdOriginalNumberScale;
-        int bdRefNumberPrecision = bdRefNumber.precision();
-        int bdRefNumberScale = bdRefNumber.scale();
-        int bdRefNumberActualPrecision = bdRefNumberPrecision - refNumberSigFig;
-        int sigFig = bdOriginalNumberNonDecimalDigits + bdRefNumberScale - bdRefNumberActualPrecision;
+        int bdOriginalNumberNonDecimalDigits =  getNumberOfNonDecimalDigits(bdOriginalNumberPrecision, bdOriginalNumberScale);
+        int bdRefNumberInsignificantPrecision = getInsignificantPrecision(bdRefNumber.precision(), refNumberSigFig);
+        int sigFig = bdOriginalNumberNonDecimalDigits + bdRefNumber.scale() - bdRefNumberInsignificantPrecision;
+        if (bdRefNumber.signum() == 0) {
+            /* This is needed because BigDecimal always saves 0 as 0.0 with 1 precision and 1 scale
+             * which would mess up the calculation.
+             */
+            sigFig -= bdRefNumber.scale();
+        }
         int newScale = sigFig - bdOriginalNumberPrecision + bdOriginalNumberScale;
         bdOriginalNumber = bdOriginalNumber.setScale(newScale, RoundingMode.HALF_EVEN);
         return bdOriginalNumber.toPlainString().replace(",", "");
@@ -47,7 +58,23 @@ public class PathmindNumberUtils {
     public static String formatToSigFig(Double originalNumber, int sigFig) {
         MathContext mathContext = new MathContext(sigFig, RoundingMode.HALF_EVEN);
         BigDecimal formatted = new BigDecimal(originalNumber, mathContext);
-        return formatted.toPlainString();
+        int numberOfNonDecimalDigits = getNumberOfNonDecimalDigits(formatted.precision(), formatted.scale());
+        String result = formatted.toPlainString();
+        if (formatted.precision() < sigFig) {
+            if (numberOfNonDecimalDigits == formatted.precision()) {
+                result += ".";
+            }
+            result += "0";
+        }
+        return result;
+    }
+
+    public static int getNumberOfNonDecimalDigits(int bdPrecision, int bdScale) {
+        return bdPrecision - bdScale;
+    }
+
+    public static int getInsignificantPrecision(int bdPrecision, int sigFig) {
+        return bdPrecision - sigFig;
     }
 
     public static int powerOfTen(int pow) {
