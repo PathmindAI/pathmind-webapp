@@ -369,8 +369,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void unarchiveExperiment() {
         ConfirmationUtils.unarchive("experiment", () -> {
-            // REFACTOR -> Quick hack to have to setArchived(false) because of how the archived is set before ExperimentUtils in modelview.
-            experiment.setArchived(false);
             ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
             segmentIntegrator.archived(Experiment.class, false);
             getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
