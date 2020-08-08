@@ -626,9 +626,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         @Override
         public void handleBusEvent(ExperimentCreatedBusEvent event) {
-            if (ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, event.getModelId())) {
-                updateExperimentComponents();
-            }
+            updateExperimentComponents();
+        }
+
+        @Override
+        public boolean filterBusEvent(ExperimentCreatedBusEvent event) {
+            return ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, event.getModelId());
         }
 
         @Override
@@ -640,8 +643,18 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     class ExperimentViewExperimentUpdatedSubscriber implements ExperimentUpdatedSubscriber {
         @Override
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
-            if (ExperimentUtils.isSameModel(experiment, event.getModelId())) {
-                updateExperimentComponents();
+            updateExperimentComponents();
+        }
+
+        @Override
+        public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
+            if (experiment == null) {
+                return false;
+            }
+            if (experiment.isArchived()) {
+                return ExperimentUtils.isSameExperiment(event.getExperiment(), experiment);
+            } else {
+                return ExperimentUtils.isSameModel(experiment, event.getModelId());
             }
         }
 

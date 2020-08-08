@@ -95,7 +95,7 @@ public class ExperimentsNavBar extends VerticalLayout
         experiments.sort(Comparator.comparing(Experiment::getDateCreated, Comparator.reverseOrder()));
         ExperimentsNavBarItem navBarItem = createExperimentNavBarItem(experiment);
         experimentsNavBarItems.add(navBarItem);
-        experimentsNavBarItems.sort(Comparator.comparing(experimentsNavBarItem -> experimentsNavBarItem.getExperiment().getName(), Comparator.reverseOrder()));
+        experimentsNavBarItems.sort(Comparator.comparing(experimentsNavBarItem -> experimentsNavBarItem.getExperiment().getDateCreated(), Comparator.reverseOrder()));
         // Remove and re-add the navbar items so that they are in sorted order.
         rowsWrapper.removeAll();
         experimentsNavBarItems.forEach(experimentsNavBarItem ->

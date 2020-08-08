@@ -132,8 +132,7 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
         experimentNameWrapper.addClassName("experiment-name");
         return experimentNameWrapper;
     }
-
-    public void updateStatus(RunStatus runStatus) {
+    private void updateStatus(RunStatus runStatus) {
         Component newStatusComponent = createStatusIcon(runStatus);
         replace(statusComponent, newStatusComponent);
         statusComponent = newStatusComponent;
