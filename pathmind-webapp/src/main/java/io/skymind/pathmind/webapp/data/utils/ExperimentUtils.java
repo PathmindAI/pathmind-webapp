@@ -165,7 +165,8 @@ public class ExperimentUtils
 
     public static void archiveExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean isArchive) {
 	    experimentDAO.archive(experiment.getId(), isArchive);
-	    experiment.setArchived(isArchive);
+        // REFACTOR -> Quick hack because of how the archived is set before ExperimentUtils in modelview.
+        // experiment.setArchived(isArchive);
 	    EventBus.post(new ExperimentUpdatedBusEvent(experiment, ExperimentUpdatedBusEvent.ExperimentUpdateType.Archive));
     }
 
