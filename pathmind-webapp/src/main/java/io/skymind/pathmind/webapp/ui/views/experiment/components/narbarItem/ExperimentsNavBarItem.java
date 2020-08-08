@@ -21,6 +21,7 @@ import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
@@ -92,7 +93,9 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
     protected void onAttach(AttachEvent attachEvent) {
         if(experiment.isArchived())
             return;
-        EventBus.subscribe(this, new NavBarItemExperimentUpdatedSubscriber(getUISupplier, this));
+        EventBus.subscribe(this,
+                new NavBarItemExperimentUpdatedSubscriber(getUISupplier, this),
+                new NavBarItemRunUpdateSubscriber(getUISupplier, this));
     }
 
     @Override

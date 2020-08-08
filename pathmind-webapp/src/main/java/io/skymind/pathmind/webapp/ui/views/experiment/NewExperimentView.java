@@ -44,9 +44,9 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.*;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionErrorPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
@@ -56,7 +56,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @CssImport("./styles/views/new-experiment-view.css")

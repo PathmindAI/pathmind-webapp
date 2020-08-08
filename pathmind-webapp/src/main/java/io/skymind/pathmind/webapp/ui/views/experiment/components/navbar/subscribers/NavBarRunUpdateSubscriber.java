@@ -39,6 +39,9 @@ public class NavBarRunUpdateSubscriber implements RunUpdateSubscriber {
 
     @Override
     public boolean filterBusEvent(RunUpdateBusEvent event) {
+        // If it's archived then we don't need to update anything since there is no NavBar.
+        if(event.getRun().getExperiment().isArchived())
+            return false;
         // We are interested in any run update that's related to any experiment
         return experimentsNavBarItems.stream().anyMatch(
                 experimentsNavBarItem -> experimentsNavBarItem.getExperiment().getRuns().stream().anyMatch(run -> run.getId() == event.getRun().getId()));
