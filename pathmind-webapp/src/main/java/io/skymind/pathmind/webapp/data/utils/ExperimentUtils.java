@@ -171,6 +171,7 @@ public class ExperimentUtils
 
     public static void favoriteExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean newIsFavorite) {
         experimentDAO.markAsFavorite(experiment.getId(), newIsFavorite);
+        experiment.setFavorite(newIsFavorite);
         EventBus.post(new ExperimentUpdatedBusEvent(experiment));
     }
 

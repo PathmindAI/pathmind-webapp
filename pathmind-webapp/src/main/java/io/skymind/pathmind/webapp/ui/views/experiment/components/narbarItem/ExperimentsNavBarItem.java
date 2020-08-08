@@ -39,6 +39,7 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
 
     private Experiment experiment;
     private Component statusComponent;
+    private FavoriteStar favoriteStar;
 
     private SegmentIntegrator segmentIntegrator;
 
@@ -80,11 +81,12 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
     }
 
     private void addNavBarTextAndButton(UI ui, ExperimentDAO experimentDAO, Experiment experiment) {
+        favoriteStar = new FavoriteStar(experiment.isFavorite(), newIsFavorite -> ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite));
         VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
             add(createExperimentText(
                     experiment.getName(),
                     DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId),
-                    new FavoriteStar(experiment.isFavorite(), newIsFavorite -> ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite))));
+                    favoriteStar));
             add(createArchiveExperimentButton(experiment));
         });
     }
@@ -157,5 +159,6 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
     public void updateExperiment(Experiment experiment) {
         this.experiment = experiment;
         updateStatus(ExperimentUtils.getTrainingStatus(experiment));
+        favoriteStar.setValue(experiment.isFavorite());
     }
 }
