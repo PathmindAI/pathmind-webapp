@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.IntStream;
 
 @Getter
 @Setter
@@ -43,5 +44,17 @@ public class Experiment extends ArchivableData
 	    if(runs == null)
 	        runs = new ArrayList<>();
 	    runs.add(run);
+    }
+
+    public void updateRun(Run run) {
+        if(runs == null) {
+            runs = new ArrayList<>();
+            runs.add(run);
+        } else {
+            IntStream.range(0, runs.size())
+                    .filter(index -> runs.get(index).getId() == run.getId())
+                    .findFirst()
+                    .ifPresent(index -> runs.set(index, run));
+        }
     }
 }

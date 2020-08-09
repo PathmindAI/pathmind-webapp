@@ -14,7 +14,9 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
+import io.skymind.pathmind.shared.utils.RunUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
@@ -55,7 +57,7 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
         statusComponent = isDraft ? new Icon(VaadinIcon.PENCIL) : createStatusIcon(overallExperimentStatus);
         add(statusComponent);
 
-        addClickListener(event -> handleRowClicked(experiment, selectExperimentConsumer));
+        addClickListener(event -> handleRowClicked(selectExperimentConsumer));
 
         addClassName("experiment-navbar-item");
         setSpacing(false);
@@ -138,7 +140,7 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
         statusComponent = newStatusComponent;
     }
 
-    private void handleRowClicked(Experiment experiment, Consumer<Experiment> selectExperimentConsumer) {
+    private void handleRowClicked(Consumer<Experiment> selectExperimentConsumer) {
         selectExperimentConsumer.accept(experiment);
         experimentsNavbar.setCurrentExperiment(experiment);
     }
@@ -159,5 +161,10 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
         this.experiment = experiment;
         updateStatus(ExperimentUtils.getTrainingStatus(experiment));
         favoriteStar.setValue(experiment.isFavorite());
+    }
+
+    public void updateRun(Run run) {
+        experiment.updateRun(run);
+        updateStatus(ExperimentUtils.getTrainingStatus(experiment));
     }
 }

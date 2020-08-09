@@ -29,7 +29,7 @@ public class NavBarItemRunUpdateSubscriber implements RunUpdateSubscriber {
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
         PushUtils.push(getUISupplier.get(), () ->
-            experimentsNavBarItem.updateExperiment(event.getRun().getExperiment()));
+            experimentsNavBarItem.updateRun(event.getRun()));
     }
 
     @Override
