@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.project.components.panels;
+package io.skymind.pathmind.webapp.ui.views.model.components;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
