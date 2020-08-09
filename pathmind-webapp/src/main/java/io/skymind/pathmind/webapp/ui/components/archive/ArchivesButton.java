@@ -48,6 +48,7 @@ public class ArchivesButton<T extends ArchivableData> extends Button
 	// need to set the items here so that the item is removed from the table.
 	private void changeArchiveStatus(Grid<T> grid, T data, Function<Boolean, List<T>> getFilteredData, BiConsumer<T, Boolean> archiveDAO) {
 		archiveDAO.accept(data, !data.isArchived());
+		data.setArchived(!data.isArchived());
 		grid.setItems(getFilteredData.apply(!data.isArchived()));
 	}
 }
