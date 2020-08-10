@@ -53,23 +53,26 @@
 
 .experiment-view .simulation-metrics-table-wrapper .header {
     display: flex;
-    align-self: flex-end;
+    justify-content: flex-end;
+    position: sticky;
+    width: 100%;
+    top: 0;
     color: var(--pm-secondary-text-color);
+    background-color: white;
 }
 
-.experiment-view .simulation-metrics-table-wrapper .header .helper-icons {
+.experiment-view .simulation-metrics-table-wrapper .header .helper-icon {
     flex-shrink: 0;
-    margin-left: var(--lumo-space-xxxs);
+    margin-left: var(--lumo-space-xxs);
 }
 
-.experiment-view .simulation-metrics-table-wrapper .header .helper-icons:hover {
+.experiment-view .simulation-metrics-table-wrapper .header .helper-icon:hover {
     color: var(--pm-secondary-text-color);
 }
 
 .experiment-view .simulation-metrics-table-wrapper .header iron-icon {
     --iron-icon-width: var(--lumo-font-size-s);
     --iron-icon-height: var(--lumo-font-size-s);
-    margin-left: var(--lumo-space-xxxs);
 }
 
 .experiment-view .reward-variables-table span:first-child {
@@ -93,6 +96,7 @@
 
 .experiment-view .metrics-wrapper,
 .experiment-view .sparklines-wrapper {
+    flex: 1 0 0;
     line-height: 2rem;
 }
 
