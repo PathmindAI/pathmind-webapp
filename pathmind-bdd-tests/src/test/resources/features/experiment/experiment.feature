@@ -63,7 +63,7 @@ Feature: Experiment page
 #    And Check that the experiment status is 'Stopping'
 #    And Check that button 'Stop Training' doesn't exist
 #    And Check that button 'Export Policy' doesn't exist
-
+  @smoke
   Scenario: Check reward function on started experiment
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function

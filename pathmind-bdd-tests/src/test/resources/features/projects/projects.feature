@@ -29,6 +29,7 @@ Feature: Projects page
     When Open projects tab
     Then Check that project exist in project list AutotestProject
 
+  @smoke
   Scenario: Edit project name from projects page
     Given Login to the pathmind
     When Create new CoffeeShop project with draft experiment
