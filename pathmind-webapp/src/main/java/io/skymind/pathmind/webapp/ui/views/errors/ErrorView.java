@@ -20,9 +20,9 @@ import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.utils.CookieUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -60,11 +60,7 @@ public class ErrorView extends PathMindDefaultView implements HasErrorParameter<
         Button signOutButton = new Button("signing out");
         signOutButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         signOutButton.addClickListener(evt -> {
-            getUI().ifPresent(ui -> {
-                CookieUtils.deleteAWSCanCookie();
-                ui.getSession().getSession().invalidate();
-                ui.getPage().reload(); 
-            });
+            getUI().ifPresent(ui -> VaadinUtils.signout(ui, true));
         });
         
         return WrapperUtils.wrapWidthFullCenterVertical(
