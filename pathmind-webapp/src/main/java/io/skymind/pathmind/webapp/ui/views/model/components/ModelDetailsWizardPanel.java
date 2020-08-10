@@ -34,14 +34,14 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
-	public ModelDetailsWizardPanel(Binder<Model> binder, boolean isResumeUpload, boolean isTupleModel)
+	public ModelDetailsWizardPanel(Binder<Model> binder, boolean isResumeUpload, boolean isValidModel)
 	{
 		setupFields();
 		setupForm();
 		setupNotesFieldTextArea();
 		nextStepButton.setIconAfterText(true);
 		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		nextStepButton.setEnabled(isTupleModel);
+		nextStepButton.setEnabled(isValidModel);
 
 
 		Icon checkmarkIcon = new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE);
@@ -81,8 +81,8 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		setSpacing(false);
 	}
 
-	public void setIsTupleModel(boolean isTupleModel) {
-        nextStepButton.setEnabled(isTupleModel);
+	public void setIsValidModel(boolean isValidModel) {
+        nextStepButton.setEnabled(isValidModel);
     }
 
 	private void setupFields()

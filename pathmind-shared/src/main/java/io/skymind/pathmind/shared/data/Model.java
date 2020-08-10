@@ -27,5 +27,6 @@ public class Model extends ArchivableData
 	private int rewardVariablesCount;
 	private String packageName;
 	private int actionTupleSize;
+	private int invalidModel;
 
 }

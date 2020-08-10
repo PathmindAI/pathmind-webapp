@@ -2,6 +2,7 @@ package io.skymind.pathmind.services.project;
 
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
+import io.skymind.pathmind.shared.constants.InvalidModelType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
@@ -13,16 +14,18 @@ import java.util.concurrent.ExecutorService;
 @Slf4j
 public class ProjectFileCheckService {
 
-    private static final String NONTUPLE_ERROR_MESSAGE = "Model needs to be updated. You can take a look at <a target='_blank' href='%s'>this article</a> for upgrade instructions.";
+    private static final String INVALID_MODEL_ERROR_MESSAGE = "Model needs to be updated. You can take a look at <a target='_blank' href='%s'>this article</a> for upgrade instructions.";
 
     private final ExecutorService checkerExecutorService;
     private final ModelAnalyzerApiClient client;
     private final String convertModelsToSupportTuplesURL;
+    private final String convertModelsToSupportRewardVariablesURL;
 
-    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportTuplesURL) {
+    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportTuplesURL, String convertModelsToSupportRewardVariablesURL) {
         this.checkerExecutorService = checkerExecutorService;
         this.client = client;
         this.convertModelsToSupportTuplesURL = convertModelsToSupportTuplesURL;
+        this.convertModelsToSupportRewardVariablesURL = convertModelsToSupportRewardVariablesURL;
     }
 
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
@@ -93,6 +96,20 @@ public class ProjectFileCheckService {
     }
 
     public String getNonTupleErrorMessage() {
-        return String.format(NONTUPLE_ERROR_MESSAGE, convertModelsToSupportTuplesURL);
+        return String.format(INVALID_MODEL_ERROR_MESSAGE, convertModelsToSupportTuplesURL);
+    }
+    public String getErrorMessage(InvalidModelType invalidModelType) {
+        String articleUrl = getArticleUrlForInvalidReason(invalidModelType);
+        return String.format(INVALID_MODEL_ERROR_MESSAGE, articleUrl);
+    }
+
+    private String getArticleUrlForInvalidReason(InvalidModelType invalidModelType) {
+        switch (invalidModelType) {
+            case OLD_REWARD_VARIABLES :
+                return convertModelsToSupportRewardVariablesURL;
+            default :
+                // Currently only invalid model reason is reward variables 
+                return convertModelsToSupportRewardVariablesURL;
+        }
     }
 }

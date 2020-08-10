@@ -21,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row13;
+import org.jooq.Row14;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = 57045546;
+    private static final long serialVersionUID = 312595029;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -124,6 +124,11 @@ public class Model extends TableImpl<ModelRecord> {
     public final TableField<ModelRecord, Integer> ACTION_TUPLE_SIZE = createField(DSL.name("action_tuple_size"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
+     * The column <code>public.model.invalid_model</code>.
+     */
+    public final TableField<ModelRecord, Integer> INVALID_MODEL = createField(DSL.name("invalid_model"), org.jooq.impl.SQLDataType.INTEGER, this, "");
+
+    /**
      * Create a <code>public.model</code> table reference
      */
     public Model() {
@@ -164,11 +169,6 @@ public class Model extends TableImpl<ModelRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.MODEL_PKEY, Indexes.MODEL_PROJECT_FK_INDEX);
-    }
-
-    @Override
-    public Identity<ModelRecord, Long> getIdentity() {
-        return Keys.IDENTITY_MODEL;
     }
 
     @Override
@@ -217,11 +217,11 @@ public class Model extends TableImpl<ModelRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row13 type methods
+    // Row14 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Integer, Boolean, String, Integer, Boolean, String, Integer> fieldsRow() {
-        return (Row13) super.fieldsRow();
+    public Row14<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Integer, Boolean, String, Integer, Boolean, String, Integer, Integer> fieldsRow() {
+        return (Row14) super.fieldsRow();
     }
 }

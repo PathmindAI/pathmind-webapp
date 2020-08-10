@@ -55,7 +55,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusD
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
-import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
+import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import org.apache.commons.lang3.StringUtils;
@@ -125,7 +125,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     @Autowired
     private FeatureManager featureManager;
     @Autowired
-    private NonTupleModelService nonTupleModelService;
+    private ModelCheckerService modelCheckerService;
     @Value("${pathmind.early-stopping.url}")
     private String earlyStoppingUrl;
 
@@ -172,7 +172,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         experimentsNavbar = new ExperimentsNavbar(experimentDAO, modelId, selectedExperiment -> selectExperiment(selectedExperiment), experimentToArchive -> archiveExperiment(experimentToArchive));
         setupExperimentContentPanel();
 
-        Span modelNeedToBeUpdatedLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
+        Span modelNeedToBeUpdatedLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
         modelNeedToBeUpdatedLabel.getStyle().set("margin-top", "2px");
 
 	    reasonWhyTheTrainingStoppedLabel = LabelFactory.createLabel("", TAG_LABEL, "reason-why-the-training-stopped");
@@ -483,7 +483,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void updateUIForError(TrainingError error, String errorText) {
         showTheReasonWhyTheTrainingStopped(errorText, ERROR_LABEL, false);
 
-        boolean allowRestart = error.isRestartable() && ModelUtils.isTupleModel(experiment.getModel());
+        boolean allowRestart = error.isRestartable() && ModelUtils.isValidModel(experiment.getModel());
         restartTraining.setVisible(allowRestart);
         restartTraining.setEnabled(allowRestart);
     }

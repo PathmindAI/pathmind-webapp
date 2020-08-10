@@ -58,7 +58,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
     @Autowired
     private SegmentIntegrator segmentIntegrator;
     @Autowired
-    private NonTupleModelService nonTupleModelService;
+    private ModelCheckerService modelCheckerService;
 
     private long modelId;
     private Model model;
@@ -107,7 +107,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
     private FlexLayout createRightPanel() {
         Span panelTitle = LabelFactory.createLabel("Model Details", CssPathmindStyles.SECTION_TITLE_LABEL);
-        Span errorMessage = nonTupleModelService.createNonTupleErrorLabel(model);
+        Span errorMessage = modelCheckerService.createInvalidErrorLabel(model);
         packageNameText = new Paragraph(LabelFactory.createLabel("Package Name", CssPathmindStyles.BOLD_LABEL));
         actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssPathmindStyles.BOLD_LABEL));
         observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssPathmindStyles.BOLD_LABEL));

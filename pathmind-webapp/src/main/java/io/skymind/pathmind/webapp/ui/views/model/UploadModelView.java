@@ -97,7 +97,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private FeatureManager featureManager;
 
 	@Autowired
-    private NonTupleModelService nonTupleModelService;
+    private ModelCheckerService modelCheckerService;
 
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSizeAsStr;
@@ -136,7 +136,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		modelBinder = new Binder<>(Model.class);
 
 		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int)DataSize.parse(maxFileSizeAsStr).toBytes());
-		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload(), ModelUtils.isTupleModel(model));
+		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload(), ModelUtils.isValidModel(model));
 		rewardVariablesPanel = new RewardVariablesPanel();
 		actionsPanel = new ActionsPanel();
 		observationsPanel = new ObservationsPanel();
@@ -172,15 +172,15 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		);
 		sectionTitleWrapper.addClassName(PROJECT_TITLE);
 
-        Span nonTupleErrorLabel = nonTupleModelService.createNonTupleErrorLabel(model);
-        nonTupleErrorLabel.getStyle().set("margin-top", "10px");
-        nonTupleErrorLabel.getStyle().set("margin-bottom", "10px");
+        Span invalidModelErrorLabel = modelCheckerService.createInvalidErrorLabel(model);
+        invalidModelErrorLabel.getStyle().set("margin-top", "10px");
+        invalidModelErrorLabel.getStyle().set("margin-bottom", "10px");
 
         List<Component> sections = new ArrayList<>();
         sections.add(sectionTitleWrapper);
         sections.add(uploadModelWizardPanel);
-        if (isResumeUpload() && !ModelUtils.isTupleModel(model)) {
-            sections.add(nonTupleErrorLabel);
+        if (isResumeUpload() && !ModelUtils.isValidModel(model)) {
+            sections.add(invalidModelErrorLabel);
         }
         sections.add(modelDetailsWizardPanel);
         sections.add(rewardVariablesPanel);
@@ -350,7 +350,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 				model.setRewardVariablesCount(((AnylogicFileCheckResult) (result)).getRewardVariablesCount());
 				model.setActionTupleSize(((AnylogicFileCheckResult) (result)).getActionTupleSize());
 			}
-			modelDetailsWizardPanel.setIsTupleModel(ModelUtils.isTupleModel(model));
+			modelDetailsWizardPanel.setIsValidModel(ModelUtils.isValidModel(model));
 
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");

@@ -64,8 +64,9 @@ public class PathmindApplication
 
     @Bean
     public ProjectFileCheckService projectFileCheckService(ExecutorService executorService, ModelAnalyzerApiClient modelAnalyzerApiClient,
-                                                           @Value("${pathmind.convert-models-to-support-tuples.url}") String convertModelsToSupportTuplesURL) {
-        return new ProjectFileCheckService(executorService, modelAnalyzerApiClient, convertModelsToSupportTuplesURL);
+                                                           @Value("${pathmind.convert-models-to-support-tuples.url}") String convertModelsToSupportTuplesURL,
+                                                           @Value("${pathmind.convert-models-to-support-reward-variables.url}") String convertModelsToSupportRewardVariablesURL) {
+        return new ProjectFileCheckService(executorService, modelAnalyzerApiClient, convertModelsToSupportTuplesURL, convertModelsToSupportRewardVariablesURL);
     }
 
 	@EventListener(ApplicationReadyEvent.class)

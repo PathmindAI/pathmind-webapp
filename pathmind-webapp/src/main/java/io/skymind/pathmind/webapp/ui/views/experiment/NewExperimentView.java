@@ -50,7 +50,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavb
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
-import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
+import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -102,7 +102,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	@Autowired
 	private RewardValidationService rewardValidationService;
 	@Autowired
-    private NonTupleModelService nonTupleModelService;
+    private ModelCheckerService modelCheckerService;
 
 	private Breadcrumbs pageBreadcrumbs;
 	private Binder<Experiment> binder;
@@ -169,7 +169,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		VerticalLayout rewardFnPanel = getRewardFnEditorPanel();
 		rewardFnPanel.addClassName("reward-fn-editor-panel");
 
-        Span errorDescriptionLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
+        Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
 
 		HorizontalLayout rewardFunctionWrapper = WrapperUtils.wrapSizeFullBetweenHorizontal(
 				rewardFnPanel, 
@@ -227,7 +227,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	}
 
 	private boolean canStartTraining() {
-		return ModelUtils.isTupleModel(experiment.getModel()) && errorMessageWrapper.hasClassName("noError") && canSaveDataInDB();
+		return ModelUtils.isValidModel(experiment.getModel()) && errorMessageWrapper.hasClassName("noError") && canSaveDataInDB();
 	}
 
 	private boolean canSaveDataInDB() {

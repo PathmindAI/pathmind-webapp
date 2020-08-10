@@ -1619,5 +1619,19 @@
             <dropColumn tableName="REWARD_VARIABLE" columnName="DATA_TYPE" />
         </rollback>
     </changeSet>
+    
+    <changeSet id="20200810-01" author="onur@vaadin.com">
+        <addColumn tableName="MODEL">
+            <column name="INVALID_MODEL" type="INT">
+            </column>
+        </addColumn>
+        <update tableName="MODEL">
+            <!-- Set all existing models as invalid -->
+            <column name="INVALID_MODEL" value="1"/>
+        </update>
+        <rollback>
+            <dropColumn tableName="MODEL" columnName="INVALID_MODEL" />
+        </rollback>
+    </changeSet>
 
 </databaseChangeLog>
