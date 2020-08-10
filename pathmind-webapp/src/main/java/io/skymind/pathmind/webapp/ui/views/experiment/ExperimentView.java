@@ -18,14 +18,15 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.data.TrainingError;
 import io.skymind.pathmind.shared.data.user.UserCaps;
-import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
-import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
@@ -39,7 +40,6 @@ import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.CodeViewer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.webapp.ui.components.SparkLine;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
@@ -48,23 +48,21 @@ import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentsNavbar;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.*;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
-import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.*;
 
@@ -86,19 +84,20 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Policy policy;
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
-    private List<Double> simulationMetrics = new ArrayList<>();
-    private List<double[]> sparklinesData = new ArrayList<>();
-    private Boolean showSimulationMetrics;
+//    private List<Double> simulationMetrics = new ArrayList<>();
+//    private List<double[]> sparklinesData = new ArrayList<>();
+//    private Boolean showSimulationMetrics;
 
     private UserCaps userCaps;
 
     private HorizontalLayout middlePanel;
-    private HorizontalLayout simulationMetricsWrapper;
-    private VerticalLayout metricsWrapper;
-    private VerticalLayout sparklinesWrapper;
+    private SimulationMetricsPanel simulationMetricsPanel;
+//    private HorizontalLayout simulationMetricsWrapper;
+//    private VerticalLayout metricsWrapper;
+//    private VerticalLayout sparklinesWrapper;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private Span panelTitle;
-    private VerticalLayout rewardVariablesGroup;
+//    private VerticalLayout rewardVariablesGroup;
     private VerticalLayout rewardFunctionGroup;
     private CodeViewer codeViewer;
     private TrainingStartingPlaceholder trainingStartingPlaceholder;
@@ -106,7 +105,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private ExperimentsNavbar experimentsNavbar;
     private NotesField notesField;
     private Span reasonWhyTheTrainingStoppedLabel;
-    private RewardVariablesTable rewardVariablesTable;
+//    private RewardVariablesTable rewardVariablesTable;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -197,86 +196,89 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
             LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
         );
-        showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
-        simulationMetricsWrapper = getSimulationMetricsTable();
-        String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
-        rewardVariablesGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-            LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsWrapper
-        );
+//        showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
+//        simulationMetricsWrapper = getSimulationMetricsTable();
+//        String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
+//        rewardVariablesGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+//             LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsWrapper
+//        );
+
+        simulationMetricsPanel = new SimulationMetricsPanel(featureManager);
 
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
-        middlePanel.add(rewardVariablesGroup, rewardFunctionGroup);
+        middlePanel.add(simulationMetricsPanel, rewardFunctionGroup);
+//        middlePanel.add(rewardVariablesGroup, rewardFunctionGroup);
         middlePanel.addClassName("middle-panel");
         middlePanel.setPadding(false);
     }
 
-    private HorizontalLayout getSimulationMetricsTable() {
-        HorizontalLayout tableWrapper = new HorizontalLayout();
-        tableWrapper.setSpacing(false);
-        tableWrapper.addClassName("simulation-metrics-table-wrapper");
+//    private HorizontalLayout getSimulationMetricsTable() {
+//        HorizontalLayout tableWrapper = new HorizontalLayout();
+//        tableWrapper.setSpacing(false);
+//        tableWrapper.addClassName("simulation-metrics-table-wrapper");
+//
+//        rewardVariablesTable = new RewardVariablesTable();
+//        rewardVariablesTable.setCodeEditorMode();
+//        rewardVariablesTable.setSizeFull();
+//        tableWrapper.add(rewardVariablesTable);
+//
+//        if (showSimulationMetrics) {
+//            metricsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+//            metricsWrapper.addClassName("metrics-wrapper");
+//            sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+//            sparklinesWrapper.addClassName("sparklines-wrapper");
+//
+//            updateSimulationMetrics();
+//            tableWrapper.add(metricsWrapper, sparklinesWrapper);
+//        }
+//
+//        return tableWrapper;
+//    }
 
-        rewardVariablesTable = new RewardVariablesTable();
-        rewardVariablesTable.setCodeEditorMode();
-        rewardVariablesTable.setSizeFull();
-        tableWrapper.add(rewardVariablesTable);
+//    private void updateSimulationMetrics() {
+//        metricsWrapper.removeAll();
+//        sparklinesWrapper.removeAll();
+//
+//        updateSimulationMetricsData();
+//
+//        IntStream.range(0, simulationMetrics.size())
+//                .forEach(idx -> {
+//                    metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx))));
+//                    SparkLine sparkLine = new SparkLine();
+//                    sparkLine.setSparkLine(sparklinesData.get(idx), idx);
+//                    sparklinesWrapper.add(sparkLine);
+//                });
+//    }
 
-        if (showSimulationMetrics) {
-            metricsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-            metricsWrapper.addClassName("metrics-wrapper");
-            sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-            sparklinesWrapper.addClassName("sparklines-wrapper");
-
-            updateSimulationMetrics();
-            tableWrapper.add(metricsWrapper, sparklinesWrapper);
-        }
-
-        return tableWrapper;
-    }
-
-    private void updateSimulationMetrics() {
-        metricsWrapper.removeAll();
-        sparklinesWrapper.removeAll();
-
-        updateSimulationMetricsData();
-
-        IntStream.range(0, simulationMetrics.size())
-                .forEach(idx -> {
-                    metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx))));
-                    SparkLine sparkLine = new SparkLine();
-                    sparkLine.setSparkLine(sparklinesData.get(idx), idx);
-                    sparklinesWrapper.add(sparkLine);
-                });
-    }
-
-    private void updateSimulationMetricsData() {
-        List<Metrics> metricsList = policy == null ? null : policy.getMetrics();
-        sparklinesData.clear();
-        simulationMetrics.clear();
-
-        if (metricsList != null && metricsList.size() > 0) {
-            // set the last metrics
-            Metrics lastMetrics = metricsList.get(metricsList.size() - 1);
-            lastMetrics.getMetricsThisIter().stream()
-                .forEach(metricsThisIter -> simulationMetrics.add(metricsThisIter.getMean()));
-
-            // index, metrics list
-            Map<Integer, List<Double>> sparkLineMap = new HashMap<>();
-            metricsList.stream().forEach(metrics ->
-                metrics.getMetricsThisIter().forEach(mIter -> {
-                    int index = mIter.getIndex();
-
-                    List<Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new ArrayList<>();
-                    data.add(mIter.getMean());
-                    sparkLineMap.put(index, data);
-                })
-            );
-
-            // convert List<Double> to double[] because sparLine needs an array of primitive types
-            sparkLineMap.entrySet().stream()
-                .map(e -> e.getValue().stream().mapToDouble(Double::doubleValue).toArray())
-                .forEach(arr -> sparklinesData.add(arr));
-        }
-    }
+//    private void updateSimulationMetricsData() {
+//        List<Metrics> metricsList = policy == null ? null : policy.getMetrics();
+//        sparklinesData.clear();
+//        simulationMetrics.clear();
+//
+//        if (metricsList != null && metricsList.size() > 0) {
+//            // set the last metrics
+//            Metrics lastMetrics = metricsList.get(metricsList.size() - 1);
+//            lastMetrics.getMetricsThisIter().stream()
+//                .forEach(metricsThisIter -> simulationMetrics.add(metricsThisIter.getMean()));
+//
+//            // index, metrics list
+//            Map<Integer, List<Double>> sparkLineMap = new HashMap<>();
+//            metricsList.stream().forEach(metrics ->
+//                metrics.getMetricsThisIter().forEach(mIter -> {
+//                    int index = mIter.getIndex();
+//
+//                    List<Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new ArrayList<>();
+//                    data.add(mIter.getMean());
+//                    sparkLineMap.put(index, data);
+//                })
+//            );
+//
+//            // convert List<Double> to double[] because sparLine needs an array of primitive types
+//            sparkLineMap.entrySet().stream()
+//                .map(e -> e.getValue().stream().mapToDouble(Double::doubleValue).toArray())
+//                .forEach(arr -> sparklinesData.add(arr));
+//        }
+//    }
 
     private Div getButtonsWrapper() {
         restartTraining = new Button("Restart Training", new Image("frontend/images/start.svg", "run"), click -> {
@@ -452,8 +454,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         // The reward variables table should only be initialized once for the Experiment Page
         // no matter which Experiment of the same model the user visits later on.
         // This may have to be changed if we allow users to navigate Experiments of different models.
-        rewardVariablesTable.setIsReadOnly(true);
-        rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
+//        rewardVariablesTable.setIsReadOnly(true);
+        simulationMetricsPanel.setRewardVariables(rewardVariables);
+//        rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
         updateScreenComponents();
         experimentsNavbar.setExperiments(event.getUI(), experiments, experiment);
     }
@@ -465,11 +468,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         panelTitle.setText("Experiment #"+experiment.getName());
         codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
         if (!rewardVariables.isEmpty()) {
-            rewardVariablesTable.setValue(rewardVariables);
+            simulationMetricsPanel.setRewardVariables(rewardVariables);
+//            rewardVariablesTable.setValue(rewardVariables);
         } 
-        if (showSimulationMetrics) {
-            updateSimulationMetrics();
-        }
+//        if (showSimulationMetrics) {
+//            updateSimulationMetrics();
+//        }
         policyChartPanel.setExperiment(experiment, policy);
         updateDetailsForExperiment();
     }
@@ -612,8 +616,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     }
 
                     updateDetailsForExperiment();
-                    if (showSimulationMetrics && policy!= null && policy.getMetrics() != null && policy.getMetrics().size() > 0) {
-                        updateSimulationMetrics();
+//                    if (showSimulationMetrics && policy!= null && policy.getMetrics() != null && policy.getMetrics().size() > 0) {
+//                        updateSimulationMetrics();
+//                    }
+                    if (policy!= null && policy.getMetrics() != null && policy.getMetrics().size() > 0) {
+                        simulationMetricsPanel.setPolicy(policy);
+//                        updateSimulationMetrics();
                     }
                 });
             }
