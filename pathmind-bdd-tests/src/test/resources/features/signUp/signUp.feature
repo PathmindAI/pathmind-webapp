@@ -34,6 +34,7 @@ Feature: Sign Up
       | First Name | Last Name | Password   |
       | Evgeniy    | Autotest  | Pass123456 |
 
+  @smoke
   Scenario: Check create new user page elements
     Given Open page early-access-sign-up
     When Check create new user page elements
