@@ -4,6 +4,8 @@ import java.util.List;
 
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,6 +33,7 @@ import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -58,6 +61,8 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     private ModelDAO modelDAO;
     @Autowired
     private RunDAO runDAO;
+    @Autowired
+    private SegmentIntegrator segmentIntegrator;
 
     private Grid<DashboardItem> dashboardGrid;
 
@@ -158,6 +163,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     private void archiveExperiment(DashboardItem item) {
         ConfirmationUtils.archive("this experiment", () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, item.getExperiment(), true);
+            segmentIntegrator.archived(Experiment.class, true);
             dataProvider.refreshAll();
         });
     }
@@ -165,6 +171,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     private void archiveModel(DashboardItem item) {
         ConfirmationUtils.archive("this model", () -> {
             modelDAO.archive(item.getModel().getId(), true);
+            segmentIntegrator.archived(Model.class, true);
             dataProvider.refreshAll();
         });
     }
@@ -172,6 +179,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     private void archiveProject(DashboardItem item) {
         ConfirmationUtils.archive("this project", () -> {
             projectDAO.archive(item.getProject().getId(), true);
+            segmentIntegrator.archived(Project.class, true);
             dataProvider.refreshAll();
         });
     }
