@@ -1,6 +1,7 @@
 @model
 Feature: Model page
 
+  @smoke
   Scenario: Add experiment to exist model
     Given Login to the pathmind
     When Create new CoffeeShop project with draft experiment

@@ -1,6 +1,7 @@
 @experimentSimulationMetrics
 Feature: Experiment page Simulation Metrics
 
+  @smoke
   Scenario: Check reward variables on experiment page
     Given Login to the pathmind
     When Create new CoffeeShop project with variable names: kitchen_cleanliness,customers_served,balked_customers,avg_response_time
@@ -14,6 +15,7 @@ Feature: Experiment page Simulation Metrics
     Then Check that simulation metrics block is shown
     Then Check running experiment page reward variables is kitchen_cleanliness,customers_served,balked_customers,avg_response_time
 
+  @smoke
   Scenario: Check that simulation metrics block is shown when switch to other experiment
     Given Login to the pathmind
     When Create new CoffeeShop project with variable names: kitchen_cleanliness,customers_served,balked_customers,avg_response_time
