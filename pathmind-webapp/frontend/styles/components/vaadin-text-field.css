@@ -1,5 +1,6 @@
 :host [part="input-field"] {
     background: var(--pm-highlight-medium);
+    border: 1px solid var(--pm-gray-color);
 }
 
 :host [part="label"] {
@@ -8,12 +9,17 @@
 }
 
 /* Search box text field */
+:host(.search-box_text-field) {
+    padding: 0;
+}
 :host(.search-box_text-field) [part="input-field"] {
+    height: 100%;
     background: transparent;
-    border: 1px solid var(--pm-gray-color);
-    border-right: none;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+    border: none;
+}
+
+:host(.search-box_text-field) .vaadin-text-field-container {
+    width: 9rem;
 }
 
 :host(.reward-variable-name-field) [part="value"] {

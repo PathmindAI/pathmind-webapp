@@ -120,6 +120,11 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.checkExperimentPageSideBarIsFavorite(experimentName, favoriteStatus);
     }
 
+    @Then("^Check that experiment page is opened$")
+    public void checkThatExperimentPageIsOpened() {
+        experimentPageSteps.checkThatExperimentPageIsOpened();
+    }
+
     @Then("^Check experiment page simulation metrics (.*)$")
     public void checkExperimentPageSimulationMetrics(String commaSeparatedVariableNames) {
         experimentPageSteps.checkExperimentPageSimulationMetrics(commaSeparatedVariableNames);

@@ -1,7 +1,5 @@
 package io.skymind.pathmind.webapp.ui.utils;
 
-import java.util.Optional;
-
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.dom.Element;
@@ -9,6 +7,7 @@ import com.vaadin.flow.server.InitialPageSettings;
 
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.utils.CookieUtils;
+import java.util.Optional;
 
 public class VaadinUtils
 {

@@ -1,13 +1,13 @@
 .experiments-navbar {
     width: auto !important;
-    height: calc(100vh - 8rem);
+    height: calc(100vh - 6rem);
     min-height: 100%;
-    border-radius: var(--lumo-border-radius);
+    border-right: 1px solid var(--pm-gray-color-lightest);
 }
 
 .experiments-navbar > vaadin-button {
-    min-width: 15.5rem;
-    margin: 0 0 var(--lumo-space-s);
+    border-radius: 0; /* TODO -> add a CSS class to the vaadin button after navbar refactoring */
+    margin: 0;
 }
 
 .experiments-navbar-items {
@@ -20,9 +20,10 @@
     align-items: center;
     flex-shrink: 0;
     width: 100%;
-    padding: 0.5rem var(--lumo-space-xs);
+    padding: 0.45rem var(--lumo-space-s);
     cursor: pointer;
     border: 1px solid transparent;
+    border-right: none;
     margin-top: -1px;
 }
 

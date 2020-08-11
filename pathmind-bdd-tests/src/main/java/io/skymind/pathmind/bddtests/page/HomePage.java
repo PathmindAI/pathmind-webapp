@@ -171,4 +171,41 @@ public class HomePage extends PageObject {
         String[] text = getDriver().findElement(By.xpath("//*[@class='section-subtitle-label']")).getText().split(" ", 3);
         assertThat(text[1], is(counter));
     }
+
+    public void chooseSearchOption(String option) {
+        getDriver().findElement(By.cssSelector(".search-box_select")).click();
+        getDriver().findElement(By.xpath("//vaadin-item[text()='"+option+"' and @role='option']")).click();
+    }
+
+    public void checkSearchResultProjectIs(String value) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='highlighted-text-wrapper'][1]"))) {
+            utils.moveToElementRepeatIfStaleException(webElement);
+            assertThat(webElement.getText(), containsString(value));
+        }
+    }
+
+    public void checkSearchResultModelIs(String value) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='highlighted-text-wrapper'][2]"))) {
+            utils.moveToElementRepeatIfStaleException(webElement);
+            assertThat(webElement.getText(), containsString(value));
+        }
+    }
+
+    public void checkSearchResultExperimentIs(String value) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='highlighted-text-wrapper'][3]"))) {
+            utils.moveToElementRepeatIfStaleException(webElement);
+            assertThat(webElement.getText(), containsString(value));
+        }
+    }
+
+    public void checkSearchResultTagIs(String tag) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//span[@class='tag tag-outline']"))) {
+            utils.moveToElementRepeatIfStaleException(webElement);
+            assertThat(webElement.getText(), containsString(tag));
+        }
+    }
+
+    public void waitForSearchResultPage() {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label truncated-label']")));
+    }
 }
