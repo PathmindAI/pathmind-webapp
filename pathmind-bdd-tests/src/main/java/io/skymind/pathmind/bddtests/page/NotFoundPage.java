@@ -11,13 +11,14 @@ import java.util.ArrayList;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertTrue;
 
 @DefaultUrl("page:home.page")
 public class NotFoundPage extends PageObject {
     private static final String PAGE_NOT_FOUND_TITLE = "Page not found";
     private static final String PAGE_NOT_FOUND_ERROR_MESSAGE = "The page you requested could not be found. Please contact Pathmind for assistance.";
     private static final String OOPS_TITLE = "Oops!";
-    private static final String OOPS_ERROR_MESSAGE = "An unexpected error occurred. Please contact Pathmind for assistance";
+    private static final String OOPS_ERROR_MESSAGE = "An unexpected error occurred.";
     private static final String INVALID_DATA_ERROR_TITLE = "Invalid data error";
     private static final String INVALID_DATA_ERROR_ERROR_MESSAGE = "This link is invalid. Please contact Pathmind if you believe this is an error";
     private static final String STATUS_MESSAGE = "You can check the current Pathmind system status at status.pathmind.com";
@@ -29,6 +30,8 @@ public class NotFoundPage extends PageObject {
     private WebElement errorMessage;
     @FindBy(xpath = "//span[@class='breadcrumb']")
     private WebElement pageTitle;
+    @FindBy(xpath = "//vaadin-button[text()='signing out']")
+    private WebElement signOutButton;
 
     public void check404PageOpened() {
         assertThat(pageTitle.getText(), is(PAGE_NOT_FOUND_TITLE));
@@ -43,6 +46,7 @@ public class NotFoundPage extends PageObject {
     public void checkThatOopsPageOpened() {
         assertThat(pageTitle.getText(), is(OOPS_TITLE));
         assertThat(errorMessage.getText(), containsString(OOPS_ERROR_MESSAGE));
+        assertTrue(signOutButton.isDisplayed());
     }
 
     public void checkThatInvalidDataErrorPageOpened() {

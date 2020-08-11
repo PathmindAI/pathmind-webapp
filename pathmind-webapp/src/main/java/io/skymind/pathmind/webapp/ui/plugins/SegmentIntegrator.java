@@ -54,6 +54,7 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
     private static final String EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW = "Added Notes on New Experiment View";
     private static final String EVENT_SEARCHED_SITE = "Performed a search using search box";
 	private static final String EVENT_USER_RUN_CAP_LIMIT = "User Run Cap Limit";
+	private static final String EVENT_ERROR_PAGE = "Error page displayed";
 	private static final String EVENT_ARCHIVED = "Archived";
 	private static final String EVENT_UNARCHIVED = "Unarchived";
 
@@ -160,6 +161,13 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
         additionalInfo.put("userCapType", userCapType.name());
         additionalInfo.put("percentage", percentage);
         track(EVENT_USER_RUN_CAP_LIMIT, additionalInfo);
+    }
+    
+    public void errorPageDisplayed(String location, String exceptionMessage) {
+        JsonObject additionalInfo = Json.createObject();
+        additionalInfo.put("location", location);
+        additionalInfo.put("exception", exceptionMessage);
+        track(EVENT_ERROR_PAGE, additionalInfo);
     }
 
 	private void track(String event) {
