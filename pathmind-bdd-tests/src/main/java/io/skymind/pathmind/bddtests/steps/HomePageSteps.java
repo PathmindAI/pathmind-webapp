@@ -133,4 +133,34 @@ public class HomePageSteps {
     public void checkThatSearchCounterIs(String counter) {
         homePage.checkThatSearchCounterIs(counter);
     }
+
+    @Step
+    public void chooseSearchOption(String option) {
+        homePage.chooseSearchOption(option);
+    }
+
+    @Step
+    public void checkSearchResultProjectIs(String value) {
+        homePage.checkSearchResultProjectIs(value);
+    }
+
+    @Step
+    public void checkSearchResultModelIs(String value) {
+        homePage.checkSearchResultModelIs(value);
+    }
+
+    @Step
+    public void checkSearchResultExperimentIs(String value) {
+        homePage.checkSearchResultExperimentIs(value);
+    }
+
+    @Step
+    public void checkSearchResultTagIs(String tag) {
+        homePage.checkSearchResultTagIs(tag);
+    }
+
+    @Step
+    public void waitForSearchResultPage() {
+        homePage.waitForSearchResultPage();
+    }
 }
