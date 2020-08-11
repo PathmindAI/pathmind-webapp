@@ -196,4 +196,9 @@ public class ExperimentPage extends PageObject {
             assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star-o"));
         }
     }
+
+    public void checkThatExperimentPageIsOpened() {
+        assertThat(getDriver().getTitle(), either(is("Pathmind | Experiment")).or(is("Pathmind | New Experiment")));
+        assertThat(getDriver().getCurrentUrl(), either(containsString("/newExperiment/")).or(containsString("/experiment/")));
+    }
 }

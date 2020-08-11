@@ -1,0 +1,11 @@
+:host [part="input-field"] {
+    height: 100%;
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--pm-gray-color);
+    border-radius: 0;
+}
+
+:host .vaadin-text-field-container {
+    width: var(--vaadin-text-field-default-width, 9em);
+}

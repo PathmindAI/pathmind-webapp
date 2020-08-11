@@ -64,6 +64,7 @@ public abstract class TrainingService {
             this.executionEnvironment = this.executionEnvironmentManager.getEnvironment(userId);
 
     		Run run = runDAO.createRun(conf, exp, DiscoveryRun);
+    		exp.addRun(run);
     		String executionId = startRun(exp.getModel(), exp, run, iterations, maxTimeInSec, numSamples);
     		runDAO.markAsStarting(conf, run.getId(), executionId);
             log.info("Started {} training job with id {}", DiscoveryRun, executionId);

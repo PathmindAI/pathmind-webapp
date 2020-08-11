@@ -1611,27 +1611,21 @@
             <column name="DATA_TYPE" type="VARCHAR(16)">
             </column>
         </addColumn>
-        <update tableName="REWARD_VARIABLE">
-            <!-- the data type of all current variables are double -->
-            <column name="DATA_TYPE" value="double"/>
-        </update>
-        <rollback>
-            <dropColumn tableName="REWARD_VARIABLE" columnName="DATA_TYPE" />
-        </rollback>
-    </changeSet>
-    
-    <changeSet id="20200810-01" author="onur@vaadin.com">
         <addColumn tableName="MODEL">
             <column name="INVALID_MODEL" type="INT">
             </column>
         </addColumn>
+        <update tableName="REWARD_VARIABLE">
+            <!-- the data type of all current variables are double -->
+            <column name="DATA_TYPE" value="double"/>
+        </update>
         <update tableName="MODEL">
             <!-- Set all existing models as invalid -->
             <column name="INVALID_MODEL" value="1"/>
         </update>
         <rollback>
+            <dropColumn tableName="REWARD_VARIABLE" columnName="DATA_TYPE" />
             <dropColumn tableName="MODEL" columnName="INVALID_MODEL" />
         </rollback>
     </changeSet>
-
 </databaseChangeLog>

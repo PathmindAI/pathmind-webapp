@@ -8,7 +8,7 @@
     width: 100%;
     min-width: auto;
     background: white;
-    border-radius: var(--lumo-border-radius);
+    border-radius: 0;
     padding: var(--lumo-space-m);
     overflow: auto; /* For Firefox's clipped wrapper due to Vaadin-chart's unexpected too-wide rendered size */
 }
@@ -36,6 +36,10 @@
     overflow: auto;
 }
 
+.experiment-view .reward-variables-table {
+    font-size: var(--lumo-font-size-xs);
+}
+
 .experiment-view .reward-variables-table span:first-child {
     display: none;
 }
@@ -48,9 +52,11 @@
 .experiment-view .metrics-wrapper span {
     display: flex;
     align-items: center;
+    flex: 1 0 auto;
     height: 2rem;
-    font-size: var(--lumo-font-size-s);
-    margin-left: var(--lumo-space-m);
+    font-size: var(--lumo-font-size-xs);
+    line-height: 1;
+    margin-left: var(--lumo-space-s);
 }
 
 .experiment-view .metrics-wrapper,
@@ -77,11 +83,6 @@
     justify-content: flex-end;
     flex-wrap: wrap;
     width: 100%;
-}
-
-.experiment-view .buttons-wrapper vaadin-button {
-    width: calc(50% - var(--lumo-space-s) / 2);
-    min-width: unset;
 }
 
 .experiment-view .buttons-wrapper vaadin-button:not(:first-child) {
@@ -153,8 +154,8 @@
 
 .training-status-details-panel span,
 .experiment-view elapsed-timer {
-    font-size: var(--lumo-font-size-s);
-    line-height: 1.3;
+    font-size: var(--lumo-font-size-xs);
+    line-height: 1.2;
 }
 
 .experiment-view elapsed-time {

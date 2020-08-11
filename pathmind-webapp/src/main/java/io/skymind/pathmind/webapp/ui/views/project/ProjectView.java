@@ -131,6 +131,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 				this::getModels,
 				(model, isArchivable) -> {
 				    modelDAO.archive(model.getId(), isArchivable);
+                    model.setArchived(isArchivable);
 				    segmentIntegrator.archived(Model.class, isArchivable);
 				});
 	}

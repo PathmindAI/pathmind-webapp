@@ -2,7 +2,6 @@ package io.skymind.pathmind.webapp.ui.views.experiment.subscribers;
 
 import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
@@ -44,7 +43,7 @@ public class ExperimentViewRunUpdateSubscriber implements RunUpdateSubscriber {
                 experimentView.updateDetailsForExperiment();
             });
         } else if (ExperimentUtils.isNewExperimentForModel(event.getRun().getExperiment(), experiments, event.getModelId())) {
-            experimentView.updateNavBarExperiments();
+            experimentView.updateExperimentComponents();
         }
     }
 

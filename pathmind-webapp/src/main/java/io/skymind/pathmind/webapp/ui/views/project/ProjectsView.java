@@ -85,6 +85,7 @@ public class ProjectsView extends PathMindDefaultView
 				this::getProjects,
 				(project, isArchive) ->  {
 				    projectDAO.archive(project.getId(), isArchive);
+				    project.setArchived(isArchive);
 				    segmentIntegrator.archived(Project.class, isArchive);
 				});
 	}

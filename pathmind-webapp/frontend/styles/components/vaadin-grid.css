@@ -1,3 +1,16 @@
+/* Customized Scrollbar for WebKit Browsers */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+background-color: var(--pm-app-bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+background-color: var(--pm-gray-color-light);
+}
+
 #header [part~="cell"] {
     color: var(--pm-gray-color);
 }
@@ -5,7 +18,7 @@
 #items [part~="cell"] {
     font-size: var(--lumo-font-size-s);
     color: var(--lumo-secondary-text-color);
-    border-top-color: var(--pm-gray-color-light);
+    border-top-color: var(--_lumo-grid-border-color);
 }
 
 :host(:not(.dashboard):not(.search-results)) #items [part~="row"]:last-child [part~="cell"] {

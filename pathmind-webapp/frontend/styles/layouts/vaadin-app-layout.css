@@ -1,6 +1,21 @@
+/* Customized Scrollbar for WebKit Browsers */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+background-color: var(--pm-app-bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+background-color: var(--pm-gray-color-light);
+}
 :host [part="navbar"] {
   padding: var(--lumo-space-xs);
 }
 :host [part="navbar"]::before {
   content: none;
+}
+:host [content] {
+    background-color: var(--pm-app-bg-color);
 }
