@@ -51,6 +51,11 @@ public class LoginPageStepDefinitions {
         loginPageSteps.loginWithCredential(email, password);
     }
 
+    @When("^Login with default credentials$")
+    public void loginWithDefaultCredentials() {
+        loginPageSteps.loginWithCredential(pathmindUsername, pathmindPassword);
+    }
+
     @Then("^Check that user (.*) successfully logged in$")
     public void checkThatUserSuccessfullyLoggedIn(String name) {
         loginPageSteps.checkThatUserSuccessfullyLoggedIn(name);
