@@ -53,6 +53,7 @@ class SparkLine extends PolymerElement {
                 }
             </style>
             <svg width="100" height="24" stroke-width="2"></svg>
+            <span class="tooltip" hidden="true"></span>
         `;
     }
 
@@ -60,19 +61,45 @@ class SparkLine extends PolymerElement {
         super();
     }
 
+    static get properties() {
+        return {
+            smallestNum: {
+                type: Number,
+                value: 0,
+            }
+        }
+    }
+
     ready() {
         super.ready();
     }
 
     setSparkLine(dataPoints, variableIndex) {
+        const options = {
+            onmousemove: (event, datapoint) => {
+              const svg = event.target;
+              const tooltip = this.shadowRoot.querySelector(".tooltip");
+
+              tooltip.hidden = false;
+              tooltip.textContent = `${(this.smallestNum + datapoint.value).toFixed(2)}`;
+              tooltip.style.top = `${event.offsetY}px`;
+              tooltip.style.left = `${event.offsetX + 20}px`;
+            },
+            onmouseout: (event) => {
+              const svg = event.target;
+              const tooltip = this.shadowRoot.querySelector(".tooltip");
+
+              tooltip.hidden = true;
+            }
+        };
         const svgElement = this.shadowRoot.querySelector("svg");
         svgElement.classList.add(`sparkline-${variableIndex % 10}`);
-        sparkline(svgElement, calibrateScale(dataPoints));
+        sparkline(svgElement, this.calibrateScale(dataPoints), options);
+    }
 
-        function calibrateScale(originalDataPoints) {
-            const smallestNum = originalDataPoints.reduce((a, b) => Math.min(a, b));
-            return originalDataPoints.map(dataPoint => dataPoint - smallestNum);
-        }
+    calibrateScale(originalDataPoints) {
+        this.smallestNum = originalDataPoints.reduce((a, b) => Math.min(a, b));
+        return originalDataPoints.map(dataPoint => dataPoint - this.smallestNum);
     }
 }
 
