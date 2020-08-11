@@ -54,4 +54,9 @@ public class ProjectPageStepDefinition {
     public void checkProjectPageModelPackageNameIs(String modelId, String packageName) {
         projectPageSteps.checkProjectPageModelPackageNameIs(modelId, packageName);
     }
+
+    @Then("^Check that project page is opened$")
+    public void checkThatProjectPageIsOpened() {
+        projectPageSteps.checkThatProjectPageIsOpened();
+    }
 }

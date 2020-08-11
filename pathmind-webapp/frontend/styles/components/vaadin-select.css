@@ -1,0 +1,10 @@
+:host([theme~="small"]) [selected] {
+    font-size: var(--lumo-font-size-s);
+}
+:host(.search-box_select) vaadin-select-text-field {
+    height: 100%;
+    padding: 0;
+}
+:host(.search-box_select) [part="input-field"] {
+    background: transparent;
+}

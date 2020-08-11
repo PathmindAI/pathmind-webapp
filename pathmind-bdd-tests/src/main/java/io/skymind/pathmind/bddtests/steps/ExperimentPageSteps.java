@@ -109,6 +109,12 @@ public class ExperimentPageSteps {
         experimentPage.checkExperimentPageSideBarIsFavorite(experimentName, favoriteStatus);
     }
 
+    @Step
+    public void checkThatExperimentPageIsOpened() {
+        experimentPage.checkThatExperimentPageIsOpened();
+    }
+
+    @Step
     public void checkExperimentPageSimulationMetrics(String commaSeparatedVariableNames) {
         experimentPage.checkExperimentPageSimulationMetrics(commaSeparatedVariableNames);
     }
