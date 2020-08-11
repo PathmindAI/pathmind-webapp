@@ -14,7 +14,7 @@ class SparkLine extends PolymerElement {
                     align-items: center;
                     height: 2rem;
                     flex: 1 0 2rem;
-                    margin-left: var(--lumo-space-m);
+                    margin-left: var(--lumo-space-s);
                 }
                 svg {
                     --sparkline-color: 255, 255, 255;

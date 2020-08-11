@@ -194,7 +194,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 experimentsNavbar,
                 experimentContent);
         pageWrapper.addClassName("page-content");
-        pageWrapper.setPadding(true);
+        pageWrapper.setSpacing(false);
         return pageWrapper;
     }
 

@@ -196,7 +196,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		mainPanel.setClassName("view-section");
 
 		HorizontalLayout panelsWrapper = WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, mainPanel);
-		panelsWrapper.setPadding(true);
+		panelsWrapper.setSpacing(false);
 		return panelsWrapper;
 	}
 
