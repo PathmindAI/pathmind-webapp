@@ -75,19 +75,27 @@ public class SearchResultItem extends VerticalLayout {
         Boolean resultTypeModel = searchResultType.equals(SearchResultItemType.MODEL);
         Boolean resultTypeExperiment = searchResultType.equals(SearchResultItemType.EXPERIMENT);
         VerticalLayout nameRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+        String modelName = searchResult.getModelName();
+        String experimentName = searchResult.getExperimentName();
         String modelNameText = "Model #"+searchResult.getModelName();
         String experimentNameText = "Experiment #"+searchResult.getExperimentName();
         nameRow.add(highlightSearchResult(searchResult.getProjectName(), null, resultTypeProject));
         if (resultTypeModel || resultTypeExperiment) {
-            nameRow.add(highlightSearchResult(modelNameText, "(?i)Model\\s#?"+searchResult.getModelName(),
-                    resultTypeModel && decodedKeyword.equals(searchResult.getModelName())));
+            nameRow.add(highlightSearchResult(modelNameText, "(?i)Model\\s#?"+modelName,
+                    resultTypeModel && matchedDecodedKeyword(decodedKeyword, "Model", modelName)));
         }
         if (resultTypeExperiment) {
-            nameRow.add(highlightSearchResult(experimentNameText, "(?i)Experiment\\s#?"+searchResult.getExperimentName(),
-                    resultTypeExperiment && decodedKeyword.equals(searchResult.getExperimentName())));
+            nameRow.add(highlightSearchResult(experimentNameText, "(?i)Experiment\\s#?"+experimentName,
+                    resultTypeExperiment && matchedDecodedKeyword(decodedKeyword, "Experiment", experimentName)));
         }
         nameRow.addClassName("name-row");
         return nameRow;
+    }
+
+    private boolean matchedDecodedKeyword(String keyword, String itemTypePrefix, String name) {
+        return keyword.equals(itemTypePrefix+" "+name) || keyword.equals(itemTypePrefix.toLowerCase()+" "+name) || 
+                keyword.equals(itemTypePrefix+"# "+name) || keyword.equals(itemTypePrefix.toLowerCase()+"# "+name) ||
+                keyword.equals(name) || keyword.equals(name.toLowerCase());
     }
 
     private Div createSearchResultsNotesComponent() {
