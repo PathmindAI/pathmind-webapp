@@ -413,7 +413,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		startRunButton.setVisible(!experiment.isArchived());
 		saveDraftButton.setVisible(!experiment.isArchived());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
-		rewardFunctionEditor.setVariableNames(rewardVariables, experiment.getModel().getRewardVariablesCount());
+		rewardFunctionEditor.setVariableNames(rewardVariables);
 		rewardVariablesTable.setRewardVariables(rewardVariables);
 		unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);

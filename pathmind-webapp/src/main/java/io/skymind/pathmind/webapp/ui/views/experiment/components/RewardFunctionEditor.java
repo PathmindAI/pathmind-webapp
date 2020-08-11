@@ -23,6 +23,7 @@ public class RewardFunctionEditor extends JuicyAceEditor {
 		setWrapmode(false);
 	}
 	
-	public void setVariableNames(List<RewardVariable> rewardVariables, int variableCount) {
+	public void setVariableNames(List<RewardVariable> rewardVariables) {
+	    setAutoComplete(rewardVariables);
     }
 }
