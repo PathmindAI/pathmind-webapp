@@ -444,7 +444,7 @@ account-view {
     position: sticky;
     top: 0;
     flex: 0 0 auto;
-    z-index: 1;
+    z-index: 5;
     line-height: 2;
     color: var(--lumo-secondary-text-color);
     font-size: var(--lumo-font-size-s);
