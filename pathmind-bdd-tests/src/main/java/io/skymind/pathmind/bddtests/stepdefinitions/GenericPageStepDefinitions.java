@@ -120,6 +120,11 @@ public class GenericPageStepDefinitions {
         genericPageSteps.checkPageUrlIs(url);
     }
 
+    @Then("^Check page url contains (.*)$")
+    public void checkPageUrlContains(String url) {
+        genericPageSteps.checkPageUrlContains(url);
+    }
+
     @Then("^Check page title tag text is (.*)$")
     public void checkPageTitleTagTextIs(String text) {
         genericPageSteps.checkPageTitleTagTextIs(text);
