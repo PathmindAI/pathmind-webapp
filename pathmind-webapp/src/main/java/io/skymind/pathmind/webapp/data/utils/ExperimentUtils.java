@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.UI;
@@ -23,7 +24,9 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 
 public class ExperimentUtils
 {
@@ -207,5 +210,34 @@ public class ExperimentUtils
 	        return false;
 	    return experiment.getRuns().stream()
                 .anyMatch(run -> RunStatus.isRunning(run.getStatusEnum()));
+    }
+
+    public static boolean isNotStarted(Experiment experiment) {
+        if(experiment.getRuns() == null || experiment.getRuns().isEmpty())
+            return false;
+        return experiment.getRuns().stream()
+                .anyMatch(run -> RunStatus.isRunning(run.getStatusEnum()));
+	}
+
+    // REFACTOR -> These two methods should not be in ExperimentalUtils since it has no GUI/UI code at all but I've just temporarily put them for now and will refactor
+    // them as part of my bigger refactoring.
+    public static void navigateToExperiment(Optional<UI> optionalUI, Experiment experiment) {
+        optionalUI.ifPresent(ui -> navigateToExperiment(ui, experiment, false));
+    }
+
+    public static void navigateToExperiment(Optional<UI> optionalUI, Experiment experiment, boolean isTestForArchive) {
+        optionalUI.ifPresent(ui -> navigateToExperiment(ui, experiment, isTestForArchive));
+    }
+
+    public static void navigateToExperiment(UI ui, Experiment experiment) {
+	    navigateToExperiment(ui, experiment, false);
+    }
+
+    public static void navigateToExperiment(UI ui, Experiment experiment, boolean isTestForArchived) {
+        if(isTestForArchived && experiment.isArchived()) {
+            ui.navigate(ModelView.class, experiment.getModelId());
+        } else {
+            ui.navigate(ExperimentUtils.isDraftRunType(experiment) ? NewExperimentView.class : ExperimentView.class, experiment.getId());
+        }
     }
 }

@@ -72,12 +72,15 @@ public class ExperimentsNavBar extends VerticalLayout
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        if(selectedExperiment.isArchived())
-            return;
-        EventBus.subscribe(this,
-                new NavBarExperimentUpdatedSubscriber(getUISupplier, this),
-                new NavBarExperimentCreatedSubscriber(getUISupplier, this),
-                notificationExperimentUpdatedSubscriber);
+        if(selectedExperiment.isArchived()) {
+            EventBus.subscribe(this,
+                    notificationExperimentUpdatedSubscriber);
+        } else {
+            EventBus.subscribe(this,
+                    new NavBarExperimentUpdatedSubscriber(getUISupplier, this),
+                    new NavBarExperimentCreatedSubscriber(getUISupplier, this),
+                    notificationExperimentUpdatedSubscriber);
+        }
     }
 
     @Override
