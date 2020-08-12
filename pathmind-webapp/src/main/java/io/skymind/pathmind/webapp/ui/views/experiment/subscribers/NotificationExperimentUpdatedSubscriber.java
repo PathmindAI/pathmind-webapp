@@ -8,7 +8,6 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 
 import java.util.Optional;
@@ -16,11 +15,12 @@ import java.util.function.Supplier;
 
 public class NotificationExperimentUpdatedSubscriber implements ExperimentUpdatedSubscriber {
 
-    private Experiment experiment;
     private Supplier<Optional<UI>> getUISupplier;
+    private Experiment experiment;
 
-    public NotificationExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
+    public NotificationExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, Experiment experiment) {
         this.getUISupplier = getUISupplier;
+        this.experiment = experiment;
     }
 
     // We can ignore this code for archived experiments since the navbar is not visible for archived experiments.
@@ -46,7 +46,7 @@ public class NotificationExperimentUpdatedSubscriber implements ExperimentUpdate
                 getUISupplier,
                 "Training Started",
                 "The experiment training started.",
-                ui -> ui.navigate(NewExperimentView.class, event.getExperiment().getId()));
+                ui -> ui.navigate(ExperimentView.class, event.getExperiment().getId()));
     }
 
     @Override

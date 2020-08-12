@@ -108,17 +108,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Breadcrumbs pageBreadcrumbs;
 	private Binder<Experiment> binder;
 
-    // REFACTOR -> Temporary placeholder until I finish the merging
-    private NotificationExperimentUpdatedSubscriber notificationExperimentUpdatedSubscriber;
-
     public NewExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
             @Value("${pathmind.notification.newRunNotificationThreshold}") int newRunNotificationThreshold) {
 		super();
         this.userCaps = new UserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
-        notificationExperimentUpdatedSubscriber = new NotificationExperimentUpdatedSubscriber(() -> getUI());
-		addClassName("new-experiment-view");
+        addClassName("new-experiment-view");
 	}
 
     @Override
@@ -130,8 +126,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this,
                 new NewExperimentViewExperimentCreatedSubscriber(),
-                new NewExperimentViewExperimentUpdatedSubscriber(),
-                notificationExperimentUpdatedSubscriber);
+                new NewExperimentViewExperimentUpdatedSubscriber());
     }
 
     @Override
@@ -414,8 +409,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(experiment.getModelId());
-        notificationExperimentUpdatedSubscriber.setExperiment(experiment);
-		loadExperimentData();
+        loadExperimentData();
 	}
 
 	private void loadExperimentData() {

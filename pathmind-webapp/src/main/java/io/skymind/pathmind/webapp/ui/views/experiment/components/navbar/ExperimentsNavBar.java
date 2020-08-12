@@ -14,6 +14,7 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.ExperimentsNavBarItem;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NotificationExperimentUpdatedSubscriber;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -28,6 +29,9 @@ public class ExperimentsNavBar extends VerticalLayout
 {
     private List<Experiment> experiments;
     private Experiment selectedExperiment;
+
+    // REFACTOR -> Temporary placeholder until I finish the merging
+    private NotificationExperimentUpdatedSubscriber notificationExperimentUpdatedSubscriber;
 
     private List<ExperimentsNavBarItem> experimentsNavBarItems = new ArrayList<>();
 	private VerticalLayout rowsWrapper;
@@ -51,7 +55,9 @@ public class ExperimentsNavBar extends VerticalLayout
         this.selectExperimentConsumer = selectExperimentConsumer;
         this.segmentIntegrator = segmentIntegrator;
 
-		rowsWrapper = new VerticalLayout();
+        notificationExperimentUpdatedSubscriber = new NotificationExperimentUpdatedSubscriber(() -> getUI(), selectedExperiment);
+
+        rowsWrapper = new VerticalLayout();
 		rowsWrapper.addClassName("experiments-navbar-items");
 		rowsWrapper.setPadding(false);
 		rowsWrapper.setSpacing(false);
@@ -70,7 +76,8 @@ public class ExperimentsNavBar extends VerticalLayout
             return;
         EventBus.subscribe(this,
                 new NavBarExperimentUpdatedSubscriber(getUISupplier, this),
-                new NavBarExperimentCreatedSubscriber(getUISupplier, this));
+                new NavBarExperimentCreatedSubscriber(getUISupplier, this),
+                notificationExperimentUpdatedSubscriber);
     }
 
     @Override
@@ -136,5 +143,6 @@ public class ExperimentsNavBar extends VerticalLayout
 				currentExperimentNavItem = experimentsNavBarItem;
 			}
 		});
+        notificationExperimentUpdatedSubscriber.setExperiment(newCurrentExperiment);
     }
 }
