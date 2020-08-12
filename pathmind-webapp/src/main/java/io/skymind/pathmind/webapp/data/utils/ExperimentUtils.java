@@ -222,22 +222,10 @@ public class ExperimentUtils
     // REFACTOR -> These two methods should not be in ExperimentalUtils since it has no GUI/UI code at all but I've just temporarily put them for now and will refactor
     // them as part of my bigger refactoring.
     public static void navigateToExperiment(Optional<UI> optionalUI, Experiment experiment) {
-        optionalUI.ifPresent(ui -> navigateToExperiment(ui, experiment, false));
-    }
-
-    public static void navigateToExperiment(Optional<UI> optionalUI, Experiment experiment, boolean isTestForArchive) {
-        optionalUI.ifPresent(ui -> navigateToExperiment(ui, experiment, isTestForArchive));
+        optionalUI.ifPresent(ui -> navigateToExperiment(ui, experiment));
     }
 
     public static void navigateToExperiment(UI ui, Experiment experiment) {
-	    navigateToExperiment(ui, experiment, false);
-    }
-
-    public static void navigateToExperiment(UI ui, Experiment experiment, boolean isTestForArchived) {
-        if(isTestForArchived && experiment.isArchived()) {
-            ui.navigate(ModelView.class, experiment.getModelId());
-        } else {
-            ui.navigate(ExperimentUtils.isDraftRunType(experiment) ? NewExperimentView.class : ExperimentView.class, experiment.getId());
-        }
+        ui.navigate(ExperimentUtils.isDraftRunType(experiment) ? NewExperimentView.class : ExperimentView.class, experiment.getId());
     }
 }
