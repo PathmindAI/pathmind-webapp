@@ -26,7 +26,6 @@ import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
-import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
@@ -42,8 +41,7 @@ public class DashboardLine extends HorizontalLayout {
 	
 	private Stage currentStage;
 	private DashboardItem dashboardItem;
-	
-	private static String INPROGRESS_INDICATOR = "...";
+
 	private String experimentNotes = "—";
 	
 	public DashboardLine(ExperimentDAO experimentDAO, DashboardItem item, SerializableConsumer<DashboardItem> clickHandler, SerializableConsumer<DashboardItem> archiveAction) {
@@ -76,11 +74,6 @@ public class DashboardLine extends HorizontalLayout {
         VerticalLayout wrapper = new VerticalLayout(projectTitle, timestamp, itemBreadcrumbsWrapper, stages);
 		wrapper.setPadding(false);
 		wrapper.addClassName("dashboard-item-main");
-		Span navigateIcon = new Span(VaadinIcon.CHEVRON_RIGHT.create());
-		navigateIcon.setClassName("navigate-icon");
-		VerticalLayout iconContainer = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(menuButton, navigateIcon);
-		iconContainer.setWidth(null);
-		iconContainer.setClassName("dashboard-item-icons");
 
 		VerticalLayout notesWrapper = new VerticalLayout();
 		notesWrapper.addClassName("dashboard-item-notes");
@@ -88,9 +81,9 @@ public class DashboardLine extends HorizontalLayout {
 			if (!item.getExperiment().getUserNotes().isEmpty()) {
 				experimentNotes = item.getExperiment().getUserNotes();
 			}
-			notesWrapper.add(LabelFactory.createLabel("Experiment notes", "bold-label"), new Paragraph(experimentNotes));
+			notesWrapper.add(new Span("Experiment Notes"), new Paragraph(experimentNotes));
 		} 
-		add(wrapper, notesWrapper, iconContainer);
+		add(wrapper, notesWrapper, menuButton);
 
 		// When a link in breadcrumb is clicked, the same click event is also triggered for DashboardLine
 		// We cannot stop propagation yet (see issue: https://github.com/vaadin/flow/issues/1363)
@@ -126,9 +119,10 @@ public class DashboardLine extends HorizontalLayout {
 			item.setClassName("stage-done");
 		} else if (stage.getValue() == currentStage.getValue()) {
 			if (DashboardUtils.isTrainingInProgress(stage, dashboardItem.getLatestRun())) {
-				PathmindTrainingProgress trainingProgress = new PathmindTrainingProgress();
+                PathmindTrainingProgress trainingProgress = new PathmindTrainingProgress();
+                trainingProgress.setTextMode(true);
 				updateProgress(trainingProgress, dashboardItem);
-				item = new Span(new Text(stage.getNameAfterDone() + INPROGRESS_INDICATOR), trainingProgress);
+				item = new Span(trainingProgress);
 				item.setClassName("stage-active");
             } else if (DashboardUtils.isTrainingStopped(stage, dashboardItem.getLatestRun()) || DashboardUtils.isTrainingInFailed(stage, dashboardItem.getLatestRun())) {
                 if (ExperimentUtils.getTrainingStatus(dashboardItem.getExperiment()) == RunStatus.Error) {
@@ -136,18 +130,15 @@ public class DashboardLine extends HorizontalLayout {
                     item.setClassName("stage-failed");
                 } else {
                     String trainingStatusText = dashboardItem.getLatestRun().getStatusEnum() == RunStatus.Stopping ? "Stopping" : "Stopped";
-                    Span stoppedIcon = new Span();
-                    stoppedIcon.addClassName("icon-stopped");
+                    Span stoppedIcon = LabelFactory.createLabel("", "icon-stopped");
                     item = new Span(stoppedIcon, new Span(new Text(stage.getNameAfterDone()), new Html("<br/>"), LabelFactory.createLabel(trainingStatusText, "hint-label")));
                     item.setClassName("stage-stopped");
                 }
 			} else {
-				item = new Span(stage.getNameAfterDone());
-				item.setClassName("stage-active");
+				item = LabelFactory.createLabel(stage.getNameAfterDone(), "stage-active");
 			}
 		} else {
-			item = new Span(stage.getName());
-			item.setClassName("stage-next");
+			item = LabelFactory.createLabel(stage.getName(), "stage-next");
 		}
 		return item;
 	}
