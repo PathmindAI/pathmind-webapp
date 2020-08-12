@@ -362,12 +362,13 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private List<RewardVariable> createDummyRewardVariables(long modelId, int size) {
         List<RewardVariable> rewardVariables = new ArrayList<>();
+        String[] dataTypes = new String[] {"double", "long", "float", "int[]"};
         for (int i = 0; i < size; i++) {
             RewardVariable rv = new RewardVariable();
             rv.setArrayIndex(i);
             rv.setModelId(modelId);
             rv.setName("var" + i);
-            rv.setDataType("double");
+            rv.setDataType(dataTypes[i % 4]);
             rewardVariables.add(rv);
         }
         return rewardVariables;
