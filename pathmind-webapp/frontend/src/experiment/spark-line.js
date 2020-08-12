@@ -13,6 +13,7 @@ class SparkLine extends PolymerElement {
                     display: flex;
                     align-items: center;
                     height: 2rem;
+                    font-size: var(--lumo-font-size-xs);
                     flex: 1 0 2rem;
                     margin-left: var(--lumo-space-s);
                 }
@@ -51,9 +52,30 @@ class SparkLine extends PolymerElement {
                 .sparkline-9 {
                     --sparkline-color: 209, 177, 18;
                 }
+                .tooltip {
+                    position: fixed;
+                    line-height: 1.2;
+                    background-color: rgba(247, 247, 247, .85);
+                    padding: var(--lumo-space-xxs);
+                    border: 1px solid var(--pm-text-color);
+                    z-index: 1;
+                }
+                .label {
+                    font-weight: bold;
+                }
             </style>
             <svg width="100" height="24" stroke-width="2"></svg>
-            <span class="tooltip" hidden="true"></span>
+            <div class="tooltip" hidden="true">
+                <!-- <div class="iteration">
+                    <span class="label">Iteration</span> <span class="data">[[iteration]]</span>
+                </div> -->
+                <div class="value">
+                    <span class="label">Mean Value</span> <span class="data">[[value]]</span>
+                </div>
+                <!-- <div class="episodes-count">
+                    <span class="label">Episode Count</span> <span class="data">[[episodeCount]]</span>
+                </div> -->
+            </div>
         `;
     }
 
@@ -64,6 +86,18 @@ class SparkLine extends PolymerElement {
     static get properties() {
         return {
             smallestNum: {
+                type: Number,
+                value: 0,
+            },
+            iteration: {
+                type: Number,
+                value: 0,
+            },
+            value: {
+                type: Number,
+                value: 0,
+            },
+            episodeCount: {
                 type: Number,
                 value: 0,
             }
@@ -77,18 +111,14 @@ class SparkLine extends PolymerElement {
     setSparkLine(dataPoints, variableIndex) {
         const options = {
             onmousemove: (event, datapoint) => {
-              const svg = event.target;
               const tooltip = this.shadowRoot.querySelector(".tooltip");
-
+              this.value = (this.smallestNum + datapoint.value).toFixed(2);
               tooltip.hidden = false;
-              tooltip.textContent = `${(this.smallestNum + datapoint.value).toFixed(2)}`;
-              tooltip.style.top = `${event.offsetY}px`;
-              tooltip.style.left = `${event.offsetX + 20}px`;
+              tooltip.style.top = `${event.clientY}px`;
+              tooltip.style.left = `${event.clientX + 20}px`;
             },
-            onmouseout: (event) => {
-              const svg = event.target;
+            onmouseout: () => {
               const tooltip = this.shadowRoot.querySelector(".tooltip");
-
               tooltip.hidden = true;
             }
         };
