@@ -1,6 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.vaadin.flow.component.dependency.CssImport;
@@ -32,6 +34,9 @@ public class RewardVariablesTable extends VerticalLayout {
     public void setCodeEditorMode() {
         setClassName("with-container-border");
     }
+    public void setCompactMode() {
+        container.addClassName("compact");
+    }
 
     public void setRewardVariables(List<RewardVariable> rewardVariables) {
         container.removeAll();
@@ -42,13 +47,9 @@ public class RewardVariablesTable extends VerticalLayout {
         GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
 
         container.add(headerRow);
-
+        
+        Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
         rewardVariables.forEach(rv -> container.add(createRow(rv)));
-    }
-
-    public void setIsReadOnly(boolean readOnly) {
-        container.getElement().setAttribute("readonly", readOnly);
-        container.getChildren().filter(c -> RowField.class.isInstance(c)).map(c -> RowField.class.cast(c)).forEach(rf -> rf.setReadOnly(readOnly));
     }
 
     private RowField createRow(RewardVariable rv) {
@@ -59,27 +60,17 @@ public class RewardVariablesTable extends VerticalLayout {
 
     private static class RowField extends HorizontalLayout {
 
-        private final int rowNumber;
-
-        private final TextField rewardVariableNameField;
-        private final Span rewardVariableNameSpan;
-
         private RowField(RewardVariable rv) {
-            rowNumber = rv.getArrayIndex();
-            rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), ("variable-color-"+rowNumber%10));
-            rewardVariableNameField = new TextField();
+            Span rewardVariableIndexSpan = LabelFactory.createLabel(Integer.toString(rv.getArrayIndex()), "reward-variable-index");
+            Span rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), ("variable-color-"+ (rv.getArrayIndex() % 10)), "reward-variable-name");
+            TextField rewardVariableNameField = new TextField();
             rewardVariableNameField.setValue(String.format("%s (%s)", rv.getName(), rv.getDataType()));
             rewardVariableNameField.addClassName("reward-variable-name-field");
             rewardVariableNameField.setReadOnly(true);
-            add(new Span("" + rowNumber), rewardVariableNameSpan, rewardVariableNameField);
+            add(rewardVariableIndexSpan, rewardVariableNameSpan, rewardVariableNameField);
             setWidthFull();
             GuiUtils.removeMarginsPaddingAndSpacing(this);
-            setReadOnly(false);
         }
         
-        private void setReadOnly(boolean readOnly){
-            rewardVariableNameSpan.setVisible(readOnly);
-            rewardVariableNameField.setVisible(!readOnly);
-        }
     }
 }

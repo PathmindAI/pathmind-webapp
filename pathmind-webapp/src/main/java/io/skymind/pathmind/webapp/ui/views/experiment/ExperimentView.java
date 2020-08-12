@@ -223,6 +223,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         rewardVariablesTable = new RewardVariablesTable();
         rewardVariablesTable.setCodeEditorMode();
+        rewardVariablesTable.setCompactMode();
         rewardVariablesTable.setSizeFull();
         tableWrapper.add(rewardVariablesTable);
 
