@@ -21,16 +21,9 @@ public class HyperparametersDTO {
     @NotBlank(message = "Number of observations cannot be blank")
     private String observations;
 
-    @NotBlank(message = "Reward variables count cannot be blank")
-    private String rewardVariablesCount;
+    @NotBlank(message = "Reward variables cannot be empty")
+    private List<String> rewardVariables;
 
     @NotBlank(message = "rewardFunction cannot be blank")
     private String rewardFunction;
-    
-    @NotBlank(message = "Tuple size cannot be blank")
-    private String actionTupleSize;
-
-    public static HyperparametersDTO of(@NotEmpty List<String> hyperparametersList){
-       return new HyperparametersDTO(hyperparametersList.get(0), hyperparametersList.get(1), hyperparametersList.get(2), hyperparametersList.get(3), hyperparametersList.get(4));
-    }
 }

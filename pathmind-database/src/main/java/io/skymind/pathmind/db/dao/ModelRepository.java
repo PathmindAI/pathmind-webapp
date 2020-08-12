@@ -61,7 +61,7 @@ class ModelRepository
 		mod.setRewardVariablesCount(model.getRewardVariablesCount());
 		mod.setUserNotes(userNotes);
 		mod.setPackageName(model.getPackageName());
-		mod.setActionTupleSize(model.getActionTupleSize());
+		mod.setActionTupleSize(-1);
 		mod.store();
 		return mod.key().get(MODEL.ID);
 	}
