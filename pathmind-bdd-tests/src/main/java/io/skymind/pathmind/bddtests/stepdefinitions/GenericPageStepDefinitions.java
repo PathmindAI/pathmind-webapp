@@ -144,4 +144,9 @@ public class GenericPageStepDefinitions {
     public void waitABitMs(int time) {
         genericPageSteps.waitABitMs(time);
     }
+
+    @When("^Check that confirmation dialog is shown (.*)$")
+    public void checkThatConfirmationDialogNotShown(Boolean status) {
+        genericPageSteps.checkThatConfirmationDialogNotShown(status);
+    }
 }
