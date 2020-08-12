@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = 312595029;
+    private static final long serialVersionUID = -41090575;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -169,6 +169,11 @@ public class Model extends TableImpl<ModelRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.MODEL_PKEY, Indexes.MODEL_PROJECT_FK_INDEX);
+    }
+
+    @Override
+    public Identity<ModelRecord, Long> getIdentity() {
+        return Keys.IDENTITY_MODEL;
     }
 
     @Override
