@@ -7,7 +7,9 @@ import io.skymind.pathmind.webapp.bus.subscribers.ExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -36,7 +38,7 @@ public class NotificationExperimentUpdatedSubscriber implements ExperimentUpdate
                 getUISupplier,
                 event.getExperiment().isArchived() ? "Experiment Archived" : "Experiment Unarchived",
                 event.getExperiment().isArchived() ? "The experiment was archived." : "The experiment was unarchived.",
-                ui -> ui.navigate(NewExperimentView.class, event.getExperiment().getId()));
+                ui -> ui.navigate(ModelView.class, event.getExperiment().getModelId()));
     }
 
     private void alertThenNotifyStarted(ExperimentUpdatedBusEvent event) {
