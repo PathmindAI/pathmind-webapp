@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers;
+package io.skymind.pathmind.webapp.ui.views.experiment.subscribers;
 
 import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.shared.data.Experiment;
