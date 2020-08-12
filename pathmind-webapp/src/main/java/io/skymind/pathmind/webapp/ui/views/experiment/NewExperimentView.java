@@ -47,6 +47,7 @@ import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionErrorPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NotificationExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
@@ -107,12 +108,16 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Breadcrumbs pageBreadcrumbs;
 	private Binder<Experiment> binder;
 
-	public NewExperimentView(
+    // REFACTOR -> Temporary placeholder until I finish the merging
+    private NotificationExperimentUpdatedSubscriber notificationExperimentUpdatedSubscriber;
+
+    public NewExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
             @Value("${pathmind.notification.newRunNotificationThreshold}") int newRunNotificationThreshold) {
 		super();
         this.userCaps = new UserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
+        notificationExperimentUpdatedSubscriber = new NotificationExperimentUpdatedSubscriber(() -> getUI());
 		addClassName("new-experiment-view");
 	}
 
@@ -125,7 +130,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this,
                 new NewExperimentViewExperimentCreatedSubscriber(),
-                new NewExperimentViewExperimentUpdatedSubscriber());
+                new NewExperimentViewExperimentUpdatedSubscriber(),
+                notificationExperimentUpdatedSubscriber);
     }
 
     @Override
@@ -408,6 +414,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(experiment.getModelId());
+        notificationExperimentUpdatedSubscriber.setExperiment(experiment);
 		loadExperimentData();
 	}
 

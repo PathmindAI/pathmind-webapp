@@ -17,9 +17,8 @@ public class NotificationExperimentUpdatedSubscriber implements ExperimentUpdate
     private Experiment experiment;
     private Supplier<Optional<UI>> getUISupplier;
 
-    public NotificationExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, Experiment experiment) {
+    public NotificationExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
         this.getUISupplier = getUISupplier;
-        this.experiment = experiment;
     }
 
     // We can ignore this code for archived experiments since the navbar is not visible for archived experiments.
@@ -59,5 +58,9 @@ public class NotificationExperimentUpdatedSubscriber implements ExperimentUpdate
     @Override
     public boolean isAttached() {
         return getUISupplier.get().isPresent();
+    }
+
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
     }
 }

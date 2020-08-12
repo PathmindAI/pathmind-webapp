@@ -53,6 +53,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartin
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NotificationExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
@@ -134,6 +135,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     // REFACTOR -> Temporary placeholder until I finish the merging
     private ExperimentViewRunUpdateSubscriber experimentViewRunUpdateSubscriber;
+    private NotificationExperimentUpdatedSubscriber notificationExperimentUpdatedSubscriber;
 
     public ExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
@@ -143,6 +145,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         this.userCaps = new UserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
         addClassName("experiment-view");
         experimentViewRunUpdateSubscriber = new ExperimentViewRunUpdateSubscriber(this, () -> getUI());
+        notificationExperimentUpdatedSubscriber = new NotificationExperimentUpdatedSubscriber(() -> getUI());
     }
 
     @Override
@@ -150,6 +153,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         EventBus.subscribe(this,
                 new ExperimentViewPolicyUpdateSubscriber(),
                 experimentViewRunUpdateSubscriber,
+                notificationExperimentUpdatedSubscriber,
                 new ExperimentViewExperimentCreatedSubscriber(),
                 new ExperimentViewExperimentUpdatedSubscriber());
     }
@@ -402,6 +406,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experiment = experimentDAO.getExperiment(selectedExperiment.getId())
                     .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
             experimentViewRunUpdateSubscriber.setExperiment(experiment);
+            notificationExperimentUpdatedSubscriber.setExperiment(experiment);
             experimentId = selectedExperiment.getId();
             loadExperimentData();
             updateScreenComponents();
@@ -429,6 +434,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
         experimentViewRunUpdateSubscriber.setExperiment(experiment);
+        notificationExperimentUpdatedSubscriber.setExperiment(experiment);
         loadExperimentData();
     }
 
