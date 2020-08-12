@@ -201,4 +201,11 @@ public class ExperimentUtils
                 .filter(policy -> policy.getRunId() == run.getId())
                 .forEach(policy -> policy.setRun(run));
     }
+
+    public static boolean isRunning(Experiment experiment) {
+	    if(experiment.getRuns() == null || experiment.getRuns().isEmpty())
+	        return false;
+	    return experiment.getRuns().stream()
+                .anyMatch(run -> RunStatus.isRunning(run.getStatusEnum()));
+    }
 }

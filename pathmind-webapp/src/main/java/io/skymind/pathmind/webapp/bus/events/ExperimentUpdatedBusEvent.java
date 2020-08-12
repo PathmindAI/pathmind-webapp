@@ -42,6 +42,10 @@ public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
         return ExperimentUpdateType.StartTraining.equals(experimentUpdateType);
     }
 
+    public boolean isArchive() {
+        return ExperimentUpdateType.Archive.equals(experimentUpdateType);
+    }
+
     public ExperimentUpdateType getExperimentUpdateType() {
         return experimentUpdateType;
     }
