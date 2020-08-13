@@ -55,8 +55,7 @@ public class DashboardLine extends HorizontalLayout {
         }
 		timestamp = new Span();
 		
-		Span projectTitle = new Span(item.getProject().getName());
-		projectTitle.addClassName(PROJECT_TITLE);
+		Span projectTitle = LabelFactory.createLabel(item.getProject().getName(), PROJECT_TITLE);
 		
 		menuButton = new Button(VaadinIcon.ELLIPSIS_DOTS_H.create());
 		menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
@@ -126,7 +125,7 @@ public class DashboardLine extends HorizontalLayout {
 				item.setClassName("stage-active");
             } else if (DashboardUtils.isTrainingStopped(stage, dashboardItem.getLatestRun()) || DashboardUtils.isTrainingInFailed(stage, dashboardItem.getLatestRun())) {
                 if (ExperimentUtils.getTrainingStatus(dashboardItem.getExperiment()) == RunStatus.Error) {
-                    item = new Span(VaadinIcon.EXCLAMATION_CIRCLE_O.create(), new Text(stage.getNameAfterDone()));
+                    item = new Span(VaadinIcon.EXCLAMATION_CIRCLE_O.create(), new Span(new Text(stage.getNameAfterDone()), new Html("<br/>"), LabelFactory.createLabel("Failed", "hint-label")));
                     item.setClassName("stage-failed");
                 } else {
                     String trainingStatusText = dashboardItem.getLatestRun().getStatusEnum() == RunStatus.Stopping ? "Stopping" : "Stopped";

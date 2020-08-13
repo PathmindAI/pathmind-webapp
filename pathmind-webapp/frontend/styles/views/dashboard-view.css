@@ -141,6 +141,9 @@
     font-weight: normal;
     color: var(--lumo-secondary-text-color);
 }
+.stages-container .hint-label {
+    font-size: var(--lumo-font-size-xs);
+}
 .stage-active {
     color: var(--lumo-primary-color);
     font-weight: bold;
@@ -156,7 +159,8 @@
 .stage-done {
     color: var(--lumo-body-text-color);
 }
-.stage-failed {
+.stage-failed,
+.stage-failed .hint-label {
     color: var(--lumo-error-text-color);
 }
 .stage-stopped {
@@ -175,13 +179,13 @@
     top: 5px;
     left: 5px;
 }
-.stage-stopped .icon-stopped + span {
+.stage-stopped .hint-label {
+    color: var(--lumo-body-text-color);
+}
+.stage-failed span,
+.stage-stopped span {
     line-height: 1.1;
     text-align: left;
-}
-.stage-stopped .hint-label {
-    font-size: var(--lumo-font-size-xs);
-    color: var(--lumo-secondary-text-color);
 }
 .stage-next {
     color: var(--pm-gray-color);

@@ -149,16 +149,14 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
             case SetUpSimulation :
                 if (item.getModel() == null) {
                     archiveProject(item);
-                }
-                else {
+                } else {
                     archiveModel(item);
                 }
                 break;
             case WriteRewardFunction:
                 if (item.getExperiment() == null) {
                     archiveModel(item);
-                }
-                else {
+                } else {
                     archiveExperiment(item);
                 }
                 break;
