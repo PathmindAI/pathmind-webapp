@@ -14,7 +14,7 @@ html {
     --pm-gold-color: #febb2b;
     --pm-orange-color: #ed7820;
     --pm-gray-color-darkest: #404040;
-    --pm-gray-color-darker: #707070;
+    --pm-gray-color-darker: #666666;
     --pm-gray-color-dark: #888888;
     --pm-gray-color: #b3b6c2;
     --pm-gray-color-light: #d0d0d0;
@@ -352,6 +352,11 @@ background-color: var(--pm-gray-color-light);
 .model-view .section-subtitle-label,
 .search-results-view .section-subtitle-label {
     color: var(--lumo-secondary-text-color);
+}
+
+.project-view .section-subtitle-label + tag-label,
+.model-view .section-subtitle-label + tag-label {
+    margin-left: var(--lumo-space-xs);
 }
 
 .project-view .truncated-label {

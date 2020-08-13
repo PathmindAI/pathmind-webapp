@@ -31,6 +31,7 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
+import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
@@ -63,7 +64,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	private Grid<Model> modelGrid;
 	
 	private Span projectName;
-	private Span createdDate;
+    private Span createdDate;
+    private TagLabel archivedLabel;
 	
 	private ScreenTitlePanel titlePanel;
 
@@ -78,13 +80,16 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		addClassName("project-view");
 
 		projectName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.PROJECT_TITLE);
-		createdDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
+        createdDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
+        archivedLabel = new TagLabel("Archived", false, "small");
 		Button edit = new Button("Rename", evt -> renameProject());
 		edit.setClassName("no-shrink");
 
 		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullRightHorizontal(
-			WrapperUtils.wrapVerticalWithNoPaddingOrSpacing
-					(WrapperUtils.wrapWidthFullHorizontal(projectName, edit), createdDate),
+			WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                WrapperUtils.wrapWidthFullHorizontal(projectName, edit),
+                WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(createdDate, archivedLabel)
+            ),
 			new UploadModelButton(projectId)
 		);
 		headerWrapper.addClassName("page-content-header");
@@ -140,7 +145,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	{
 		modelGrid = new Grid<>();
 
-		modelGrid.addColumn(TemplateRenderer.<Model> of("[[item.name]] <tag-label text='[[item.draft]]'></tag-label>")
+		modelGrid.addColumn(TemplateRenderer.<Model> of("[[item.name]] <tag-label size='small' text='[[item.draft]]'></tag-label>")
                         .withProperty("name", Data::getName)
 						.withProperty("draft", model -> model.isDraft() ? "Draft" : ""))
 				.setHeader("#")
@@ -209,12 +214,14 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	protected void initLoadData() {
 		project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));
-		project.setModels(modelDAO.getModelsForProject(projectId));
+        project.setModels(modelDAO.getModelsForProject(projectId));
 	}
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
-		projectName.setText(project.getName());
+        projectName.setText(project.getName());
+        archivedLabel.setVisible(project.isArchived());
+
 		if (project.getModels().isEmpty()) {
 			event.forwardTo(Routes.UPLOAD_MODEL, ""+projectId);
 		}

@@ -3,6 +3,11 @@
     line-height: 1;
 }
 
+.experiment-view .section-title-label + tag-label {
+    align-self: flex-start;
+    margin-left: var(--lumo-space-xs);
+}
+
 .experiment-view .view-section {
     box-sizing: border-box;
     width: 100%;
