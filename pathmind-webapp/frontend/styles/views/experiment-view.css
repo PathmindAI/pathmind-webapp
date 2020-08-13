@@ -173,7 +173,16 @@
 }
 
 .experiment-view vaadin-progress-bar {
-    margin: var(--lumo-space-xs) 0;
+    width: 6rem;
+    margin: var(--lumo-space-xs) 0 var(--lumo-space-xxs);
+}
+
+.experiment-view vaadin-progress-bar + div {
+    display: flex;
+}
+
+.experiment-view vaadin-progress-bar + div span:last-child {
+    margin-left: var(--lumo-space-xxxs);
 }
 
 .experiment-view .reason-why-the-training-stopped {
