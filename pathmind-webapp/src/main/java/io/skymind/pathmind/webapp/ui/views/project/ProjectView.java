@@ -140,8 +140,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	{
 		modelGrid = new Grid<>();
 
-		modelGrid.addColumn(TemplateRenderer.<Model> of("[[item.name]] <span class='tag'>[[item.draft]]</span>")
-						.withProperty("name", Data::getName)
+		modelGrid.addColumn(TemplateRenderer.<Model> of("[[item.name]] <tag-label text='[[item.draft]]'></tag-label>")
+                        .withProperty("name", Data::getName)
 						.withProperty("draft", model -> model.isDraft() ? "Draft" : ""))
 				.setHeader("#")
 				.setComparator(Comparator.comparingLong(model -> Long.parseLong(model.getName())))

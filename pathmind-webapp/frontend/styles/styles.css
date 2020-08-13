@@ -510,15 +510,11 @@ account-view {
 
 .tag {
     color: var(--pm-gray-color-dark);
-    padding: 4px 8px;
+    padding: var(--lumo-space-xxxs) var(--lumo-space-xs);
     background: var(--lumo-contrast-10pct);
     border: 1px solid transparent;
     border-radius: var(--lumo-border-radius);
     margin: 0 2px;
-}
-.tag-outline {
-    background: transparent;
-    border: 1px solid;
 }
 .tag:empty {
     display: none;
