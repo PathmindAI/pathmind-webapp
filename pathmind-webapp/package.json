@@ -4,7 +4,7 @@
   "dependencies": {
     "@pickra/copy-code-block": "^1.2.0",
     "@polymer/polymer": "3.2.0",
-    "@storybook/addon-backgrounds": "^5.3.19",
+    "@storybook/addon-backgrounds": "^6.0.5",
     "@vaadin/flow-deps": "./target/frontend",
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "css-loader": "^3.6.0",
