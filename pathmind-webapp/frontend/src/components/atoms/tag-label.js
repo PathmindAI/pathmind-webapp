@@ -12,6 +12,7 @@ class TagLabel extends PolymerElement {
     ready() {
         super.ready();
         this.setOutlineStyle();
+        this.setSize();
     }
 
     static get properties() {
