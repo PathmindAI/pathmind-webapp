@@ -13,10 +13,9 @@ def icon = ":heavy_check_mark:"
 /*
     Build a docker image
 */
-def buildDockerImage(image_name, image_id) {
+def buildDockerImage(image_name, dockerfile) {
     echo "Building the pathmind Docker Image"
-    sh "docker build -t base -f ${WORKSPACE}/Dockerfile-cache ${WORKSPACE}/"
-    sh "docker build -t ${image_name} -f ${WORKSPACE}/Dockerfile ${WORKSPACE}/"
+    sh "docker build -t ${image_name} -f ${WORKSPACE}/${Dockerfile} ${WORKSPACE}/"
 }
 
 /*
@@ -139,7 +138,18 @@ pipeline {
             parallel {
                 stage('Build pathmind image') {
                     steps {
-                        buildDockerImage("${IMAGE_NAME}", "${PATHMIND_ID}")
+                        buildDockerImage("base", "Dockerfile-cache")
+                        buildDockerImage("${IMAGE_NAME}", "Dockerfile")
+                    }
+                }
+                stage('Build trainer image') {
+                    steps {
+                        buildDockerImage("trainer", "Dockerfile")
+                    }
+                }
+                stage('Build rl_training image') {
+                    steps {
+                        buildDockerImage("rl_training", "Dockerfile")
                     }
                 }
             }
@@ -159,31 +169,59 @@ pipeline {
                         publishDockerImage("${IMAGE_NAME}", "${DOCKER_TAG}")
                     }
                 }
+                stage('Publish trainer image') {
+                    steps {
+                        publishDockerImage("trainer", "${DOCKER_TAG}")
+                    }
+                }
+                stage('Publish rl_training image') {
+                    steps {
+                        publishDockerImage("rl_training", "${DOCKER_TAG}")
+                    }
+                }
             }
         }
 
-        stage('Deploying helm chart') {
+        stage('Deploying helm charts') {
             when {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
                 }
             }
-            steps {
-                script {
-                    echo "Running db migrations"
-                    sh "cd ${WORKSPACE} && mvn clean install"
+            parallel {
+                stage('Deploying pathmind') {
+                    steps {
+                        script {
+                            echo "Running db migrations"
+                            sh "cd ${WORKSPACE} && mvn clean install"
+                        }
+                        runMigrations("${DOCKER_TAG}")
+                        script {
+                            echo "Updating helm chart"
+                            sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} ${DOCKER_TAG} ${WORKSPACE}"
+                            sh "sleep 90"
+                            echo "Deploying updater helm chart"
+                            sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml -n ${DOCKER_TAG}"
+                            echo "Wait for webapp to be available"
+                            sh "timeout 300 bash -c 'while ! curl http://pathmind-${DOCKER_TAG}; do sleep 5; done'"
+                            sh "timeout 300 bash -c 'while ! curl http://pathmind-slot-${DOCKER_TAG}; do sleep 5; done'"
+                        }
+                    }
                 }
-                runMigrations("${DOCKER_TAG}")
-                script {
-                    echo "Updating helm chart"
-                    sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} ${DOCKER_TAG} ${WORKSPACE}"
-                    sh "sleep 90"
-                    echo "Deploying updater helm chart"
-                    sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml -n ${DOCKER_TAG}"
-                    echo "Wait for webapp to be available"
-                    sh "timeout 300 bash -c 'while ! curl http://pathmind-${DOCKER_TAG}; do sleep 5; done'"
-                    sh "timeout 300 bash -c 'while ! curl http://pathmind-slot-${DOCKER_TAG}; do sleep 5; done'"
+                stage('Deploying trainer') {
+                    steps {
+                        script {
+                            sh "helm upgrade --install trainer ${WORKSPACE}/infra/helm/trainer -f ${WORKSPACE}/infra/helm/trainer/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
+                        }
+                    }
+                }
+                stage('Deploying rl_training') {
+                    steps {
+                        script {
+                            sh "helm upgrade --install rl_training ${WORKSPACE}/infra/helm/rl_training -f ${WORKSPACE}/infra/helm/rl_training/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
+                        }
+                    }
                 }
             }
         }
@@ -256,20 +294,38 @@ pipeline {
                     environment name: 'DEPLOY_TO_PROD', value: 'true'
                 }
             }
-            steps {
-                script {
-                    DEPLOY_PROD = true
-                    echo "Running db migrations"
-                    sh "cd ${WORKSPACE} && mvn clean install"
+            parallel {
+                stage('Deploying pathmind') {
+                    steps {
+                        script {
+                            DEPLOY_PROD = true
+                            echo "Running db migrations"
+                            sh "cd ${WORKSPACE} && mvn clean install"
+                        }
+                        backupDb("pathmind-prod")
+                        runMigrations("default")
+                        script {
+                            echo "Updating helm chart"
+                            sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
+                            sh "sleep 90"
+                            echo "Deploying updater helm chart"
+                            sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml"
+                        }
+                    }
                 }
-                backupDb("pathmind-prod")
-                runMigrations("default")
-                script {
-                    echo "Updating helm chart"
-                    sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
-                    sh "sleep 90"
-                    echo "Deploying updater helm chart"
-                    sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml"
+                stage('Deploying trainer') {
+                    steps {
+                        script {
+                            sh "helm upgrade --install trainer ${WORKSPACE}/infra/helm/trainer -f ${WORKSPACE}/infra/helm/trainer/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
+                        }
+                    }
+                }
+                stage('Deploying rl_training') {
+                    steps {
+                        script {
+                            sh "helm upgrade --install rl_training ${WORKSPACE}/infra/helm/rl_training -f ${WORKSPACE}/infra/helm/rl_training/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
+                        }
+                    }
                 }
             }
         }
