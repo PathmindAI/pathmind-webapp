@@ -76,9 +76,4 @@ public class PathmindNumberUtils {
     public static int getInsignificantPrecision(int bdPrecision, int sigFig) {
         return bdPrecision - sigFig;
     }
-
-    public static int powerOfTen(int pow) {
-        final int[] POWERS_OF_10 = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
-        return POWERS_OF_10[pow];
-    }
 }
