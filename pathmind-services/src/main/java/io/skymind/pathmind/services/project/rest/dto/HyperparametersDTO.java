@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HyperparametersDTO {
+    private boolean oldVersionFound;
 
     @NotBlank(message = "Number of actions cannot be blank")
     private String actions;

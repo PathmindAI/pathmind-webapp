@@ -70,7 +70,10 @@ public class ProjectFileCheckService {
     }
 
     private Optional<String> verifyAnalysisResult(HyperparametersDTO analysisResult) {
-        if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null 
+        if (analysisResult != null && analysisResult.isOldVersionFound()) {
+            return Optional.of("Old model version found.");
+        }
+        else if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null
                 || analysisResult.getRewardVariables() == null) {
             return Optional.of("Unable to analyze the model.");
         }
