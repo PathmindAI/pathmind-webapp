@@ -84,9 +84,9 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
         chart.getConfiguration().addyAxis(yAxis);
         chart.getConfiguration().getTooltip().setFormatter(
                 "return "
-                + "'<b>Iteration#:</b>' + this.x + '<br/>' + "
-                + "'<b>Mean Reward:</b>' + this.y.toFixed(Math.abs(this.y) > 1 ? 1 : 6) + '<br/>' + "
-                + "(this.point.episodeCount != null ? '<b>Episode Count:</b>' + this.point.episodeCount : '')");
+                + "'<b>Iteration </b>#' + this.x + '<br/>' + "
+                + "'<b>Mean Reward </b>' + this.y.toFixed(Math.abs(this.y) > 1 ? 1 : 6) + '<br/>' + "
+                + "(this.point.episodeCount != null ? '<b>Episode Count </b>' + this.point.episodeCount : '')");
         chart.setSizeFull();
     }
 

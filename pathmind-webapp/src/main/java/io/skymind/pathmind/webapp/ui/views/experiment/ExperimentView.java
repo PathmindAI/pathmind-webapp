@@ -631,7 +631,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         @Override
         public boolean filterBusEvent(ExperimentCreatedBusEvent event) {
-            return ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, event.getModelId());
+            return ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, modelId);
         }
 
         @Override
