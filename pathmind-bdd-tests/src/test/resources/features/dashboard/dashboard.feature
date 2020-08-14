@@ -12,7 +12,7 @@ Feature: Dashboard page
 
     Examples:
       | Click action                              |
-      | Click in AutotestProject dashboard item  |
+      | Click AutotestProject dashboard item  |
       | Click in AutotestProject stage breadcrumb |
 
   Scenario: Check dashboard begin screen elements

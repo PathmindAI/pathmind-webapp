@@ -34,31 +34,28 @@ class TagLabel extends PolymerElement {
     }
 
     static get template() {
-        return html`
-            <style>
-                :host {
-                    box-sizing: border-box;
-                    display: inline-block;
-                    color: var(--pm-gray-color-dark);
-                    font-size: var(--lumo-font-size-s);
-                    line-height: 1.3;
-                    padding: var(--lumo-space-xxxs) var(--lumo-space-xs);
-                    background: var(--lumo-contrast-10pct);
-                    border: 1px solid transparent;
-                    border-radius: var(--lumo-border-radius);
-                    margin: 0 var(--lumo-space-xxxs);
-                }
-                :host([outline="true"]) {
-                    background: transparent;
-                    border: 1px solid;
-                }
-                :host([size="small"]) {
-                    padding: 0 var(--lumo-space-xxs);
-                    border-radius: var(--lumo-border-radius-s);
-                }
-            </style>
-            [[text]]
-        `;
+        return html`<style>
+    :host {
+        box-sizing: border-box;
+        display: inline-block;
+        color: var(--pm-gray-color-dark);
+        font-size: var(--lumo-font-size-s);
+        line-height: 1.3;
+        padding: var(--lumo-space-xxxs) var(--lumo-space-xs);
+        background: var(--lumo-contrast-10pct);
+        border: 1px solid transparent;
+        border-radius: var(--lumo-border-radius);
+        margin: 0 var(--lumo-space-xxxs);
+    }
+    :host([outline="true"]) {
+        background: transparent;
+        border: 1px solid;
+    }
+    :host([size="small"]) {
+        padding: 0 var(--lumo-space-xxs);
+        border-radius: var(--lumo-border-radius-s);
+    }
+</style>[[text]]`;
     }
 
     setSize() {
