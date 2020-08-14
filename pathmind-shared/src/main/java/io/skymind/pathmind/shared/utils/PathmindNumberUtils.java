@@ -28,31 +28,31 @@ public class PathmindNumberUtils {
      *             is used for determining the actual sig. fig. of figures ending with 0 at its last position.
      */
     public static String setSigFigBasedOnAnotherDouble(Double originalNumber, Double refNumber, int refNumberSigFig) {
-        BigDecimal bdRefNumber;
-        BigDecimal bdOriginalNumber = BigDecimal.valueOf(originalNumber);
+        BigDecimal _refNumber;
+        BigDecimal _originalNumber = BigDecimal.valueOf(originalNumber);
         String refNumber2SigFig = formatToSigFig(refNumber, 2);
         if (refNumberSigFig < 1) {
             return "";
         }
         if (refNumber2SigFig.contains(".")) {
-            bdRefNumber = BigDecimal.valueOf(Double.parseDouble(refNumber2SigFig));
+            _refNumber = BigDecimal.valueOf(Double.parseDouble(refNumber2SigFig));
         } else {
-            bdRefNumber = BigDecimal.valueOf(Integer.parseInt(refNumber2SigFig));
+            _refNumber = BigDecimal.valueOf(Integer.parseInt(refNumber2SigFig));
         }
-        int bdOriginalNumberPrecision = bdOriginalNumber.precision();
-        int bdOriginalNumberScale = bdOriginalNumber.scale();
-        int bdOriginalNumberNonDecimalDigits =  getNumberOfNonDecimalDigits(bdOriginalNumberPrecision, bdOriginalNumberScale);
-        int bdRefNumberInsignificantPrecision = getInsignificantPrecision(bdRefNumber.precision(), refNumberSigFig);
-        int sigFig = bdOriginalNumberNonDecimalDigits + bdRefNumber.scale() - bdRefNumberInsignificantPrecision;
-        if (bdRefNumber.signum() == 0) {
+        int originalNumberPrecision = _originalNumber.precision();
+        int originalNumberScale = _originalNumber.scale();
+        int originalNumberNonDecimalDigits =  getNumberOfNonDecimalDigits(originalNumberPrecision, originalNumberScale);
+        int refNumberInsignificantPrecision = getInsignificantPrecision(_refNumber.precision(), refNumberSigFig);
+        int sigFig = originalNumberNonDecimalDigits + _refNumber.scale() - refNumberInsignificantPrecision;
+        if (_refNumber.signum() == 0) {
             /* This is needed because BigDecimal always saves 0 as 0.0 with 1 precision and 1 scale
              * which would mess up the calculation.
              */
-            sigFig -= bdRefNumber.scale();
+            sigFig -= _refNumber.scale();
         }
-        int newScale = sigFig - bdOriginalNumberPrecision + bdOriginalNumberScale;
-        bdOriginalNumber = bdOriginalNumber.setScale(newScale, RoundingMode.HALF_EVEN);
-        return bdOriginalNumber.toPlainString().replace(",", "");
+        int newScale = sigFig - originalNumberPrecision + originalNumberScale;
+        _originalNumber = _originalNumber.setScale(newScale, RoundingMode.HALF_EVEN);
+        return _originalNumber.toPlainString().replace(",", "");
     }
 
     public static String formatToSigFig(Double originalNumber, int sigFig) {
