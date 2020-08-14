@@ -62,8 +62,8 @@ public class DashboardPage extends PageObject {
         }
     }
 
-    public void clickInNavigationIcon(String projectName) {
-        String xpath = dashboardLineXPathPrefix(projectName, "Model #1") + "//*[@class='navigate-icon']";
+    public void clickDashboardItem(String projectName) {
+        String xpath = dashboardLineXPathPrefix(projectName, "Model #1");
         getDriver().findElement(By.xpath(xpath)).click();
         waitABit(2500);
     }

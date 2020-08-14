@@ -51,9 +51,9 @@ public class DashboardPageStepDefinitions {
         dashboardPageSteps.checkExperimentNotes(projectName + Serenity.sessionVariableCalled("randomNumber"), experimentNotes);
     }
 
-    @When("^Click in (.*) navigation icon$")
+    @When("^Click (.*) dashboard item$")
     public void clickInNavigationIcon(String projectName) {
-        dashboardPageSteps.clickInNavigationIcon(projectName + Serenity.sessionVariableCalled("randomNumber"));
+        dashboardPageSteps.clickDashboardItem(projectName + Serenity.sessionVariableCalled("randomNumber"));
     }
 
     @When("^Click in (.*) stage breadcrumb$")

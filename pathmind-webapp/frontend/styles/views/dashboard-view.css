@@ -58,6 +58,9 @@
     color: var(--lumo-body-text-color);
     text-decoration: none;
 }
+.dashboard-item-main .breadcrumb:hover {
+    color: var(--lumo-primary-text-color);
+}
 .dashboard-item-main .breadcrumb:last-child {
     color: var(--lumo-body-text-color);
     font-weight: normal;
