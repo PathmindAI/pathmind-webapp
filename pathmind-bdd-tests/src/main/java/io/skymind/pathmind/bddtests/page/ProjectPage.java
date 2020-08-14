@@ -26,7 +26,7 @@ public class ProjectPage extends PageObject {
 
     public void checkNumberOfModelsWithDraftTag(int numberOfProjects) {
         setImplicitTimeout(5, SECONDS);
-        String xpath = "//vaadin-grid-cell-content/tag-label[text()='Draft']";
+        String xpath = "//vaadin-grid-cell-content/tag-label";
         assertThat(getDriver().findElements(By.xpath(xpath)).size(), is(numberOfProjects));
         resetImplicitTimeout();
     }

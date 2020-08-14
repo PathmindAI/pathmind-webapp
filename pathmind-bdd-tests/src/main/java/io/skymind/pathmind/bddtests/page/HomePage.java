@@ -159,7 +159,7 @@ public class HomePage extends PageObject {
     }
 
     public void checkSearchResultPageProjectNameContainsArchivedTag(String name) {
-        assertThat(getDriver().findElement(By.xpath("//*[@class='highlight-label' and contains(text(), '"+name+"')]/parent::div/parent::vaadin-vertical-layout[@class='name-row']/preceding-sibling::vaadin-horizontal-layout[@class='info-row']//vaadin-horizontal-layout[1]//tag-label")).getText(), is("Archived"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='highlight-label' and contains(text(), '"+name+"')]/parent::div/parent::vaadin-vertical-layout[@class='name-row']/preceding-sibling::vaadin-horizontal-layout[@class='info-row']//vaadin-horizontal-layout[1]//tag-label[2]")).getText(), is("Archived"));
     }
 
     public void checkSearchResultsForValueIs(String value) {
