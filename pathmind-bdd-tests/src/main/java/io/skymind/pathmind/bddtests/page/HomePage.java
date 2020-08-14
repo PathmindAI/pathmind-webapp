@@ -199,7 +199,7 @@ public class HomePage extends PageObject {
     }
 
     public void checkSearchResultTagIs(String tag) {
-        for (WebElement webElement : getDriver().findElements(By.xpath("//tag-label"))) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//tag-label[@outline='true']"))) {
             utils.moveToElementRepeatIfStaleException(webElement);
             assertThat(webElement.getText(), containsString(tag));
         }
