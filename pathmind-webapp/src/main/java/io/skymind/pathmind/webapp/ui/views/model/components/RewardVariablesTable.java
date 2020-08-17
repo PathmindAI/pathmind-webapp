@@ -64,7 +64,7 @@ public class RewardVariablesTable extends VerticalLayout {
             Span rewardVariableIndexSpan = LabelFactory.createLabel(Integer.toString(rv.getArrayIndex()), "reward-variable-index");
             Span rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), ("variable-color-"+ (rv.getArrayIndex() % 10)), "reward-variable-name");
             TextField rewardVariableNameField = new TextField();
-            rewardVariableNameField.setValue(String.format("%s (%s)", rv.getName(), rv.getDataType()));
+            rewardVariableNameField.setValue(rv.getName());
             rewardVariableNameField.addClassName("reward-variable-name-field");
             rewardVariableNameField.setReadOnly(true);
             add(rewardVariableIndexSpan, rewardVariableNameSpan, rewardVariableNameField);

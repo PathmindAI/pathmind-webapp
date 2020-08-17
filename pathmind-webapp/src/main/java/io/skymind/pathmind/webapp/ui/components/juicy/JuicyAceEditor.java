@@ -93,19 +93,19 @@ public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, 
 	
 	private JsonArray generateLocalVariablesAutocompleteOption(List<RewardVariable> rewardVariables) {
         JsonArray localVariables = Json.createArray();
-        localVariables.set(localVariables.length(), createVariableAutocompleteOption("reward", "double"));
+        localVariables.set(localVariables.length(), createVariableAutocompleteOption("reward"));
         for (RewardVariable rewardVariable : rewardVariables) {
-            localVariables.set(localVariables.length(), createVariableAutocompleteOption("before."+rewardVariable.getName(), rewardVariable.getDataType()));
-            localVariables.set(localVariables.length(), createVariableAutocompleteOption("after."+rewardVariable.getName(), rewardVariable.getDataType()));
+            localVariables.set(localVariables.length(), createVariableAutocompleteOption("before."+rewardVariable.getName()));
+            localVariables.set(localVariables.length(), createVariableAutocompleteOption("after."+rewardVariable.getName()));
         }
         return localVariables;
     }
 
-    private JsonObject createVariableAutocompleteOption(String variable, String dataType) {
+    private JsonObject createVariableAutocompleteOption(String variable) {
         JsonObject autocompleteOption = Json.createObject();
         autocompleteOption.put("caption", variable);
         autocompleteOption.put("value", variable);
-        autocompleteOption.put("meta", dataType);
+//        autocompleteOption.put("meta", "");
         return autocompleteOption;
     }
 }
