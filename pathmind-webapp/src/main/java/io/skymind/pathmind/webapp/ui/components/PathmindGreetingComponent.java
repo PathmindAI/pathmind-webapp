@@ -12,7 +12,7 @@ public class PathmindGreetingComponent extends VerticalLayout {
 	}
 	public PathmindGreetingComponent(String greetingText) {
 		setSpacing(false);
-		Image pathMindLogo = new Image("frontend/images/pathmind-logo.png", "Pathmind Logo");
+		Image pathMindLogo = new Image("frontend/images/pathmind-logo.svg", "Pathmind Logo");
 		pathMindLogo.addClassName("navbar-logo");
 		add(LabelFactory.createLabel(greetingText, CssPathmindStyles.SMALL_LIGHT_LABEL),
 				pathMindLogo);

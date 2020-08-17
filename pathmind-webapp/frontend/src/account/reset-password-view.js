@@ -27,7 +27,7 @@ class ResetPasswordView extends PolymerElement {
         <span class="welcome-text">Welcome to</span>
         <img
           class="logo"
-          src="frontend/images/pathmind-logo.png"
+          src="frontend/images/pathmind-logo.svg"
           alt="Pathmind"
         />
         <vaadin-vertical-layout id="prePart" class="inner-content">

@@ -118,4 +118,9 @@ public class ExperimentPageSteps {
     public void checkExperimentPageSimulationMetrics(String commaSeparatedVariableNames) {
         experimentPage.checkExperimentPageSimulationMetrics(commaSeparatedVariableNames);
     }
+
+    @Step
+    public void checkSideBarExperimentsListExperiment(String commaSeparatedExperimentNames) {
+        experimentPage.checkSideBarExperimentsListExperiment(commaSeparatedExperimentNames);
+    }
 }
