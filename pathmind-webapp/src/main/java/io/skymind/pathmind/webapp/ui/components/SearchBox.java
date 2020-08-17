@@ -2,6 +2,8 @@ package io.skymind.pathmind.webapp.ui.components;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,7 +18,13 @@ import io.skymind.pathmind.webapp.ui.views.search.SearchResultsView;
 
 public class SearchBox extends HorizontalLayout
 {
+    private static final List<String> SEARCH_TYPES = Arrays.asList("All", "Project", "Model", "Experiment");
+    public static final int MAX_SEARCH_TYPE_LENGTH;
+    static {
+        MAX_SEARCH_TYPE_LENGTH = SEARCH_TYPES.stream().map(String::length).max(Integer::compareTo).get();
+    }
     public static final int MAX_KEYWORD_LENGTH = 200;
+    public static final int OPERATOR_LENGTH = 1;
     private String searchType = "All";
     private String CLASS_NAME = "search-box";
     private Select searchSelect = typeSelect();
@@ -45,7 +53,7 @@ public class SearchBox extends HorizontalLayout
     public Select typeSelect() {
         Select<String> typeSelect = new Select<>();
         typeSelect.addValueChangeListener(event -> searchType = event.getValue());
-        typeSelect.setItems("All", "Project", "Model", "Experiment");
+        typeSelect.setItems(SEARCH_TYPES);
         typeSelect.setValue("All");
         return typeSelect;
     }
