@@ -189,12 +189,15 @@
     box-sizing: border-box;
     display: inline-block;
     width: 100%;
-    color: var(--pm-gray-color-dark);
     padding: var(--lumo-space-xxxs) var(--lumo-space-xs);
-    background: var(--lumo-contrast-10pct);
     border: 1px solid transparent;
     border-radius: var(--lumo-border-radius);
     margin: var(--lumo-space-xs) 0 0;
+}
+
+.experiment-view .tag.error-label {
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .experiment-view .reason-why-the-training-stopped:empty {
