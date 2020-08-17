@@ -143,8 +143,9 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
             decodedKeyword = "";
             titleText = "You did not search for anything.";
         } else {
-            decodedKeyword = URLDecoder.decode(keyword, StandardCharsets.UTF_8).substring(0,
-                    SearchBox.MAX_SEARCH_TYPE_LENGTH + SearchBox.OPERATOR_LENGTH + SearchBox.MAX_KEYWORD_LENGTH);
+            int maxAllowedInputSize = SearchBox.MAX_SEARCH_TYPE_LENGTH + SearchBox.OPERATOR_LENGTH + SearchBox.MAX_KEYWORD_LENGTH;
+            String decodedValue = URLDecoder.decode(keyword, StandardCharsets.UTF_8);
+            decodedKeyword = decodedValue.substring(0, Math.min(decodedValue.length(), maxAllowedInputSize));
             String escapedBackslashDecodedKeyword = PathmindStringUtils.escapeBackslash(decodedKeyword);
             decodedKeyword = getActuaKeyword(decodedKeyword);
             dataProvider.setFilter(escapedBackslashDecodedKeyword);
