@@ -19,13 +19,11 @@ public class ProjectFileCheckService {
 
     private final ExecutorService checkerExecutorService;
     private final ModelAnalyzerApiClient client;
-    private final String convertModelsToSupportTuplesURL;
     private final String convertModelsToSupportRewardVariablesURL;
 
-    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportTuplesURL, String convertModelsToSupportRewardVariablesURL) {
+    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportRewardVariablesURL) {
         this.checkerExecutorService = checkerExecutorService;
         this.client = client;
-        this.convertModelsToSupportTuplesURL = convertModelsToSupportTuplesURL;
         this.convertModelsToSupportRewardVariablesURL = convertModelsToSupportRewardVariablesURL;
     }
 
