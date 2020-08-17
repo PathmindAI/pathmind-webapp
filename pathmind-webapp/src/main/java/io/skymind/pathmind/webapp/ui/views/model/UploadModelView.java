@@ -343,32 +343,32 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		getUI().ifPresent(ui -> PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
 			setVisibleWizardPanel(modelDetailsWizardPanel);
+			List<String> rewardVariablesNames = new ArrayList<>();
 
 			if (result != null) {
 				model.setNumberOfPossibleActions(((AnylogicFileCheckResult) (result)).getNumAction());
 				model.setNumberOfObservations(((AnylogicFileCheckResult) (result)).getNumObservation());
-				model.setRewardVariablesCount(((AnylogicFileCheckResult) (result)).getRewardVariablesCount());
-				model.setActionTupleSize(((AnylogicFileCheckResult) (result)).getActionTupleSize());
+                rewardVariablesNames.addAll(((AnylogicFileCheckResult) result).getRewardVariables());
+                model.setRewardVariablesCount(rewardVariablesNames.size());
 			}
 			modelDetailsWizardPanel.setIsValidModel(ModelUtils.isValidModel(model));
 
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");
-			rewardVariables = createDummyRewardVariables(model.getId(), model.getRewardVariablesCount());
+			rewardVariables = createDummyRewardVariables(model.getId(), rewardVariablesNames);
 			rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
 			segmentIntegrator.modelImported(true);
 		}));
 	}
 
-	private List<RewardVariable> createDummyRewardVariables(long modelId, int size) {
+	private List<RewardVariable> createDummyRewardVariables(long modelId, List<String> rewardVariablesNames) {
         List<RewardVariable> rewardVariables = new ArrayList<>();
-        String[] dataTypes = new String[] {"double", "long", "float", "int[]"};
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < rewardVariables.size(); i++) {
             RewardVariable rv = new RewardVariable();
             rv.setArrayIndex(i);
             rv.setModelId(modelId);
-            rv.setName("var" + i);
-            rv.setDataType(dataTypes[i % 4]);
+            rv.setName(rewardVariablesNames.get(i));
+            rv.setDataType("double");
             rewardVariables.add(rv);
         }
         return rewardVariables;

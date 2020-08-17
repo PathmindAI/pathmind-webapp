@@ -475,8 +475,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("ENTROPY_SLOPE", "0.01"),
                 var("VF_LOSS_RANGE", "0.1"),
                 var("VALUE_PRED", "1"), // disabled for now
-                var("USER_LOG", String.valueOf(job.isUserLog())),
-                var("ACTION_TUPLE_SIZE", String.valueOf(job.getActionTupleSize()))
+                var("USER_LOG", String.valueOf(job.isUserLog()))
         ));
     }
 

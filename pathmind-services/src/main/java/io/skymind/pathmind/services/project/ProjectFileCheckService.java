@@ -70,8 +70,11 @@ public class ProjectFileCheckService {
     }
 
     private Optional<String> verifyAnalysisResult(HyperparametersDTO analysisResult) {
-        if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null 
-                || analysisResult.getRewardVariablesCount() == null || analysisResult.getActionTupleSize() == null) {
+        if (analysisResult != null && analysisResult.isOldVersionFound()) {
+            return Optional.of("Old model version found.");
+        }
+        else if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null
+                || analysisResult.getRewardVariables() == null) {
             return Optional.of("Unable to analyze the model.");
         }
         else if (analysisResult.getActions() != null && Integer.parseInt(analysisResult.getActions()) == 0) {
@@ -80,8 +83,8 @@ public class ProjectFileCheckService {
         else if (analysisResult.getObservations() != null && Integer.parseInt(analysisResult.getObservations()) == 0) {
             return Optional.of("Number of observations found to be zero.");
         }
-        else if (analysisResult.getActionTupleSize() != null && Integer.parseInt(analysisResult.getActionTupleSize()) == 0) {
-            return Optional.of(getNonTupleErrorMessage());
+        else if (analysisResult.getRewardVariables().isEmpty()) {
+            return Optional.of("Reward variables list is empty.");
         }
         return Optional.empty();
     }
@@ -90,12 +93,12 @@ public class ProjectFileCheckService {
     	AnylogicFileCheckResult fileCheckResult = AnylogicFileCheckResult.class.cast(result);
         fileCheckResult.setNumAction(Integer.parseInt(params.getActions()));
     	fileCheckResult.setNumObservation(Integer.parseInt(params.getObservations()));
-    	fileCheckResult.setRewardVariablesCount(Integer.parseInt(params.getRewardVariablesCount()));
     	fileCheckResult.setRewardVariableFunction(params.getRewardFunction());
-    	fileCheckResult.setActionTupleSize(Integer.parseInt(params.getActionTupleSize()));
+    	fileCheckResult.setRewardVariables(params.getRewardVariables());
     }
 
     public String getNonTupleErrorMessage() {
+
         return String.format(INVALID_MODEL_ERROR_MESSAGE, convertModelsToSupportTuplesURL);
     }
     public String getErrorMessage(InvalidModelType invalidModelType) {
