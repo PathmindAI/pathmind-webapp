@@ -24,8 +24,17 @@ public class PathmindNumberUtils {
     }
 
     /**
+     * Format the <code>orignalNumber</code> based on the <code>refNumber</code>.
+     * <p>
+     * This is used for formatting the simulation metric value which shows at the end of the training along with the uncertainty value.
+     * <p>
+     * For detailed explanation of the calculations involved, please visit <a href="https://github.com/SkymindIO/pathmind-webapp/wiki/Calculations-for-formatting-metrics-with-&-without-uncertainty-value-on-UI">the GitHub wiki page</a>.
+     * @param originalNumber
+     *            the original number to be formatted.
+     * @param refNumber
+     *            the ref number with its designated number of significant figures which doesn't require further formatting.
      * @param refNumberSigFig
-     *             is used for determining the actual sig. fig. of figures ending with 0 at its last position.
+     *            is used for determining the actual sig. fig. of figures ending with 0 at its last position.
      */
     public static String setSigFigBasedOnAnotherDouble(Double originalNumber, Double refNumber, int refNumberSigFig) {
         BigDecimal _refNumber;
