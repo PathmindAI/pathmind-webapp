@@ -35,8 +35,7 @@ public class ProgressInterpreter {
         }
 
         static String[] metricsColumns(int numReward) {
-            List<RAY_PROGRESS> metricsColumns = List.of(TRAINING_ITERATION);
-            List<String> columns = metricsColumns.stream().map(e -> e.column).collect(Collectors.toList());
+            List<String> columns = new ArrayList<>(Arrays.asList(TRAINING_ITERATION.column));
             for (int i = 0; i < numReward; i++) {
                 columns.add(metricsMax(i));
                 columns.add(metricsMin(i));
@@ -47,14 +46,11 @@ public class ProgressInterpreter {
         }
 
         static RAY_PROGRESS[] scoreColumns() {
-            List<RAY_PROGRESS> scoreColumns = List.of(EPISODE_REWARD_MAX, EPISODE_REWARD_MIN, EPISODE_REWARD_MEAN, EPISODES_THIS_ITER, TRAINING_ITERATION);
-            return scoreColumns.toArray(new RAY_PROGRESS[0]);
+            return new RAY_PROGRESS[] {EPISODE_REWARD_MAX, EPISODE_REWARD_MIN, EPISODE_REWARD_MEAN, EPISODES_THIS_ITER, TRAINING_ITERATION};
         }
 
         static String[] metricsRawColumns() {
-            List<RAY_PROGRESS> scoreColumns = List.of(EPISODES_THIS_ITER, TRAINING_ITERATION, METRICS_RAW);
-            List<String> columns = scoreColumns.stream().map(e -> e.column).collect(Collectors.toList());
-            return columns.toArray(new String[0]);
+            return new String[] {EPISODES_THIS_ITER.column, TRAINING_ITERATION.column, METRICS_RAW.column};
         }
 
         static final String metrics_max = "custom_metrics/metrics_%d_max";

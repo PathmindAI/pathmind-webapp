@@ -100,7 +100,6 @@ public class MetricsRawRepository {
                     List<List<MetricsRawThisEpisode>> episodeRaw = new ArrayList<>();
                     iterAndRaw.getValue().entrySet().stream()
                         .forEach(episodeAndRaw -> {
-                            int episode = episodeAndRaw.getKey();
                             List<MetricsRawThisEpisode> indexRaw = new ArrayList<>();
                             episodeAndRaw.getValue().entrySet().stream()
                                 .forEach(indexAndRaw -> {
