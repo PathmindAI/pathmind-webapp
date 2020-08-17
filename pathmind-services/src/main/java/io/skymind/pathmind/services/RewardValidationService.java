@@ -10,6 +10,7 @@ import javax.tools.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -82,11 +83,41 @@ public class RewardValidationService {
     private static String createCustomClassTemplate(List<RewardVariable> rewardVariables) {
         StringBuilder builder = new StringBuilder();
         builder.append("    private static class Model {\n");
-        rewardVariables.forEach(rv -> builder.append(String.format("        public %s %s;\n", rv.getDataType(), rv.getName())));
+        normalizeVariables(rewardVariables)
+            .forEach(rv -> builder.append(String.format("        public %s %s;\n", rv.getDataType(), rv.getName())));
         builder.append("    }\n");
         return builder.toString();
     }
     
+    private static List<RewardVariable> normalizeVariables(List<RewardVariable> rewardVariables){
+        List<RewardVariable> normalizedRewardVariables = new ArrayList<>();
+        for (RewardVariable rewardVariable : rewardVariables) {
+            if (isArrayItem(rewardVariable.getName())) {
+                String arrayName = removeArrayIndexFromVariableName(rewardVariable.getName());
+                boolean alreadyExist = normalizedRewardVariables.stream().anyMatch(rv -> rv.getName().equals(arrayName));
+                if (!alreadyExist) {
+                    RewardVariable arrayVariable = new RewardVariable();
+                    arrayVariable.setName(arrayName);
+                    arrayVariable.setDataType("double[]");
+                    normalizedRewardVariables.add(arrayVariable);
+                }
+            } else {
+                normalizedRewardVariables.add(rewardVariable);
+            }
+        }
+        return normalizedRewardVariables;
+    }
+    
+    
+    private static String removeArrayIndexFromVariableName(String name) {
+        return name.replaceAll("\\[[0-9]*\\]", "");
+    }
+
+    private static boolean isArrayItem(String name) {
+        return Pattern.matches("\\w*\\[[0-9]*\\]", name);
+    }
+
+
     private static class CharSequenceJavaFileObject extends SimpleJavaFileObject {
 
         private final CharSequence content;
