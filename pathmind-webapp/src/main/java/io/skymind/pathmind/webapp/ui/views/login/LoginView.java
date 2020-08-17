@@ -73,7 +73,7 @@ public class LoginView extends HorizontalLayout
 	{
 		addClassName("login-panel-cont");
 		Span welcome = LabelFactory.createLabel("Welcome to", CssPathmindStyles.WELCOME_TEXT);
-		Image img = new Image("frontend/images/pathmind-logo.png", "Pathmind logo");
+		Image img = new Image("frontend/images/pathmind-logo.svg", "Pathmind logo");
 		img.setClassName("logo");
 		img.setWidth("200px");
 

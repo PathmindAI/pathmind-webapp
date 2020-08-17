@@ -288,7 +288,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private Div getButtonsWrapper() {
-        restartTraining = new Button("Restart Training", new Image("frontend/images/start.svg", "run"), click -> {
+        restartTraining = new Button("Restart Training", click -> {
             synchronized (experimentLock) {
                 if(!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator))
                     return;
