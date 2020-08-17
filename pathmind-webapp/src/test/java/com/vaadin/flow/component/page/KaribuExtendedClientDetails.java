@@ -6,14 +6,14 @@ public class KaribuExtendedClientDetails extends ExtendedClientDetails {
                                        String windowInnerHeight, String bodyClientWidth, String bodyClientHeight,
                                        String tzOffset, String rawTzOffset, String dstShift, String dstInEffect,
                                        String tzId, String curDate, String touchDevice, String devicePixelRatio,
-                                       String windowName) {
+                                       String windowName, String navigatorPlatform) {
         super(screenWidth, screenHeight, windowInnerWidth, windowInnerHeight, bodyClientWidth, bodyClientHeight,
-                tzOffset, rawTzOffset, dstShift, dstInEffect, tzId, curDate, touchDevice, devicePixelRatio, windowName);
+                tzOffset, rawTzOffset, dstShift, dstInEffect, tzId, curDate, touchDevice, devicePixelRatio, windowName, navigatorPlatform);
     }
 
     public KaribuExtendedClientDetails() {
         this("1920", "1200", "1024", "640",
                 "1024", "640", "420", "480", "60",
-                "true", "America/Los_Angeles", "", "false", "2", "ROOT-1");
+                "true", "America/Los_Angeles", "", "false", "2", "ROOT-1", "Platform");
     }
 }

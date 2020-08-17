@@ -29,7 +29,7 @@ public class SectionsHeaderPanel extends HorizontalLayout
 	}
 
 	private Anchor linkedLogo() {
-		Image logo = new Image("frontend/images/pathmind-logo.png", "Pathmind Logo");
+		Image logo = new Image("frontend/images/pathmind-logo.svg", "Pathmind Logo");
 		Anchor anchor = new Anchor("/", logo);
 		anchor.addClassName("navbar-logo");
 		return anchor;

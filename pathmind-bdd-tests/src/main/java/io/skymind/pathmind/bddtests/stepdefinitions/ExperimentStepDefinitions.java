@@ -129,4 +129,9 @@ public class ExperimentStepDefinitions {
     public void checkExperimentPageSimulationMetrics(String commaSeparatedVariableNames) {
         experimentPageSteps.checkExperimentPageSimulationMetrics(commaSeparatedVariableNames);
     }
+
+    @Then("^Check side bar experiments list (.*)$")
+    public void checkSideBarExperimentsListExperiment(String commaSeparatedExperimentNames) {
+        experimentPageSteps.checkSideBarExperimentsListExperiment(commaSeparatedExperimentNames);
+    }
 }

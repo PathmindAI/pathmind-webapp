@@ -15,6 +15,7 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -37,6 +38,8 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.dashboard.components.DashboardLine;
 import io.skymind.pathmind.webapp.ui.views.dashboard.components.EmptyDashboardPlaceholder;
@@ -70,6 +73,8 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
     private HorizontalLayout newProjectButtonWrapper;
 
+    private Span title;
+
     private long loggedUserId;
 
     public DashboardView(){
@@ -78,14 +83,17 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     }
 
     protected Component getMainContent(){
+        title = LabelFactory.createLabel("Recent", CssPathmindStyles.SECTION_TITLE_LABEL);
         newProjectButtonWrapper = WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton());
         placeholder = new EmptyDashboardPlaceholder();
         setupDashboardGrid();
 
         VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
+            title,
             placeholder,
             dashboardGrid,
             newProjectButtonWrapper);
+        gridWrapper.setPadding(false);
 
         return gridWrapper;
     }
@@ -141,16 +149,14 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
             case SetUpSimulation :
                 if (item.getModel() == null) {
                     archiveProject(item);
-                }
-                else {
+                } else {
                     archiveModel(item);
                 }
                 break;
             case WriteRewardFunction:
                 if (item.getExperiment() == null) {
                     archiveModel(item);
-                }
-                else {
+                } else {
                     archiveExperiment(item);
                 }
                 break;
@@ -197,6 +203,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     @Override
     protected void initScreen(BeforeEnterEvent event) {
         boolean emptyDashboard = dataProvider.isEmpty();
+        title.setVisible(!emptyDashboard);
         placeholder.setVisible(emptyDashboard);
         dashboardGrid.setVisible(!emptyDashboard);
         newProjectButtonWrapper.setVisible(!emptyDashboard);

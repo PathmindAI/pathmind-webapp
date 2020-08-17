@@ -16,7 +16,7 @@ class EmailVerificationView extends PolymerElement {
         <span class="welcome-text">Welcome to</span>
         <img
           class="logo"
-          src="frontend/images/pathmind-logo.png"
+          src="frontend/images/pathmind-logo.svg"
           alt="Pathmind logo"
         />
         <vaadin-vertical-layout class="inner-content">

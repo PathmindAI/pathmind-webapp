@@ -286,7 +286,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private Div getButtonsWrapper() {
-        restartTraining = new Button("Restart Training", new Image("frontend/images/start.svg", "run"), click -> {
+        restartTraining = new Button("Restart Training", click -> {
             synchronized (experimentLock) {
                 if(!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator))
                     return;
@@ -632,7 +632,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         @Override
         public boolean filterBusEvent(ExperimentCreatedBusEvent event) {
-            return ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, event.getModelId());
+            return ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, modelId);
         }
 
         @Override
