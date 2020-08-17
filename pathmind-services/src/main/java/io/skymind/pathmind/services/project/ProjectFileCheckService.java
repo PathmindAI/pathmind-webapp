@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -43,6 +44,8 @@ public class ProjectFileCheckService {
 
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
                         HyperparametersDTO analysisResult = client.analyze(tempFile);
+                        // TODO OnurI: Remove after actual model-analyzer integration
+                        analysisResult.setRewardVariables(Arrays.asList("sample[0]", "sample[1]", "sample[2]"));
                         Optional<String> optionalError = verifyAnalysisResult(analysisResult);
                         if (optionalError.isPresent()) {
                             statusUpdater.updateError(optionalError.get());
@@ -71,7 +74,7 @@ public class ProjectFileCheckService {
 
     private Optional<String> verifyAnalysisResult(HyperparametersDTO analysisResult) {
         if (analysisResult != null && analysisResult.isOldVersionFound()) {
-            return Optional.of("Old model version found.");
+            return Optional.of(getErrorMessage(InvalidModelType.OLD_REWARD_VARIABLES));
         }
         else if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null
                 || analysisResult.getRewardVariables() == null) {
@@ -97,10 +100,6 @@ public class ProjectFileCheckService {
     	fileCheckResult.setRewardVariables(params.getRewardVariables());
     }
 
-    public String getNonTupleErrorMessage() {
-
-        return String.format(INVALID_MODEL_ERROR_MESSAGE, convertModelsToSupportTuplesURL);
-    }
     public String getErrorMessage(InvalidModelType invalidModelType) {
         String articleUrl = getArticleUrlForInvalidReason(invalidModelType);
         return String.format(INVALID_MODEL_ERROR_MESSAGE, articleUrl);

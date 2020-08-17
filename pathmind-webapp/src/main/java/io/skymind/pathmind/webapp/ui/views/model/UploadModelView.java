@@ -343,27 +343,26 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		getUI().ifPresent(ui -> PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
 			setVisibleWizardPanel(modelDetailsWizardPanel);
-			List<String> rewardVariablesNames = new ArrayList<>();
 
 			if (result != null) {
-				model.setNumberOfPossibleActions(((AnylogicFileCheckResult) (result)).getNumAction());
-				model.setNumberOfObservations(((AnylogicFileCheckResult) (result)).getNumObservation());
-                rewardVariablesNames.addAll(((AnylogicFileCheckResult) result).getRewardVariables());
-                model.setRewardVariablesCount(rewardVariablesNames.size());
+			    AnylogicFileCheckResult alResult = AnylogicFileCheckResult.class.cast(result);
+			    rewardVariables = convertToRewardVariables(model.getId(), alResult.getRewardVariables());
+				model.setNumberOfPossibleActions(alResult.getNumAction());
+				model.setNumberOfObservations(alResult.getNumObservation());
+                model.setRewardVariablesCount(rewardVariables.size());
 			}
 			modelDetailsWizardPanel.setIsValidModel(ModelUtils.isValidModel(model));
 
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");
-			rewardVariables = createDummyRewardVariables(model.getId(), rewardVariablesNames);
 			rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
 			segmentIntegrator.modelImported(true);
 		}));
 	}
 
-	private List<RewardVariable> createDummyRewardVariables(long modelId, List<String> rewardVariablesNames) {
+	private List<RewardVariable> convertToRewardVariables(long modelId, List<String> rewardVariablesNames) {
         List<RewardVariable> rewardVariables = new ArrayList<>();
-        for (int i = 0; i < rewardVariables.size(); i++) {
+        for (int i = 0; i < rewardVariablesNames.size(); i++) {
             RewardVariable rv = new RewardVariable();
             rv.setArrayIndex(i);
             rv.setModelId(modelId);
