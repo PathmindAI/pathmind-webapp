@@ -31,6 +31,7 @@ class SignUpView extends PolymerElement {
             The email will be used as the User Email during sign in
           </p>
           <vaadin-button
+            id="forgotPasswordBtn"
             theme="tertiary small"
             hidden$="{{!isEmailUsed}}"
             onclick="window.location.href='/reset-password'"
