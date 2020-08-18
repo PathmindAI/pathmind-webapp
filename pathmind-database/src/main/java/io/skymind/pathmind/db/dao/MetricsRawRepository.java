@@ -43,7 +43,7 @@ public class MetricsRawRepository {
      * This is due to a limitation in JOOQ which does not allow dynamic multi-row inserts https://github.com/jOOQ/jOOQ/issues/6604
      * we have to rely on batching.
      */
-    protected static void insertMetricsRaw(DSLContext ctx, Map<Long,List<MetricsRaw>> metricsRawByPolicyId) {
+    protected static void insertMetricsRaw(DSLContext ctx, Map<Long, List<MetricsRaw>> metricsRawByPolicyId) {
         List<Query> insertQueries = new ArrayList<>();
         metricsRawByPolicyId.forEach((policyId, metricsRawList) ->
                 metricsRawList.stream().forEach(metricsRaw -> {

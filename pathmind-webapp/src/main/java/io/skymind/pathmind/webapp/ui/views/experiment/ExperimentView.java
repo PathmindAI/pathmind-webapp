@@ -6,7 +6,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -24,6 +23,7 @@ import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.shared.utils.MetricsRawUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
@@ -307,22 +307,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         List<MetricsRaw> metricsRawList = policy == null ? null : policy.getMetricsRaws();
         if (metricsRawList != null && metricsRawList.size() > 0) {
-            // index, metrics raw data list
-            Map<Integer, List<Double>> uncertaintyMap = new HashMap<>();
-            metricsRawList.stream()
-                .forEach(metricsRaw -> {
-                        List<List<MetricsRawThisEpisode>> episodeRawData = metricsRaw.getEpisodeRaw();
-                        for (int episode = 0; episode < episodeRawData.size(); episode++) {
-                            List<MetricsRawThisEpisode> indexRaw = episodeRawData.get(episode);
-                            for (int idx = 0; idx < indexRaw.size(); idx++) {
-                                List<Double> data = uncertaintyMap.containsKey(idx) ? uncertaintyMap.get(idx) : new ArrayList<>();
-                                data.add(indexRaw.get(idx).getValue());
-                                uncertaintyMap.put(idx, data);
-                            }
-
-                        }
-                    }
-                );
+            Map<Integer, List<Double>> uncertaintyMap = MetricsRawUtils.toIndexAndMetricRawData(metricsRawList);
 
             uncertainty = uncertaintyMap.values().stream()
                 .map(list -> {

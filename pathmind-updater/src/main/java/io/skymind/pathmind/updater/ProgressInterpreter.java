@@ -4,6 +4,7 @@ import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.utils.MetricsRawUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
@@ -219,31 +220,9 @@ public class ProgressInterpreter {
             final Integer iteration = record.getInt(RAY_PROGRESS.TRAINING_ITERATION);
 
             if (iteration > lastIteration) {
-                final int episodesThisIter = record.getInt(RAY_PROGRESS.EPISODES_THIS_ITER);
-
-                // since `hist_stats/metrics_raw` has accumulated raw data
-                // we need to take the first the size of `episodeThisIter` to get the episode reward variables
-                // and the raw data has the number of reward variable for each episode
-                // for example, let's say we have two rows and this model has 3 reward variables
-                // 1) iter=1, episode_this_iter=2, metrics_raw=[1.1, 1.2, 1.3, 2.1, 2.2, 2.3]
-                // 2) iter=2, episode_this_iter=3, metrics_raw=[11.1 11.2 11.3, 12.1, 12.2, 12.3, 13.1, 13.2, 13.3, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3]
-                List<Double> metircsRawData =
-                    Arrays.asList(record.getString(RAY_PROGRESS.METRICS_RAW.column)
-                        .replace("[", "").replace("]", "")
-                        .split(",", episodesThisIter * numReward + 1)).subList(0, episodesThisIter * numReward ).stream()
-                        .map(Double::valueOf)
-                        .collect(Collectors.toList());
-
-                List<List<MetricsRawThisEpisode>> episodeRaw = new ArrayList<>();
-                for (int i = 0; i < metircsRawData.size(); i += numReward) {
-                    List<MetricsRawThisEpisode> metricsRawThisEpisodes = new ArrayList<>();
-                    for (int idx = 0; idx < numReward; idx++) {
-                        metricsRawThisEpisodes.add(new MetricsRawThisEpisode(idx, metircsRawData.get(i + idx)));
-                    }
-                    episodeRaw.add(metricsRawThisEpisodes);
-                }
-
-                metricsRaws.add(new MetricsRaw(iteration, episodeRaw));
+                int episodesThisIter = record.getInt(RAY_PROGRESS.EPISODES_THIS_ITER);
+                String rawDataString = record.getString(RAY_PROGRESS.METRICS_RAW.column);
+                metricsRaws.add(new MetricsRaw(iteration, MetricsRawUtils.toMetricsRawDataList(rawDataString, episodesThisIter, numReward)));
             }
         }
         policy.setMetricsRaws(metricsRaws);
