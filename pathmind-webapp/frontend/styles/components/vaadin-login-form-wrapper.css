@@ -1,8 +1,3 @@
-:host {
-  width: 100%;
-  max-width: 100%;
-}
-
 :host [part="form"] {
   padding: 0;
 }
@@ -17,4 +12,5 @@
 
 :host #forgotPasswordButton {
   color: var(--pm-text-color);
+  margin-bottom: 0;
 }
