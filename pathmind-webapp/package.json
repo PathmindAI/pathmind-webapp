@@ -4,7 +4,7 @@
   "dependencies": {
     "@pickra/copy-code-block": "^1.2.0",
     "@polymer/polymer": "3.2.0",
-    "@storybook/addon-backgrounds": "^5.3.19",
+    "@storybook/addon-backgrounds": "^6.0.5",
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "css-loader": "^3.6.0",
     "highlight.js": "^9.13.1",
@@ -130,6 +130,6 @@
       "webpack-merge": "4.2.2",
       "webpack-dev-server": "3.10.3"
     },
-    "hash": "884991a0360a050281d2d170ab24c6fd075a0b61ebbbdccf2bdedfe5958ca2e5"
+    "hash": "19d821a55ae7866184be4f9ea2741fc16c044cae5b36ba31473547e4308ed7c4"
   }
 }
