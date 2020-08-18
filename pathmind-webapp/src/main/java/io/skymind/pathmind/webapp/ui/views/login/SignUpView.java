@@ -46,9 +46,6 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	@Id("cancelSignInBtn")
 	private Button cancelSignInBtn;
 
-	@Id("forgotPasswordBtn")
-	private Button forgotPasswordBtn;
-
 	@Id("signUp")
 	private Button signUp;
 
@@ -108,8 +105,6 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 
 		cancelSignInBtn.addClickListener(e -> showPassword(false));
 
-		forgotPasswordBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(ResetPasswordView.class)));
-
 		signUp.addClickListener(e -> {
 			if (binder.validate().isOk()) {
 			    showPassword(true);
@@ -133,7 +128,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 				confirmNewPassword.setInvalid(!validationResults.getConfirmPasswordValidationError().isEmpty());
 				confirmNewPassword.setErrorMessage(validationResults.getConfirmPasswordValidationError());
 			}
-		});
+        });
 	}
 
 	private void showPassword(boolean showPasswordPart) {

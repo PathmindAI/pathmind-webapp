@@ -1,90 +1,26 @@
-:host {
-  overflow-x: hidden;
-}
-
-.content {
-  width: 400px;
-  padding: 0;
-  margin: var(--lumo-space-xl) auto 0;
-}
-
-.welcome-text {
-  color: var(--pm-orange-color);
-}
-
-.logo {
-  width: 200px;
-}
-
 .inner-content {
   align-items: center;
-  width: 100%;
-  padding: var(--lumo-space-xl) var(--lumo-space-l);
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
-  margin-top: var(--lumo-space-xl);
-}
-
-a {
-  color: var(--pm-text-color);
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-h3 {
-  margin-top: 0;
-  margin-bottom: var(--lumo-size-l);
+  text-align: left;
 }
 
 h3 + vaadin-password-field {
   padding-top: 0;
 }
 
-#buttonsCont {
-  margin-top: var(--lumo-space-l);
-}
-
-#buttonsCont vaadin-button {
-    width: 100%;
-}
-
 #buttonsCont + p {
-  margin-bottom: var(--lumo-space-l);
+  margin-bottom: var(--lumo-space-m);
+}
+
+vaadin-button[theme~="tertiary"] {
+    color: var(--lumo-body-text-color);
 }
 
 .notes {
-  font-size: var(--lumo-font-size-xs);
-  color: var(--lumo-secondary-text-color);
-  padding-left: var(--lumo-space-s);
-}
-
-.notes span:last-child {
-  padding-bottom: 20px;
-}
-
-.notes .secondary {
-  color: #e7e7e7;
-}
-
-.form-hints {
-  font-size: var(--lumo-font-size-xs);
-  color: var(--lumo-secondary-text-color);
   margin: 0;
 }
 
-#forgotPasswordBtn {
-  color: var(--lumo-body-text-color);
-}
-
-#errorCont {
-  justify-content: space-between;
-  width: 100%;
-}
-
-#errorCont .error-message {
-  padding-top: 8px;
+#email[invalid] + .notes {
+    display: none;
 }
 
 .do-not-share-url {
@@ -97,28 +33,4 @@ h3 + vaadin-password-field {
 .do-not-share-url iron-icon {
   width: 16px;
   margin-right: var(--lumo-space-xs);
-}
-
-.policy {
-  font-size: var(--lumo-font-size-xs);
-  color: var(--lumo-secondary-text-color);
-}
-
-.policy a {
-  font-weight: 700;
-  color: var(--lumo-secondary-text-color);
-  text-decoration: none;
-}
-
-.policy a:hover {
-  text-decoration: underline;
-}
-
-.support {
-  margin: var(--lumo-size-xl) auto;
-  text-decoration: underline;
-}
-
-.support:hover {
-  text-decoration: none;
 }
