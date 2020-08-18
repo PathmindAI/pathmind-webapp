@@ -36,10 +36,6 @@
     margin-top: 0;
 }
 
-.info {
-    color: #696969;
-}
-
 .inner-content {
     box-sizing: border-box;
     max-width: 380px;
@@ -53,7 +49,9 @@
     margin-top: var(--lumo-space-xl);
 }
 
+/* For Account Pages */
 span.section-title-label + .inner-content {
+    padding: var(--lumo-space-l) var(--lumo-space-l) var(--lumo-space-s);
     margin-top: var(--lumo-space-m);
 }
 
@@ -67,7 +65,7 @@ span.section-title-label + .inner-content {
 }
 
 .block vaadin-button {
-    width: 120px;
+    width: 6.5rem;
 }
 
 .title {
@@ -75,7 +73,7 @@ span.section-title-label + .inner-content {
 }
 
 .data {
-    padding-bottom: 30px;
+    padding-bottom: var(--lumo-space-m);
 }
 
 .support-cont {
@@ -84,10 +82,21 @@ span.section-title-label + .inner-content {
 
 .support,
 .support-cont a {
-    display: inline-block;
     color: var(--lumo-secondary-text-color);
     margin: var(--lumo-size-xl) auto;
     text-decoration: underline;
+}
+
+.support {
+    display: inline-block;
+}
+
+.support-cont {
+    margin-top: var(--lumo-size-xl);
+}
+
+.support-cont a {
+    margin: var(--lumo-size-m) var(--lumo-size-m);
 }
 
 .support:hover,
