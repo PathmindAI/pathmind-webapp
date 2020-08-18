@@ -8,6 +8,8 @@ import sh
 import traceback
 import psycopg2
 import time
+import re
+from datetime import timedelta
 from LoggerInit import LoggerInit
 from threading import Thread
 import subprocess
@@ -46,8 +48,11 @@ def convert_to_seconds(s):
     """
     Convert time string expressed as <number>[m|h|d|s|w] to seconds
     """
-    seconds_per_unit = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
-    return int(s[:-1]) * seconds_per_unit[s[-1]]
+    UNITS = {'s':'seconds', 'm':'minutes', 'h':'hours', 'd':'days', 'w':'weeks'}
+    return int(timedelta(**{
+        UNITS.get(m.group('unit').lower(), 'seconds'): int(m.group('val'))
+        for m in re.finditer(r'(?P<val>\d+)(?P<unit>[smhdw]?)', s, flags=re.I)
+    }).total_seconds())
 
 def post_message_to_slack(text):
     slack_url='https://hooks.slack.com/services/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'
@@ -105,18 +110,20 @@ def send_mockup_data(s3bucket, s3path, cycle):
             s3.meta.client.copy(copy_source, s3bucket, s3path+'/output/'+target_key)
         time.sleep(cycle)
 
-def th_monitor_job(message):
+def th_monitor_job():
     """
     monitors if the pods for related to trainings are in Running mode
     """
     reported={}
     start_threshold=900
-    while:
+    while True:
         data=sh.kubectl('get','pods',\
             '-n',NAMESPACE,\
             '--field-selector','status.phase=Running',\
             '-l','type=training')
         for line in data.split('\n')[1:]:
+            if not line:
+                continue
             pod=line.split()[0]
             if pod not in reported and pod:
                 status=line.split()[2]

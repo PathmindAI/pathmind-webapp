@@ -14,67 +14,15 @@ where job_id='${S3PATH}';
 commit;
 EOF
 
-#Checked if pod crashed more than 3 times already
-CRASHES=`kubectl get pods -n ${ENVIRONMENT} | grep ${S3PATH} | grep Evicted | wc -l`
-if [ $CRASHES -ge 3 ]
-then
-        description="Job crashed more than 3 times, job is killed"
-        curl -X POST -H 'Content-type: application/json' \
-        --data "{'text':':x:Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
-        https://hooks.slack.com/services/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
-        echo "Job crashed more than 3 times, job is killed"
-        #Set the status in trainer_job
-        psql "$DB_URL_CLI" << EOF
-update public.trainer_job
-set status=5,ec2_end_date=now(),update_date=NOW(),description='${description}'
-where job_id='${S3PATH}';
-commit;
-EOF
-        aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
-        echo ${description} > errors.log
-        aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null
-        aws sqs send-message \
-                --queue-url ${SQS_URL} \
-                --message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
-                --message-group-id training
-        sleep 1h
-fi
-
-#Check training age and kill it if is older than 24 hours
-AGE=`psql -t "$DB_URL_CLI" << EOF
-select extract(hour from age(NOW(),create_date))  from public.trainer_job where job_id='${S3PATH}'
-EOF`
-
-if [ $AGE -ge 24 ]
-then
-	description="Job running for more than 24 hours, job is killed"
-	curl -X POST -H 'Content-type: application/json' \
-	--data "{'text':':x:Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
-	https://hooks.slack.com/services/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
-	echo "Killing on timeout"
-	#Set the status in trainer_job
-	psql "$DB_URL_CLI" << EOF
-update public.trainer_job
-set status=5,ec2_end_date=now(),update_date=NOW(),description='${description}'
-where job_id='${S3PATH}';
-commit;
-EOF
-	aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
-	echo ${description} > errors.log
-	aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null
-	aws sqs send-message \
-		--queue-url ${SQS_URL} \
-		--message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
-		--message-group-id training
-	sleep 1h
-fi
-
 sleep_time=60
 training_update_timeout=3600
 s3_url="s3://${S3BUCKET}/${S3PATH}"
 s3_url_link="${S3BUCKET}/${S3PATH}"
 log_file="process_output.log"
 aws s3 sync ${s3_url} ./ > /dev/null
+
+s3_url="s3://${S3BUCKET}/mockup-uncertainty/"
+s3_url_link="${S3BUCKET}/mockup-uncertainty/"
 
 #remove existing folders
 find . -mindepth 1 -maxdepth 1 -type d | xargs -I {} rm -rf {}
@@ -92,34 +40,6 @@ EOF`
 instanceid=`curl http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId'`
 instance_type=`aws ec2 describe-spot-instance-requests | jq -r ".SpotInstanceRequests | .[] | select (.InstanceId ==\"${instanceid}\").LaunchSpecification.InstanceType"`
 instance_price=`aws ec2 describe-spot-instance-requests | jq -r ".SpotInstanceRequests | .[] | select (.InstanceId ==\"${instanceid}\").SpotPrice"`
-
-#Check if we need to resume the training
-aws s3 sync ${s3_url}/output/ /tmp/PPO/
-output_files=`ls  /tmp/PPO/experiment_state*json | wc -l`
-if [ "${output_files}" -ge 1 ]
-then
-	set -e
-	echo "Resuming Training"
-	export RESUME=true
-	rm -rf /app/work/PPO/*
-	touch restarting
-	aws s3 cp restarting ${s3_url}/output/
-	aws s3 sync ${s3_url}/output/ /app/work/PPO/
-	echo `ls -1 /app/work/PPO/ | wc -l`" files were downloaded from ${s3_url}/output/"
-	aws s3 cp ${s3_url}/output/ ${s3_url}/output_backup_`date '+%Y%m%d%H%M'`/ --recursive
-	aws s3 rm ${s3_url}/output/ --recursive
-	touch restarted
-	aws s3 cp restarted ${s3_url}/output/
-	set +e
-else
-	#Set the status in trainer_job
-	psql "$DB_URL_CLI" << EOF
-update public.trainer_job
-set status=3,ec2_create_date=now(),update_date=NOW(),ec2_instance_type='${instance_type}',ec2_max_price='${instance_price}',restarts=0
-where job_id='${S3PATH}';
-commit;
-EOF
-fi
 
 bash script.sh > ${log_file} 2>&1 &
 pid=$!
@@ -147,7 +67,7 @@ do
         fi
 
         #Upload files
-        aws s3 sync ./work/PPO ${s3_url}/mockup-uncertainty/${minuto}/ > /dev/null
+        aws s3 sync ./work/PPO ${s3_url}/${minuto}/ > /dev/null
         minuto=$((minuto+1))
         #Check the training response timeout
         last_modification=`echo $(( $(date +%s) - $(stat -c %Y -- "${log_file}") ))`
@@ -165,9 +85,9 @@ set status=5,ec2_end_date=now(),update_date=NOW(),description='${description}'
 where job_id='${S3PATH}';
 commit;
 EOF
-		aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
+		aws s3 cp ${log_file} ${s3_url}/${minuto}/${log_file} > /dev/null
 		echo ${description} > errors.log
-		aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null
+		aws s3 cp errors.log ${s3_url}/${minuto}/errors.log > /dev/null
 		aws sqs send-message \
 			--queue-url ${SQS_URL} \
 			--message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
@@ -203,12 +123,12 @@ for DIR in `find . -iname model -type d`; do
         zip -r $OLDPWD/../result/policy_$(basename `dirname $DIR`).zip .
         S3_DIR=`echo $DIR | cut -f3 -d'/'`
         aws s3 cp $OLDPWD/../result/policy_$(basename `dirname $DIR`).zip \
-                ${s3_url}/output/${S3_DIR}/ > /dev/null
+                ${s3_url}/${minuto}/${S3_DIR}/ > /dev/null
         cd $OLDPWD
         cd `find "$DIR"/.. -iname checkpoint_* -type d | sort -V | tail -1`
         zip $OLDPWD/../result/$(basename `dirname $DIR`)/checkpoint.zip ./*
         aws s3 cp $OLDPWD/../result/$(basename `dirname $DIR`)/checkpoint.zip \
-                ${s3_url}/output/${S3_DIR}/ > /dev/null
+                ${s3_url}/${minuto}/${S3_DIR}/ > /dev/null
         cd $OLDPWD
 done
 
@@ -217,9 +137,9 @@ cd ..
 #Check errors
 bash errorCheck.sh
 #Upload the final files only after policy and checkpoint are uploaded
-aws s3 sync ./work/PPO ${s3_url}/output/ > /dev/null
-aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
-aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null
+aws s3 sync ./work/PPO ${s3_url}/${minuto}/ > /dev/null
+aws s3 cp ${log_file} ${s3_url}/${minuto}/${log_file} > /dev/null
+aws s3 cp errors.log ${s3_url}/${minuto}/errors.log > /dev/null
 
 #delete old state files
 if [ "${RESUME}" == true ]
@@ -231,7 +151,7 @@ then
 		rm ${file}
 		#Delete from s3
 		file=`basename ${file}`
-		aws s3 rm ${s3_url}/output/${file} > /dev/null
+		aws s3 rm ${s3_url}/${minuto}//${file} > /dev/null
 	done
 fi
 
