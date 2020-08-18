@@ -211,4 +211,8 @@ public class ExperimentPage extends PageObject {
 
         assertThat(actual, containsInAnyOrder(items.toArray()));
     }
+
+    public void checkThatExperimentPageArchivedTagIsShown() {
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']/following-sibling::tag-label")).getText(), is("Archived"));
+    }
 }

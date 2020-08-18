@@ -11,9 +11,11 @@ Feature: Experiment archive
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1' exist in archived/not archived tab
     Then Click the experiment name 1
+    Then Check that experiment page archived tag is shown
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
+    Then Check that experiment page archived tag is shown
 
   Scenario: Check running experiment page archive btn, move second running experiment to archived
     Given Login to the pathmind

@@ -197,4 +197,8 @@ public class GenericPage extends PageObject {
         }
         resetImplicitTimeout();
     }
+
+    public void checkTitleLabelTagIsArchived(String tag) {
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")).getText(), is(tag));
+    }
 }

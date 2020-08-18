@@ -149,4 +149,9 @@ public class GenericPageStepDefinitions {
     public void checkThatConfirmationDialogNotShown(Boolean status) {
         genericPageSteps.checkThatConfirmationDialogNotShown(status);
     }
+
+    @Then("^Check project/model title label tag is (.*)$")
+    public void checkTitleLabelTagIsArchived(String tag) {
+        genericPageSteps.checkTitleLabelTagIsArchived(tag);
+    }
 }

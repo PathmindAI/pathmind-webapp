@@ -123,4 +123,9 @@ public class ExperimentPageSteps {
     public void checkSideBarExperimentsListExperiment(String commaSeparatedExperimentNames) {
         experimentPage.checkSideBarExperimentsListExperiment(commaSeparatedExperimentNames);
     }
+
+    @Step
+    public void checkThatExperimentPageArchivedTagIsShown() {
+        experimentPage.checkThatExperimentPageArchivedTagIsShown();
+    }
 }
