@@ -31,4 +31,9 @@ public class NewProjectSteps {
     public void checkThatNewProjectPageOpened() {
         newProjectPage.checkThatNewProjectPageOpened();
     }
+
+    @Step
+    public void checkWizardModelUploadBreadcrumbIsShown() {
+        newProjectPage.checkWizardModelUploadBreadcrumbIsShown();
+    }
 }
