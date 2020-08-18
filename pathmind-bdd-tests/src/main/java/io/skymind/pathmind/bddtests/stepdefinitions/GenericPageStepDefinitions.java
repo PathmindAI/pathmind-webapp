@@ -144,4 +144,9 @@ public class GenericPageStepDefinitions {
     public void waitABitMs(int time) {
         genericPageSteps.waitABitMs(time);
     }
+
+    @Then("^Check project/model title label tag is (.*)$")
+    public void checkTitleLabelTagIsArchived(String tag) {
+        genericPageSteps.checkTitleLabelTagIsArchived(tag);
+    }
 }

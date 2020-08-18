@@ -431,6 +431,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private void updateScreenComponents() {
 		binder.setBean(experiment);
+		experimentsNavbar.setVisible(!experiment.isArchived());
 		startRunButton.setVisible(!experiment.isArchived());
 		saveDraftButton.setVisible(!experiment.isArchived());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());

@@ -36,17 +36,15 @@
     box-shadow: 0 4px 7px var(--lumo-shade-30pct);
 }
 
-.search-results-view .search-result-item .info-row .tag {
-    padding: 0 4px;
+.search-results-view .search-result-item .info-row tag-label {
     margin-left: var(--lumo-space-xs);
-    border-radius: var(--lumo-border-radius-s);
 }
 
-.search-results-view .search-result-item .info-row .tag-outline {
+.search-results-view .search-result-item .info-row tag-label[outline="true"] {
     color: var(--lumo-primary-color);
 }
 
-.search-results-view .search-result-item .info-row .tag:first-child {
+.search-results-view .search-result-item .info-row tag-label:first-child {
     margin-left: var(--lumo-space-m);
 }
 

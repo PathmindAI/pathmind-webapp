@@ -81,3 +81,14 @@ Feature: Project page
     When Check that project exist in project list AutotestEditName
     When Open project AutotestEditName on projects page
     Then Check that project name is AutotestEditName on project page
+
+  Scenario: Check project archived label
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft experiment
+    When Open projects page
+    When Click AutotestProject project archive/unarchive button
+    When In confirmation dialog click in 'Archive' button
+    When Open projects/model/experiment archived tab
+    Then Check that project exist in project list AutotestProject
+    When Open project AutotestProject on projects page
+    Then Check project/model title label tag is Archived

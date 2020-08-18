@@ -67,6 +67,7 @@
 
 :host(.action-button) {
     color: var(--pm-gray-color);
+    margin: 0;
 }
 
 :host(.action-button:hover) {
