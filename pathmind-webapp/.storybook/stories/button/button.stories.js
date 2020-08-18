@@ -11,8 +11,6 @@ registerStyles("vaadin-button", unsafeCSS(pathmindVaadinButtonStyles));
 
 hljs.registerLanguage('java', hlJava);
 
-console.log(code)
-
 storiesOf('Inputs', module)
 .addDecorator(storyFn => `<div class="story-wrapper">
     ${storyFn()}

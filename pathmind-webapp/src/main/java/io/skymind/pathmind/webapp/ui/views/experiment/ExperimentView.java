@@ -40,6 +40,7 @@ import io.skymind.pathmind.webapp.ui.components.CodeViewer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.SparkLine;
+import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
@@ -97,6 +98,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private VerticalLayout metricsWrapper;
     private VerticalLayout sparklinesWrapper;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
+    private TagLabel archivedLabel;
     private Span panelTitle;
     private VerticalLayout rewardVariablesGroup;
     private VerticalLayout rewardFunctionGroup;
@@ -168,6 +170,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     @Override
     protected Component getMainContent() {
         panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
+        archivedLabel = new TagLabel("Archived", false, "small");
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
         experimentsNavbar = new ExperimentsNavBar(
                 () -> getUI(),
@@ -181,10 +184,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         Span modelNeedToBeUpdatedLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
         modelNeedToBeUpdatedLabel.getStyle().set("margin-top", "2px");
 
-	    reasonWhyTheTrainingStoppedLabel = LabelFactory.createLabel("", TAG_LABEL, "reason-why-the-training-stopped");
+	    reasonWhyTheTrainingStoppedLabel = LabelFactory.createLabel("", "reason-why-the-training-stopped");
 
         VerticalLayout experimentContent = WrapperUtils.wrapWidthFullVertical(
-                WrapperUtils.wrapWidthFullHorizontal(panelTitle, trainingStatusDetailsPanel, getButtonsWrapper()),
+                WrapperUtils.wrapWidthFullHorizontal(panelTitle, archivedLabel, trainingStatusDetailsPanel, getButtonsWrapper()),
                 reasonWhyTheTrainingStoppedLabel,
                 modelNeedToBeUpdatedLabel,
                 middlePanel,
@@ -246,7 +249,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         updateSimulationMetricsData();
 
         IntStream.range(0, simulationMetrics.size())
-                .forEach(idx -> {
+        .forEach(idx -> {
                     metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx))));
                     SparkLine sparkLine = new SparkLine();
                     sparkLine.setSparkLine(sparklinesData.get(idx), idx);
@@ -525,6 +528,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     public void updateDetailsForExperiment() {
         updateButtonEnablement();
+        archivedLabel.setVisible(experiment.isArchived());
         trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
         RunStatus status = ExperimentUtils.getTrainingStatus(experiment);
         if (status == RunStatus.Error || status == RunStatus.Killed) {

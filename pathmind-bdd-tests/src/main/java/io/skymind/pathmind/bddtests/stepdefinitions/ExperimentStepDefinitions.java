@@ -134,4 +134,9 @@ public class ExperimentStepDefinitions {
     public void checkSideBarExperimentsListExperiment(String commaSeparatedExperimentNames) {
         experimentPageSteps.checkSideBarExperimentsListExperiment(commaSeparatedExperimentNames);
     }
+
+    @Then("^Check that experiment page archived tag is shown$")
+    public void checkThatExperimentPageArchivedTagIsShown() {
+        experimentPageSteps.checkThatExperimentPageArchivedTagIsShown();
+    }
 }

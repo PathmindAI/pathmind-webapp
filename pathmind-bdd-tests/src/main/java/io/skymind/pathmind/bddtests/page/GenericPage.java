@@ -187,4 +187,8 @@ public class GenericPage extends PageObject {
     public void waitABitMs(int time) {
         waitABit(time);
     }
+
+    public void checkTitleLabelTagIsArchived(String tag) {
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")).getText(), is(tag));
+    }
 }

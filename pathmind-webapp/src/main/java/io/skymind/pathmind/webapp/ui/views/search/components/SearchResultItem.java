@@ -15,6 +15,7 @@ import io.skymind.pathmind.shared.utils.PathmindStringUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
@@ -61,9 +62,9 @@ public class SearchResultItem extends VerticalLayout {
                         ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite)));
             }
         }
-        tags.add(LabelFactory.createLabel(searchResultType.getName(), CssPathmindStyles.TAG_LABEL, CssPathmindStyles.TAG_OUTLINE_LABEL));
+        tags.add(new TagLabel(searchResultType.getName(), true, "small"));
         if (isArchived) {
-            tags.add(LabelFactory.createLabel("Archived", CssPathmindStyles.TAG_LABEL));
+            tags.add(new TagLabel("Archived", false, "small"));
         }
         infoRow.add(tags, dates);
         infoRow.addClassName("info-row");
