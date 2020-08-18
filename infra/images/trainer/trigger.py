@@ -142,7 +142,13 @@ def process_message(message):
     if not message:
         return
     global mockup_status
-    hw_type_list=['16cpu_32gb','16cpu_64gb','8cpu_16gb','8cpu_32gb','36cpu_72gb']
+    hw_type_list=['16cpu_32gb', \
+        '16cpu_64gb', \
+        '8cpu_16gb', \
+        '8cpu_32gb', \
+        '36cpu_72gb', \
+        '36cpu_72gb_mockup', \
+        ]
     app_logger.info('Received {message}'.format(message=message['Body']))
     body=json.loads(message['Body'])
     s3bucket=body['S3Bucket']
