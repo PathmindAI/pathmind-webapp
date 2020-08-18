@@ -3,9 +3,9 @@
 }
 
 .content {
-  width: 445px;
+  width: 400px;
   padding: 0;
-  margin: 50px auto 0;
+  margin: var(--lumo-space-xl) auto 0;
 }
 
 .welcome-text {
@@ -14,30 +14,28 @@
 
 .logo {
   width: 200px;
-  margin-bottom: 25px;
 }
 
 .inner-content {
   align-items: center;
   width: 100%;
-  padding: var(--lumo-space-l) var(--lumo-space-xl);
+  padding: var(--lumo-space-xl) var(--lumo-space-l);
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
-  margin-top: 0;
+  margin-top: var(--lumo-space-xl);
 }
 
 a {
   color: var(--pm-text-color);
-  text-decoration: underline;
-}
-
-a:hover {
   text-decoration: none;
 }
 
+a:hover {
+  text-decoration: underline;
+}
+
 h3 {
-  font-size: var(--lumo-font-size-xl);
   margin-top: 0;
-  margin-bottom: var(--lumo-size-xl);
+  margin-bottom: var(--lumo-size-l);
 }
 
 h3 + vaadin-password-field {
@@ -45,20 +43,19 @@ h3 + vaadin-password-field {
 }
 
 #buttonsCont {
-  margin-top: 45px;
-  width: 100%;
+  margin-top: var(--lumo-space-l);
 }
 
-#buttonsCont vaadin-button:first-child {
-  margin-top: 0;
+#buttonsCont vaadin-button {
+    width: 100%;
 }
 
 #buttonsCont + p {
-  margin-bottom: var(--lumo-space-xl);
+  margin-bottom: var(--lumo-space-l);
 }
 
 .notes {
-  font-size: var(--lumo-font-size-s);
+  font-size: var(--lumo-font-size-xs);
   color: var(--lumo-secondary-text-color);
   padding-left: var(--lumo-space-s);
 }
@@ -72,13 +69,13 @@ h3 + vaadin-password-field {
 }
 
 .form-hints {
-  font-size: var(--lumo-font-size-s);
+  font-size: var(--lumo-font-size-xs);
   color: var(--lumo-secondary-text-color);
   margin: 0;
 }
 
 #forgotPasswordBtn {
-  width: 200px;
+  color: var(--lumo-body-text-color);
 }
 
 #errorCont {
@@ -93,6 +90,7 @@ h3 + vaadin-password-field {
 .do-not-share-url {
   display: flex;
   align-self: flex-start;
+  font-size: var(--lumo-font-size-s);
   color: var(--pm-primary-color);
 }
 

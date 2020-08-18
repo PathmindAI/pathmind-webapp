@@ -33,9 +33,7 @@ class SignUpView extends PolymerElement {
             id="forgotPasswordBtn"
             theme="tertiary"
             hidden$="{{!isEmailUsed}}"
-          >
-            Want to reset password?
-          </vaadin-button>
+          >Want to reset password?</vaadin-button>
           <vaadin-vertical-layout id="buttonsCont">
             <vaadin-button id="signUp" theme="primary">
               Sign up
