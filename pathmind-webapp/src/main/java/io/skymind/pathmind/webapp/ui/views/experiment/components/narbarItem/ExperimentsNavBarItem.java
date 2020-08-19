@@ -78,10 +78,13 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
     }
 
     private void archiveExperiment(Experiment experimentToArchive) {
+//        PushUtils.push(getUISupplier, ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+//        getUISupplier.get().ifPresent(ui -> ui.navigate(ModelView.class, experiment.getModelId()));
         ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
             segmentIntegrator.archived(Experiment.class, true);
-            getUISupplier.get().ifPresent(ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+//            PushUtils.push(getUISupplier, ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+//            getUISupplier.get().ifPresent(ui -> ui.navigate(ModelView.class, experiment.getModelId()));
         });
     }
 

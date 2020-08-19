@@ -55,7 +55,7 @@ public class ExperimentsNavBar extends VerticalLayout
         this.selectExperimentConsumer = selectExperimentConsumer;
         this.segmentIntegrator = segmentIntegrator;
 
-        notificationExperimentUpdatedSubscriber = new NotificationExperimentUpdatedSubscriber(() -> getUI(), selectedExperiment);
+        notificationExperimentUpdatedSubscriber = new NotificationExperimentUpdatedSubscriber(getUISupplier, selectedExperiment);
 
         rowsWrapper = new VerticalLayout();
 		rowsWrapper.addClassName("experiments-navbar-items");
