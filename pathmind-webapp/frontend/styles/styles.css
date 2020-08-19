@@ -76,7 +76,7 @@ html {
     --lumo-error-color-50pct: rgba(216, 9, 71, 0.5);
     --lumo-error-color-10pct: rgba(216, 9, 71, 0.1);
     --lumo-error-color: var(--pm-danger-color);
-    --lumo-header-text-color: #000000;
+    --lumo-header-text-color: var(--pm-text-color);
     --lumo-body-text-color: var(--pm-text-color);
     --lumo-secondary-text-color: var(--pm-gray-color-dark);
     --lumo-tertiary-text-color: #d7d7d7;
