@@ -61,7 +61,9 @@ public class ChangePasswordViewContent extends PolymerTemplate<ChangePasswordVie
 		user = currentUser.getUser();
 
 		passwordValidationNotes.setPadding(false);
-		passwordValidationNotes.setSpacing(false);
+        passwordValidationNotes.setSpacing(false);
+        currentPasswordValidationNotes.setPadding(false);
+        currentPasswordValidationNotes.setSpacing(false);
 
 		cancelBtn.addClickShortcut(Key.ESCAPE);
 

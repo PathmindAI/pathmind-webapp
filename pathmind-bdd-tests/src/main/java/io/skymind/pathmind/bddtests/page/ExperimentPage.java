@@ -201,4 +201,18 @@ public class ExperimentPage extends PageObject {
         assertThat(getDriver().getTitle(), either(is("Pathmind | Experiment")).or(is("Pathmind | New Experiment")));
         assertThat(getDriver().getCurrentUrl(), either(containsString("/newExperiment/")).or(containsString("/experiment/")));
     }
+
+    public void checkSideBarExperimentsListExperiment(String commaSeparatedExperimentNames) {
+        List<String> items = Arrays.asList(commaSeparatedExperimentNames.split("\\s*,\\s*"));
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='experiment-name']/p[1]"))) {
+            actual.add(webElement.getText());
+        }
+
+        assertThat(actual, containsInAnyOrder(items.toArray()));
+    }
+
+    public void checkThatExperimentPageArchivedTagIsShown() {
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']/following-sibling::tag-label")).getText(), is("Archived"));
+    }
 }

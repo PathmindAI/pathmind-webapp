@@ -38,8 +38,8 @@ public class DashboardPageSteps {
     }
 
     @Step
-    public void clickInNavigationIcon(String projectName) {
-        dashboardPage.clickInNavigationIcon(projectName);
+    public void clickDashboardItem(String projectName) {
+        dashboardPage.clickDashboardItem(projectName);
     }
 
     @Step

@@ -161,3 +161,24 @@ Feature: Experiment page
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
+
+  Scenario: Check that experiment not shown in other projects
+    Given Login to the pathmind
+    When Create new CoffeeShop project with 4 variables reward function
+    When Click project save draft btn
+    Then Check side bar experiments list Experiment #1
+    When Click in 'New Experiment' button
+    When Wait a bit 3000 ms
+    Then Check side bar experiments list Experiment #1,Experiment #2
+    When Duplicate current tab
+    When Open tab 1
+    When Create new CoffeeShop project with 4 variables reward function
+    Then Check side bar experiments list Experiment #1
+    When Click in 'New Experiment' button
+    When Wait a bit 3000 ms
+    Then Check side bar experiments list Experiment #1,Experiment #2
+    When Click in 'New Experiment' button
+    When Wait a bit 3000 ms
+    Then Check side bar experiments list Experiment #1,Experiment #2,Experiment #3
+    When Open tab 0
+    Then Check side bar experiments list Experiment #1,Experiment #2

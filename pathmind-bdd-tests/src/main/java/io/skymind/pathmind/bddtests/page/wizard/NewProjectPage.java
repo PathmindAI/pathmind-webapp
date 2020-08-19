@@ -56,4 +56,8 @@ public class NewProjectPage extends PageObject {
     public void checkThatNewProjectPageOpened() {
         assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']")).getText(), is("Start a New Project!"));
     }
+
+    public void checkWizardModelUploadBreadcrumbIsShown() {
+        assertThat(getDriver().findElement(By.xpath("//span[@class='breadcrumb']")).getText(), is("Upload Model"));
+    }
 }

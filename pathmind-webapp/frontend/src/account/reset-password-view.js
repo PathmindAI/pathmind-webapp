@@ -12,22 +12,13 @@ import "@vaadin/vaadin-text-field/src/vaadin-email-field.js";
 class ResetPasswordView extends PolymerElement {
   static get template() {
     return html`
-      <style include="pathmind-dialog-view sign-up-view-styles">
-        .content {
-          width: 460px;
-        }
-        h3 {
-          margin-bottom: 0;
-        }
-        h3 + p {
-          margin-top: 0;
-        }
-      </style>
-      <div class="content">
+      <style include="shared-styles pathmind-dialog-view"></style>
+      <vaadin-horizontal-layout class="panel-wrapper">
+        <div class="content">
         <span class="welcome-text">Welcome to</span>
         <img
           class="logo"
-          src="frontend/images/pathmind-logo.png"
+          src="frontend/images/pathmind-logo.svg"
           alt="Pathmind"
         />
         <vaadin-vertical-layout id="prePart" class="inner-content">
@@ -78,7 +69,7 @@ class ResetPasswordView extends PolymerElement {
         </vaadin-vertical-layout>
         <a class="support" href="{{contactLink}}">Contact Support</a>
       </div>
-    `;
+    </vaadin-horizontal-layout>`;
   }
 
   static get is() {
