@@ -218,7 +218,6 @@ background-color: var(--pm-gray-color-light);
 .nav-account-links {
     align-items: center;
     margin-left: auto;
-    padding-right: 20px;
 }
 
 .navbar-logo {

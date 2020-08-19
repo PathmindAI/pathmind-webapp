@@ -12,7 +12,7 @@
 }
 :host [part="navbar"] {
   align-items: stretch;
-  padding: 0 var(--lumo-space-xs);
+  padding: 0 var(--lumo-space-m);
 }
 :host [part="navbar"]::before {
   content: none;
