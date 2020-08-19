@@ -1,5 +1,8 @@
 package io.skymind.pathmind.shared.utils;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -95,6 +98,24 @@ public class PathmindNumberUtilsTest {
          */
         Assert.assertEquals("0.0", PathmindNumberUtils.formatToSigFig((double) 0, 2));
         Assert.assertEquals("2.0", PathmindNumberUtils.formatToSigFig((double) 2, 2));
+    }
+
+    @Test
+    public void testCalculateVariance() {
+        List<Double> list1 = Arrays.asList(1.5, 0.5, (double) 1);
+        Assert.assertEquals(0.25, PathmindNumberUtils.calculateVariance(list1), 0.0001);
+
+        List<Double> list2 = Arrays.asList(1.5);
+        Assert.assertEquals(0, PathmindNumberUtils.calculateVariance(list2), 0.0001);
+
+        List<Double> list3 = Arrays.asList(12.34, 12.34, 12.34);
+        Assert.assertEquals(0, PathmindNumberUtils.calculateVariance(list3), 0.0001);
+
+        List<Double> list4 = Arrays.asList(12.34, 10.578, 11.560);
+        Assert.assertEquals(0.7795613333, PathmindNumberUtils.calculateVariance(list4), 0.0001);
+
+        List<Double> list5 = Arrays.asList();
+        Assert.assertEquals(0, PathmindNumberUtils.calculateVariance(list5), 0.0001);
     }
 
 }

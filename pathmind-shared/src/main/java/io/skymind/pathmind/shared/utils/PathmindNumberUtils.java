@@ -3,9 +3,38 @@ package io.skymind.pathmind.shared.utils;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.DoubleSummaryStatistics;
+import java.util.List;
 
 public class PathmindNumberUtils {
     private PathmindNumberUtils() {
+    }
+
+    /**
+     * Calculate uncertainty with the uncertainty being 2 sd.
+     * We may want to change it to Inter-Quartile Range in the future depending on what the users find useful.
+     */
+    public static String calculateUncertainty(List<Double> list) {
+        DoubleSummaryStatistics stat = list.stream().mapToDouble(Double::doubleValue).summaryStatistics();
+        double variance = calculateVariance(list);
+        double sd = Double.parseDouble(formatToSigFig(Math.sqrt(variance), 2));
+        double uncertainty = 2*sd;
+        return setSigFigBasedOnAnotherDouble(stat.getAverage(), uncertainty, 2)  +"\u2800\u00B1\u2800" + formatToSigFig(uncertainty, 2);
+    }
+
+    /**
+     * Calculates the variance of the samples based on the List of Double
+     */
+    public static double calculateVariance(List<Double> list) {
+        DoubleSummaryStatistics stat = list.stream().mapToDouble(Double::doubleValue).summaryStatistics();
+        if (stat.getCount() <= 1) {
+            return 0;
+        }
+        double sumOfDifferences = 0.0;
+        for (int i = 0; i < stat.getCount(); i++) {
+            sumOfDifferences += Math.pow((list.get(i) - stat.getAverage()), 2);
+        }
+        return sumOfDifferences / (double) (stat.getCount() - 1);
     }
 
     /**
