@@ -406,12 +406,12 @@ background-color: var(--pm-gray-color-light);
 .default-view.upload-model-view {
     height: auto;
     min-height: 100%;
-    padding: var(--lumo-space-xxl);
 }
 
 .upload-model-view .view-section {
     max-width: 540px;
     flex: 0 0 auto;
+    margin-top: var(--lumo-space-xxl);
 }
 
 .upload-model-view .view-section > vaadin-vertical-layout > vaadin-horizontal-layout:last-child {
