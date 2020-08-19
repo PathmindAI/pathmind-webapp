@@ -81,7 +81,7 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
         ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
             segmentIntegrator.archived(Experiment.class, true);
-            getUISupplier.get().ifPresent().navigate(ModelView.class, experiment.getModelId()));
+            getUISupplier.get().ifPresent(ui -> ui.navigate(ModelView.class, experiment.getModelId()));
         });
     }
 
