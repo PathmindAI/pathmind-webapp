@@ -22,6 +22,7 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
+import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
@@ -80,7 +81,7 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
         ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
             segmentIntegrator.archived(Experiment.class, true);
-            getUISupplier.get().ifPresent(ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+            PushUtils.push(getUISupplier, ui -> ui.navigate(ModelView.class, experiment.getModelId()));
         });
     }
 

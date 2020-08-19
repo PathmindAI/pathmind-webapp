@@ -22,7 +22,6 @@ public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
     }
 
     public ExperimentUpdatedBusEvent(Experiment experiment, ExperimentUpdateType experimentUpdateType) {
-        System.out.println(">>>>>>>>>>>>>>>>>>>> " + UI.getCurrent().getUIId());
         this.experiment = experiment;
         this.experimentUpdateType = experimentUpdateType;
     }

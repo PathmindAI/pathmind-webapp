@@ -58,7 +58,6 @@ public class NotificationExperimentUpdatedSubscriber extends ExperimentUpdatedSu
     @Override
     public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
         // The last clause is if the archive state has changed OR the experiment isn't currently running.
-        System.out.println("........................  " +  getUiSupplier().get().get().getUIId());
         if(isSourceSameUI(event))
             return false;
         return ExperimentUtils.isSameExperiment(event.getExperiment(), experiment) &&
