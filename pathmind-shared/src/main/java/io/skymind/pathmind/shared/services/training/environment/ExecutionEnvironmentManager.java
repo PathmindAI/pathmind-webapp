@@ -32,7 +32,7 @@ public class ExecutionEnvironmentManager {
             pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
         }
 
-        return new ExecutionEnvironment(AnyLogic.VERSION_8_5_2,
+        return new ExecutionEnvironment(AnyLogic.VERSION_8_6_0,
                 pathmindHelperVersion,
                 NativeRL.VERSION_1_1_1,
                 JDK.VERSION_8_222,
