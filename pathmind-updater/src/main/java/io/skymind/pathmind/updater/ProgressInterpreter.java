@@ -194,7 +194,7 @@ public class ProgressInterpreter {
         }
     }
 
-    public static void interpretMetricsRaw(Map.Entry<String, String> entry, Policy policy, List<MetricsRaw> previousMetricsRaw, int startIteration,  int numReward) {
+    public static void interpretMetricsRaw(Map.Entry<String, String> entry, Policy policy, List<MetricsRaw> previousMetricsRaw, int startIteration, int numReward) {
         List<MetricsRaw> metricsRaws = previousMetricsRaw == null || previousMetricsRaw.size() == 0 ? new ArrayList<>() : previousMetricsRaw;
         final int lastIteration = metricsRaws.size() == 0 ? Math.max(startIteration, 0) : metricsRaws.get(metricsRaws.size() - 1).getIteration();;
 
@@ -210,6 +210,12 @@ public class ProgressInterpreter {
         CsvParser parser = new CsvParser(settings);
         List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
 
+        metricsRaws.addAll(parseMetricsRaw(allRecords, lastIteration, numReward));
+        policy.setMetricsRaws(metricsRaws);
+    }
+
+    public static List<MetricsRaw> parseMetricsRaw(List<Record> allRecords, int lastIteration, int numReward) {
+        List<MetricsRaw> metricsRaws = new ArrayList<>();
         for(Record record : allRecords) {
             // missing information check
             if (Arrays.asList(record.getValues()).contains(null)) {
@@ -225,6 +231,6 @@ public class ProgressInterpreter {
                 metricsRaws.add(new MetricsRaw(iteration, MetricsRawUtils.toMetricsRawDataList(rawDataString, episodesThisIter, numReward)));
             }
         }
-        policy.setMetricsRaws(metricsRaws);
+        return metricsRaws;
     }
 }
