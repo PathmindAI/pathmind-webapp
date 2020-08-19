@@ -5,6 +5,10 @@
     border-radius: 0;
 }
 
+:host([theme~="small"]) {
+    color: var(--lumo-secondary-text-color);
+}
+
 :host([theme~="small"]) .vaadin-text-field-container {
     width: var(--vaadin-text-field-default-width, 8em);
 }
@@ -13,4 +17,12 @@
     --_lumo-text-field-overflow-mask-image: none;
     -webkit-mask-image: none;
     padding: 0 0.1em;
+}
+
+:host(:hover:not([readonly]):not([focused])[theme~="small"]) {
+    color: var(--lumo-body-text-color);
+}
+
+:host(:hover:not([readonly]):not([focused])[theme~="small"]) [part="input-field"]::after {
+    opacity: 0;
 }
