@@ -1,7 +1,10 @@
 package io.skymind.pathmind.webapp.ui.views.dashboard;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
+import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
@@ -49,7 +52,7 @@ import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 @Route(value= Routes.DASHBOARD_URL, layout = MainLayout.class)
-public class DashboardView extends PathMindDefaultView implements RunUpdateSubscriber
+public class DashboardView extends PathMindDefaultView
 {
     @Autowired
     private DashboardDataProvider dataProvider;
@@ -208,7 +211,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this);
+        EventBus.subscribe(this, new DashboardViewRunUpdateSubscriber(() -> getUI()));
     }
 
     @Override
@@ -216,18 +219,20 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
         EventBus.unsubscribe(this);
     }
 
-    @Override
-    public void handleBusEvent(RunUpdateBusEvent event) {
-        PushUtils.push(this, () -> dataProvider.refreshItemByExperiment(event.getRun().getExperimentId()));
-    }
+    class DashboardViewRunUpdateSubscriber extends RunUpdateSubscriber {
 
-    @Override
-    public boolean filterBusEvent(RunUpdateBusEvent event) {
-        return event.getRun().getProject().getPathmindUserId() == loggedUserId;
-    }
+        public DashboardViewRunUpdateSubscriber(Supplier<Optional<UI>> getUISupplier) {
+            super(getUISupplier);
+        }
 
-    @Override
-    public boolean isAttached() {
-        return getUI().isPresent();
+        @Override
+        public void handleBusEvent(RunUpdateBusEvent event) {
+            PushUtils.push(getUiSupplier(), () -> dataProvider.refreshItemByExperiment(event.getRun().getExperimentId()));
+        }
+
+        @Override
+        public boolean filterBusEvent(RunUpdateBusEvent event) {
+            return event.getRun().getProject().getPathmindUserId() == loggedUserId;
+        }
     }
 }

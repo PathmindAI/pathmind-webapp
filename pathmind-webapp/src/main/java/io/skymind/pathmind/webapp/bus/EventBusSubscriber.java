@@ -1,5 +1,10 @@
 package io.skymind.pathmind.webapp.bus;
 
+import com.vaadin.flow.component.UI;
+
+import java.util.Optional;
+import java.util.function.Supplier;
+
 /**
  * Any View or Component that wants to subscribe to events needs to implement this interface. However it is strongly
  * recommended to create an intermediate interface for the Subscriber such as PolicyUpdateSubscriber, etc. so that
@@ -18,11 +23,13 @@ package io.skymind.pathmind.webapp.bus;
  *
  * @param <T> Is the type of PathmindBusEvent.
  */
-public interface EventBusSubscriber<T> {
+public abstract class EventBusSubscriber<T extends PathmindBusEvent> {
 
-    BusEventType getEventType();
+    private Supplier<Optional<UI>> uiSupplier;
 
-    void handleBusEvent(T event);
+    public abstract BusEventType getEventType();
+
+    public abstract void handleBusEvent(T event);
 
     /**
      * This is already supplied by the component or view so this method should NOT be implemented. That being said it's
@@ -30,8 +37,13 @@ public interface EventBusSubscriber<T> {
      * may no longer be viewable, etc. and as a result we do not want to fire events to views and components that are still
      * subscribed but that do not have a UI.
      */
-//    Optional<UI> getUI();
-    boolean isAttached();
+    public boolean isAttached() {
+        return getUiSupplier().get().isPresent();
+    }
+
+    public EventBusSubscriber(Supplier<Optional<UI>> uiSupplier) {
+        this.uiSupplier = uiSupplier;
+    }
 
     /**
      * This is used to filter events BEFORE they are fired. By default nothing is filtered but in most cases you will
@@ -39,7 +51,17 @@ public interface EventBusSubscriber<T> {
      * threads. For example this could be a PolicyUpdateEvent where you filter on the Experiment (for the Experiment View)
      * or on the Policy for the PolicyStatusDetailsPanel (which is on the Experiment view).
      */
-    default boolean filterBusEvent(T event) {
+    public boolean filterBusEvent(T event) {
         return true;
+    }
+
+    public boolean isSourceSameUI(T event) {
+        if(event.getSourceId() < 0 || uiSupplier.get().isEmpty())
+            return false;
+        return event.getSourceId() == uiSupplier.get().get().getUIId();
+    }
+
+    public Supplier<Optional<UI>> getUiSupplier() {
+        return uiSupplier;
     }
 }

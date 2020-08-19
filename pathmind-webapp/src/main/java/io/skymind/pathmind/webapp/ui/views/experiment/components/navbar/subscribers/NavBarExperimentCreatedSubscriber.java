@@ -10,25 +10,24 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.Experime
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class NavBarExperimentCreatedSubscriber implements ExperimentCreatedSubscriber {
+public class NavBarExperimentCreatedSubscriber extends ExperimentCreatedSubscriber {
 
-    private Supplier<Optional<UI>> getUISupplier;
     private ExperimentsNavBar experimentsNavBar;
 
     public NavBarExperimentCreatedSubscriber(Supplier<Optional<UI>> getUISupplier, ExperimentsNavBar experimentsNavBar) {
-        this.getUISupplier = getUISupplier;
+        super(getUISupplier);
         this.experimentsNavBar = experimentsNavBar;
     }
 
     @Override
     public void handleBusEvent(ExperimentCreatedBusEvent event) {
-        PushUtils.push(getUISupplier.get(),
+        PushUtils.push(getUiSupplier().get(),
                 ui -> experimentsNavBar.addExperiment(event.getExperiment()));
     }
 
     @Override
     public boolean isAttached() {
-        return getUISupplier.get().isPresent();
+        return getUiSupplier().get().isPresent();
     }
 
     @Override

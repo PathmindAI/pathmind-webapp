@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.layouts.components;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
@@ -24,7 +25,10 @@ import io.skymind.pathmind.webapp.ui.views.account.AccountView;
 import io.skymind.pathmind.webapp.ui.views.settings.SettingsView;
 import org.apache.commons.lang3.StringUtils;
 
-public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSubscriber
+import java.util.Optional;
+import java.util.function.Supplier;
+
+public class AccountHeaderPanel extends HorizontalLayout
 {
 	private Span usernameLabel = new Span();
 	private PathmindUser user;
@@ -75,24 +79,9 @@ public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSu
 
 	@Override
 	protected void onAttach(AttachEvent event) {
-		EventBus.subscribe(this);
+		EventBus.subscribe(this, new AccountHeaderUserUpdateSubscriber(() -> getUI()));
 	}
 
-	@Override
-	public void handleBusEvent(UserUpdateBusEvent event) {
-		this.user = event.getPathmindUser();
-		PushUtils.push(this, () -> updateData(event.getPathmindUser()));
-	}
-
-	@Override
-	public boolean filterBusEvent(UserUpdateBusEvent event) {
-		return user.getId() == event.getPathmindUser().getId();
-	}
-
-	@Override
-	public boolean isAttached() {
-		return getUI().isPresent();
-	}
 
     public void clearSearchBoxValue() {
 	    if (searchBox != null) {
@@ -107,4 +96,22 @@ public class AccountHeaderPanel extends HorizontalLayout implements UserUpdateSu
     public String getSearchBoxValue() {
 	    return searchBox.getValue();
     }
+
+    class AccountHeaderUserUpdateSubscriber extends UserUpdateSubscriber {
+
+        public AccountHeaderUserUpdateSubscriber(Supplier<Optional<UI>> getUISupplier) {
+            super(getUISupplier);
+        }
+
+        @Override
+        public void handleBusEvent(UserUpdateBusEvent event) {
+            user = event.getPathmindUser();
+            PushUtils.push(getUiSupplier(), () -> updateData(event.getPathmindUser()));
+        }
+
+        @Override
+        public boolean filterBusEvent(UserUpdateBusEvent event) {
+            return user.getId() == event.getPathmindUser().getId();
+        }
+   }
 }

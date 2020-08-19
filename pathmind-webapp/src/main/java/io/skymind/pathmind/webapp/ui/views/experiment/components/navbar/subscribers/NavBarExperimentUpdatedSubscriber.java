@@ -10,19 +10,18 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.Experime
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class NavBarExperimentUpdatedSubscriber implements ExperimentUpdatedSubscriber {
+public class NavBarExperimentUpdatedSubscriber extends ExperimentUpdatedSubscriber {
 
-    private Supplier<Optional<UI>> getUISupplier;
     private ExperimentsNavBar experimentsNavBar;
 
     public NavBarExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, ExperimentsNavBar experimentsNavBar) {
-        this.getUISupplier = getUISupplier;
+        super(getUISupplier);
         this.experimentsNavBar = experimentsNavBar;
     }
 
     // We can ignore this code for archived experiments since the navbar is not visible for archived experiments.
     public void handleBusEvent(ExperimentUpdatedBusEvent event) {
-        PushUtils.push(getUISupplier.get(), ui -> {
+        PushUtils.push(getUiSupplier().get(), ui -> {
             if(event.getExperiment().isArchived()) {
                 experimentsNavBar.removeExperiment(event.getExperiment());
             } else {
@@ -40,6 +39,6 @@ public class NavBarExperimentUpdatedSubscriber implements ExperimentUpdatedSubsc
 
     @Override
     public boolean isAttached() {
-        return getUISupplier.get().isPresent();
+        return getUiSupplier().get().isPresent();
     }
 }

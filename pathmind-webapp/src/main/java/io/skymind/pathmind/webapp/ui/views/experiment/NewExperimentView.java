@@ -56,6 +56,8 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @CssImport("./styles/views/new-experiment-view.css")
@@ -124,8 +126,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this,
-                new NewExperimentViewExperimentCreatedSubscriber(),
-                new NewExperimentViewExperimentUpdatedSubscriber());
+                new NewExperimentViewExperimentCreatedSubscriber(() -> getUI()),
+                new NewExperimentViewExperimentUpdatedSubscriber(() -> getUI()));
     }
 
     @Override
@@ -473,7 +475,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         }
     }
 
-    class NewExperimentViewExperimentCreatedSubscriber implements ExperimentCreatedSubscriber {
+    class NewExperimentViewExperimentCreatedSubscriber extends ExperimentCreatedSubscriber {
+
+        public NewExperimentViewExperimentCreatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
+            super(getUISupplier);
+        }
 
         @Override
         public void handleBusEvent(ExperimentCreatedBusEvent event) {
@@ -481,14 +487,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 updateExperimentComponents();
             }
         }
-
-        @Override
-        public boolean isAttached() {
-            return isViewAttached();
-        }
     }
 
-    class NewExperimentViewExperimentUpdatedSubscriber implements ExperimentUpdatedSubscriber {
+    class NewExperimentViewExperimentUpdatedSubscriber extends ExperimentUpdatedSubscriber {
+
+        public NewExperimentViewExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
+            super(getUISupplier);
+        }
 
         @Override
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
@@ -498,11 +503,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             else if (ExperimentUtils.isSameModel(experiment, event.getModelId())) {
                 updateExperimentComponents();
             }
-        }
-
-        @Override
-        public boolean isAttached() {
-            return isViewAttached();
         }
     }
 }

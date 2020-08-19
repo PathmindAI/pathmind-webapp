@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.awt.image.AreaAveragingScaleFilter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -46,7 +47,7 @@ import java.util.concurrent.Executors;
  */
 public class EventBus {
     private static final EventBus EVENT_BUS = new EventBus();
-    private static ConcurrentHashMap<Component, EventBusSubscriber[]> componentSubscribers = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Component, List<EventBusSubscriber>> componentSubscribers = new ConcurrentHashMap<>();
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
@@ -81,12 +82,15 @@ public class EventBus {
         });
     }
 
-    public static void subscribe(Component component, EventBusSubscriber... subscribers) {
+    /**
+     * The reason for the first single EventBusSubscriber is so that we can get a compile time error in case someone forgets to add one. At least until
+     * we're done the refactorings.
+     */
+    public static void subscribe(Component component, EventBusSubscriber eventBusSubscriber, EventBusSubscriber... eventBusSubscribers) {
+        List<EventBusSubscriber> subscribers = new ArrayList<>(Arrays.asList(eventBusSubscribers));
+        subscribers.add(eventBusSubscriber);
         componentSubscribers.put(component, subscribers);
-        // Check to see if the component is a subscriber and if so subscribe itself.
-        if(component instanceof EventBusSubscriber)
-            subscribe((EventBusSubscriber)component);
-        Arrays.stream(subscribers).forEach(subscriber -> subscribe(subscriber));
+        subscribers.forEach(subscriber -> subscribe(subscriber));
     }
 
     private static void subscribe(EventBusSubscriber subscriber) {
@@ -94,13 +98,10 @@ public class EventBus {
     }
 
     public static void unsubscribe(Component component) {
-        EventBusSubscriber[] subscribers = componentSubscribers.get(component);
+        List<EventBusSubscriber> subscribers = componentSubscribers.get(component);
         componentSubscribers.remove(component);
-        // Check that the component may also be a subscriber itself (confirming it)
-        if(component instanceof EventBusSubscriber)
-            unsubscribe((EventBusSubscriber)component);
         if(subscribers != null)
-            Arrays.stream(subscribers).forEach(subscriber -> unsubscribe(subscriber));
+            subscribers.forEach(subscriber -> unsubscribe(subscriber));
     }
 
     private static void unsubscribe(EventBusSubscriber subscriber) {

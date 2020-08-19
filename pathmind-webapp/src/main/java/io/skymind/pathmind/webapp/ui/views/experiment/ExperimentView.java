@@ -53,7 +53,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartin
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NotificationExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
@@ -64,6 +63,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -149,10 +149,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this,
-                new ExperimentViewPolicyUpdateSubscriber(),
+                new ExperimentViewPolicyUpdateSubscriber(() -> getUI()),
                 experimentViewRunUpdateSubscriber,
-                new ExperimentViewExperimentCreatedSubscriber(),
-                new ExperimentViewExperimentUpdatedSubscriber());
+                new ExperimentViewExperimentCreatedSubscriber(() -> getUI()),
+                new ExperimentViewExperimentUpdatedSubscriber(() -> getUI()));
     }
 
     @Override
@@ -586,8 +586,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
     }
 
-    class ExperimentViewPolicyUpdateSubscriber implements PolicyUpdateSubscriber
+    class ExperimentViewPolicyUpdateSubscriber extends PolicyUpdateSubscriber
     {
+        public ExperimentViewPolicyUpdateSubscriber(Supplier<Optional<UI>> getUISupplier) {
+            super(getUISupplier);
+        }
+
         @Override
         public void handleBusEvent(PolicyUpdateBusEvent event) {
             synchronized (experimentLock) {
@@ -616,14 +620,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         public boolean filterBusEvent(PolicyUpdateBusEvent event) {
             return experiment != null && experiment.getId() == event.getExperimentId();
         }
-
-        @Override
-        public boolean isAttached() {
-            return isViewAttached();
-        }
     }
 
-    class ExperimentViewExperimentCreatedSubscriber implements ExperimentCreatedSubscriber {
+    class ExperimentViewExperimentCreatedSubscriber extends ExperimentCreatedSubscriber {
+
+        public ExperimentViewExperimentCreatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
+            super(getUISupplier);
+        }
 
         @Override
         public void handleBusEvent(ExperimentCreatedBusEvent event) {
@@ -635,13 +638,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             return ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, event.getModelId());
         }
 
-        @Override
-        public boolean isAttached() {
-            return isViewAttached();
-        }
     }
 
-    class ExperimentViewExperimentUpdatedSubscriber implements ExperimentUpdatedSubscriber {
+    class ExperimentViewExperimentUpdatedSubscriber extends ExperimentUpdatedSubscriber {
+
+        public ExperimentViewExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
+            super(getUISupplier);
+        }
+
         @Override
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
             updateExperimentComponents();
@@ -657,11 +661,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             } else {
                 return ExperimentUtils.isSameModel(experiment, event.getModelId());
             }
-        }
-
-        @Override
-        public boolean isAttached() {
-            return isViewAttached();
         }
     }
 }

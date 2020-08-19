@@ -12,16 +12,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class ExperimentViewRunUpdateSubscriber implements RunUpdateSubscriber {
+public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
 
     private List<Experiment> experiments;
     private Experiment experiment;
 
     private ExperimentView experimentView;
-    private Supplier<Optional<UI>> getUISupplier;
 
     public ExperimentViewRunUpdateSubscriber(ExperimentView experimentView, Supplier<Optional<UI>> getUISupplier) {
-        this.getUISupplier = getUISupplier;
+        super(getUISupplier);
         this.experimentView = experimentView;
     }
 
@@ -38,7 +37,7 @@ public class ExperimentViewRunUpdateSubscriber implements RunUpdateSubscriber {
         if (isSameExperiment(event)) {
             ExperimentUtils.addOrUpdateRun(experiment, event.getRun());
             ExperimentUtils.updatedRunForPolicies(experiment, event.getRun());
-            PushUtils.push(getUISupplier.get(), () -> {
+            PushUtils.push(getUiSupplier(), () -> {
                 experimentView.setPolicyChartVisibility();
                 experimentView.updateDetailsForExperiment();
             });
@@ -50,11 +49,6 @@ public class ExperimentViewRunUpdateSubscriber implements RunUpdateSubscriber {
     @Override
     public boolean filterBusEvent(RunUpdateBusEvent event) {
         return isSameExperiment(event) || (!experiment.isArchived() && ExperimentUtils.isSameModel(experiment, event.getModelId()));
-    }
-
-    @Override
-    public boolean isAttached() {
-        return getUISupplier.get().isPresent();
     }
 
     private boolean isSameExperiment(RunUpdateBusEvent event) {

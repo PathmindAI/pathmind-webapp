@@ -1,5 +1,14 @@
 package io.skymind.pathmind.webapp.bus;
 
+import com.vaadin.flow.component.UI;
+
 public interface PathmindBusEvent {
+
     BusEventType getEventType();
+
+    public default int getSourceId() {
+        if(UI.getCurrent() == null)
+            return -1;
+        return UI.getCurrent().getUIId();
+    }
 }

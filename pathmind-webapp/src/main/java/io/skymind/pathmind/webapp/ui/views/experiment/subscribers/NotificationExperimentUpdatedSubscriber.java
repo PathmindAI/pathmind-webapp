@@ -13,19 +13,18 @@ import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class NotificationExperimentUpdatedSubscriber implements ExperimentUpdatedSubscriber {
+public class NotificationExperimentUpdatedSubscriber extends ExperimentUpdatedSubscriber {
 
-    private Supplier<Optional<UI>> getUISupplier;
     private Experiment experiment;
 
     public NotificationExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, Experiment experiment) {
-        this.getUISupplier = getUISupplier;
+        super(getUISupplier);
         this.experiment = experiment;
     }
 
     // We can ignore this code for archived experiments since the navbar is not visible for archived experiments.
     public void handleBusEvent(ExperimentUpdatedBusEvent event) {
-        PushUtils.push(getUISupplier.get(), ui -> {
+        PushUtils.push(getUiSupplier().get(), ui -> {
             if(event.isStartedTraining())
                 alertThenNotifyStarted(event);
             if(event.isArchive())
@@ -35,7 +34,7 @@ public class NotificationExperimentUpdatedSubscriber implements ExperimentUpdate
 
     private void alertThenNotifyArchive(ExperimentUpdatedBusEvent event) {
         NotificationUtils.alertAndThen(
-                getUISupplier,
+                getUiSupplier(),
                 event.getExperiment().isArchived() ? "Experiment Archived" : "Experiment Unarchived",
                 event.getExperiment().isArchived() ? "The experiment was archived." : "The experiment was unarchived.",
                 ui -> navigateToView(ui, event.getExperiment()));
@@ -50,7 +49,7 @@ public class NotificationExperimentUpdatedSubscriber implements ExperimentUpdate
 
     private void alertThenNotifyStarted(ExperimentUpdatedBusEvent event) {
         NotificationUtils.alertAndThen(
-                getUISupplier,
+                getUiSupplier(),
                 "Training Started",
                 "The experiment training started.",
                 ui -> ui.navigate(ExperimentView.class, event.getExperiment().getId()));
@@ -59,14 +58,12 @@ public class NotificationExperimentUpdatedSubscriber implements ExperimentUpdate
     @Override
     public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
         // The last clause is if the archive state has changed OR the experiment isn't currently running.
+        System.out.println("........................  " +  getUiSupplier().get().get().getUIId());
+        if(isSourceSameUI(event))
+            return false;
         return ExperimentUtils.isSameExperiment(event.getExperiment(), experiment) &&
                 (event.isStartedTraining() || event.isArchive()) &&
                 (event.isArchive() != experiment.isArchived() || !ExperimentUtils.isRunning(experiment));
-    }
-
-    @Override
-    public boolean isAttached() {
-        return getUISupplier.get().isPresent();
     }
 
     public void setExperiment(Experiment experiment) {
