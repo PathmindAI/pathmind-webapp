@@ -310,18 +310,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             Map<Integer, List<Double>> uncertaintyMap = MetricsRawUtils.toIndexAndMetricRawData(metricsRawList);
 
             uncertainty = uncertaintyMap.values().stream()
-                .map(list -> {
-                    DoubleSummaryStatistics stat = list.stream().mapToDouble(Double::doubleValue).summaryStatistics();
-                    double squareDiffToMeans = 0.0;
-                    for (int i = 0; i < stat.getCount(); i++) {
-                        squareDiffToMeans += Math.pow((list.get(i) - stat.getAverage()), 2);
-                    }
-
-                    double meanOfDiffs = squareDiffToMeans / (double) (stat.getCount() - 1);
-                    double sd = Double.parseDouble(PathmindNumberUtils.formatToSigFig(Math.sqrt(meanOfDiffs), 2));
-                    double uncertainty = 2*sd; // It may be changed to Inter-Quartile Range in the future
-                    return PathmindNumberUtils.setSigFigBasedOnAnotherDouble(stat.getAverage(), uncertainty, 2)  +"\u2800\u00B1\u2800" + PathmindNumberUtils.formatToSigFig(uncertainty, 2);
-                }).collect(Collectors.toList());
+                .map(list -> PathmindNumberUtils.calculateUncertainty(list))
+                .collect(Collectors.toList());
         }
     }
 
