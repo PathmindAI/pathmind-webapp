@@ -35,6 +35,7 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
+import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
@@ -70,6 +71,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
     private Span modelName;
     private Span createdDate;
+    private TagLabel archivedLabel;
     private Paragraph packageNameText;
     private Paragraph actionsText;
     private Paragraph observationsText;
@@ -87,9 +89,12 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
         modelName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL);
         createdDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
+        archivedLabel = new TagLabel("Archived", false, "small");
 
         HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(
-            WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(modelName, createdDate),
+            WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(modelName, 
+                WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(createdDate, archivedLabel)
+            ),
             new NewExperimentButton(experimentDAO, modelId));
         headerWrapper.addClassName("page-content-header");
 
@@ -187,6 +192,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
     protected void initScreen(BeforeEnterEvent event) {
         String packageName = (model.getPackageName() != null) ? model.getPackageName() : "—";
         modelName.setText("Model #"+model.getName());
+        archivedLabel.setVisible(model.isArchived());
 
         VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
             // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items

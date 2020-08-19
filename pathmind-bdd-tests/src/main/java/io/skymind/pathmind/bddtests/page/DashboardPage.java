@@ -62,8 +62,8 @@ public class DashboardPage extends PageObject {
         }
     }
 
-    public void clickInNavigationIcon(String projectName) {
-        String xpath = dashboardLineXPathPrefix(projectName, "Model #1") + "//*[@class='navigate-icon']";
+    public void clickDashboardItem(String projectName) {
+        String xpath = dashboardLineXPathPrefix(projectName, "Model #1");
         getDriver().findElement(By.xpath(xpath)).click();
         waitABit(2500);
     }
@@ -94,7 +94,7 @@ public class DashboardPage extends PageObject {
     public void checkDashboardBeginScreenElements() {
         assertThat(getDriver().findElement(By.xpath("//span[@class='light-text-label']")).getText(), is("Welcome to"));
         assertThat(getDriver().findElement(By.xpath("//img[@class='navbar-logo']")).isDisplayed(), is(true));
-        assertThat(getDriver().findElement(By.xpath("//img[@class='navbar-logo']")).getAttribute("src"), containsString("frontend/images/pathmind-logo.png"));
+        assertThat(getDriver().findElement(By.xpath("//img[@class='navbar-logo']")).getAttribute("src"), containsString("frontend/images/pathmind-logo.svg"));
         assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']")).getText(), is("Let's begin by opening the"));
         assertThat(getDriver().findElement(By.xpath("//a[@class='button-link']")).getText(), is("Getting Started Guide"));
         assertThat(getDriver().findElement(By.xpath("//a[@class='button-link']")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4004788-getting-started"));

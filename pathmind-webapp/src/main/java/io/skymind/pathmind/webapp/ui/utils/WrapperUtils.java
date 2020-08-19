@@ -59,6 +59,14 @@ public class WrapperUtils
 		return wrapper;
 	}
 
+	public static HorizontalLayout wrapWidthFullHorizontalNoSpacingAlignCenter(Component... components) {
+		HorizontalLayout wrapper = new HorizontalLayout(components);
+		wrapper.setWidthFull();
+		wrapper.setSpacing(false);
+		wrapper.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+		return wrapper;
+	}
+
 	public static HorizontalLayout wrapSizeFullBetweenHorizontal(Component... components) {
 		HorizontalLayout wrapper = wrapWidthFullHorizontal(components);
 		wrapper.setSpacing(false);

@@ -32,6 +32,6 @@ public class NavBarExperimentCreatedSubscriber extends ExperimentCreatedSubscrib
 
     @Override
     public boolean filterBusEvent(ExperimentCreatedBusEvent event) {
-        return ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experimentsNavBar.getExperiments(), event.getModelId());
+        return ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experimentsNavBar.getExperiments(), experimentsNavBar.getModelId());
     }
 }

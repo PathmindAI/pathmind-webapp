@@ -1,14 +1,23 @@
-.dashboard-view .view-section {
-    flex: 1;
-    max-width: 1480px;
-    align-self: center;
+.dashboard-view {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.dashboard-view > vaadin-vertical-layout > .section-title-label {
+    padding: calc(var(--lumo-space-m) * 2) var(--lumo-space-m) 0;
+    line-height: 1;
 }
 
 .dashboard-view .create-project-link {
     margin-left: 0.4em;
 }
 
+.dashboard + vaadin-horizontal-layout {
+    padding: var(--lumo-space-s) 0 var(--lumo-space-l);
+}
+
 .dashboard-line {
+    position: relative;
     background: white;
     border-radius: var(--lumo-border-radius);
     box-sizing: border-box;
@@ -17,14 +26,8 @@
     padding: var(--lumo-space-m);
     align-items: center;
 }
-.navigate-icon {
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
-    opacity: 0;
-}
-.dashboard-line:hover .navigate-icon {
-    opacity: 1;
+.dashboard-line:hover {
+    box-shadow: 0 4px 7px var(--lumo-shade-30pct);
 }
 .dashboard-placeholder {
     width: auto !important;
@@ -48,21 +51,39 @@
 }
 .dashboard-item-main .project-title-label {
     color: var(--lumo-body-text-color);
-    font-size: var(--lumo-font-size-xl);
+    font-size: var(--lumo-font-size-l);
     font-weight: bold;
+}
+.dashboard-item-main .breadcrumb {
+    color: var(--lumo-body-text-color);
+    text-decoration: none;
+}
+.dashboard-item-main .breadcrumb:hover {
+    color: var(--lumo-primary-text-color);
+}
+.dashboard-item-main .breadcrumb:last-child {
+    color: var(--lumo-body-text-color);
+    font-weight: normal;
+}
+.dashboard-item-main .breadcrumb:last-child:hover {
+    /* Although it's not a span not an anchor, clicking it results in
+       clicking of the whole dashboard item so it kinds of acts like a link */
+    color: var(--lumo-primary-text-color);
+    cursor: pointer;
 }
 .dashboard-item-notes {
     justify-content: space-between;
     align-self: stretch;
     height: 6rem;
     padding: 0 0 0 var(--lumo-space-m);
-    border-left: 1px solid var(--pm-gray-color-light);
+    border-left: 1px solid var(--pm-gray-color-lighter);
     margin-top: 1.8rem;
 }
 .dashboard-item-notes:empty {
     border-left: none;
 }
 .dashboard-item-notes span {
+    color: var(--lumo-body-text-color);
     line-height: 1;
 }
 .dashboard-item-notes p {
@@ -84,36 +105,50 @@
     background: linear-gradient(rgba(255, 255, 255, 0), white);
 }
 
-.dashboard-item-icons {
-    flex-grow: 0;
-    align-self: stretch;
+.dashboard-item-notes + vaadin-button {
+    position: absolute;
+    top: var(--lumo-space-m);
+    right: var(--lumo-space-m);
+    align-self: flex-start;
+    color: var(--lumo-secondary-text-color);
 }
 
 .stages-container {
     width: 100%;
+    font-size: var(--lumo-font-size-xs);
 }
-.stages-container > span:not(:first-child) {
-    margin-left: 0;
-}
-.stages-container > span:nth-child(1),
-.stages-container > span:nth-child(2) {
-    width: 30%;
-}
-.stages-container > span:nth-child(3) {
-    width: 22%;
+.stages-container > span {
+    display: flex;
+    align-items: center;
+    width: 28%;
     text-align: center;
 }
 .stages-container > span:nth-child(4) {
-    width: 18%;
-    text-align: center;
+    width: 16%;
+}
+.stages-container > span:not(:first-child) {
+    justify-content: center;
+    margin-left: 0;
 }
 .stages-container > span > iron-icon {
     width: 20px;
     height: 20px;
     margin-right: 4px;
 }
+.stages-container > span:nth-child(3) div span:first-child {
+    margin-right: var(--lumo-space-xxxs);
+}
+.stages-container > span:nth-child(3) div span:last-child {
+    display: block;
+    font-size: var(--lumo-font-size-xs);
+    font-weight: normal;
+    color: var(--lumo-secondary-text-color);
+}
+.stages-container .hint-label {
+    font-size: var(--lumo-font-size-xs);
+}
 .stage-active {
-    color: var(--lumo-primary-text-color);
+    color: var(--lumo-primary-color);
     font-weight: bold;
 }
 /* Training Progress */
@@ -124,17 +159,11 @@
 .stage-active vaadin-progress-bar {
     margin: var(--lumo-space-xs) 0;
 }
-.stage-active span {
-    font-weight: normal;
-    margin: auto;
-}
 .stage-done {
     color: var(--lumo-body-text-color);
 }
-.stage-done:last-child {
-    font-weight: bold;
-}
-.stage-failed {
+.stage-failed,
+.stage-failed .hint-label {
     color: var(--lumo-error-text-color);
 }
 .stage-stopped {
@@ -153,15 +182,16 @@
     top: 5px;
     left: 5px;
 }
-.stage-stopped .icon-stopped + span {
+.stage-stopped .hint-label {
+    color: var(--lumo-body-text-color);
+}
+.stage-failed span,
+.stage-stopped span {
+    line-height: 1.1;
     text-align: left;
 }
-.stage-active vaadin-progress-bar + span,
-.stage-stopped .hint-label {
-    font-size: var(--lumo-font-size-xs);
-}
 .stage-next {
-    color: var(--pm-gray-color-light);
+    color: var(--pm-gray-color);
 }
 @media (max-width: 720px) {
     .stages-container {
