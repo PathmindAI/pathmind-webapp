@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -28,6 +29,7 @@ public class SearchBox extends HorizontalLayout
     private String searchType = "All";
     private String CLASS_NAME = "search-box";
     private Select searchSelect = typeSelect();
+    private Div searchDivider = new Div();
 	private TextField searchTextField = new TextField();
 	private Button searchButton = new Button(new Icon(VaadinIcon.SEARCH));
 
@@ -39,15 +41,17 @@ public class SearchBox extends HorizontalLayout
         searchTextField.getElement().setAttribute("theme", "small");
         searchSelect.getElement().setAttribute("theme", "small");
 		searchButton.addClickListener(click -> search());
-    	searchTextField.addValueChangeListener(change -> search());
+        searchTextField.addValueChangeListener(change -> search());
 
+        
 		addClassName(CLASS_NAME);
         searchSelect.addClassName(CLASS_NAME + "_select");
+        searchDivider.addClassName(CLASS_NAME+ "_divider");
     	searchTextField.addClassName(CLASS_NAME + "_text-field");
     	searchTextField.setMaxLength(MAX_KEYWORD_LENGTH);
         searchButton.addClassNames(CLASS_NAME + "_button");
 
-		add(searchSelect, searchTextField, searchButton);
+		add(searchSelect, searchDivider, searchTextField, searchButton);
     }
 
     public Select typeSelect() {

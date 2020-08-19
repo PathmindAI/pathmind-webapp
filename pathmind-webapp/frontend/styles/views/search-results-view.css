@@ -60,7 +60,14 @@
 }
 
 .search-box {
-    height: 2.3rem;
+    height: 2.1rem;
     border: 1px solid var(--pm-gray-color);
     border-radius: var(--lumo-border-radius);
+}
+
+.search-box .search-box_divider {
+    width: 1px;
+    height: calc(100% - 8px);
+    background: var(--pm-gray-color);
+    align-self: center;
 }
