@@ -18,7 +18,7 @@ public interface VersionEnum {
                     .forEach(file -> {
                         String folder = versionEnum.getClass().getSimpleName().toLowerCase();
                         String version = versionEnum.toString().split("VERSION_")[1].toLowerCase();
-                        paths.add(String.join(File.separator, folder, version, file));
+                        paths.add(String.join("/", folder, version, file));
 
                     });
 

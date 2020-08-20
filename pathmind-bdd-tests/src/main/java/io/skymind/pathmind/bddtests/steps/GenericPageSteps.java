@@ -135,4 +135,9 @@ public class GenericPageSteps {
     public void generateBigModelWithName(String name) throws IOException {
         utils.generateBigModelWithName(name);
     }
+
+    @Step
+    public void checkTitleLabelTagIsArchived(String tag) {
+        genericPage.checkTitleLabelTagIsArchived(tag);
+    }
 }

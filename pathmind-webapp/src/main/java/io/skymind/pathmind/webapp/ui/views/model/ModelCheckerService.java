@@ -7,6 +7,9 @@ import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import org.springframework.stereotype.Service;
 
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.TAG_LABEL;
+
 @Service
 public class ModelCheckerService {
     private final ProjectFileCheckService projectFileCheckService;
@@ -16,7 +19,7 @@ public class ModelCheckerService {
     }
 
     public Span createInvalidErrorLabel(Model model) {
-        Span result = LabelFactory.createLabel("", "tag", "error-label");
+        Span result = LabelFactory.createLabel("", TAG_LABEL, ERROR_LABEL);
         result.setVisible(false);
         ModelUtils.checkIfModelIsInvalid(model).ifPresent(invalidModelType -> {
             result.getElement().setProperty("innerHTML", projectFileCheckService.getErrorMessage(invalidModelType));

@@ -14,7 +14,7 @@ html {
     --pm-gold-color: #febb2b;
     --pm-orange-color: #ed7820;
     --pm-gray-color-darkest: #404040;
-    --pm-gray-color-darker: #707070;
+    --pm-gray-color-darker: #666666;
     --pm-gray-color-dark: #888888;
     --pm-gray-color: #b3b6c2;
     --pm-gray-color-light: #d0d0d0;
@@ -76,7 +76,7 @@ html {
     --lumo-error-color-50pct: rgba(216, 9, 71, 0.5);
     --lumo-error-color-10pct: rgba(216, 9, 71, 0.1);
     --lumo-error-color: var(--pm-danger-color);
-    --lumo-header-text-color: #000000;
+    --lumo-header-text-color: var(--pm-text-color);
     --lumo-body-text-color: var(--pm-text-color);
     --lumo-secondary-text-color: var(--pm-gray-color-dark);
     --lumo-tertiary-text-color: #d7d7d7;
@@ -354,6 +354,11 @@ background-color: var(--pm-gray-color-light);
     color: var(--lumo-secondary-text-color);
 }
 
+.project-view .section-subtitle-label + tag-label,
+.model-view .section-subtitle-label + tag-label {
+    margin-left: var(--lumo-space-xs);
+}
+
 .project-view .truncated-label {
     max-width: 100%;
     width: auto;
@@ -401,12 +406,12 @@ background-color: var(--pm-gray-color-light);
 .default-view.upload-model-view {
     height: auto;
     min-height: 100%;
-    padding: var(--lumo-space-xxl);
 }
 
 .upload-model-view .view-section {
     max-width: 540px;
     flex: 0 0 auto;
+    margin-top: var(--lumo-space-xxl);
 }
 
 .upload-model-view .view-section > vaadin-vertical-layout > vaadin-horizontal-layout:last-child {
@@ -510,15 +515,11 @@ account-view {
 
 .tag {
     color: var(--pm-gray-color-dark);
-    padding: 4px 8px;
+    padding: var(--lumo-space-xxxs) var(--lumo-space-xs);
     background: var(--lumo-contrast-10pct);
     border: 1px solid transparent;
     border-radius: var(--lumo-border-radius);
     margin: 0 2px;
-}
-.tag-outline {
-    background: transparent;
-    border: 1px solid;
 }
 .tag:empty {
     display: none;

@@ -347,6 +347,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         switch (anylogicVersion) {
             case VERSION_8_5_1:
             case VERSION_8_5_2:
+            case VERSION_8_6_0:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip > /dev/null",
                         "rm baseEnv.zip",
