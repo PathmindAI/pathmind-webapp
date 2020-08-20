@@ -307,6 +307,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         List<MetricsRaw> metricsRawList = policy == null ? null : policy.getMetricsRaws();
         if (metricsRawList != null && metricsRawList.size() > 0) {
+            Collections.sort(metricsRawList, Comparator.comparingInt(MetricsRaw::getIteration));
             Map<Integer, List<Double>> uncertaintyMap = MetricsRawUtils.toIndexAndMetricRawData(metricsRawList);
 
             uncertainty = uncertaintyMap.values().stream()
