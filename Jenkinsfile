@@ -223,6 +223,7 @@ pipeline {
                             alwaysLinkToLastBuild: true,
                             allowMissing: false
                         ])
+                        junit 'pathmind-bdd-tests/target/site/serenity/SERENITY-JUNIT*xml'
                     }
                 }
             }
