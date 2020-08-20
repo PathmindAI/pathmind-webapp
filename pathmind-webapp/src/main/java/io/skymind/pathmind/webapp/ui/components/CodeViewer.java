@@ -12,7 +12,7 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 @Tag("code-viewer")
-@JsModule("/src/experiment/code-viewer.js")
+@JsModule("./src/experiment/code-viewer.js")
 public class CodeViewer extends PolymerTemplate<TemplateModel> implements HasStyle {
     public CodeViewer() {
         super();

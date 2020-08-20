@@ -36,7 +36,7 @@ import io.skymind.pathmind.services.billing.StripeService;
  * DO NOT SEND CREDIT CARD INFORMATION FROM FRONTEND TO BACKEND. LET STRIPE HANDLE ALL THAT INSTEAD AND ONLY PASS IDS.
  */
 @Tag("payment-view-content")
-@JsModule("./src/account/payment-view-content.js")
+@JsModule("./src/pages/account/payment-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class PaymentViewContent extends PolymerTemplate<PaymentViewContent.Model>{

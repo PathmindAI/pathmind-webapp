@@ -22,7 +22,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
 @Tag("change-password-view-content")
-@JsModule("./src/account/change-password-view-content.js")
+@JsModule("./src/pages/account/change-password-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class ChangePasswordViewContent extends PolymerTemplate<ChangePasswordViewContent.Model> {
