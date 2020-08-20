@@ -88,5 +88,11 @@ public class MetricsRawUtils {
         private int index;
         private double value;
 
+        public MetricsRawFlat(int iteration, int episode, int index, double value) {
+            this.iteration = iteration;
+            this.episode = episode;
+            this.index = index;
+            this.value = value;
+        }
     }
 }

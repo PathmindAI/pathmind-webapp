@@ -4,8 +4,7 @@ import io.skymind.pathmind.db.utils.JooqUtils;
 import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.MetricsRawThisEpisode;
 import io.skymind.pathmind.shared.utils.MetricsRawUtils;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import io.skymind.pathmind.shared.utils.MetricsRawUtils.MetricsRawFlat;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
@@ -17,16 +16,6 @@ import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.max;
 
 public class MetricsRawRepository {
-
-    @AllArgsConstructor
-    @Data
-    static class MetricsRawTemp {
-        private int iteration;
-        private int episode;
-        private int index;
-        private double value;
-    }
-
 
     protected static Map<Long, Integer> getMaxMetricsRawIterationForPolicies(DSLContext ctx, List<Long> policyIds) {
         return ctx.select(METRICS_RAW.POLICY_ID, max(METRICS_RAW.ITERATION))
@@ -65,12 +54,12 @@ public class MetricsRawRepository {
 
     // todo : clean up
     public static Map<Long,List<MetricsRaw>> getMetricsRawForPolicies(DSLContext ctx, List<Long> policyIds) {
-        Map<Long, List<MetricsRawTemp>> subresult = ctx.select(METRICS_RAW.POLICY_ID, METRICS_RAW.ITERATION, METRICS_RAW.EPISODE, METRICS_RAW.INDEX, METRICS_RAW.VALUE)
+        Map<Long, List<MetricsRawFlat>> subresult = ctx.select(METRICS_RAW.POLICY_ID, METRICS_RAW.ITERATION, METRICS_RAW.EPISODE, METRICS_RAW.INDEX, METRICS_RAW.VALUE)
             .from(METRICS_RAW)
             .where(METRICS_RAW.POLICY_ID.in(policyIds))
             .orderBy(METRICS_RAW.POLICY_ID, METRICS_RAW.ITERATION, METRICS_RAW.EPISODE, METRICS_RAW.INDEX)
             .fetchGroups(METRICS.POLICY_ID, record ->
-                new MetricsRawTemp(
+                new MetricsRawFlat(
                     record.get(METRICS_RAW.ITERATION),
                     record.get(METRICS_RAW.EPISODE),
                     record.get(METRICS_RAW.INDEX),
@@ -83,8 +72,8 @@ public class MetricsRawRepository {
         subresult.entrySet().stream().forEach(e -> {
             long policyId = e.getKey();
             // (iteration | (episode | (index | value)))
-            final Map<Integer, Map<Integer, Map<Integer, List<MetricsRawTemp>>>> collect = e.getValue().stream()
-                .collect(groupingBy(MetricsRawTemp::getIteration, groupingBy(MetricsRawTemp::getEpisode, groupingBy(MetricsRawTemp::getIndex))));
+            final Map<Integer, Map<Integer, Map<Integer, List<MetricsRawFlat>>>> collect = e.getValue().stream()
+                .collect(groupingBy(MetricsRawFlat::getIteration, groupingBy(MetricsRawFlat::getEpisode, groupingBy(MetricsRawFlat::getIndex))));
 
             List<MetricsRaw> metricsRaw = new ArrayList<>();
             collect.entrySet().stream()
