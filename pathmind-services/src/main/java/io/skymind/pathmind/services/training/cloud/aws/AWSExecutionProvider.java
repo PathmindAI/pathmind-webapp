@@ -325,16 +325,18 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_0_7:
             case VERSION_1_1_0:
             case VERSION_1_1_1:
-                instructions.addAll(Arrays.asList(
+            case VERSION_1_2_0:
+                nativerlVersion.fileNames().forEach(filename -> {
+                    instructions.addAll(Arrays.asList(
                         // Setup NativeRL
                         "mkdir -p work",
                         "cd work",
-                        "unzip ../nativerl-1.0.0-SNAPSHOT-bin.zip > /dev/null",
-                        "rm ../nativerl-1.0.0-SNAPSHOT-bin.zip",
+                        String.format("unzip ../%s > /dev/null", filename),
+                        String.format("rm ../%s", filename),
                         "mv nativerl-bin/* .",
                         "mv examples/train.sh .",
-                        "cd .."
-                ));
+                        "cd .."));
+                });
 
                 files.addAll(fileManager.getFiles(nativerlVersion));
                 break;
@@ -415,6 +417,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_0_25_Multi:
             case VERSION_1_0_1:
             case VERSION_1_0_2:
+            case VERSION_1_2_0:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));
