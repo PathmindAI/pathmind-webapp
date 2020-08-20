@@ -1,11 +1,15 @@
 @experimentSimulationMetrics
 Feature: Experiment page Simulation Metrics
 
+  @smoke
   Scenario: Check reward variables on experiment page
     Given Login to the pathmind
     When Create new CoffeeShop project with variable names: kitchen_cleanliness,customers_served,balked_customers,avg_response_time
     When Click project start run button
     Then Check experiment page simulation metrics kitchen_cleanliness,customers_served,balked_customers,avg_response_time
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
 
   Scenario: Check that simulation metrics block is shown
     Given Login to the pathmind
@@ -13,7 +17,11 @@ Feature: Experiment page Simulation Metrics
     When Click project start run button
     Then Check that simulation metrics block is shown
     Then Check running experiment page reward variables is kitchen_cleanliness,customers_served,balked_customers,avg_response_time
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
 
+  @smoke
   Scenario: Check that simulation metrics block is shown when switch to other experiment
     Given Login to the pathmind
     When Create new CoffeeShop project with variable names: kitchen_cleanliness,customers_served,balked_customers,avg_response_time
@@ -57,6 +65,9 @@ Feature: Experiment page Simulation Metrics
     When Click project start run button
     Then Check that <simulation metrics count> metrics are shown for reward variables
     Then Check that <simulation metrics count> sparklines are shown for reward variables
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
 
     Examples:
       | project name    | model                                       | reward function file                                             | variables                                                               | simulation metrics count |

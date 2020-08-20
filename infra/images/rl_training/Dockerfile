@@ -5,8 +5,7 @@ WORKDIR /app
 
 #Copy files
 COPY requirements.txt .
-COPY do_training.sh .
-COPY check_spot.sh .
+COPY *.sh ./
 
 #env
 ENV DEBIAN_FRONTEND=noninteractive
@@ -38,7 +37,7 @@ RUN apt-get update && \
 #use bsdtar instead of tar
 RUN cp /usr/bin/bsdtar /bin/tar
 
-RUN chmod +x /app/do_training.sh
+RUN chmod +x /app/*.sh
 
 CMD ["bash","-c","/app/do_training.sh"]
 #CMD ["bash","-c","sleep 300000000"]
