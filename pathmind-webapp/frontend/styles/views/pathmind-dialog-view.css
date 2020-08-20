@@ -1,34 +1,57 @@
 :host {
-    background: var(--pm-app-bg-color);
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
     box-sizing: border-box;
-    align-items: center;
-}
-
-.content {
-    padding: var(--lumo-space-m);
-    max-width: 500px;
-    margin-top: 0;
-    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    height: 100%;
+    background: var(--pm-app-bg-color);
+}
+.panel-wrapper {
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+    background: var(--pm-app-bg-color);
+    padding: var(--lumo-space-xl) var(--lumo-space-m) var(--lumo-space-m);
+    overflow: auto;
+}
+.panel-wrapper h3 {
+    margin: 0 auto var(--lumo-space-l);
 }
 
-.info {
-    color: #696969;
+.welcome-text {
+    color: var(--pm-orange-color);
+    font-size: var(--lumo-font-size-m);
+}
+.panel-wrapper .logo {
+    width: 200px;
+}
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    padding: 0;
+    margin-top: 0;
 }
 
 .inner-content {
+    box-sizing: border-box;
+    max-width: 380px;
+    width: 100%;
+    font-size: var(--lumo-font-size-s);
+    text-align: center;
     background: #fff;
+    padding: var(--lumo-space-xl) var(--lumo-space-l);
     border-radius: var(--lumo-border-radius);
-    padding: 20px 40px;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+    margin-top: var(--lumo-space-xl);
 }
 
+/* For Account Pages */
 span.section-title-label + .inner-content {
+    padding: var(--lumo-space-l) var(--lumo-space-l) var(--lumo-space-s);
     margin-top: var(--lumo-space-m);
 }
 
@@ -42,7 +65,7 @@ span.section-title-label + .inner-content {
 }
 
 .block vaadin-button {
-    width: 120px;
+    width: 6.5rem;
 }
 
 .title {
@@ -50,7 +73,7 @@ span.section-title-label + .inner-content {
 }
 
 .data {
-    padding-bottom: 30px;
+    padding-bottom: var(--lumo-space-m);
 }
 
 .support-cont {
@@ -59,9 +82,21 @@ span.section-title-label + .inner-content {
 
 .support,
 .support-cont a {
-    display: inline-block;
     color: var(--lumo-secondary-text-color);
-    margin: 10px var(--lumo-space-s) 0;
+    margin: var(--lumo-size-xl) auto;
+    text-decoration: underline;
+}
+
+.support {
+    display: inline-block;
+}
+
+.support-cont {
+    margin-top: var(--lumo-size-xl);
+}
+
+.support-cont a {
+    margin: var(--lumo-size-m) var(--lumo-size-m);
 }
 
 .support:hover,
@@ -77,11 +112,12 @@ vaadin-password-field {
 }
 
 #buttonsCont {
-    margin-top: var(--lumo-space-xxl);
-    width: 100%;
+  margin-top: var(--lumo-space-l);
+  width: 100%;
 }
 
 #buttonsCont vaadin-button {
+    width: 100%;
     margin: 5px auto;
 }
 
@@ -97,16 +133,22 @@ vaadin-password-field {
 
 .notes {
     font-size: 0.9em;
+    color: var(--pm-secondary-text-color);
+    margin-left: 15px;
+}
+
+.policy {
+    font-size: var(--lumo-font-size-xs);
+    color: var(--lumo-secondary-text-color);
+    margin-top: var(--lumo-space-m);
+}
+
+.policy a {
+    color: var(--pm-primary-color);
     font-weight: 700;
-    color: #979797;
-    padding-left: 15px;
-    padding-top: 5px;
+    text-decoration: none;
 }
 
-.notes span:last-child {
-    padding-bottom: 20px;
-}
-
-.notes .secondary {
-    color: #e7e7e7;
+.policy a:hover {
+    text-decoration: underline;
 }

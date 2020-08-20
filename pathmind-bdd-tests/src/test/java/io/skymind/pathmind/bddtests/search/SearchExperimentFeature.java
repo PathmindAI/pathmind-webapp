@@ -1,4 +1,4 @@
-package io.skymind.pathmind.bddtests;
+package io.skymind.pathmind.bddtests.search;
 
 import cucumber.api.CucumberOptions;
 import net.serenitybdd.cucumber.CucumberWithSerenity;
@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
     plugin = {"pretty", "html:target/cucumber"},
     glue = "io.skymind.pathmind.bddtests.stepdefinitions",
-    features = "src/test/resources/features/wizard.feature"
+    features = "src/test/resources/features/search/searchExperiment.feature"
 )
-public class WizardFeature {
+public class SearchExperimentFeature {
 }

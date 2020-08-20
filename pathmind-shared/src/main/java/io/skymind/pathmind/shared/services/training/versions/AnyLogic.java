@@ -6,7 +6,8 @@ import java.util.List;
 public enum AnyLogic implements VersionEnum {
     VERSION_8_5,
     VERSION_8_5_1,
-    VERSION_8_5_2;
+    VERSION_8_5_2,
+    VERSION_8_6_0;
 
     @Override
     public List<String> fileNames() {
