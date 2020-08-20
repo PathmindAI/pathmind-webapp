@@ -139,4 +139,19 @@ public class ExperimentStepDefinitions {
     public void checkThatExperimentPageArchivedTagIsShown() {
         experimentPageSteps.checkThatExperimentPageArchivedTagIsShown();
     }
+
+    @Then("^Check Simulation Metrics columns titles$")
+    public void checkSimulationMetricsColumnsTitles() {
+        experimentPageSteps.checkSimulationMetricsColumnsTitles();
+    }
+
+    @Then("^Click simulation metrics value icon$")
+    public void clickSimulationMetricsValueIcon() {
+        experimentPageSteps.clickSimulationMetricsValueIcon();
+    }
+
+    @Then("^Click simulation metrics overview icon$")
+    public void clickSimulationMetricsOverviewIcon() {
+        experimentPageSteps.clickSimulationMetricsOverviewIcon();
+    }
 }
