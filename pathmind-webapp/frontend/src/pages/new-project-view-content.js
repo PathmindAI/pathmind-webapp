@@ -4,7 +4,7 @@ class NewProjectView extends PolymerElement {
   static get template() {
     return html`
     <style include="shared-styles pathmind-dialog-view">
-        p {
+        p, vaadin-text-field {
             text-align: left;
         }
     </style>
@@ -22,6 +22,7 @@ class NewProjectView extends PolymerElement {
           <vaadin-text-field
             id="projectName"
             label="Give your project a name"
+            required
           ></vaadin-text-field>
           <vaadin-vertical-layout id="buttonsCont">
             <vaadin-button id="createProject" theme="primary" on-click="handleNewProjectClicked">
