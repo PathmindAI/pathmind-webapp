@@ -459,7 +459,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         setPolicyChartVisibility();
         experimentsNavbar.setVisible(!experiment.isArchived());
         panelTitle.setText("Experiment #"+experiment.getName());
-        codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
+        if (ModelUtils.isValidModel(experiment.getModel())) {
+            codeViewer.setValue(experiment.getRewardFunction());
+        } else {
+            codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
+        }
         rewardVariablesTable.setRewardVariables(rewardVariables);
         if (showSimulationMetrics) {
             updateSimulationMetrics();
