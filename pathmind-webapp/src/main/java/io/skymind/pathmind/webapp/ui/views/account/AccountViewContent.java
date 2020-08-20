@@ -27,7 +27,7 @@ import io.skymind.pathmind.webapp.ui.components.dialog.SubscriptionCancelDialog;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 
 @Tag("account-view-content")
-@JsModule("./src/account/account-view-content.js")
+@JsModule("./src/pages/account/account-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model> {

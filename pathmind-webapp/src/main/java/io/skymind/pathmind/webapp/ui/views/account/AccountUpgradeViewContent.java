@@ -17,7 +17,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.data.PathmindUser;
 
 @Tag("account-upgrade-view-content")
-@JsModule("./src/account/account-upgrade-view-content.js")
+@JsModule("./src/pages/account/account-upgrade-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class AccountUpgradeViewContent extends PolymerTemplate<AccountUpgradeViewContent.Model>
