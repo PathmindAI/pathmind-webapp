@@ -2,6 +2,8 @@ package io.skymind.pathmind.shared.utils;
 
 import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.MetricsRawThisEpisode;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,5 +59,34 @@ public class MetricsRawUtils {
             episodeRaw.add(metricsRawThisEpisodes);
         }
         return episodeRaw;
+    }
+
+    public static List<MetricsRawFlat> toMetricsRawThisEpisodeList(Map<Long, List<MetricsRaw>> metricsRawByPolicyId) {
+        List<MetricsRawFlat> list = new ArrayList<>();
+
+        metricsRawByPolicyId.forEach((policyId, metricsRawList) ->
+            metricsRawList.stream().forEach(metricsRaw -> {
+                int currentIter = metricsRaw.getIteration();
+                for (int episode = 0; episode < metricsRaw.getEpisodeRaw().size(); episode++) {
+                    List<MetricsRawThisEpisode> metricsRawData = metricsRaw.getEpisodeRaw().get(episode);
+                    int episodeNum = episode;
+                    metricsRawData.stream().forEach(raw ->
+                        list.add(new MetricsRawFlat(policyId, currentIter, episodeNum, raw.getIndex(), raw.getValue()))
+                    );
+                }
+            })
+        );
+        return list;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class MetricsRawFlat {
+        private long policyId;
+        private int iteration;
+        private int episode;
+        private int index;
+        private double value;
+
     }
 }

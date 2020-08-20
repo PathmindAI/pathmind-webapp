@@ -3,6 +3,7 @@ package io.skymind.pathmind.db.dao;
 import io.skymind.pathmind.db.utils.JooqUtils;
 import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.MetricsRawThisEpisode;
+import io.skymind.pathmind.shared.utils.MetricsRawUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.jooq.DSLContext;
@@ -45,26 +46,18 @@ public class MetricsRawRepository {
      */
     protected static void insertMetricsRaw(DSLContext ctx, Map<Long, List<MetricsRaw>> metricsRawByPolicyId) {
         List<Query> insertQueries = new ArrayList<>();
-        metricsRawByPolicyId.forEach((policyId, metricsRawList) ->
-                metricsRawList.stream().forEach(metricsRaw -> {
-                    int currentIter = metricsRaw.getIteration();
-                    for (int episode = 0; episode < metricsRaw.getEpisodeRaw().size(); episode++) {
-                        List<MetricsRawThisEpisode> metricsRawData = metricsRaw.getEpisodeRaw().get(episode);
-                        int episodeNum = episode;
-                        metricsRawData.stream().forEach(raw ->
-                            insertQueries.add(
-                                ctx.insertInto(METRICS_RAW)
-                                    .columns(METRICS_RAW.INDEX, METRICS_RAW.VALUE, METRICS_RAW.EPISODE, METRICS_RAW.ITERATION, METRICS_RAW.POLICY_ID)
-                                    .values(raw.getIndex(),
-                                        JooqUtils.getSafeBigDecimal(raw.getValue()),
-                                        episodeNum,
-                                        currentIter,
-                                        policyId
-                                        )
-                            )
-                        );
-                    }
-                })
+        MetricsRawUtils.toMetricsRawThisEpisodeList(metricsRawByPolicyId).stream()
+            .forEach(metricsRawFlat ->
+                insertQueries.add(
+                    ctx.insertInto(METRICS_RAW)
+                        .columns(METRICS_RAW.INDEX, METRICS_RAW.VALUE, METRICS_RAW.EPISODE, METRICS_RAW.ITERATION, METRICS_RAW.POLICY_ID)
+                        .values(metricsRawFlat.getIndex(),
+                        JooqUtils.getSafeBigDecimal(metricsRawFlat.getValue()),
+                        metricsRawFlat.getEpisode(),
+                        metricsRawFlat.getIteration(),
+                        metricsRawFlat.getPolicyId()
+                    )
+            )
         );
         ctx.batch(insertQueries).execute();
     }
