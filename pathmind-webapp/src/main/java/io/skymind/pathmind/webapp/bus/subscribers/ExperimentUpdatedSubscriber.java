@@ -10,8 +10,13 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public abstract class ExperimentUpdatedSubscriber extends EventBusSubscriber<ExperimentUpdatedBusEvent> {
+
     public ExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
         super(getUISupplier);
+    }
+
+    public ExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, boolean isListenForEventOnSameUI) {
+        super(getUISupplier, isListenForEventOnSameUI);
     }
 
     @Override

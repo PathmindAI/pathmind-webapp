@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 public abstract class EventBusSubscriber<T extends PathmindBusEvent> {
 
     private Supplier<Optional<UI>> uiSupplier;
+    private boolean isListenForEventOnSameUI;
 
     public abstract BusEventType getEventType();
 
@@ -42,7 +43,12 @@ public abstract class EventBusSubscriber<T extends PathmindBusEvent> {
     }
 
     public EventBusSubscriber(Supplier<Optional<UI>> uiSupplier) {
+        this(uiSupplier, false);
+    }
+
+    public EventBusSubscriber(Supplier<Optional<UI>> uiSupplier, boolean isListenForEventOnSameUI) {
         this.uiSupplier = uiSupplier;
+        this.isListenForEventOnSameUI = isListenForEventOnSameUI;
     }
 
     /**
@@ -63,5 +69,11 @@ public abstract class EventBusSubscriber<T extends PathmindBusEvent> {
 
     public Supplier<Optional<UI>> getUiSupplier() {
         return uiSupplier;
+    }
+
+    public boolean filterSameUI(T event) {
+        if(isListenForEventOnSameUI)
+            return true;
+        return !isSourceSameUI(event);
     }
 }

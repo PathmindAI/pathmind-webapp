@@ -15,7 +15,7 @@ public class NavBarItemExperimentUpdatedSubscriber extends ExperimentUpdatedSubs
     private ExperimentsNavBarItem experimentsNavBarItem;
 
     public NavBarItemExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, ExperimentsNavBarItem experimentsNavBarItem) {
-        super(getUISupplier);
+        super(getUISupplier, true);
         this.experimentsNavBarItem = experimentsNavBarItem;
     }
 
