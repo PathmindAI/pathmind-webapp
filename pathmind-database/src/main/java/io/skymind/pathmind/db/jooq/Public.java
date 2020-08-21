@@ -4,7 +4,6 @@
 package io.skymind.pathmind.db.jooq;
 
 
-import io.skymind.pathmind.db.jooq.tables.Action;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
 import io.skymind.pathmind.db.jooq.tables.Metrics;
 import io.skymind.pathmind.db.jooq.tables.MetricsRaw;
@@ -45,17 +44,12 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 1427704746;
+    private static final long serialVersionUID = 1332965704;
 
     /**
      * The reference instance of <code>public</code>
      */
     public static final Public PUBLIC = new Public();
-
-    /**
-     * The table <code>public.action</code>.
-     */
-    public final Action ACTION = io.skymind.pathmind.db.jooq.tables.Action.ACTION;
 
     /**
      * The table <code>public.experiment</code>.
@@ -149,7 +143,6 @@ public class Public extends SchemaImpl {
 
     private final List<Sequence<?>> getSequences0() {
         return Arrays.<Sequence<?>>asList(
-            Sequences.ACTION_ID_SEQ,
             Sequences.EXPERIMENT_ID_SEQ,
             Sequences.MODEL_ID_SEQ,
             Sequences.OBSERVATION_ID_SEQ,
@@ -170,7 +163,6 @@ public class Public extends SchemaImpl {
 
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
-            Action.ACTION,
             Experiment.EXPERIMENT,
             Metrics.METRICS,
             MetricsRaw.METRICS_RAW,

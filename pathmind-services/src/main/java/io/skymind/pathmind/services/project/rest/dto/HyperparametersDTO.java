@@ -16,9 +16,6 @@ import java.util.List;
 public class HyperparametersDTO {
     private boolean oldVersionFound;
 
-    @NotBlank(message = "Number of actions cannot be blank")
-    private String actions;
-
     @NotBlank(message = "Number of observations cannot be blank")
     private String observations;
 

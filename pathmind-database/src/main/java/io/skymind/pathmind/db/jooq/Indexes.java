@@ -4,7 +4,6 @@
 package io.skymind.pathmind.db.jooq;
 
 
-import io.skymind.pathmind.db.jooq.tables.Action;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
 import io.skymind.pathmind.db.jooq.tables.Metrics;
 import io.skymind.pathmind.db.jooq.tables.MetricsRaw;
@@ -44,9 +43,6 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
-    public static final Index ACTION_MODEL_FK_INDEX = Indexes0.ACTION_MODEL_FK_INDEX;
-    public static final Index ACTION_MODEL_ID_ARRAY_INDEX_KEY = Indexes0.ACTION_MODEL_ID_ARRAY_INDEX_KEY;
-    public static final Index ACTION_PKEY = Indexes0.ACTION_PKEY;
     public static final Index EXPERIMENT_MODEL_FK_INDEX = Indexes0.EXPERIMENT_MODEL_FK_INDEX;
     public static final Index EXPERIMENT_PKEY = Indexes0.EXPERIMENT_PKEY;
     public static final Index METRICS_POLICY_ID_INDEX = Indexes0.METRICS_POLICY_ID_INDEX;
@@ -80,9 +76,6 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     private static class Indexes0 {
-        public static Index ACTION_MODEL_FK_INDEX = Internal.createIndex("action_model_fk_index", Action.ACTION, new OrderField[] { Action.ACTION.MODEL_ID }, false);
-        public static Index ACTION_MODEL_ID_ARRAY_INDEX_KEY = Internal.createIndex("action_model_id_array_index_key", Action.ACTION, new OrderField[] { Action.ACTION.MODEL_ID, Action.ACTION.ARRAY_INDEX }, true);
-        public static Index ACTION_PKEY = Internal.createIndex("action_pkey", Action.ACTION, new OrderField[] { Action.ACTION.ID }, true);
         public static Index EXPERIMENT_MODEL_FK_INDEX = Internal.createIndex("experiment_model_fk_index", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.MODEL_ID }, false);
         public static Index EXPERIMENT_PKEY = Internal.createIndex("experiment_pkey", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.ID }, true);
         public static Index METRICS_POLICY_ID_INDEX = Internal.createIndex("metrics_policy_id_index", Metrics.METRICS, new OrderField[] { Metrics.METRICS.POLICY_ID }, false);
