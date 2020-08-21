@@ -38,8 +38,8 @@ public class SearchBox extends HorizontalLayout
 
 		searchTextField.setWidthFull();
         searchTextField.setClearButtonVisible(true);
-        searchTextField.getElement().setAttribute("theme", "small");
-        searchSelect.getElement().setAttribute("theme", "small");
+        searchTextField.getElement().setAttribute("theme", "searchBox small");
+        searchSelect.getElement().setAttribute("theme", "searchBox small");
 		searchButton.addClickListener(click -> search());
         searchTextField.addValueChangeListener(change -> search());
 
