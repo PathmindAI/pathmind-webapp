@@ -107,8 +107,7 @@ def send_mockup_data(s3bucket, s3path, cycle):
             key=my_bucket_object.key
             copy_source = { 'Bucket': src_bucket, 'Key': key }
             target_key='/'.join(key.split('/')[2:])
-            #s3.meta.client.copy(copy_source, s3bucket, s3path+'/output/'+target_key)
-            s3.Object(s3bucket, s3path+'/output/'+target_key).put(Metadata={'key':src_bucket+'/'+key})
+            s3.Object(s3bucket, s3path+'/output/'+target_key).put(Metadata={'path':src_bucket+'/'+key})
         time.sleep(cycle)
 
 def th_monitor_job():
