@@ -1653,4 +1653,14 @@
             <dropColumn tableName="MODEL" columnName="INVALID_MODEL" />
         </rollback>
     </changeSet>
+
+    <changeSet id="20200821-01" author="bruno.rezende@ext.vaadin.com">
+        <dropColumn tableName="MODEL" columnName="NUMBER_OF_POSSIBLE_ACTIONS" />
+    </changeSet>
+
+    <changeSet id="20200821-02" author="bruno.rezende@ext.vaadin.com">
+        <dropTable tableName="ACTION"/>
+    </changeSet>
+
+
 </databaseChangeLog>

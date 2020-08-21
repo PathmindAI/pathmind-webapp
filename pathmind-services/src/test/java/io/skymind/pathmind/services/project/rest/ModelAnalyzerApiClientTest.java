@@ -41,7 +41,6 @@ public class ModelAnalyzerApiClientTest {
         File model = new ClassPathResource("model/call_center.zip").getFile();
         HyperparametersDTO hyperparametersDTO = client.analyze(model);
 
-        assertEquals(hyperparametersDTO.getActions(), "125");
         assertEquals(hyperparametersDTO.getObservations(), "70");
         assertEquals(hyperparametersDTO.getRewardFunction(), "new double[]{this.getReward()}");
     }

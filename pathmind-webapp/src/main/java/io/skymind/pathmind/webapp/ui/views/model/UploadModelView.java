@@ -10,13 +10,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import io.skymind.pathmind.shared.data.Action;
 import com.vaadin.flow.component.html.Span;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,7 +31,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.WildcardParameter;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 
-import io.skymind.pathmind.db.dao.ActionDAO;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
@@ -59,7 +56,6 @@ import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
-import io.skymind.pathmind.webapp.ui.views.model.components.ActionsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel;
@@ -84,9 +80,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private RewardVariableDAO rewardVariablesDAO;
 
 	@Autowired
-	private ActionDAO actionDAO;
-
-	@Autowired
 	private ObservationDAO observationDAO;
 
 	@Autowired
@@ -107,7 +100,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private Model model;
 
 	private List<RewardVariable> rewardVariables = new ArrayList<>();
-    private List<Action> actions = new ArrayList<>();
     private List<Observation> observations = new ArrayList<>();
 
 	private Binder<Model> modelBinder;
@@ -115,7 +107,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private UploadModelWizardPanel uploadModelWizardPanel;
 	private ModelDetailsWizardPanel modelDetailsWizardPanel;
 	private RewardVariablesPanel rewardVariablesPanel;
-	private ActionsPanel actionsPanel;
 	private ObservationsPanel observationsPanel;
 
 	private List<Component> wizardPanels;
@@ -140,7 +131,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int)DataSize.parse(maxFileSizeAsStr).toBytes());
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload(), ModelUtils.isValidModel(model));
 		rewardVariablesPanel = new RewardVariablesPanel();
-		actionsPanel = new ActionsPanel();
 		observationsPanel = new ObservationsPanel();
 
 		modelBinder.readBean(model);
@@ -149,7 +139,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel,
 				rewardVariablesPanel,
-				actionsPanel,
 				observationsPanel);
 
 		if (isResumeUpload()) {
@@ -163,7 +152,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		uploadModelWizardPanel.addFileUploadFailedListener(errors -> handleUploadFailed(errors));
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleModelDetailsClicked());
 		rewardVariablesPanel.addButtonClickListener(click -> handleRewardVariablesClicked());
-		actionsPanel.addButtonClickListener(click -> handleActionsClicked());
 		observationsPanel.addButtonClickListener(click -> handleObservationsClicked());
 
 		Div sectionTitleWrapper = new Div();
@@ -186,7 +174,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         }
         sections.add(modelDetailsWizardPanel);
         sections.add(rewardVariablesPanel);
-        sections.add(actionsPanel);
         sections.add(observationsPanel);
         VerticalLayout wrapper = new VerticalLayout(
                 sections.toArray(new Component[0]));
@@ -232,7 +219,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			this.model = modelService.getModel(modelId)
 					.orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
 			this.rewardVariables = rewardVariablesDAO.getRewardVariablesForModel(modelId);
-			this.actions = actionDAO.getActionsForModel(modelId);
 			this.observations = observationDAO.getObservationsForModel(modelId);
 		}
 		else {
@@ -252,24 +238,15 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	private void handleRewardVariablesClicked() {
-		if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
-            actionsPanel.setupActionsTable(model.getNumberOfPossibleActions(), actions);
-            setVisibleWizardPanel(actionsPanel);
+		if (featureManager.isEnabled(Feature.OBSERVATIONS_FEATURE)) {
+            observationsPanel.setupObservationTable(model.getNumberOfObservations(), observations);
+            setVisibleWizardPanel(observationsPanel);
         } else {
             saveAndNavigateToNewExperiment();
         }
 	}
-	private void handleActionsClicked() {
-	    if (!actionsPanel.isInputValueValid()) {
-	        return;
-	    }
-	    actions = actionsPanel.getActions();
-	    actionDAO.updateModelActions(model.getId(), actions);
-	    observationsPanel.setupObservationTable(model.getNumberOfObservations(), observations);
-	    setVisibleWizardPanel(observationsPanel);
-	}
 	private void handleObservationsClicked() {
-	    if (!actionsPanel.isInputValueValid()) {
+	    if (!observationsPanel.isInputValueValid()) {
 	        return;
 	    }
 	    saveAndNavigateToNewExperiment();
@@ -298,9 +275,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		experimentId = experiment.getId();
         EventBus.post(new ExperimentCreatedBusEvent(experiment));
 
-        if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
-            actions = actionsPanel.getActions();
-            actionDAO.updateModelActions(model.getId(), actions);
+        if (featureManager.isEnabled(Feature.OBSERVATIONS_FEATURE)) {
             observations = observationsPanel.getObservations();
             observationDAO.updateModelObservations(model.getId(), observations);
         }
@@ -351,7 +326,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			if (result != null) {
 			    AnylogicFileCheckResult alResult = AnylogicFileCheckResult.class.cast(result);
 			    rewardVariables = convertToRewardVariables(model.getId(), alResult.getRewardVariables());
-				model.setNumberOfPossibleActions(alResult.getNumAction());
 				model.setNumberOfObservations(alResult.getNumObservation());
                 model.setRewardVariablesCount(rewardVariables.size());
 			}

@@ -4,7 +4,6 @@
 package io.skymind.pathmind.db.jooq;
 
 
-import io.skymind.pathmind.db.jooq.tables.Action;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
 import io.skymind.pathmind.db.jooq.tables.Metrics;
 import io.skymind.pathmind.db.jooq.tables.MetricsRaw;
@@ -19,7 +18,6 @@ import io.skymind.pathmind.db.jooq.tables.Run;
 import io.skymind.pathmind.db.jooq.tables.RunAdminNote;
 import io.skymind.pathmind.db.jooq.tables.TrainerJob;
 import io.skymind.pathmind.db.jooq.tables.TrainingError;
-import io.skymind.pathmind.db.jooq.tables.records.ActionRecord;
 import io.skymind.pathmind.db.jooq.tables.records.ExperimentRecord;
 import io.skymind.pathmind.db.jooq.tables.records.MetricsRawRecord;
 import io.skymind.pathmind.db.jooq.tables.records.MetricsRecord;
@@ -61,7 +59,6 @@ public class Keys {
     // IDENTITY definitions
     // -------------------------------------------------------------------------
 
-    public static final Identity<ActionRecord, Long> IDENTITY_ACTION = Identities0.IDENTITY_ACTION;
     public static final Identity<ExperimentRecord, Long> IDENTITY_EXPERIMENT = Identities0.IDENTITY_EXPERIMENT;
     public static final Identity<ModelRecord, Long> IDENTITY_MODEL = Identities0.IDENTITY_MODEL;
     public static final Identity<ObservationRecord, Long> IDENTITY_OBSERVATION = Identities0.IDENTITY_OBSERVATION;
@@ -76,8 +73,6 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final UniqueKey<ActionRecord> ACTION_PKEY = UniqueKeys0.ACTION_PKEY;
-    public static final UniqueKey<ActionRecord> ACTION_MODEL_ID_ARRAY_INDEX_KEY = UniqueKeys0.ACTION_MODEL_ID_ARRAY_INDEX_KEY;
     public static final UniqueKey<ExperimentRecord> EXPERIMENT_PKEY = UniqueKeys0.EXPERIMENT_PKEY;
     public static final UniqueKey<ModelRecord> MODEL_PKEY = UniqueKeys0.MODEL_PKEY;
     public static final UniqueKey<ObservationRecord> OBSERVATION_PKEY = UniqueKeys0.OBSERVATION_PKEY;
@@ -100,7 +95,6 @@ public class Keys {
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final ForeignKey<ActionRecord, ModelRecord> ACTION__PM_FK_ACTION_MODEL = ForeignKeys0.ACTION__PM_FK_ACTION_MODEL;
     public static final ForeignKey<ExperimentRecord, ModelRecord> EXPERIMENT__PM_FK_EXPERIMENT_MODEL = ForeignKeys0.EXPERIMENT__PM_FK_EXPERIMENT_MODEL;
     public static final ForeignKey<MetricsRecord, PolicyRecord> METRICS__PM_FK_METRICS_POLICY = ForeignKeys0.METRICS__PM_FK_METRICS_POLICY;
     public static final ForeignKey<MetricsRawRecord, PolicyRecord> METRICS_RAW__PM_FK_METRICS_RAW_POLICY = ForeignKeys0.METRICS_RAW__PM_FK_METRICS_RAW_POLICY;
@@ -119,7 +113,6 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     private static class Identities0 {
-        public static Identity<ActionRecord, Long> IDENTITY_ACTION = Internal.createIdentity(Action.ACTION, Action.ACTION.ID);
         public static Identity<ExperimentRecord, Long> IDENTITY_EXPERIMENT = Internal.createIdentity(Experiment.EXPERIMENT, Experiment.EXPERIMENT.ID);
         public static Identity<ModelRecord, Long> IDENTITY_MODEL = Internal.createIdentity(Model.MODEL, Model.MODEL.ID);
         public static Identity<ObservationRecord, Long> IDENTITY_OBSERVATION = Internal.createIdentity(Observation.OBSERVATION, Observation.OBSERVATION.ID);
@@ -132,8 +125,6 @@ public class Keys {
     }
 
     private static class UniqueKeys0 {
-        public static final UniqueKey<ActionRecord> ACTION_PKEY = Internal.createUniqueKey(Action.ACTION, "action_pkey", Action.ACTION.ID);
-        public static final UniqueKey<ActionRecord> ACTION_MODEL_ID_ARRAY_INDEX_KEY = Internal.createUniqueKey(Action.ACTION, "action_model_id_array_index_key", Action.ACTION.MODEL_ID, Action.ACTION.ARRAY_INDEX);
         public static final UniqueKey<ExperimentRecord> EXPERIMENT_PKEY = Internal.createUniqueKey(Experiment.EXPERIMENT, "experiment_pkey", Experiment.EXPERIMENT.ID);
         public static final UniqueKey<ModelRecord> MODEL_PKEY = Internal.createUniqueKey(Model.MODEL, "model_pkey", Model.MODEL.ID);
         public static final UniqueKey<ObservationRecord> OBSERVATION_PKEY = Internal.createUniqueKey(Observation.OBSERVATION, "observation_pkey", Observation.OBSERVATION.ID);
@@ -154,7 +145,6 @@ public class Keys {
     }
 
     private static class ForeignKeys0 {
-        public static final ForeignKey<ActionRecord, ModelRecord> ACTION__PM_FK_ACTION_MODEL = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.MODEL_PKEY, Action.ACTION, "action__pm_fk_action_model", Action.ACTION.MODEL_ID);
         public static final ForeignKey<ExperimentRecord, ModelRecord> EXPERIMENT__PM_FK_EXPERIMENT_MODEL = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.MODEL_PKEY, Experiment.EXPERIMENT, "experiment__pm_fk_experiment_model", Experiment.EXPERIMENT.MODEL_ID);
         public static final ForeignKey<MetricsRecord, PolicyRecord> METRICS__PM_FK_METRICS_POLICY = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.POLICY_PKEY, Metrics.METRICS, "metrics__pm_fk_metrics_policy", Metrics.METRICS.POLICY_ID);
         public static final ForeignKey<MetricsRawRecord, PolicyRecord> METRICS_RAW__PM_FK_METRICS_RAW_POLICY = Internal.createForeignKey(io.skymind.pathmind.db.jooq.Keys.POLICY_PKEY, MetricsRaw.METRICS_RAW, "metrics_raw__pm_fk_metrics_raw_policy", MetricsRaw.METRICS_RAW.POLICY_ID);

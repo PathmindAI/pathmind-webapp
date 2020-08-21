@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -72,12 +71,9 @@ public class ProjectFileCheckService {
         if (analysisResult != null && analysisResult.isOldVersionFound()) {
             return Optional.of(getErrorMessage(InvalidModelType.OLD_REWARD_VARIABLES));
         }
-        else if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null
+        else if (analysisResult == null || analysisResult.getObservations() == null
                 || analysisResult.getRewardVariables() == null) {
             return Optional.of("Unable to analyze the model.");
-        }
-        else if (analysisResult.getActions() != null && Integer.parseInt(analysisResult.getActions()) == 0) {
-            return Optional.of("Number of actions found to be zero.");
         }
         else if (analysisResult.getObservations() != null && Integer.parseInt(analysisResult.getObservations()) == 0) {
             return Optional.of("Number of observations found to be zero.");
@@ -90,7 +86,6 @@ public class ProjectFileCheckService {
 
     private void setHyperparams(FileCheckResult result, HyperparametersDTO params) {
     	AnylogicFileCheckResult fileCheckResult = AnylogicFileCheckResult.class.cast(result);
-        fileCheckResult.setNumAction(Integer.parseInt(params.getActions()));
     	fileCheckResult.setNumObservation(Integer.parseInt(params.getObservations()));
     	fileCheckResult.setRewardVariableFunction(params.getRewardFunction());
     	fileCheckResult.setRewardVariables(params.getRewardVariables());
