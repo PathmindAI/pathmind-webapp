@@ -160,16 +160,9 @@
     justify-content: center;
     color: var(--lumo-body-text-color);
 }
-.stage-stopped .icon-stopped {
-    width: var(--lumo-font-size-m);
-    height: var(--lumo-font-size-m);
+.stage-stopped icon-stopped {
+    --icon-size: 20px;
     margin-right: 4px;
-}
-.stage-stopped .icon-stopped::after {
-    width: calc(var(--lumo-font-size-m) / 2);
-    height: calc(var(--lumo-font-size-m) / 2);
-    top: calc(var(--lumo-font-size-m) / 4);
-    left: calc(var(--lumo-font-size-m) / 4);
 }
 .stage-stopped .hint-label {
     color: var(--lumo-body-text-color);

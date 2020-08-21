@@ -129,24 +129,20 @@ public class ExperimentsNavBar extends VerticalLayout
                 experimentsNavBarItems.add(navBarItem);
 				if(experiment.equals(selectedExperiment)) {
 					navBarItem.setAsCurrent();
-					currentExperimentNavItem = navBarItem;
 				}
 				rowsWrapper.add(navBarItem);
 		});
 	}
 
     private ExperimentsNavBarItem createExperimentNavBarItem(Experiment experiment) {
-        return new ExperimentsNavBarItem(this, getUISupplier, experimentDAO, experiment, selectExperimentConsumer, segmentIntegrator);
+        return new ExperimentsNavBarItem(getUISupplier, experimentDAO, experiment, selectExperimentConsumer, segmentIntegrator);
     }
 
     public void setCurrentExperiment(Experiment newCurrentExperiment) {
-	    if (currentExperimentNavItem != null) {
-	        currentExperimentNavItem.removeAsCurrent();
-	    }
 		experimentsNavBarItems.stream().forEach(experimentsNavBarItem -> {
+            experimentsNavBarItem.removeAsCurrent();
 			if (experimentsNavBarItem.getExperiment().equals(newCurrentExperiment)) {
 				experimentsNavBarItem.setAsCurrent();
-				currentExperimentNavItem = experimentsNavBarItem;
 			}
 		});
         notificationExperimentUpdatedSubscriber.setExperiment(newCurrentExperiment);

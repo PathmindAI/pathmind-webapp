@@ -13,7 +13,9 @@ class FavoriteStar extends PolymerElement {
         return {
             isFavorite: {
                 type: Boolean,
-                observer: '_isFavoriteChanged'
+                observer: '_isFavoriteChanged',
+                notify: true,
+                reflectToAttribute: true
             }
         }
     }
@@ -36,14 +38,20 @@ class FavoriteStar extends PolymerElement {
                     padding: 0;
                 }
             </style>
-            <vaadin-button theme="tertiary-inline" on-click="toggleFavorite">
+            <vaadin-button theme="tertiary-inline" title="Favorite">
                 <iron-icon icon="vaadin:star-o"></iron-icon>
             </vaadin-button>
         `;
     }
 
-    toggleFavorite(event) {
+    ready() {
+        super.ready();
+        this.addEventListener("click", this._onClick);
+    }
+
+    _onClick(event) {
         event.stopPropagation();
+        this.toggleFavorite();
     }
 
     _isFavoriteChanged(newValue) {
