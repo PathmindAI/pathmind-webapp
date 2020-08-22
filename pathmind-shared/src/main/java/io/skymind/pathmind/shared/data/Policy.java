@@ -30,6 +30,7 @@ public class Policy extends Data
 	private Experiment experiment;
 	private Run run;
 	private transient List<Metrics> metrics;
+	private transient List<MetricsRaw> metricsRaws;
 
     public List<RewardScore> getScores() {
         return scores == null ? Collections.emptyList() : scores;

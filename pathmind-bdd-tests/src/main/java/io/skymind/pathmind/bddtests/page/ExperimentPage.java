@@ -215,4 +215,30 @@ public class ExperimentPage extends PageObject {
     public void checkThatExperimentPageArchivedTagIsShown() {
         assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']/following-sibling::tag-label")).getText(), is("Archived"));
     }
+
+    public void checkSimulationMetricsColumnsTitles() {
+        setImplicitTimeout(3, SECONDS);
+        for (int i = 0; i < 4; i++) {
+            if (getDriver().findElements(By.xpath("//*[@class='metrics-wrapper']/span")).size() != 0) {
+                break;
+            } else {
+                waitABit(60000);
+                getDriver().navigate().refresh();
+            }
+        }
+        resetImplicitTimeout();
+        assertThat(getDriver().findElement(By.xpath("//*[@class='header-row']/span[2]")).getText(), is("Variable Name"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/span")).getText(), is("Value"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4305404-simulation-metrics"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='sparklines-wrapper']/div/span")).getText(), is("Overview"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='sparklines-wrapper']/div/a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4305404-simulation-metrics"));
+    }
+
+    public void clickSimulationMetricsValueIcon() {
+        getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/a")).click();
+    }
+
+    public void clickSimulationMetricsOverviewIcon() {
+        getDriver().findElement(By.xpath("//*[@class='sparklines-wrapper']/div/a")).click();
+    }
 }
