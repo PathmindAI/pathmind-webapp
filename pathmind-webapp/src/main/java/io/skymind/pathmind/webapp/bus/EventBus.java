@@ -65,25 +65,7 @@ public class EventBus {
         EVENT_BUS.subscribers.get(event.getEventType()).stream()
                 .filter(subscriber -> subscriber.filterSameUI(event) && subscriber.filterBusEvent(event) && subscriber.isAttached())
                 .forEach(subscriber -> {
-                        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                        EXECUTOR_SERVICE.execute(() -> {
-                            try {
-                                SecurityContext ctx = SecurityContextHolder.createEmptyContext();
-                                ctx.setAuthentication(authentication);
-                                SecurityContextHolder.setContext(ctx);
-                                subscriber.handleBusEvent(event);
-                            } finally {
-                                SecurityContextHolder.clearContext();
-                            }
-                        });
-        });
-
-        EVENT_BUS.subscribers.get(event.getEventType()).stream().forEach(subscriber -> {
-            if (subscriber != null && subscriber.filterBusEvent(event) && subscriber.isAttached()) {
-                EXECUTOR_SERVICE.execute(() -> {
-                    subscriber.handleBusEvent(event);
-                });
-            }
+                    EXECUTOR_SERVICE.execute(() -> subscriber.handleBusEvent(event));
         });
     }
 
