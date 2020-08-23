@@ -35,6 +35,11 @@
     box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.08);
 }
 
+:host([theme~="small"]) {
+    min-width: auto;
+    height: auto;
+}
+
 :host([theme~="tertiary"]),
 :host([theme~="tertiary-inline"]),
 :host([theme~="tertiary"][disabled]),
@@ -81,13 +86,19 @@
 
 /* Search box button*/
 :host(.search-box_button) {
+    --iron-icon-fill-color: var(--lumo-secondary-text-color);
     height: auto;
     background: transparent;
     border: none;
     border-radius: 0;
     margin: 0;
-
-    --iron-icon-fill-color: var(--pm-text-color);
+}
+:host(.search-box_button:hover) {
+    --iron-icon-fill-color: var(--lumo-body-text-color);
+    box-shadow: none;
+}
+:host(.search-box_button:hover)::before {
+    opacity: 0;
 }
 
 /* Large image button*/

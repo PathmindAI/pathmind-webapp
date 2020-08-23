@@ -88,7 +88,7 @@ public class UpdaterService {
         ExperimentState experimentState = providerJobStatus.getExperimentState();
 
         final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(),
-                jobHandle, experimentState);
+                jobHandle, experimentState, false);
 
         setStoppedAtForFinishedPolicies(policies, experimentState);
         setEventualInformationAboutWhyTheRunEnded(run, providerJobStatus);
@@ -120,7 +120,7 @@ public class UpdaterService {
         if (run.getStatusEnum() == RunStatus.Completed) {
             log.debug("final DB updates for " + run.getJobId());
             List<Policy> policies = getPoliciesFromProgressProvider(Collections.emptyMap(), run.getId(),
-                    run.getJobId(), providerJobStatus.getExperimentState());
+                    run.getJobId(), providerJobStatus.getExperimentState(), true);
             setStoppedAtForFinishedPolicies(policies, providerJobStatus.getExperimentState());
             runDAO.updatePolicyData(run, policies);
             return policies;
@@ -158,7 +158,8 @@ public class UpdaterService {
                 .forEach(policy -> policy.setStoppedAt(terminatedTrials.get(policy.getExternalId())));
     }
 
-    private List<Policy> getPoliciesFromProgressProvider(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId, String jobHandle, ExperimentState experimentState) {
+    private List<Policy> getPoliciesFromProgressProvider(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId,
+                                                         String jobHandle, ExperimentState experimentState, boolean isFinalUpdate) {
         if (experimentState == null) {
             return Collections.emptyList();
         }
@@ -175,8 +176,14 @@ public class UpdaterService {
                 List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
                 List<Metrics> previousMetrics = runDAO.getMetrics(runId, e.getKey());
                 int numReward = runDAO.getRewardNumForRun(runId);
+                Policy policy = ProgressInterpreter.interpret(e, previousScores, previousMetrics, numReward);
+                if (isFinalUpdate) {
+                    List<MetricsRaw> previousMetricsRaw = runDAO.getMetricsRaw(runId, e.getKey());
+                    int lastIteration = policy.getMetrics().get(policy.getMetrics().size() - 1).getIteration();
+                    ProgressInterpreter.interpretMetricsRaw(e, policy, previousMetricsRaw, lastIteration - 10, numReward);
+                }
 
-                return ProgressInterpreter.interpret(e, previousScores, previousMetrics, numReward);
+                return policy;
             })
             .collect(Collectors.toList());
     }

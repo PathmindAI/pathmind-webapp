@@ -1544,6 +1544,31 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20200730-01" author="daehyun@skymind.io">
+        <createTable tableName="METRICS_RAW">
+            <column name="POLICY_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_METRICS_RAW_POLICY" references="POLICY(ID)"/>
+            </column>
+            <column name="ITERATION" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EPISODE" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INDEX" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALUE" type="DECIMAL(32,17)"/>
+        </createTable>
+        <createIndex tableName="METRICS_RAW" indexName="METRICS_RAW_POLICY_ID_INDEX">
+            <column name="POLICY_ID"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="METRICS_RAW" indexName="METRICS_RAW_POLICY_ID_INDEX"/>
+            <dropTable tableName="METRICS_RAW"/>
+        </rollback>
+    </changeSet>
+
 
     <changeSet id="20200727-02" author="bruno.rezende@ext.vaadin.com">
         <createProcedure>

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
@@ -71,7 +72,7 @@ public class LoginView extends HorizontalLayout
 	public LoginView(@Value("${pathmind.privacy-policy.url}") String privacyPolicyUrl,
 					 @Value("${pathmind.terms-of-use.url}") String termsOfUseUrl)
 	{
-		addClassName("login-panel-cont");
+		addClassName("panel-wrapper");
 		Span welcome = LabelFactory.createLabel("Welcome to", CssPathmindStyles.WELCOME_TEXT);
 		Image img = new Image("frontend/images/pathmind-logo.svg", "Pathmind logo");
 		img.setClassName("logo");
@@ -117,7 +118,8 @@ public class LoginView extends HorizontalLayout
 	}
 
 	private void updateEmailNotVerified() {
-		Button resendVerification = new Button("Resend");
+        Button resendVerification = new Button("Resend");
+        resendVerification.addThemeVariants(ButtonVariant.LUMO_SMALL);
 		resendVerification.getElement().setAttribute("title", "Send verification email again.");
 		resendVerification.addClickListener(e -> {
 			PathmindUser user = userService.findByEmailIgnoreCase(email);

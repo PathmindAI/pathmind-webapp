@@ -10,6 +10,7 @@ import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent;
 import io.skymind.pathmind.shared.data.Metrics;
+import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
@@ -94,6 +95,10 @@ public class UpdaterListener {
                                             policyDAO.getMetricsForPolicies(Collections.singletonList(policyId))
                                                     .getOrDefault(policyId, Collections.emptyList());
                                     policy.setMetrics(metrics);
+                                    List<MetricsRaw> metricsRaw =
+                                        policyDAO.getMetricsRawForPolicies(Collections.singletonList(policyId))
+                                            .getOrDefault(policyId, Collections.emptyList());
+                                    policy.setMetricsRaws(metricsRaw);
                                     EventBus.post(new PolicyUpdateBusEvent(Collections.singletonList(policy)));
                                     break;
                                 }

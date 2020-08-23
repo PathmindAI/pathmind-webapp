@@ -7,6 +7,7 @@ package io.skymind.pathmind.db.jooq;
 import io.skymind.pathmind.db.jooq.tables.Action;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
 import io.skymind.pathmind.db.jooq.tables.Metrics;
+import io.skymind.pathmind.db.jooq.tables.MetricsRaw;
 import io.skymind.pathmind.db.jooq.tables.Model;
 import io.skymind.pathmind.db.jooq.tables.Observation;
 import io.skymind.pathmind.db.jooq.tables.PathmindUser;
@@ -49,6 +50,11 @@ public class Tables {
      * The table <code>public.metrics</code>.
      */
     public static final Metrics METRICS = Metrics.METRICS;
+
+    /**
+     * The table <code>public.metrics_raw</code>.
+     */
+    public static final MetricsRaw METRICS_RAW = MetricsRaw.METRICS_RAW;
 
     /**
      * The table <code>public.model</code>.

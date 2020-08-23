@@ -32,20 +32,6 @@ Feature: Nav bar search
     When Click notes search btn
     Then Check search result page project name contains archived tag
 
-  Scenario: Check model name search
-    Given Login to the pathmind
-    When Create new CoffeeShop project with single reward function
-    When Input '1' to the notes search field
-    When Click notes search btn
-    When Check search result page contains model name '1'
-
-  Scenario: Check experiment name search
-    Given Login to the pathmind
-    When Create new CoffeeShop project with single reward function
-    When Input '1' to the notes search field
-    When Click notes search btn
-    When Check search result page contains model name '1'
-
   Scenario: Check search field clear button
     Given Login to the pathmind
     When Input 'AutotestNoteSearch' to the notes search field
@@ -92,6 +78,12 @@ Feature: Nav bar search
     When Click notes search btn
     Then Check Search Results for value is 'AutotestNoteSearch'
 
+  Scenario: Check Search Results for value is limited to 200 characters
+    Given Login to the pathmind
+    When Input 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qua' to the notes search field
+    When Click notes search btn
+    Then Check Search Results for value is 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qu'
+
   Scenario: Check search result redirect to project page
     Given Login to the pathmind
     When Choose search option Project
@@ -101,26 +93,6 @@ Feature: Nav bar search
     When Click in 'AutotestProject' button
     When Wait a bit 4000 ms
     Then Check that project page is opened
-
-  Scenario: Check search result redirect to model page
-    Given Login to the pathmind
-    When Choose search option Model
-    When Input 'Model 1' to the notes search field
-    When Click notes search btn
-    When Wait for search result page
-    When Click in 'Model #1' button
-    When Wait a bit 4000 ms
-    Then Check that models page opened
-
-  Scenario: Check search result redirect to experiment page
-    Given Login to the pathmind
-    When Choose search option Experiment
-    When Input 'Experiment 1' to the notes search field
-    When Click notes search btn
-    When Wait for search result page
-    When Click in 'Experiment #1' button
-    When Wait a bit 4000 ms
-    Then Check that experiment page is opened
 
   Scenario: Check search result project name
     Given Login to the pathmind
@@ -132,43 +104,3 @@ Feature: Nav bar search
     Then Check search result tag is 'Project'
     When Refresh page
     Then Check search result group project is 'AutotestProject15'
-
-  Scenario Outline: Check search result model name
-    Given Login to the pathmind
-    When Choose search option Model
-    When Input '<search request>' to the notes search field
-    When Click notes search btn
-    Then Check Search Results for value is '<search request>'
-    When Wait a bit 4000 ms
-    Then Check search result tag is 'Model'
-    When Refresh page
-    Then Check search result group model is '<search result>'
-
-    Examples:
-      | search request | search result |
-      | Model #1       | Model #1      |
-      | model #1       | Model #1      |
-      | Model 1        | Model #1      |
-      | model 1        | Model #1      |
-      | 1              | Model #1      |
-      | #1             | Model #1      |
-
-  Scenario Outline: Check search result experiment name
-    Given Login to the pathmind
-    When Choose search option Experiment
-    When Input '<search request>' to the notes search field
-    When Click notes search btn
-    Then Check Search Results for value is '<search request>'
-    When Wait a bit 4000 ms
-    Then Check search result tag is 'Experiment'
-    When Refresh page
-    Then Check search result group experiment is '<search result>'
-
-    Examples:
-      | search request | search result |
-      | Experiment #1  | Experiment #1 |
-      | experiment #1  | Experiment #1 |
-      | Experiment 1   | Experiment #1 |
-      | experiment 1   | Experiment #1 |
-      | 1              | Experiment #1 |
-      | #1             | Experiment #1 |

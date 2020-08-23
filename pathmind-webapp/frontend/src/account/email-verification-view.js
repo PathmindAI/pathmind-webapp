@@ -11,8 +11,13 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 class EmailVerificationView extends PolymerElement {
   static get template() {
     return html`
-      <style include="pathmind-dialog-view sign-up-view-styles"></style>
-      <div class="content">
+      <style include="shared-styles pathmind-dialog-view">
+        p {
+            width: 100%;
+        }
+      </style>
+      <vaadin-horizontal-layout class="panel-wrapper">
+        <div class="content">
         <span class="welcome-text">Welcome to</span>
         <img
           class="logo"
@@ -34,7 +39,7 @@ class EmailVerificationView extends PolymerElement {
           </vaadin-vertical-layout>
         </vaadin-vertical-layout>
       </div>
-    `;
+    </vaadin-horizontal-layout>`;
   }
 
   static get is() {

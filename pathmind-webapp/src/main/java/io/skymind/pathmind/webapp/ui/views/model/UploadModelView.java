@@ -51,6 +51,8 @@ import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
@@ -353,14 +355,16 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private void setVisibleWizardPanel(Component wizardPanel) {
 		wizardPanels
 				.forEach(panel -> panel.setVisible(panel.equals(wizardPanel)));
-	}
+    }
 
-	/**
-	 * The titles are in the individual panels as the title changes based on the state.
-	 */
-	protected VerticalLayout getTitlePanel() {
-		return null;
-	}
+    private Breadcrumbs createBreadcrumbs() {
+        return new Breadcrumbs(project, model);
+    }
+
+    @Override
+    protected Component getTitlePanel() {
+        return new ScreenTitlePanel(createBreadcrumbs());
+    }
 
 	@Override
 	public void updateStatus(double percentage) {

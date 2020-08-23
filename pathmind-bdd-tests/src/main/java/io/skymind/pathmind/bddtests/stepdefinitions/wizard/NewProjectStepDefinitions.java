@@ -40,4 +40,9 @@ public class NewProjectStepDefinitions {
     public void checkThatNewProjectPageOpened() {
         newProjectSteps.checkThatNewProjectPageOpened();
     }
+
+    @Then("^Check wizard model upload breadcrumb is shown$")
+    public void checkWizardModelUploadBreadcrumbIsShown() {
+        newProjectSteps.checkWizardModelUploadBreadcrumbIsShown();
+    }
 }

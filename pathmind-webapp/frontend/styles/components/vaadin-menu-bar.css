@@ -1,4 +1,8 @@
 :host(.account-menu) span {
+  align-self: center;
+  font-family: var(--lumo-font-family-header);
+  font-size: var(--lumo-font-size-s);
+  font-weight: 400;
   color: var(--pm-text-color);
   margin-left: var(--lumo-space-xs);
 }
@@ -6,6 +10,7 @@
 :host(.account-menu) iron-icon {
   --iron-icon-height: 1rem;
   --iron-icon-width: 1rem;
+  align-self: center;
   fill: var(--pm-text-color);
 }
 

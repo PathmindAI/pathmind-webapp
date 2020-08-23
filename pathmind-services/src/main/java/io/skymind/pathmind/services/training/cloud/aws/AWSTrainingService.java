@@ -57,7 +57,8 @@ public class AWSTrainingService extends TrainingService {
                 false,
                 50,
                 false,
-                model.getActionTupleSize()
+                model.getActionTupleSize(),
+                true
         );
 
         return executionProvider.execute(spec);        

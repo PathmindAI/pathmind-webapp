@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.components.navigation;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -80,8 +81,9 @@ public class Breadcrumbs extends HorizontalLayout
 				items.add(new BreadcrumbItem("Model #" + model.getName(), UploadModelView.class, target));
 			}
 			else {
+                String modelName = model.getName() != null && NumberUtils.isCreatable(model.getName()) ? "Model #"+model.getName() : "Upload Model";
                 String packageName = model.getPackageName() != null ?  " ("+model.getPackageName()+")" : "";
-				items.add(new BreadcrumbItem("Model #" + model.getName() + packageName, ModelView.class, model.getId()));
+				items.add(new BreadcrumbItem(modelName + packageName, ModelView.class, model.getId()));
 			}
 		}
 		if (experiment != null) {

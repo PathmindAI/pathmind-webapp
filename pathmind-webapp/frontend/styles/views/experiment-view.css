@@ -33,9 +33,10 @@
     flex: 1;
     width: 100%;
     max-height: calc(1.8em * 20);
-    font-size: var(--lumo-font-size-s);
+    font-size: var(--lumo-font-size-xs);
     line-height: 1.8;
     padding: var(--lumo-space-s);
+    padding-top: 0;
     border: 1px solid var(--pm-gray-color);
     border-radius: var(--lumo-border-radius);
     overflow: auto;
@@ -43,6 +44,44 @@
 
 .experiment-view .reward-variables-table {
     font-size: var(--lumo-font-size-xs);
+}
+
+.experiment-view .reward-variables-table[readonly] .header-row {
+    display: block;
+}
+
+.experiment-view .reward-variables-table[readonly] .header-row span:last-child {
+    justify-content: flex-start;
+    line-height: 2rem;
+    padding: 0;
+}
+
+.experiment-view .simulation-metrics-table-wrapper .header {
+    display: flex;
+    justify-content: flex-end;
+    position: sticky;
+    width: 100%;
+    top: 0;
+    color: var(--pm-secondary-text-color);
+    background-color: white;
+}
+
+.experiment-view .metrics-wrapper .header span {
+    justify-content: flex-end;
+}
+
+.experiment-view .simulation-metrics-table-wrapper .header .helper-icon {
+    flex-shrink: 0;
+    margin-left: var(--lumo-space-xxs);
+}
+
+.experiment-view .simulation-metrics-table-wrapper .header .helper-icon:hover {
+    color: var(--pm-secondary-text-color);
+}
+
+.experiment-view .simulation-metrics-table-wrapper .header iron-icon {
+    --iron-icon-width: var(--lumo-font-size-s);
+    --iron-icon-height: var(--lumo-font-size-s);
 }
 
 .experiment-view .reward-variables-table span:first-child {
@@ -59,14 +98,13 @@
     align-items: center;
     flex: 1 0 auto;
     height: 2rem;
-    font-size: var(--lumo-font-size-xs);
     line-height: 1;
     margin-left: var(--lumo-space-s);
 }
 
 .experiment-view .metrics-wrapper,
 .experiment-view .sparklines-wrapper {
-    flex: 0;
+    flex: 1 0 0;
     line-height: 2rem;
 }
 

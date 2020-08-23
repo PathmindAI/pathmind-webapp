@@ -5,9 +5,7 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.concurrent.DelegatingSecurityContextExecutorService;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,7 +46,7 @@ public class EventBus {
     private static final EventBus EVENT_BUS = new EventBus();
     private static ConcurrentHashMap<Component, List<EventBusSubscriber>> componentSubscribers = new ConcurrentHashMap<>();
 
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
+    private static final ExecutorService EXECUTOR_SERVICE = new DelegatingSecurityContextExecutorService(Executors.newCachedThreadPool());
 
     private Map<BusEventType, List<EventBusSubscriber>> subscribers;
 
@@ -78,6 +76,14 @@ public class EventBus {
                                 SecurityContextHolder.clearContext();
                             }
                         });
+        });
+
+        EVENT_BUS.subscribers.get(event.getEventType()).stream().forEach(subscriber -> {
+            if (subscriber != null && subscriber.filterBusEvent(event) && subscriber.isAttached()) {
+                EXECUTOR_SERVICE.execute(() -> {
+                    subscriber.handleBusEvent(event);
+                });
+            }
         });
     }
 
