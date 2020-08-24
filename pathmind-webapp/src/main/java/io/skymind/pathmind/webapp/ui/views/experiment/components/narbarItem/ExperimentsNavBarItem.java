@@ -20,7 +20,6 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemRunUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import java.util.Optional;
@@ -31,7 +30,6 @@ import java.util.function.Supplier;
 @JsModule("./src/experiment/experiment-navbar-item.js")
 public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem.Model> {
 
-    private ExperimentsNavBar experimentsNavbar;
     private Supplier<Optional<UI>> getUISupplier;
     private ExperimentDAO experimentDAO;
 
@@ -42,7 +40,6 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     private SegmentIntegrator segmentIntegrator;
 
     public ExperimentsNavBarItem(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator) {
-        this.experimentsNavbar = experimentsNavbar;
         this.getUISupplier = getUISupplier;
         this.experimentDAO = experimentDAO;
         this.experiment = experiment;
@@ -67,13 +64,13 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         ConfirmationUtils.archive("Experiment #"+experiment.getName(), () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experiment, true);
             segmentIntegrator.archived(Experiment.class, true);
-            ExperimentUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
+            // ExperimentUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
         });
     }
 
     private void setExperimentDetails(UI ui, Experiment experiment) {
         RunStatus overallExperimentStatus = ExperimentUtils.getTrainingStatus(experiment);
-        getModel().setStatusIcon(getStatusIcon(overallExperimentStatus));
+        getModel().setStatus(getIconStatus(overallExperimentStatus));
         getModel().setIsDraft(ExperimentUtils.isDraftRunType(experiment));
         getModel().setIsFavorite(experiment.isFavorite());
         getModel().setExperimentName(experiment.getName());
@@ -96,15 +93,15 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         EventBus.unsubscribe(this);
     }
 
-    private String getStatusIcon(RunStatus status) {
+    private String getIconStatus(RunStatus status) {
         if(ExperimentUtils.isDraftRunType(experiment))
             return "pencil";
         if (RunStatus.isRunning(status)) {
-            return("icon-loading-spinner");
+            return "icon-loading-spinner";
         } else if (status == RunStatus.Completed) {
             return "check";
         } else if (status == RunStatus.Killed || status == RunStatus.Stopping) {
-            return "icon-stopped";
+            return "stopped";
         }
         return "exclamation";
     }
@@ -131,7 +128,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     }
 
     private void updateStatus(RunStatus runStatus) {
-        getModel().setStatusIcon(getStatusIcon(runStatus));
+        getModel().setStatus(getIconStatus(runStatus));
     }
 
     public void updateExperiment(Experiment experiment) {
@@ -154,6 +151,6 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         void setIsCurrent(boolean isCurrent);
         void setIsDraft(boolean isDraft);
         void setIsFavorite(boolean isFavorite);
-        void setStatusIcon(String statusIcon);
+        void setStatus(String IconStatus);
     }
 }

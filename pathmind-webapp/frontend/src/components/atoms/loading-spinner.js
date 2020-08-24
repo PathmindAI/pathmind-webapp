@@ -50,15 +50,6 @@ class LoadingSpinner extends PolymerElement {
             <div></div>
         `;
     }
-
-    constructor() {
-        super();
-    }
-
-    static get properties() {
-        return {
-        }
-    }
 }
 
 customElements.define(LoadingSpinner.is, LoadingSpinner);

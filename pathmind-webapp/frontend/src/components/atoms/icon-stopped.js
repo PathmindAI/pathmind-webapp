@@ -30,15 +30,6 @@ class IconStopped extends PolymerElement {
             <div></div>
         `;
     }
-
-    constructor() {
-        super();
-    }
-
-    static get properties() {
-        return {
-        }
-    }
 }
 
 customElements.define(IconStopped.is, IconStopped);

@@ -1,6 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "../components/atoms/icon-stopped.js";
-import "../components/atoms/loading-spinner.js";
+import "../components/atoms/status-icon.js";
 
 class ExperimentNavbarItem extends PolymerElement {
     static get is() {
@@ -27,20 +26,6 @@ class ExperimentNavbarItem extends PolymerElement {
                     background-color: white;
                     border-color: var(--pm-gray-color-lighter);
                 }
-                iron-icon[icon="vaadin:pencil"] {
-                    --iron-icon-width: 1rem;
-                    --iron-icon-height: 1rem;
-                    --iron-icon-fill-color: var(--lumo-contrast-90pct);
-                    margin: 0.125rem;
-                }
-                iron-icon[icon="vaadin:check-circle"] {
-                    --iron-icon-width: var(--lumo-font-size-l);
-                    color: var(--pm-green-color);
-                }
-                iron-icon[icon="vaadin:exclamation-circle-o"] {
-                    --iron-icon-width: var(--lumo-font-size-l);
-                    color: var(--pm-danger-color);
-                }
                 .experiment-name {
                     font-size: var(--lumo-font-size-s);
                     line-height: 1em;
@@ -66,7 +51,7 @@ class ExperimentNavbarItem extends PolymerElement {
                     padding: 0;
                 }
             </style>
-            <div id="status"></div>
+            <status-icon status=[[status]]></status-icon>
             <div class="experiment-name">
                 <p>Experiment #[[experimentName]]<favorite-star is-favorite="{{isFavorite}}"></favorite-star></p>
                 <p>Created [[createdDate]]</p>
@@ -80,10 +65,6 @@ class ExperimentNavbarItem extends PolymerElement {
                 <iron-icon icon="vaadin:archive" slot="prefix"></iron-icon>
             </vaadin-button>
         `;
-    }
-
-    constructor() {
-        super();
     }
 
     static get properties() {
@@ -109,14 +90,12 @@ class ExperimentNavbarItem extends PolymerElement {
                 notify: true,
                 reflectToAttribute: true,
             },
-            statusIcon: {
+            status: {
                 type: String,
-                observer: '_statusIconChanged',
-                notify: true,
             }
         }
     }
-
+    
     ready() {
         super.ready();
         this.addEventListener("click", this.handleRowClicked);
@@ -125,27 +104,6 @@ class ExperimentNavbarItem extends PolymerElement {
 
     onArchiveButtonClicked(event) {
         event.stopPropagation();
-    }
-
-    _statusIconChanged(status) {
-        switch(status) {
-            case "pencil":
-                this.$.status.innerHTML = `<iron-icon icon="vaadin:pencil"></iron-icon>`;
-                break;
-            case "icon-loading-spinner":
-                this.$.status.innerHTML = `<loading-spinner></loading-spinner>`;
-                break;
-            case "comments":
-                this.$.status.innerHTML = `<iron-icon icon="vaadin:check-circle"></iron-icon>`;
-                break;
-            case "icon-stopped":
-                this.$.status.innerHTML = `<icon-stopped></icon-stopped>`;
-                break;
-            case "exclamation":
-            default:
-                this.$.status.innerHTML = `<iron-icon icon="vaadin:exclamation-circle-o"></iron-icon>`;
-                break;
-        }
     }
 }
 

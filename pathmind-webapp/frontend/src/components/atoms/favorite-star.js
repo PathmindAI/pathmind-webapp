@@ -5,10 +5,6 @@ class FavoriteStar extends PolymerElement {
         return "favorite-star";
     }
 
-    constructor() {
-        super();
-    }
-
     static get properties() {
         return {
             isFavorite: {
@@ -44,8 +40,8 @@ class FavoriteStar extends PolymerElement {
         `;
     }
 
-    ready() {
-        super.ready();
+    constructor() {
+        super();
         this.addEventListener("click", this._onClick);
     }
 
