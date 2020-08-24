@@ -42,8 +42,6 @@ public class ProjectFileCheckService {
 
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
                         HyperparametersDTO analysisResult = client.analyze(tempFile);
-                        // TODO OnurI: Remove after actual model-analyzer integration
-//                        analysisResult.setRewardVariables(Arrays.asList("sample[0]", "sample[1]", "sample[2]"));
                         Optional<String> optionalError = verifyAnalysisResult(analysisResult);
                         if (optionalError.isPresent()) {
                             statusUpdater.updateError(optionalError.get());
