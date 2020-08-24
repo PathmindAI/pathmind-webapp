@@ -52,7 +52,7 @@ class SparkLine extends PolymerElement {
                 .sparkline-9 {
                     --sparkline-color: 209, 177, 18;
                 }
-                .tooltip {
+                #tooltip {
                     position: fixed;
                     line-height: 1.2;
                     background-color: rgba(247, 247, 247, .85);
@@ -65,7 +65,7 @@ class SparkLine extends PolymerElement {
                 }
             </style>
             <svg width="100" height="24" stroke-width="2"></svg>
-            <div class="tooltip" hidden="true">
+            <div id="tooltip" hidden="true">
                 <!-- <div class="iteration">
                     <span class="label">Iteration</span> <span class="data">[[iteration]]</span>
                 </div> -->
@@ -100,6 +100,10 @@ class SparkLine extends PolymerElement {
             episodeCount: {
                 type: Number,
                 value: 0,
+            },
+            isFlat: {
+                type: Boolean,
+                value: false,
             }
         }
     }
@@ -110,16 +114,15 @@ class SparkLine extends PolymerElement {
 
     setSparkLine(dataPoints, variableIndex) {
         const options = {
-            onmousemove: (event, datapoint) => {
-              const tooltip = this.shadowRoot.querySelector(".tooltip");
-              this.value = (this.smallestNum + datapoint.value).toFixed(2);
+            onmousemove: (event, dataPoint) => {
+              const tooltip = this.$.tooltip;
+              this.value = this.isFlat ? this.smallestNum : (this.smallestNum + dataPoint.value).toFixed(2);
               tooltip.hidden = false;
               tooltip.style.top = `${event.clientY}px`;
               tooltip.style.left = `${event.clientX + 20}px`;
             },
             onmouseout: () => {
-              const tooltip = this.shadowRoot.querySelector(".tooltip");
-              tooltip.hidden = true;
+              this.$.tooltip.hidden = true;
             }
         };
         const svgElement = this.shadowRoot.querySelector("svg");
@@ -128,8 +131,31 @@ class SparkLine extends PolymerElement {
     }
 
     calibrateScale(originalDataPoints) {
+        const originalDataPointsLength = originalDataPoints.length;
+        const sumOfDataPoints = originalDataPoints.reduce((a, b) => a+b);
         this.smallestNum = originalDataPoints.reduce((a, b) => Math.min(a, b));
+
+        if (this.checkDataPointsChange(this.smallestNum*originalDataPointsLength, sumOfDataPoints)) {
+            this.isFlat = true;
+            return this.processDataPoints(originalDataPoints);
+        }
         return originalDataPoints.map(dataPoint => dataPoint - this.smallestNum);
+    }
+
+    checkDataPointsChange(smallestNumTimesLength, sumOfDataPoints) {
+        return this.trimInaccurateFloatingPoints(sumOfDataPoints) === this.trimInaccurateFloatingPoints(smallestNumTimesLength);
+    }
+
+    trimInaccurateFloatingPoints(num) {
+        return Number((num).toFixed(6));
+    }
+
+    // Only called when all data points are equal
+    processDataPoints(originalDataPoints) {
+        if (this.smallestNum === 0) {
+            return originalDataPoints.map(() => 1);
+        }
+        return originalDataPoints;
     }
 }
 
