@@ -6,7 +6,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -24,6 +23,7 @@ import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.shared.utils.MetricsRawUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
@@ -50,6 +50,7 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
@@ -59,6 +60,7 @@ import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -70,6 +72,7 @@ import java.util.stream.IntStream;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.*;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
+@Slf4j
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
 
@@ -89,6 +92,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private List<Experiment> experiments = new ArrayList<>();
     private List<Double> simulationMetrics = new ArrayList<>();
     private List<double[]> sparklinesData = new ArrayList<>();
+    private List<String> uncertainty = new ArrayList<>();
     private Boolean showSimulationMetrics;
 
     private UserCaps userCaps;
@@ -249,12 +253,26 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         updateSimulationMetricsData();
 
+        if (simulationMetrics.size() > 0) {
+            Div metricsHeader = new Div(new Span("Value"), new SimulationMetricsInfoLink());
+            metricsHeader.addClassName("header");
+            metricsWrapper.add(metricsHeader);
+
+            Div sparklineHeader = new Div(new Span("Overview"), new SimulationMetricsInfoLink());
+            sparklineHeader.addClassName("header");
+            sparklinesWrapper.add(sparklineHeader);
+        }
+
         IntStream.range(0, simulationMetrics.size())
-        .forEach(idx -> {
-                    metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx))));
+                .forEach(idx -> {
                     SparkLine sparkLine = new SparkLine();
                     sparkLine.setSparkLine(sparklinesData.get(idx), idx);
                     sparklinesWrapper.add(sparkLine);
+                    if (uncertainty != null && !uncertainty.isEmpty()) {
+                        metricsWrapper.add(new Span(uncertainty.get(idx)));
+                    } else {
+                        metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx))));
+                    }
                 });
     }
 
@@ -262,6 +280,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         List<Metrics> metricsList = policy == null ? null : policy.getMetrics();
         sparklinesData.clear();
         simulationMetrics.clear();
+        uncertainty.clear();
 
         if (metricsList != null && metricsList.size() > 0) {
             // set the last metrics
@@ -285,6 +304,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             sparkLineMap.entrySet().stream()
                 .map(e -> e.getValue().stream().mapToDouble(Double::doubleValue).toArray())
                 .forEach(arr -> sparklinesData.add(arr));
+        }
+
+        List<MetricsRaw> metricsRawList = policy == null ? null : policy.getMetricsRaws();
+        if (metricsRawList != null && metricsRawList.size() > 0) {
+            Collections.sort(metricsRawList, Comparator.comparingInt(MetricsRaw::getIteration));
+            Map<Integer, List<Double>> uncertaintyMap = MetricsRawUtils.toIndexAndMetricRawData(metricsRawList);
+
+            uncertainty = uncertaintyMap.values().stream()
+                .map(list -> PathmindNumberUtils.calculateUncertainty(list))
+                .collect(Collectors.toList());
         }
     }
 

@@ -65,6 +65,19 @@ Feature: Experiment page Simulation Metrics
     When Click project start run button
     Then Check that <simulation metrics count> metrics are shown for reward variables
     Then Check that <simulation metrics count> sparklines are shown for reward variables
+    Then Check Simulation Metrics columns titles
+    Then Click simulation metrics value icon
+    When Open tab 1
+    Then Check page title tag text is Simulation Metrics | Pathmind Knowledge Base
+    Then Check page url is https://help.pathmind.com/en/articles/4305404-simulation-metrics
+    When Close browser tab
+    When Open tab 0
+    Then Click simulation metrics overview icon
+    When Open tab 1
+    Then Check page title tag text is Simulation Metrics | Pathmind Knowledge Base
+    Then Check page url is https://help.pathmind.com/en/articles/4305404-simulation-metrics
+    When Close browser tab
+    When Open tab 0
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button

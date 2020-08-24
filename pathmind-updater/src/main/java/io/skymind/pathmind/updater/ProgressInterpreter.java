@@ -3,10 +3,8 @@ package io.skymind.pathmind.updater;
 import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
-import io.skymind.pathmind.shared.data.Metrics;
-import io.skymind.pathmind.shared.data.MetricsThisIter;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.RewardScore;
+import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.utils.MetricsRawUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
@@ -28,7 +26,8 @@ public class ProgressInterpreter {
         EPISODE_REWARD_MIN("episode_reward_min"),
         EPISODE_REWARD_MEAN("episode_reward_mean"),
         EPISODES_THIS_ITER("episodes_this_iter"),
-        TRAINING_ITERATION("training_iteration");
+        TRAINING_ITERATION("training_iteration"),
+        METRICS_RAW("hist_stats/metrics_raw");
 
         String column;
 
@@ -36,8 +35,8 @@ public class ProgressInterpreter {
             this.column = column;
         }
 
-        static String[] columns(int numReward) {
-            List<String> columns = Arrays.stream(values()).map(e -> e.column).collect(Collectors.toList());
+        static String[] metricsColumns(int numReward) {
+            List<String> columns = new ArrayList<>(Arrays.asList(TRAINING_ITERATION.column));
             for (int i = 0; i < numReward; i++) {
                 columns.add(metricsMax(i));
                 columns.add(metricsMin(i));
@@ -45,6 +44,14 @@ public class ProgressInterpreter {
             }
 
             return columns.toArray(new String[0]);
+        }
+
+        static RAY_PROGRESS[] scoreColumns() {
+            return new RAY_PROGRESS[] {EPISODE_REWARD_MAX, EPISODE_REWARD_MIN, EPISODE_REWARD_MEAN, EPISODES_THIS_ITER, TRAINING_ITERATION};
+        }
+
+        static String[] metricsRawColumns() {
+            return new String[] {EPISODES_THIS_ITER.column, TRAINING_ITERATION.column, METRICS_RAW.column};
         }
 
         static final String metrics_max = "custom_metrics/metrics_%d_max";
@@ -121,7 +128,7 @@ public class ProgressInterpreter {
 
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
-        settings.selectFields(RAY_PROGRESS.values());
+        settings.selectFields(RAY_PROGRESS.scoreColumns());
         settings.getFormat().setLineSeparator("\n");
 
         CsvParser parser = new CsvParser(settings);
@@ -154,7 +161,7 @@ public class ProgressInterpreter {
 
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
-        settings.selectFields((RAY_PROGRESS.columns(numReward)));
+        settings.selectFields((RAY_PROGRESS.metricsColumns(numReward)));
 
         CsvParser parser = new CsvParser(settings);
         List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
@@ -185,5 +192,45 @@ public class ProgressInterpreter {
             }
             policy.setMetrics(metrics);
         }
+    }
+
+    public static void interpretMetricsRaw(Map.Entry<String, String> entry, Policy policy, List<MetricsRaw> previousMetricsRaw, int startIteration, int numReward) {
+        List<MetricsRaw> metricsRaws = previousMetricsRaw == null || previousMetricsRaw.size() == 0 ? new ArrayList<>() : previousMetricsRaw;
+        final int lastIteration = metricsRaws.size() == 0 ? Math.max(startIteration, 0) : metricsRaws.get(metricsRaws.size() - 1).getIteration();;
+
+        CsvParserSettings settings = new CsvParserSettings();
+        settings.setHeaderExtractionEnabled(true);
+        // to enable auto expansion we can set -1, but it can cause OOM
+        // so i set it 81960 for now(tested with 30 reward variables)
+        // https://s3.console.aws.amazon.com/s3/object/dh-training-dynamic-files.pathmind.com/id1234/output/PPO_PathmindEnvironment_0_num_sgd_iter%253D20%252Csgd_minibatch_size%253D128%252Ctrain_batch_size%253D12000_2020-08-05_20-46-15kvcndt60/progress.csv?region=us-east-1&tab=overview
+//        settings.setMaxCharsPerColumn(-1);
+        settings.setMaxCharsPerColumn(81960);
+        settings.selectFields((RAY_PROGRESS.metricsRawColumns()));
+
+        CsvParser parser = new CsvParser(settings);
+        List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
+
+        metricsRaws.addAll(parseMetricsRaw(allRecords, lastIteration, numReward));
+        policy.setMetricsRaws(metricsRaws);
+    }
+
+    public static List<MetricsRaw> parseMetricsRaw(List<Record> allRecords, int lastIteration, int numReward) {
+        List<MetricsRaw> metricsRaws = new ArrayList<>();
+        for(Record record : allRecords) {
+            // missing information check
+            if (Arrays.asList(record.getValues()).contains(null)) {
+                log.debug("There are missing information in the csv contents");
+                continue;
+            }
+
+            final Integer iteration = record.getInt(RAY_PROGRESS.TRAINING_ITERATION);
+
+            if (iteration > lastIteration) {
+                int episodesThisIter = record.getInt(RAY_PROGRESS.EPISODES_THIS_ITER);
+                String rawDataString = record.getString(RAY_PROGRESS.METRICS_RAW.column);
+                metricsRaws.add(new MetricsRaw(iteration, MetricsRawUtils.toMetricsRawDataList(rawDataString, episodesThisIter, numReward)));
+            }
+        }
+        return metricsRaws;
     }
 }

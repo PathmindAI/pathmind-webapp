@@ -56,7 +56,8 @@ public class AWSTrainingService extends TrainingService {
                 featureManager.isEnabled(Feature.MULTI_AGENT_TRAINING),
                 false,
                 50,
-                false
+                false,
+                true
         );
 
         return executionProvider.execute(spec);        
