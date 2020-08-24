@@ -461,15 +461,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("RESET_SNIPPET", job.getReset()),
                 var("REWARD_SNIPPET", job.getReward()),
                 var("METRICS_SNIPPET", job.getMetrics()),
-                var("DISCRETE_ACTIONS", String.valueOf(job.getActions())),
-                var("CONTINUOUS_OBSERVATIONS", String.valueOf(job.getObservations())),
                 var("MAX_ITERATIONS", String.valueOf(job.getIterations())),
                 var("TEST_ITERATIONS", "0"), // disabled for now
-
-                // Still has to be set, but doesn't actually do something, needs to be removed from train.sh
-                var("STEP_TIME", "1"),
-                var("STOP_TIME", "420"),
-                var("TIME_UNIT", "MINUTE"),
                 var("MAX_TIME_IN_SEC", String.valueOf(job.getMaxTimeInSec())),
                 var("NUM_SAMPLES", String.valueOf(job.getNumSamples())),
                 var("MULTIAGENT", String.valueOf(job.isMultiAgent())),
@@ -481,7 +474,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("VALUE_PRED", "1"), // disabled for now
                 var("USER_LOG", String.valueOf(job.isUserLog())),
                 var("DEBUGMETRICS", String.valueOf(job.isRecordMetricsRaw())),
-                var("NAMED_VARIABLE", "true")
+                var("NAMED_VARIABLE", String.valueOf(job.isNamedVariables()))
         ));
     }
 

@@ -46,8 +46,6 @@ public class AWSTrainingService extends TrainingService {
                 "", // not collected via UI yet
                 "", // not collected via UI yet
                 exp.getRewardFunction(),
-                model.getNumberOfPossibleActions(),
-                model.getNumberOfObservations(),
                 iterations,
                 executionEnvironment,
                 DiscoveryRun,
@@ -57,6 +55,7 @@ public class AWSTrainingService extends TrainingService {
                 false,
                 50,
                 false,
+                true,
                 true
         );
 
