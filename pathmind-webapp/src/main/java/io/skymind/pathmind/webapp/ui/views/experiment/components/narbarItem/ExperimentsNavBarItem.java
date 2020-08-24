@@ -6,7 +6,9 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.EventHandler;
+import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
+import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
@@ -17,6 +19,8 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
@@ -30,12 +34,14 @@ import java.util.function.Supplier;
 @JsModule("./src/experiment/experiment-navbar-item.js")
 public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem.Model> {
 
+    @Id("experimentLink")
+    private RouterLink experimentLink;
+
     private ExperimentsNavBar experimentsNavbar;
     private Supplier<Optional<UI>> getUISupplier;
     private ExperimentDAO experimentDAO;
 
     private Experiment experiment;
-	private Consumer<Experiment> selectExperimentConsumer;
 
     private SegmentIntegrator segmentIntegrator;
 
@@ -45,7 +51,11 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         this.experimentDAO = experimentDAO;
         this.experiment = experiment;
         this.segmentIntegrator = segmentIntegrator;
-        this.selectExperimentConsumer = selectExperimentConsumer;
+        if (ExperimentUtils.isDraftRunType(experiment)) {
+            experimentLink.setRoute(NewExperimentView.class, experiment.getId());
+        } else {
+            experimentLink.setRoute(ExperimentView.class, experiment.getId());
+        }
 
         UI.getCurrent().getUI().ifPresent(ui -> setExperimentDetails(ui, experiment));
     }
@@ -53,11 +63,6 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     @EventHandler
     private void onFavoriteToggled() {
         ExperimentUtils.favoriteExperiment(experimentDAO, experiment, !experiment.isFavorite());
-    }
-
-    @EventHandler
-    private void handleRowClicked() {
-        selectExperimentConsumer.accept(experiment);
     }
 
     @EventHandler

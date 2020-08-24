@@ -52,7 +52,6 @@ public class ExperimentsNavBar extends VerticalLayout
 	    this.experiments = experiments;
 	    this.selectedExperiment = selectedExperiment;
 	    this.modelId = selectedExperiment.getModelId();
-        this.selectExperimentConsumer = selectExperimentConsumer;
         this.segmentIntegrator = segmentIntegrator;
 
         notificationExperimentUpdatedSubscriber = new NotificationExperimentUpdatedSubscriber(getUISupplier, experiments, selectedExperiment);

@@ -9,7 +9,7 @@ class ExperimentNavbarItem extends PolymerElement {
 
     static get template() {
         return html`
-            <style>
+            <style include="styles">
                 :host {
                     box-sizing: border-box;
                     display: flex;
@@ -20,7 +20,6 @@ class ExperimentNavbarItem extends PolymerElement {
                     border: 1px solid transparent;
                     border-right: none;
                     margin-top: -1px;
-                    cursor: pointer;
                 }
                 :host([is-current]),
                 :host(:hover) {
@@ -34,6 +33,14 @@ class ExperimentNavbarItem extends PolymerElement {
                 }
                 .experiment-name p {
                     margin: 0;
+                }
+                .experiment-name a {
+                	color: var(--lumo-body-text-color);
+                	text-decoration: none;
+                }
+                .experiment-name a:hover {
+                    color: var(--lumo-primary-color);
+                    text-decoration: none;
                 }
                 .experiment-name p:nth-child(2) {
                     font-size: var(--lumo-font-size-xs);
@@ -57,7 +64,7 @@ class ExperimentNavbarItem extends PolymerElement {
             </style>
             <status-icon status=[[status]]></status-icon>
             <div class="experiment-name">
-                <p>Experiment #[[experimentName]]<favorite-star is-favorite="{{isFavorite}}"></favorite-star></p>
+                <p><a id="experimentLink">Experiment #[[experimentName]]</a><favorite-star is-favorite="{{isFavorite}}"></favorite-star></p>
                 <p>Created [[createdDate]]</p>
                 <goals-reached-status reached=[[goalsReached]] hidden=[[!showGoals]]></goals-reached-status>
             </div>
@@ -110,7 +117,6 @@ class ExperimentNavbarItem extends PolymerElement {
     
     ready() {
         super.ready();
-        this.addEventListener("click", this.handleRowClicked);
         this.shadowRoot.querySelector("favorite-star").toggleFavorite = this.onFavoriteToggled;
     }
 
