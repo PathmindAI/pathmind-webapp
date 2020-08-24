@@ -37,8 +37,9 @@ public class JobSpec {
     private final int checkpointFrequency;
     private final boolean userLog;
     private final int actionTupleSize;
+    private final boolean recordMetricsRaw;
 
-    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent, boolean resume, int checkpointFrequency, boolean userLog, int actionTupleSize) {
+    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent, boolean resume, int checkpointFrequency, boolean userLog, int actionTupleSize, boolean recordMetricsRaw) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
@@ -59,5 +60,6 @@ public class JobSpec {
         this.checkpointFrequency = checkpointFrequency;
         this.userLog = userLog;
         this.actionTupleSize = actionTupleSize;
+        this.recordMetricsRaw = recordMetricsRaw;
     }
 }

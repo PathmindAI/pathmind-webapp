@@ -128,4 +128,19 @@ public class ExperimentPageSteps {
     public void checkThatExperimentPageArchivedTagIsShown() {
         experimentPage.checkThatExperimentPageArchivedTagIsShown();
     }
+
+    @Step
+    public void checkSimulationMetricsColumnsTitles() {
+        experimentPage.checkSimulationMetricsColumnsTitles();
+    }
+
+    @Step
+    public void clickSimulationMetricsValueIcon() {
+        experimentPage.clickSimulationMetricsValueIcon();
+    }
+
+    @Step
+    public void clickSimulationMetricsOverviewIcon() {
+        experimentPage.clickSimulationMetricsOverviewIcon();
+    }
 }

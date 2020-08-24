@@ -2,6 +2,7 @@ package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.db.utils.DataUtils;
 import io.skymind.pathmind.shared.data.Metrics;
+import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
 import lombok.extern.slf4j.Slf4j;
@@ -38,12 +39,18 @@ public class PolicyDAO {
         policies.stream().forEach(policy -> policy.setScores(rewardScores.get(policy.getId())));
         Map<Long, List<Metrics>> metricsMap = getMetricsForPolicies(DataUtils.convertToIds(policies));
         policies.stream().forEach(policy -> policy.setMetrics(metricsMap.get(policy.getId())));
+        Map<Long, List<MetricsRaw>> metricsRawMap = MetricsRawRepository.getMetricsRawForPolicies(ctx, DataUtils.convertToIds(policies));
+        policies.stream().forEach(policy -> policy.setMetricsRaws(metricsRawMap.get(policy.getId())));
 
         return policies;
     }
 
     public Map<Long, List<Metrics>> getMetricsForPolicies(List<Long> policyIds) {
         return MetricsRepository.getMetricsForPolicies(ctx, policyIds);
+    }
+
+    public Map<Long, List<MetricsRaw>> getMetricsRawForPolicies(List<Long> policyIds) {
+        return MetricsRawRepository.getMetricsRawForPolicies(ctx, policyIds);
     }
 
     public Map<Long, Integer> getRewardScoresCountForExperiments(List<Long> experimentIds) {
