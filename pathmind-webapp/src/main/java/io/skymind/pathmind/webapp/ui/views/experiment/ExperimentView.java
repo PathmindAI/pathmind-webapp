@@ -91,7 +91,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
     private List<Double> simulationMetrics = new ArrayList<>();
-    private List<double[]> sparklinesData = new ArrayList<>();
+    // The first Integer is the Index of the Metric, the <Integer, Double> are the Iteration number and the Mean Value of the Metric
+    private Map<Integer, Map<Integer, Double>> sparkLineMap = new LinkedHashMap<>();
     private List<String> uncertainty = new ArrayList<>();
     private Boolean showSimulationMetrics;
 
@@ -262,48 +263,46 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             sparklineHeader.addClassName("header");
             sparklinesWrapper.add(sparklineHeader);
         }
-
+        
         IntStream.range(0, simulationMetrics.size())
-                .forEach(idx -> {
+                .forEach(index -> {
                     SparkLine sparkLine = new SparkLine();
-                    sparkLine.setSparkLine(sparklinesData.get(idx), idx);
+                    sparkLine.setSparkLine(sparkLineMap.get(index), index);
                     sparklinesWrapper.add(sparkLine);
                     if (uncertainty != null && !uncertainty.isEmpty()) {
-                        metricsWrapper.add(new Span(uncertainty.get(idx)));
+                        metricsWrapper.add(new Span(uncertainty.get(index)));
                     } else {
-                        metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx))));
+                        metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(index))));
                     }
                 });
     }
 
     private void updateSimulationMetricsData() {
         List<Metrics> metricsList = policy == null ? null : policy.getMetrics();
-        sparklinesData.clear();
+        sparkLineMap.clear();
         simulationMetrics.clear();
         uncertainty.clear();
 
         if (metricsList != null && metricsList.size() > 0) {
-            // set the last metrics
+            // The Simulation Metric value shown is the mean value of the metric in the last iteration
+            // Below sets the mean value of the metrics at the latest iteration into the list `simulationMetrics`
             Metrics lastMetrics = metricsList.get(metricsList.size() - 1);
             lastMetrics.getMetricsThisIter().stream()
                 .forEach(metricsThisIter -> simulationMetrics.add(metricsThisIter.getMean()));
 
-            // index, metrics list
-            Map<Integer, List<Double>> sparkLineMap = new HashMap<>();
+            // Loop by iteration
             metricsList.stream().forEach(metrics ->
+                // Loop by Number of Metrics for this Model, 
+                // with their index, min, max, and mean as values provided
                 metrics.getMetricsThisIter().forEach(mIter -> {
-                    int index = mIter.getIndex();
-
-                    List<Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new ArrayList<>();
-                    data.add(mIter.getMean());
+                    int index = mIter.getIndex(); // this is the index of the metric
+                    
+                    Map<Integer, Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new LinkedHashMap<>();
+                    // Put Iteration Number and Mean Value of metric into this LinkedHashMap
+                    data.put(metrics.getIteration(), mIter.getMean());
                     sparkLineMap.put(index, data);
                 })
             );
-
-            // convert List<Double> to double[] because sparLine needs an array of primitive types
-            sparkLineMap.entrySet().stream()
-                .map(e -> e.getValue().stream().mapToDouble(Double::doubleValue).toArray())
-                .forEach(arr -> sparklinesData.add(arr));
         }
 
         List<MetricsRaw> metricsRawList = policy == null ? null : policy.getMetricsRaws();

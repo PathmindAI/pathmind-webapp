@@ -1,7 +1,8 @@
 package io.skymind.pathmind.webapp.ui.components;
 
-import elemental.json.Json;
-import elemental.json.JsonArray;
+import java.util.Map;
+
+import com.google.gson.Gson;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -17,17 +18,8 @@ public class SparkLine extends PolymerTemplate<TemplateModel> implements HasStyl
         super();
     }
     
-    public void setSparkLine(double[] sparklineData, int index) {
-        getElement().callJsFunction("setSparkLine", convertToJsArray(sparklineData), index);
-    }
-    
-    public JsonArray convertToJsArray(double[] sparklineData) {
-		JsonArray json = Json.createArray();
-        if (sparklineData != null) {
-            for (int i = 0; i < sparklineData.length; i++) {
-                json.set(i, sparklineData[i]);
-            }
-        }
-        return json;
+    public void setSparkLine(Map<Integer, Double> sparklineData, int index) {
+        Gson gson = new Gson();
+        getElement().callJsFunction("setSparkLine", gson.toJson(sparklineData), index);
     }
 }

@@ -66,9 +66,9 @@ class SparkLine extends PolymerElement {
             </style>
             <svg width="100" height="24" stroke-width="2"></svg>
             <div id="tooltip" hidden="true">
-                <!-- <div class="iteration">
-                    <span class="label">Iteration</span> <span class="data">[[iteration]]</span>
-                </div> -->
+                <div class="iteration">
+                    <span class="label">Iteration</span> #<span class="data">[[iteration]]</span>
+                </div>
                 <div class="value">
                     <span class="label">Mean Value</span> <span class="data">[[value]]</span>
                 </div>
@@ -112,11 +112,15 @@ class SparkLine extends PolymerElement {
         super.ready();
     }
 
-    setSparkLine(dataPoints, variableIndex) {
+    setSparkLine(dataPointsList, variableIndex) {
+        const parsedDataPointsList = JSON.parse(dataPointsList);
+        const iterationList = Object.keys(parsedDataPointsList);
+        const dataPoints = Object.values(parsedDataPointsList);
         const options = {
             onmousemove: (event, dataPoint) => {
               const tooltip = this.$.tooltip;
               this.value = this.isFlat ? this.smallestNum : (this.smallestNum + dataPoint.value).toFixed(2);
+              this.iteration = iterationList[dataPoint.index];
               tooltip.hidden = false;
               tooltip.style.top = `${event.clientY}px`;
               tooltip.style.left = `${event.clientX + 20}px`;
@@ -135,15 +139,15 @@ class SparkLine extends PolymerElement {
         const sumOfDataPoints = originalDataPoints.reduce((a, b) => a+b);
         this.smallestNum = originalDataPoints.reduce((a, b) => Math.min(a, b));
 
-        if (this.checkDataPointsChange(this.smallestNum*originalDataPointsLength, sumOfDataPoints)) {
+        if (this.checkDiff(this.smallestNum*originalDataPointsLength, sumOfDataPoints)) {
             this.isFlat = true;
             return this.processDataPoints(originalDataPoints);
         }
         return originalDataPoints.map(dataPoint => dataPoint - this.smallestNum);
     }
 
-    checkDataPointsChange(smallestNumTimesLength, sumOfDataPoints) {
-        return this.trimInaccurateFloatingPoints(sumOfDataPoints) === this.trimInaccurateFloatingPoints(smallestNumTimesLength);
+    checkDiff(a, b) {
+        return this.trimInaccurateFloatingPoints(a) === this.trimInaccurateFloatingPoints(b);
     }
 
     trimInaccurateFloatingPoints(num) {
