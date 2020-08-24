@@ -480,7 +480,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("VF_LOSS_RANGE", "0.1"),
                 var("VALUE_PRED", "1"), // disabled for now
                 var("USER_LOG", String.valueOf(job.isUserLog())),
-                var("DEBUGMETRICS", String.valueOf(job.isRecordMetricsRaw()))
+                var("DEBUGMETRICS", String.valueOf(job.isRecordMetricsRaw())),
+                var("NAMED_VARIABLE", "true")
         ));
     }
 
