@@ -55,8 +55,11 @@ class FavoriteStar extends PolymerElement {
     }
 
     _isFavoriteChanged(newValue) {
+        const buttonElement = this.shadowRoot.querySelector("vaadin-button");
         const iconElement = this.shadowRoot.querySelector("iron-icon");
         const iconType = newValue ? "vaadin:star" : "vaadin:star-o";
+        const titleText = newValue ? "Unfavorite" : "Favorite";
+        buttonElement.setAttribute("title", titleText);
         iconElement.setAttribute("icon", iconType);
     }
 }
