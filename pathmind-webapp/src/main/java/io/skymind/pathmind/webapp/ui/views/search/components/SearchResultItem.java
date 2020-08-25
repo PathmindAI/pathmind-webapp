@@ -1,10 +1,17 @@
 package io.skymind.pathmind.webapp.ui.views.search.components;
 
+import java.util.Optional;
+
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.RouterLink;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.constants.SearchResultItemType;
@@ -18,6 +25,10 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.webapp.ui.views.model.ModelView;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 public class SearchResultItem extends VerticalLayout {
@@ -48,7 +59,7 @@ public class SearchResultItem extends VerticalLayout {
         setPadding(false);
         setClassName("search-result-item");
     }
-
+    
     private HorizontalLayout createInfoRow() {
         HorizontalLayout infoRow = WrapperUtils.wrapWidthFullBetweenHorizontal();
         HorizontalLayout tags = new HorizontalLayout();
@@ -80,17 +91,42 @@ public class SearchResultItem extends VerticalLayout {
         String experimentName = searchResult.getExperimentName();
         String modelNameText = "Model #"+searchResult.getModelName();
         String experimentNameText = "Experiment #"+searchResult.getExperimentName();
-        nameRow.add(highlightSearchResult(searchResult.getProjectName(), null, resultTypeProject));
+        RouterLink projectNameLink = new RouterLink();
+        nameRow.add(highlightSearchResult(projectNameLink, searchResult.getProjectName(), null, resultTypeProject));
+        setRouterTarget(projectNameLink);
         if (resultTypeModel || resultTypeExperiment) {
-            nameRow.add(highlightSearchResult(modelNameText, "(?i)Model\\s#?"+modelName,
+            RouterLink modelNameLink = new RouterLink();
+            nameRow.add(highlightSearchResult(modelNameLink, modelNameText, "(?i)Model\\s#?"+modelName,
                     resultTypeModel && matchedDecodedKeyword(decodedKeyword, "Model", modelName)));
+            setRouterTarget(modelNameLink);
         }
         if (resultTypeExperiment) {
-            nameRow.add(highlightSearchResult(experimentNameText, "(?i)Experiment\\s#?"+experimentName,
+            RouterLink experimentNameLink = new RouterLink();
+            nameRow.add(highlightSearchResult(experimentNameLink, experimentNameText, "(?i)Experiment\\s#?"+experimentName,
                     resultTypeExperiment && matchedDecodedKeyword(decodedKeyword, "Experiment", experimentName)));
+            setRouterTarget(experimentNameLink);
         }
         nameRow.addClassName("name-row");
         return nameRow;
+    }
+
+    private void setRouterTarget(RouterLink link) {
+        switch (searchResult.getItemType()) {
+            case PROJECT :
+                link.setRoute(ProjectView.class, searchResult.getItemId());
+                break;
+            case MODEL :
+                link.setRoute(ModelView.class, searchResult.getItemId());
+                break;
+            case EXPERIMENT :
+                Experiment experiment = experimentDAO.getExperimentWithRuns(searchResult.getItemId()).get();
+                if (ExperimentUtils.isDraftRunType(experiment)) {
+                    link.setRoute(NewExperimentView.class, searchResult.getItemId());
+                } else {
+                    link.setRoute(ExperimentView.class, searchResult.getItemId());
+                }
+                break;
+        }
     }
 
     private boolean matchedDecodedKeyword(String keyword, String itemTypePrefix, String name) {
@@ -104,14 +140,13 @@ public class SearchResultItem extends VerticalLayout {
         if (notes.isEmpty()) {
             return new Div(new Span("—"));
         } else {
-            Div notesColumn = highlightSearchResult(notes, null, true);
+            Div notesColumn = (Div) highlightSearchResult(new Div(), notes, null, true);
             notesColumn.addClassName("grid-notes-column");
             return notesColumn;
         }
     }
 
-    private Div highlightSearchResult(String columnText, String toMatch, boolean isHighlightable) {
-        Div searchResultColumn = new Div();
+    private <ROW extends Component & HasComponents & HasStyle> ROW highlightSearchResult(ROW searchResultColumn, String columnText, String toMatch, boolean isHighlightable) {
         String escapedKeyword = PathmindStringUtils.escapeNonAlphanumericalCharacters(decodedKeyword);
         String[] parts = columnText.split("(?i)((?<="+escapedKeyword+")|(?=(?i)"+escapedKeyword+"))");
 

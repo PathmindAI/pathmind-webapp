@@ -93,28 +93,10 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         numberOfResults = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         VerticalLayout headerWrapper = new VerticalLayout(title, numberOfResults);
         headerWrapper.setSpacing(false);
-        grid.addSelectionListener(evt -> navigateToSelectedRecord(evt.getFirstSelectedItem()));
         
         FlexLayout gridWrapper = new ViewSection(headerWrapper, grid);
         gridWrapper.addClassName("page-content");
         return gridWrapper;
-    }
-
-    private void navigateToSelectedRecord(Optional<SearchResult> selectedItem) {
-        selectedItem.ifPresent(item -> {
-            switch (item.getItemType()) {
-                case PROJECT :
-                    getUI().ifPresent(ui -> ui.navigate(ProjectView.class, item.getItemId()));
-                    break;
-                case MODEL :
-                    getUI().ifPresent(ui -> ui.navigate(ModelView.class, item.getItemId()));
-                    break;
-                case EXPERIMENT:
-                    Experiment experiment = experimentDAO.getExperimentWithRuns(item.getItemId()).get();
-                    ExperimentUtils.navigateToExperiment(getUI(), experiment);
-                    break;
-            }
-        });
     }
 
     private Optional<MainLayout> getMainLayout() {

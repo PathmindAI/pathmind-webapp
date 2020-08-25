@@ -17,6 +17,9 @@ import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.router.RouterLink;
 
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.DashboardItem;
@@ -47,7 +50,7 @@ public class DashboardLine extends HorizontalLayout {
 
 	private String experimentNotes = "—";
 	
-	public DashboardLine(ExperimentDAO experimentDAO, DashboardItem item, SerializableConsumer<DashboardItem> clickHandler, SerializableConsumer<DashboardItem> archiveAction) {
+	public DashboardLine(ExperimentDAO experimentDAO, DashboardItem item, SerializableConsumer<DashboardItem> archiveAction) {
         this.dashboardItem = item;
         Experiment experiment = item.getExperiment();
 		setClassName("dashboard-line");
@@ -58,7 +61,10 @@ public class DashboardLine extends HorizontalLayout {
         }
 		timestamp = new Span();
 		
-		Span projectTitle = LabelFactory.createLabel(item.getProject().getName(), PROJECT_TITLE);
+		RouterLink projectTitle = new RouterLink();
+		projectTitle.setText(item.getProject().getName());
+		projectTitle.addClassName(PROJECT_TITLE);
+		setProjectTitleNavigationTarget(projectTitle, item);
 		
 		menuButton = new Button(VaadinIcon.ELLIPSIS_DOTS_H.create());
 		menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
@@ -86,18 +92,34 @@ public class DashboardLine extends HorizontalLayout {
 			notesWrapper.add(new Span("Experiment Notes"), new Paragraph(experimentNotes));
 		} 
 		add(wrapper, notesWrapper, menuButton);
-
-		// When a link in breadcrumb is clicked, the same click event is also triggered for DashboardLine
-		// We cannot stop propagation yet (see issue: https://github.com/vaadin/flow/issues/1363)
-		// but applied the workaround suggested in the issue
-		breadcrumb.getChildren()
-			.filter(comp -> RouterLink.class.isInstance(comp))
-			.forEach(comp -> comp.getElement().addEventListener("click", evt -> {}).addEventData("event.stopPropagation()"));
-		menuButton.getElement().addEventListener("click", evt -> {}).addEventData("event.stopPropagation()");
-		addClickListener(evt -> clickHandler.accept(item));
 	}
 	
-	@Override
+    private void setProjectTitleNavigationTarget(RouterLink projectTitle, DashboardItem item) {
+        Stage stage = DashboardUtils.calculateStage(item);
+        switch (stage) {
+            case SetUpSimulation :
+                if (item.getModel() != null && item.getModel().isDraft()) {
+                    projectTitle.setRoute(UploadModelView.class, UploadModelView.createResumeUploadTarget(item.getProject(), item.getModel()));
+                } else {
+                    projectTitle.setRoute(UploadModelView.class, String.valueOf(item.getProject().getId()));
+                }
+                break;
+            case WriteRewardFunction :
+                if (item.getExperiment() == null) {
+                    // getUI().ifPresent(ui ->
+                    // ExperimentUtils.createAndNavigateToNewExperiment(ui,
+                    // experimentDAO, item.getModel().getId()));
+                } else {
+                    projectTitle.setRoute(NewExperimentView.class, item.getExperiment().getId());
+                }
+                break;
+            default :
+                projectTitle.setRoute(ExperimentView.class, item.getExperiment().getId());
+                break;
+        }
+    }
+
+    @Override
 	protected void onAttach(AttachEvent evt) {
 		VaadinDateAndTimeUtils.withUserTimeZoneId(evt.getUI(), timeZoneId -> {
 			timestamp.setText("Last Activity: "+DateAndTimeUtils.formatDateAndTimeShortFormatter(dashboardItem.getLatestUpdateTime(), timeZoneId));

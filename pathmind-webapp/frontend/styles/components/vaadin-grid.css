@@ -42,7 +42,7 @@ vaadin-grid-cell-content vaadin-grid-sorter[direction] {
     font-weight: bold;
 }
 
-[part~="cell"] ::slotted(vaadin-grid-cell-content) {
+:host(:not(.dashboard):not(.search-results)) [part~="cell"] ::slotted(vaadin-grid-cell-content) {
     cursor: pointer;
     overflow: visible;
 }

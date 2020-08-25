@@ -32,9 +32,6 @@
     align-items: center;
 }
 
-.search-results-view .search-result-item:hover {
-    box-shadow: 0 4px 7px var(--lumo-shade-30pct);
-}
 
 .search-results-view .search-result-item .info-row tag-label {
     margin-left: var(--lumo-space-xs);
@@ -53,10 +50,15 @@
     margin-left: var(--lumo-space-xs);
 }
 
-.search-results-view .search-result-item .name-row {
+.search-results-view .search-result-item .name-row a {
     font-size: var(--lumo-font-size-m);
     color: var(--lumo-body-text-color);
     margin: var(--lumo-space-xxxs) 0 var(--lumo-space-xs) 0;
+}
+
+.search-results-view .search-result-item .name-row a:hover {
+    color: var(--lumo-primary-color);
+    text-decoration: none;
 }
 
 .search-box {
