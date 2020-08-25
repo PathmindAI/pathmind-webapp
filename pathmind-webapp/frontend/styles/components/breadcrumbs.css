@@ -6,6 +6,11 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    transition: max-width 0.4s;
+}
+
+.page-title .breadcrumb:hover {
+    max-width: 100%;
 }
 
 .page-title .breadcrumb:last-child {
