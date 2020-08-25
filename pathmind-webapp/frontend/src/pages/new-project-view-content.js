@@ -36,25 +36,18 @@ class NewProjectView extends PolymerElement {
 
   ready() {
       super.ready();
-      const projectNameTextField = this.shadowRoot.querySelector("#projectName");
-      const createProjectButton = this.shadowRoot.querySelector("#createProject");
+      const projectNameTextField = this.$.projectName;
       projectNameTextField.focus();
       projectNameTextField.addEventListener("keyup", event => {
           if (event.keyCode === 13) { // Enter key
             event.preventDefault();
-            createProjectButton.click();
+            this.$.createProject.click();
           }
       });
   }
 
   static get is() {
     return "new-project-view";
-  }
-
-  static get properties() {
-    return {
-      // Declare your properties here.
-    };
   }
 }
 
