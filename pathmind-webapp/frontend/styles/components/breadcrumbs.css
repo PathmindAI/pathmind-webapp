@@ -1,22 +1,16 @@
 .breadcrumb {
     position: relative;
     max-width: 20rem;
-    color: var(--lumo-secondary-text-color);
+    font-family: var(--lumo-font-family-header);
+    color: var(--lumo-body-text-color);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.breadcrumb:last-child {
-    font-weight: bold;
-}
-
 .page-title .breadcrumb:last-child {
     max-width: none;
-}
-
-.breadcrumb ~ span {
-    cursor: default;
+    cursor: pointer;
 }
 
 .breadcrumb:hover,
