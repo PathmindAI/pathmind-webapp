@@ -67,6 +67,7 @@
 }
 
 .search-box .search-box_divider {
+    flex: 1 0 1px;
     width: 1px;
     height: calc(100% - 8px);
     background: var(--pm-gray-color-light);

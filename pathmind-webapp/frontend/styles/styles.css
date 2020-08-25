@@ -182,7 +182,7 @@ background-color: var(--pm-gray-color-light);
     display: flex;
     align-items: center;
     font-size: var(--lumo-font-size-s);
-    font-weight: 500;
+    font-weight: 600;
     font-family: var(--lumo-font-family-header);
     line-height: 1;
     padding: var(--lumo-space-m) 0;
