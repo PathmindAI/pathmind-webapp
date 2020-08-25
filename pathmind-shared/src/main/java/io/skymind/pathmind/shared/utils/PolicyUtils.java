@@ -7,7 +7,6 @@ import io.skymind.pathmind.shared.data.Run;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 
-import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -84,6 +83,6 @@ public class PolicyUtils
         if(!ObjectUtils.allNotNull(policy, policy.getProject(), policy.getModel(), policy.getExperiment())) {
             return "-";
         }
-        return removeInvalidChars(String.format("%s-M%sE%s-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getExperiment().getName()));
+        return removeInvalidChars(String.format("%s-M%s-%s-E%s-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getModel().getPackageName(), policy.getExperiment().getName()));
     }
 }
