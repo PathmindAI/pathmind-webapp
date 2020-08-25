@@ -8,17 +8,19 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 public class NotificationExperimentUpdatedSubscriber extends ExperimentUpdatedSubscriber {
 
+    private List<Experiment> experiments;
     private Experiment experiment;
 
-    public NotificationExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, Experiment experiment) {
+    public NotificationExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, List<Experiment> experiments, Experiment experiment) {
         super(getUISupplier);
+        this.experiments = experiments;
         this.experiment = experiment;
     }
 
@@ -37,14 +39,14 @@ public class NotificationExperimentUpdatedSubscriber extends ExperimentUpdatedSu
                 getUiSupplier(),
                 event.getExperiment().isArchived() ? "Experiment Archived" : "Experiment Unarchived",
                 event.getExperiment().isArchived() ? "The experiment was archived." : "The experiment was unarchived.",
-                ui -> navigateToView(ui, event.getExperiment()));
+                ui -> navigateToView(event.getExperiment()));
     }
 
-    private void navigateToView(UI ui, Experiment experiment) {
+    private void navigateToView(Experiment experiment) {
         if(experiment.isArchived())
-            ui.navigate(ModelView.class, experiment.getModelId());
+            ExperimentUtils.navigateToFirstUnarchivedOrModel(getUiSupplier(), experiments);
         else
-            ExperimentUtils.navigateToExperiment(ui, experiment);
+            ExperimentUtils.navigateToExperiment(getUiSupplier().get(), experiment);
     }
 
     private void alertThenNotifyStarted(ExperimentUpdatedBusEvent event) {

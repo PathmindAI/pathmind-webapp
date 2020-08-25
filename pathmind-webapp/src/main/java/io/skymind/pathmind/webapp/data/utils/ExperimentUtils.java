@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.UI;
@@ -228,4 +229,19 @@ public class ExperimentUtils
     public static void navigateToExperiment(UI ui, Experiment experiment) {
         ui.navigate(ExperimentUtils.isDraftRunType(experiment) ? NewExperimentView.class : ExperimentView.class, experiment.getId());
     }
+
+    public static Optional<Experiment> getFirstUnarchivedExperiment(List<Experiment> experiments) {
+	    return experiments.stream()
+                .filter(experiment -> !experiment.isArchived())
+                .findFirst();
+    }
+
+    public static void navigateToFirstUnarchivedOrModel(Supplier<Optional<UI>> getUISupplier, List<Experiment> experiments) {
+        Optional<Experiment> firstUnarchivedExperiment = ExperimentUtils.getFirstUnarchivedExperiment(experiments);
+        if(firstUnarchivedExperiment.isEmpty())
+            getUISupplier.get().ifPresent(ui -> ui.navigate(ModelView.class, experiments.get(0).getModelId()));
+        else
+            getUISupplier.get().ifPresent(ui -> ExperimentUtils.navigateToExperiment(ui, firstUnarchivedExperiment.get()));
+    }
+
 }
