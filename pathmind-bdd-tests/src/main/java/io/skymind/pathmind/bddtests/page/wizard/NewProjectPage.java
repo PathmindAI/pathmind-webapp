@@ -35,7 +35,7 @@ public class NewProjectPage extends PageObject {
 
     public void checkCreateANewProjectPage() {
         WebElement e = utils.expandRootElement(newProjectViewShadow);
-        assertThat(e.findElement(By.cssSelector(".welcomte-text")).getText(), containsString("Welcome to"));
+        assertThat(e.findElement(By.cssSelector(".welcome-text")).getText(), containsString("Welcome to"));
         assertThat(e.findElement(By.cssSelector(".logo")).isDisplayed(), is(true));
         assertThat(e.findElement(By.cssSelector("h3")).getText(), containsString("Start a New Project!"));
         assertThat(e.findElement(By.cssSelector("h3 + p")).getText(), containsString("Projects organize your Pathmind Experiments based on your AnyLogic model"));
