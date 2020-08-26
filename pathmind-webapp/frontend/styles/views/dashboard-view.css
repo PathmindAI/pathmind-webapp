@@ -55,7 +55,6 @@
     font-weight: bold;
 }
 .dashboard-item-main .breadcrumb {
-    color: var(--lumo-body-text-color);
     text-decoration: none;
 }
 .dashboard-item-main .breadcrumb:hover {
@@ -63,7 +62,6 @@
 }
 .dashboard-item-main .breadcrumb:last-child {
     color: var(--lumo-body-text-color);
-    font-weight: normal;
 }
 .dashboard-item-main .breadcrumb:last-child:hover {
     /* Although it's not a span not an anchor, clicking it results in
