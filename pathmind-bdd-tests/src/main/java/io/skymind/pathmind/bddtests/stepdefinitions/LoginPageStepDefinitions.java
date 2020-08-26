@@ -98,6 +98,14 @@ public class LoginPageStepDefinitions {
         loginPageSteps.newUserInputEmail(emailApi.getEmail());
     }
 
+    @When("^Fill temporary email with alias to the new user form$")
+    public void fillFormWithEmailAliasFromApi() {
+        String email = emailApi.getEmail();
+        String emailAlias = email.substring(0,email.indexOf("@")) + "+" + new Date().getTime() + "@" + email.substring(email.indexOf("@")+1);
+        loginPageSteps.newUserInputEmail(emailAlias);
+        Serenity.setSessionVariable("email").to(emailAlias);
+    }
+
     @When("^Fill new user form with email (.*)$")
     public void fillFormWithEmail(String email) {
         Serenity.setSessionVariable("randomNumber").to(new Date().getTime());
@@ -236,5 +244,10 @@ public class LoginPageStepDefinitions {
         loginPageSteps.fillNewUserConfirmationPassword(password);
         loginPageSteps.createNewUserClickSignInButton();
         loginPageSteps.openPage(pathmindUrl + "email-verification/" + emailApi.getVerificationLink());
+    }
+
+    @Then("^Check that (.*) popup is shown$")
+    public void checkThatPopupIsShown(String popUp) {
+        loginPageSteps.checkThatPopupIsShown(popUp);
     }
 }
