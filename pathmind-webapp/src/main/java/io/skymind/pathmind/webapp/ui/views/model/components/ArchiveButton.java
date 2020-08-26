@@ -14,8 +14,8 @@ public class ArchiveButton extends Button {
         super();
         this.isArchived = isArchived;
         updateUIstatus();
-		addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-		setClassName("action-button");
+        addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        setClassName("action-button");
         addClickListener(clickEvent -> {
             this.isArchived = !this.isArchived;
             updateUIstatus();
@@ -25,7 +25,7 @@ public class ArchiveButton extends Button {
 
     private void updateUIstatus() {
         Icon archiveIcon = isArchived ? VaadinIcon.ARROW_BACKWARD.create() : VaadinIcon.ARCHIVE.create();
-		setIcon(archiveIcon);
+        setIcon(archiveIcon);
         getElement().setAttribute("title", isArchived ? "Unarchive" : "Archive");
     }
 }
