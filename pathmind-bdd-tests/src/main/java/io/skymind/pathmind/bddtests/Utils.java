@@ -125,4 +125,11 @@ public class Utils extends PageObject {
         RandomAccessFile f = new RandomAccessFile("models/problematic_models/" + name, "rw");
         f.setLength(1024 * 1024 * 210);
     }
+
+    public void sendKeysCarefully(String text, WebElement locator) {
+        for (int i = 0; i < text.length(); i++) {
+            String myChar = String.valueOf(text.charAt(i));
+            locator.sendKeys(myChar);
+        }
+    }
 }
