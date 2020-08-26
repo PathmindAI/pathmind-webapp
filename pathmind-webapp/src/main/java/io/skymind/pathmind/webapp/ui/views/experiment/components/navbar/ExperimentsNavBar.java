@@ -36,7 +36,6 @@ public class ExperimentsNavBar extends VerticalLayout
     private List<ExperimentsNavBarItem> experimentsNavBarItems = new ArrayList<>();
 	private VerticalLayout rowsWrapper;
 	private Consumer<Experiment> selectExperimentConsumer;
-    private ExperimentsNavBarItem currentExperimentNavItem;
     private NewExperimentButton newExperimentButton;
 
     private SegmentIntegrator segmentIntegrator;

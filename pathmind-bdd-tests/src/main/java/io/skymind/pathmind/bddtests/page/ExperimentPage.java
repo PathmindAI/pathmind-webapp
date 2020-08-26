@@ -158,7 +158,7 @@ public class ExperimentPage extends PageObject {
 
     public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
         waitABit(4000);
-        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='experiment-name']/p[1]")), hasItem(experiment));
+        assertThat(utils.getStringListFromShadowRootRepeatIfStaleException(By.xpath("//experiment-navbar-item"), By.cssSelector(".experiment-name p:first-child")), hasItem(experiment));
     }
 
     public void clickCopyRewardFunctionBtn() {
@@ -171,7 +171,7 @@ public class ExperimentPage extends PageObject {
 
     public void checkThatExperimentNotExistOnTheExperimentPage(String experiment) {
         waitABit(4000);
-        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='experiment-name']/p[1]")), not(hasItem(experiment)));
+        assertThat(utils.getStringListFromShadowRootRepeatIfStaleException(By.xpath("//experiment-navbar-item"), By.cssSelector(".experiment-name p:first-child")), not(hasItem(experiment)));
     }
 
     public void checkThatExperimentStatusIconIs(String experiment, String icon) {
@@ -181,14 +181,14 @@ public class ExperimentPage extends PageObject {
 
     public void clickExperimentPageStarButton(String experimentName) {
         waitABit(3500);
-        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='experiment-name']/p[text()='"+ experimentName +"']/favorite-star")));
+        WebElement favoriteStarShadow = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "favorite-star"));
         waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
         favoriteStarShadow.findElement(By.cssSelector("vaadin-button")).click();
     }
 
     public void checkExperimentPageSideBarIsFavorite(String experimentName, Boolean favoriteStatus) {
         waitABit(3500);
-        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='experiment-name']/p[text()='"+ experimentName +"']/favorite-star")));
+        WebElement favoriteStarShadow = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "favorite-star"));
         waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
         if (favoriteStatus){
             assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star"));
@@ -205,8 +205,10 @@ public class ExperimentPage extends PageObject {
     public void checkSideBarExperimentsListExperiment(String commaSeparatedExperimentNames) {
         List<String> items = Arrays.asList(commaSeparatedExperimentNames.split("\\s*,\\s*"));
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='experiment-name']/p[1]"))) {
-            actual.add(webElement.getText());
+        for (WebElement webElement : getDriver().findElements(By.xpath("//experiment-navbar-item"))) {
+            WebElement experimentNavbarItemShadow = utils.expandRootElement(webElement);
+            String experimentNameText = experimentNavbarItemShadow.findElement(By.cssSelector(".experiment-name p:first-child")).getText();
+            actual.add(experimentNameText);
         }
 
         assertThat(actual, containsInAnyOrder(items.toArray()));
