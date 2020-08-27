@@ -1,6 +1,7 @@
 @model
 Feature: Model page
 
+  @smoke
   Scenario: Add experiment to exist model
     Given Login to the pathmind
     When Create new CoffeeShop project with draft experiment
@@ -62,3 +63,28 @@ Feature: Model page
     When Open projects/model/experiment archived tab
     When Check that model/experiment name '1 Draft' exist in archived/not archived tab
     When Check that model/experiment name '2 Draft' NOT exist in archived/not archived tab
+
+  Scenario: Check model archived label
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft experiment
+    When Open projects page
+    When Open project AutotestProject on projects page
+    When Click model 1 archive/unarchive button
+    When In confirmation dialog click in 'Archive' button
+    When Open projects/model/experiment archived tab
+    When Click the model name 1
+    Then Check project/model title label tag is Archived
+
+  Scenario: Check draft model archived label
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft model
+    When Open projects page
+    When Open project AutotestProject on projects page
+    When Click model 1 archive/unarchive button
+    When In confirmation dialog click in 'Archive' button
+    When Open projects/model/experiment archived tab
+    When Click the model name 1
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    When Click model breadcrumb btn
+    Then Check project/model title label tag is Archived

@@ -4,6 +4,9 @@ class AccountViewContent extends PolymerElement {
     static get template() {
         return html`
             <style include="shared-styles pathmind-dialog-view">
+                .block {
+                    align-items: flex-start;
+                }
                 .small {
                     font-size: var(--lumo-font-size-s);
                 }
@@ -14,7 +17,8 @@ class AccountViewContent extends PolymerElement {
                     min-width: auto;
                 }
             </style>
-            <div class="content">
+            <vaadin-horizontal-layout class="panel-wrapper">
+              <div class="content">
                 <span class="section-title-label">Account</span>
                 <vaadin-vertical-layout style="width: 100%;" class="inner-content">
                     <vaadin-horizontal-layout style="width: 100%;" class="block">
@@ -26,7 +30,7 @@ class AccountViewContent extends PolymerElement {
                             <div class="title">Last Name</div>
                             <div class="data">{{lastName}}</div>
                         </vaadin-vertical-layout>
-                        <vaadin-button id="editInfoBtn">
+                        <vaadin-button id="editInfoBtn" theme="small">
                             Edit
                         </vaadin-button>
                     </vaadin-horizontal-layout>
@@ -35,7 +39,7 @@ class AccountViewContent extends PolymerElement {
                             <div class="title">Password</div>
                             <div class="data">* * * * * * * * *</div>
                         </vaadin-vertical-layout>
-                        <vaadin-button id="changePasswordBtn">
+                        <vaadin-button id="changePasswordBtn" theme="small">
                             Change
                         </vaadin-button>
                     </vaadin-horizontal-layout>
@@ -57,18 +61,18 @@ class AccountViewContent extends PolymerElement {
                             <div class="title">Payment</div>
                             <div class="data">{{billingInfo}}</div>
                         </vaadin-vertical-layout>
-                        <vaadin-button id="editPaymentBtn">
+                        <vaadin-button id="editPaymentBtn" theme="small">
                             Edit
                         </vaadin-button>
                     </vaadin-horizontal-layout>
                 </vaadin-vertical-layout>
                 <div class="support-cont">
                     <a href="{{privacyLink}}" target="_blank">Privacy Policy</a>
-                    <a href="{{termsOfUseLink}}" target="_blank">Terms of Use</a>
+                    <a href="{{termsOfUseLink}}" target="_blank">Terms of Use</a><br>
+                    <a class="support" href="{{contactLink}}">Contact Support</a>
                 </div>
-                <a class="support" href="{{contactLink}}">Contact Support</a>
             </div>
-        `;
+        </vaadin-horizontal-layout>`;
     }
 
     static get is() {

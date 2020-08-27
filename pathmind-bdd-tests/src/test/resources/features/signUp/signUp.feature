@@ -34,6 +34,23 @@ Feature: Sign Up
       | First Name | Last Name | Password   |
       | Evgeniy    | Autotest  | Pass123456 |
 
+  Scenario: Create new user using email alias
+    Given Open page early-access-sign-up
+    When Fill new user form with first name Evgeniy
+    When Fill new user form with last name Autotest
+    When Fill temporary email with alias to the new user form
+    When Create new user click sign up button
+    When Fill new user password Pass123456
+    When Fill new user confirmation password Pass123456
+    When Create new user click sign in button
+    When Open pathmind page
+    Then Login with new user email and Pass123456
+    Then Check that Create new user error Email is not verified shown
+    Then Click in 'Resend' button
+    Then Check that Email verification was sent to your email. popup is shown
+    Then Delete all cookies
+
+  @smoke
   Scenario: Check create new user page elements
     Given Open page early-access-sign-up
     When Check create new user page elements

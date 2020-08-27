@@ -165,12 +165,14 @@ public class ExperimentUtils
 
     public static void archiveExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean isArchive) {
 	    experimentDAO.archive(experiment.getId(), isArchive);
-	    EventBus.post(new ExperimentUpdatedBusEvent(experiment));
+	    experiment.setArchived(isArchive);
+	    EventBus.post(new ExperimentUpdatedBusEvent(experiment, ExperimentUpdatedBusEvent.ExperimentUpdateType.Archive));
     }
 
     public static void favoriteExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean newIsFavorite) {
         experimentDAO.markAsFavorite(experiment.getId(), newIsFavorite);
-        EventBus.post(new ExperimentUpdatedBusEvent(experiment));
+        experiment.setFavorite(newIsFavorite);
+        EventBus.post(new ExperimentUpdatedBusEvent(experiment, ExperimentUpdatedBusEvent.ExperimentUpdateType.Favorite));
     }
 
     public static boolean isNewExperimentForModel(Experiment experiment, List<Experiment> experiments, long modelId) {

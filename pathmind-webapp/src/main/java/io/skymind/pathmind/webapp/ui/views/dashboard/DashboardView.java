@@ -4,6 +4,8 @@ import java.util.List;
 
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,6 +15,7 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -31,9 +34,12 @@ import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.dashboard.components.DashboardLine;
 import io.skymind.pathmind.webapp.ui.views.dashboard.components.EmptyDashboardPlaceholder;
@@ -58,12 +64,16 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     private ModelDAO modelDAO;
     @Autowired
     private RunDAO runDAO;
+    @Autowired
+    private SegmentIntegrator segmentIntegrator;
 
     private Grid<DashboardItem> dashboardGrid;
 
     private EmptyDashboardPlaceholder placeholder;
 
     private HorizontalLayout newProjectButtonWrapper;
+
+    private Span title;
 
     private long loggedUserId;
 
@@ -73,14 +83,17 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     }
 
     protected Component getMainContent(){
+        title = LabelFactory.createLabel("Recent", CssPathmindStyles.SECTION_TITLE_LABEL);
         newProjectButtonWrapper = WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton());
         placeholder = new EmptyDashboardPlaceholder();
         setupDashboardGrid();
 
         VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
+            title,
             placeholder,
             dashboardGrid,
             newProjectButtonWrapper);
+        gridWrapper.setPadding(false);
 
         return gridWrapper;
     }
@@ -136,16 +149,14 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
             case SetUpSimulation :
                 if (item.getModel() == null) {
                     archiveProject(item);
-                }
-                else {
+                } else {
                     archiveModel(item);
                 }
                 break;
             case WriteRewardFunction:
                 if (item.getExperiment() == null) {
                     archiveModel(item);
-                }
-                else {
+                } else {
                     archiveExperiment(item);
                 }
                 break;
@@ -158,6 +169,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     private void archiveExperiment(DashboardItem item) {
         ConfirmationUtils.archive("this experiment", () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, item.getExperiment(), true);
+            segmentIntegrator.archived(Experiment.class, true);
             dataProvider.refreshAll();
         });
     }
@@ -165,6 +177,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     private void archiveModel(DashboardItem item) {
         ConfirmationUtils.archive("this model", () -> {
             modelDAO.archive(item.getModel().getId(), true);
+            segmentIntegrator.archived(Model.class, true);
             dataProvider.refreshAll();
         });
     }
@@ -172,6 +185,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     private void archiveProject(DashboardItem item) {
         ConfirmationUtils.archive("this project", () -> {
             projectDAO.archive(item.getProject().getId(), true);
+            segmentIntegrator.archived(Project.class, true);
             dataProvider.refreshAll();
         });
     }
@@ -189,6 +203,7 @@ public class DashboardView extends PathMindDefaultView implements RunUpdateSubsc
     @Override
     protected void initScreen(BeforeEnterEvent event) {
         boolean emptyDashboard = dataProvider.isEmpty();
+        title.setVisible(!emptyDashboard);
         placeholder.setVisible(emptyDashboard);
         dashboardGrid.setVisible(!emptyDashboard);
         newProjectButtonWrapper.setVisible(!emptyDashboard);

@@ -60,7 +60,7 @@ pipeline {
 
     options {
         // Build auto timeout
-        timeout(time: 60, unit: 'MINUTES')
+        timeout(time: 120, unit: 'MINUTES')
         disableConcurrentBuilds()
         buildDiscarder(logRotator(daysToKeepStr: '15', artifactDaysToKeepStr: '15'))
     }
@@ -262,8 +262,8 @@ pipeline {
                     echo "Running db migrations"
                     sh "cd ${WORKSPACE} && mvn clean install"
                 }
-                runMigrations("default")
                 backupDb("pathmind-prod")
+                runMigrations("default")
                 script {
                     echo "Updating helm chart"
                     sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"

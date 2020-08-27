@@ -112,7 +112,7 @@ public class HomePageStepDefinitions {
         homePageSteps.checkSearchResultPageContainsModelName(name);
     }
 
-    @Then("^Click (.*) from search page$")
+    @Then("^Click project name (.*) from search page$")
     public void clickAutotestProjectFromSearchPage(String projectName) {
         homePageSteps.clickAutotestProjectFromSearchPage(projectName + Serenity.sessionVariableCalled("randomNumber"));
     }
@@ -150,5 +150,35 @@ public class HomePageStepDefinitions {
     @Then("^Check that search counter is '(\\d+)'$")
     public void checkThatSearchCounterIs(String counter) {
         homePageSteps.checkThatSearchCounterIs(counter);
+    }
+
+    @When("^Choose search option (.*)")
+    public void chooseSearchOption(String option) {
+        homePageSteps.chooseSearchOption(option);
+    }
+
+    @Then("^Check search result group project is '(.*)'$")
+    public void checkSearchResultProjectIs(String value) {
+        homePageSteps.checkSearchResultProjectIs(value);
+    }
+
+    @Then("^Check search result group model is '(.*)'$")
+    public void checkSearchResultModelIs(String value) {
+        homePageSteps.checkSearchResultModelIs(value);
+    }
+
+    @Then("^Check search result group experiment is '(.*)'$")
+    public void checkSearchResultExperimentIs(String value) {
+        homePageSteps.checkSearchResultExperimentIs(value);
+    }
+
+    @Then("^Check search result tag is '(.*)'$")
+    public void checkSearchResultTagIs(String tag) {
+        homePageSteps.checkSearchResultTagIs(tag);
+    }
+
+    @When("^Wait for search result page$")
+    public void waitForSearchResultPage() {
+        homePageSteps.waitForSearchResultPage();
     }
 }

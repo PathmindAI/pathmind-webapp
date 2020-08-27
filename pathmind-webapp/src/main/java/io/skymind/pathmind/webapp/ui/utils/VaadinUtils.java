@@ -1,11 +1,13 @@
 package io.skymind.pathmind.webapp.ui.utils;
 
-import java.util.Optional;
-
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.server.InitialPageSettings;
+
+import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.webapp.utils.CookieUtils;
+import java.util.Optional;
 
 public class VaadinUtils
 {
@@ -36,5 +38,15 @@ public class VaadinUtils
         if (id == null) return Optional.empty();
         return ui.getElement().getChildren()
                 .filter((element) -> id.equals(element.getAttribute("id"))).findFirst();
+    }
+    
+    public static void signout(UI ui, boolean keepCurrentUrl) {
+        CookieUtils.deleteAWSCanCookie();
+        if (keepCurrentUrl) {
+            ui.getSession().getSession().invalidate();
+            ui.getPage().reload();
+        } else {
+            ui.getPage().setLocation(Routes.LOGOUT_URL);
+        }
     }
 }

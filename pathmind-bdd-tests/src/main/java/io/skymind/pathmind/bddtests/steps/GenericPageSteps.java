@@ -117,6 +117,11 @@ public class GenericPageSteps {
     }
 
     @Step
+    public void checkPageUrlContains(String url) {
+        genericPage.checkPageUrlContains(url);
+    }
+
+    @Step
     public void checkPageTitleTagTextIs(String text) {
         genericPage.checkPageTitleTagTextIs(text);
     }
@@ -129,5 +134,10 @@ public class GenericPageSteps {
     @Step
     public void generateBigModelWithName(String name) throws IOException {
         utils.generateBigModelWithName(name);
+    }
+
+    @Step
+    public void checkTitleLabelTagIsArchived(String tag) {
+        genericPage.checkTitleLabelTagIsArchived(tag);
     }
 }

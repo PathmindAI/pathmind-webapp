@@ -3,12 +3,17 @@
     line-height: 1;
 }
 
+.experiment-view .section-title-label + tag-label {
+    align-self: flex-start;
+    margin-left: var(--lumo-space-xs);
+}
+
 .experiment-view .view-section {
     box-sizing: border-box;
     width: 100%;
     min-width: auto;
     background: white;
-    border-radius: var(--lumo-border-radius);
+    border-radius: 0;
     padding: var(--lumo-space-m);
     overflow: auto; /* For Firefox's clipped wrapper due to Vaadin-chart's unexpected too-wide rendered size */
 }
@@ -28,12 +33,55 @@
     flex: 1;
     width: 100%;
     max-height: calc(1.8em * 20);
-    font-size: var(--lumo-font-size-s);
+    font-size: var(--lumo-font-size-xs);
     line-height: 1.8;
     padding: var(--lumo-space-s);
+    padding-top: 0;
     border: 1px solid var(--pm-gray-color);
     border-radius: var(--lumo-border-radius);
     overflow: auto;
+}
+
+.experiment-view .reward-variables-table {
+    font-size: var(--lumo-font-size-xs);
+}
+
+.experiment-view .reward-variables-table[readonly] .header-row {
+    display: block;
+}
+
+.experiment-view .reward-variables-table[readonly] .header-row span:last-child {
+    justify-content: flex-start;
+    line-height: 2rem;
+    padding: 0;
+}
+
+.experiment-view .simulation-metrics-table-wrapper .header {
+    display: flex;
+    justify-content: flex-end;
+    position: sticky;
+    width: 100%;
+    top: 0;
+    color: var(--pm-secondary-text-color);
+    background-color: white;
+}
+
+.experiment-view .metrics-wrapper .header span {
+    justify-content: flex-end;
+}
+
+.experiment-view .simulation-metrics-table-wrapper .header .helper-icon {
+    flex-shrink: 0;
+    margin-left: var(--lumo-space-xxs);
+}
+
+.experiment-view .simulation-metrics-table-wrapper .header .helper-icon:hover {
+    color: var(--pm-secondary-text-color);
+}
+
+.experiment-view .simulation-metrics-table-wrapper .header iron-icon {
+    --iron-icon-width: var(--lumo-font-size-s);
+    --iron-icon-height: var(--lumo-font-size-s);
 }
 
 .experiment-view .reward-variables-table span:first-child {
@@ -48,14 +96,15 @@
 .experiment-view .metrics-wrapper span {
     display: flex;
     align-items: center;
+    flex: 1 0 auto;
     height: 2rem;
-    font-size: var(--lumo-font-size-s);
-    margin-left: var(--lumo-space-m);
+    line-height: 1;
+    margin-left: var(--lumo-space-s);
 }
 
 .experiment-view .metrics-wrapper,
 .experiment-view .sparklines-wrapper {
-    flex: 0;
+    flex: 1 0 0;
     line-height: 2rem;
 }
 
@@ -77,11 +126,6 @@
     justify-content: flex-end;
     flex-wrap: wrap;
     width: 100%;
-}
-
-.experiment-view .buttons-wrapper vaadin-button {
-    width: calc(50% - var(--lumo-space-s) / 2);
-    min-width: unset;
 }
 
 .experiment-view .buttons-wrapper vaadin-button:not(:first-child) {
@@ -153,8 +197,8 @@
 
 .training-status-details-panel span,
 .experiment-view elapsed-timer {
-    font-size: var(--lumo-font-size-s);
-    line-height: 1.3;
+    font-size: var(--lumo-font-size-xs);
+    line-height: 1.2;
 }
 
 .experiment-view elapsed-time {
@@ -167,10 +211,33 @@
 }
 
 .experiment-view vaadin-progress-bar {
-    margin: var(--lumo-space-xs) 0;
+    width: 6rem;
+    margin: var(--lumo-space-xs) 0 var(--lumo-space-xxs);
+}
+
+.experiment-view vaadin-progress-bar + div {
+    display: flex;
+}
+
+.experiment-view vaadin-progress-bar + div span:last-child {
+    margin-left: var(--lumo-space-xxxs);
 }
 
 .experiment-view .reason-why-the-training-stopped {
     box-sizing: border-box;
+    display: inline-block;
     width: 100%;
+    padding: var(--lumo-space-xxxs) var(--lumo-space-xs);
+    border: 1px solid transparent;
+    border-radius: var(--lumo-border-radius);
+    margin: var(--lumo-space-xs) 0 0;
+}
+
+.experiment-view .tag.error-label {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.experiment-view .reason-why-the-training-stopped:empty {
+    display: none;
 }

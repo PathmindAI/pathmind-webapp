@@ -12,7 +12,7 @@ Feature: Dashboard page
 
     Examples:
       | Click action                              |
-      | Click in AutotestProject navigation icon  |
+      | Click AutotestProject dashboard item  |
       | Click in AutotestProject stage breadcrumb |
 
   Scenario: Check dashboard begin screen elements
@@ -27,6 +27,7 @@ Feature: Dashboard page
     When Click Getting Started Guide button
     Then Check that learn page https://help.pathmind.com/en/articles/4004788-getting-started opened
 
+  @smoke
   Scenario: Check start page with the getting started message user see after login
     Given Open page early-access-sign-up
     When Fill new user form with name EditEmail, User

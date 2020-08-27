@@ -47,4 +47,9 @@ public class ProjectPageSteps {
     public void checkProjectPageModelPackageNameIs(String modelId, String packageName) {
         projectPage.checkProjectPageModelPackageNameIs(modelId, packageName);
     }
+
+    @Step
+    public void checkThatProjectPageIsOpened() {
+        projectPage.checkThatProjectPageIsOpened();
+    }
 }

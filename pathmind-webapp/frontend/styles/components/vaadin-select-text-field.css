@@ -1,0 +1,28 @@
+:host([theme~="searchBox"]) [part="input-field"] {
+    height: 100%;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+}
+
+:host([theme~="searchBox"]) {
+    color: var(--lumo-secondary-text-color);
+}
+
+:host([theme~="searchBox"]) .vaadin-text-field-container {
+    width: var(--vaadin-text-field-default-width, 8em);
+}
+
+:host([theme~="searchBox"]) [part="input-field"] ::slotted([part="value"]) {
+    --_lumo-text-field-overflow-mask-image: none;
+    -webkit-mask-image: none;
+    padding: 0 0.1em;
+}
+
+:host(:hover:not([readonly])[theme~="searchBox"]) {
+    color: var(--lumo-body-text-color);
+}
+
+:host(:hover:not([readonly]):not([focused])[theme~="searchBox"]) [part="input-field"]::after {
+    opacity: 0;
+}

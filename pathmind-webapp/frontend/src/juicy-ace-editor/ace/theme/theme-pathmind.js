@@ -24,8 +24,8 @@ background-color: #FFFFFF;\
 border: 1px solid var(--pm-gray-color);\
 border-radius: var(--lumo-border-radius);\
 color: black;\
-font-size: var(--lumo-font-size-s);\
-line-height: 1.6rem;\
+font-size: 0.8125rem;\
+line-height: 1.4rem;\
 }\
 .ace-eclipse .ace_cursor {\
 color: black;\

@@ -1,5 +1,26 @@
 :host [part="splitter"] {
     background: transparent;
-    min-width: var(--lumo-space-m);
-    min-height: var(--lumo-space-m);
+    min-width: 1px;
+    min-height: 1px;
+}
+:host(:not([orientation="vertical"])) > [part="splitter"] {
+    cursor: col-resize;
+}
+
+:host [part="handle"] {
+    width: 100%;
+    height: 100%;
+    background-color: var(--pm-gray-color-lightest);
+    transition: all 0.3s;
+}
+
+:host [part="handle"]:hover,
+:host [part="handle"]:active {
+    min-width: 3px;
+    min-height: 3px;
+    background-color: var(--pm-gray-color-lighter);
+}
+
+:host [part="handle"]::after {
+    content: none;
 }

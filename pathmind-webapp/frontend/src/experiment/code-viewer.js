@@ -90,7 +90,7 @@ class CodeViewer extends PolymerElement {
                     box-sizing: border-box;
                     flex: 1;
                     width: 100%;
-                    font-size: var(--lumo-font-size-s);
+                    font-size: 0.8125rem;
                     border: 1px solid var(--pm-gray-color);
                     border-radius: var(--lumo-border-radius);
                 }

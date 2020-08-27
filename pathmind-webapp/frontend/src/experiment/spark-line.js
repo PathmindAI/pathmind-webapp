@@ -13,8 +13,9 @@ class SparkLine extends PolymerElement {
                     display: flex;
                     align-items: center;
                     height: 2rem;
+                    font-size: var(--lumo-font-size-xs);
                     flex: 1 0 2rem;
-                    margin-left: var(--lumo-space-m);
+                    margin-left: var(--lumo-space-s);
                 }
                 svg {
                     --sparkline-color: 255, 255, 255;
@@ -51,8 +52,30 @@ class SparkLine extends PolymerElement {
                 .sparkline-9 {
                     --sparkline-color: 209, 177, 18;
                 }
+                .tooltip {
+                    position: fixed;
+                    line-height: 1.2;
+                    background-color: rgba(247, 247, 247, .85);
+                    padding: var(--lumo-space-xxs);
+                    border: 1px solid var(--pm-text-color);
+                    z-index: 1;
+                }
+                .label {
+                    font-weight: bold;
+                }
             </style>
             <svg width="100" height="24" stroke-width="2"></svg>
+            <div class="tooltip" hidden="true">
+                <!-- <div class="iteration">
+                    <span class="label">Iteration</span> <span class="data">[[iteration]]</span>
+                </div> -->
+                <div class="value">
+                    <span class="label">Mean Value</span> <span class="data">[[value]]</span>
+                </div>
+                <!-- <div class="episodes-count">
+                    <span class="label">Episode Count</span> <span class="data">[[episodeCount]]</span>
+                </div> -->
+            </div>
         `;
     }
 
@@ -60,19 +83,53 @@ class SparkLine extends PolymerElement {
         super();
     }
 
+    static get properties() {
+        return {
+            smallestNum: {
+                type: Number,
+                value: 0,
+            },
+            iteration: {
+                type: Number,
+                value: 0,
+            },
+            value: {
+                type: Number,
+                value: 0,
+            },
+            episodeCount: {
+                type: Number,
+                value: 0,
+            }
+        }
+    }
+
     ready() {
         super.ready();
     }
 
     setSparkLine(dataPoints, variableIndex) {
+        const options = {
+            onmousemove: (event, datapoint) => {
+              const tooltip = this.shadowRoot.querySelector(".tooltip");
+              this.value = (this.smallestNum + datapoint.value).toFixed(2);
+              tooltip.hidden = false;
+              tooltip.style.top = `${event.clientY}px`;
+              tooltip.style.left = `${event.clientX + 20}px`;
+            },
+            onmouseout: () => {
+              const tooltip = this.shadowRoot.querySelector(".tooltip");
+              tooltip.hidden = true;
+            }
+        };
         const svgElement = this.shadowRoot.querySelector("svg");
         svgElement.classList.add(`sparkline-${variableIndex % 10}`);
-        sparkline(svgElement, calibrateScale(dataPoints));
+        sparkline(svgElement, this.calibrateScale(dataPoints), options);
+    }
 
-        function calibrateScale(originalDataPoints) {
-            const smallestNum = originalDataPoints.reduce((a, b) => Math.min(a, b));
-            return originalDataPoints.map(dataPoint => dataPoint - smallestNum);
-        }
+    calibrateScale(originalDataPoints) {
+        this.smallestNum = originalDataPoints.reduce((a, b) => Math.min(a, b));
+        return originalDataPoints.map(dataPoint => dataPoint - this.smallestNum);
     }
 }
 

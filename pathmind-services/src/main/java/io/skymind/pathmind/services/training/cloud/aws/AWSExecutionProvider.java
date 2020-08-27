@@ -347,6 +347,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         switch (anylogicVersion) {
             case VERSION_8_5_1:
             case VERSION_8_5_2:
+            case VERSION_8_6_0:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip > /dev/null",
                         "rm baseEnv.zip",
@@ -476,7 +477,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("VF_LOSS_RANGE", "0.1"),
                 var("VALUE_PRED", "1"), // disabled for now
                 var("USER_LOG", String.valueOf(job.isUserLog())),
-                var("ACTION_TUPLE_SIZE", String.valueOf(job.getActionTupleSize()))
+                var("ACTION_TUPLE_SIZE", String.valueOf(job.getActionTupleSize())),
+                var("DEBUGMETRICS", String.valueOf(job.isRecordMetricsRaw()))
         ));
     }
 

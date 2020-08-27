@@ -89,6 +89,21 @@ public class Utils extends PageObject {
         }
     }
 
+    public void moveToElementRepeatIfStaleException(WebElement webElement) {
+        int attempts = 0;
+        while (attempts < 3) {
+            try {
+                Actions actions = new Actions(getDriver());
+                actions.moveToElement(webElement);
+                actions.perform();
+                break;
+            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
+                waitABit(2000);
+            }
+            attempts++;
+        }
+    }
+
     public String getTextRootElement(WebElement element) {
         String text = element.getText().trim();
         for (WebElement child : element.findElements(By.xpath("./*"))) {

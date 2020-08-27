@@ -5,16 +5,24 @@ import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 
 public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
-    private Experiment experiment;
-    private boolean startedTraining = false;
 
-    public ExperimentUpdatedBusEvent(Experiment experiment) {
-        this.experiment = experiment;
+    public enum ExperimentUpdateType {
+        ExperimentDataUpdate,
+        StartTraining,
+        Favorite,
+        Archive
     }
 
-    public ExperimentUpdatedBusEvent(Experiment experiment, boolean startedTraining) {
+    private Experiment experiment;
+    private ExperimentUpdateType experimentUpdateType;
+
+    public ExperimentUpdatedBusEvent(Experiment experiment) {
+        this(experiment, ExperimentUpdateType.ExperimentDataUpdate);
+    }
+
+    public ExperimentUpdatedBusEvent(Experiment experiment, ExperimentUpdateType experimentUpdateType) {
         this.experiment = experiment;
-        this.startedTraining = startedTraining;
+        this.experimentUpdateType = experimentUpdateType;
     }
 
     @Override
@@ -31,6 +39,10 @@ public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
     }
 
     public boolean isStartedTraining() {
-        return startedTraining;
+        return ExperimentUpdateType.StartTraining.equals(experimentUpdateType);
+    }
+
+    public ExperimentUpdateType getExperimentUpdateType() {
+        return experimentUpdateType;
     }
 }

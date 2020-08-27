@@ -51,6 +51,11 @@ public class LoginPageStepDefinitions {
         loginPageSteps.loginWithCredential(email, password);
     }
 
+    @When("^Login with default credentials$")
+    public void loginWithDefaultCredentials() {
+        loginPageSteps.loginWithCredential(pathmindUsername, pathmindPassword);
+    }
+
     @Then("^Check that user (.*) successfully logged in$")
     public void checkThatUserSuccessfullyLoggedIn(String name) {
         loginPageSteps.checkThatUserSuccessfullyLoggedIn(name);
@@ -91,6 +96,14 @@ public class LoginPageStepDefinitions {
     @When("^Fill temporary email to the new user form$")
     public void fillFormWithEmailFromApi() {
         loginPageSteps.newUserInputEmail(emailApi.getEmail());
+    }
+
+    @When("^Fill temporary email with alias to the new user form$")
+    public void fillFormWithEmailAliasFromApi() {
+        String email = emailApi.getEmail();
+        String emailAlias = email.substring(0,email.indexOf("@")) + "+" + new Date().getTime() + "@" + email.substring(email.indexOf("@")+1);
+        loginPageSteps.newUserInputEmail(emailAlias);
+        Serenity.setSessionVariable("email").to(emailAlias);
     }
 
     @When("^Fill new user form with email (.*)$")
@@ -231,5 +244,10 @@ public class LoginPageStepDefinitions {
         loginPageSteps.fillNewUserConfirmationPassword(password);
         loginPageSteps.createNewUserClickSignInButton();
         loginPageSteps.openPage(pathmindUrl + "email-verification/" + emailApi.getVerificationLink());
+    }
+
+    @Then("^Check that (.*) popup is shown$")
+    public void checkThatPopupIsShown(String popUp) {
+        loginPageSteps.checkThatPopupIsShown(popUp);
     }
 }

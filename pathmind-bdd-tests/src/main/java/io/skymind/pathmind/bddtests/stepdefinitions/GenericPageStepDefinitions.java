@@ -120,6 +120,11 @@ public class GenericPageStepDefinitions {
         genericPageSteps.checkPageUrlIs(url);
     }
 
+    @Then("^Check page url contains (.*)$")
+    public void checkPageUrlContains(String url) {
+        genericPageSteps.checkPageUrlContains(url);
+    }
+
     @Then("^Check page title tag text is (.*)$")
     public void checkPageTitleTagTextIs(String text) {
         genericPageSteps.checkPageTitleTagTextIs(text);
@@ -138,5 +143,10 @@ public class GenericPageStepDefinitions {
     @When("^Wait a bit (\\d+) ms$")
     public void waitABitMs(int time) {
         genericPageSteps.waitABitMs(time);
+    }
+
+    @Then("^Check project/model title label tag is (.*)$")
+    public void checkTitleLabelTagIsArchived(String tag) {
+        genericPageSteps.checkTitleLabelTagIsArchived(tag);
     }
 }

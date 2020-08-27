@@ -19,7 +19,7 @@ Feature: Nav bar search
     When Input project name to the notes search field
     When Click notes search btn
     When Check search result page contains project name
-    Then Click AutotestProject from search page
+    Then Click project name AutotestProject from search page
     Then Check that project AutotestProject page is opened
 
   Scenario: Check project name archived tag
@@ -31,20 +31,6 @@ Feature: Nav bar search
     When Input project name to the notes search field
     When Click notes search btn
     Then Check search result page project name contains archived tag
-
-  Scenario: Check model name search
-    Given Login to the pathmind
-    When Create new CoffeeShop project with single reward function
-    When Input '1' to the notes search field
-    When Click notes search btn
-    When Check search result page contains model name '1'
-
-  Scenario: Check experiment name search
-    Given Login to the pathmind
-    When Create new CoffeeShop project with single reward function
-    When Input '1' to the notes search field
-    When Click notes search btn
-    When Check search result page contains model name '1'
 
   Scenario: Check search field clear button
     Given Login to the pathmind
@@ -80,7 +66,7 @@ Feature: Nav bar search
     When Click notes search btn
     Then Check that dashboard page opened
 
-  Scenario: Check search field empty case
+  Scenario: Check search field space case
     Given Login to the pathmind
     When Input ' ' to the notes search field
     When Click notes search btn
@@ -91,3 +77,30 @@ Feature: Nav bar search
     When Input 'AutotestNoteSearch' to the notes search field
     When Click notes search btn
     Then Check Search Results for value is 'AutotestNoteSearch'
+
+  Scenario: Check Search Results for value is limited to 200 characters
+    Given Login to the pathmind
+    When Input 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qua' to the notes search field
+    When Click notes search btn
+    Then Check Search Results for value is 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qu'
+
+  Scenario: Check search result redirect to project page
+    Given Login to the pathmind
+    When Choose search option Project
+    When Input 'AutotestProject' to the notes search field
+    When Click notes search btn
+    When Wait for search result page
+    When Click in 'AutotestProject' button
+    When Wait a bit 4000 ms
+    Then Check that project page is opened
+
+  Scenario: Check search result project name
+    Given Login to the pathmind
+    When Choose search option Project
+    When Input 'AutotestProject15' to the notes search field
+    When Click notes search btn
+    Then Check Search Results for value is 'AutotestProject15'
+    When Wait a bit 4000 ms
+    Then Check search result tag is 'Project'
+    When Refresh page
+    Then Check search result group project is 'AutotestProject15'

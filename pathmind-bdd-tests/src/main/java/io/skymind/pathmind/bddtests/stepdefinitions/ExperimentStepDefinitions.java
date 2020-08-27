@@ -120,8 +120,38 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.checkExperimentPageSideBarIsFavorite(experimentName, favoriteStatus);
     }
 
+    @Then("^Check that experiment page is opened$")
+    public void checkThatExperimentPageIsOpened() {
+        experimentPageSteps.checkThatExperimentPageIsOpened();
+    }
+
     @Then("^Check experiment page simulation metrics (.*)$")
     public void checkExperimentPageSimulationMetrics(String commaSeparatedVariableNames) {
         experimentPageSteps.checkExperimentPageSimulationMetrics(commaSeparatedVariableNames);
+    }
+
+    @Then("^Check side bar experiments list (.*)$")
+    public void checkSideBarExperimentsListExperiment(String commaSeparatedExperimentNames) {
+        experimentPageSteps.checkSideBarExperimentsListExperiment(commaSeparatedExperimentNames);
+    }
+
+    @Then("^Check that experiment page archived tag is shown$")
+    public void checkThatExperimentPageArchivedTagIsShown() {
+        experimentPageSteps.checkThatExperimentPageArchivedTagIsShown();
+    }
+
+    @Then("^Check Simulation Metrics columns titles$")
+    public void checkSimulationMetricsColumnsTitles() {
+        experimentPageSteps.checkSimulationMetricsColumnsTitles();
+    }
+
+    @Then("^Click simulation metrics value icon$")
+    public void clickSimulationMetricsValueIcon() {
+        experimentPageSteps.clickSimulationMetricsValueIcon();
+    }
+
+    @Then("^Click simulation metrics overview icon$")
+    public void clickSimulationMetricsOverviewIcon() {
+        experimentPageSteps.clickSimulationMetricsOverviewIcon();
     }
 }

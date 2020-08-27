@@ -35,6 +35,11 @@
     box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.08);
 }
 
+:host([theme~="small"]) {
+    min-width: auto;
+    height: auto;
+}
+
 :host([theme~="tertiary"]),
 :host([theme~="tertiary-inline"]),
 :host([theme~="tertiary"][disabled]),
@@ -67,6 +72,7 @@
 
 :host(.action-button) {
     color: var(--pm-gray-color);
+    margin: 0;
 }
 
 :host(.action-button:hover) {
@@ -80,14 +86,19 @@
 
 /* Search box button*/
 :host(.search-box_button) {
-    background: transparent;
-    border: 1px solid var(--pm-gray-color);
-    border-left: none;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+    --iron-icon-fill-color: var(--lumo-secondary-text-color);
     height: auto;
-
-    --iron-icon-fill-color: var(--pm-text-color);
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+}
+:host(.search-box_button:hover) {
+    --iron-icon-fill-color: var(--lumo-body-text-color);
+    box-shadow: none;
+}
+:host(.search-box_button:hover)::before {
+    opacity: 0;
 }
 
 /* Large image button*/

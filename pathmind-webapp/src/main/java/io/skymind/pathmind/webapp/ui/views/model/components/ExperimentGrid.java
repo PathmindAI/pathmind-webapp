@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.project.components.panels;
+package io.skymind.pathmind.webapp.ui.views.model.components;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -32,7 +32,7 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true);
-		addColumn(TemplateRenderer.<Experiment> of("[[item.name]] <span class='tag'>[[item.draft]]</span>")
+		addColumn(TemplateRenderer.<Experiment> of("[[item.name]] <tag-label size='small' text='[[item.draft]]'></tag-label>")
 					.withProperty("name", Experiment::getName)
 					.withProperty("draft", experiment -> experiment.isDraft() ? "Draft" : ""))
 				.setComparator(Comparator.comparingLong(experiment -> Long.parseLong(experiment.getName())))

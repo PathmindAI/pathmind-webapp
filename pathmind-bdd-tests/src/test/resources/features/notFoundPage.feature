@@ -15,6 +15,14 @@ Feature: Not found page
     When Open page project/wrongUrl
     Then Check that Oops page opened
 
+  Scenario: Check Oops page signing out btn
+    Given Login to the pathmind
+    When Open page project/wrongUrl
+    When Click in 'signing out' button
+    Then Check that login page opened
+    Given Login with default credentials
+    Then Check page url contains project/wrongUrl
+
   Scenario: Check Invalid data error page title and its error message
     Given Login to the pathmind
     When Open page project/905461

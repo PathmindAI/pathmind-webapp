@@ -20,6 +20,8 @@ import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
 @Push(PushMode.AUTOMATIC)
 @CssImport(value = "./styles/styles.css", id = "shared-styles")
 @CssImport(value = "./styles/components/vaadin-text-field.css", themeFor = "vaadin-text-field")
+@CssImport(value = "./styles/components/vaadin-select.css", themeFor = "vaadin-select")
+@CssImport(value = "./styles/components/vaadin-select-text-field.css", themeFor = "vaadin-select-text-field")
 @CssImport(value = "./styles/components/vaadin-button.css", themeFor = "vaadin-button")
 @CssImport(value = "./styles/components/vaadin-menu-bar.css", themeFor = "vaadin-menu-bar")
 @CssImport(value = "./styles/components/vaadin-context-menu-list-box.css", themeFor = "vaadin-context-menu-list-box")
@@ -32,6 +34,7 @@ import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
 @CssImport(value = "./styles/layouts/vaadin-app-layout.css", themeFor = "vaadin-app-layout")
 @CssImport(value = "./styles/views/experiment-view.css")
 @CssImport(value = "./styles/views/dashboard-view.css")
+@CssImport(value = "./styles/views/search-results-view.css")
 @CssImport(value = "./styles/views/pathmind-dialog-view.css", id = "pathmind-dialog-view")
 // Stripe should be added to every page to be able to use their fraud detection mechanism
 @JavaScript("https://js.stripe.com/v3/")

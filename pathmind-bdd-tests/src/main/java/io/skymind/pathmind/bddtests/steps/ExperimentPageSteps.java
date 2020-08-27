@@ -109,7 +109,38 @@ public class ExperimentPageSteps {
         experimentPage.checkExperimentPageSideBarIsFavorite(experimentName, favoriteStatus);
     }
 
+    @Step
+    public void checkThatExperimentPageIsOpened() {
+        experimentPage.checkThatExperimentPageIsOpened();
+    }
+
+    @Step
     public void checkExperimentPageSimulationMetrics(String commaSeparatedVariableNames) {
         experimentPage.checkExperimentPageSimulationMetrics(commaSeparatedVariableNames);
+    }
+
+    @Step
+    public void checkSideBarExperimentsListExperiment(String commaSeparatedExperimentNames) {
+        experimentPage.checkSideBarExperimentsListExperiment(commaSeparatedExperimentNames);
+    }
+
+    @Step
+    public void checkThatExperimentPageArchivedTagIsShown() {
+        experimentPage.checkThatExperimentPageArchivedTagIsShown();
+    }
+
+    @Step
+    public void checkSimulationMetricsColumnsTitles() {
+        experimentPage.checkSimulationMetricsColumnsTitles();
+    }
+
+    @Step
+    public void clickSimulationMetricsValueIcon() {
+        experimentPage.clickSimulationMetricsValueIcon();
+    }
+
+    @Step
+    public void clickSimulationMetricsOverviewIcon() {
+        experimentPage.clickSimulationMetricsOverviewIcon();
     }
 }

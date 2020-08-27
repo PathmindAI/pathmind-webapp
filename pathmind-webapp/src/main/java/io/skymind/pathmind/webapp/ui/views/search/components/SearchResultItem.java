@@ -15,6 +15,7 @@ import io.skymind.pathmind.shared.utils.PathmindStringUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
@@ -61,9 +62,9 @@ public class SearchResultItem extends VerticalLayout {
                         ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite)));
             }
         }
-        tags.add(LabelFactory.createLabel(searchResultType.getName(), CssPathmindStyles.TAG_LABEL, CssPathmindStyles.TAG_OUTLINE_LABEL));
+        tags.add(new TagLabel(searchResultType.getName(), true, "small"));
         if (isArchived) {
-            tags.add(LabelFactory.createLabel("Archived", CssPathmindStyles.TAG_LABEL));
+            tags.add(new TagLabel("Archived", false, "small"));
         }
         infoRow.add(tags, dates);
         infoRow.addClassName("info-row");
@@ -71,18 +72,31 @@ public class SearchResultItem extends VerticalLayout {
     }
 
     private VerticalLayout createNameRow() {
+        Boolean resultTypeProject = searchResultType.equals(SearchResultItemType.PROJECT);
         Boolean resultTypeModel = searchResultType.equals(SearchResultItemType.MODEL);
         Boolean resultTypeExperiment = searchResultType.equals(SearchResultItemType.EXPERIMENT);
-        Div projectName = highlightSearchResult(searchResult.getProjectName());
-        VerticalLayout nameRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(projectName);
+        VerticalLayout nameRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+        String modelName = searchResult.getModelName();
+        String experimentName = searchResult.getExperimentName();
+        String modelNameText = "Model #"+searchResult.getModelName();
+        String experimentNameText = "Experiment #"+searchResult.getExperimentName();
+        nameRow.add(highlightSearchResult(searchResult.getProjectName(), null, resultTypeProject));
         if (resultTypeModel || resultTypeExperiment) {
-            nameRow.add(highlightSearchResult("Model #"+searchResult.getModelName()));
+            nameRow.add(highlightSearchResult(modelNameText, "(?i)Model\\s#?"+modelName,
+                    resultTypeModel && matchedDecodedKeyword(decodedKeyword, "Model", modelName)));
         }
         if (resultTypeExperiment) {
-            nameRow.add(highlightSearchResult("Experiment #"+searchResult.getExperimentName()));
+            nameRow.add(highlightSearchResult(experimentNameText, "(?i)Experiment\\s#?"+experimentName,
+                    resultTypeExperiment && matchedDecodedKeyword(decodedKeyword, "Experiment", experimentName)));
         }
         nameRow.addClassName("name-row");
         return nameRow;
+    }
+
+    private boolean matchedDecodedKeyword(String keyword, String itemTypePrefix, String name) {
+        return keyword.equals(itemTypePrefix+" "+name) || keyword.equals(itemTypePrefix.toLowerCase()+" "+name) || 
+                keyword.equals(itemTypePrefix+"# "+name) || keyword.equals(itemTypePrefix.toLowerCase()+"# "+name) ||
+                keyword.equals(name) || keyword.equals(name.toLowerCase());
     }
 
     private Div createSearchResultsNotesComponent() {
@@ -90,21 +104,30 @@ public class SearchResultItem extends VerticalLayout {
         if (notes.isEmpty()) {
             return new Div(new Span("—"));
         } else {
-            Div notesColumn = highlightSearchResult(notes);
+            Div notesColumn = highlightSearchResult(notes, null, true);
             notesColumn.addClassName("grid-notes-column");
             return notesColumn;
         }
     }
 
-    private Div highlightSearchResult(String columnText) {
+    private Div highlightSearchResult(String columnText, String toMatch, boolean isHighlightable) {
         Div searchResultColumn = new Div();
         String escapedKeyword = PathmindStringUtils.escapeNonAlphanumericalCharacters(decodedKeyword);
         String[] parts = columnText.split("(?i)((?<="+escapedKeyword+")|(?=(?i)"+escapedKeyword+"))");
+
+        if (!isHighlightable) {
+            searchResultColumn.add(new Span(columnText));
+            return searchResultColumn;
+        }
 
         for (int i = 0; i < parts.length; i++) {
             if (parts[i].toLowerCase().equals(decodedKeyword.toLowerCase())) {
                 searchResultColumn.add(
                     LabelFactory.createLabel(parts[i], CssPathmindStyles.HIGHLIGHT_LABEL)
+                );
+            } else if (toMatch != null && escapedKeyword.matches(toMatch)) {
+                searchResultColumn.add(
+                    LabelFactory.createLabel(columnText, CssPathmindStyles.HIGHLIGHT_LABEL)
                 );
             } else {
                 searchResultColumn.add(parts[i]);

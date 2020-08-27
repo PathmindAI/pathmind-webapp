@@ -173,6 +173,12 @@ public class GenericPage extends PageObject {
         assertThat(getDriver().getCurrentUrl(), is(url));
     }
 
+    public void checkPageUrlContains(String url) {
+        waitABit(4000);
+        waitFor(ExpectedConditions.urlMatches(url));
+        assertThat(getDriver().getCurrentUrl(), containsString(url));
+    }
+
     public void checkPageTitleTagTextIs(String text) {
         waitABit(5000);
         assertThat(getDriver().getTitle(), is(text));
@@ -180,5 +186,9 @@ public class GenericPage extends PageObject {
 
     public void waitABitMs(int time) {
         waitABit(time);
+    }
+
+    public void checkTitleLabelTagIsArchived(String tag) {
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")).getText(), is(tag));
     }
 }

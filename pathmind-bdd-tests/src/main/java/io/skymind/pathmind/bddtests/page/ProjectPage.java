@@ -26,7 +26,7 @@ public class ProjectPage extends PageObject {
 
     public void checkNumberOfModelsWithDraftTag(int numberOfProjects) {
         setImplicitTimeout(5, SECONDS);
-        String xpath = "//vaadin-grid-cell-content/span[@class='tag' and text()='Draft']";
+        String xpath = "//vaadin-grid-cell-content/tag-label[not(@hidden='true')]";
         assertThat(getDriver().findElements(By.xpath(xpath)).size(), is(numberOfProjects));
         resetImplicitTimeout();
     }
@@ -64,5 +64,10 @@ public class ProjectPage extends PageObject {
 
     public void checkProjectPageModelPackageNameIs(String modelId, String packageName) {
         assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + modelId + " " + "']/following-sibling::vaadin-grid-cell-content[1]")).getText(), is(packageName));
+    }
+
+    public void checkThatProjectPageIsOpened() {
+        assertThat(getDriver().getTitle(), is("Pathmind | Project"));
+        assertThat(getDriver().getCurrentUrl(), containsString("/project/"));
     }
 }

@@ -1,5 +1,6 @@
 .new-experiment-view .view-section {
     padding: var(--lumo-space-m);
+    border-radius: 0;
     overflow: visible;
 }
 
