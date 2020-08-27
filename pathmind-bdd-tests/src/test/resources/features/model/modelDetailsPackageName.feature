@@ -1,6 +1,6 @@
 @modelDetails
 Feature: Check Model Details package name field
-#  TO DO Add new models
+
   Scenario Outline: Check Model Details package name field
     Given Login to the pathmind
     When Open projects page
@@ -24,7 +24,9 @@ Feature: Check Model Details package name field
     Then Check model page model breadcrumb package name is <package name>
 
     Examples:
-      | project name    | model                            | reward function file                                                        | package name |
-#      | AutotestProject | tuple_models/CallCenterTuples.zip           | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt | interconnected_cc_tuple |
-      | AutotestProject | tuple_models/CoffeeShopTuple.zip | Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt | coffeeshop   |
-#      | AutotestProject | tuple_models/SimpleSchedulingTuplesTest.zip | Production_Single_Agent/Production_Single_Agent_Reward.txt       | simplescheduling_tuple  |
+      | project name    | model                             | reward function file                                                        | package name            |
+      | AutotestProject | tuple_models/MoonLanding.zip      | tuple_models/MoonLandingRewardFunction.txt                                  | moonLanding             |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip  | Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt | coffeeshop              |
+      | AutotestProject | tuple_models/SimpleStochastic.zip | tuple_models/SimpleStochasticRewardFunction.txt                             | simple_stochastic_model |
+      | AutotestProject | tuple_models/ProductDelivery.zip  | tuple_models/ProductDeliveryRewardFunction.txt                              | product_delivery        |
+      | AutotestProject | tuple_models/Warehouse.zip        | tuple_models/WarehouseRewardFunction.txt                                    | warehouse_pathmind_demo |
