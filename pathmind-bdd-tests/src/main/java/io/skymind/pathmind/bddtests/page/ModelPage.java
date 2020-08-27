@@ -20,9 +20,9 @@ import static org.hamcrest.Matchers.*;
 @DefaultUrl("page:home.page")
 public class ModelPage extends PageObject {
 
-    @FindBy(xpath = "//vaadin-button[@title='Archive']")
+    @FindBy(xpath = "//vaadin-grid//vaadin-button[@title='Archive']")
     private WebElement archiveBtnShadow;
-    @FindBy(xpath = "//vaadin-button[@title='Unarchive']")
+    @FindBy(xpath = "//vaadin-grid//vaadin-button[@title='Unarchive']")
     private WebElement unarchiveBtnShadow;
     @FindBy(xpath = "//*[@class='breadcrumb']")
     private List<WebElement> breadcrumb;
