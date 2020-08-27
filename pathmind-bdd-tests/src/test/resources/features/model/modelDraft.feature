@@ -38,7 +38,6 @@ Feature: Save Model draft
     When Upload model tuple_models/CoffeeShopTuple.zip
     When Check that model successfully uploaded
     When Click wizard model details next btn
-    When Input reward variable names kitchen_cleanliness
     When Open projects page
     When Open project AutotestProject on projects page
     Then Check that there are 1 model(s) with 'Draft' tag in project page

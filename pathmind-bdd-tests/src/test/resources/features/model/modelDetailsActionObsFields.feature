@@ -1,6 +1,6 @@
 @modelDetails
 Feature: Check Model Details Actions/Observations fields
-
+#TO DO update models
   Scenario Outline: Check Model Details Actions/Observations fields
     Given Login to the pathmind
     When Open projects page
@@ -21,6 +21,6 @@ Feature: Check Model Details Actions/Observations fields
 
     Examples:
       | project name    | model                                       | reward function file                                             | actions | observations |
-      | AutotestProject | tuple_models/CallCenterTuples.zip           | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt | 5       | 60            |
-      | AutotestProject | tuple_models/CoffeeShopTuple.zip            | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | 4       | 5            |
-      | AutotestProject | tuple_models/SimpleSchedulingTuplesTest.zip | Production_Single_Agent/Two_Variables_Reward_Function.txt        | 6       | 21            |
+#      | AutotestProject | tuple_models/CallCenterTuples.zip           | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt | 5       | 60            |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip            | Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt               | 4       | 5            |
+#      | AutotestProject | tuple_models/SimpleSchedulingTuplesTest.zip | Production_Single_Agent/Two_Variables_Reward_Function.txt        | 6       | 21            |

@@ -61,20 +61,4 @@ Feature: Wizard page
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
-    Then Check experiment page reward variables is var-0,var-1,var-2,var-3
-
-  Scenario: Check wizard Reward Variables not required after edit
-    Given Login to the pathmind
-    When Open projects page
-    When Click create new project button
-    When Input name of the new project AutotestProject and click Create project button
-    When Upload model tuple_models/CoffeeShopTuple.zip
-    When Check that model successfully uploaded
-    When Click wizard model details next btn
-    When Input reward variable names ,text, ,error
-    When Wait a bit 1500 ms
-    When Input reward variable names , ,,test
-    When Wait a bit 3500 ms
-    When Click wizard reward variables next btn
-    Then Check that new experiment AutotestProject page is opened
-    Then Check experiment page reward variables is var-0,var-1,var-2,test
+    Then Check experiment page reward variables is kitchen_cleanliness,successful_customers,balked_customers,service_time
