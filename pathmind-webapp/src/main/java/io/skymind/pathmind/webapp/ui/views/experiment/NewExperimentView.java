@@ -162,6 +162,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 experiments,
                 selectedExperiment -> selectExperiment(selectedExperiment),
                 segmentIntegrator);
+		experimentsNavbar.setAllowNewExperimentCreation(ModelUtils.isValidModel(experiment.getModel()));
 
         unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
         unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
