@@ -148,48 +148,6 @@
     line-height: 1;
 }
 
-.experiment-view .training-starting-placeholder {
-    justify-content: center;
-    align-items: center;
-    flex: 1;
-    position: relative;
-    min-height: 25rem;
-    background-color: var(--pm-highlight-light);
-    padding: var(--lumo-space-m) var(--lumo-space-xxl);
-    border: 1px solid var(--pm-gray-color);
-    border-radius: var(--lumo-border-radius);
-}
-
-.experiment-view .training-starting-placeholder chart-placeholder {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    opacity: 0.4;
-}
-
-.experiment-view .training-starting-placeholder chart-placeholder + vaadin-vertical-layout {
-    justify-content: center;
-    position: relative;
-    max-width: 640px;
-    width: 100%;
-}
-
-.experiment-view .training-starting-placeholder span {
-    display: block;
-    position: relative;
-    font-size: var(--lumo-font-size-l);
-    font-weight: bold;
-    line-height: 1;
-    padding-left: 2rem;
-    margin-bottom: 0.75em;
-}
-
-.experiment-view .training-starting-placeholder span::before {
-    top: -0.2rem !important;
-}
-
 .training-status-details-panel vaadin-vertical-layout {
     width: auto !important;
     margin-left: var(--lumo-space-l);
