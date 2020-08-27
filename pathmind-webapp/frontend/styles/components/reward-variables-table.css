@@ -25,13 +25,19 @@
     align-items: center;
     padding: 0.4em;
 }
-.reward-variables-table:not([readonly]) span:first-child {
+.reward-variables-table:not(.compact) .reward-variable-name {
+    display: none;
+}
+.reward-variables-table.compact .reward-variable-name-field {
+    display: none;
+}
+.reward-variables-table:not(.compact) .reward-variable-index {
     box-sizing: border-box;
     flex: 0 0 2rem;
     text-align: center;
     padding: 0.5em;
 }
-.reward-variables-table:not([readonly]) :not(.header-row) span:first-child {
+.reward-variables-table:not(.compact) :not(.header-row) .reward-variable-index {
     box-sizing: border-box;
     align-self: flex-start;
     height: 1.75rem;
@@ -41,13 +47,16 @@
     border: 1px solid var(--pm-gray-color);
     border-right: none;
 }
-.reward-variables-table[readonly] .header-row {
+.reward-variables-table.compact .header-row {
     display: none;
 }
-.reward-variables-table[readonly] span:first-child {
+.reward-variables-table.compact .reward-variable-index {
     background-color: transparent !important;
+    display: inline-block;
+    width: 30px;
+    color: var(--lumo-secondary-text-color);
 }
-.reward-variables-table[readonly] span:last-child {
+.reward-variables-table.compact .reward-variable-name {
     line-height: 1;
     padding: .3em;
     border-radius: var(--lumo-border-radius-s);

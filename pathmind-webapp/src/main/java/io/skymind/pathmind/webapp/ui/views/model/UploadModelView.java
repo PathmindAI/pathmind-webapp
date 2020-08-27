@@ -99,7 +99,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private FeatureManager featureManager;
 
 	@Autowired
-    private NonTupleModelService nonTupleModelService;
+    private ModelCheckerService modelCheckerService;
 
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSizeAsStr;
@@ -138,7 +138,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		modelBinder = new Binder<>(Model.class);
 
 		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int)DataSize.parse(maxFileSizeAsStr).toBytes());
-		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload(), ModelUtils.isTupleModel(model));
+		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload(), ModelUtils.isValidModel(model));
 		rewardVariablesPanel = new RewardVariablesPanel();
 		actionsPanel = new ActionsPanel();
 		observationsPanel = new ObservationsPanel();
@@ -174,15 +174,15 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		);
 		sectionTitleWrapper.addClassName(PROJECT_TITLE);
 
-        Span nonTupleErrorLabel = nonTupleModelService.createNonTupleErrorLabel(model);
-        nonTupleErrorLabel.getStyle().set("margin-top", "10px");
-        nonTupleErrorLabel.getStyle().set("margin-bottom", "10px");
+        Span invalidModelErrorLabel = modelCheckerService.createInvalidErrorLabel(model);
+        invalidModelErrorLabel.getStyle().set("margin-top", "10px");
+        invalidModelErrorLabel.getStyle().set("margin-bottom", "10px");
 
         List<Component> sections = new ArrayList<>();
         sections.add(sectionTitleWrapper);
         sections.add(uploadModelWizardPanel);
-        if (isResumeUpload() && !ModelUtils.isTupleModel(model)) {
-            sections.add(nonTupleErrorLabel);
+        if (isResumeUpload() && !ModelUtils.isValidModel(model)) {
+            sections.add(invalidModelErrorLabel);
         }
         sections.add(modelDetailsWizardPanel);
         sections.add(rewardVariablesPanel);
@@ -202,16 +202,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	    this.updateError(errors.iterator().next());
     }
 
-    private void autosaveRewardVariables() {
-		if (!rewardVariablesPanel.isInputValueValid()) {
-			return;
-		}
-
-		segmentIntegrator.modelDraftSaved();
-		rewardVariables = rewardVariablesPanel.getRewardVariables();
-		rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
-	}
-	
 	private void autosaveModelDetails() {
 		if(!FormUtils.isValidForm(modelBinder, model)) {
 			return;
@@ -232,9 +222,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         ContinueNavigationAction action = event.postpone();
         if (modelDetailsWizardPanel.isVisible()) {
             autosaveModelDetails();
-        }
-        if (rewardVariablesPanel.isVisible()) {
-            autosaveRewardVariables();
         }
 		action.proceed();
     }
@@ -265,12 +252,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	private void handleRewardVariablesClicked() {
-		if (!rewardVariablesPanel.isInputValueValid()) {
-		    return;
-		}
 		if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
-		    rewardVariables = rewardVariablesPanel.getRewardVariables();
-	        rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
             actionsPanel.setupActionsTable(model.getNumberOfPossibleActions(), actions);
             setVisibleWizardPanel(actionsPanel);
         } else {
@@ -316,8 +298,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		experimentId = experiment.getId();
         EventBus.post(new ExperimentCreatedBusEvent(experiment));
 
-        List<RewardVariable> rewardVariableList = getRewardVariablesWithFallback();
-        rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariableList);
         if (featureManager.isEnabled(Feature.ACTIONS_AND_OBSERVATION_FEATURE)) {
             actions = actionsPanel.getActions();
             actionDAO.updateModelActions(model.getId(), actions);
@@ -327,25 +307,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 		getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
 	}
-
-    private List<RewardVariable> getRewardVariablesWithFallback() {
-        List<RewardVariable> rewardVariableList = rewardVariablesPanel.getRewardVariables();
-        if (rewardVariableList == null || rewardVariableList.isEmpty()) {
-            rewardVariableList = new ArrayList<>();
-            for (int i = 0; i < model.getRewardVariablesCount(); i++) {
-                RewardVariable rewardVariable = new RewardVariable();
-                rewardVariable.setArrayIndex(i);
-                rewardVariableList.add(rewardVariable);
-            }
-        }
-        for (int i=0; i < rewardVariableList.size(); i++) {
-            RewardVariable rewardVariable = rewardVariableList.get(i);
-            if (StringUtils.isEmpty(rewardVariable.getName())) {
-                rewardVariable.setName("var-" + i);
-            }
-        }
-        return rewardVariableList;
-    }
 
     private void handleUploadWizardClicked() {
 		uploadModelWizardPanel.showFileCheckPanel();
@@ -388,20 +349,35 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			setVisibleWizardPanel(modelDetailsWizardPanel);
 
 			if (result != null) {
-				model.setNumberOfPossibleActions(((AnylogicFileCheckResult) (result)).getNumAction());
-				model.setNumberOfObservations(((AnylogicFileCheckResult) (result)).getNumObservation());
-				model.setRewardVariablesCount(((AnylogicFileCheckResult) (result)).getRewardVariablesCount());
-				model.setActionTupleSize(((AnylogicFileCheckResult) (result)).getActionTupleSize());
+			    AnylogicFileCheckResult alResult = AnylogicFileCheckResult.class.cast(result);
+			    rewardVariables = convertToRewardVariables(model.getId(), alResult.getRewardVariables());
+				model.setNumberOfPossibleActions(alResult.getNumAction());
+				model.setNumberOfObservations(alResult.getNumObservation());
+                model.setRewardVariablesCount(rewardVariables.size());
 			}
-			modelDetailsWizardPanel.setIsTupleModel(ModelUtils.isTupleModel(model));
+			modelDetailsWizardPanel.setIsValidModel(ModelUtils.isValidModel(model));
 
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");
+			rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
 			segmentIntegrator.modelImported(true);
 		}));
 	}
 
-	@Override
+	private List<RewardVariable> convertToRewardVariables(long modelId, List<String> rewardVariablesNames) {
+        List<RewardVariable> rewardVariables = new ArrayList<>();
+        for (int i = 0; i < rewardVariablesNames.size(); i++) {
+            RewardVariable rv = new RewardVariable();
+            rv.setArrayIndex(i);
+            rv.setModelId(modelId);
+            rv.setName(rewardVariablesNames.get(i));
+            rv.setDataType("double");
+            rewardVariables.add(rv);
+        }
+        return rewardVariables;
+    }
+
+    @Override
 	public void setParameter(BeforeEvent event, @WildcardParameter String parameter) {
  		String[] segments = parameter.split("/");
  		uploadMode = UploadMode.FOLDER;

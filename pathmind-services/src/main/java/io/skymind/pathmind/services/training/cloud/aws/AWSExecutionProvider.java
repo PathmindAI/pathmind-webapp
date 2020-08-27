@@ -325,16 +325,18 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_0_7:
             case VERSION_1_1_0:
             case VERSION_1_1_1:
-                instructions.addAll(Arrays.asList(
+            case VERSION_1_2_0:
+                nativerlVersion.fileNames().forEach(filename -> {
+                    instructions.addAll(Arrays.asList(
                         // Setup NativeRL
                         "mkdir -p work",
                         "cd work",
-                        "unzip ../nativerl-1.0.0-SNAPSHOT-bin.zip > /dev/null",
-                        "rm ../nativerl-1.0.0-SNAPSHOT-bin.zip",
+                        String.format("unzip ../%s > /dev/null", filename),
+                        String.format("rm ../%s", filename),
                         "mv nativerl-bin/* .",
                         "mv examples/train.sh .",
-                        "cd .."
-                ));
+                        "cd .."));
+                });
 
                 files.addAll(fileManager.getFiles(nativerlVersion));
                 break;
@@ -415,6 +417,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_0_25_Multi:
             case VERSION_1_0_1:
             case VERSION_1_0_2:
+            case VERSION_1_2_0:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));
@@ -458,15 +461,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("RESET_SNIPPET", job.getReset()),
                 var("REWARD_SNIPPET", job.getReward()),
                 var("METRICS_SNIPPET", job.getMetrics()),
-                var("DISCRETE_ACTIONS", String.valueOf(job.getActions())),
-                var("CONTINUOUS_OBSERVATIONS", String.valueOf(job.getObservations())),
                 var("MAX_ITERATIONS", String.valueOf(job.getIterations())),
                 var("TEST_ITERATIONS", "0"), // disabled for now
-
-                // Still has to be set, but doesn't actually do something, needs to be removed from train.sh
-                var("STEP_TIME", "1"),
-                var("STOP_TIME", "420"),
-                var("TIME_UNIT", "MINUTE"),
                 var("MAX_TIME_IN_SEC", String.valueOf(job.getMaxTimeInSec())),
                 var("NUM_SAMPLES", String.valueOf(job.getNumSamples())),
                 var("MULTIAGENT", String.valueOf(job.isMultiAgent())),
@@ -477,8 +473,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("VF_LOSS_RANGE", "0.1"),
                 var("VALUE_PRED", "1"), // disabled for now
                 var("USER_LOG", String.valueOf(job.isUserLog())),
-                var("ACTION_TUPLE_SIZE", String.valueOf(job.getActionTupleSize())),
-                var("DEBUGMETRICS", String.valueOf(job.isRecordMetricsRaw()))
+                var("DEBUGMETRICS", String.valueOf(job.isRecordMetricsRaw())),
+                var("NAMED_VARIABLE", String.valueOf(job.isNamedVariables()))
         ));
     }
 

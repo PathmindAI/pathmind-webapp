@@ -1,0 +1,2 @@
+reward -= after.avgWaitTime - before.avgWaitTime;
+reward -= (after.avgDistanceKM - before.avgDistanceKM) * 20;

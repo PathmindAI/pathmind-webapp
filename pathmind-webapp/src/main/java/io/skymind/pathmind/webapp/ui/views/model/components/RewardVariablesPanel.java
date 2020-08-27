@@ -1,12 +1,10 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
 import java.util.List;
 
 import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -53,33 +51,13 @@ public class RewardVariablesPanel extends VerticalLayout
 	}
 
 	private void setupForm() {
-        rewardVariablesTable = new RewardVariablesTable(false);
-		formPanel.add(new Paragraph("You have created a function to gather reward variables in your simulation. Let’s give them variable names to make it easier to remember what they reference."));
-		formPanel.add(getRewardVariablesPanel());
+        rewardVariablesTable = new RewardVariablesTable();
+		formPanel.add(new Paragraph("You have created a function to gather reward variables in your simulation. Here is the list of reward variables we extracted from your simulation:"));
 		formPanel.setPadding(false);
 		formPanel.add(rewardVariablesTable);
 	}
 
 	public void setupRewardVariablesTable(int rewardVariablesCount, List<RewardVariable> rewardVariables) {
-	    rewardVariablesTable.setVariableSize(Math.max(rewardVariablesCount, rewardVariables.size()));
-		rewardVariablesTable.setValue(rewardVariables);
-	}
-
-	private Component getRewardVariablesPanel() {
-        VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
-                LabelFactory.createLabel("Let’s give each variable a name", BOLD_LABEL),
-                LabelFactory.createLabel("This will make it easier to understand when you’re creating reward functions."),
-                LabelFactory.createLabel("If a name isn't provided, the reward variable will be named 'var-X', where 'X' is its index, e.g. 'var-0'.")
-        );
-		GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
-		return wrapper;
-	}
-	
-	public List<RewardVariable> getRewardVariables(){
-		return rewardVariablesTable.getValue();
-	}
-
-	public boolean isInputValueValid() {
-        return !rewardVariablesTable.isInvalid();
+	    rewardVariablesTable.setRewardVariables(rewardVariables);
 	}
 }

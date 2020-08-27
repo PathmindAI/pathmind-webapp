@@ -117,7 +117,7 @@ public class ExperimentPage extends PageObject {
     public void checkRunningExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
         List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='reward-variables-table']/descendant::vaadin-horizontal-layout/span[not(text()='Variable Name')][2]"))) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='reward-variables-table compact']/descendant::vaadin-horizontal-layout/span[not(text()='Variable Name')][2]"))) {
             actual.add(webElement.getText());
         }
 

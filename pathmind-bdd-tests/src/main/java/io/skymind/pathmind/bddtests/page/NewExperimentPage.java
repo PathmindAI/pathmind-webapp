@@ -46,7 +46,7 @@ public class NewExperimentPage extends PageObject {
             System.out.println("No file");
         } else {
             try {
-                rewardField.sendKeys(FileUtils.readFileToString(new File("models/" + rewardFile), StandardCharsets.UTF_8));
+                utils.sendKeysCarefully(FileUtils.readFileToString(new File("models/" + rewardFile), StandardCharsets.UTF_8), rewardField);
             } catch (IOException e) {
                 e.printStackTrace();
             }

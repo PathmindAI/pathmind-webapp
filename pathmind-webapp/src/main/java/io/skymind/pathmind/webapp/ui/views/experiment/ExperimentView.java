@@ -57,7 +57,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.Experime
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
-import io.skymind.pathmind.webapp.ui.views.model.NonTupleModelService;
+import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import lombok.extern.slf4j.Slf4j;
@@ -131,7 +131,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     @Autowired
     private FeatureManager featureManager;
     @Autowired
-    private NonTupleModelService nonTupleModelService;
+    private ModelCheckerService modelCheckerService;
     @Value("${pathmind.early-stopping.url}")
     private String earlyStoppingUrl;
 
@@ -185,7 +185,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 segmentIntegrator);
         setupExperimentContentPanel();
 
-        Span modelNeedToBeUpdatedLabel = nonTupleModelService.createNonTupleErrorLabel(experiment.getModel());
+        Span modelNeedToBeUpdatedLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
         modelNeedToBeUpdatedLabel.getStyle().set("margin-top", "2px");
 
 	    reasonWhyTheTrainingStoppedLabel = LabelFactory.createLabel("", "reason-why-the-training-stopped");
@@ -230,6 +230,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         rewardVariablesTable = new RewardVariablesTable();
         rewardVariablesTable.setCodeEditorMode();
+        rewardVariablesTable.setCompactMode();
         rewardVariablesTable.setSizeFull();
         tableWrapper.add(rewardVariablesTable);
 
@@ -479,11 +480,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     @Override
     protected void initScreen(BeforeEnterEvent event) {
-        // The reward variables table should only be initialized once for the Experiment Page
-        // no matter which Experiment of the same model the user visits later on.
-        // This may have to be changed if we allow users to navigate Experiments of different models.
-        rewardVariablesTable.setIsReadOnly(true);
-        rewardVariablesTable.setVariableSize(experiment.getModel().getRewardVariablesCount());
         updateScreenComponents();
     }
 
@@ -492,10 +488,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         setPolicyChartVisibility();
         experimentsNavbar.setVisible(!experiment.isArchived());
         panelTitle.setText("Experiment #"+experiment.getName());
-        codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
-        if (!rewardVariables.isEmpty()) {
-            rewardVariablesTable.setValue(rewardVariables);
-        } 
+        if (ModelUtils.isValidModel(experiment.getModel())) {
+            codeViewer.setValue(experiment.getRewardFunction());
+        } else {
+            codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
+            experimentsNavbar.setAllowNewExperimentCreation(false);
+        }
+        rewardVariablesTable.setRewardVariables(rewardVariables);
         if (showSimulationMetrics) {
             updateSimulationMetrics();
         }
@@ -519,7 +518,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void updateUIForError(TrainingError error, String errorText) {
         showTheReasonWhyTheTrainingStopped(errorText, ERROR_LABEL, false);
 
-        boolean allowRestart = error.isRestartable() && ModelUtils.isTupleModel(experiment.getModel());
+        boolean allowRestart = error.isRestartable() && ModelUtils.isValidModel(experiment.getModel());
         restartTraining.setVisible(allowRestart);
         restartTraining.setEnabled(allowRestart);
     }

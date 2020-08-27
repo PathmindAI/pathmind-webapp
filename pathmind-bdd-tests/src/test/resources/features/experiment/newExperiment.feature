@@ -50,11 +50,11 @@ Feature: New experiment page
     When Open project AutotestProject on projects page
     Then Click the model name 1
     Then Click the experiment name 1
-    Then Input reward function reward -= after[3] - before[3];
+    Then Input reward function reward -= after.balked_customers - before.balked_customers; // Minimize balked customers test3
     When Click project save draft btn
     When Click back button
     Then Click the experiment name 1
-    Then Check reward function is reward -= after[3 var-3] - before[3 var-3];
+    Then Check reward function is reward -= after.balked_customers - before.balked_customers; // Minimize balked customers test3
 
   @notes
   Scenario: Adding notes to the experiment
@@ -77,6 +77,6 @@ Feature: New experiment page
     Then Click the model name 1
     Then Click the experiment name 1
     Then Add note This is the experiment notes for this Coffee Shop project to the experiment page
-    Then Click project save draft btn
-    Then Refresh page
+    When Click in 'Model #1 (coffeeshop)' button
+    Then Click the experiment name 1
     Then Check experiment notes is This is the experiment notes for this Coffee Shop project

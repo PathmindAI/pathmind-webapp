@@ -33,6 +33,7 @@ public class ExperimentsNavBar extends VerticalLayout
 	private VerticalLayout rowsWrapper;
 	private Consumer<Experiment> selectExperimentConsumer;
     private ExperimentsNavBarItem currentExperimentNavItem;
+    private NewExperimentButton newExperimentButton;
 
     private SegmentIntegrator segmentIntegrator;
 
@@ -55,10 +56,12 @@ public class ExperimentsNavBar extends VerticalLayout
 		rowsWrapper.addClassName("experiments-navbar-items");
 		rowsWrapper.setPadding(false);
 		rowsWrapper.setSpacing(false);
+		
+		newExperimentButton = new NewExperimentButton(experimentDAO, modelId);
 
 		setPadding(false);
 		setSpacing(false);
-		add(new NewExperimentButton(experimentDAO, modelId));
+		add(newExperimentButton);
 		add(rowsWrapper);
 		addClassName("experiments-navbar");
         addExperimentsToNavBar();
@@ -136,5 +139,9 @@ public class ExperimentsNavBar extends VerticalLayout
 				currentExperimentNavItem = experimentsNavBarItem;
 			}
 		});
+    }
+    
+    public void setAllowNewExperimentCreation(boolean allowNewExperimentCreation) {
+        newExperimentButton.setEnabled(allowNewExperimentCreation);
     }
 }
