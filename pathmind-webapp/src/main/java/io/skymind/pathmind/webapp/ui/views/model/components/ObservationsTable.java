@@ -1,29 +1,34 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
+import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.shared.data.Observation;
 
 @CssImport(value = "./styles/components/observations-table.css")
-public class ObservationsTable extends VerticalLayout {
+public class ObservationsTable extends CustomField<Set<Observation>> implements HasStyle {
 
-	private List<Observation> observationsList = new ArrayList<>();
+	private Set<Observation> observationsList = new HashSet<>();
     private CheckboxGroup<Observation> checkboxGroup = new CheckboxGroup<>();
-    private Set<Observation> checkboxGroupItems;
 
 	public ObservationsTable() {
-        setPadding(false);
-        setSpacing(false);
-	    setClassName("observations-table");
+	    VerticalLayout container = new VerticalLayout();
+	    container.setPadding(false);
+	    container.setSpacing(false);
+	    container.setClassName("observations-table");
         
         Checkbox checkboxSelectAll = new Checkbox("Select All");
         checkboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
@@ -40,22 +45,30 @@ public class ObservationsTable extends VerticalLayout {
         });
         checkboxSelectAll.addValueChangeListener(event -> {
             if (checkboxSelectAll.getValue()) {
-                checkboxGroup.setValue(checkboxGroupItems);
+                checkboxGroup.select(observationsList);
             } else {
                 checkboxGroup.deselectAll();
             }
         });
-        add(checkboxSelectAll, checkboxGroup);
+        container.add(checkboxSelectAll, checkboxGroup);
+        add(container);
     }
     
-    public void setObservations(List<Observation> observations) {
+    public void setItems(Set<Observation> observations) {
         observationsList = observations;
-        checkboxGroupItems = new LinkedHashSet<>(observationsList);
-        checkboxGroup.setItems(checkboxGroupItems);
+        checkboxGroup.setItems(observationsList);
         checkboxGroup.setItemLabelGenerator(Observation::getVariable);
     }
 
-    public List<Observation> getObservations() {
-        return observationsList;
+    @Override
+    protected Set<Observation> generateModelValue() {
+        return checkboxGroup.getSelectedItems();
     }
+
+    @Override
+    protected void setPresentationValue(Set<Observation> newPresentationValue) {
+        checkboxGroup.setValue(newPresentationValue);
+    }
+
+    
 }
