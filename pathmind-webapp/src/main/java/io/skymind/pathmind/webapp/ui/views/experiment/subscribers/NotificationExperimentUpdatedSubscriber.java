@@ -26,10 +26,12 @@ public class NotificationExperimentUpdatedSubscriber extends ExperimentUpdatedSu
 
     // We can ignore this code for archived experiments since the navbar is not visible for archived experiments.
     public void handleBusEvent(ExperimentUpdatedBusEvent event) {
+        // We need to update the internal experiments list for the navigation logic.
+        ExperimentUtils.updateExperimentInExperimentsList(experiments, event.getExperiment());
         PushUtils.push(getUiSupplier().get(), ui -> {
-            if(event.isStartedTraining())
+            if(event.isStartedTrainingEventType())
                 alertThenNotifyStarted(event);
-            if(event.isArchive())
+            if(event.isArchiveEventType())
                 alertThenNotifyArchive(event);
         });
     }
@@ -59,12 +61,8 @@ public class NotificationExperimentUpdatedSubscriber extends ExperimentUpdatedSu
 
     @Override
     public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
-        // The last clause is if the archive state has changed OR the experiment isn't currently running.
-        if(isSourceSameUI(event))
-            return false;
         return ExperimentUtils.isSameExperiment(event.getExperiment(), experiment) &&
-                (event.isStartedTraining() || event.isArchive()) &&
-                (event.isArchive() != experiment.isArchived() || !ExperimentUtils.isRunning(experiment));
+                (event.isStartedTrainingEventType() || event.isArchiveEventType());
     }
 
     public void setExperiment(Experiment experiment) {

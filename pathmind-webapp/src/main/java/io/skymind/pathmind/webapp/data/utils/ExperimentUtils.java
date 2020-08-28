@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
@@ -244,4 +245,15 @@ public class ExperimentUtils
             getUISupplier.get().ifPresent(ui -> ExperimentUtils.navigateToExperiment(ui, firstUnarchivedExperiment.get()));
     }
 
+    /**
+     * Replace the existing experiment in the experiments list without replicating the list (for example using map and then collecting)
+     * as well as keeping the exact same order in case the list is already sorted.
+     */
+    public static void updateExperimentInExperimentsList(List<Experiment> experiments, Experiment experiment) {
+        int index = IntStream.range(0, experiments.size())
+                .filter(x -> experiment.getId() == experiments.get(x).getId())
+                .findFirst().orElse(-1);
+        if(index > -1)
+            experiments.set(index, experiment);
+    }
 }

@@ -33,8 +33,7 @@ public class NavBarExperimentUpdatedSubscriber extends ExperimentUpdatedSubscrib
     @Override
     public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
         // At this point the navbar only adds/removes elements when an experiment is archived or unarchived.
-        return ExperimentUtils.isSameModel(event.getExperiment(), experimentsNavBar.getModelId()) &&
-                event.getExperimentUpdateType().equals(ExperimentUpdatedBusEvent.ExperimentUpdateType.Archive);
+        return ExperimentUtils.isSameModel(event.getExperiment(), experimentsNavBar.getModelId()) && event.isArchiveEventType();
     }
 
     @Override

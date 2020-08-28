@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.bus.events;
 
-import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
@@ -39,11 +38,11 @@ public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
         return experiment.getModelId();
     }
 
-    public boolean isStartedTraining() {
+    public boolean isStartedTrainingEventType() {
         return ExperimentUpdateType.StartTraining.equals(experimentUpdateType);
     }
 
-    public boolean isArchive() {
+    public boolean isArchiveEventType() {
         return ExperimentUpdateType.Archive.equals(experimentUpdateType);
     }
 
