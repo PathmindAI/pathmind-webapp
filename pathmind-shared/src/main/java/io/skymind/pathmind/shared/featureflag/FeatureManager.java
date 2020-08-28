@@ -25,8 +25,6 @@ public class FeatureManager {
 
     public boolean isEnabled(Feature feature) {
         switch (feature) {
-            case OBSERVATIONS_FEATURE:
-                return true;
             case SEARCH:
                 return true;
             case MULTI_AGENT_TRAINING:
