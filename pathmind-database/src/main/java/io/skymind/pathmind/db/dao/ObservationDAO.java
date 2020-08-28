@@ -1,5 +1,6 @@
 package io.skymind.pathmind.db.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.jooq.DSLContext;
@@ -21,7 +22,7 @@ public class ObservationDAO {
     }
 
     public List<Observation> getObservationsForExperiment(long experimentId) {
-        return ObservationRepository.getObservationsForModel(ctx, experimentId);
+        return ObservationRepository.getObservationsForExperiment(ctx, experimentId);
     }
 
     public void updateModelObservations(long modelId, List<Observation> observations) {
@@ -32,7 +33,7 @@ public class ObservationDAO {
         });
     }
     
-    public void saveExperimentObservations(long experimentId, List<Observation> observations) {
+    public void saveExperimentObservations(long experimentId, Collection<Observation> observations) {
         ctx.transaction(conf -> {
             DSLContext transactionCtx = DSL.using(conf);
             ExperimentObservationRepository.deleteExperimentObservations(transactionCtx, experimentId);

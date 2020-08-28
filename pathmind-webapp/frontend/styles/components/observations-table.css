@@ -10,6 +10,9 @@
     border-radius: var(--lumo-border-radius);
     overflow-y: auto;
 }
+.observations-panel vaadin-custom-field {
+	--lumo-text-field-size: var(--lumo-space-s);
+}
 .observations-panel span {
     position: sticky;
     width: 100%;

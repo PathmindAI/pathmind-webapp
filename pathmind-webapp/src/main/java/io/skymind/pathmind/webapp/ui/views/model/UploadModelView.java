@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.List;
 
 import com.vaadin.flow.component.html.Span;
+
+import io.skymind.pathmind.shared.constants.ObservationDataType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
@@ -87,9 +89,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private SegmentIntegrator segmentIntegrator;
 
 	@Autowired
-	private FeatureManager featureManager;
-
-	@Autowired
     private ModelCheckerService modelCheckerService;
 
     @Value("${spring.servlet.multipart.max-file-size}")
@@ -98,7 +97,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private Model model;
 
 	private List<RewardVariable> rewardVariables = new ArrayList<>();
-    private List<Observation> observations = new ArrayList<>();
 
 	private Binder<Model> modelBinder;
 
@@ -212,7 +210,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			this.model = modelService.getModel(modelId)
 					.orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
 			this.rewardVariables = rewardVariablesDAO.getRewardVariablesForModel(modelId);
-			this.observations = observationDAO.getObservationsForModel(modelId);
 		}
 		else {
 			this.model = ModelUtils.generateNewDefaultModel();
@@ -310,11 +307,24 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");
 			rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
+			observationDAO.updateModelObservations(model.getId(), createDummyObservations(model.getNumberOfObservations()));
 			segmentIntegrator.modelImported(true);
 		}));
 	}
 
-	private List<RewardVariable> convertToRewardVariables(long modelId, List<String> rewardVariablesNames) {
+	private List<Observation> createDummyObservations(int numberOfObservations) {
+        List<Observation> observations = new ArrayList<>();
+        for (int i = 0; i < numberOfObservations; i++) {
+            Observation obs = new Observation();
+            obs.setArrayIndex(i);
+            obs.setDataTypeEnum(ObservationDataType.NUMBER);
+            obs.setVariable("Observation#"+i);
+            observations.add(obs);
+        }
+        return observations;
+    }
+
+    private List<RewardVariable> convertToRewardVariables(long modelId, List<String> rewardVariablesNames) {
         List<RewardVariable> rewardVariables = new ArrayList<>();
         for (int i = 0; i < rewardVariablesNames.size(); i++) {
             RewardVariable rv = new RewardVariable();

@@ -3,6 +3,7 @@ package io.skymind.pathmind.db.dao;
 import static io.skymind.pathmind.db.jooq.Tables.EXPERIMENT_OBSERVATION;
 import static io.skymind.pathmind.db.jooq.Tables.OBSERVATION;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,7 @@ class ObservationRepository {
         ctx.batch(saveQueries).execute();
     }
 
-    protected static void insertExperimentObservations(DSLContext ctx, long experimentId, List<Observation> observations) {
+    protected static void insertExperimentObservations(DSLContext ctx, long experimentId, Collection<Observation> observations) {
         final List<Query> saveQueries = observations.stream()
                 .map(observation ->
                 ctx.insertInto(EXPERIMENT_OBSERVATION)
@@ -52,6 +53,7 @@ class ObservationRepository {
         return ctx.select(OBSERVATION.asterisk())
                 .from(OBSERVATION)
                 .where(OBSERVATION.MODEL_ID.eq(modelId))
+                .orderBy(OBSERVATION.ARRAY_INDEX)
                 .fetchInto(Observation.class);
     }
     

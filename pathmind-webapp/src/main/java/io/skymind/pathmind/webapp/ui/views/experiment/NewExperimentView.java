@@ -40,7 +40,6 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.user.UserCaps;
-import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
@@ -90,7 +89,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
     private List<String> rewardFunctionErrors = new ArrayList<>();
-    private List<Observation> observations = new ArrayList<>();
+    private List<Observation> modelObservations = new ArrayList<>();
+    private List<Observation> experimentObservations = new ArrayList<>();
 
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardFunctionErrorPanel rewardFunctionErrorPanel;
@@ -120,8 +120,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private TrainingService trainingService;
     @Autowired
     private SegmentIntegrator segmentIntegrator;
-	@Autowired
-	private FeatureManager featureManager;
     @Autowired
     private RewardValidationService rewardValidationService;
 	@Autowired
@@ -206,7 +204,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
 
         observationsPanel = new ObservationsPanel();
-        observationsPanel.setupObservationTable(getMockedObservations());
+        observationsPanel.setupObservationTable(modelObservations, experimentObservations);
+        observationsPanel.addValueChangeListener(evt -> {
+            unsavedChanges.setVisible(true);
+            startRunButton.setEnabled(canStartTraining());
+            saveDraftButton.setEnabled(canSaveDataInDB());
+        });
         HorizontalLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapWidthFullHorizontal(
                 rewardFnEditorWrapper,
                 observationsPanel);
@@ -255,9 +258,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         }
         return rewardFnEditorPanel;
     }
-
+	
 	private boolean canStartTraining() {
-		return ModelUtils.isValidModel(experiment.getModel()) && rewardFunctionErrors.size() == 0 && canSaveDataInDB();
+		return ModelUtils.isValidModel(experiment.getModel()) && rewardFunctionErrors.size() == 0 && !observationsPanel.getSelectedObservations().isEmpty() && canSaveDataInDB();
 	}
 
 	private boolean canSaveDataInDB() {
@@ -269,25 +272,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 Experiment::setRewardFunction);
     }
 
-    // For development purpose only
-    private List<Observation> getMockedObservations() {
-        long mockedModelId = 15366;
-        List<Observation> mockedObservations = new ArrayList<>();
-        for (int i = 0; i < 18; i++) {
-            Observation mockObs = new Observation();
-            mockObs.setModelId(mockedModelId);
-            mockObs.setVariable("Observation " + i);
-            mockedObservations.add(mockObs);
-        }
-        return mockedObservations;
-    }
-//	private RewardVariablesTable getRewardVariableNamesPanel() {
-//		rewardVariablesTable = new RewardVariablesTable();
-//		rewardVariablesTable.setCodeEditorMode();
-//        rewardVariablesTable.setSizeFull();
-//		return rewardVariablesTable;
-//	}
-
 	private void handleStartRunButtonClicked() {
 		if (!FormUtils.isValidForm(binder, experiment))
 			return;
@@ -295,6 +279,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             return;
 
 		experimentDAO.updateExperiment(experiment);
+		observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
 		segmentIntegrator.rewardFuntionCreated();
 
         trainingService.startRun(experiment);
@@ -309,6 +294,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
 		experimentDAO.updateExperiment(experiment);
+		observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
 		segmentIntegrator.draftSaved();
 		unsavedChanges.setVisible(false);
 		notesSavedHint.setVisible(false);
@@ -316,11 +302,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		afterClickedCallback.execute();
 	}
     
-    private void saveObservationsSelection() {
-        observations = observationsPanel.getObservations();
-        // update observations selection status for experiment
-    }
-
     private void unarchiveExperiment() {
         ConfirmationUtils.unarchive("experiment", () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
@@ -428,14 +409,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	protected void initLoadData() {
 		experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
 				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(experiment.getModelId());
-        observations = observationDAO.getObservationsForModel(modelId);
 		loadExperimentData();
 	}
 
 	private void loadExperimentData() {
 		modelId = experiment.getModelId();
 		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
+		modelObservations = observationDAO.getObservationsForModel(experiment.getModelId());
+		experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
 		if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
                                     .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
