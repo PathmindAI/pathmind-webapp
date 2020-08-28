@@ -40,7 +40,6 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.user.UserCaps;
-import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
@@ -73,7 +72,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVe
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
-import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
@@ -126,7 +124,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private FeatureManager featureManager;
     @Autowired
     private RewardValidationService rewardValidationService;
-    @Autowired
+	@Autowired
     private ModelCheckerService modelCheckerService;
 
     private Breadcrumbs pageBreadcrumbs;
@@ -165,10 +163,15 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         return mainContent;
     }
 
-    private HorizontalLayout createMainPanel() {
-        experimentsNavbar = new ExperimentsNavBar(() -> getUI(), experimentDAO, experiment, experiments,
-                selectedExperiment -> selectExperiment(selectedExperiment), segmentIntegrator);
-        experimentsNavbar.setAllowNewExperimentCreation(ModelUtils.isValidModel(experiment.getModel()));
+	private HorizontalLayout createMainPanel() {
+		experimentsNavbar = new ExperimentsNavBar(
+		        () -> getUI(),
+                experimentDAO,
+                experiment,
+                experiments,
+                selectedExperiment -> selectExperiment(selectedExperiment),
+                segmentIntegrator);
+		experimentsNavbar.setAllowNewExperimentCreation(ModelUtils.isValidModel(experiment.getModel()));
 
         unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(),
                 click -> unarchiveExperiment());
@@ -230,38 +233,36 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         return panelsWrapper;
     }
 
-    private VerticalLayout getRewardFnEditorPanel() {
+	private VerticalLayout getRewardFnEditorPanel() {
         rewardFunctionEditor = new RewardFunctionEditor();
         rewardFunctionEditor.addValueChangeListener(changeEvent -> {
             unsavedChanges.setVisible(true);
             rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > REWARD_FUNCTION_MAX_LENGTH);
-            rewardFunctionErrors = rewardValidationService.validateRewardFunction(rewardFunctionEditor.getValue(),
-                    rewardVariables);
+            rewardFunctionErrors = rewardValidationService.validateRewardFunction(rewardFunctionEditor.getValue(), rewardVariables);
             rewardFunctionErrorPanel.showErrors(rewardFunctionErrors);
-
+            
             startRunButton.setEnabled(canStartTraining());
             saveDraftButton.setEnabled(canSaveDataInDB());
         });
-        rewardEditorErrorLabel = LabelFactory.createLabel(
-                "Reward Function must not exceed " + REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
+        rewardEditorErrorLabel = LabelFactory.createLabel("Reward Function must not exceed " + REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
         rewardEditorErrorLabel.setVisible(false);
-        VerticalLayout rewardFnEditorPanel = WrapperUtils
-                .wrapVerticalWithNoPaddingOrSpacing(WrapperUtils.wrapWidthFullBetweenHorizontal(
-                        LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL),
-                        rewardEditorErrorLabel), rewardFunctionEditor);
+        VerticalLayout rewardFnEditorPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                WrapperUtils.wrapWidthFullBetweenHorizontal(
+                        LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL), rewardEditorErrorLabel),
+                rewardFunctionEditor);
         if (experiment.isArchived()) {
             rewardFnEditorPanel.setEnabled(false);
         }
         return rewardFnEditorPanel;
     }
 
-    private boolean canStartTraining() {
-        return ModelUtils.isValidModel(experiment.getModel()) && rewardFunctionErrors.size() == 0 && canSaveDataInDB();
-    }
+	private boolean canStartTraining() {
+		return ModelUtils.isValidModel(experiment.getModel()) && rewardFunctionErrors.size() == 0 && canSaveDataInDB();
+	}
 
-    private boolean canSaveDataInDB() {
-        return rewardFunctionEditor.getValue().length() <= REWARD_FUNCTION_MAX_LENGTH;
-    }
+	private boolean canSaveDataInDB() {
+		return rewardFunctionEditor.getValue().length() <= REWARD_FUNCTION_MAX_LENGTH;
+	}
 
     private void setupBinder() {
         binder.forField(rewardFunctionEditor).asRequired().bind(Experiment::getRewardFunction,
@@ -280,15 +281,21 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         }
         return mockedObservations;
     }
+//	private RewardVariablesTable getRewardVariableNamesPanel() {
+//		rewardVariablesTable = new RewardVariablesTable();
+//		rewardVariablesTable.setCodeEditorMode();
+//        rewardVariablesTable.setSizeFull();
+//		return rewardVariablesTable;
+//	}
 
-    private void handleStartRunButtonClicked() {
-        if (!FormUtils.isValidForm(binder, experiment))
-            return;
-        if (!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator))
+	private void handleStartRunButtonClicked() {
+		if (!FormUtils.isValidForm(binder, experiment))
+			return;
+		if(!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator))
             return;
 
-        experimentDAO.updateExperiment(experiment);
-        segmentIntegrator.rewardFuntionCreated();
+		experimentDAO.updateExperiment(experiment);
+		segmentIntegrator.rewardFuntionCreated();
 
         trainingService.startRun(experiment);
         EventBus.post(new ExperimentUpdatedBusEvent(experiment,
@@ -301,19 +308,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
-        experimentDAO.updateExperiment(experiment);
-        segmentIntegrator.draftSaved();
-        unsavedChanges.setVisible(false);
-        notesSavedHint.setVisible(false);
-        NotificationUtils.showSuccess("Draft successfully saved");
-        afterClickedCallback.execute();
-    }
-
+		experimentDAO.updateExperiment(experiment);
+		segmentIntegrator.draftSaved();
+		unsavedChanges.setVisible(false);
+		notesSavedHint.setVisible(false);
+		NotificationUtils.showSuccess("Draft successfully saved");
+		afterClickedCallback.execute();
+	}
+    
     private void saveObservationsSelection() {
-        if (featureManager.isEnabled(FeatureManager.OBSERVATIONS_FEATURE)) {
-            observations = observationsPanel.getObservations();
-            // update observations selection status for experiment
-        }
+        observations = observationsPanel.getObservations();
+        // update observations selection status for experiment
     }
 
     private void unarchiveExperiment() {

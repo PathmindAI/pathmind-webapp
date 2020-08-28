@@ -87,6 +87,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private SegmentIntegrator segmentIntegrator;
 
 	@Autowired
+	private FeatureManager featureManager;
+
+	@Autowired
     private ModelCheckerService modelCheckerService;
 
     @Value("${spring.servlet.multipart.max-file-size}")

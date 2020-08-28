@@ -1631,23 +1631,6 @@
         </rollback>
     </changeSet>
     
-    <changeSet id="20200827-01" author="onur@vaadin.com">
-        <createTable tableName="EXPERIMENT_OBSERVATION">
-            <column autoIncrement="true" name="ID" type="BIGINT">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="EXPERIMENT_ID" type="BIGINT">
-                <constraints nullable="false" foreignKeyName="PM_FK_EO_EXPERIMENT" references="EXPERIMENT(ID)"/>
-            </column>
-            <column name="OBSERVATION_ID" type="BIGINT">
-                <constraints nullable="false" foreignKeyName="PM_FK_EO_OBSERVATION" references="OBSERVATION(ID)"/>
-            </column>
-        </createTable>
-        <rollback>
-            <dropTable tableName="EXPERIMENT_OBSERVATION"/>
-        </rollback>
-    </changeSet>
-
     <changeSet id="20200805-01" author="onur@vaadin.com">
         <addColumn tableName="REWARD_VARIABLE">
             <column name="DATA_TYPE" type="VARCHAR(16)">
@@ -1673,11 +1656,23 @@
 
     <changeSet id="20200821-01" author="bruno.rezende@ext.vaadin.com">
         <dropColumn tableName="MODEL" columnName="NUMBER_OF_POSSIBLE_ACTIONS" />
-    </changeSet>
-
-    <changeSet id="20200821-02" author="bruno.rezende@ext.vaadin.com">
         <dropTable tableName="ACTION"/>
     </changeSet>
 
-
+    <changeSet id="20200827-01" author="onur@vaadin.com">
+        <createTable tableName="EXPERIMENT_OBSERVATION">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="EXPERIMENT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_EO_EXPERIMENT" references="EXPERIMENT(ID)"/>
+            </column>
+            <column name="OBSERVATION_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="PM_FK_EO_OBSERVATION" references="OBSERVATION(ID)"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="EXPERIMENT_OBSERVATION"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>

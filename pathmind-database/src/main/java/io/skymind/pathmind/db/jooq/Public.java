@@ -45,7 +45,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -1949848254;
+    private static final long serialVersionUID = -641524924;
 
     /**
      * The reference instance of <code>public</code>
