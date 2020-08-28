@@ -70,8 +70,7 @@ public class EventBus {
     }
 
     /**
-     * The reason for the first single EventBusSubscriber is so that we can get a compile time error in case someone forgets to add one. At least until
-     * we're done the refactorings.
+     * The reason for the first single EventBusSubscriber is so that we can get a compile time error in case someone forgets to add one.
      */
     public static void subscribe(Component component, EventBusSubscriber eventBusSubscriber, EventBusSubscriber... eventBusSubscribers) {
         List<EventBusSubscriber> subscribers = new ArrayList<>(Arrays.asList(eventBusSubscribers));

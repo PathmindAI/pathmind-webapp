@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * Any View or Component that wants to subscribe to events needs to implement this interface. However it is strongly
+ * Any View or Component that wants to subscribe to events needs to extend this class. However it is strongly
  * recommended to create an intermediate interface for the Subscriber such as PolicyUpdateSubscriber, etc. so that
  * we can easily differentiate what there are no errors or mixups with the EventType.
  * <p>
