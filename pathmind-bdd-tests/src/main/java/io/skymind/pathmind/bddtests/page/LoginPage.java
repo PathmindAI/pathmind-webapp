@@ -271,4 +271,8 @@ public class LoginPage extends PageObject {
         WebElement signUpView = utils.expandRootElement(signUpShadow);
         assertThat(signUpView.findElement(By.cssSelector("h3")).getText(), is("Create Password"));
     }
+
+    public void checkThatPopupIsShown(String popUp) {
+        assertThat(getDriver().findElement(By.xpath("//span[@class='closeable-notification-text-label']")).getText(), is(popUp));
+    }
 }

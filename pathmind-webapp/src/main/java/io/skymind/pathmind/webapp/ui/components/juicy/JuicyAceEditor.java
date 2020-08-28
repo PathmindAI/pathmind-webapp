@@ -1,37 +1,32 @@
 package io.skymind.pathmind.webapp.ui.components.juicy;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.AbstractSinglePropertyField;
-import com.vaadin.flow.component.ComponentEvent;
-import com.vaadin.flow.component.DebounceSettings;
-import com.vaadin.flow.component.DomEvent;
-import com.vaadin.flow.component.EventData;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.Synchronize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.dom.DebouncePhase;
-import com.vaadin.flow.internal.Pair;
 
+import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
+import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.juicy.mode.JuicyAceMode;
 import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
 
 //NOTE: consider to move as separate from project component
 @Tag("juicy-ace-editor")
-// Using CDN here as a workaround for an issue with webpack + ace-builds: https://github.com/DanielSchaffer/webpack-babel-multi-target-plugin/issues/39
 @JavaScript("./src/juicy-ace-editor/ace/ace.js")
 @JavaScript("./src/juicy-ace-editor/ace/ext-searchbox.js")
 @JavaScript("./src/juicy-ace-editor/ace/ext-beautify.js")
+@JavaScript("./src/juicy-ace-editor/ace/ext-language_tools.js")
 @JavaScript("./src/juicy-ace-editor/ace/mode/mode-java.js")
 @JavaScript("./src/juicy-ace-editor/ace/theme/theme-pathmind.js")
-@JavaScript("./src/juicy-ace-editor/juicy-ace-editor-variable-names.js")
 @JsModule("./src/juicy-ace-editor/juicy-ace-editor-npm.min.js")
+@JsModule("./src/juicy-ace-editor/juicy-ace-editor-autocomplete.js")
 public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, String> implements HasSize, Focusable<JuicyAceEditor> {
 	public JuicyAceEditor() {
 		super("value", "", false);
@@ -44,8 +39,13 @@ public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, 
 	public void setTheme(JuicyAceTheme theme) {
 		this.getElement().setAttribute("theme", "ace/theme/" + theme);
 	}
+	
+	public void setAutoComplete(List<RewardVariable> rewardVariables) {
+	    JsonArray localVariables = generateLocalVariablesAutocompleteOption(rewardVariables);
+        getElement().executeJs("window.Pathmind.autocomplete.enableAutoComplete($0, $1)", getElement(), localVariables);
+    }
 
-	public void setFontsize(Integer fontsize) {
+    public void setFontsize(Integer fontsize) {
 		this.getElement().setAttribute("fontsize", String.valueOf(fontsize));
 	}
 
@@ -91,48 +91,21 @@ public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, 
 		return this.getElement().getProperty("value");
 	}
 	
-	protected void addVariableNameSupport() {
-		getElement().executeJs("window.Pathmind.CodeEditor.addVariableNamesSupport($0)");
-	}
-	
-	protected void setVariableNames(JsonObject variableNames, int variableCount) {
-		getElement().executeJs("window.Pathmind.CodeEditor.setVariableNames($0, $1)", variableNames, variableCount);
-	}
-	
-	@DomEvent(value = "reward-function-validation", debounce = @DebounceSettings(timeout = 400, phases = DebouncePhase.TRAILING))
-    public static class RewardFunctionValidationEvent extends ComponentEvent<JuicyAceEditor> {
-        private boolean valid;
-        private List<Pair<String, String>> invalidLineVariableIndexPairs;
-
-        public RewardFunctionValidationEvent(JuicyAceEditor source, boolean fromClient, @EventData("event.detail.valid") boolean isValid,
-                @EventData("event.detail.invalidIndexes") JsonArray invalidIndexes) {
-            super(source, fromClient);
-            this.valid = isValid;
-            invalidLineVariableIndexPairs = new ArrayList<>();
-            for (int line = 0; line < invalidIndexes.length(); line++) {
-                JsonArray invalidIndexesForLine = invalidIndexes.getArray(line);
-                for (int i = 0; i < invalidIndexesForLine.length(); i++) {
-                    String invalidIndex = invalidIndexesForLine.getString(i);
-                    invalidLineVariableIndexPairs.add(new Pair<>(Integer.toString(line + 1), invalidIndex));
-                }
-            }
+	private JsonArray generateLocalVariablesAutocompleteOption(List<RewardVariable> rewardVariables) {
+        JsonArray localVariables = Json.createArray();
+        localVariables.set(localVariables.length(), createVariableAutocompleteOption("reward"));
+        for (RewardVariable rewardVariable : rewardVariables) {
+            localVariables.set(localVariables.length(), createVariableAutocompleteOption("before."+rewardVariable.getName()));
+            localVariables.set(localVariables.length(), createVariableAutocompleteOption("after."+rewardVariable.getName()));
         }
+        return localVariables;
+    }
 
-        public boolean isValid() {
-            return valid;
-        }
-
-        public void setValid(boolean valid) {
-            this.valid = valid;
-        }
-
-        public List<Pair<String, String>> getInvalidLineVariableIndexPairs() {
-            return invalidLineVariableIndexPairs;
-        }
-
-        public void setInvalidLineVariableIndexPairs(List<Pair<String, String>> invalidLineVariableIndexPairs) {
-            this.invalidLineVariableIndexPairs = invalidLineVariableIndexPairs;
-        }
-
-	}
+    private JsonObject createVariableAutocompleteOption(String variable) {
+        JsonObject autocompleteOption = Json.createObject();
+        autocompleteOption.put("caption", variable);
+        autocompleteOption.put("value", variable);
+//        autocompleteOption.put("meta", "");
+        return autocompleteOption;
+    }
 }

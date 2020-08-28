@@ -27,14 +27,14 @@ public class ExecutionEnvironmentManager {
     private static Map<Long, ExecutionEnvironment> environmentMap= new HashMap();
 
     private ExecutionEnvironment defaultEnvironment() {
-        PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_1_0_2;
+        PathmindHelper pathmindHelperVersion = PathmindHelper.VERSION_1_2_0;
         if (featureManager.isEnabled(Feature.MULTI_AGENT_TRAINING)) {
             pathmindHelperVersion = PathmindHelper.VERSION_0_0_25_Multi;
         }
 
         return new ExecutionEnvironment(AnyLogic.VERSION_8_6_0,
                 pathmindHelperVersion,
-                NativeRL.VERSION_1_1_1,
+                NativeRL.VERSION_1_2_0,
                 JDK.VERSION_8_222,
                 Conda.VERSION_0_8_6,
                 EC2InstanceType.IT_36CPU_72GB);

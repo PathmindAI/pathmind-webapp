@@ -18,6 +18,14 @@ public class CodeViewer extends PolymerTemplate<TemplateModel> implements HasSty
         super();
     }
 
+    public void setValue(String rewardFunction) {
+        getElement().callJsFunction("setValue", rewardFunction);
+    }
+    
+    /**
+     * In old models, reward variables are placed in code viewer as hint, because RVs were represented as before[0]
+     * Not that reward variables are used in reward function with their names, this method should only be used for backward compatibility
+     */
 	public void setValue(String rewardFunction, List<RewardVariable> rewardVariables) {
         getElement().callJsFunction("setValue", rewardFunction, convertToJson(rewardVariables));
     }

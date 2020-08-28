@@ -98,60 +98,6 @@ border: 1px solid rgb(181, 213, 255);\
 }\
 .ace-eclipse .ace_indent-guide {\
 background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==") right repeat-y;\
-}\
-.ace-eclipse .ace_reward_variable{\
-  padding: .14em 0;\
-  border-radius: var(--lumo-border-radius-s);\
-}\
-.variable-color-0 {\
-  color: #000;\
-  background-color: var(--variable-color-0);\
-  box-shadow: -.15em 0 var(--variable-color-0), .15em 0 var(--variable-color-0);\
-}\
-.variable-color-1 {\
-  color: #fff;\
-  background-color: var(--variable-color-1);\
-  box-shadow: -.15em 0 var(--variable-color-1), .15em 0 var(--variable-color-1);\
-}\
-.variable-color-2 {\
-  color: #000;\
-  background-color: var(--variable-color-2);\
-  box-shadow: -.15em 0 var(--variable-color-2), .15em 0 var(--variable-color-2);\
-}\
-.variable-color-3 {\
-  color: #fff;\
-  background-color: var(--variable-color-3);\
-  box-shadow: -.15em 0 var(--variable-color-3), .15em 0 var(--variable-color-3);\
-}\
-.variable-color-4 {\
-  color: #000;\
-  background-color: var(--variable-color-4);\
-  box-shadow: -.15em 0 var(--variable-color-4), .15em 0 var(--variable-color-4);\
-}\
-.variable-color-5 {\
-  color: #000;\
-  background-color: var(--variable-color-5);\
-  box-shadow: -.15em 0 var(--variable-color-5), .15em 0 var(--variable-color-5);\
-}\
-.variable-color-6 {\
-  color: #000;\
-  background-color: var(--variable-color-6);\
-  box-shadow: -.15em 0 var(--variable-color-6), .15em 0 var(--variable-color-6);\
-}\
-.variable-color-7 {\
-  color: #fff;\
-  background-color: var(--variable-color-7);\
-  box-shadow: -.15em 0 var(--variable-color-7), .15em 0 var(--variable-color-7);\
-}\
-.variable-color-8 {\
-  color: #fff;\
-  background-color: var(--variable-color-8);\
-  box-shadow: -.15em 0 var(--variable-color-8), .15em 0 var(--variable-color-8);\
-}\
-.variable-color-9 {\
-  color: #000;\
-  background-color: var(--variable-color-9);\
-  box-shadow: -.15em 0 var(--variable-color-9), .15em 0 var(--variable-color-9);\
 }';
 
     exports.cssClass = "ace-eclipse";

@@ -1,0 +1,2 @@
+reward += after.profitableDeliveries - before.profitableDeliveries; // Maximize profitable deliveries test1
+reward -= after.unprofitableDeliveries - before.unprofitableDeliveries; // Minimize unprofitable deliveries test2

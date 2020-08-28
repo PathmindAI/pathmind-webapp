@@ -59,7 +59,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
     @Autowired
     private SegmentIntegrator segmentIntegrator;
     @Autowired
-    private NonTupleModelService nonTupleModelService;
+    private ModelCheckerService modelCheckerService;
 
     private long modelId;
     private Model model;
@@ -112,7 +112,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
     private FlexLayout createRightPanel() {
         Span panelTitle = LabelFactory.createLabel("Model Details", CssPathmindStyles.SECTION_TITLE_LABEL);
-        Span errorMessage = nonTupleModelService.createNonTupleErrorLabel(model);
+        Span errorMessage = modelCheckerService.createInvalidErrorLabel(model);
         packageNameText = new Paragraph(LabelFactory.createLabel("Package Name", CssPathmindStyles.BOLD_LABEL));
         actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssPathmindStyles.BOLD_LABEL));
         observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssPathmindStyles.BOLD_LABEL));
@@ -206,10 +206,8 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
         if (rewardVariableNames.size() > 0) {
             RewardVariablesTable rewardVariablesTable = new RewardVariablesTable();
-            rewardVariablesTable.setIsReadOnly(true);
-            rewardVariableNames.sort(Comparator.comparingInt(RewardVariable::getArrayIndex));
-            rewardVariablesTable.setVariableSize(model.getRewardVariablesCount());
-            rewardVariablesTable.setValue(rewardVariableNames);
+            rewardVariablesTable.setRewardVariables(rewardVariableNames);
+            rewardVariablesTable.setCompactMode();
             rewardVariableNamesText.add(rewardVariablesTable);
         } else {
             rewardVariableNamesText.add("All reward variables are unnamed. You can name them when you create a new experiment for this model.");

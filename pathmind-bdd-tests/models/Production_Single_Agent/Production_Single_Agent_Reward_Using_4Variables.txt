@@ -1,4 +1,4 @@
-reward += after[0] - before[0];
-reward += after[1] - before[1];
-reward += after[2] - before[2];
-reward += after[3] - before[3];
+reward += after.kitchen_cleanliness - before.kitchen_cleanliness; // Maximize kitchen cleanliness test1
+reward += after.successful_customers - before.successful_customers; // Maximize successful exits test2
+reward -= after.balked_customers - before.balked_customers; // Minimize balked customers test3
+reward -= after.service_time - before.service_time; // Minimize average service time test4

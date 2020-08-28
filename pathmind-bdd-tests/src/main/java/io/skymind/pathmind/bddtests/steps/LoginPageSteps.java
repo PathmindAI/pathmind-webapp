@@ -157,4 +157,9 @@ public class LoginPageSteps {
     public void checkNewPasswordPageOpened() {
         loginPage.checkNewPasswordPageOpened();
     }
+
+    @Step
+    public void checkThatPopupIsShown(String popUp) {
+        loginPage.checkThatPopupIsShown(popUp);
+    }
 }

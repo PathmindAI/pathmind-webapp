@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 /**
@@ -47,7 +49,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		if (null == user) {
 			throw new UsernameNotFoundException("No user present with email: " + username);
 		} else if (user.getEmailVerifiedAt() == null) {
-			throw new EmailIsNotVerifiedException(user.getEmail());
+			throw new EmailIsNotVerifiedException(URLEncoder.encode(user.getEmail(), StandardCharsets.UTF_8));
 		} else {
             Set<SimpleGrantedAuthority> permissions = user.getAccountType().getGrantedAuthorities();
             permissions.add(new SimpleGrantedAuthority("logged_in"));

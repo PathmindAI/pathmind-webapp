@@ -79,7 +79,7 @@ Feature: Experiment page
     When Click project save draft btn
     When Click project start run button
     When Click copy reward function btn and paste text to the notes field
-    Then Check experiment notes is reward += after[0] - before[0];
+    Then Check experiment notes is reward += after.kitchen_cleanliness - before.kitchen_cleanliness; // Maximize kitchen cleanliness test1
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
@@ -90,7 +90,7 @@ Feature: Experiment page
     When Click project save draft btn
     When Click project start run button
     When Click copy reward function btn and paste text to the notes field
-    Then Check experiment notes is reward += after[0] - before[0];/nreward += after[1] - before[1];/nreward += after[2] - before[2];/nreward += after[3] - before[3];
+    Then Check experiment notes is reward += after.kitchen_cleanliness - before.kitchen_cleanliness; // Maximize kitchen cleanliness test1/nreward += after.successful_customers - before.successful_customers; // Maximize successful exits test2/nreward -= after.balked_customers - before.balked_customers; // Minimize balked customers test3/nreward -= after.service_time - before.service_time; // Minimize average service time test4
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button

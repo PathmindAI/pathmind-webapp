@@ -46,11 +46,11 @@
     font-size: var(--lumo-font-size-xs);
 }
 
-.experiment-view .reward-variables-table[readonly] .header-row {
+.experiment-view .reward-variables-table.compact .header-row {
     display: block;
 }
 
-.experiment-view .reward-variables-table[readonly] .header-row span:last-child {
+.experiment-view .reward-variables-table .header-row span:last-child {
     justify-content: flex-start;
     line-height: 2rem;
     padding: 0;

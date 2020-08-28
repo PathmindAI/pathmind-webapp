@@ -25,11 +25,16 @@ public enum NativeRL implements VersionEnum{
     VERSION_1_0_6,
     VERSION_1_0_7,
     VERSION_1_1_0,
-    VERSION_1_1_1;
+    VERSION_1_1_1,
+    VERSION_1_2_0;
 
     @Override
     public List<String> fileNames() {
-        return Arrays.asList("nativerl-1.0.0-SNAPSHOT-bin.zip");
+        if (this == VERSION_1_2_0) {
+            return Arrays.asList("nativerl-1.2.0-SNAPSHOT-bin.zip");
+        } else {
+            return Arrays.asList("nativerl-1.0.0-SNAPSHOT-bin.zip");
+        }
     }
 
     public static List<NativeRL> activeValues() {
