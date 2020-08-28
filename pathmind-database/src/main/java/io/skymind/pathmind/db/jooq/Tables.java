@@ -5,6 +5,7 @@ package io.skymind.pathmind.db.jooq;
 
 
 import io.skymind.pathmind.db.jooq.tables.Experiment;
+import io.skymind.pathmind.db.jooq.tables.ExperimentObservation;
 import io.skymind.pathmind.db.jooq.tables.Metrics;
 import io.skymind.pathmind.db.jooq.tables.MetricsRaw;
 import io.skymind.pathmind.db.jooq.tables.Model;
@@ -39,6 +40,11 @@ public class Tables {
      * The table <code>public.experiment</code>.
      */
     public static final Experiment EXPERIMENT = Experiment.EXPERIMENT;
+
+    /**
+     * The table <code>public.experiment_observation</code>.
+     */
+    public static final ExperimentObservation EXPERIMENT_OBSERVATION = ExperimentObservation.EXPERIMENT_OBSERVATION;
 
     /**
      * The table <code>public.metrics</code>.

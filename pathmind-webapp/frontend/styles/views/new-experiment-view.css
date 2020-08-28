@@ -28,15 +28,6 @@
 .new-experiment-view .reward-function-wrapper .reward-fn-editor-panel {
     flex: 2 0 65.7%;
 }
-.new-experiment-view .with-container-border {
-    box-sizing: border-box;
-    flex: 1 1 19rem;
-    line-height: 1;
-    padding: 0 var(--lumo-space-s) var(--lumo-space-s);
-    border: 1px solid var(--pm-gray-color);
-    border-radius: var(--lumo-border-radius);
-    overflow-y: auto;
-}
 
 .new-experiment-view .reward-fn-panel-container {
     flex: 2;

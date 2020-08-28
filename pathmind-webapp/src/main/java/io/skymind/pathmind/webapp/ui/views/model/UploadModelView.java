@@ -43,7 +43,6 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
@@ -57,7 +56,6 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
-import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import org.springframework.beans.factory.annotation.Value;
@@ -89,9 +87,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private SegmentIntegrator segmentIntegrator;
 
 	@Autowired
-	private FeatureManager featureManager;
-
-	@Autowired
     private ModelCheckerService modelCheckerService;
 
     @Value("${spring.servlet.multipart.max-file-size}")
@@ -107,7 +102,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private UploadModelWizardPanel uploadModelWizardPanel;
 	private ModelDetailsWizardPanel modelDetailsWizardPanel;
 	private RewardVariablesPanel rewardVariablesPanel;
-	private ObservationsPanel observationsPanel;
 
 	private List<Component> wizardPanels;
 
@@ -131,15 +125,13 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int)DataSize.parse(maxFileSizeAsStr).toBytes());
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload(), ModelUtils.isValidModel(model));
 		rewardVariablesPanel = new RewardVariablesPanel();
-		observationsPanel = new ObservationsPanel();
 
 		modelBinder.readBean(model);
 
 		wizardPanels = Arrays.asList(
 				uploadModelWizardPanel,
 				modelDetailsWizardPanel,
-				rewardVariablesPanel,
-				observationsPanel);
+				rewardVariablesPanel);
 
 		if (isResumeUpload()) {
 			setVisibleWizardPanel(modelDetailsWizardPanel);
@@ -152,7 +144,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		uploadModelWizardPanel.addFileUploadFailedListener(errors -> handleUploadFailed(errors));
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleModelDetailsClicked());
 		rewardVariablesPanel.addButtonClickListener(click -> handleRewardVariablesClicked());
-		observationsPanel.addButtonClickListener(click -> handleObservationsClicked());
 
 		Div sectionTitleWrapper = new Div();
 		
@@ -174,7 +165,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         }
         sections.add(modelDetailsWizardPanel);
         sections.add(rewardVariablesPanel);
-        sections.add(observationsPanel);
         VerticalLayout wrapper = new VerticalLayout(
                 sections.toArray(new Component[0]));
 
@@ -238,19 +228,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	private void handleRewardVariablesClicked() {
-		if (featureManager.isEnabled(Feature.OBSERVATIONS_FEATURE)) {
-            observationsPanel.setupObservationTable(model.getNumberOfObservations(), observations);
-            setVisibleWizardPanel(observationsPanel);
-        } else {
-            saveAndNavigateToNewExperiment();
-        }
-	}
-	private void handleObservationsClicked() {
-	    if (!observationsPanel.isInputValueValid()) {
-	        return;
-	    }
-	    saveAndNavigateToNewExperiment();
-	}
+        saveAndNavigateToNewExperiment();
+    }
 
 	private void handleModelDetailsClicked()
 	{
@@ -274,12 +253,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		Experiment experiment = modelService.resumeModelCreation(model, modelNotes);
 		experimentId = experiment.getId();
         EventBus.post(new ExperimentCreatedBusEvent(experiment));
-
-        if (featureManager.isEnabled(Feature.OBSERVATIONS_FEATURE)) {
-            observations = observationsPanel.getObservations();
-            observationDAO.updateModelObservations(model.getId(), observations);
-        }
-
 		getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
 	}
 
