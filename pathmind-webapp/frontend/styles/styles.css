@@ -458,22 +458,6 @@ background-color: var(--pm-gray-color-light);
     margin-top: var(--lumo-space-xl);
 }
 
-/* Upload Model View Reward Variable Names */
-.upload-model-view vaadin-custom-field {
-    box-sizing: border-box;
-    flex: 1;
-    width: 100%;
-    max-height: 280px;
-    line-height: 1;
-    padding: 0 var(--lumo-space-s) var(--lumo-space-s);
-    border: 1px solid var(--pm-gray-color);
-    border-radius: var(--lumo-border-radius);
-    overflow-y: auto;
-}
-.upload-model-view .observations-table {
-    max-height: 560px;
-}
-
 account-view {
     background: var(--pm-app-bg-color);
     height: 100%;
