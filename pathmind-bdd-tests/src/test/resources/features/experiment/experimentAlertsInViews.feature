@@ -44,6 +44,7 @@ Feature: Experiment page alerts in multiple views
     When Check that confirmation dialog is shown false
     When Open tab 0
     When Check that confirmation dialog is shown true
+    When In confirmation dialog click in 'Ok' button
     Then Check that 'Experiment #1' exist on the experiment page
 
   @otherView
@@ -70,6 +71,8 @@ Feature: Experiment page alerts in multiple views
     When In confirmation dialog click in 'Unarchive' button
     When Check that confirmation dialog is shown false
     When Open tab 0
+    When Check that confirmation dialog is shown true
+    When In confirmation dialog click in 'Ok' button
     Then Check that 'Experiment #1' exist on the experiment page
 
   @otherView
