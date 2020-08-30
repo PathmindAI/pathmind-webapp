@@ -155,7 +155,7 @@ public class GenericPage extends PageObject {
     public void duplicateCurrentTab() {
         waitABit(3000);
         String url = getDriver().getCurrentUrl();
-        ((JavascriptExecutor)getDriver()).executeScript("window.open()");
+        ((JavascriptExecutor) getDriver()).executeScript("window.open()");
         ArrayList<String> tabs = new ArrayList<>(getDriver().getWindowHandles());
         getDriver().switchTo().window(tabs.get(1));
         getDriver().get(url);
@@ -186,6 +186,16 @@ public class GenericPage extends PageObject {
 
     public void waitABitMs(int time) {
         waitABit(time);
+    }
+
+    public void checkThatConfirmationDialogNotShown(Boolean status) {
+        setImplicitTimeout(4, SECONDS);
+        if (status) {
+            assertThat(getDriver().findElements(By.xpath("//*[@role='dialog']")).size(), is(1));
+        } else {
+            assertThat(getDriver().findElements(By.xpath("//*[@role='dialog']")).size(), is(0));
+        }
+        resetImplicitTimeout();
     }
 
     public void checkTitleLabelTagIsArchived(String tag) {

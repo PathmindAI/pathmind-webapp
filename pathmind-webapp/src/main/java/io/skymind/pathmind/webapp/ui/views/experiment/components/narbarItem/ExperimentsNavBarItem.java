@@ -16,7 +16,6 @@ import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
-import io.skymind.pathmind.shared.utils.RunUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
@@ -77,8 +76,9 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
 
     private void archiveExperiment(Experiment experimentToArchive) {
         ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
-            ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
             segmentIntegrator.archived(Experiment.class, true);
+            ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
+            ExperimentUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
         });
     }
 

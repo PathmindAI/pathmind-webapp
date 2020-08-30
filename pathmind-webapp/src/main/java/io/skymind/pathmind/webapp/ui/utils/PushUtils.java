@@ -7,6 +7,7 @@ import com.vaadin.flow.server.Command;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @Slf4j
 public class PushUtils
@@ -29,7 +30,21 @@ public class PushUtils
 	            () -> log.error("-------> PUSH FAILED"));
 	}
 
-	// TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/41 -> Trying different ways to resolve push
+    /**
+     * Helper method for eventbus subscribers.
+     */
+	public static void push(Supplier<Optional<UI>> supplier, SerializableConsumer<UI> consumer) {
+	    push(supplier.get(), consumer);
+    }
+
+    /**
+     * Helper method for eventbus subscribers.
+     */
+    public static void push(Supplier<Optional<UI>> supplier, Command command) {
+        push(supplier.get(), command);
+    }
+
+        // TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/41 -> Trying different ways to resolve push
 	private static void push(UI ui, Command command) {
 		if(ui == null) {
 			log.error("-------> PUSH FAILED");

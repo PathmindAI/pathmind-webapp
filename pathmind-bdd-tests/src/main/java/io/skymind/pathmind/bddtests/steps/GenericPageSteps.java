@@ -137,6 +137,11 @@ public class GenericPageSteps {
     }
 
     @Step
+    public void checkThatConfirmationDialogNotShown(Boolean status) {
+        genericPage.checkThatConfirmationDialogNotShown(status);
+    }
+
+    @Step
     public void checkTitleLabelTagIsArchived(String tag) {
         genericPage.checkTitleLabelTagIsArchived(tag);
     }

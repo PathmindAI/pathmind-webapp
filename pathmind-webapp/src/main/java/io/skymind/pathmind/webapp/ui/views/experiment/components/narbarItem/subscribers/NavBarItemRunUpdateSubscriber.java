@@ -7,28 +7,26 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.ExperimentsNavBarItem;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class NavBarItemRunUpdateSubscriber implements RunUpdateSubscriber {
+public class NavBarItemRunUpdateSubscriber extends RunUpdateSubscriber {
 
-    private Supplier<Optional<UI>> getUISupplier;
     private ExperimentsNavBarItem experimentsNavBarItem;
 
     public NavBarItemRunUpdateSubscriber(Supplier<Optional<UI>> getUISupplier, ExperimentsNavBarItem experimentsNavBarItem) {
-        this.getUISupplier = getUISupplier;
+        super(getUISupplier);
         this.experimentsNavBarItem = experimentsNavBarItem;
     }
 
     @Override
     public boolean isAttached() {
-        return getUISupplier.get().isPresent();
+        return getUiSupplier().get().isPresent();
     }
 
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
-        PushUtils.push(getUISupplier.get(), () ->
+        PushUtils.push(getUiSupplier().get(), () ->
             experimentsNavBarItem.updateRun(event.getRun()));
     }
 

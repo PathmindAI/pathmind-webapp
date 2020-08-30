@@ -38,8 +38,12 @@ public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
         return experiment.getModelId();
     }
 
-    public boolean isStartedTraining() {
+    public boolean isStartedTrainingEventType() {
         return ExperimentUpdateType.StartTraining.equals(experimentUpdateType);
+    }
+
+    public boolean isArchiveEventType() {
+        return ExperimentUpdateType.Archive.equals(experimentUpdateType);
     }
 
     public ExperimentUpdateType getExperimentUpdateType() {

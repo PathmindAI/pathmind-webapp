@@ -155,7 +155,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
     private void setupExperimentListPanel() {
         experimentGrid = new ExperimentGrid(experimentDAO);
-        experimentGrid.addItemClickListener(event -> handleExperimentClick(event.getItem()));
+        experimentGrid.addItemClickListener(event -> ExperimentUtils.navigateToExperiment(getUI(), event.getItem()));
     }
 
     private NotesField createViewNotesField() {
@@ -167,14 +167,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
                 segmentIntegrator.updatedNotesExperimentsView();
             }
         );
-    }
-
-    private void handleExperimentClick(Experiment experiment) {
-        if (ExperimentUtils.isDraftRunType(experiment)) {
-            getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
-        } else {
-            getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
-        }
     }
 
     @Override

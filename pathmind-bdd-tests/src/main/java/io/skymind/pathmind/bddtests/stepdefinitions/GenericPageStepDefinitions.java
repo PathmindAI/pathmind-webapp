@@ -145,6 +145,11 @@ public class GenericPageStepDefinitions {
         genericPageSteps.waitABitMs(time);
     }
 
+    @When("^Check that confirmation dialog is shown (.*)$")
+    public void checkThatConfirmationDialogNotShown(Boolean status) {
+        genericPageSteps.checkThatConfirmationDialogNotShown(status);
+    }
+
     @Then("^Check project/model title label tag is (.*)$")
     public void checkTitleLabelTagIsArchived(String tag) {
         genericPageSteps.checkTitleLabelTagIsArchived(tag);

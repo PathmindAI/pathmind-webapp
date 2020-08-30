@@ -69,6 +69,14 @@ import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVe
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
@@ -119,13 +127,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private Breadcrumbs pageBreadcrumbs;
 	private Binder<Experiment> binder;
 
-	public NewExperimentView(
+    public NewExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
             @Value("${pathmind.notification.newRunNotificationThreshold}") int newRunNotificationThreshold) {
 		super();
         this.userCaps = new UserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
-		addClassName("new-experiment-view");
+        addClassName("new-experiment-view");
 	}
 
     @Override
@@ -136,8 +144,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this,
-                new NewExperimentViewExperimentCreatedSubscriber(),
-                new NewExperimentViewExperimentUpdatedSubscriber());
+                new NewExperimentViewExperimentCreatedSubscriber(() -> getUI()),
+                new NewExperimentViewExperimentUpdatedSubscriber(() -> getUI()));
     }
 
     @Override
@@ -220,7 +228,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > REWARD_FUNCTION_MAX_LENGTH);
             rewardFunctionErrors = rewardValidationService.validateRewardFunction(rewardFunctionEditor.getValue(), rewardVariables);
             rewardFunctionErrorPanel.showErrors(rewardFunctionErrors);
-            
+
             startRunButton.setEnabled(canStartTraining());
             saveDraftButton.setEnabled(canSaveDataInDB());
         });
@@ -454,7 +462,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         }
     }
 
-    class NewExperimentViewExperimentCreatedSubscriber implements ExperimentCreatedSubscriber {
+    class NewExperimentViewExperimentCreatedSubscriber extends ExperimentCreatedSubscriber {
+
+        public NewExperimentViewExperimentCreatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
+            super(getUISupplier);
+        }
 
         @Override
         public void handleBusEvent(ExperimentCreatedBusEvent event) {
@@ -462,28 +474,22 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 updateExperimentComponents();
             }
         }
-
-        @Override
-        public boolean isAttached() {
-            return isViewAttached();
-        }
     }
 
-    class NewExperimentViewExperimentUpdatedSubscriber implements ExperimentUpdatedSubscriber {
+    class NewExperimentViewExperimentUpdatedSubscriber extends ExperimentUpdatedSubscriber {
+
+        public NewExperimentViewExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
+            super(getUISupplier);
+        }
 
         @Override
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
-            if (isSameExperiment(event.getExperiment()) && event.isStartedTraining()) {
+            if (isSameExperiment(event.getExperiment()) && event.isStartedTrainingEventType()) {
                 navigateToExperimentView(event.getExperiment());
             }
             else if (ExperimentUtils.isSameModel(experiment, event.getModelId())) {
                 updateExperimentComponents();
             }
-        }
-
-        @Override
-        public boolean isAttached() {
-            return isViewAttached();
         }
     }
 }
