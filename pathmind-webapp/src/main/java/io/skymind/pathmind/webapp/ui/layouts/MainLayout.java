@@ -31,6 +31,7 @@ import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
 @CssImport(value = "./styles/components/vaadin-tabs.css", themeFor = "vaadin-tabs")
 @CssImport(value = "./styles/components/vaadin-tab.css", themeFor = "vaadin-tab")
 @CssImport(value = "./styles/components/vaadin-text-area.css", themeFor = "vaadin-text-area")
+@CssImport(value = "./styles/components/vaadin-checkbox.css", themeFor = "vaadin-checkbox")
 @CssImport(value = "./styles/layouts/vaadin-app-layout.css", themeFor = "vaadin-app-layout")
 @CssImport(value = "./styles/views/experiment-view.css")
 @CssImport(value = "./styles/views/dashboard-view.css")

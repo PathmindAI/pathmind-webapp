@@ -44,7 +44,6 @@ public class ObservationsPanel extends VerticalLayout
     public void addValueChangeListener(SerializableConsumer<Set<Observation>> listener) {
         observationsTable.addValueChangeListener(evt -> listener.accept(evt.getValue()));
     }
-    
 
 	private Component getObservationsPanel() {
 		VerticalLayout wrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
@@ -53,6 +52,5 @@ public class ObservationsPanel extends VerticalLayout
         wrapper.addClassName("observations-panel");
 		return wrapper;
 	}
-	
-    
+
 }

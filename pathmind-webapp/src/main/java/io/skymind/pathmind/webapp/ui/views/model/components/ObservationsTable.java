@@ -31,6 +31,7 @@ public class ObservationsTable extends CustomField<Set<Observation>> implements 
 	    container.setClassName("observations-table");
         
         Checkbox checkboxSelectAll = new Checkbox("Select All");
+        checkboxSelectAll.addClassName("select-all");
         checkboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
         checkboxGroup.addValueChangeListener(event -> {
             if (event.getValue().size() == observationsList.size()) {
@@ -70,5 +71,4 @@ public class ObservationsTable extends CustomField<Set<Observation>> implements 
         checkboxGroup.setValue(newPresentationValue);
     }
 
-    
 }
