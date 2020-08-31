@@ -38,6 +38,7 @@ public class ObservationsTable extends CustomField<Set<Observation>> implements 
             } else {
                 checkboxSelectAll.setIndeterminate(true);
             }
+            setValue(event.getValue());
         });
         checkboxSelectAll.addValueChangeListener(event -> {
             if (checkboxSelectAll.getValue()) {
