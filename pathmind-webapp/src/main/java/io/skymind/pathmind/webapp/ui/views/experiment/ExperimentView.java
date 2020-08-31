@@ -58,6 +58,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentView
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
+import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +95,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private List<Double> simulationMetrics = new ArrayList<>();
     private List<double[]> sparklinesData = new ArrayList<>();
     private List<String> uncertainty = new ArrayList<>();
+    private List<Observation> modelObservations = new ArrayList<>();
+    private List<Observation> experimentObservations = new ArrayList<>();
     private Boolean showSimulationMetrics;
 
     private UserCaps userCaps;
@@ -114,11 +117,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private NotesField notesField;
     private Span reasonWhyTheTrainingStoppedLabel;
     private RewardVariablesTable rewardVariablesTable;
+    private ObservationsPanel observationsPanel;
 
     @Autowired
     private ExperimentDAO experimentDAO;
     @Autowired
     private RewardVariableDAO rewardVariableDAO;
+	@Autowired
+	private ObservationDAO observationDAO;
     @Autowired
     private PolicyDAO policyDAO;
     @Autowired
@@ -218,8 +224,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsWrapper
         );
 
+        observationsPanel = new ObservationsPanel(true);
+        observationsPanel.setupObservationTable(modelObservations, experimentObservations);
+
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
-        middlePanel.add(rewardVariablesGroup, rewardFunctionGroup);
+        middlePanel.add(rewardVariablesGroup, observationsPanel, rewardFunctionGroup);
         middlePanel.addClassName("middle-panel");
         middlePanel.setPadding(false);
     }
@@ -470,6 +479,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         modelId = experiment.getModelId();
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
+		modelObservations = observationDAO.getObservationsForModel(experiment.getModelId());
+		experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
         policy = selectBestPolicy(experiment.getPolicies());
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {

@@ -1,7 +1,7 @@
 .observations-table {
     padding-top: var(--lumo-space-s);
 }
-.new-experiment-view .observations-panel {
+.observations-panel {
     box-sizing: border-box;
     flex: 1 1 19rem;
     line-height: 1;

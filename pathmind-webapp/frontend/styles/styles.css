@@ -81,6 +81,7 @@ html {
     --lumo-body-text-color: var(--pm-text-color);
     --lumo-secondary-text-color: var(--pm-gray-color-dark);
     --lumo-tertiary-text-color: #d7d7d7;
+    --lumo-disabled-text-color: var(--pm-gray-color);
     --lumo-base-color: #ffffff;
     --lumo-primary-text-color: var(--pm-primary-color);
     --lumo-primary-color-75pct: rgba(79, 151, 170, 0.75);

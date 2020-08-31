@@ -4,7 +4,6 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LAB
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.vaadin.flow.component.Component;
@@ -20,12 +19,16 @@ public class ObservationsPanel extends VerticalLayout
 {
     private ObservationsTable observationsTable;
 
-	public ObservationsPanel()
-	{
-	    observationsTable = new ObservationsTable();
+    public ObservationsPanel() {
+        this(false);
+    }
 
-		add(LabelFactory.createLabel("Observations", BOLD_LABEL),
-            getObservationsPanel());
+	public ObservationsPanel(Boolean isReadOnly)
+	{
+	    observationsTable = new ObservationsTable(isReadOnly);
+
+        add(LabelFactory.createLabel("Observations", BOLD_LABEL));
+        add(getObservationsPanel(isReadOnly));
 
 		setWidthFull();
 		setPadding(false);
@@ -45,10 +48,12 @@ public class ObservationsPanel extends VerticalLayout
         observationsTable.addValueChangeListener(evt -> listener.accept(evt.getValue()));
     }
 
-	private Component getObservationsPanel() {
-		VerticalLayout wrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-				new Span("Select observations for this experiment"), 
-                observationsTable);
+	private Component getObservationsPanel(Boolean isReadOnly) {
+        VerticalLayout wrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+        if (!isReadOnly) {
+            wrapper.add(new Span("Select observations for this experiment"));
+        }
+        wrapper.add(observationsTable);
         wrapper.addClassName("observations-panel");
 		return wrapper;
 	}

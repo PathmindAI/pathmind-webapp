@@ -1,8 +1,8 @@
 :host(.select-all:not([checked]):not([indeterminate]):not([disabled])) [part="checkbox"] {
-    background-color: var(--lumo-primary-color-50pct);
+    background-color: var(--lumo-primary-color-25pct);
 }
 
-[part="checkbox"] {
+:host(:not([disabled])) [part="checkbox"] {
     pointer-events: initial;
     cursor: pointer;
 }

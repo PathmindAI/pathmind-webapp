@@ -1,13 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
-import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
@@ -24,7 +19,7 @@ public class ObservationsTable extends CustomField<Set<Observation>> implements 
 	private Set<Observation> observationsList = new HashSet<>();
     private CheckboxGroup<Observation> checkboxGroup = new CheckboxGroup<>();
 
-	public ObservationsTable() {
+	public ObservationsTable(Boolean isReadOnly) {
 	    VerticalLayout container = new VerticalLayout();
 	    container.setPadding(false);
 	    container.setSpacing(false);
@@ -40,9 +35,9 @@ public class ObservationsTable extends CustomField<Set<Observation>> implements 
             } else if (event.getValue().size() == 0) {
                 checkboxSelectAll.setValue(false);
                 checkboxSelectAll.setIndeterminate(false);
-            } else
+            } else {
                 checkboxSelectAll.setIndeterminate(true);
-
+            }
         });
         checkboxSelectAll.addValueChangeListener(event -> {
             if (checkboxSelectAll.getValue()) {
@@ -52,6 +47,11 @@ public class ObservationsTable extends CustomField<Set<Observation>> implements 
             }
         });
         container.add(checkboxSelectAll, checkboxGroup);
+
+        if (isReadOnly) {
+            checkboxSelectAll.setVisible(false);
+            checkboxGroup.setEnabled(false);
+        }
         add(container);
     }
     
