@@ -4,6 +4,7 @@ import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH
 import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_SINGLE_BY_EXPERIMENT;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,11 +13,13 @@ import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.db.utils.DataUtils;
 import io.skymind.pathmind.shared.data.user.UserMetrics;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import io.skymind.pathmind.shared.aspects.MonitorExecutionTime;
 import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.db.utils.DashboardQueryParams;
 
 @Repository
@@ -99,10 +102,16 @@ public class ExperimentDAO
 	}
 
 	public Experiment createNewExperiment(long modelId) {
-		String experimentName = Integer.toString(ExperimentRepository.getExperimentCount(ctx, modelId) + 1);
-		Experiment lastExperiment = ExperimentRepository.getLastExperimentForModel(ctx, modelId);
-		String rewardFunction = lastExperiment != null ? lastExperiment.getRewardFunction() : ""; 
-		return ExperimentRepository.createNewExperiment(ctx, modelId, experimentName, rewardFunction);
+		return ctx.transactionResult(conf -> {
+            DSLContext transactionCtx = DSL.using(conf);
+            String experimentName = Integer.toString(ExperimentRepository.getExperimentCount(transactionCtx, modelId) + 1);
+            Experiment lastExperiment = ExperimentRepository.getLastExperimentForModel(transactionCtx, modelId);
+            String rewardFunction = lastExperiment != null ? lastExperiment.getRewardFunction() : ""; 
+            List<Observation> observations = lastExperiment != null ? ObservationRepository.getObservationsForExperiment(transactionCtx, lastExperiment.getId()) : Collections.emptyList();
+            Experiment exp = ExperimentRepository.createNewExperiment(transactionCtx, modelId, experimentName, rewardFunction);
+            ObservationRepository.insertExperimentObservations(transactionCtx, exp.getId(), observations);
+            return exp;
+        });
 	}
 
 	public void updateUserNotes(long experimentId, String userNotes) {
