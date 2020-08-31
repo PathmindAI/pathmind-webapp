@@ -1,5 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics;
 
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -9,15 +12,21 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
+import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.SparkLine;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
+import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 public class SimulationMetricsPanel extends HorizontalLayout {
+
+    private Supplier<Optional<UI>> getUISupplier;
 
     private VerticalLayout metricsWrapper;
     private VerticalLayout sparklinesWrapper;
@@ -28,11 +37,12 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
     private Experiment experiment;
 
-    public SimulationMetricsPanel(Experiment experiment, boolean showSimulationMetrics, List<RewardVariable> rewardVariables) {
+    public SimulationMetricsPanel(Experiment experiment, boolean showSimulationMetrics, List<RewardVariable> rewardVariables, Supplier<Optional<UI>> getUISupplier) {
 
         super();
         this.experiment = experiment;
         this.showSimulationMetrics = showSimulationMetrics;
+        this.getUISupplier = getUISupplier;
 
         setSpacing(false);
         addClassName("simulation-metrics-table-wrapper");
@@ -54,6 +64,20 @@ public class SimulationMetricsPanel extends HorizontalLayout {
             updateSimulationMetrics(experiment.getPolicies().isEmpty() ? null : PolicyUtils.selectBestPolicy(experiment.getPolicies()));
             add(metricsWrapper, sparklinesWrapper);
         }
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        if(experiment.isArchived())
+            return;
+        EventBus.subscribe(this,
+                new SimulationMetricsPolicyUpdateSubscriber(getUISupplier, this),
+                new SimulationMetricsPolicyUpdateSubscriber(getUISupplier, this));
+    }
+
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        EventBus.unsubscribe(this);
     }
 
     public Experiment getExperiment() {
