@@ -9,6 +9,7 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,5 +86,12 @@ public class PolicyUtils
             return "-";
         }
         return removeInvalidChars(String.format("%s-M%sE%s-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getExperiment().getName()));
+    }
+
+    public static Policy selectBestPolicy(List<Policy> policies) {
+        return policies.stream()
+                .filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
+                .max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration))
+                .orElse(null);
     }
 }
