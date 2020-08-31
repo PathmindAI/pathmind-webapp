@@ -12,6 +12,9 @@ import java.net.URI;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import static io.skymind.pathmind.shared.utils.VariableParserUtils.isArray;
+import static io.skymind.pathmind.shared.utils.VariableParserUtils.removeArrayIndexFromVariableName;;
+
 @Slf4j
 @Service
 public class RewardValidationService {
@@ -92,7 +95,7 @@ public class RewardValidationService {
     private static List<RewardVariable> normalizeVariables(List<RewardVariable> rewardVariables){
         List<RewardVariable> normalizedRewardVariables = new ArrayList<>();
         for (RewardVariable rewardVariable : rewardVariables) {
-            if (isArrayItem(rewardVariable.getName())) {
+            if (isArray(rewardVariable.getName())) {
                 String arrayName = removeArrayIndexFromVariableName(rewardVariable.getName());
                 boolean alreadyExist = normalizedRewardVariables.stream().anyMatch(rv -> rv.getName().equals(arrayName));
                 if (!alreadyExist) {
@@ -109,15 +112,6 @@ public class RewardValidationService {
     }
     
     
-    private static String removeArrayIndexFromVariableName(String name) {
-        return name.replaceAll("\\[[0-9]*\\]", "");
-    }
-
-    private static boolean isArrayItem(String name) {
-        return Pattern.matches("\\w*\\[[0-9]*\\]", name);
-    }
-
-
     private static class CharSequenceJavaFileObject extends SimpleJavaFileObject {
 
         private final CharSequence content;

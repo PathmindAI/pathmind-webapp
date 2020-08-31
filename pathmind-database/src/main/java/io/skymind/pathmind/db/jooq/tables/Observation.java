@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Observation extends TableImpl<ObservationRecord> {
 
-    private static final long serialVersionUID = 1427862518;
+    private static final long serialVersionUID = 1720464040;
 
     /**
      * The reference instance of <code>public.observation</code>
@@ -75,7 +75,7 @@ public class Observation extends TableImpl<ObservationRecord> {
     /**
      * The column <code>public.observation.variable</code>.
      */
-    public final TableField<ObservationRecord, String> VARIABLE = createField(DSL.name("variable"), org.jooq.impl.SQLDataType.VARCHAR(16).nullable(false), this, "");
+    public final TableField<ObservationRecord, String> VARIABLE = createField(DSL.name("variable"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "");
 
     /**
      * The column <code>public.observation.data_type</code>.

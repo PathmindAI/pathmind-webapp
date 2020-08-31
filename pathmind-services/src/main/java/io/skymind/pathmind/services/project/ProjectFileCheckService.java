@@ -71,15 +71,14 @@ public class ProjectFileCheckService {
         if (analysisResult != null && analysisResult.isOldVersionFound()) {
             return Optional.of(getErrorMessage(InvalidModelType.OLD_REWARD_VARIABLES));
         }
-        else if (analysisResult == null || analysisResult.getObservations() == null
-                || analysisResult.getRewardVariables() == null) {
+        else if (analysisResult == null || analysisResult.getObservationsNames() == null || analysisResult.getRewardVariables() == null) {
             return Optional.of("Unable to analyze the model.");
         }
-        else if (analysisResult.getObservations() != null && Integer.parseInt(analysisResult.getObservations()) == 0) {
-            return Optional.of("Number of observations found to be zero.");
-        }
         else if (analysisResult.getRewardVariables().isEmpty()) {
-            return Optional.of("Reward variables list is empty.");
+            return Optional.of("Failed to read reward variables.");
+        }
+        else if (analysisResult.getObservationsNames().isEmpty()) {
+            return Optional.of("Failed to read observations.");
         }
         return Optional.empty();
     }
@@ -89,6 +88,7 @@ public class ProjectFileCheckService {
     	fileCheckResult.setNumObservation(Integer.parseInt(params.getObservations()));
     	fileCheckResult.setRewardVariableFunction(params.getRewardFunction());
     	fileCheckResult.setRewardVariables(params.getRewardVariables());
+    	fileCheckResult.setObservationNames(params.getObservationsNames());
     }
 
     public String getErrorMessage(InvalidModelType invalidModelType) {

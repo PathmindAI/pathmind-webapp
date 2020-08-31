@@ -15,6 +15,7 @@ import com.vaadin.flow.component.html.Span;
 import io.skymind.pathmind.shared.constants.ObservationDataType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ModelUtils;
+import io.skymind.pathmind.shared.utils.VariableParserUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -295,10 +296,11 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		getUI().ifPresent(ui -> PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
 			setVisibleWizardPanel(modelDetailsWizardPanel);
-
+			List<Observation> observationList = new ArrayList<>();
 			if (result != null) {
 			    AnylogicFileCheckResult alResult = AnylogicFileCheckResult.class.cast(result);
 			    rewardVariables = convertToRewardVariables(model.getId(), alResult.getRewardVariables());
+			    observationList = convertToObservations(alResult.getObservationNames());
 				model.setNumberOfObservations(alResult.getNumObservation());
                 model.setRewardVariablesCount(rewardVariables.size());
 			}
@@ -307,20 +309,29 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");
 			rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
-			observationDAO.updateModelObservations(model.getId(), createDummyObservations(model.getNumberOfObservations()));
+			observationDAO.updateModelObservations(model.getId(), observationList);
 			segmentIntegrator.modelImported(true);
 		}));
 	}
 
-	private List<Observation> createDummyObservations(int numberOfObservations) {
+	private List<Observation> convertToObservations(List<String> observationNames) {
         List<Observation> observations = new ArrayList<>();
-        for (int i = 0; i < numberOfObservations; i++) {
+        observationNames.forEach(name -> {
             Observation obs = new Observation();
-            obs.setArrayIndex(i);
-            obs.setDataTypeEnum(ObservationDataType.NUMBER);
-            obs.setVariable("Observation#"+i);
-            observations.add(obs);
-        }
+            if (VariableParserUtils.isArray(name)) {
+                obs.setVariable(VariableParserUtils.removeArrayIndexFromVariableName(name));
+                obs.setDataTypeEnum(ObservationDataType.NUMBER_ARRAY);
+            } else {
+                obs.setVariable(name);
+                obs.setDataTypeEnum(ObservationDataType.NUMBER);
+            }
+            boolean isAlreadyInserted = observations.stream().anyMatch(o -> o.getVariable().equals(obs.getVariable()));
+            if (!isAlreadyInserted) {
+                obs.setArrayIndex(observations.size());
+                observations.add(obs);
+            }
+        });
+
         return observations;
     }
 

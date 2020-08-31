@@ -18,6 +18,9 @@ public class HyperparametersDTO {
 
     @NotBlank(message = "Number of observations cannot be blank")
     private String observations;
+    
+    @NotBlank(message = "Observations cannot be empty")
+    private List<String> observationsNames;
 
     @NotBlank(message = "Reward variables cannot be empty")
     private List<String> rewardVariables;
