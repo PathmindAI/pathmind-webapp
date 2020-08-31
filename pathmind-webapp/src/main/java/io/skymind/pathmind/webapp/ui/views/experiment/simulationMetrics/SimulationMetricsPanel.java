@@ -6,12 +6,14 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.webapp.ui.components.SparkLine;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class SimulationMetricsPanel extends HorizontalLayout {
@@ -19,13 +21,13 @@ public class SimulationMetricsPanel extends HorizontalLayout {
     private VerticalLayout metricsWrapper;
     private VerticalLayout sparklinesWrapper;
 
+    private RewardVariablesTable rewardVariablesTable;
 
     private boolean showSimulationMetrics;
 
     private Experiment experiment;
 
-    // REFACTOR -> I don't like that the rewardVariablesTable is here but possibly it's required. Need to confirm.
-    public SimulationMetricsPanel(Experiment experiment, boolean showSimulationMetrics, RewardVariablesTable rewardVariablesTable) {
+    public SimulationMetricsPanel(Experiment experiment, boolean showSimulationMetrics, List<RewardVariable> rewardVariables) {
 
         super();
         this.experiment = experiment;
@@ -33,6 +35,12 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
         setSpacing(false);
         addClassName("simulation-metrics-table-wrapper");
+
+        rewardVariablesTable = new RewardVariablesTable();
+        rewardVariablesTable.setCodeEditorMode();
+        rewardVariablesTable.setCompactMode();
+        rewardVariablesTable.setSizeFull();
+        rewardVariablesTable.setRewardVariables(rewardVariables);
 
         add(rewardVariablesTable);
 

@@ -108,7 +108,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private ExperimentsNavBar experimentsNavbar;
     private NotesField notesField;
     private StoppedTrainingNotification stoppedTrainingNotification;
-    private RewardVariablesTable rewardVariablesTable;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -207,13 +206,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
         );
 
-        rewardVariablesTable = new RewardVariablesTable();
-        rewardVariablesTable.setCodeEditorMode();
-        rewardVariablesTable.setCompactMode();
-        rewardVariablesTable.setSizeFull();
-
         boolean showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
-        SimulationMetricsPanel simulationMetricsPanel = new SimulationMetricsPanel(experiment, showSimulationMetrics, rewardVariablesTable);
+        SimulationMetricsPanel simulationMetricsPanel = new SimulationMetricsPanel(experiment, showSimulationMetrics, rewardVariables);
         String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
 
         rewardVariablesGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
@@ -403,10 +397,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
             experimentsNavbar.setAllowNewExperimentCreation(false);
         }
-        rewardVariablesTable.setRewardVariables(rewardVariables);
-//        if (showSimulationMetrics) {
-//            updateSimulationMetrics();
-//        }
         policyChartPanel.setExperiment(experiment, policy);
         updateDetailsForExperiment();
     }
