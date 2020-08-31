@@ -25,8 +25,8 @@ public class SimulationMetricsPolicyUpdateSubscriber extends PolicyUpdateSubscri
         PushUtils.push(getUiSupplier(), ui -> {
             // Only for the best policy.
             Policy policy = PolicyUtils.selectBestPolicy(event.getPolicies());
-            PolicyUtils.updateSimulationMetricsData(policy);
             if (simulationMetricsPanel.isShowSimulationMetrics() && policy!= null && policy.getMetrics() != null && policy.getMetrics().size() > 0) {
+                PolicyUtils.updateSimulationMetricsData(policy);
                 simulationMetricsPanel.updateSimulationMetrics(policy);
             }
         });
