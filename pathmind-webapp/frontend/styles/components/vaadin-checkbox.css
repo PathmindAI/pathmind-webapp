@@ -10,3 +10,7 @@
 :host([disabled]) [part="checkbox"]::after {
     border-color: var(--lumo-body-text-color);
 }
+
+:host([disabled][checked]) {
+    color: var(--lumo-body-text-color);
+}
