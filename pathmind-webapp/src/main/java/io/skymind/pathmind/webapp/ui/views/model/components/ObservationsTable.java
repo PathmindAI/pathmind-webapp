@@ -50,7 +50,7 @@ public class ObservationsTable extends CustomField<Set<Observation>> implements 
 
         if (isReadOnly) {
             checkboxSelectAll.setVisible(false);
-            checkboxGroup.setEnabled(false);
+            checkboxGroup.setReadOnly(true);
         }
         add(container);
     }
