@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public enum InvalidModelType {
     
-    OLD_REWARD_VARIABLES(1);
+    OLD_REWARD_VARIABLES(1), MISSING_OBSERVATIONS(2);
     
     private int id;
 

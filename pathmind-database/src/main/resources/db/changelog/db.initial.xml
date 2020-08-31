@@ -1685,5 +1685,16 @@
         </comment> 
         <modifyDataType tableName="OBSERVATION" columnName="VARIABLE" newDataType="VARCHAR(100)"/>
     </changeSet>
+    
+    <changeSet id="20200831-02" author="onur@vaadin.com">
+        <comment>
+             Mark all valid models with invalid (InvalidModelType.MISSING_OBSERVATIONS : 2), so that they will be re-uploaded  
+        </comment> 
+        <update tableName="MODEL">
+            <!-- Set all existing models as invalid -->
+            <column name="INVALID_MODEL" value="2"/>
+            <where>INVALID_MODEL IS NULL</where>
+        </update>
+    </changeSet>
 
 </databaseChangeLog>

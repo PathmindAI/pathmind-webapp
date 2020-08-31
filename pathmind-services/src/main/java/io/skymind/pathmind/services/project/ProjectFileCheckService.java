@@ -14,7 +14,8 @@ import java.util.concurrent.ExecutorService;
 @Slf4j
 public class ProjectFileCheckService {
 
-    private static final String INVALID_MODEL_ERROR_MESSAGE = "Model needs to be updated. You can take a look at <a target='_blank' href='%s'>this article</a> for upgrade instructions.";
+    private static final String INVALID_MODEL_ERROR_MESSAGE_WITH_INSTRUCTIONS = "Model needs to be updated. You can take a look at <a target='_blank' href='%s'>this article</a> for upgrade instructions.";
+    private static final String INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS = "Model needs to be uploaded again.";
 
     private final ExecutorService checkerExecutorService;
     private final ModelAnalyzerApiClient client;
@@ -92,8 +93,13 @@ public class ProjectFileCheckService {
     }
 
     public String getErrorMessage(InvalidModelType invalidModelType) {
-        String articleUrl = getArticleUrlForInvalidReason(invalidModelType);
-        return String.format(INVALID_MODEL_ERROR_MESSAGE, articleUrl);
+        switch (invalidModelType) {
+            case MISSING_OBSERVATIONS :
+                return INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
+            default:
+                String articleUrl = getArticleUrlForInvalidReason(invalidModelType);
+                return String.format(INVALID_MODEL_ERROR_MESSAGE_WITH_INSTRUCTIONS, articleUrl);
+        }
     }
 
     private String getArticleUrlForInvalidReason(InvalidModelType invalidModelType) {
