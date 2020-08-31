@@ -48,7 +48,6 @@ public class ModelDetailsPage extends PageObject {
                 break;
             }
             System.out.println("WAITING FOR ELEMENT");
-            waitABit(1000);
             attempts++;
         }
         assertThat(getDriver().findElements(By.xpath("//span[text()='Unable to analyze the model.']")).size(), is(0));
