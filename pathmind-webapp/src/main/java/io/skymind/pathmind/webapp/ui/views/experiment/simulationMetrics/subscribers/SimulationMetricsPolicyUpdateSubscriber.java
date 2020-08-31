@@ -34,6 +34,6 @@ public class SimulationMetricsPolicyUpdateSubscriber extends PolicyUpdateSubscri
 
     @Override
     public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-        return simulationMetricsPanel.getExperiment() != null && simulationMetricsPanel.getExperiment().getId() == event.getExperimentId();
+        return simulationMetricsPanel.getExperiment().getId() == event.getExperimentId();
     }
 }
