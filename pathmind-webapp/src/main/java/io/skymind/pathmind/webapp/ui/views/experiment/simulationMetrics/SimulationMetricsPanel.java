@@ -5,18 +5,13 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Metrics;
-import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.utils.MetricsRawUtils;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.webapp.ui.components.SparkLine;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 
-import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class SimulationMetricsPanel extends HorizontalLayout {
@@ -24,17 +19,13 @@ public class SimulationMetricsPanel extends HorizontalLayout {
     private VerticalLayout metricsWrapper;
     private VerticalLayout sparklinesWrapper;
 
-    private RewardVariablesTable rewardVariablesTable;
 
     private boolean showSimulationMetrics;
 
-    private List<Double> simulationMetrics = new ArrayList<>();
-    private List<double[]> sparklinesData = new ArrayList<>();
-    private List<String> uncertainty = new ArrayList<>();
-
     private Experiment experiment;
 
-    public SimulationMetricsPanel(Experiment experiment, boolean showSimulationMetrics) {
+    // REFACTOR -> I don't like that the rewardVariablesTable is here but possibly it's required. Need to confirm.
+    public SimulationMetricsPanel(Experiment experiment, boolean showSimulationMetrics, RewardVariablesTable rewardVariablesTable) {
 
         super();
         this.experiment = experiment;
@@ -43,10 +34,6 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         setSpacing(false);
         addClassName("simulation-metrics-table-wrapper");
 
-        rewardVariablesTable = new RewardVariablesTable();
-        rewardVariablesTable.setCodeEditorMode();
-        rewardVariablesTable.setCompactMode();
-        rewardVariablesTable.setSizeFull();
         add(rewardVariablesTable);
 
         if (showSimulationMetrics) {
@@ -73,10 +60,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         metricsWrapper.removeAll();
         sparklinesWrapper.removeAll();
 
-        // REFACTOR -> This code should NOT be in the GUI code but rather the eventbus subscriber. Coming in the next commit.
-        updateSimulationMetricsData(policy);
-
-        if (simulationMetrics.size() > 0) {
+        if (policy.getSimulationMetrics().size() > 0) {
             Div metricsHeader = new Div(new Span("Value"), new SimulationMetricsInfoLink());
             metricsHeader.addClassName("header");
             metricsWrapper.add(metricsHeader);
@@ -86,60 +70,16 @@ public class SimulationMetricsPanel extends HorizontalLayout {
             sparklinesWrapper.add(sparklineHeader);
         }
 
-        IntStream.range(0, simulationMetrics.size())
+        IntStream.range(0, policy.getSimulationMetrics().size())
                 .forEach(idx -> {
                     SparkLine sparkLine = new SparkLine();
-                    sparkLine.setSparkLine(sparklinesData.get(idx), idx);
+                    sparkLine.setSparkLine(policy.getSparklinesData().get(idx), idx);
                     sparklinesWrapper.add(sparkLine);
-                    if (uncertainty != null && !uncertainty.isEmpty()) {
-                        metricsWrapper.add(new Span(uncertainty.get(idx)));
+                    if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {
+                        metricsWrapper.add(new Span(policy.getUncertainty().get(idx)));
                     } else {
-                        metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx))));
+                        metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(policy.getSimulationMetrics().get(idx))));
                     }
                 });
-    }
-
-    /**
-     * REFACTOR -> This code should NOT be in the GUI code nor in the eventbus subscriber. Coming in the next commit.
-      */
-    private void updateSimulationMetricsData(Policy policy) {
-        List<Metrics> metricsList = policy == null ? null : policy.getMetrics();
-        sparklinesData.clear();
-        simulationMetrics.clear();
-        uncertainty.clear();
-
-        if (metricsList != null && metricsList.size() > 0) {
-            // set the last metrics
-            Metrics lastMetrics = metricsList.get(metricsList.size() - 1);
-            lastMetrics.getMetricsThisIter().stream()
-                    .forEach(metricsThisIter -> simulationMetrics.add(metricsThisIter.getMean()));
-
-            // index, metrics list
-            Map<Integer, List<Double>> sparkLineMap = new HashMap<>();
-            metricsList.stream().forEach(metrics ->
-                    metrics.getMetricsThisIter().forEach(mIter -> {
-                        int index = mIter.getIndex();
-
-                        List<Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new ArrayList<>();
-                        data.add(mIter.getMean());
-                        sparkLineMap.put(index, data);
-                    })
-            );
-
-            // convert List<Double> to double[] because sparLine needs an array of primitive types
-            sparkLineMap.entrySet().stream()
-                    .map(e -> e.getValue().stream().mapToDouble(Double::doubleValue).toArray())
-                    .forEach(arr -> sparklinesData.add(arr));
-        }
-
-        List<MetricsRaw> metricsRawList = policy == null ? null : policy.getMetricsRaws();
-        if (metricsRawList != null && metricsRawList.size() > 0) {
-            Collections.sort(metricsRawList, Comparator.comparingInt(MetricsRaw::getIteration));
-            Map<Integer, List<Double>> uncertaintyMap = MetricsRawUtils.toIndexAndMetricRawData(metricsRawList);
-
-            uncertainty = uncertaintyMap.values().stream()
-                    .map(list -> PathmindNumberUtils.calculateUncertainty(list))
-                    .collect(Collectors.toList());
-        }
     }
 }

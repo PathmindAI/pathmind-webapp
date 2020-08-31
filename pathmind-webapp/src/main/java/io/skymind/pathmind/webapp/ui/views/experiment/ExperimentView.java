@@ -93,17 +93,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Policy policy;
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
-//    private List<Double> simulationMetrics = new ArrayList<>();
-//    private List<double[]> sparklinesData = new ArrayList<>();
-//    private List<String> uncertainty = new ArrayList<>();
-    private Boolean showSimulationMetrics;
 
     private UserCaps userCaps;
 
     private HorizontalLayout middlePanel;
-//    private HorizontalLayout simulationMetricsWrapper;
-//    private VerticalLayout metricsWrapper;
-//    private VerticalLayout sparklinesWrapper;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private TagLabel archivedLabel;
     private Span panelTitle;
@@ -213,10 +206,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
             LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
         );
-        showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
-        SimulationMetricsPanel simulationMetricsPanel = new SimulationMetricsPanel(experiment, showSimulationMetrics);
-//        simulationMetricsWrapper = getSimulationMetricsTable();
+
+        rewardVariablesTable = new RewardVariablesTable();
+        rewardVariablesTable.setCodeEditorMode();
+        rewardVariablesTable.setCompactMode();
+        rewardVariablesTable.setSizeFull();
+
+        boolean showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
+        SimulationMetricsPanel simulationMetricsPanel = new SimulationMetricsPanel(experiment, showSimulationMetrics, rewardVariablesTable);
         String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
+
         rewardVariablesGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
             LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
         );
@@ -226,100 +225,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         middlePanel.addClassName("middle-panel");
         middlePanel.setPadding(false);
     }
-
-//    private HorizontalLayout getSimulationMetricsTable() {
-//        HorizontalLayout tableWrapper = new HorizontalLayout();
-//        tableWrapper.setSpacing(false);
-//        tableWrapper.addClassName("simulation-metrics-table-wrapper");
-//
-//        rewardVariablesTable = new RewardVariablesTable();
-//        rewardVariablesTable.setCodeEditorMode();
-//        rewardVariablesTable.setCompactMode();
-//        rewardVariablesTable.setSizeFull();
-//        tableWrapper.add(rewardVariablesTable);
-//
-//        if (showSimulationMetrics) {
-//            metricsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-//            metricsWrapper.addClassName("metrics-wrapper");
-//            sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-//            sparklinesWrapper.addClassName("sparklines-wrapper");
-//
-//            updateSimulationMetrics();
-//            tableWrapper.add(metricsWrapper, sparklinesWrapper);
-//        }
-//
-//        return tableWrapper;
-//    }
-
-//    private void updateSimulationMetrics() {
-//        metricsWrapper.removeAll();
-//        sparklinesWrapper.removeAll();
-//
-//        updateSimulationMetricsData();
-//
-//        if (simulationMetrics.size() > 0) {
-//            Div metricsHeader = new Div(new Span("Value"), new SimulationMetricsInfoLink());
-//            metricsHeader.addClassName("header");
-//            metricsWrapper.add(metricsHeader);
-//
-//            Div sparklineHeader = new Div(new Span("Overview"), new SimulationMetricsInfoLink());
-//            sparklineHeader.addClassName("header");
-//            sparklinesWrapper.add(sparklineHeader);
-//        }
-//
-//        IntStream.range(0, simulationMetrics.size())
-//                .forEach(idx -> {
-//                    SparkLine sparkLine = new SparkLine();
-//                    sparkLine.setSparkLine(sparklinesData.get(idx), idx);
-//                    sparklinesWrapper.add(sparkLine);
-//                    if (uncertainty != null && !uncertainty.isEmpty()) {
-//                        metricsWrapper.add(new Span(uncertainty.get(idx)));
-//                    } else {
-//                        metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx))));
-//                    }
-//                });
-//    }
-
-//    private void updateSimulationMetricsData() {
-//        List<Metrics> metricsList = policy == null ? null : policy.getMetrics();
-//        sparklinesData.clear();
-//        simulationMetrics.clear();
-//        uncertainty.clear();
-//
-//        if (metricsList != null && metricsList.size() > 0) {
-//            // set the last metrics
-//            Metrics lastMetrics = metricsList.get(metricsList.size() - 1);
-//            lastMetrics.getMetricsThisIter().stream()
-//                .forEach(metricsThisIter -> simulationMetrics.add(metricsThisIter.getMean()));
-//
-//            // index, metrics list
-//            Map<Integer, List<Double>> sparkLineMap = new HashMap<>();
-//            metricsList.stream().forEach(metrics ->
-//                metrics.getMetricsThisIter().forEach(mIter -> {
-//                    int index = mIter.getIndex();
-//
-//                    List<Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new ArrayList<>();
-//                    data.add(mIter.getMean());
-//                    sparkLineMap.put(index, data);
-//                })
-//            );
-//
-//            // convert List<Double> to double[] because sparLine needs an array of primitive types
-//            sparkLineMap.entrySet().stream()
-//                .map(e -> e.getValue().stream().mapToDouble(Double::doubleValue).toArray())
-//                .forEach(arr -> sparklinesData.add(arr));
-//        }
-//
-//        List<MetricsRaw> metricsRawList = policy == null ? null : policy.getMetricsRaws();
-//        if (metricsRawList != null && metricsRawList.size() > 0) {
-//            Collections.sort(metricsRawList, Comparator.comparingInt(MetricsRaw::getIteration));
-//            Map<Integer, List<Double>> uncertaintyMap = MetricsRawUtils.toIndexAndMetricRawData(metricsRawList);
-//
-//            uncertainty = uncertaintyMap.values().stream()
-//                .map(list -> PathmindNumberUtils.calculateUncertainty(list))
-//                .collect(Collectors.toList());
-//        }
-//    }
 
     private Div getButtonsWrapper() {
         restartTraining = new Button("Restart Training", click -> {

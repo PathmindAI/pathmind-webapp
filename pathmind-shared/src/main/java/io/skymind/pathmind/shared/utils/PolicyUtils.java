@@ -2,6 +2,8 @@ package io.skymind.pathmind.shared.utils;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
+import io.skymind.pathmind.shared.data.Metrics;
+import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +11,7 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
@@ -93,5 +94,46 @@ public class PolicyUtils
                 .filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
                 .max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration))
                 .orElse(null);
+    }
+
+    public static void updateSimulationMetricsData(Policy policy) {
+        List<Metrics> metricsList = policy == null ? null : policy.getMetrics();
+        policy.getSparklinesData().clear();
+        policy.getSimulationMetrics().clear();
+        policy.getUncertainty().clear();
+
+        if (metricsList != null && metricsList.size() > 0) {
+            // set the last metrics
+            Metrics lastMetrics = metricsList.get(metricsList.size() - 1);
+            lastMetrics.getMetricsThisIter().stream()
+                    .forEach(metricsThisIter -> policy.getSimulationMetrics().add(metricsThisIter.getMean()));
+
+            // index, metrics list
+            Map<Integer, List<Double>> sparkLineMap = new HashMap<>();
+            metricsList.stream().forEach(metrics ->
+                    metrics.getMetricsThisIter().forEach(mIter -> {
+                        int index = mIter.getIndex();
+
+                        List<Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new ArrayList<>();
+                        data.add(mIter.getMean());
+                        sparkLineMap.put(index, data);
+                    })
+            );
+
+            // convert List<Double> to double[] because sparLine needs an array of primitive types
+            sparkLineMap.entrySet().stream()
+                    .map(e -> e.getValue().stream().mapToDouble(Double::doubleValue).toArray())
+                    .forEach(arr -> policy.getSparklinesData().add(arr));
+        }
+
+        List<MetricsRaw> metricsRawList = policy == null ? null : policy.getMetricsRaws();
+        if (metricsRawList != null && metricsRawList.size() > 0) {
+            Collections.sort(metricsRawList, Comparator.comparingInt(MetricsRaw::getIteration));
+            Map<Integer, List<Double>> uncertaintyMap = MetricsRawUtils.toIndexAndMetricRawData(metricsRawList);
+
+            policy.setUncertainty(uncertaintyMap.values().stream()
+                    .map(list -> PathmindNumberUtils.calculateUncertainty(list))
+                    .collect(Collectors.toList()));
+        }
     }
 }
