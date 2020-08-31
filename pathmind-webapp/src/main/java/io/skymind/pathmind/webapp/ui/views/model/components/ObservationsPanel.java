@@ -37,11 +37,15 @@ public class ObservationsPanel extends VerticalLayout
 
     public void setupObservationTable(Collection<Observation> allObservations, Collection<Observation> selection) {
         observationsTable.setItems(new HashSet<>(allObservations));
-        observationsTable.setValue(new HashSet<>(selection));
+        setSelectedObservations(selection);
     }
     
     public Collection<Observation> getSelectedObservations(){
         return observationsTable.getValue();
+    }
+    
+    public void setSelectedObservations(Collection<Observation> observations){
+        observationsTable.setValue(new HashSet<>(observations));
     }
   
     public void addValueChangeListener(SerializableConsumer<Set<Observation>> listener) {

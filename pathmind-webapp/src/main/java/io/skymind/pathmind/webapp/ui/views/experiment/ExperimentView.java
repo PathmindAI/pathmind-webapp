@@ -507,6 +507,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentsNavbar.setAllowNewExperimentCreation(false);
         }
         rewardVariablesTable.setRewardVariables(rewardVariables);
+        observationsPanel.setSelectedObservations(experimentObservations);
         if (showSimulationMetrics) {
             updateSimulationMetrics();
         }
