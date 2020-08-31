@@ -42,8 +42,6 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.user.UserCaps;
-import io.skymind.pathmind.shared.featureflag.Feature;
-import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
@@ -272,7 +270,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 	
 	private boolean canStartTraining() {
-		return ModelUtils.isValidModel(experiment.getModel()) && rewardFunctionErrors.size() == 0 && !observationsPanel.getSelectedObservations().isEmpty() && canSaveDataInDB();
+		return ModelUtils.isValidModel(experiment.getModel()) 
+		        && rewardFunctionEditor.getOptionalValue().isPresent() && rewardFunctionErrors.size() == 0 
+		        && !observationsPanel.getSelectedObservations().isEmpty() 
+		        && canSaveDataInDB();
 	}
 
     private boolean canSaveDataInDB() {
