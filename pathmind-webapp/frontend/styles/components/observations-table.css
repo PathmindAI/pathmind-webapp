@@ -1,9 +1,13 @@
 .observations-table {
     padding-top: var(--lumo-space-s);
 }
-.observations-panel {
-    box-sizing: border-box;
+
+.new-experiment-view .observations-panel {
     flex: 1 1 19rem;
+} 
+.observations-panel {
+    height: 100%;
+    box-sizing: border-box;
     line-height: 1;
     padding: 0 var(--lumo-space-s) var(--lumo-space-xxxs);
     border: 1px solid var(--pm-gray-color);
