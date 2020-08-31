@@ -99,6 +99,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardFunctionErrorPanel rewardFunctionErrorPanel;
+    private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
     private ExperimentsNavBar experimentsNavbar;
     private NotesField notesField;
@@ -202,6 +203,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         rewardFnEditorWrapper.addClassName("reward-fn-editor-panel");
 
         Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
+        
+        rewardVariablesTable = new RewardVariablesTable();
+        VerticalLayout rewardVariablesPanel = WrapperUtils
+                .wrapVerticalWithNoPaddingOrSpacing(
+                        LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL),
+                        rewardVariablesTable);
+        rewardVariablesPanel.addClassName("reward-variables-panel");
 
         observationsPanel = new ObservationsPanel();
         observationsPanel.setupObservationTable(modelObservations, experimentObservations);
@@ -210,8 +218,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             startRunButton.setEnabled(canStartTraining());
             saveDraftButton.setEnabled(canSaveDataInDB());
         });
+
         HorizontalLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapWidthFullHorizontal(
                 rewardFnEditorWrapper,
+                rewardVariablesPanel,
                 observationsPanel);
         rewardFunctionAndObservationsWrapper.setClassName("reward-function-wrapper");
         rewardFunctionErrorPanel = new RewardFunctionErrorPanel();
@@ -304,14 +314,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         afterClickedCallback.execute();
     }
 
-    private void saveObservationsSelection() {
-        if (featureManager.isEnabled(FeatureManager.OBSERVATIONS_FEATURE)) {
-            observations = observationsPanel.getObservations();
-            // update observations selection status for experiment
-        }
-    }
-
-    
     private void unarchiveExperiment() {
         ConfirmationUtils.unarchive("experiment", () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
@@ -445,7 +447,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		saveDraftButton.setVisible(!experiment.isArchived());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
 		rewardFunctionEditor.setVariableNames(rewardVariables);
-		unsavedChanges.setVisible(false);
+        rewardVariablesTable.setRewardVariables(rewardVariables);
+        unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);
         unarchiveExperimentButton.setVisible(experiment.isArchived());
 	}

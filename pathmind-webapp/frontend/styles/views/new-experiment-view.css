@@ -22,26 +22,51 @@
 }
 
 .new-experiment-view .reward-function-wrapper {
+    flex: 2 0 auto;
     margin-top: 0;
 }
 
 .new-experiment-view .reward-function-wrapper .reward-fn-editor-panel {
-    flex: 2 0 65.7%;
+    flex: 1 0 50%;
 }
 
 .new-experiment-view .reward-fn-panel-container {
     flex: 2;
 }
 
-.new-experiment-view .reward-variables-table.code-editor-mode .header-row {
-    align-items: center;
-    color: var(--pm-text-color);
-    background-color: white;
-    padding: var(--lumo-space-m) 0;
+.new-experiment-view .reward-variables-panel .reward-function-wrapper .reward-variables-table {
+    max-height: none;
 }
 
-.new-experiment-view .reward-variables-table.code-editor-mode .header-row span:first-child {
-    color: var(--pm-text-color);
+.new-experiment-view .reward-variables-panel > vaadin-vertical-layout {
+    box-sizing: border-box;
+    flex: 1 1 19rem;
+    line-height: 1;
+    padding: 0 var(--lumo-space-s) var(--lumo-space-xxxs);
+    border: 1px solid var(--pm-gray-color);
+    border-radius: var(--lumo-border-radius);
+    overflow-y: auto;
+}
+
+.new-experiment-view .reward-function-wrapper .reward-variables-table {
+    max-height: none;
+}
+
+.new-experiment-view .reward-variables-table .header-row {
+    height: auto;
+    padding: var(--lumo-space-s) 0;
+    border-bottom: 1px solid var(--pm-gray-color-lightest);
+    margin-bottom: var(--lumo-space-s);
+}
+
+.new-experiment-view .reward-variables-table .header-row span {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.new-experiment-view .reward-variables-table vaadin-horizontal-layout {
+    height: auto;
+    margin-bottom: var(--lumo-space-xxs);
 }
 
 .new-experiment-view .error-and-notes-container {
