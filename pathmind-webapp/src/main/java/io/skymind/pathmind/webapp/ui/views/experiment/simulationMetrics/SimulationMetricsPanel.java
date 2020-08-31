@@ -8,6 +8,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.components.SparkLine;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
@@ -50,7 +51,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
             sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
             sparklinesWrapper.addClassName("sparklines-wrapper");
 
-            updateSimulationMetrics(null);
+            updateSimulationMetrics(experiment.getPolicies().isEmpty() ? null : PolicyUtils.selectBestPolicy(experiment.getPolicies()));
             add(metricsWrapper, sparklinesWrapper);
         }
     }
