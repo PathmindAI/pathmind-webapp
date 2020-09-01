@@ -79,7 +79,6 @@ public class SparklineChart extends VerticalLayout{
             PlotLine target = new PlotLine(val);
             target.setClassName("target");
             chart.getConfiguration().getyAxis().addPlotLine(target);
-            plotOptions.setThreshold(val);
         });
         
         series.setPlotOptions(plotOptions);
