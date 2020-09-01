@@ -207,7 +207,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		if (isResumeUpload()) {
 			this.model = modelService.getModel(modelId)
 					.orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
-			this.rewardVariables = rewardVariablesDAO.getRewardVariablesForModel(modelId);
+            this.rewardVariables = rewardVariablesDAO.getRewardVariablesForModel(modelId);
 		}
 		else {
 			this.model = ModelUtils.generateNewDefaultModel();
@@ -219,7 +219,18 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private boolean isResumeUpload() {
 		return modelId != -1;
-	}
+    }
+
+    // For development purpose only
+    private List<RewardVariable> getGoals() {
+        List<RewardVariable> mockedRewardVarWithGoal = new ArrayList<>();
+        for (int i = 0; i < rewardVariables.size(); i++) {
+            RewardVariable mockGoal = rewardVariables.get(i);
+            mockGoal.setHasGoal(false);
+            mockedRewardVarWithGoal.add(mockGoal);
+        }
+        return mockedRewardVarWithGoal;
+    }
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
@@ -244,7 +255,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 		modelService.updateDraftModel(model, modelNotes);
 		rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount(), rewardVariables);
-		setVisibleWizardPanel(rewardVariablesPanel);
+        rewardVariablesPanel.setupGoalsTable(rewardVariables, rewardVariables);
+        setVisibleWizardPanel(rewardVariablesPanel);
 	}
 	
 	private void saveAndNavigateToNewExperiment() {

@@ -21,8 +21,9 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
 public class RewardVariablesPanel extends VerticalLayout
 {
-	private VerticalLayout formPanel = new VerticalLayout();
-	private RewardVariablesTable rewardVariablesTable;
+	private HorizontalLayout formPanel = new HorizontalLayout();
+    private RewardVariablesTable rewardVariablesTable;
+    private GoalsTable goalsTable;
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
@@ -38,7 +39,8 @@ public class RewardVariablesPanel extends VerticalLayout
 
 		add(rewardVariablesNameLine,
 				GuiUtils.getFullWidthHr(),
-				formPanel,
+		        new Paragraph("You have created a function to gather reward variables in your simulation. Here is the list of reward variables we extracted from your simulation:"),
+                formPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
 
 		setWidthFull();
@@ -52,12 +54,18 @@ public class RewardVariablesPanel extends VerticalLayout
 
 	private void setupForm() {
         rewardVariablesTable = new RewardVariablesTable();
-		formPanel.add(new Paragraph("You have created a function to gather reward variables in your simulation. Here is the list of reward variables we extracted from your simulation:"));
+        goalsTable = new GoalsTable(false);
 		formPanel.setPadding(false);
-		formPanel.add(rewardVariablesTable);
+        formPanel.add(rewardVariablesTable);
+        formPanel.add(goalsTable);
 	}
 
 	public void setupRewardVariablesTable(int rewardVariablesCount, List<RewardVariable> rewardVariables) {
 	    rewardVariablesTable.setRewardVariables(rewardVariables);
-	}
+    }
+    
+    public void setupGoalsTable(List<RewardVariable> allRewardVariables, List<RewardVariable> selection) {
+        goalsTable.setItems(allRewardVariables);
+        goalsTable.setValue(selection);
+    }
 }
