@@ -12,6 +12,9 @@ public class RewardVariable extends Data {
     private long modelId;
     private int arrayIndex;
     private String dataType;
+    private Boolean hasGoal;
+    private Boolean goalIsLargerThanOrEqualTo;
+    private double goalValue;
 
     public RewardVariable(long modelId, String name, int arrayIndex) {
         this(modelId, name, arrayIndex, "double");
