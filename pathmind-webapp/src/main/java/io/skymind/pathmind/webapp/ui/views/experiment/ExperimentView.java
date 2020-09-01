@@ -206,7 +206,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         );
 
         boolean showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
-        SimulationMetricsPanel simulationMetricsPanel = new SimulationMetricsPanel(experiment, showSimulationMetrics, rewardVariables);
+        SimulationMetricsPanel simulationMetricsPanel = new SimulationMetricsPanel(experiment, showSimulationMetrics, rewardVariables, () -> getUI());
         String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
 
         rewardVariablesGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(

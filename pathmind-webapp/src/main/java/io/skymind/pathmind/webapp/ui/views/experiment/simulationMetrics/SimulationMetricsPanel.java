@@ -61,7 +61,9 @@ public class SimulationMetricsPanel extends HorizontalLayout {
             sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
             sparklinesWrapper.addClassName("sparklines-wrapper");
 
-            updateSimulationMetrics(experiment.getPolicies().isEmpty() ? null : PolicyUtils.selectBestPolicy(experiment.getPolicies()));
+            if(!experiment.getPolicies().isEmpty())
+               updateSimulationMetrics(PolicyUtils.selectBestPolicy(experiment.getPolicies()));
+
             add(metricsWrapper, sparklinesWrapper);
         }
     }
@@ -93,15 +95,16 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         metricsWrapper.removeAll();
         sparklinesWrapper.removeAll();
 
-        if (policy.getSimulationMetrics().size() > 0) {
-            Div metricsHeader = new Div(new Span("Value"), new SimulationMetricsInfoLink());
-            metricsHeader.addClassName("header");
-            metricsWrapper.add(metricsHeader);
+        if(policy.getSimulationMetrics() == null && policy.getSimulationMetrics().isEmpty())
+            return;
 
-            Div sparklineHeader = new Div(new Span("Overview"), new SimulationMetricsInfoLink());
-            sparklineHeader.addClassName("header");
-            sparklinesWrapper.add(sparklineHeader);
-        }
+        Div metricsHeader = new Div(new Span("Value"), new SimulationMetricsInfoLink());
+        metricsHeader.addClassName("header");
+        metricsWrapper.add(metricsHeader);
+
+        Div sparklineHeader = new Div(new Span("Overview"), new SimulationMetricsInfoLink());
+        sparklineHeader.addClassName("header");
+        sparklinesWrapper.add(sparklineHeader);
 
         IntStream.range(0, policy.getSimulationMetrics().size())
                 .forEach(idx -> {
