@@ -15,7 +15,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.security.Routes;
 
 @Tag("verification-email-sent-view")
-@JsModule("./src/account/verification-email-sent-view.js")
+@JsModule("./src/pages/account/verification-email-sent-view.js")
 @Route(value = Routes.VERIFICATION_EMAIL_SENT_URL)
 public class VerificationEmailSentView extends PolymerTemplate<TemplateModel> implements PublicView {
 

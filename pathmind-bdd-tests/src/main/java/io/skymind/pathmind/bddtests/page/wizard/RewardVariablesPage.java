@@ -1,5 +1,6 @@
 package io.skymind.pathmind.bddtests.page.wizard;
 
+import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -12,7 +13,10 @@ import static org.hamcrest.Matchers.hasItem;
 
 public class RewardVariablesPage extends PageObject {
 
+    private Utils utils;
+
     public void clickWizardRewardVariableNamesNextBtn() {
+        utils.moveToElementRepeatIfStaleException(By.xpath("//span[text()='Reward Variable Names']/ancestor::*[@class='view-section']/descendant::vaadin-button[normalize-space(text())='Next'][2]"));
         getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/ancestor::*[@class='view-section']/descendant::vaadin-button[normalize-space(text())='Next'][2]")).click();
     }
 

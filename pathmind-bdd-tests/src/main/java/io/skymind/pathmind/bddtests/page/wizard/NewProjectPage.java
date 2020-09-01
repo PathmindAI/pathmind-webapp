@@ -14,47 +14,52 @@ public class NewProjectPage extends PageObject {
 
     private Utils utils;
 
-    @FindBy(xpath = "//vaadin-text-field[@required]")
-    private WebElement projectNameInputFieldShadow;
-    @FindBy(xpath = "//vaadin-button[text()='Create Project']")
-    private WebElement projectNameCreateBtn;
+    @FindBy(xpath = "//new-project-view")
+    private WebElement newProjectViewShadow;
 
     private final By byInput = By.cssSelector("input");
 
     public void inputNameOfTheNewProject(String projectName) {
-        WebElement e = utils.expandRootElement(projectNameInputFieldShadow);
-        WebElement projectNameInputField = e.findElement(byInput);
+        WebElement e = utils.expandRootElement(newProjectViewShadow);
+        WebElement e2 = utils.expandRootElement(e.findElement(By.cssSelector("#projectName")));
+        WebElement projectNameInputField = e2.findElement(byInput);
         projectNameInputField.click();
         projectNameInputField.sendKeys(projectName);
     }
 
     public void clickProjectNameCreateBtn() {
         waitABit(3000);
-        projectNameCreateBtn.click();
+        WebElement e = utils.expandRootElement(newProjectViewShadow);
+        e.findElement(By.cssSelector("#createProject")).click();
     }
 
     public void checkCreateANewProjectPage() {
-        assertThat(getDriver().findElement(By.xpath("//*[@class='light-text-label']")).getText(), containsString("Welcome to"));
-        assertThat(getDriver().findElement(By.xpath("//img[@class='navbar-logo']")).isDisplayed(), is(true));
-        assertThat(getDriver().findElement(By.cssSelector(".section-title-label")).getText(), containsString("Start a New Project!"));
-        assertThat(getDriver().findElement(By.cssSelector(".section-subtitle-label")).getText(), containsString("Projects organize your Pathmind Experiments based on your AnyLogic model"));
+        WebElement e = utils.expandRootElement(newProjectViewShadow);
+        assertThat(e.findElement(By.cssSelector(".welcome-text")).getText(), containsString("Welcome to"));
+        assertThat(e.findElement(By.cssSelector(".logo")).isDisplayed(), is(true));
+        assertThat(e.findElement(By.cssSelector("h3")).getText(), containsString("Start a New Project!"));
+        assertThat(e.findElement(By.cssSelector("h3 + p")).getText(), containsString("Projects organize your Pathmind Experiments based on your AnyLogic model"));
+        
+        WebElement e2 = utils.expandRootElement(e.findElement(By.cssSelector("#projectName")));
+        WebElement inputField = e2.findElement(By.cssSelector("label[part='label']"));
+        assertThat(inputField.getText(), containsString("Give your project a name"));
 
-        WebElement e = utils.expandRootElement(projectNameInputFieldShadow);
-        WebElement searchInputField = e.findElement(By.cssSelector("label[part='label']"));
-        assertThat(searchInputField.getText(), containsString("Give your project a name"));
-
-        assertThat(getDriver().findElement(By.cssSelector(".create-project-button")).getText(), containsString("Create Project"));
+        assertThat(e.findElement(By.cssSelector("#createProject")).getText(), containsString("Create Project"));
     }
 
     public void checkThatErrorShown(String error) {
         waitABit(2500);
-        WebElement e = utils.expandRootElement(projectNameInputFieldShadow);
-        e.findElement(By.cssSelector("div[part='error-message']"));
-        assertThat(e.findElement(By.cssSelector("div[part='error-message']")).getText(), containsString(error));
+        WebElement e = utils.expandRootElement(newProjectViewShadow);
+        WebElement e2 = utils.expandRootElement(e.findElement(By.cssSelector("#projectName")));
+        e2.findElement(By.cssSelector("div[part='error-message']"));
+        assertThat(e2.findElement(By.cssSelector("div[part='error-message']")).getText(), containsString(error));
     }
 
     public void checkThatNewProjectPageOpened() {
-        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']")).getText(), is("Start a New Project!"));
+        waitABit(2500);
+        assertThat(getDriver().getTitle(), containsString("Pathmind | New Project"));
+        WebElement e = utils.expandRootElement(newProjectViewShadow);
+        assertThat(e.findElement(By.cssSelector("h3")).getText(), is("Start a New Project!"));
     }
 
     public void checkWizardModelUploadBreadcrumbIsShown() {

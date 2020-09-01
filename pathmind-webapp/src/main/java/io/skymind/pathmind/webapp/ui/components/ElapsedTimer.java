@@ -7,7 +7,7 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 @Tag("elapsed-timer")
-@JsModule("/src/experiment/elapsed-timer.js")
+@JsModule("./src/experiment/elapsed-timer.js")
 public class ElapsedTimer extends PolymerTemplate<TemplateModel> implements HasStyle {
 
     public void updateTimer(long time, boolean isRunning) {
