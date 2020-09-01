@@ -29,8 +29,12 @@ public class Job {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private EC2InstanceType ec2InstanceType;
 
-    public Job(String s3Bucket, String s3Path, int mockCycle) {
-        this(s3Bucket, s3Path, false, mockCycle);
+    @JsonProperty("maxMin")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String maxElaspedTime;
+
+    public Job(String s3Bucket, String s3Path, int mockCycle, int mockMaxMin) {
+        this(s3Bucket, s3Path, false, mockCycle, mockMaxMin);
     }
 
     public Job(String s3Bucket, String s3Path, boolean destroy, int mockCycle) {
@@ -41,6 +45,13 @@ public class Job {
         if (mockCycle > 0) {
             this.mockup = "1";
             this.mockupCycle = String.valueOf(mockCycle);
+        }
+    }
+
+    public Job(String s3Bucket, String s3Path, boolean destroy, int mockCycle, int mockMaxMin) {
+        this(s3Bucket, s3Path, destroy, mockCycle);
+        if (mockMaxMin > 0) {
+            this.maxElaspedTime = String.valueOf(mockMaxMin);
         }
     }
 
