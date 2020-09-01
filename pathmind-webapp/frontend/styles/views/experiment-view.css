@@ -121,7 +121,7 @@
 }
 
 .experiment-view vaadin-chart {
-    min-height: 25rem;
+/*     min-height: 25rem; */
 }
 
 .experiment-view .bottom-panel,

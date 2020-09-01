@@ -27,3 +27,7 @@
 .highcharts-tooltip-box {
     stroke: var(--pm-text-color);
 }
+.target {
+	stroke: red;
+	z-index: 9999;
+}

@@ -1,6 +1,27 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import com.vaadin.flow.component.*;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -13,7 +34,13 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.db.dao.*;
+
+import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.ObservationDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.RewardVariableDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -59,22 +86,11 @@ import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentView
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
+import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.*;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 @Slf4j
