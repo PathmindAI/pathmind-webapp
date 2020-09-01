@@ -75,7 +75,7 @@ def load_deployment_template(DEPLOYMENT_TEMPLATE):
         mem_deployment_template=file.read().split('\n')
     return mem_deployment_template
 
-def send_mockup_data(s3bucket, s3path, cycle):
+def send_mockup_data(s3bucket, s3path, cycle, maxMin):
     """
     sends the mockup data to the s3 bucket every cycle
     """
@@ -87,6 +87,8 @@ def send_mockup_data(s3bucket, s3path, cycle):
     for my_bucket_object in my_bucket.objects.filter(Prefix='mockup/', Delimiter=''):
         folder_list.add(int(my_bucket_object.key.split('/')[1]))
     folder_list=sorted(folder_list)
+    offset = max(int(len(folder_list) * cycle / (60 * maxMin)), 1)
+    folder_list = [x for x in folder_list if x == folder_list[-1] or x % offset == 0]
     for folder in folder_list:
         if mockup_status[s3bucket+'/'+s3path]['destroy']==True:
             app_logger.info('Killing mockup {s3bucket}/{s3path}'\
@@ -208,7 +210,13 @@ def process_message(message):
             cycle=int(body['cycle'])
         else:
             cycle=60
-        worker = Thread(target=send_mockup_data, args=(s3bucket,s3path,cycle,))
+
+        if 'maxMin' in body:
+            maxMin=int(body['maxMin'])
+        else:
+            maxMin=-1
+
+        worker = Thread(target=send_mockup_data, args=(s3bucket,s3path,cycle,maxMin,))
         worker.setDaemon(True)
         worker.start()
         mockup_status[s3bucket+'/'+s3path]={'destroy':False}
