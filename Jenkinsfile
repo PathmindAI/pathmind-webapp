@@ -216,13 +216,6 @@ pipeline {
                         }
                     }
                 }
-                stage('Deploying rl_training') {
-                    steps {
-                        script {
-                            sh "helm upgrade --install rl_training ${WORKSPACE}/infra/helm/rl_training -f ${WORKSPACE}/infra/helm/rl_training/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
-                        }
-                    }
-                }
             }
         }
 
@@ -317,13 +310,6 @@ pipeline {
                     steps {
                         script {
                             sh "helm upgrade --install trainer ${WORKSPACE}/infra/helm/trainer -f ${WORKSPACE}/infra/helm/trainer/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
-                        }
-                    }
-                }
-                stage('Deploying rl_training') {
-                    steps {
-                        script {
-                            sh "helm upgrade --install rl_training ${WORKSPACE}/infra/helm/rl_training -f ${WORKSPACE}/infra/helm/rl_training/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
                         }
                     }
                 }
