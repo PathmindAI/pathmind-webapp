@@ -221,23 +221,15 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		return modelId != -1;
     }
 
-    // For development purpose only
-    private List<RewardVariable> getGoals() {
-        List<RewardVariable> mockedRewardVarWithGoal = new ArrayList<>();
-        for (int i = 0; i < rewardVariables.size(); i++) {
-            RewardVariable mockGoal = rewardVariables.get(i);
-            mockGoal.setHasGoal(false);
-            mockedRewardVarWithGoal.add(mockGoal);
-        }
-        return mockedRewardVarWithGoal;
-    }
-
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 	}
 
 	private void handleRewardVariablesClicked() {
-        saveAndNavigateToNewExperiment();
+	    if (rewardVariablesPanel.isInputValueValid()) {
+	        rewardVariablesDAO.updateModelRewardVariables(modelId, rewardVariables);
+	        saveAndNavigateToNewExperiment();
+	    }
     }
 
 	private void handleModelDetailsClicked()
@@ -254,8 +246,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		}
 
 		modelService.updateDraftModel(model, modelNotes);
-		rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount(), rewardVariables);
-        rewardVariablesPanel.setupGoalsTable(rewardVariables, rewardVariables);
+		rewardVariablesPanel.setupRewardVariables(rewardVariables);
         setVisibleWizardPanel(rewardVariablesPanel);
 	}
 	
