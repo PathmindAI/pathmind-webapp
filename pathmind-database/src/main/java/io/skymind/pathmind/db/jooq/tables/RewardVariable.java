@@ -20,7 +20,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row5;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RewardVariable extends TableImpl<RewardVariableRecord> {
 
-    private static final long serialVersionUID = -518653281;
+    private static final long serialVersionUID = -909733314;
 
     /**
      * The reference instance of <code>public.reward_variable</code>
@@ -81,6 +81,16 @@ public class RewardVariable extends TableImpl<RewardVariableRecord> {
      * The column <code>public.reward_variable.data_type</code>.
      */
     public final TableField<RewardVariableRecord, String> DATA_TYPE = createField(DSL.name("data_type"), org.jooq.impl.SQLDataType.VARCHAR(16), this, "");
+
+    /**
+     * The column <code>public.reward_variable.goal_condition_type</code>.
+     */
+    public final TableField<RewardVariableRecord, String> GOAL_CONDITION_TYPE = createField(DSL.name("goal_condition_type"), org.jooq.impl.SQLDataType.VARCHAR(16), this, "");
+
+    /**
+     * The column <code>public.reward_variable.goal_value</code>.
+     */
+    public final TableField<RewardVariableRecord, Double> GOAL_VALUE = createField(DSL.name("goal_value"), org.jooq.impl.SQLDataType.DOUBLE, this, "");
 
     /**
      * Create a <code>public.reward_variable</code> table reference
@@ -176,11 +186,11 @@ public class RewardVariable extends TableImpl<RewardVariableRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row5 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Long, Long, String, Integer, String> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row7<Long, Long, String, Integer, String, String, Double> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 }
