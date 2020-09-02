@@ -23,22 +23,21 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 @CssImport(value = "./styles/components/goals-table.css")
 public class GoalsTable extends CustomField<List<RewardVariable>> implements HasStyle {
 
-	private List<RowField> goalFields = new ArrayList<>();
-    private List<RewardVariable> goalsList = new ArrayList<>();
+    private List<RowField> goalFields = new ArrayList<>();
     private VerticalLayout container;
     private Boolean isReadOnly;
 
     public GoalsTable(Boolean isReadOnly) {
         this.isReadOnly = isReadOnly;
-	    container = new VerticalLayout();
-	    container.setPadding(false);
-	    container.setSpacing(false);
+        container = new VerticalLayout();
+        container.setPadding(false);
+        container.setSpacing(false);
         container.setClassName("goals-table");
         add(container);
     }
     
     public void setItems(List<RewardVariable> goals) {
-        goalsList = goals;
+        container.add(LabelFactory.createLabel("Goal", "header-row"));
 
         container.add(LabelFactory.createLabel("Goal", "header-row"));
 
@@ -47,10 +46,10 @@ public class GoalsTable extends CustomField<List<RewardVariable>> implements Has
         }
     }
 
-	private RowField createRow() {
-		RowField goalField = new RowField(isReadOnly);
+    private RowField createRow() {
+        RowField goalField = new RowField(isReadOnly);
         goalFields.add(goalField);
-		return goalField;
+        return goalField;
     }
 
     @Override
@@ -63,8 +62,8 @@ public class GoalsTable extends CustomField<List<RewardVariable>> implements Has
         newPresentationValue.forEach(rv -> goalFields.get(rv.getArrayIndex()).setValue(rv));
     }
 
-	private static class RowField extends AbstractCompositeField<HorizontalLayout, RowField, RewardVariable> implements
-			HasValidation {
+    private static class RowField extends AbstractCompositeField<HorizontalLayout, RowField, RewardVariable> implements
+            HasValidation {
         private final NumberField goalField;
         private final Span goalSpan;
         private final Select<String> goalOperatorSelect;
@@ -72,7 +71,7 @@ public class GoalsTable extends CustomField<List<RewardVariable>> implements Has
         private boolean readOnly = false;
         private String goalOperatorSelectThemeNames = "goals small align-center";
 
-		private RowField(boolean readOnly) {
+        private RowField(boolean readOnly) {
             super(null);
             this.readOnly = readOnly;
             this.goalField = new NumberField();
@@ -97,7 +96,7 @@ public class GoalsTable extends CustomField<List<RewardVariable>> implements Has
                 setNumberFieldVisibility();
             }
             getContent().setWidthFull();
-			GuiUtils.removeMarginsPaddingAndSpacing(getContent());
+            GuiUtils.removeMarginsPaddingAndSpacing(getContent());
         }
         
         private void setNumberFieldVisibility() {
@@ -111,17 +110,17 @@ public class GoalsTable extends CustomField<List<RewardVariable>> implements Has
             goalField.setEnabled(goalFieldUsable);
         }
 
-		@Override
-		public RewardVariable getValue() {
+        @Override
+        public RewardVariable getValue() {
             Double goalValue = goalField.getValue();
             Boolean goalIsLargerThanOrEqualTo = goalOperatorSelect.getValue() == "\u2265";
             currentRewardVariable.setGoalValue(goalValue);
             currentRewardVariable.setGoalIsLargerThanOrEqualTo(goalIsLargerThanOrEqualTo);
-			return currentRewardVariable;
-		}
+            return currentRewardVariable;
+        }
 
-		@Override
-		protected void setPresentationValue(RewardVariable newPresentationValue) {
+        @Override
+        protected void setPresentationValue(RewardVariable newPresentationValue) {
             Double goalValue = newPresentationValue.getGoalValue();
             this.currentRewardVariable = newPresentationValue;
             if (goalValue != null) {
@@ -131,33 +130,33 @@ public class GoalsTable extends CustomField<List<RewardVariable>> implements Has
                     goalField.setValue(goalValue);
                 }
             }
-		}
+        }
 
-		@Override
-		public void setErrorMessage(String errorMessage) {
-			goalField.setErrorMessage(errorMessage);
-		}
+        @Override
+        public void setErrorMessage(String errorMessage) {
+            goalField.setErrorMessage(errorMessage);
+        }
 
-		@Override
-		public String getErrorMessage() {
-			return goalField.getErrorMessage();
-		}
+        @Override
+        public String getErrorMessage() {
+            return goalField.getErrorMessage();
+        }
 
-		@Override
-		public void setInvalid(boolean invalid) {
-			goalField.setInvalid(invalid);
-			String className = "invalid-reward-variable-row";
-			if (invalid) {
-				getContent().addClassName(className);
-			}
-			else {
-				getContent().removeClassName(className);
-			}
-		}
+        @Override
+        public void setInvalid(boolean invalid) {
+            goalField.setInvalid(invalid);
+            String className = "invalid-reward-variable-row";
+            if (invalid) {
+                getContent().addClassName(className);
+            }
+            else {
+                getContent().removeClassName(className);
+            }
+        }
 
-		@Override
-		public boolean isInvalid() {
-			return goalField.isInvalid();
-		}
-	}
+        @Override
+        public boolean isInvalid() {
+            return goalField.isInvalid();
+        }
+    }
 }
