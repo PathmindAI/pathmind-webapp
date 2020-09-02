@@ -460,6 +460,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("CLASS_SNIPPET", job.getVariables()),
                 var("RESET_SNIPPET", job.getReset()),
                 var("REWARD_SNIPPET", job.getReward()),
+                var("OBSERVATION_SNIPPET", BashScriptCreatorUtil.createObservationSnippet(job.getSelectedObservations())),
                 var("METRICS_SNIPPET", job.getMetrics()),
                 var("MAX_ITERATIONS", String.valueOf(job.getIterations())),
                 var("TEST_ITERATIONS", "0"), // disabled for now

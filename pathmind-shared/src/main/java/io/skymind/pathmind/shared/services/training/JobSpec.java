@@ -1,5 +1,7 @@
 package io.skymind.pathmind.shared.services.training;
 
+import java.util.List;
+
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import lombok.Getter;
@@ -21,6 +23,7 @@ public class JobSpec {
     private final String reward;
     private final String metrics = ""; // Disabled for now. Proper Metrics support will probably need a bit of
                                        // re-engineering across the webapp, Pathmind Helper and NativeRL
+    private final List<String> selectedObservations;
     private final int iterations;
 
     private final ExecutionEnvironment env;
@@ -37,7 +40,7 @@ public class JobSpec {
 
     private final boolean recordMetricsRaw;
     private final boolean namedVariables;
-    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent, boolean resume, int checkpointFrequency, boolean userLog, boolean recordMetricsRaw, boolean namedVariables) {
+    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, List<String> selectedObservations, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent, boolean resume, int checkpointFrequency, boolean userLog, boolean recordMetricsRaw, boolean namedVariables) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
@@ -46,6 +49,7 @@ public class JobSpec {
         this.variables = variables;
         this.reset = reset;
         this.reward = reward;
+        this.selectedObservations = selectedObservations;
         this.iterations = iterations;
         this.env = env;
         this.type = type;
