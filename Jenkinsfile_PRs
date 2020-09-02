@@ -103,8 +103,8 @@ def setGitHubStatus(state) {
         status="pending"
     }
     repoUrl = "https://api.github.com/repos/SkymindIO/pathmind-webapp"
-    commitSha = sh(returnStdout: true, script: 'git log --format=format:%H | sed -n 2,2p').trim()
     token = sh(returnStdout: true, script: 'kubectl get secret githubtoken -o=jsonpath=\'{.data.GITHUBTOKEN}\' | base64 --decode')
+    commitSha = sh(returnStdout: true, script: "curl \"${repoUrl}/pulls/${ghprbPullId}/commits?access_token=${token}\" | jq -r \".[].sha\" | head -1").trim()
     sh """
         set -x
         curl \"${repoUrl}/statuses/${commitSha}?access_token=${token}\" \
