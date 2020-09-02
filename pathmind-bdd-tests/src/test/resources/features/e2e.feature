@@ -12,10 +12,18 @@ Feature: E2E
     When Click wizard reward variables next btn
     Then Check that new experiment <project name> page is opened
     Then Input from file reward function <reward function file>
-    Then Click project start run button
+    When Wait a bit 5000 ms
+    Then Click project save draft btn
+    Then Click in 'New Experiment' button
+    When Wait a bit 5000 ms
+    When Click project start run button
     Then Check experiment status completed with <limit> hours
+    When Refresh page
+    When Click in 'Export Policy' button
+    When Click in '< Back to Experiment #2' button
+    When Check side bar experiments list Experiment #1,Experiment #2
+    Then Check page title is Experiment #2
 
     Examples:
-      | project name    | model                             | reward function file                                       | limit |
-      | AutotestProject | tuple_models/CallCenterTuples.zip | Production_Single_Agent/Production_Single_Agent_Reward.txt | 15    |
-      | AutotestProject | tuple_models/CoffeeShopTuple.zip  | Production_Single_Agent/CoffeeShopPathmindDemo.txt         | 15    |
+      | project name    | model                             | reward function file                            | limit |
+      | AutotestProject | tuple_models/SimpleStochastic.zip | tuple_models/SimpleStochasticRewardFunction.txt | 1     |
