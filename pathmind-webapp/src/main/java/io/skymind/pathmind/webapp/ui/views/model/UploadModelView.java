@@ -5,10 +5,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_SUBTITLE_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.PROJECT_TITLE;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import com.vaadin.flow.component.html.Span;
 
@@ -315,24 +312,31 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	private List<Observation> convertToObservations(List<String> observationNames) {
-        List<Observation> observations = new ArrayList<>();
-        observationNames.forEach(name -> {
-            Observation obs = new Observation();
+        Map<String, Observation> auxObservations = new LinkedHashMap<>();
+        for (String name: observationNames) {
             if (VariableParserUtils.isArray(name)) {
-                obs.setVariable(VariableParserUtils.removeArrayIndexFromVariableName(name));
-                obs.setDataTypeEnum(ObservationDataType.NUMBER_ARRAY);
+                String correctName = VariableParserUtils.removeArrayIndexFromVariableName(name);
+                if (auxObservations.containsKey(correctName)) {
+                    Observation obs = auxObservations.get(correctName);
+                    obs.setMaxItems(obs.getMaxItems() + 1);
+                }
+                else {
+                    Observation obs = new Observation();
+                    obs.setVariable(correctName);
+                    obs.setDataTypeEnum(ObservationDataType.NUMBER_ARRAY);
+                    obs.setArrayIndex(auxObservations.size());
+                    obs.setMaxItems(1);
+                    auxObservations.put(correctName, obs);
+                }
             } else {
+                Observation obs = new Observation();
                 obs.setVariable(name);
                 obs.setDataTypeEnum(ObservationDataType.NUMBER);
+                obs.setArrayIndex(auxObservations.size());
+                auxObservations.put(name, obs);
             }
-            boolean isAlreadyInserted = observations.stream().anyMatch(o -> o.getVariable().equals(obs.getVariable()));
-            if (!isAlreadyInserted) {
-                obs.setArrayIndex(observations.size());
-                observations.add(obs);
-            }
-        });
-
-        return observations;
+        }
+        return new ArrayList<>(auxObservations.values());
     }
 
     private List<RewardVariable> convertToRewardVariables(long modelId, List<String> rewardVariablesNames) {
