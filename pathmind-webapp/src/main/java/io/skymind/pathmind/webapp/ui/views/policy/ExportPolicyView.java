@@ -85,7 +85,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 		Anchor learnMoreLink = new Anchor("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy", "Learn how to validate your policy");
 		learnMoreLink.setTarget("_blank");
 
-		cancelButton = new Button("Cancel", click -> handleCancelButtonClicked());
+		cancelButton = new Button("< Back to Experiment #"+policy.getExperiment().getName(), click -> handleCancelButtonClicked());
 		cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 		VerticalLayout wrapperContent = WrapperUtils.wrapFormCenterVertical(

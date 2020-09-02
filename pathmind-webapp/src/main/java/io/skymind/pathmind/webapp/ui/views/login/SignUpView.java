@@ -30,7 +30,7 @@ import io.skymind.pathmind.services.notificationservice.EmailNotificationService
 
 @Tag("sign-up-view")
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
-@JsModule("./src/account/sign-up-view.js")
+@JsModule("./src/pages/account/sign-up-view.js")
 @Route(value = Routes.SIGN_UP_URL)
 public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView
 {

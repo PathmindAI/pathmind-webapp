@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,6 +32,11 @@ public class Policy extends Data
 	private Run run;
 	private transient List<Metrics> metrics;
 	private transient List<MetricsRaw> metricsRaws;
+
+    // Helper Simulation Metrics GUI attributes not stored in the database
+    private List<Double> simulationMetrics = new ArrayList<>();
+    private List<double[]> sparklinesData = new ArrayList<>();
+    private List<String> uncertainty = new ArrayList<>();
 
     public List<RewardScore> getScores() {
         return scores == null ? Collections.emptyList() : scores;

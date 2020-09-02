@@ -11,7 +11,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 @Tag("spark-line")
 @NpmPackage(value = "@fnando/sparkline", version = "0.3.10")
-@JsModule("/src/experiment/spark-line.js")
+@JsModule("./src/experiment/spark-line.js")
 public class SparkLine extends PolymerTemplate<TemplateModel> implements HasStyle {
     public SparkLine() {
         super();

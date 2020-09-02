@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Tag("account-edit-view-content")
-@JsModule("./src/account/account-edit-view-content.js")
+@JsModule("./src/pages/account/account-edit-view-content.js")
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class AccountEditViewContent extends PolymerTemplate<AccountEditViewContent.Model> {

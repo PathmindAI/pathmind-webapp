@@ -20,7 +20,7 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.security.UserService;
 
 @Tag("email-verification-view")
-@JsModule("./src/account/email-verification-view.js")
+@JsModule("./src/pages/account/email-verification-view.js")
 @Route(value = Routes.EMAIL_VERIFICATION_URL)
 public class EmailVerificationView extends PolymerTemplate<EmailVerificationView.Model>
 		implements PublicView, HasUrlParameter<String>, AfterNavigationObserver

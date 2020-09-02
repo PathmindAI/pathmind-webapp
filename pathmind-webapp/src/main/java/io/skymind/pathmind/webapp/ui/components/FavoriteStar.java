@@ -10,7 +10,7 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 @Tag("favorite-star")
-@JsModule("/src/components/favorite-star.js")
+@JsModule("./src/components/atoms/favorite-star.js")
 public class FavoriteStar extends PolymerTemplate<TemplateModel> implements HasStyle {
     private boolean isFavorite = false;
     private Consumer<Boolean> onToggleFavorite;

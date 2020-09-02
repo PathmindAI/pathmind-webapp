@@ -41,7 +41,17 @@ public class ModelDetailsPage extends PageObject {
     }
 
     public void checkThatModelSuccessfullyUploaded() {
-        setImplicitTimeout(300, SECONDS);
+        setImplicitTimeout(1, SECONDS);
+        int attempts = 0;
+        while (attempts < 300) {
+            if (getDriver().findElements(By.xpath("//*[text()='Your model was successfully uploaded!']")).size() != 0 || getDriver().findElements(By.xpath("//span[text()='Unable to analyze the model.']")).size() != 0) {
+                break;
+            }
+            System.out.println("WAITING FOR ELEMENT");
+            attempts++;
+        }
+        assertThat(getDriver().findElements(By.xpath("//span[text()='Unable to analyze the model.']")).size(), is(0));
+
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Your model was successfully uploaded!']")));
         resetImplicitTimeout();
     }

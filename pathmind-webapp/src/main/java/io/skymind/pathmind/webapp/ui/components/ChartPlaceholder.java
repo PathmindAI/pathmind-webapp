@@ -7,6 +7,6 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 @Tag("chart-placeholder")
-@JsModule("/src/experiment/chart-placeholder.js")
+@JsModule("./src/experiment/chart-placeholder.js")
 public class ChartPlaceholder extends PolymerTemplate<TemplateModel> implements HasStyle {
 }
