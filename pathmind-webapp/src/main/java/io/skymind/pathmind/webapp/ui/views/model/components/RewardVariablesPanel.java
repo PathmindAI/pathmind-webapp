@@ -27,7 +27,6 @@ public class RewardVariablesPanel extends VerticalLayout
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
-	public RewardVariablesPanel()
 	{
 		setupForm();
 		nextStepButton.setIconAfterText(true);
@@ -55,18 +54,18 @@ public class RewardVariablesPanel extends VerticalLayout
 
 	private void setupForm() {
         rewardVariablesTable = new RewardVariablesTable();
-        goalsTable = new GoalsTable(false);
+        goalsTable = new GoalsTable();
 		formPanel.setPadding(false);
         formPanel.add(rewardVariablesTable);
         formPanel.add(goalsTable);
 	}
 
-	public void setupRewardVariablesTable(int rewardVariablesCount, List<RewardVariable> rewardVariables) {
+	public void setupRewardVariables(List<RewardVariable> rewardVariables) {
 	    rewardVariablesTable.setRewardVariables(rewardVariables);
+	    goalsTable.setValue(rewardVariables);
     }
-    
-    public void setupGoalsTable(List<RewardVariable> allRewardVariables, List<RewardVariable> selection) {
-        goalsTable.setItems(allRewardVariables);
-        goalsTable.setValue(selection);
+	
+	public boolean isInputValueValid() {
+        return goalsTable.isValid();
     }
 }

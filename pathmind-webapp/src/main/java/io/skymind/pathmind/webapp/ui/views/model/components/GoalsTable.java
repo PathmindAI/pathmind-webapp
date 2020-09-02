@@ -15,7 +15,10 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.Binder.Binding;
 
+import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
@@ -25,10 +28,8 @@ public class GoalsTable extends CustomField<List<RewardVariable>> implements Has
 
     private List<RowField> goalFields = new ArrayList<>();
     private VerticalLayout container;
-    private Boolean isReadOnly;
 
-    public GoalsTable(Boolean isReadOnly) {
-        this.isReadOnly = isReadOnly;
+    public GoalsTable() {
         container = new VerticalLayout();
         container.setPadding(false);
         container.setSpacing(false);
@@ -36,18 +37,8 @@ public class GoalsTable extends CustomField<List<RewardVariable>> implements Has
         add(container);
     }
     
-    public void setItems(List<RewardVariable> goals) {
-        container.add(LabelFactory.createLabel("Goal", "header-row"));
-
-        container.add(LabelFactory.createLabel("Goal", "header-row"));
-
-        for (int i = 0; i < goals.size(); i++) {
-            container.add(createRow());
-        }
-    }
-
     private RowField createRow() {
-        RowField goalField = new RowField(isReadOnly);
+        RowField goalField = new RowField();
         goalFields.add(goalField);
         return goalField;
     }
@@ -59,77 +50,85 @@ public class GoalsTable extends CustomField<List<RewardVariable>> implements Has
 
     @Override
     protected void setPresentationValue(List<RewardVariable> newPresentationValue) {
-        newPresentationValue.forEach(rv -> goalFields.get(rv.getArrayIndex()).setValue(rv));
+        goalFields.clear();
+        container.removeAll();
+        
+        container.add(LabelFactory.createLabel("Goal", "header-row"));
+        newPresentationValue.forEach(rv -> {
+            RowField field = createRow();
+            field.setValue(rv);
+            container.add(field);
+        });
+    }
+    
+    public boolean isValid() {
+        return goalFields.stream().allMatch(f -> !f.isInvalid());
     }
 
     private static class RowField extends AbstractCompositeField<HorizontalLayout, RowField, RewardVariable> implements
             HasValidation {
         private final NumberField goalField;
         private final Span goalSpan;
-        private final Select<String> goalOperatorSelect;
-        private RewardVariable currentRewardVariable;
-        private boolean readOnly = false;
+        private final Select<GoalConditionType> conditionType;
+        private Binding<RewardVariable, Double> goalValueBinding;
         private String goalOperatorSelectThemeNames = "goals small align-center";
+        
+        private Binder<RewardVariable> binder;
 
-        private RowField(boolean readOnly) {
+        private RowField() {
             super(null);
-            this.readOnly = readOnly;
             this.goalField = new NumberField();
             this.goalSpan = new Span();
-            this.goalOperatorSelect = new Select<>();
-            goalOperatorSelect.setItems("None", "\u2264", "\u2265");
-            goalOperatorSelect.setValue("None");
-            goalOperatorSelect.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
-            goalOperatorSelect.addValueChangeListener(event -> {
-                setNumberFieldVisibility();
-            });
-            getContent().add(goalOperatorSelect);
-            if (readOnly) {
-                getContent().add(goalSpan);
-            } else {
-                goalField.addClassName("goal-field");
-                goalField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
-                goalField.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
-                goalField.addValueChangeListener(e -> {
-                });
-                getContent().add(goalField);
-                setNumberFieldVisibility();
-            }
+            this.conditionType = new Select<>();
+
+            createLayout();
+            initBinder();
+            conditionType.addValueChangeListener(event -> setNumberFieldVisibility());
+            setNumberFieldVisibility();
+        }
+        
+        private void createLayout() {
+            conditionType.setItems(GoalConditionType.LESS_THAN_OR_EQUAL, GoalConditionType.GREATER_THAN_OR_EQUAL);
+            conditionType.setItemLabelGenerator(type -> type != null ? type.toString() : "None");
+            conditionType.setEmptySelectionAllowed(true);
+            conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
+            getContent().add(conditionType);
+            getContent().add(goalSpan);
+            goalSpan.setVisible(false);
+            goalField.addClassName("goal-field");
+            goalField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+            goalField.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
+            getContent().add(goalField);
             getContent().setWidthFull();
             GuiUtils.removeMarginsPaddingAndSpacing(getContent());
         }
         
+        private void initBinder() {
+            binder = new Binder<>();
+            binder.bind(conditionType, RewardVariable::getGoalConditionTypeEnum, RewardVariable::setGoalConditionTypeEnum);
+            goalValueBinding = binder.forField(goalField).asRequired("Enter a value for goal").bind(RewardVariable::getGoalValue, RewardVariable::setGoalValue);
+        }
+        
         private void setNumberFieldVisibility() {
-            Boolean goalFieldUsable = !goalOperatorSelect.getValue().equals("None");
-            if (goalFieldUsable) {
-                goalOperatorSelect.getElement().setAttribute("theme", goalOperatorSelectThemeNames+" not-none");
+            if (conditionType.getValue() != null) {
+                conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames+" not-none");
             } else {
-                goalOperatorSelect.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
+                conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
             }
-            goalField.setVisible(goalFieldUsable);
-            goalField.setEnabled(goalFieldUsable);
+            goalValueBinding.setAsRequiredEnabled(conditionType.getValue() != null);
+            goalField.setVisible(conditionType.getValue() != null);
+            goalField.setEnabled(conditionType.getValue() != null);
         }
 
         @Override
         public RewardVariable getValue() {
-            Double goalValue = goalField.getValue();
-            Boolean goalIsLargerThanOrEqualTo = goalOperatorSelect.getValue() == "\u2265";
-            currentRewardVariable.setGoalValue(goalValue);
-            currentRewardVariable.setGoalIsLargerThanOrEqualTo(goalIsLargerThanOrEqualTo);
-            return currentRewardVariable;
+            return binder.getBean();
         }
 
         @Override
         protected void setPresentationValue(RewardVariable newPresentationValue) {
-            Double goalValue = newPresentationValue.getGoalValue();
-            this.currentRewardVariable = newPresentationValue;
-            if (goalValue != null) {
-                if (readOnly) {
-                    goalSpan.setText(""+goalValue);
-                } else {
-                    goalField.setValue(goalValue);
-                }
-            }
+            binder.setBean(newPresentationValue);
+            goalSpan.setText(newPresentationValue.getGoalValue() == null ? "" : newPresentationValue.getGoalValue().toString());
         }
 
         @Override
@@ -156,7 +155,13 @@ public class GoalsTable extends CustomField<List<RewardVariable>> implements Has
 
         @Override
         public boolean isInvalid() {
-            return goalField.isInvalid();
+            return !binder.isValid();
+        }
+        
+        @Override
+        public void setReadOnly(boolean readOnly) {
+            goalSpan.setVisible(readOnly);
+            goalField.setVisible(!readOnly);
         }
     }
 }
