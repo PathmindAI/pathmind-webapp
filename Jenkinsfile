@@ -13,9 +13,9 @@ def icon = ":heavy_check_mark:"
 /*
     Build a docker image
 */
-def buildDockerImage(image_name, dockerfile) {
+def buildDockerImage(image_name, dockerfile, basedir) {
     echo "Building the pathmind Docker Image"
-    sh "docker build -t ${image_name} -f ${WORKSPACE}/${Dockerfile} ${WORKSPACE}/"
+    sh "docker build -t ${image_name} -f ${basedir}/${Dockerfile} ${basedir}/"
 }
 
 /*
@@ -138,18 +138,18 @@ pipeline {
             parallel {
                 stage('Build pathmind image') {
                     steps {
-                        buildDockerImage("base", "Dockerfile-cache")
-                        buildDockerImage("${IMAGE_NAME}", "Dockerfile")
+                        buildDockerImage("base", "Dockerfile-cache", "${WORKSPACE}")
+                        buildDockerImage("${IMAGE_NAME}", "Dockerfile", "${WORKSPACE}")
                     }
                 }
                 stage('Build trainer image') {
                     steps {
-                        buildDockerImage("trainer", "Dockerfile")
+                        buildDockerImage("trainer", "Dockerfile", "${WORKSPACE}/infra/images/trainer/")
                     }
                 }
                 stage('Build rl_training image') {
                     steps {
-                        buildDockerImage("rl_training", "Dockerfile")
+                        buildDockerImage("rl_training", "Dockerfile", "${WORKSPACE}/infra/images/rl_training/")
                     }
                 }
             }
