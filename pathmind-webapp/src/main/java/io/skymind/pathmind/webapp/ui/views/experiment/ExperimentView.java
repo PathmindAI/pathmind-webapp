@@ -4,7 +4,6 @@ import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -17,15 +16,16 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.data.TrainingError;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
-import io.skymind.pathmind.shared.utils.MetricsRawUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
-import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
@@ -39,7 +39,6 @@ import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.CodeViewer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.webapp.ui.components.SparkLine;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
@@ -50,25 +49,27 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
+import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
-import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
+import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.*;
 
@@ -91,17 +92,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Policy policy;
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
-    private List<Double> simulationMetrics = new ArrayList<>();
-    private List<double[]> sparklinesData = new ArrayList<>();
-    private List<String> uncertainty = new ArrayList<>();
-    private Boolean showSimulationMetrics;
 
     private UserCaps userCaps;
 
     private HorizontalLayout middlePanel;
-    private HorizontalLayout simulationMetricsWrapper;
-    private VerticalLayout metricsWrapper;
-    private VerticalLayout sparklinesWrapper;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private TagLabel archivedLabel;
     private Span panelTitle;
@@ -112,8 +106,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private PolicyChartPanel policyChartPanel;
     private ExperimentsNavBar experimentsNavbar;
     private NotesField notesField;
-    private Span reasonWhyTheTrainingStoppedLabel;
-    private RewardVariablesTable rewardVariablesTable;
+    private StoppedTrainingNotification stoppedTrainingNotification;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -189,11 +182,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         Span modelNeedToBeUpdatedLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
         modelNeedToBeUpdatedLabel.getStyle().set("margin-top", "2px");
 
-	    reasonWhyTheTrainingStoppedLabel = LabelFactory.createLabel("", "reason-why-the-training-stopped");
+        stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
         VerticalLayout experimentContent = WrapperUtils.wrapWidthFullVertical(
                 WrapperUtils.wrapWidthFullHorizontal(panelTitle, archivedLabel, trainingStatusDetailsPanel, getButtonsWrapper()),
-                reasonWhyTheTrainingStoppedLabel,
+                stoppedTrainingNotification,
                 modelNeedToBeUpdatedLabel,
                 middlePanel,
                 getBottomPanel());
@@ -211,111 +204,19 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
             LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
         );
-        showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
-        simulationMetricsWrapper = getSimulationMetricsTable();
+
+        boolean showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
+        SimulationMetricsPanel simulationMetricsPanel = new SimulationMetricsPanel(experiment, showSimulationMetrics, rewardVariables, () -> getUI());
         String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
+
         rewardVariablesGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-            LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsWrapper
+            LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
         );
 
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
         middlePanel.add(rewardVariablesGroup, rewardFunctionGroup);
         middlePanel.addClassName("middle-panel");
         middlePanel.setPadding(false);
-    }
-
-    private HorizontalLayout getSimulationMetricsTable() {
-        HorizontalLayout tableWrapper = new HorizontalLayout();
-        tableWrapper.setSpacing(false);
-        tableWrapper.addClassName("simulation-metrics-table-wrapper");
-
-        rewardVariablesTable = new RewardVariablesTable();
-        rewardVariablesTable.setCodeEditorMode();
-        rewardVariablesTable.setCompactMode();
-        rewardVariablesTable.setSizeFull();
-        tableWrapper.add(rewardVariablesTable);
-
-        if (showSimulationMetrics) {
-            metricsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-            metricsWrapper.addClassName("metrics-wrapper");
-            sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-            sparklinesWrapper.addClassName("sparklines-wrapper");
-
-            updateSimulationMetrics();
-            tableWrapper.add(metricsWrapper, sparklinesWrapper);
-        }
-
-        return tableWrapper;
-    }
-
-    private void updateSimulationMetrics() {
-        metricsWrapper.removeAll();
-        sparklinesWrapper.removeAll();
-
-        updateSimulationMetricsData();
-
-        if (simulationMetrics.size() > 0) {
-            Div metricsHeader = new Div(new Span("Value"), new SimulationMetricsInfoLink());
-            metricsHeader.addClassName("header");
-            metricsWrapper.add(metricsHeader);
-
-            Div sparklineHeader = new Div(new Span("Overview"), new SimulationMetricsInfoLink());
-            sparklineHeader.addClassName("header");
-            sparklinesWrapper.add(sparklineHeader);
-        }
-
-        IntStream.range(0, simulationMetrics.size())
-                .forEach(idx -> {
-                    SparkLine sparkLine = new SparkLine();
-                    sparkLine.setSparkLine(sparklinesData.get(idx), idx);
-                    sparklinesWrapper.add(sparkLine);
-                    if (uncertainty != null && !uncertainty.isEmpty()) {
-                        metricsWrapper.add(new Span(uncertainty.get(idx)));
-                    } else {
-                        metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(simulationMetrics.get(idx))));
-                    }
-                });
-    }
-
-    private void updateSimulationMetricsData() {
-        List<Metrics> metricsList = policy == null ? null : policy.getMetrics();
-        sparklinesData.clear();
-        simulationMetrics.clear();
-        uncertainty.clear();
-
-        if (metricsList != null && metricsList.size() > 0) {
-            // set the last metrics
-            Metrics lastMetrics = metricsList.get(metricsList.size() - 1);
-            lastMetrics.getMetricsThisIter().stream()
-                .forEach(metricsThisIter -> simulationMetrics.add(metricsThisIter.getMean()));
-
-            // index, metrics list
-            Map<Integer, List<Double>> sparkLineMap = new HashMap<>();
-            metricsList.stream().forEach(metrics ->
-                metrics.getMetricsThisIter().forEach(mIter -> {
-                    int index = mIter.getIndex();
-
-                    List<Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new ArrayList<>();
-                    data.add(mIter.getMean());
-                    sparkLineMap.put(index, data);
-                })
-            );
-
-            // convert List<Double> to double[] because sparLine needs an array of primitive types
-            sparkLineMap.entrySet().stream()
-                .map(e -> e.getValue().stream().mapToDouble(Double::doubleValue).toArray())
-                .forEach(arr -> sparklinesData.add(arr));
-        }
-
-        List<MetricsRaw> metricsRawList = policy == null ? null : policy.getMetricsRaws();
-        if (metricsRawList != null && metricsRawList.size() > 0) {
-            Collections.sort(metricsRawList, Comparator.comparingInt(MetricsRaw::getIteration));
-            Map<Integer, List<Double>> uncertaintyMap = MetricsRawUtils.toIndexAndMetricRawData(metricsRawList);
-
-            uncertainty = uncertaintyMap.values().stream()
-                .map(list -> PathmindNumberUtils.calculateUncertainty(list))
-                .collect(Collectors.toList());
-        }
     }
 
     private Div getButtonsWrapper() {
@@ -470,7 +371,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         modelId = experiment.getModelId();
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-        policy = selectBestPolicy(experiment.getPolicies());
+        policy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
@@ -495,10 +396,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
             experimentsNavbar.setAllowNewExperimentCreation(false);
         }
-        rewardVariablesTable.setRewardVariables(rewardVariables);
-        if (showSimulationMetrics) {
-            updateSimulationMetrics();
-        }
         policyChartPanel.setExperiment(experiment, policy);
         updateDetailsForExperiment();
     }
@@ -509,38 +406,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         policyChartPanel.setVisible(trainingStatus != RunStatus.Starting);
     }
 
-    private Policy selectBestPolicy(List<Policy> policies) {
-        return policies.stream()
-                .filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
-                .max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration))
-                .orElse(null);
-    }
-
     private void updateUIForError(TrainingError error, String errorText) {
-        showTheReasonWhyTheTrainingStopped(errorText, ERROR_LABEL, false);
+        stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(errorText, ERROR_LABEL, false);
 
         boolean allowRestart = error.isRestartable() && ModelUtils.isValidModel(experiment.getModel());
         restartTraining.setVisible(allowRestart);
         restartTraining.setEnabled(allowRestart);
     }
 
-    private void showTheReasonWhyTheTrainingStopped(String text, String labelClass, boolean showEarlyStoppingLink) {
-        reasonWhyTheTrainingStoppedLabel.removeClassNames(SUCCESS_LABEL, WARNING_LABEL, ERROR_LABEL);
-        reasonWhyTheTrainingStoppedLabel.addClassName(labelClass);
-        reasonWhyTheTrainingStoppedLabel.setText(text);
-        if (showEarlyStoppingLink) {
-            reasonWhyTheTrainingStoppedLabel.add(". See more info at ");
-            Anchor earlyStopping = new Anchor(earlyStoppingUrl, "Early Stopping");
-            earlyStopping.setTarget("_blank");
-            reasonWhyTheTrainingStoppedLabel.add(earlyStopping);
-            reasonWhyTheTrainingStoppedLabel.add(".");
-        }
-        reasonWhyTheTrainingStoppedLabel.setVisible(true);
-    }
-
     private void clearErrorState() {
-        reasonWhyTheTrainingStoppedLabel.setText(null);
-		reasonWhyTheTrainingStoppedLabel.setVisible(false);
+        stoppedTrainingNotification.clearErrorState();
         updateButtonEnablement();
     }
 
@@ -576,10 +451,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     .findAny()
                     .ifPresent(r -> {
                         if (StringUtils.isNotBlank(r.getSuccessMessage())) {
-                            this.showTheReasonWhyTheTrainingStopped(r.getSuccessMessage(), SUCCESS_LABEL, true);
+                            stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(r.getSuccessMessage(), SUCCESS_LABEL, true);
                         }
                         else {
-                            this.showTheReasonWhyTheTrainingStopped(r.getWarningMessage(), WARNING_LABEL, true);
+                            stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(r.getWarningMessage(), WARNING_LABEL, true);
                         }
                     });
         }
@@ -611,9 +486,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 PushUtils.push(getUI(), ui -> navigateToExperiment(ui, newSelectedExperiment));
             }
             else {
-                PushUtils.push(getUI(), ui ->  {
-                    selectExperiment(experiment);
-                });
+                PushUtils.push(getUI(), ui -> selectExperiment(experiment));
             }
         }
     }
@@ -634,16 +507,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 addOrUpdatePolicies(event.getPolicies());
 
                 // Calculate the best policy again
-                policy = selectBestPolicy(experiment.getPolicies());
+                policy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
                 PushUtils.push(getUI(), () -> {
                     if (policy != null) {
                         policyChartPanel.highlightPolicy(policy);
                     }
 
                     updateDetailsForExperiment();
-                    if (showSimulationMetrics && policy!= null && policy.getMetrics() != null && policy.getMetrics().size() > 0) {
-                        updateSimulationMetrics();
-                    }
                 });
             }
         }
