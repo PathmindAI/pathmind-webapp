@@ -418,6 +418,7 @@ background-color: var(--pm-gray-color-light);
 
 .model-view .model-reward-variables {
     max-height: 180px;
+    line-height: 1;
     color: var(--lumo-secondary-text-color);
     overflow-y: auto;
 }
