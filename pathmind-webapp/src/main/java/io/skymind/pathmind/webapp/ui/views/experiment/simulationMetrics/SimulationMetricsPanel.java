@@ -14,6 +14,7 @@ import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.SparkLine;
+import io.skymind.pathmind.webapp.ui.components.SparklineChart;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPolicyUpdateSubscriber;
@@ -118,7 +119,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
         IntStream.range(0, policy.getSimulationMetrics().size())
                 .forEach(idx -> {
-                    SparkLine sparkLine = new SparkLine();
+                    SparklineChart sparkLine = new SparklineChart();
                     sparkLine.setSparkLine(policy.getSparklinesData().get(idx), idx);
                     sparklinesWrapper.add(sparkLine);
                     if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {
