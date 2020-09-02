@@ -21,7 +21,7 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
 public class RewardVariablesPanel extends VerticalLayout
 {
-	private HorizontalLayout formPanel = new HorizontalLayout();
+	private HorizontalLayout formPanel = WrapperUtils.wrapWidthFullHorizontal();
     private RewardVariablesTable rewardVariablesTable;
     private GoalsTable goalsTable;
 
