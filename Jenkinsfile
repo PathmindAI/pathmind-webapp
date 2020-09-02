@@ -15,7 +15,7 @@ def icon = ":heavy_check_mark:"
 */
 def buildDockerImage(image_name, dockerfile, basedir) {
     echo "Building the pathmind Docker Image"
-    sh "docker build -t ${image_name} -f ${basedir}/${Dockerfile} ${basedir}/"
+    sh "docker build -t ${image_name} -f ${basedir}/${dockerfile} ${basedir}/"
 }
 
 /*
