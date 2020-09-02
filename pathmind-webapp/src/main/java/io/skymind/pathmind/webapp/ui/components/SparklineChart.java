@@ -8,6 +8,7 @@ import com.vaadin.flow.component.charts.model.Accessibility;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.Label;
 import com.vaadin.flow.component.charts.model.ListSeries;
+import com.vaadin.flow.component.charts.model.Marker;
 import com.vaadin.flow.component.charts.model.PlotLine;
 import com.vaadin.flow.component.charts.model.PlotOptionsSeries;
 import com.vaadin.flow.component.charts.model.Tooltip;
@@ -73,6 +74,7 @@ public class SparklineChart extends VerticalLayout{
         
         ListSeries series = new ListSeries(data);
         PlotOptionsSeries plotOptions = new PlotOptionsSeries();
+        plotOptions.setMarker(new Marker(false));
         plotOptions.setColorIndex(index);
 
         avg.ifPresent(val -> {
