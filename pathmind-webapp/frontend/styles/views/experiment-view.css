@@ -87,6 +87,9 @@
 .experiment-view .reward-variables-table span:first-child {
     display: none;
 }
+.experiment-view .reward-variables-table span:last-child {
+    display: none;
+}
 .experiment-view .reward-variable-name-field {
     height: 1.75rem;
     border-radius: 3px;
