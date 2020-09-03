@@ -128,7 +128,7 @@ public class UpdaterService {
     }
 
     private List<String> getValidExternalIdsIfCompleted(ProviderJobStatus providerJobStatus) {
-    	if (providerJobStatus.getRunStatus() == RunStatus.Completing || providerJobStatus.getRunStatus() == RunStatus.Completed) {
+    	if (RunStatus.isCompleting(providerJobStatus.getRunStatus())) {
     		return providerJobStatus.getExperimentState().getCheckpoints().stream()
     				.map(CheckPoint::getId)
     				.collect(Collectors.toList());
@@ -285,7 +285,7 @@ public class UpdaterService {
     private List<PolicyUpdateInfo> getPoliciesUpdateInfo(List<String> stoppedPoliciesNames, Long runId,
             String jobHandle, ProviderJobStatus providerJobStatus) {
         List<PolicyUpdateInfo> policiesInfo = new ArrayList<>();
-        if (providerJobStatus.getRunStatus() == RunStatus.Completing || providerJobStatus.getRunStatus() == RunStatus.Completed) {
+        if (RunStatus.isCompleting(providerJobStatus.getRunStatus())) {
             List<String> unfinishedPolicyIds = runDAO.unfinishedPolicyIds(runId);
             policiesInfo.addAll(
                     stoppedPoliciesNames

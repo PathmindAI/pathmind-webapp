@@ -248,8 +248,7 @@ public class RunDAO {
 
             updateRun(transactionCtx, run, providerJobStatus, policies);
 
-            if (providerJobStatus.getRunStatus() == RunStatus.Completing || providerJobStatus.getRunStatus() == RunStatus.Completed) {
-            	
+            if (RunStatus.isCompleting(providerJobStatus.getRunStatus())) {
             	policiesUpdateInfo.forEach(policyInfo -> {
             		Long policyId = PolicyRepository.getPolicyIdByRunIdAndExternalId(transactionCtx, run.getId(), policyInfo.getName());
             		PolicyRepository.setHasFileAndCheckPoint(transactionCtx, policyId, true, policyInfo.getCheckpointFileKey());
