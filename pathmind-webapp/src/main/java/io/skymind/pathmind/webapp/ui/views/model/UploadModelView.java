@@ -174,6 +174,13 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
     private void handleUploadALPClicked() {
+	    if (model.getAlpFile() != null && model.getAlpFile().length > 0) {
+	        modelService.saveModelAlp(model);
+        }
+	    else {
+	        // for the case we are resuming a model creation and we had already uploaded the alp file
+            modelService.removeModelAlp(model);
+        }
         setVisibleWizardPanel(modelDetailsWizardPanel);
     }
 

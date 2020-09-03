@@ -17,4 +17,9 @@ public interface ModelService {
     void updateDraftModel(Model model, String modelNotes);
     Experiment resumeModelCreation(Model model, String modelNotes);
     String buildModelPath(long modelId);
+    String buildModelAlpPath(long modelId);
+
+    void saveModelAlp(Model model);
+
+    void removeModelAlp(Model model);
 }

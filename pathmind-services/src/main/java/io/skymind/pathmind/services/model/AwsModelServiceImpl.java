@@ -16,6 +16,7 @@ import io.skymind.pathmind.shared.utils.ModelUtils;
 class AwsModelServiceImpl implements ModelService {
 
     public static final String MODEL_FILES = "model_file/";
+    private static final String MODEL_ALP_FILES = "model_alp_file/";
 
     private final ModelDAO modelDAO;
     private final AWSApiClient awsApiClient;
@@ -64,5 +65,21 @@ class AwsModelServiceImpl implements ModelService {
     @Override
     public String buildModelPath(long modelId) {
         return MODEL_FILES + modelId;
+    }
+
+    @Override
+    public String buildModelAlpPath(long modelId) {
+        return MODEL_ALP_FILES + modelId;
+    }
+
+    @Override
+    public void saveModelAlp(Model model) {
+        assert model.getAlpFile() != null && model.getAlpFile().length > 0;
+        awsApiClient.fileUpload(buildModelAlpPath(model.getId()), model.getAlpFile());
+    }
+
+    @Override
+    public void removeModelAlp(Model model) {
+        awsApiClient.fileDelete(buildModelAlpPath(model.getId()));
     }
 }
