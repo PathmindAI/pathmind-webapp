@@ -59,7 +59,7 @@ public class SparklineChart extends VerticalLayout{
         chart.getConfiguration().getyAxis().setStartOnTick(false);
         chart.getConfiguration().getyAxis().setEndOnTick(false);
         chart.getConfiguration().getyAxis().setTickPositions(new Number[0]);
-        chart.setHeight(WIDTH + "px");
+        chart.setWidth(WIDTH + "px");
         chart.setHeight(HEIGHT + "px");
     }
 
@@ -71,19 +71,19 @@ public class SparklineChart extends VerticalLayout{
         OptionalDouble min = data.stream().mapToDouble(Number::doubleValue).min();
         OptionalDouble max = data.stream().mapToDouble(Number::doubleValue).max();
 
-        double goal = rewardVariable.getGoalValue();
-
         double minVal = min.orElse(0);
         double maxVal = max.orElse(0);
-
-        if (minVal > goal) {
-            // if the value is equal to the goal value, the goal line doesn't show on the chart
-            minVal = goal;
-        }
-
-        if (maxVal < goal) {
-            // if the value is equal to the goal value, the goal line doesn't show on the chart
-            maxVal = goal;
+        
+        if (rewardVariable.getGoalValue() != null) {
+            if (minVal > rewardVariable.getGoalValue()) {
+                // if the value is equal to the goal value, the goal line doesn't show on the chart
+                minVal = rewardVariable.getGoalValue();
+            }
+            
+            if (maxVal < rewardVariable.getGoalValue()) {
+                // if the value is equal to the goal value, the goal line doesn't show on the chart
+                maxVal = rewardVariable.getGoalValue();
+            }
         }
         
         chart.getConfiguration().getyAxis().setMin(minVal);
@@ -97,11 +97,13 @@ public class SparklineChart extends VerticalLayout{
         series.setPlotOptions(plotOptions);
         chart.getConfiguration().addSeries(series);
 
-        PlotLine target = new PlotLine(goal);
-        target.setZIndex(9999);
-        target.setClassName("target");
-        target.setValue(goal);
-        chart.getConfiguration().getyAxis().addPlotLine(target);
+        if (rewardVariable.getGoalValue() != null) {
+            PlotLine target = new PlotLine(rewardVariable.getGoalValue());
+            target.setZIndex(9999);
+            target.setClassName("target");
+            target.setValue(rewardVariable.getGoalValue());
+            chart.getConfiguration().getyAxis().addPlotLine(target);
+        }
 
         chart.drawChart(true);
     }
