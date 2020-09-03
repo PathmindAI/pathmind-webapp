@@ -227,7 +227,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private void handleRewardVariablesClicked() {
 	    if (rewardVariablesPanel.isInputValueValid()) {
-	        rewardVariablesDAO.updateModelRewardVariables(modelId, rewardVariables);
+	        rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
 	        saveAndNavigateToNewExperiment();
 	    }
     }
