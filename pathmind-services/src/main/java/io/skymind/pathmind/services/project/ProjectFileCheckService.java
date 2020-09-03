@@ -19,12 +19,12 @@ public class ProjectFileCheckService {
 
     private final ExecutorService checkerExecutorService;
     private final ModelAnalyzerApiClient client;
-    private final String convertModelsToSupportRewardVariablesURL;
+    private final String convertModelsToSupportLastestVersionURL;
 
-    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportRewardVariablesURL) {
+    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportLastestVersionURL) {
         this.checkerExecutorService = checkerExecutorService;
         this.client = client;
-        this.convertModelsToSupportRewardVariablesURL = convertModelsToSupportRewardVariablesURL;
+        this.convertModelsToSupportLastestVersionURL = convertModelsToSupportLastestVersionURL;
     }
 
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
@@ -105,10 +105,10 @@ public class ProjectFileCheckService {
     private String getArticleUrlForInvalidReason(InvalidModelType invalidModelType) {
         switch (invalidModelType) {
             case OLD_REWARD_VARIABLES :
-                return convertModelsToSupportRewardVariablesURL;
+                return convertModelsToSupportLastestVersionURL;
             default :
                 // Currently only invalid model reason is reward variables 
-                return convertModelsToSupportRewardVariablesURL;
+                return convertModelsToSupportLastestVersionURL;
         }
     }
 }
