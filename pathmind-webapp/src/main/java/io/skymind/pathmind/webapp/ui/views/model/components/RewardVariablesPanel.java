@@ -23,11 +23,10 @@ public class RewardVariablesPanel extends VerticalLayout
 {
 	private HorizontalLayout formPanel = WrapperUtils.wrapWidthFullHorizontal();
     private RewardVariablesTable rewardVariablesTable;
-    private GoalsTable goalsTable;
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
-	{
+	public RewardVariablesPanel(){
 		setupForm();
 		nextStepButton.setIconAfterText(true);
 		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -47,25 +46,23 @@ public class RewardVariablesPanel extends VerticalLayout
 		setPadding(false);
 		setSpacing(false);
 	}
-
+	
 	public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
 		nextStepButton.addClickListener(listener);
 	}
 
 	private void setupForm() {
         rewardVariablesTable = new RewardVariablesTable();
-        goalsTable = new GoalsTable();
 		formPanel.setPadding(false);
         formPanel.add(rewardVariablesTable);
-        formPanel.add(goalsTable);
 	}
 
 	public void setupRewardVariables(List<RewardVariable> rewardVariables) {
 	    rewardVariablesTable.setRewardVariables(rewardVariables);
-	    goalsTable.setValue(rewardVariables);
+	    rewardVariablesTable.makeEditable();
     }
 	
-	public boolean isInputValueValid() {
-        return goalsTable.isValid();
+	public boolean canSaveChanges() {
+        return rewardVariablesTable.canSaveChanges();
     }
 }
