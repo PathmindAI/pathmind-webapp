@@ -1,5 +1,13 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
+import io.skymind.pathmind.shared.constants.ObservationDataType;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.utils.ModelUtils;
+import io.skymind.pathmind.shared.utils.VariableParserUtils;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -17,14 +25,8 @@ import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
 import io.skymind.pathmind.shared.constants.ModelType;
-import io.skymind.pathmind.shared.constants.ObservationDataType;
 import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.shared.utils.ModelUtils;
-import io.skymind.pathmind.shared.utils.VariableParserUtils;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
-import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
@@ -38,6 +40,8 @@ import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
+import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel;
+
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -88,6 +92,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private Binder<Model> modelBinder;
 
 	private UploadModelWizardPanel uploadModelWizardPanel;
+	private UploadALPWizardPanel uploadALPWizardPanel;
 	private ModelDetailsWizardPanel modelDetailsWizardPanel;
 	private RewardVariablesPanel rewardVariablesPanel;
 
@@ -111,6 +116,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		modelBinder = new Binder<>(Model.class);
 
 		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int)DataSize.parse(maxFileSizeAsStr).toBytes());
+		// TODO: add specific support to ALP size instead of using the same size we use for model, e.g. 10 MB
+        // TODO: add isValidModel support
+        uploadALPWizardPanel = new UploadALPWizardPanel(model, uploadMode, (int)DataSize.parse(maxFileSizeAsStr).toBytes());
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload(), ModelUtils.isValidModel(model));
 		rewardVariablesPanel = new RewardVariablesPanel();
 
@@ -118,11 +126,12 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 		wizardPanels = Arrays.asList(
 				uploadModelWizardPanel,
+				uploadALPWizardPanel,
 				modelDetailsWizardPanel,
 				rewardVariablesPanel);
 
 		if (isResumeUpload()) {
-			setVisibleWizardPanel(modelDetailsWizardPanel);
+			setVisibleWizardPanel(uploadALPWizardPanel);
 		}
 		else {
 			setVisibleWizardPanel(uploadModelWizardPanel);
@@ -130,6 +139,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 		uploadModelWizardPanel.addFileUploadCompletedListener(() -> handleUploadWizardClicked());
 		uploadModelWizardPanel.addFileUploadFailedListener(errors -> handleUploadFailed(errors));
+		uploadALPWizardPanel.addButtonClickListener(click -> handleUploadALPClicked());
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleModelDetailsClicked());
 		rewardVariablesPanel.addButtonClickListener(click -> handleRewardVariablesClicked());
 
@@ -151,6 +161,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         if (isResumeUpload() && !ModelUtils.isValidModel(model)) {
             sections.add(invalidModelErrorLabel);
         }
+        sections.add(uploadALPWizardPanel);
         sections.add(modelDetailsWizardPanel);
         sections.add(rewardVariablesPanel);
         VerticalLayout wrapper = new VerticalLayout(
@@ -161,6 +172,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		addClassName("upload-model-view");
 		return wrapper;
 	}
+
+    private void handleUploadALPClicked() {
+        setVisibleWizardPanel(modelDetailsWizardPanel);
+    }
 
     private void handleUploadFailed(Collection<String> errors) {
         uploadModelWizardPanel.showFileCheckPanel();
@@ -284,7 +299,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	public void fileSuccessfullyVerified(FileCheckResult result) {
 		getUI().ifPresent(ui -> PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
-			setVisibleWizardPanel(modelDetailsWizardPanel);
+			setVisibleWizardPanel(uploadALPWizardPanel);
 			List<Observation> observationList = new ArrayList<>();
 			if (result != null) {
 			    AnylogicFileCheckResult alResult = AnylogicFileCheckResult.class.cast(result);
