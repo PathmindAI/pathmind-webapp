@@ -38,18 +38,17 @@ Feature: Wizard page
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
     Then Check Reward Function default value <>
-#  TO DO
-#  Scenario: Check tuple article link on model upload step
-#    Given Login to the pathmind
-#    When Open projects page
-#    When Click create new project button
-#    When Input name of the new project AutotestProject and click Create project button
-#    When Upload model problematic_models/NonTupleModel.zip
-#    Then Wait for text "Checking your model" to disappear
-#    When Click in 'this article' button
-#    When Open tab 1
-#    Then Check page url is https://help.pathmind.com/en/articles/4219921-converting-models-to-support-tuples
-#    Then Check Converting models to support Tuples page elements
+
+  Scenario: Check update model article link on model upload step
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model problematic_models/NonTupleModel.zip
+    Then Wait for text "Checking your model" to disappear
+    When Click in 'this article' button
+    When Open tab 1
+    Then Check page url is https://help.pathmind.com/en/articles/4408884-how-to-update-your-model-to-the-latest-version
 
   Scenario: Check wizard Reward Variables not required
     Given Login to the pathmind
