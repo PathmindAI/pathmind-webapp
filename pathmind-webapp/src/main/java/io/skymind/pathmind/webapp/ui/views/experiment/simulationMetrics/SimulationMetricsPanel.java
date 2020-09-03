@@ -92,6 +92,9 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
     public void updateSimulationMetrics(Policy policy) {
 
+        // Needed to convert the raw metrics to a format the UI can use.
+        PolicyUtils.updateSimulationMetricsData(policy);
+
         metricsWrapper.removeAll();
         sparklinesWrapper.removeAll();
 
