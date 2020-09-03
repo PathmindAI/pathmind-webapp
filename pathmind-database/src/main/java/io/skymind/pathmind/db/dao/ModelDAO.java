@@ -31,6 +31,10 @@ public class ModelDAO {
 	public Optional<Model> getModel(long modelId) {
     	return Optional.ofNullable(ModelRepository.getModel(ctx, modelId));
 	}
+	
+	public Optional<Model> getPrevModelForProject(long projectId, long currentModelId) {
+	    return Optional.ofNullable(ModelRepository.getLastModelForProject(ctx, projectId, currentModelId));
+	}
 
 	public void addDraftModelToProject(Model model, long projectId, String userNotes)
 	{

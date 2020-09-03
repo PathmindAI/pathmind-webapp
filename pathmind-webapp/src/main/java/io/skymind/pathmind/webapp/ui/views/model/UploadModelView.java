@@ -31,6 +31,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.WildcardParameter;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 
+import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
@@ -74,6 +75,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	@Autowired
 	private ModelService modelService;
 
+	@Autowired
+	private ModelDAO modelDAO;
+	
 	@Autowired
 	private RewardVariableDAO rewardVariablesDAO;
 
@@ -308,13 +312,29 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");
+			copyGoalsFromPreviousModel(rewardVariables, model.getProjectId(), model.getId());
 			rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
 			observationDAO.updateModelObservations(model.getId(), observationList);
 			segmentIntegrator.modelImported(true);
 		}));
 	}
 
-	private List<Observation> convertToObservations(List<String> observationNames) {
+	private void copyGoalsFromPreviousModel(List<RewardVariable> rewardVariables, long projectId, long currentModelId) {
+        Optional<Model> prevModel = modelDAO.getPrevModelForProject(projectId, currentModelId);
+        prevModel.ifPresent(pm -> {
+            List<RewardVariable> previousRewardVariables = rewardVariablesDAO.getRewardVariablesForModel(pm.getId());
+            rewardVariables.forEach(rv -> {
+                Optional<RewardVariable> rvFromPrevModel = previousRewardVariables.stream().filter(prv -> prv.getName().equals(rv.getName())).findAny();
+                rvFromPrevModel.ifPresent(prv -> {
+                    rv.setGoalConditionType(prv.getGoalConditionType());
+                    rv.setGoalValue(prv.getGoalValue());
+                });
+            });
+        });
+        
+    }
+
+    private List<Observation> convertToObservations(List<String> observationNames) {
         Map<String, Observation> auxObservations = new LinkedHashMap<>();
         for (String name: observationNames) {
             if (VariableParserUtils.isArray(name)) {
