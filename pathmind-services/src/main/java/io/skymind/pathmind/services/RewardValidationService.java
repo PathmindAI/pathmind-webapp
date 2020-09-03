@@ -65,6 +65,25 @@ public class RewardValidationService {
         return "package pathmind;\n" +
                 "\n" +
                 "public class Environment {\n" +
+                "    \n" +
+                "    public boolean isSkip(long agentId) {\n" +
+                "        return false;\n" +
+                "    }\n" +
+                "    \n" +
+                "    public boolean isDone(long agentId) {\n" +
+                "        return false;\n" +
+                "    }\n" +
+                "    \n" +
+                "    public long getNumberOfAgents() {\n" +
+                "        return 0;\n" +
+                "    }\n" +
+                "    \n" +
+                "    public void step() {\n" +
+                "    }\n" +
+                "    \n" +
+                "    public double[] test() {\n" +
+                "        return null;\n" +
+                "    }\n" +
                 "    public float step(long action) {\n" +
                 "        double reward = 0;\n" +
                 "        Model before = new Model();\n" +
