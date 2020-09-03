@@ -37,11 +37,13 @@ public class SimulationMetricsPanel extends HorizontalLayout {
     private boolean showSimulationMetrics;
 
     private Experiment experiment;
+    private List<RewardVariable> rewardVariables;
 
     public SimulationMetricsPanel(Experiment experiment, boolean showSimulationMetrics, List<RewardVariable> rewardVariables, Supplier<Optional<UI>> getUISupplier) {
 
         super();
         this.experiment = experiment;
+        this.rewardVariables= rewardVariables;
         this.showSimulationMetrics = showSimulationMetrics;
         this.getUISupplier = getUISupplier;
 
@@ -120,7 +122,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         IntStream.range(0, policy.getSimulationMetrics().size())
                 .forEach(idx -> {
                     SparklineChart sparkLine = new SparklineChart();
-                    sparkLine.setSparkLine(policy.getSparklinesData().get(idx), idx);
+                    sparkLine.setSparkLine(policy.getSparklinesData().get(idx), idx, rewardVariables.get(idx));
                     sparklinesWrapper.add(sparkLine);
                     if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {
                         metricsWrapper.add(new Span(policy.getUncertainty().get(idx)));
