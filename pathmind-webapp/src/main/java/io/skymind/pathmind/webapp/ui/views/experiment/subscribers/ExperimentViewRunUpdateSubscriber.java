@@ -7,11 +7,13 @@ import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@Slf4j
 public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
 
     private List<Experiment> experiments;

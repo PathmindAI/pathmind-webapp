@@ -152,12 +152,12 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
             if (experimentState != null && experimentState.getCheckpoints() != null && (experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L))) {
                 // this is ugly, yes, but it is better to not rely on changing the state of a static object
-                ProviderJobStatus completedStatus = new ProviderJobStatus(ProviderJobStatus.COMPLETED.getRunStatus(), new ArrayList<>());
-                completedStatus.addExperimentState(experimentState);
+                ProviderJobStatus completingStatus = new ProviderJobStatus(ProviderJobStatus.COMPLETING.getRunStatus(), new ArrayList<>());
+                completingStatus.addExperimentState(experimentState);
                 // let's follow what is being done with rlib and add a prefix to the message and add it to description
-                getSuccessMessage(jobHandle).ifPresent(m -> completedStatus.getDescription().add(SUCCESS_MESSAGE_PREFIX + m));
-                getWarningMessage(jobHandle).ifPresent(m -> completedStatus.getDescription().add(WARNING_MESSAGE_PREFIX + m));
-                return completedStatus;
+                getSuccessMessage(jobHandle).ifPresent(m -> completingStatus.getDescription().add(SUCCESS_MESSAGE_PREFIX + m));
+                getWarningMessage(jobHandle).ifPresent(m -> completingStatus.getDescription().add(WARNING_MESSAGE_PREFIX + m));
+                return completingStatus;
             }
 
             return ProviderJobStatus.RUNNING.addExperimentState(experimentState);

@@ -110,7 +110,7 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
     private Component createStatusIcon(RunStatus status) {
         if(ExperimentUtils.isDraftRunType(experiment))
             return new Icon(VaadinIcon.PENCIL);
-        if (status.getValue() <= RunStatus.Running.getValue() || status == RunStatus.Restarting) {
+        if (status.getValue() <= RunStatus.Running.getValue() || status == RunStatus.Restarting || status == RunStatus.Completing) {
             Div loadingSpinner = new Div();
             loadingSpinner.addClassName("icon-loading-spinner");
             return loadingSpinner;

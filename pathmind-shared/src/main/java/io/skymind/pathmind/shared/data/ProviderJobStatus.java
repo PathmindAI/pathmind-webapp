@@ -26,6 +26,7 @@ public class ProviderJobStatus {
 	public static ProviderJobStatus RUNNING = new ProviderJobStatus(Running);
 	public static ProviderJobStatus STARTING = new ProviderJobStatus(Starting);
 	public static ProviderJobStatus STOPPING = new ProviderJobStatus(Stopping);
+	public static ProviderJobStatus COMPLETING = new ProviderJobStatus(Completing);
 
 	public ProviderJobStatus(RunStatus runStatus) {
 		this(runStatus, Collections.emptyList());

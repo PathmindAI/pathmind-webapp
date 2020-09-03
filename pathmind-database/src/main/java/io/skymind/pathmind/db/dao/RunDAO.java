@@ -248,7 +248,7 @@ public class RunDAO {
 
             updateRun(transactionCtx, run, providerJobStatus, policies);
 
-            if (providerJobStatus.getRunStatus() == RunStatus.Completed) {
+            if (providerJobStatus.getRunStatus() == RunStatus.Completing || providerJobStatus.getRunStatus() == RunStatus.Completed) {
             	
             	policiesUpdateInfo.forEach(policyInfo -> {
             		Long policyId = PolicyRepository.getPolicyIdByRunIdAndExternalId(transactionCtx, run.getId(), policyInfo.getName());
@@ -291,5 +291,9 @@ public class RunDAO {
 
     public UserMetrics getRunUsageDataForUser(long userId) {
         return RunRepository.getRunUsageDataForUser(ctx, userId);
+    }
+
+    public List<Policy> getPolicies(long runId) {
+        return PolicyRepository.getPoliciesForRun(ctx, runId);
     }
 }
