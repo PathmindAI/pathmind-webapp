@@ -41,6 +41,9 @@
 .reward-variables-table.compact .reward-variable-name-field {
     display: none;
 }
+.reward-variables-table.compact .goal-display-span {
+    display: none;
+}
 .reward-variables-table:not(.compact) .reward-variable-index {
     box-sizing: border-box;
     flex: 0 0 2rem;
@@ -127,4 +130,9 @@
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 1):not(.header-row) span {
     color: #000;
     background-color: var(--variable-color-9);
+}
+.goal-fields-wrapper {
+	align-items: baseline !important;
+	align-self: center;
+	margin-left: var(--lumo-space-m);
 }
