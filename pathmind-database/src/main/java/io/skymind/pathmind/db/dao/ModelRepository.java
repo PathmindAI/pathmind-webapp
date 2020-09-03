@@ -1,6 +1,7 @@
 package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.db.jooq.tables.records.ModelRecord;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import org.jooq.DSLContext;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
 import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
 
@@ -98,5 +100,14 @@ class ModelRepository
                 .leftJoin(MODEL).on(MODEL.PROJECT_ID.eq(PROJECT.ID))
                 .where(MODEL.ID.eq(modelId))
                 .fetchOne(PROJECT.PATHMIND_USER_ID);
+    }
+    
+    protected static Model getLastModelForProject(DSLContext ctx, long projectId, long currentModelId) {
+        return ctx.select(MODEL.asterisk())
+                .from(MODEL)
+                .where(MODEL.PROJECT_ID.eq(projectId).and(MODEL.ID.lessThan(currentModelId)))
+                .orderBy(MODEL.ID.desc())
+                .limit(1)
+                .fetchAnyInto(Model.class);
     }
 }
