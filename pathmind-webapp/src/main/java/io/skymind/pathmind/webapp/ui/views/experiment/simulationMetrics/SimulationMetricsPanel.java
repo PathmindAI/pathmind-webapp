@@ -136,13 +136,17 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                     });
                     sparklinesWrapper.add(sparkLine);
                     if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {
-                        metricsWrapper.add(new Span(policy.getUncertainty().get(idx)));
-                    } else {
-                        String metricValueWithUncertainty = PathmindNumberUtils.formatNumber(policy.getSimulationMetrics().get(idx));
+                        String metricValueWithUncertainty = policy.getUncertainty().get(idx);
                         Span metricSpan = new Span(metricValueWithUncertainty);
-                        Boolean reachedGoal = compareGoalAndActualValue(rewardVariables.get(idx), metricValueWithUncertainty);
-                        String metricSpanColorClass = reachedGoal ? "success-text" : "failure-text";
-                        metricSpan.addClassName(metricSpanColorClass);
+                        if (rewardVariables.get(idx).getGoalConditionTypeEnum() != null){
+                            Boolean reachedGoal = compareGoalAndActualValue(rewardVariables.get(idx), metricValueWithUncertainty);
+                            String metricSpanColorClass = reachedGoal ? "success-text" : "failure-text";
+                            metricSpan.addClassName(metricSpanColorClass);
+                        }
+                        metricsWrapper.add(metricSpan);
+                    } else {
+                        String metricValueWithoutUncertainty = PathmindNumberUtils.formatNumber(policy.getSimulationMetrics().get(idx));
+                        Span metricSpan = new Span(metricValueWithoutUncertainty);
                         metricsWrapper.add(metricSpan);
                     }
                 });
