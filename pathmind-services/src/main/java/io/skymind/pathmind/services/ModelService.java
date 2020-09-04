@@ -22,4 +22,7 @@ public interface ModelService {
     void saveModelAlp(Model model);
 
     void removeModelAlp(Model model);
+
+    boolean hasModelAlp(long modelId);
+    Optional<byte[]> getModelAlp(long modelId);
 }

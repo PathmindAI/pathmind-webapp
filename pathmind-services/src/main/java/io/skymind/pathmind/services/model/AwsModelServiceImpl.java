@@ -82,4 +82,14 @@ class AwsModelServiceImpl implements ModelService {
     public void removeModelAlp(Model model) {
         awsApiClient.fileDelete(buildModelAlpPath(model.getId()));
     }
+
+    @Override
+    public boolean hasModelAlp(long modelId) {
+        return awsApiClient.fileExists(buildModelAlpPath(modelId));
+    }
+
+    @Override
+    public Optional<byte[]> getModelAlp(long modelId) {
+        return Optional.ofNullable(awsApiClient.fileContents(buildModelAlpPath(modelId), true));
+    }
 }
