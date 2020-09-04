@@ -85,6 +85,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSizeAsStr;
 
+    @Value(("${pathhmind.model.apl.max-size}"))
+    private String alpFileSizeAsStr;
+
 	private Model model;
 
 	private List<RewardVariable> rewardVariables = new ArrayList<>();
@@ -116,9 +119,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		modelBinder = new Binder<>(Model.class);
 
 		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int)DataSize.parse(maxFileSizeAsStr).toBytes());
-		// TODO: add specific support to ALP size instead of using the same size we use for model, e.g. 10 MB
         // TODO: add isValidModel support
-        uploadALPWizardPanel = new UploadALPWizardPanel(model, uploadMode, (int)DataSize.parse(maxFileSizeAsStr).toBytes());
+        uploadALPWizardPanel = new UploadALPWizardPanel(model, uploadMode, (int)DataSize.parse(alpFileSizeAsStr).toBytes());
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload(), ModelUtils.isValidModel(model));
 		rewardVariablesPanel = new RewardVariablesPanel();
 
