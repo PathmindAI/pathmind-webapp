@@ -1671,7 +1671,15 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_EXPERIMENT_OBSERVATION" foreignKeyName="PM_FK_EO_OBSERVATION" references="OBSERVATION(ID)"/>
             </column>
         </createTable>
+        <createIndex tableName="EXPERIMENT_OBSERVATION" indexName="EXPERIMENT_OBSERVATION_EXPERIMENT_ID_INDEX">
+            <column name="EXPERIMENT_ID"/>
+        </createIndex>
+        <createIndex tableName="EXPERIMENT_OBSERVATION" indexName="EXPERIMENT_OBSERVATION_OBSERVATION_ID_INDEX">
+            <column name="OBSERVATION_ID"/>
+        </createIndex>
         <rollback>
+            <dropIndex tableName="EXPERIMENT_OBSERVATION" indexName="EXPERIMENT_OBSERVATION_EXPERIMENT_ID_INDEX" />
+            <dropIndex tableName="EXPERIMENT_OBSERVATION" indexName="EXPERIMENT_OBSERVATION_OBSERVATION_ID_INDEX" />
             <dropTable tableName="EXPERIMENT_OBSERVATION"/>
         </rollback>
     </changeSet>
