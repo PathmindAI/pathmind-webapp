@@ -149,6 +149,13 @@ class ExperimentRepository
 				.execute();
 	}
 
+	protected static void updateGoalsReached(DSLContext ctx, long experimentId, boolean goalsReached) {
+	    ctx.update(Tables.EXPERIMENT)
+	    .set(Tables.EXPERIMENT.GOALS_REACHED, goalsReached)
+	    .where(Tables.EXPERIMENT.ID.eq(experimentId))
+	    .execute();
+	}
+
 	/**
 	 * Main method to retrieve List of {@link DashboardItem}.
 	 * It prepares a query to get all needed data within single database call, then tries to map returned
