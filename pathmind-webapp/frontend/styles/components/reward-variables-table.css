@@ -13,11 +13,31 @@
     background-color: white;
     z-index: 1;
 }
+.experiment-view .reward-variables-table .header-row span:nth-child(2) {
+    box-sizing: border-box;
+    height: 2rem;
+}
+.reward-variables-table .header-row span:nth-child(2) {
+    justify-content: flex-start;
+    width: calc(100% - 2rem);
+}
+.reward-variables-table .header-row span:last-child {
+    justify-content: flex-start;
+    width: 100%;
+}
+.upload-model-view .reward-variables-table .header-row span:last-child {
+    box-sizing: border-box;
+    padding-left: calc(var(--lumo-space-m));
+}
+.new-experiment-view .reward-variables-table .header-row span:last-child {
+    justify-content: flex-end;
+}
 .reward-variables-table vaadin-horizontal-layout:not(.header-row) {
     align-items: center;
     margin-bottom: var(--lumo-space-xs);
 }
 .simulation-metrics-table-wrapper .reward-variables-table vaadin-horizontal-layout:not(.header-row) {
+    align-items: center !important;
     height: 2rem;
     margin-bottom: 0;
 }
@@ -81,6 +101,12 @@
     font-family: var(--code-font-family);
     color: var(--lumo-secondary-text-color);
     padding: 0;
+}
+.reward-variables-table .goal-display-span {
+    align-self: center;
+    background: transparent !important;
+    color: var(--lumo-body-text-color) !important;
+    margin-left: var(--lumo-space-xs);
 }
 
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(2) span,
