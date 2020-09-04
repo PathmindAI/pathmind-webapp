@@ -28,8 +28,8 @@
     stroke: var(--pm-text-color);
 }
 .target {
-    stroke: red;
-    stroke-width: 2px;
+    fill: var(--pm-friendly-color);
+    fill-opacity: 0.4;
 }
 svg {
     width: 100%;

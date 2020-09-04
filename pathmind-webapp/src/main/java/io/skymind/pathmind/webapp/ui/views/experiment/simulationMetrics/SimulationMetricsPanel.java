@@ -3,19 +3,24 @@ package io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+
+import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.ui.components.SparkLine;
 import io.skymind.pathmind.webapp.ui.components.SparklineChart;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.MetricChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
@@ -123,12 +128,47 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                 .forEach(idx -> {
                     SparklineChart sparkLine = new SparklineChart();
                     sparkLine.setSparkLine(policy.getSparklinesData().get(idx), idx, rewardVariables.get(idx));
+                    sparkLine.setupButton(() -> {
+                        MetricChartPanel metricChartPanel = new MetricChartPanel();
+                        metricChartPanel.setLines(policy.getSparklinesData().get(idx), idx, rewardVariables.get(idx));
+                        Dialog dialog = createEnlargedChartDialog(metricChartPanel);
+                        dialog.open();
+                    });
                     sparklinesWrapper.add(sparkLine);
                     if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {
                         metricsWrapper.add(new Span(policy.getUncertainty().get(idx)));
                     } else {
-                        metricsWrapper.add(new Span(PathmindNumberUtils.formatNumber(policy.getSimulationMetrics().get(idx))));
+                        String metricValueWithUncertainty = PathmindNumberUtils.formatNumber(policy.getSimulationMetrics().get(idx));
+                        Span metricSpan = new Span(metricValueWithUncertainty);
+                        Boolean reachedGoal = compareGoalAndActualValue(rewardVariables.get(idx), metricValueWithUncertainty);
+                        String metricSpanColorClass = reachedGoal ? "success-text" : "failure-text";
+                        metricSpan.addClassName(metricSpanColorClass);
+                        metricsWrapper.add(metricSpan);
                     }
                 });
+    }
+
+    private Boolean compareGoalAndActualValue(RewardVariable rewardVariable, String actualValueWithUncertainty) {
+        GoalConditionType goalCondition = rewardVariable.getGoalConditionTypeEnum();
+        Double goalValue = rewardVariable.getGoalValue();
+        String[] actualMetricBreakdown = actualValueWithUncertainty.split("\u2800\u00B1\u2800");
+        Double actualMetricValue = Double.parseDouble(actualMetricBreakdown[0]);
+        Double uncertaintyValue = Double.parseDouble(actualMetricBreakdown[1]);
+        Boolean reachedGoal = false;
+        if (goalCondition.equals(GoalConditionType.GREATER_THAN_OR_EQUAL)) {
+            reachedGoal = actualMetricValue+uncertaintyValue >= goalValue;
+        } else {
+            reachedGoal = actualMetricValue-uncertaintyValue <= goalValue;
+        }
+        return reachedGoal;
+    }
+
+    private Dialog createEnlargedChartDialog(MetricChartPanel chartPanel) {
+        Dialog dialog = new Dialog();
+        Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
+        closeButton.addClickListener(event -> dialog.close());
+        dialog.setWidth("60vw");
+        dialog.add(chartPanel, closeButton);
+        return dialog;
     }
 }

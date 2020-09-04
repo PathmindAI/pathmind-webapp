@@ -87,8 +87,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVe
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
-import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
-import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import lombok.extern.slf4j.Slf4j;
 
