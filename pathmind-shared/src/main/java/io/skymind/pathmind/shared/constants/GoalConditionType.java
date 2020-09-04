@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public enum GoalConditionType {
-    GREATER_THAN_OR_EQUAL("GTE", ">="), LESS_THAN_OR_EQUAL("LTE", "<=");
+    GREATER_THAN_OR_EQUAL("GTE", "≥"), LESS_THAN_OR_EQUAL("LTE", "≤");
     
     private String code;
     private String name;
