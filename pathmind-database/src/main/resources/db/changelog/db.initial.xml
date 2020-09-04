@@ -1711,5 +1711,16 @@
             <column name="GOAL_VALUE" type="DOUBLE"/>
         </addColumn>
     </changeSet>
+    
+    <changeSet id="20200904-01" author="onur@vaadin.com">
+        <comment>
+             Add a goal reached flag to experiment table  
+        </comment>
+        <addColumn tableName="EXPERIMENT">
+            <column name="GOALS_REACHED" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

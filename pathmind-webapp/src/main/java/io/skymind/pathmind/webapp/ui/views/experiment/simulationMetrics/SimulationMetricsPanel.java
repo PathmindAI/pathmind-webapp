@@ -10,6 +10,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.internal.Pair;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -135,36 +136,22 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                         dialog.open();
                     });
                     sparklinesWrapper.add(sparkLine);
+                    Span metricSpan = new Span();
                     if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {
                         String metricValueWithUncertainty = policy.getUncertainty().get(idx);
-                        Span metricSpan = new Span(metricValueWithUncertainty);
-                        if (rewardVariables.get(idx).getGoalConditionTypeEnum() != null){
-                            Boolean reachedGoal = compareGoalAndActualValue(rewardVariables.get(idx), metricValueWithUncertainty);
-                            String metricSpanColorClass = reachedGoal ? "success-text" : "failure-text";
-                            metricSpan.addClassName(metricSpanColorClass);
-                        }
+                        metricSpan = new Span(metricValueWithUncertainty);
                         metricsWrapper.add(metricSpan);
                     } else {
                         String metricValueWithoutUncertainty = PathmindNumberUtils.formatNumber(policy.getSimulationMetrics().get(idx));
-                        Span metricSpan = new Span(metricValueWithoutUncertainty);
+                        metricSpan = new Span(metricValueWithoutUncertainty);
                         metricsWrapper.add(metricSpan);
                     }
+                    if (rewardVariables.get(idx).getGoalConditionTypeEnum() != null){
+                        Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariables.get(idx), policy);
+                        String metricSpanColorClass = reachedGoal ? "success-text" : "failure-text";
+                        metricSpan.addClassName(metricSpanColorClass);
+                    }
                 });
-    }
-
-    private Boolean compareGoalAndActualValue(RewardVariable rewardVariable, String actualValueWithUncertainty) {
-        GoalConditionType goalCondition = rewardVariable.getGoalConditionTypeEnum();
-        Double goalValue = rewardVariable.getGoalValue();
-        String[] actualMetricBreakdown = actualValueWithUncertainty.split("\u2800\u00B1\u2800");
-        Double actualMetricValue = Double.parseDouble(actualMetricBreakdown[0]);
-        Double uncertaintyValue = Double.parseDouble(actualMetricBreakdown[1]);
-        Boolean reachedGoal = false;
-        if (goalCondition.equals(GoalConditionType.GREATER_THAN_OR_EQUAL)) {
-            reachedGoal = actualMetricValue+uncertaintyValue >= goalValue;
-        } else {
-            reachedGoal = actualMetricValue-uncertaintyValue <= goalValue;
-        }
-        return reachedGoal;
     }
 
     private Dialog createEnlargedChartDialog(MetricChartPanel chartPanel) {
