@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -153,6 +154,24 @@ public class ModelPage extends PageObject {
             assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star"));
         }else {
             assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star-o"));
+        }
+    }
+
+    public void clickModelPageModelArchiveButton() {
+        getDriver().findElement(By.xpath("//span[@class='section-title-label']/following-sibling::vaadin-button")).click();
+    }
+
+    public void checkModelPageModelArchivedTagIsShown(Boolean archived) {
+        if (archived){
+            waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")));
+            assertThat(getDriver().findElements(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")).size(), is(1));
+            assertThat(getDriver().findElement(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")).getText(), is("Archived"));
+
+        }else {
+            setImplicitTimeout(3, SECONDS);
+            waitFor(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")));
+            assertThat(getDriver().findElement(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")).getAttribute("hidden"), is("true"));
+            resetImplicitTimeout();
         }
     }
 }
