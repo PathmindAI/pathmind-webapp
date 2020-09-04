@@ -47,16 +47,7 @@ public class AWSTrainingService extends TrainingService {
     protected String startRun(Model model, Experiment exp, Run run, int iterations, int maxTimeInSec, int numSamples) {
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final String modelFileId = modelService.buildModelPath(model.getId());
-        List<String> observations =  observationDAO.getObservationsForExperiment(exp.getId()).stream()
-                .flatMap(o -> {
-                    if (o.getDataTypeEnum() == ObservationDataType.NUMBER_ARRAY) {
-                        return IntStream.range(0, o.getMaxItems()).mapToObj(i -> String.format("%s[%s]", o.getVariable(), i));
-                    }
-                    else {
-                        return Stream.of(o.getVariable());
-                    }
-                })
-                .collect(Collectors.toList());
+        List<Observation> observations =  observationDAO.getObservationsForExperiment(exp.getId());
 
         final JobSpec spec = new JobSpec(
                 exp.getProject().getPathmindUserId(),
