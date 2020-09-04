@@ -147,8 +147,19 @@
     font-size: var(--lumo-font-size-xs);
 }
 
-.experiment-view vaadin-chart {
-/*     min-height: 25rem; */
+.metric-chart-panel {
+    position: relative;
+}
+
+.metric-chart-panel p {
+    margin-top: 0;
+}
+
+.metric-chart-panel + vaadin-button {
+    position: absolute;
+    top: var(--lumo-space-l);
+    right: var(--lumo-space-l);
+    margin: 0;
 }
 
 .experiment-view .bottom-panel,

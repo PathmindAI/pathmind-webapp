@@ -6,20 +6,17 @@ import java.util.OptionalDouble;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.Chart;
-import com.vaadin.flow.component.charts.model.Accessibility;
-import com.vaadin.flow.component.charts.model.ChartType;
-import com.vaadin.flow.component.charts.model.ListSeries;
-import com.vaadin.flow.component.charts.model.Marker;
-import com.vaadin.flow.component.charts.model.PlotLine;
-import com.vaadin.flow.component.charts.model.PlotOptionsSeries;
+import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.server.Command;
 
+import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
 
 public class SparklineChart extends VerticalLayout{
 
     private Button enlargeButton = new Button("Show");
-    private Chart chart = new Chart(ChartType.AREA);
+    private Chart chart = new Chart(ChartType.AREASPLINE);
     
     private int WIDTH = 100;
     private int HEIGHT = 32;
@@ -27,7 +24,6 @@ public class SparklineChart extends VerticalLayout{
     public SparklineChart() {
         setPadding(false);
         setSpacing(false);
-        setupButton();
         setupChart();
         setWidth(WIDTH + "px");
         setHeight(HEIGHT + "px");
@@ -35,8 +31,9 @@ public class SparklineChart extends VerticalLayout{
         add(chart, enlargeButton);
     }
 
-    private void setupButton() {
+    public void setupButton(Command clickHandler) {
         enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+        enlargeButton.addClickListener(event -> clickHandler.execute());
     }
 
     private void setupChart() {
@@ -75,14 +72,13 @@ public class SparklineChart extends VerticalLayout{
         double maxVal = max.orElse(0);
         
         if (rewardVariable.getGoalValue() != null) {
-            if (minVal > rewardVariable.getGoalValue()) {
-                // if the value is equal to the goal value, the goal line doesn't show on the chart
-                minVal = rewardVariable.getGoalValue();
+            double goalValue = rewardVariable.getGoalValue();
+            if (minVal > goalValue) {
+                minVal = goalValue;
             }
             
-            if (maxVal < rewardVariable.getGoalValue()) {
-                // if the value is equal to the goal value, the goal line doesn't show on the chart
-                maxVal = rewardVariable.getGoalValue();
+            if (maxVal < goalValue) {
+                maxVal = goalValue;
             }
         }
         
@@ -97,12 +93,18 @@ public class SparklineChart extends VerticalLayout{
         series.setPlotOptions(plotOptions);
         chart.getConfiguration().addSeries(series);
 
-        if (rewardVariable.getGoalValue() != null) {
-            PlotLine target = new PlotLine(rewardVariable.getGoalValue());
-            target.setZIndex(9999);
+        if (rewardVariable.getGoalValue() != null && rewardVariable.getGoalConditionTypeEnum() != null) {
+            GoalConditionType goalCondition = rewardVariable.getGoalConditionTypeEnum();
+            PlotBand target = new PlotBand();
+            target.setFrom(rewardVariable.getGoalValue());
+            if (goalCondition.equals(GoalConditionType.GREATER_THAN_OR_EQUAL)) {
+                target.setTo(maxVal);
+            } else {
+                target.setTo(0);
+            }
+            target.setZIndex(10);
             target.setClassName("target");
-            target.setValue(rewardVariable.getGoalValue());
-            chart.getConfiguration().getyAxis().addPlotLine(target);
+            chart.getConfiguration().getyAxis().addPlotBand(target);
         }
 
         chart.drawChart(true);
