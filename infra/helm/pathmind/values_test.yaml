@@ -35,6 +35,7 @@ env:
   MODEL_ANALYZER_URL: https://ma.test.devpathmind.com
   MULTI_AGENT: false
   JOB_MOCK_CYCLE: 0
+  JOB_MOCK_MAX_MIN: 0
   SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/test-updater-queue
   SNS_UPDATER_SQS_FILTER_ATTR: test
   NEW_RUN_DAILY_LIMIT: 100
