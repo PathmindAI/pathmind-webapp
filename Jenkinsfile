@@ -89,7 +89,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'master'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
             steps {
@@ -97,7 +97,7 @@ pipeline {
                 sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\":building_construction: Starting Jenkins Job\nBranch: ${env.BRANCH_NAME}\nUrl: ${env.RUN_DISPLAY_URL}\"}' ${SLACK_URL}"
                 script {
                     DOCKER_TAG = "dev"
-                    if (env.BRANCH_NAME == 'master') {
+                    if (env.BRANCH_NAME == 'prod') {
                         DOCKER_TAG = "prod"
                     }
                     if (env.BRANCH_NAME == 'dev') {
@@ -133,7 +133,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'master'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
             parallel {
@@ -150,7 +150,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'master'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
             parallel {
@@ -232,7 +232,7 @@ pipeline {
         stage('Go for Production?') {
             when {
                 allOf {
-                    environment name: 'GIT_BRANCH', value: 'master'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                     environment name: 'DEPLOY_TO_PROD', value: 'false'
                 }
             }
