@@ -4,11 +4,13 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
@@ -59,7 +61,24 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true)
-				.setSortable(true);
+                .setSortable(true);
+        addComponentColumn(experiment -> {
+                    if (ExperimentUtils.getTrainingStatus(experiment).getValue() >= RunStatus.Completed.getValue()) {
+                        Boolean isGoalsReached = experiment.isGoalsReached();
+                        String goalStatusClassName = isGoalsReached ? "success-text" : "failure-text";
+                        Icon goalReachedIcon = experiment.isGoalsReached() ? new Icon(VaadinIcon.CHECK) : new Icon(VaadinIcon.CLOSE);
+                        goalReachedIcon.addClassName(goalStatusClassName);
+                        return goalReachedIcon;
+                    }
+                    // to be replaced with the loading icon after the polymer loading icon component is merged
+                    return new Span("—");
+                })
+				.setComparator(Comparator.comparing(Experiment::isGoalsReached))
+                .setHeader("Goals Reached")
+                .setAutoWidth(true)
+                .setFlexGrow(0)
+                .setResizable(true)
+                .setSortable(true);
 		addColumn(experiment -> {
 					String userNotes = experiment.getUserNotes();
 					return userNotes.isEmpty() ? "—" : userNotes;

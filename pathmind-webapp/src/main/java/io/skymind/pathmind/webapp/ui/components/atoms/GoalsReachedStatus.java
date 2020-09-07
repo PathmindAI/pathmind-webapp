@@ -17,4 +17,8 @@ public class GoalsReachedStatus extends PolymerTemplate<TemplateModel> implement
     public void setValue(boolean goalsReached) {
         getElement().setProperty("goalsReached", goalsReached);
     }
+
+    public void setSize(String size) {
+        getElement().setAttribute("size", size);
+    }
 }
