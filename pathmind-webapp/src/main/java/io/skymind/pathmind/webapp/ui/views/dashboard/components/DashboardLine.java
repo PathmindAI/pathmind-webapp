@@ -25,7 +25,9 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
+import io.skymind.pathmind.webapp.ui.components.atoms.GoalsReachedStatus;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
@@ -102,7 +104,7 @@ public class DashboardLine extends HorizontalLayout {
 	}
 
 	private HorizontalLayout createStages() {
-		HorizontalLayout stagesContainer = new HorizontalLayout();
+		HorizontalLayout stagesContainer = WrapperUtils.wrapWidthFullBetweenHorizontal();
 		stagesContainer.setClassName("stages-container");
 		stagesContainer.add(createStageItem(Stage.SetUpSimulation));
 		stagesContainer.add(createStageItem(Stage.WriteRewardFunction));
@@ -114,7 +116,7 @@ public class DashboardLine extends HorizontalLayout {
 	private Span createStageItem(Stage stage) {
 		Span item = null; 
 		if (stage.getValue() < currentStage.getValue()) {
-			item = new Span(VaadinIcon.CHECK_CIRCLE.create(), new Text(stage.getNameAfterDone()));
+			item = new Span(new Span(VaadinIcon.CHECK_CIRCLE.create(), new Text(stage.getNameAfterDone())));
 			item.setClassName("stage-done");
 		} else if (stage.getValue() == currentStage.getValue()) {
 			if (DashboardUtils.isTrainingInProgress(stage, dashboardItem.getLatestRun())) {
@@ -135,10 +137,21 @@ public class DashboardLine extends HorizontalLayout {
                 }
 			} else {
 				item = LabelFactory.createLabel(stage.getNameAfterDone(), "stage-active");
-			}
+            }
 		} else {
 			item = LabelFactory.createLabel(stage.getName(), "stage-next");
-		}
+        }
+        if (stage.equals(Stage.TrainPolicy)) {
+            Boolean trainingNotCompleted = 
+                    stage.getValue() == currentStage.getValue() && DashboardUtils.isTrainingInProgress(stage, dashboardItem.getLatestRun()) ||
+                    stage.getValue() > currentStage.getValue();
+            if (!trainingNotCompleted) {
+                GoalsReachedStatus goalStatusComponent = new GoalsReachedStatus(dashboardItem.getExperiment().isGoalsReached());
+                goalStatusComponent.setVisible(!trainingNotCompleted);
+                goalStatusComponent.setSize("large");
+                item.add(goalStatusComponent);
+            }
+        }
 		return item;
 	}
 	

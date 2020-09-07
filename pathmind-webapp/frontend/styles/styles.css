@@ -162,6 +162,13 @@ background-color: var(--pm-gray-color-light);
     vertical-align: text-top;
 }
 
+.model-view [icon="vaadin:close"],
+.model-view [icon="vaadin:check"] {
+    --iron-icon-width: var(--lumo-font-size-m);
+    --iron-icon-height: var(--lumo-font-size-m);
+    vertical-align: text-top;
+}
+
 #nav-main-links,
 #nav-main-links a,
 .nav-account-links a {

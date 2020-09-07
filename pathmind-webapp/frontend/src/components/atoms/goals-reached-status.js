@@ -30,6 +30,11 @@ class GoalsReachedStatus extends PolymerElement {
                     display: none;
                     margin-right: 2px;
                 }
+                :host([size~="large"]) iron-icon {
+                    --iron-icon-width: var(--lumo-font-size-m);
+                    --iron-icon-height: var(--lumo-font-size-m);
+                    margin-right: 4px;
+                }
                 :host(:not([goals-reached])) {
                     color: var(--pm-danger-color);
                 }
