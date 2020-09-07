@@ -104,7 +104,8 @@ public class HomePage extends PageObject {
     }
 
     public void clickGettingStartedGuideButton() {
-        getDriver().findElement(By.xpath("//a[text()='Getting Started Guide']")).click();
+        WebElement element = utils.expandRootElement(getDriver().findElement(By.xpath("//empty-dashboard-placeholder")));
+        element.findElement(By.cssSelector(".button-link")).click();
     }
 
     public void checkThatProjectsButtonHighlightIs(Boolean status) {

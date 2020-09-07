@@ -105,7 +105,8 @@ public class DashboardPage extends PageObject {
     }
 
     public void clickDashboardCreateYourFirstProjectBtn() {
-        getDriver().findElement(By.xpath("//a[text()='create your first project.']")).click();
+        WebElement element = utils.expandRootElement(getDriver().findElement(By.xpath("//empty-dashboard-placeholder")));
+        element.findElement(By.cssSelector(".create-project-link")).click();
     }
 
     public void clickStageWriteRewardFunctionFromDashboard(String projectName) {
