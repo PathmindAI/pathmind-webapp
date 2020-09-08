@@ -92,19 +92,21 @@ public class DashboardPage extends PageObject {
     }
 
     public void checkDashboardBeginScreenElements() {
-        assertThat(getDriver().findElement(By.xpath("//span[@class='light-text-label']")).getText(), is("Welcome to"));
-        assertThat(getDriver().findElement(By.xpath("//img[@class='navbar-logo']")).isDisplayed(), is(true));
-        assertThat(getDriver().findElement(By.xpath("//img[@class='navbar-logo']")).getAttribute("src"), containsString("frontend/images/pathmind-logo.svg"));
-        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']")).getText(), is("Let's begin by opening the"));
-        assertThat(getDriver().findElement(By.xpath("//a[@class='button-link']")).getText(), is("Getting Started Guide"));
-        assertThat(getDriver().findElement(By.xpath("//a[@class='button-link']")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4004788-getting-started"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@theme='spacing'][2]/span")).getText(), is("or skip ahead to"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@theme='spacing'][2]/a")).getText(), is("create your first project."));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@theme='spacing'][2]/a")).getAttribute("href"), containsString("newProject"));
+        WebElement emptyDashboardShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//empty-dashboard-placeholder")));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector(".welcome-text")).getText(), is("Welcome to"));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector(".logo")).isDisplayed(), is(true));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector(".logo")).getAttribute("src"), containsString("frontend/images/pathmind-logo.svg"));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector(".section-title-label")).getText(), is("Let's begin by opening the"));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector(".button-link")).getText(), is("Getting Started Guide"));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector(".button-link")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4004788-getting-started"));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector("vaadin-horizontal-layout:nth-of-type(2) span")).getText(), is("or skip ahead to"));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector("vaadin-horizontal-layout:nth-of-type(2) a")).getText(), is("create your first project."));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector("vaadin-horizontal-layout:nth-of-type(2) a")).getAttribute("href"), containsString("newProject"));
     }
 
     public void clickDashboardCreateYourFirstProjectBtn() {
-        getDriver().findElement(By.xpath("//a[text()='create your first project.']")).click();
+        WebElement element = utils.expandRootElement(getDriver().findElement(By.xpath("//empty-dashboard-placeholder")));
+        element.findElement(By.cssSelector(".create-project-link")).click();
     }
 
     public void clickStageWriteRewardFunctionFromDashboard(String projectName) {

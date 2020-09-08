@@ -11,7 +11,6 @@ Feature: Check Model Details Reward Variables fields
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment <project name> page is opened
-    Then Input from file reward function <reward function file>
     When Open projects page
     When Open project <project name> on projects page
     When Click the model name 1
@@ -19,9 +18,9 @@ Feature: Check Model Details Reward Variables fields
     Then Check model page model details reward variables is <variables>
 
     Examples:
-      | project name    | model                             | reward function file                                                        | variables                                                                                                                                                           |
-      | AutotestProject | tuple_models/MoonLanding.zip      | tuple_models/MoonLandingRewardFunction.txt                                  | fuelRemaining,distanceToX,distanceToY,distanceToZ,landed,crashed,gotAway,throttlingUp,thottlingDown,movingDown,movingUp,movingLeft,movingRight,speedX,speedY,speedZ |
-      | AutotestProject | tuple_models/CoffeeShopTuple.zip  | Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt | kitchen_cleanliness,successful_customers,balked_customers,service_time                                                                                              |
-      | AutotestProject | tuple_models/SimpleStochastic.zip | tuple_models/SimpleStochasticRewardFunction.txt                             | goalReached                                                                                                                                                         |
-      | AutotestProject | tuple_models/ProductDelivery.zip  | tuple_models/ProductDeliveryRewardFunction.txt                              | avgWaitTime,avgDistanceKM                                                                                                                                           |
-      | AutotestProject | tuple_models/Warehouse.zip        | tuple_models/WarehouseRewardFunction.txt                                    | profitableDeliveries,unprofitableDeliveries                                                                                                                         |
+      | project name    | model                             | variables                                                                                                                                                           |
+      | AutotestProject | tuple_models/MoonLanding.zip      | fuelRemaining,distanceToX,distanceToY,distanceToZ,landed,crashed,gotAway,throttlingUp,thottlingDown,movingDown,movingUp,movingLeft,movingRight,speedX,speedY,speedZ |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip  | kitchen_cleanliness,successful_customers,balked_customers,service_time                                                                                              |
+      | AutotestProject | tuple_models/SimpleStochastic.zip | goalReached                                                                                                                                                         |
+      | AutotestProject | tuple_models/ProductDelivery.zip  | avgWaitTime,avgDistanceKM                                                                                                                                           |
+      | AutotestProject | tuple_models/Warehouse.zip        | profitableDeliveries,unprofitableDeliveries                                                                                                                         |
