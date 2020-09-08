@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
@@ -23,9 +25,12 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
+
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
+import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -46,10 +51,14 @@ import io.skymind.pathmind.webapp.ui.views.model.components.ArchiveButton;
 import io.skymind.pathmind.webapp.ui.views.model.components.ExperimentGrid;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
+import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
+
 @Route(value = Routes.MODEL_URL, layout = MainLayout.class)
 public class ModelView extends PathMindDefaultView implements HasUrlParameter<Long> {
     @Autowired
     private ExperimentDAO experimentDAO;
+	@Autowired
+	private ModelService modelService;
     @Autowired
     private ModelDAO modelDAO;
     @Autowired
@@ -70,9 +79,9 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
     private Span modelName;
     private Span createdDate;
     private TagLabel archivedLabel;
-    private Paragraph packageNameText;
     private Paragraph observationsText;
     private Div rewardVariableNamesText;
+    private Anchor downloadLink;
 
     public ModelView() {
         super();
@@ -116,9 +125,9 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
     }
 
     private FlexLayout createRightPanel() {
+        setupDownloadAlpLink();
         Span panelTitle = LabelFactory.createLabel("Model Details", CssPathmindStyles.SECTION_TITLE_LABEL);
         Span errorMessage = modelCheckerService.createInvalidErrorLabel(model);
-        packageNameText = new Paragraph(LabelFactory.createLabel("Package Name", CssPathmindStyles.BOLD_LABEL));
         observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssPathmindStyles.BOLD_LABEL));
         rewardVariableNamesText = new Div();
         rewardVariableNamesText.addClassName("model-reward-variables");
@@ -126,8 +135,8 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
         NotesField notesField = createViewNotesField();
         FlexLayout rightPanelCard = new ViewSection(
                 panelTitle,
+                downloadLink,
                 errorMessage,
-                packageNameText,
                 observationsText,
                 new Div(LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL), rewardVariableNamesText),
                 notesField);
@@ -135,6 +144,27 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
         return rightPanelCard;
     }
+
+    private void setupDownloadAlpLink() {
+        downloadLink = new Anchor();
+        downloadLink.setText("Download Model ALP");
+        downloadLink.getElement().setAttribute("download", true);
+        downloadLink.getElement().addEventListener("click", event -> {
+            segmentIntegrator.downloadedALP();
+        });
+        if (modelService.hasModelAlp(modelId)) {
+            modelService.getModelAlp(modelId).ifPresent(resource -> {
+                downloadLink.getElement().setAttribute("href", getResourceStream(resource));
+            });
+        } else {
+            downloadLink.setVisible(false);
+        }
+    }
+	
+	private StreamResource getResourceStream(byte[] resource) {
+        return new StreamResource("model_M"+model.getName()+"_"+removeInvalidChars(model.getPackageName())+".alp",
+                () -> new ByteArrayInputStream(resource));
+	}
 
     /**
      * Using any experiment's getProject() since they should all be the same. I'm assuming at this point
@@ -193,8 +223,8 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
     @Override
     protected void initScreen(BeforeEnterEvent event) {
-        String packageName = (model.getPackageName() != null) ? model.getPackageName() : "—";
-        modelName.setText("Model #"+model.getName());
+        String packageName = (model.getPackageName() != null) ? " ("+model.getPackageName()+")" : "";
+        modelName.setText("Model #"+model.getName()+packageName);
         archivedLabel.setVisible(model.isArchived());
 
         VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
@@ -203,7 +233,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
             LocalDateTime dateCreatedData = model.getDateCreated();
             createdDate.setText(String.format("Uploaded on %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(dateCreatedData, timeZoneId)));
         });
-        packageNameText.add(packageName);
         observationsText.add(""+model.getNumberOfObservations());
 
         if (rewardVariableNames.size() > 0) {
