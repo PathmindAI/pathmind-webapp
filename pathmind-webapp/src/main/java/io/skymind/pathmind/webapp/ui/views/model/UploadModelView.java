@@ -1,5 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
+
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import io.skymind.pathmind.shared.constants.ObservationDataType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ModelUtils;
@@ -8,6 +11,8 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -119,9 +124,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		modelBinder = new Binder<>(Model.class);
 
 		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int)DataSize.parse(maxFileSizeAsStr).toBytes());
-        // TODO: add isValidModel support
-        uploadALPWizardPanel = new UploadALPWizardPanel(model, uploadMode, (int)DataSize.parse(alpFileSizeAsStr).toBytes());
-		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload(), ModelUtils.isValidModel(model));
+        uploadALPWizardPanel = new UploadALPWizardPanel(model, isResumeUpload(), ModelUtils.isValidModel(model), (int)DataSize.parse(alpFileSizeAsStr).toBytes());
+		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
 		rewardVariablesPanel = new RewardVariablesPanel();
 
 		modelBinder.readBean(model);
@@ -318,7 +322,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
                 model.setRewardVariablesCount(rewardVariables.size());
                 model.setModelType(ModelType.fromName(alResult.getModelType()).getValue());
 			}
-			modelDetailsWizardPanel.setIsValidModel(ModelUtils.isValidModel(model));
+            uploadALPWizardPanel.setIsValidModel(ModelUtils.isValidModel(model));
 
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");
@@ -389,4 +393,11 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	public static String createResumeUploadTarget(Project project, Model model) {
 		return String.format("%s/%s/%s", project.getId(), UploadMode.RESUME, model.getId());
 	}
+
+	public static Button createNextStepButton() {
+        Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
+        nextStepButton.setIconAfterText(true);
+        nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        return nextStepButton;
+    }
 }

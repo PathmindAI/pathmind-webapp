@@ -1,12 +1,15 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.upload.Receiver;
 import com.vaadin.flow.component.upload.Upload;
@@ -17,13 +20,15 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.model.UploadMode;
+import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
 @Slf4j
@@ -34,35 +39,48 @@ public class UploadALPWizardPanel extends VerticalLayout {
     private VerticalLayout uploadModelPanel;
     private Upload upload;
 
-    private UploadMode mode;
-    private Consumer<Collection<String>> uploadFailedConsumer;
-    private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
+    private Button nextStepButton;
 
-    public UploadALPWizardPanel(Model model, UploadMode mode, int maxFileSize) {
+    public UploadALPWizardPanel(Model model, boolean isResumeUpload, boolean isValidModel, int maxFileSize) {
         this.model = model;
-        this.mode = mode;
         this.maxFileSize = maxFileSize;
 
-        // TODO: move nextStepButton to its own component, the code below is being copied in all wizard panels
-        nextStepButton.setIconAfterText(true);
-        nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        nextStepButton = UploadModelView.createNextStepButton();
+        nextStepButton.setEnabled(isValidModel);
 
-        setupLayout();
+        setupLayout(isResumeUpload);
         setWidthFull();
         setPadding(false);
         setSpacing(false);
 
     }
 
-    private void setupLayout() {
+    private void setupLayout(boolean isResumeUpload) {
         setupUploadPanel();
+        List<Component> items = new ArrayList<>(Arrays.asList(
+                LabelFactory.createLabel("Upload alp file (Optional)", NO_TOP_MARGIN_LABEL),
+                GuiUtils.getFullWidthHr()));
+        if (!isResumeUpload) {
+            Icon checkmarkIcon = new Icon(VaadinIcon.CHECK_CIRCLE);
+            checkmarkIcon.setColor("var(--pm-friendly-color)");
 
-        add(LabelFactory.createLabel("Upload ALP file", NO_TOP_MARGIN_LABEL),
-                GuiUtils.getFullWidthHr(),
+            HorizontalLayout successMessage = WrapperUtils.wrapWidthFullHorizontal(
+                    checkmarkIcon,
+                    WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                            LabelFactory.createLabel("Your model was successfully uploaded!", BOLD_LABEL))
+            );
+            items.add(successMessage);
+        }
+        items.addAll(Arrays.asList(
                 getInstructionsDiv(),
                 uploadModelPanel,
-                WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton)
-        );
+                WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton)));
+
+        add(items.toArray(new Component[0]));
+    }
+
+    public void setIsValidModel(boolean isValidModel) {
+        nextStepButton.setEnabled(isValidModel);
     }
 
     private void setupUploadPanel() {
@@ -113,24 +131,10 @@ public class UploadALPWizardPanel extends VerticalLayout {
         });
     }
 
-    public void addFileUploadFailedListener(Consumer<Collection<String>> consumer) {
-        uploadFailedConsumer = consumer;
-    }
-
     private Div getInstructionsDiv() {
         Div div = new Div();
         div.setWidthFull();
-        setInstructionsForUploadDiv(div);
+        div.add(new Paragraph("Upload your model's ALP file to easily keep track of the version of your model that was used for training each policy."));
         return div;
-    }
-
-
-    private void setInstructionsForUploadDiv(Div div) {
-        div.getElement().setProperty("innerHTML",
-                "<ol>" +
-                        "<li>Here we'll add</li>" +
-                        "<li>the</li>" +
-                        "<li>relevant info</li>" +
-                        "</ol>");
     }
 }
