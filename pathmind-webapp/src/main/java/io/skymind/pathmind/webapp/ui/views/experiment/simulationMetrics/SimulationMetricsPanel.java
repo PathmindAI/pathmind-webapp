@@ -86,6 +86,13 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         return experiment;
     }
 
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
+        if(bestPolicy != null)
+            updateSimulationMetrics(bestPolicy);
+    }
+
     public boolean isShowSimulationMetrics() {
         return showSimulationMetrics;
     }
