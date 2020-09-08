@@ -106,4 +106,14 @@ public class ModelPageSteps {
     public void clickModelPageExperimentArchiveBtn(String experiment) {
         modelPage.clickModelPageExperimentArchiveBtn(experiment);
     }
+
+    @Step
+    public void clickModelPageModelArchiveButton() {
+        modelPage.clickModelPageModelArchiveButton();
+    }
+
+    @Step
+    public void checkModelPageModelArchivedTagIsShown(Boolean archived) {
+        modelPage.checkModelPageModelArchivedTagIsShown(archived);
+    }
 }

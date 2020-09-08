@@ -87,7 +87,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
 		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullRightHorizontal(
 			WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                WrapperUtils.wrapWidthFullHorizontal(projectName, edit),
+                WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(projectName, edit),
                 WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(createdDate, archivedLabel)
             ),
 			new UploadModelButton(projectId)
