@@ -20,6 +20,7 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemRunUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import java.util.Optional;
@@ -30,6 +31,7 @@ import java.util.function.Supplier;
 @JsModule("./src/experiment/experiment-navbar-item.js")
 public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem.Model> {
 
+    private ExperimentsNavBar experimentsNavbar;
     private Supplier<Optional<UI>> getUISupplier;
     private ExperimentDAO experimentDAO;
 
@@ -39,7 +41,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     private SegmentIntegrator segmentIntegrator;
 
-    public ExperimentsNavBarItem(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator) {
+    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator) {
         this.getUISupplier = getUISupplier;
         this.experimentDAO = experimentDAO;
         this.experiment = experiment;

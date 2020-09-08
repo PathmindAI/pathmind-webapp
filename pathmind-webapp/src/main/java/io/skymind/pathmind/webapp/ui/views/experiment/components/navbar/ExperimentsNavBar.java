@@ -134,7 +134,7 @@ public class ExperimentsNavBar extends VerticalLayout
 	}
 
     private ExperimentsNavBarItem createExperimentNavBarItem(Experiment experiment) {
-        return new ExperimentsNavBarItem(getUISupplier, experimentDAO, experiment, selectExperimentConsumer, segmentIntegrator);
+        return new ExperimentsNavBarItem(this, getUISupplier, experimentDAO, experiment, selectExperimentConsumer, segmentIntegrator);
     }
 
     public void setCurrentExperiment(Experiment newCurrentExperiment) {
