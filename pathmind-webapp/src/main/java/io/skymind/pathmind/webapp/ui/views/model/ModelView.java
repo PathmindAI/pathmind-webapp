@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
-import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,7 +24,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.StreamResource;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
@@ -48,10 +46,9 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ArchiveButton;
+import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.views.model.components.ExperimentGrid;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
-
-import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
 
 @Route(value = Routes.MODEL_URL, layout = MainLayout.class)
 public class ModelView extends PathMindDefaultView implements HasUrlParameter<Long> {
@@ -125,7 +122,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
     }
 
     private FlexLayout createRightPanel() {
-        setupDownloadAlpLink();
+        downloadLink = new DownloadModelAlpLink(experiments.get(0).getProject().getName(), model, modelService, segmentIntegrator);
         Span panelTitle = LabelFactory.createLabel("Model Details", CssPathmindStyles.SECTION_TITLE_LABEL);
         Span errorMessage = modelCheckerService.createInvalidErrorLabel(model);
         observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssPathmindStyles.BOLD_LABEL));
@@ -144,27 +141,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
         return rightPanelCard;
     }
-
-    private void setupDownloadAlpLink() {
-        downloadLink = new Anchor();
-        downloadLink.setText("Download Model ALP");
-        downloadLink.getElement().setAttribute("download", true);
-        downloadLink.getElement().addEventListener("click", event -> {
-            segmentIntegrator.downloadedALP();
-        });
-        if (modelService.hasModelAlp(modelId)) {
-            modelService.getModelAlp(modelId).ifPresent(resource -> {
-                downloadLink.getElement().setAttribute("href", getResourceStream(resource));
-            });
-        } else {
-            downloadLink.setVisible(false);
-        }
-    }
-	
-	private StreamResource getResourceStream(byte[] resource) {
-        return new StreamResource("model_M"+model.getName()+"_"+removeInvalidChars(model.getPackageName())+".alp",
-                () -> new ByteArrayInputStream(resource));
-	}
 
     /**
      * Using any experiment's getProject() since they should all be the same. I'm assuming at this point

@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -36,6 +36,7 @@ import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -72,6 +73,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.Experime
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
+import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 
@@ -107,11 +109,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private Button unarchiveExperimentButton;
     private Button saveDraftButton;
     private Button startRunButton;
+    private Anchor downloadModelAlpLink;
 
     private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
 
     private UserCaps userCaps;
 
+    @Autowired
+    private ModelService modelService;
     @Autowired
     private ExperimentDAO experimentDAO;
     @Autowired
@@ -139,9 +144,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         super();
         this.userCaps = new UserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
         addClassName("new-experiment-view");
-    }
-
-    protected void onDetach(DetachEvent event) {
     }
 
     @Override
@@ -178,6 +180,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         startRunButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         startRunButton.setEnabled(false);
 
+        // It is the same for all experiments from the same model so it doesn't have to be updated as long
+        // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
+        // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
+        downloadModelAlpLink = new DownloadModelAlpLink(experiment.getProject().getName(), experiment.getModel(), modelService, segmentIntegrator);
+
         saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> {
         }));
         saveDraftButton.setEnabled(false);
@@ -185,7 +192,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         mainPanel.setSpacing(true);
         VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                LabelFactory.createLabel("Write your reward function", CssPathmindStyles.SECTION_TITLE_LABEL),
+                WrapperUtils.wrapWidthFullHorizontal(
+                    LabelFactory.createLabel("Experiment #"+experiment.getName(), CssPathmindStyles.SECTION_TITLE_LABEL),
+                    downloadModelAlpLink
+                ),
                 LabelFactory.createLabel(
                         "To judge if an action is a good one, we calculate a reward score. "
                                 + "The reward score is based on the reward function.",

@@ -598,6 +598,14 @@ account-view {
     opacity: 0;
 }
 
+.download-alp-link {
+    align-self: flex-start;
+}
+
+.export-policy-view .download-alp-link {
+    align-self: center;
+}
+
 /* Typography Styles */
 h1, h2, h3, h4 {
     font-family: var(--lumo-font-family-header);
