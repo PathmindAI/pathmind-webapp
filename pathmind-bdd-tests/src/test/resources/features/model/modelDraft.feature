@@ -8,7 +8,7 @@ Feature: Save Model draft
     When Open projects page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
-    When Upload model tuple_models/CoffeeShopTuple.zip
+    When Upload model CoffeeShop/CoffeeShop.zip
     Then Check that model successfully uploaded
     When Open projects page
     When Open project AutotestProject on projects page
@@ -21,7 +21,7 @@ Feature: Save Model draft
     When Open projects page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
-    When Upload model tuple_models/CoffeeShopTuple.zip
+    When Upload model CoffeeShop/CoffeeShop.zip
     When Check that model successfully uploaded
     Then Click wizard model details next btn
     When Open projects page

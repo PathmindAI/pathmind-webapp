@@ -19,9 +19,9 @@ Feature: Check Model Details Actions/Observations fields
     Then Check model page model details observations is <observations>
 
     Examples:
-      | project name    | model                             | reward function file                                                        | observations |
-      | AutotestProject | tuple_models/MoonLanding.zip      | tuple_models/MoonLandingRewardFunction.txt                                  | 9            |
-      | AutotestProject | tuple_models/CoffeeShopTuple.zip  | Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt | 5            |
-      | AutotestProject | tuple_models/SimpleStochastic.zip | tuple_models/SimpleStochasticRewardFunction.txt                             | 3            |
-      | AutotestProject | tuple_models/ProductDelivery.zip  | tuple_models/ProductDeliveryRewardFunction.txt                              | 24           |
-      | AutotestProject | tuple_models/Warehouse.zip        | tuple_models/WarehouseRewardFunction.txt                                    | 2            |
+      | project name    | model                                 | reward function file                                | actions | observations |
+      | AutotestProject | MoonLanding/MoonLanding.zip           | MoonLanding/MoonLandingRewardFunction.txt           | 3       | 9            |
+      | AutotestProject | CoffeeShop/CoffeeShopTuple.zip        | CoffeeShop/CoffeeShopRewardFunction.txt             | 4       | 5            |
+      | AutotestProject | SimpleStochastic/SimpleStochastic.zip | SimpleStochastic/SimpleStochasticRewardFunction.txt | 2       | 3            |
+      | AutotestProject | ProductDelivery/ProductDelivery.zip   | ProductDelivery/ProductDeliveryRewardFunction.txt   | 3       | 24           |
+      | AutotestProject | Warehouse/Warehouse.zip               | Warehouse/WarehouseRewardFunction.txt               | 2       | 2            |

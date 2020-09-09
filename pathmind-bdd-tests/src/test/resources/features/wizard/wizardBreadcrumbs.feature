@@ -14,7 +14,7 @@ Feature: Wizard page breadcrumbs
     When Open projects page
     When Click create new project button
     When Input name of the new project AutotestProject and click Create project button
-    When Upload model tuple_models/CoffeeShopTuple.zip
+    When Upload model CoffeeShop/CoffeeShop.zip
     When Check that model successfully uploaded
     When Click project/ breadcrumb btn
     Then Check that project AutotestProject page is opened

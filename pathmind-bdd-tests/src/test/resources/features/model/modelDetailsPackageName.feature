@@ -22,9 +22,9 @@ Feature: Check Model Details package name field
     Then Check model page model breadcrumb package name is <package name>
 
     Examples:
-      | project name    | model                             | package name            |
-      | AutotestProject | tuple_models/MoonLanding.zip      | moonLanding             |
-      | AutotestProject | tuple_models/CoffeeShopTuple.zip  | coffeeshop              |
-      | AutotestProject | tuple_models/SimpleStochastic.zip | simple_stochastic_model |
-      | AutotestProject | tuple_models/ProductDelivery.zip  | product_delivery        |
-      | AutotestProject | tuple_models/Warehouse.zip        | warehouse_pathmind_demo |
+      | project name    | model                                 | reward function file                                | package name            |
+      | AutotestProject | MoonLanding/MoonLanding.zip           | MoonLanding/MoonLandingRewardFunction.txt           | moonLanding             |
+      | AutotestProject | CoffeeShop/CoffeeShop.zip             | CoffeeShop/CoffeeShopRewardFunction.txt             | coffeeshop              |
+      | AutotestProject | SimpleStochastic/SimpleStochastic.zip | SimpleStochastic/SimpleStochasticRewardFunction.txt | simple_stochastic_model |
+      | AutotestProject | ProductDelivery/ProductDelivery.zip   | ProductDelivery/ProductDeliveryRewardFunction.txt   | product_delivery        |
+      | AutotestProject | Warehouse/Warehouse.zip               | Warehouse/WarehouseRewardFunction.txt               | warehouse_pathmind_demo |
