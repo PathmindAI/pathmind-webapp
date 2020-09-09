@@ -8,10 +8,6 @@
     line-height: 1;
 }
 
-.dashboard-view .create-project-link {
-    margin-left: 0.4em;
-}
-
 .dashboard + vaadin-horizontal-layout {
     padding: var(--lumo-space-s) 0 var(--lumo-space-l);
 }
@@ -28,17 +24,6 @@
 }
 .dashboard-line:hover {
     box-shadow: 0 4px 7px var(--lumo-shade-30pct);
-}
-.dashboard-placeholder {
-    width: auto !important;
-    margin: 90px auto 0;
-}
-.dashboard-placeholder vaadin-horizontal-layout {
-    flex-wrap: wrap;
-}
-
-.dashboard-placeholder vaadin-horizontal-layout .button-link {
-    margin: var(--lumo-space-m);
 }
 
 .dashboard-item-main {

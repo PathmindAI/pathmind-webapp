@@ -1,10 +1,6 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 class ChartPlaceholder extends PolymerElement {
-    constructor() {
-        super();
-    }
-
     static get is() {
         return "chart-placeholder";
     }

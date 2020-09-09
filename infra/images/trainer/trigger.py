@@ -85,7 +85,8 @@ def send_mockup_data(s3bucket, s3path, cycle, maxMin):
     s3 = boto3.resource('s3')
     my_bucket = s3.Bucket(src_bucket)
     for my_bucket_object in my_bucket.objects.filter(Prefix='mockup/', Delimiter=''):
-        folder_list.add(int(my_bucket_object.key.split('/')[1]))
+        if not my_bucket_object.key.endswith("/"):
+            folder_list.add(int(my_bucket_object.key.split('/')[1]))
     folder_list=sorted(folder_list)
     offset = max(int(len(folder_list) * cycle / (60 * maxMin)), 1)
     folder_list = [x for x in folder_list if x == folder_list[-1] or x % offset == 0]

@@ -324,7 +324,7 @@ background-color: var(--pm-gray-color-light);
     margin-bottom: var(--lumo-space-m);
 }
 
-.page-content-header vaadin-button {
+.page-content-header > vaadin-button {
     margin: 0 0 0 var(--lumo-space-xxl);
 }
 
@@ -405,7 +405,8 @@ background-color: var(--pm-gray-color-light);
     width: auto;
 }
 
-.project-view .section-title-label + vaadin-button {
+.project-view .section-title-label + vaadin-button,
+.model-view .section-title-label + vaadin-button {
     min-width: var(--lumo-button-size);
     height: 1.4rem;
     line-height: calc(1.4rem - 2px);

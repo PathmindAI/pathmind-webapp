@@ -42,6 +42,7 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.model.components.ArchiveButton;
 import io.skymind.pathmind.webapp.ui.views.model.components.ExperimentGrid;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
@@ -86,9 +87,17 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
         modelName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL);
         createdDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         archivedLabel = new TagLabel("Archived", false, "small");
+		ArchiveButton archiveButton = new ArchiveButton(model.isArchived(), () -> {
+            Boolean toBeArchived = !model.isArchived();
+            modelDAO.archive(model.getId(), toBeArchived);
+            model.setArchived(toBeArchived);
+            archivedLabel.setVisible(toBeArchived);
+            segmentIntegrator.archived(Model.class, toBeArchived);
+        });
 
         HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(
-            WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(modelName, 
+            WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName, archiveButton),
                 WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(createdDate, archivedLabel)
             ),
             new NewExperimentButton(experimentDAO, modelId));

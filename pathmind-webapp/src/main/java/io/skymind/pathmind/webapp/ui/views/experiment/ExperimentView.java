@@ -116,6 +116,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private ObservationsPanel observationsPanel;
 
     private StoppedTrainingNotification stoppedTrainingNotification;
+    private SimulationMetricsPanel simulationMetricsPanel;
 
     @Autowired
     private ExperimentDAO experimentDAO;
@@ -217,7 +218,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         );
 
         boolean showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
-        SimulationMetricsPanel simulationMetricsPanel = new SimulationMetricsPanel(experiment, showSimulationMetrics, rewardVariables, () -> getUI());
+        simulationMetricsPanel = new SimulationMetricsPanel(experiment, showSimulationMetrics, rewardVariables, () -> getUI());
         String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
 
         rewardVariablesGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
@@ -356,6 +357,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             updateScreenComponents();
             notesField.setNotesText(experiment.getUserNotes());
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
+            simulationMetricsPanel.setExperiment(experiment);
 
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
