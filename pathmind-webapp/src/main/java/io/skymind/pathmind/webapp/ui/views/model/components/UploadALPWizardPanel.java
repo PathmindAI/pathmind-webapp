@@ -134,7 +134,8 @@ public class UploadALPWizardPanel extends VerticalLayout {
     private Div getInstructionsDiv() {
         Div div = new Div();
         div.setWidthFull();
-        div.add(new Paragraph("Upload your model's ALP file to easily keep track of the version of your model that was used for training each policy."));
+        div.add(new Paragraph("Upload your model's ALP file to easily keep track of the version of your model that was used for training each policy."),
+                new Paragraph("You'll be able to download this ALP file with your trained policy from an experiment."));
         return div;
     }
 }
