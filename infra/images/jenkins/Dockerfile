@@ -31,7 +31,7 @@ RUN apt update && \
 
 #Install JDK
 RUN mkdir /var/cache/oracle-jdk11-installer-local/ && \
-        wget http://s3.amazonaws.com/public-pathmind.com/jdk-11.0.7_linux-x64_bin.tar.gz -P /var/cache/oracle-jdk11-installer-local/ && \
+        wget http://s3.amazonaws.com/public-pathmind.com/jdk-11.0.8_linux-x64_bin.tar.gz -P /var/cache/oracle-jdk11-installer-local/ && \
         echo "oracle-java11-installer shared/accepted-oracle-license-v1-2 select true" | debconf-set-selections && \
         echo "oracle-java11-installer shared/accepted-oracle-license-v1-2 seen true" | debconf-set-selections && \
         echo "deb http://ppa.launchpad.net/linuxuprising/java/ubuntu focal main" | tee /etc/apt/sources.list.d/linuxuprising-java.list && \
@@ -65,3 +65,8 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s
     chmod 700 get_helm.sh && \
     ./get_helm.sh
 
+#Junit
+COPY junit/* /usr/bin/
+
+RUN chmod +x /usr/bin/flaky.py  
+RUN chmod +x /usr/bin/xml2json.py
