@@ -56,6 +56,7 @@ storiesOf('Charts', module)
                 ]'
                 options='{
                     "tooltip": { "isHtml": true },
+                    "isStacked": true,
                     "curveType": "function",
                     "hAxis": {"title": "Iteration", "titleTextStyle": {"italic": false}},
                     "vAxis": {"title": "Mean Reward Score over All Episodes", "titleTextStyle": {"italic": false}},
@@ -63,7 +64,7 @@ storiesOf('Charts', module)
                 }'
             ></data-chart>
         </div>
-        <h3>Sparkline Chart (Metric with Goall <=22, calibrated)</h3>
+        <h3>Sparkline Chart (Metric with Goal <=22, starts from 0)</h3>
         <div class="col-wrapper">
             <div style="width: 100px; height: 32px">
                 <data-chart
@@ -85,8 +86,8 @@ storiesOf('Charts', module)
                         [8,  54, 0, 22]
                     ]'
                     options='{
+                        "seriesType": "area",
                         "tooltip": { "trigger": "none" },
-                        "curveType": "function",
                         "hAxis": {"textPosition": "none", "ticks": []},
                         "vAxis": {
                             "textPosition": "none",
@@ -107,6 +108,61 @@ storiesOf('Charts', module)
                             "2": {
                                 "lineWidth": 0,
                                 "type": "area",
+                                "enableInteractivity": false,
+                                "color": "green"
+                            }
+                        }
+                    }'
+                ></data-chart>
+            </div>
+        </div>
+        <h3>Sparkline Chart (Metric with Goal >=5200, calibrated)</h3>
+        <div class="col-wrapper">
+            <div style="width: 100px; height: 32px">
+                <data-chart
+                    type='combo'
+                    cols='[
+                        {"label":"Iteration", "type":"number"},
+                        {"label":"Mean Metric Value", "type":"number"},
+                        {"label":"goal base", "type": "number"},
+                        {"label":"goal", "type": "number"}
+                    ]'
+                    rows='[
+                        [1,  5340.9, 5200, 300],
+                        [2,  5340, 5200, 300],
+                        [3,  5210, 5200, 300],
+                        [4,  5150, 5200, 300],
+                        [5,  5325, 5200, 300],
+                        [6,  5123, 5200, 300],
+                        [7,  5500, 5200, 300],
+                        [8,  5400, 5200, 300]
+                    ]'
+                    options='{
+                        "seriesType": "area",
+                        "tooltip": { "trigger": "none" },
+                        "isStacked": true,
+                        "hAxis": {"textPosition": "none", "ticks": []},
+                        "vAxis": {
+                            "textPosition": "none",
+                            "ticks": [],
+                            "viewWindow": {
+                                "max": 5500,
+                                "min": 5120
+                            }
+                        },
+                        "legend": {"position": "none"},
+                        "series": {
+                            "0": {
+                                "type": "line",
+                                "enableInteractivity": true
+                            },
+                            "1": {
+                                "lineWidth": 0,
+                                "enableInteractivity": false,
+                                "color": "transparent"
+                            },
+                            "2": {
+                                "lineWidth": 0,
                                 "enableInteractivity": false,
                                 "color": "green"
                             }
