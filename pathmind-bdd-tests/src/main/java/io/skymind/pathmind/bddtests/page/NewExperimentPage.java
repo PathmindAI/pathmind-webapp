@@ -136,6 +136,10 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void clickSideBarExperiment(String experimentName) {
-        getDriver().findElement(By.xpath("//div[@class='experiment-name']/p[text()='"+ experimentName +"']")).click();
+        getDriver().findElement(By.xpath("//div[@class='experiment-name']/p[text()='" + experimentName + "']")).click();
+    }
+
+    public void clickObservationsCheckbox(String checkbox) {
+        getDriver().findElement(By.xpath("//vaadin-checkbox[@role='checkbox' and text()='" + checkbox + "']")).click();
     }
 }

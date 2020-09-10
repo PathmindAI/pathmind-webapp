@@ -24,14 +24,14 @@ import org.jooq.impl.SequenceImpl;
 public class Sequences {
 
     /**
-     * The sequence <code>public.action_id_seq</code>
-     */
-    public static final Sequence<Long> ACTION_ID_SEQ = new SequenceImpl<Long>("action_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
-
-    /**
      * The sequence <code>public.experiment_id_seq</code>
      */
     public static final Sequence<Long> EXPERIMENT_ID_SEQ = new SequenceImpl<Long>("experiment_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+
+    /**
+     * The sequence <code>public.experiment_observation_id_seq</code>
+     */
+    public static final Sequence<Long> EXPERIMENT_OBSERVATION_ID_SEQ = new SequenceImpl<Long>("experiment_observation_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
 
     /**
      * The sequence <code>public.model_id_seq</code>

@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 import io.skymind.pathmind.shared.data.Experiment;
@@ -9,8 +8,6 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +71,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
     private Span createdDate;
     private TagLabel archivedLabel;
     private Paragraph packageNameText;
-    private Paragraph actionsText;
     private Paragraph observationsText;
     private Div rewardVariableNamesText;
 
@@ -123,7 +119,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
         Span panelTitle = LabelFactory.createLabel("Model Details", CssPathmindStyles.SECTION_TITLE_LABEL);
         Span errorMessage = modelCheckerService.createInvalidErrorLabel(model);
         packageNameText = new Paragraph(LabelFactory.createLabel("Package Name", CssPathmindStyles.BOLD_LABEL));
-        actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssPathmindStyles.BOLD_LABEL));
         observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssPathmindStyles.BOLD_LABEL));
         rewardVariableNamesText = new Div();
         rewardVariableNamesText.addClassName("model-reward-variables");
@@ -133,7 +128,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
                 panelTitle,
                 errorMessage,
                 packageNameText,
-                actionsText,
                 observationsText,
                 new Div(LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL), rewardVariableNamesText),
                 notesField);
@@ -210,7 +204,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
             createdDate.setText(String.format("Uploaded on %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(dateCreatedData, timeZoneId)));
         });
         packageNameText.add(packageName);
-        actionsText.add(""+model.getNumberOfPossibleActions());
         observationsText.add(""+model.getNumberOfObservations());
 
         if (rewardVariableNames.size() > 0) {
@@ -218,8 +211,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
             rewardVariablesTable.setRewardVariables(rewardVariableNames);
             rewardVariablesTable.setCompactMode();
             rewardVariableNamesText.add(rewardVariablesTable);
-        } else {
-            rewardVariableNamesText.add("All reward variables are unnamed. You can name them when you create a new experiment for this model.");
         }
         archivesTabPanel.initData(event.getUI());
 

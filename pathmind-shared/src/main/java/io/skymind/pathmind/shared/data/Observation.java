@@ -1,5 +1,7 @@
 package io.skymind.pathmind.shared.data;
 
+import java.util.Objects;
+
 import io.skymind.pathmind.shared.constants.ObservationDataType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -7,7 +9,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"id"})
 public class Observation {
     private long id = -1;
     private long modelId;
@@ -25,9 +26,14 @@ public class Observation {
     public boolean equals(Object o) {
         if(this == o) return true;
         if(o == null || getClass() != o.getClass()) return false;
-        Observation observation = (Observation) o;
+        Observation obs = (Observation) o;
         // If there is no id in either then use the instance comparison.
-        return id == observation.id;
+        return id > -1 && obs.id > -1 ? id == obs.id : this == o;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     public ObservationDataType getDataTypeEnum() {

@@ -17,6 +17,7 @@ import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.TrainingError;
@@ -57,6 +58,8 @@ import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.Simulati
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
+import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
+import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import lombok.extern.slf4j.Slf4j;
@@ -93,6 +96,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
 
+    private List<Observation> modelObservations = new ArrayList<>();
+    private List<Observation> experimentObservations = new ArrayList<>();
+
     private UserCaps userCaps;
 
     private HorizontalLayout middlePanel;
@@ -106,6 +112,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private PolicyChartPanel policyChartPanel;
     private ExperimentsNavBar experimentsNavbar;
     private NotesField notesField;
+
+    private ObservationsPanel observationsPanel;
+
     private StoppedTrainingNotification stoppedTrainingNotification;
     private SimulationMetricsPanel simulationMetricsPanel;
 
@@ -113,6 +122,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private ExperimentDAO experimentDAO;
     @Autowired
     private RewardVariableDAO rewardVariableDAO;
+	@Autowired
+	private ObservationDAO observationDAO;
     @Autowired
     private PolicyDAO policyDAO;
     @Autowired
@@ -214,8 +225,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
         );
 
+        observationsPanel = new ObservationsPanel(true);
+        observationsPanel.setupObservationTable(modelObservations, experimentObservations);
+
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
-        middlePanel.add(rewardVariablesGroup, rewardFunctionGroup);
+        middlePanel.add(rewardVariablesGroup, observationsPanel, rewardFunctionGroup);
         middlePanel.addClassName("middle-panel");
         middlePanel.setPadding(false);
     }
@@ -373,6 +387,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         modelId = experiment.getModelId();
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
+		modelObservations = observationDAO.getObservationsForModel(experiment.getModelId());
+		experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
         policy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
@@ -398,6 +414,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
             experimentsNavbar.setAllowNewExperimentCreation(false);
         }
+        observationsPanel.setSelectedObservations(experimentObservations);
         policyChartPanel.setExperiment(experiment, policy);
         updateDetailsForExperiment();
     }

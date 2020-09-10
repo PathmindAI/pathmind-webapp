@@ -15,7 +15,7 @@ class ModelRepository
 {
     protected static List<Model> getModelsForProject(DSLContext ctx, long projectId) {
         return ctx
-				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.PACKAGE_NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.ARCHIVED, MODEL.USER_NOTES, MODEL.DRAFT, MODEL.ACTION_TUPLE_SIZE)
+				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.PACKAGE_NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.ARCHIVED, MODEL.USER_NOTES, MODEL.DRAFT, MODEL.ACTION_TUPLE_SIZE)
 				.from(MODEL)
 				.where(MODEL.PROJECT_ID.eq(projectId))
 				.fetchInto(Model.class);
@@ -42,7 +42,7 @@ class ModelRepository
 	 */
 	protected static Model getModel(DSLContext ctx, long modelId) {
 		return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.PACKAGE_NAME, MODEL.NUMBER_OF_OBSERVATIONS,
-				MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.USER_NOTES, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT, MODEL.ACTION_TUPLE_SIZE, MODEL.INVALID_MODEL)
+				MODEL.USER_NOTES, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT, MODEL.ACTION_TUPLE_SIZE, MODEL.INVALID_MODEL)
 				.from(MODEL)
 				.where(MODEL.ID.eq(modelId))
 				.fetchOneInto(Model.class);
@@ -55,7 +55,6 @@ class ModelRepository
 		mod.setDateCreated(dateCreated);
 		mod.setLastActivityDate(dateCreated);
 		mod.setProjectId(projectId);
-		mod.setNumberOfPossibleActions(model.getNumberOfPossibleActions());
 		mod.setNumberOfObservations(model.getNumberOfObservations());
 		mod.setDraft(model.isDraft());
 		mod.setRewardVariablesCount(model.getRewardVariablesCount());
@@ -84,7 +83,7 @@ class ModelRepository
 	public static Optional<Model> getModelIfAllowed(DSLContext ctx, long modelId, long userId) {
 		return Optional.ofNullable(ctx
 				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.PACKAGE_NAME, MODEL.ARCHIVED,
-						MODEL.NUMBER_OF_POSSIBLE_ACTIONS, MODEL.USER_NOTES, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT, MODEL.ACTION_TUPLE_SIZE)
+						MODEL.USER_NOTES, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT, MODEL.ACTION_TUPLE_SIZE)
 				.from(MODEL)
 				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
 				.where(MODEL.ID.eq(modelId))
