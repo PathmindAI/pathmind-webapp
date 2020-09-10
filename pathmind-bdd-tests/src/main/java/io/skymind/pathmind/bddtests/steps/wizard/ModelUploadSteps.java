@@ -21,4 +21,9 @@ public class ModelUploadSteps {
     public void checkErrorMessageInModelCheckPanel(String errorMessage) {
         modelUploadPage.checkErrorMessageInModelCheckPanel(errorMessage);
     }
+
+    @Step
+    public void clickAlpUploadStepNextBtn() {
+        modelUploadPage.clickAlpUploadStepNextBtn();
+    }
 }

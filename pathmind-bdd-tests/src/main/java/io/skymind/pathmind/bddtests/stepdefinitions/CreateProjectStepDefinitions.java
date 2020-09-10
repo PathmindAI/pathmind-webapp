@@ -52,6 +52,7 @@ public class CreateProjectStepDefinitions {
     @When("^Create new CoffeeShop project with draft experiment$")
     public void createNewProjectWithModelAndDraftExperiment() {
         createNewCoffeeShopProjectWithDraftModel();
+        modelUploadSteps.clickAlpUploadStepNextBtn();
         modelDetailsSteps.clickWizardModelDetailsNextBtn();
         rewardVariablesSteps.clickWizardRewardVariableNamesNextBtn();
         newExperimentSteps.checkThatExperimentPageOpened("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));

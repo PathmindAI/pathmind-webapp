@@ -44,4 +44,8 @@ public class ModelUploadPage extends PageObject {
         assertThat(getDriver().findElement(xpath).getText(), is(errorMessage));
         resetImplicitTimeout();
     }
+
+    public void clickAlpUploadStepNextBtn() {
+        getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']/following-sibling::vaadin-horizontal-layout/vaadin-button")).click();
+    }
 }
