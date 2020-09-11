@@ -15,18 +15,42 @@ public class DataChart extends PolymerTemplate<DataChart.Model> implements HasSt
     public DataChart() {
         super();
     }
+
+    public void setupChart(
+            String type,
+            Boolean showTooltip,
+            String hAxisTitle,
+            String vAxisTitle,
+            Boolean curveLines,
+            String seriesType,
+            JsonObject series,
+            Boolean stacked,
+            JsonObject viewWindow,
+            JsonArray cols,
+            JsonArray rows
+        ) {
+        getModel().setType(type);
+        getModel().setShowtooltip(showTooltip);
+        getModel().setHaxistitle(hAxisTitle);
+        getModel().setVaxistitle(vAxisTitle);
+        getModel().setCurvelines(curveLines);
+        getModel().setSeriestype(seriesType);
+        getModel().setStacked(stacked);
+
+        // JsonObject and JsonArray are not allowed types for TemplateModel methods
+        // So we have to set it through calling the JS function
+        getElement().callJsFunction("setData", cols, rows);
+        getElement().callJsFunction("setSeries", series);
+        getElement().callJsFunction("setViewWindow", viewWindow);
+    }
     
 	public interface Model extends TemplateModel {
 		void setType(String type);
 		void setShowtooltip(Boolean showTooltip);
-		void setHAxisTitle(String hAxisTitle);
-		void setVAxisTitle(String vAxisTitle);
-		void setCurveLines(Boolean curveLines);
-        void setSeriesType(String seriesType);
-        void setSeries(JsonObject series);
+		void setHaxistitle(String hAxisTitle);
+		void setVaxistitle(String vAxisTitle);
+		void setCurvelines(Boolean curveLines);
+        void setSeriestype(String seriesType);
         void setStacked(Boolean stacked);
-        void setViewWindow(JsonObject viewWindow);
-		void setCols(JsonArray cols);
-		void setRows(JsonArray rows);
 	}
 }

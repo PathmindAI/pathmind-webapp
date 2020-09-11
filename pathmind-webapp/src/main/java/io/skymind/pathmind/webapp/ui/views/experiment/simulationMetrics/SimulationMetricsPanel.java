@@ -18,6 +18,7 @@ import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.SparklineChart;
+import io.skymind.pathmind.webapp.ui.components.SparklineChartNew;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.MetricChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
@@ -131,6 +132,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         IntStream.range(0, policy.getSimulationMetrics().size())
                 .forEach(idx -> {
                     SparklineChart sparkLine = new SparklineChart();
+                    SparklineChartNew sparkLineNew = new SparklineChartNew();
                     sparkLine.setSparkLine(policy.getSparklinesData().get(idx), idx, rewardVariables.get(idx));
                     sparkLine.setupButton(() -> {
                         MetricChartPanel metricChartPanel = new MetricChartPanel();
@@ -139,6 +141,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                         metricChartDialog.open();
                     });
                     sparklinesWrapper.add(sparkLine);
+                    sparklinesWrapper.add(sparkLineNew);
                     Span metricSpan = new Span();
                     if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {
                         String metricValueWithUncertainty = policy.getUncertainty().get(idx);

@@ -28,20 +28,20 @@ class DataChart extends PolymerElement {
             seriestype: {
                 type: String,
             },
-            series: {
-                type: Object,
-            },
             stacked: {
                 type: Boolean,
-            },
-            viewwindow: {
-                type: Object,
             },
             cols: {
                 type: Array,
             },
             rows: {
                 type: Array,
+            },
+            series: {
+                type: Object,
+            },
+            viewwindow: {
+                type: Object,
             },
             options: {
                 type: Object,
@@ -86,7 +86,6 @@ class DataChart extends PolymerElement {
     }
 
     _computeOptions(showtooltip, haxistitle, vaxistitle, curvelines, seriestype, series, stacked, viewwindow) {
-        console.log(viewwindow)
         return {
             "tooltip": showtooltip ? { "isHtml": true } : { "trigger": "none" },
             "curveType": curvelines ? "function" : null,
@@ -111,6 +110,19 @@ class DataChart extends PolymerElement {
             "seriesType": seriestype,
             "series": series,
         };
+    }
+    
+    setData(cols, rows) {
+        this.cols = cols;
+        this.rows = rows;
+    }
+
+    setSeries(series) {
+        this.series = series;
+    }
+
+    setViewWindow(viewWindow) {
+        this.viewwindow = viewWindow;
     }
 
     static get template() {
