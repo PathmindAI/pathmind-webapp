@@ -11,11 +11,30 @@ class DataChart extends PolymerElement {
         return {
             type: {
                 type: String,
+                value: "combo",
             },
-            data: {
+            showtooltip: {
+                type: Boolean,
+            },
+            haxistitle: {
                 type: String,
             },
-            options: {
+            vaxistitle: {
+                type: String,
+            },
+            curvelines: {
+                type: Boolean,
+            },
+            seriestype: {
+                type: String,
+            },
+            series: {
+                type: Object,
+            },
+            stacked: {
+                type: Boolean,
+            },
+            viewwindow: {
                 type: Object,
             },
             cols: {
@@ -24,6 +43,18 @@ class DataChart extends PolymerElement {
             rows: {
                 type: Array,
             },
+            options: {
+                type: Object,
+                computed: `_computeOptions(
+                                showtooltip, 
+                                haxistitle, 
+                                vaxistitle, 
+                                curvelines, 
+                                seriestype, 
+                                series,
+                                stacked,
+                                viewwindow)`,
+            }
         }
     }
 
@@ -54,15 +85,42 @@ class DataChart extends PolymerElement {
         }, 300));
     }
 
+    _computeOptions(showtooltip, haxistitle, vaxistitle, curvelines, seriestype, series, stacked, viewwindow) {
+        console.log(viewwindow)
+        return {
+            "tooltip": showtooltip ? { "isHtml": true } : { "trigger": "none" },
+            "curveType": curvelines ? "function" : null,
+            "isStacked": stacked,
+            "hAxis": haxistitle ? {
+                    "title": haxistitle,
+                    "titleTextStyle": {"italic": false},
+                    "format": "0"
+                } : {
+                    "textPosition": "none",
+                    "ticks": []
+                },
+            "vAxis": {
+                "title": vaxistitle,
+                "titleTextStyle": {"italic": false},
+                "textPosition": vaxistitle ? "none" : "out",
+                "ticks": vaxistitle ? "auto" : [],
+                "viewWindow": viewwindow,
+                "viewWindowMode": viewwindow ? "pretty" : "maximized",
+            },
+            "legend": {"position": "none"},  // true for all usages
+            "seriesType": seriestype,
+            "series": series,
+        };
+    }
+
     static get template() {
         return html`
             <google-chart 
                 id="chart"
                 type=[[type]]
-                data=[[data]]
-                options=[[options]]
                 cols=[[cols]]
                 rows=[[rows]]
+                options=[[options]]
             ></google-chart>
         `;
     }
