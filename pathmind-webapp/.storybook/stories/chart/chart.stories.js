@@ -17,24 +17,6 @@ storiesOf('Charts', module)
         <p>This is based on the APIs from <a href="https://www.webcomponents.org/element/@google-web-components/google-chart/elements/google-chart" target="_blank">Google Chart</a>.</p>
     </div>
     <div class="block-wrapper">
-        <h3>Area Chart</h3>
-        <div class="col-wrapper">
-            <data-chart
-                type='area'
-                data='[
-                    ["Year", "Sales", "Expenses"],
-                    ["2013",  1000,      400],
-                    ["2014",  1170,      460],
-                    ["2015",  660,       1120],
-                    ["2016",  1030,      540]
-                ]'
-                options='{
-                    "title": "Company Performance",
-                    "hAxis": {"title": "Year"},
-                    "vAxis": {"minValue": 0}
-                }'
-            ></data-chart>
-        </div>
         <h3>Line Chart (Reward Score Chart)</h3>
         <div class="col-wrapper">
             <data-chart
@@ -54,21 +36,16 @@ storiesOf('Charts', module)
                     [7,  9.3, "nah", -70.3, "what"],
                     [8,  18.4, "nah", -69.0, "what"]
                 ]'
-                options='{
-                    "tooltip": { "isHtml": true },
-                    "isStacked": true,
-                    "curveType": "function",
-                    "hAxis": {"title": "Iteration", "titleTextStyle": {"italic": false}},
-                    "vAxis": {"title": "Mean Reward Score over All Episodes", "titleTextStyle": {"italic": false}},
-                    "legend": {"position": "none"}
-                }'
+                showtooltip
+                curvelines
+                haxistitle="Iteration"
+                vaxistitle='Mean Reward Score over All Episodes'
             ></data-chart>
         </div>
         <h3>Sparkline Chart (Metric with Goal <=22, starts from 0)</h3>
         <div class="col-wrapper">
             <div style="width: 100px; height: 32px">
                 <data-chart
-                    type='combo'
                     cols='[
                         {"label":"Iteration", "type":"number"},
                         {"label":"Mean Metric Value", "type":"number"},
@@ -85,32 +62,22 @@ storiesOf('Charts', module)
                         [7,  55, 0, 22],
                         [8,  54, 0, 22]
                     ]'
-                    options='{
-                        "seriesType": "area",
-                        "tooltip": { "trigger": "none" },
-                        "hAxis": {"textPosition": "none", "ticks": []},
-                        "vAxis": {
-                            "textPosition": "none",
-                            "ticks": [],
-                            "viewWindowMode": "maximized"
+                    seriestype='area'
+                    series='{
+                        "0": {
+                            "type": "line",
+                            "enableInteractivity": true
                         },
-                        "legend": {"position": "none"},
-                        "series": {
-                            "0": {
-                                "type": "line",
-                                "enableInteractivity": true
-                            },
-                            "1": {
-                                "lineWidth": 0,
-                                "enableInteractivity": false,
-                                "color": "transparent"
-                            },
-                            "2": {
-                                "lineWidth": 0,
-                                "type": "area",
-                                "enableInteractivity": false,
-                                "color": "green"
-                            }
+                        "1": {
+                            "lineWidth": 0,
+                            "enableInteractivity": false,
+                            "color": "transparent"
+                        },
+                        "2": {
+                            "lineWidth": 0,
+                            "type": "area",
+                            "enableInteractivity": false,
+                            "color": "green"
                         }
                     }'
                 ></data-chart>
@@ -120,7 +87,6 @@ storiesOf('Charts', module)
         <div class="col-wrapper">
             <div style="width: 100px; height: 32px">
                 <data-chart
-                    type='combo'
                     cols='[
                         {"label":"Iteration", "type":"number"},
                         {"label":"Mean Metric Value", "type":"number"},
@@ -137,36 +103,27 @@ storiesOf('Charts', module)
                         [7,  5500, 5200, 300],
                         [8,  5400, 5200, 300]
                     ]'
-                    options='{
-                        "seriesType": "area",
-                        "tooltip": { "trigger": "none" },
-                        "isStacked": true,
-                        "hAxis": {"textPosition": "none", "ticks": []},
-                        "vAxis": {
-                            "textPosition": "none",
-                            "ticks": [],
-                            "viewWindow": {
-                                "max": 5500,
-                                "min": 5120
-                            }
+                    seriestype='area'
+                    series='{
+                        "0": {
+                            "type": "line",
+                            "enableInteractivity": true
                         },
-                        "legend": {"position": "none"},
-                        "series": {
-                            "0": {
-                                "type": "line",
-                                "enableInteractivity": true
-                            },
-                            "1": {
-                                "lineWidth": 0,
-                                "enableInteractivity": false,
-                                "color": "transparent"
-                            },
-                            "2": {
-                                "lineWidth": 0,
-                                "enableInteractivity": false,
-                                "color": "green"
-                            }
+                        "1": {
+                            "lineWidth": 0,
+                            "enableInteractivity": false,
+                            "color": "transparent"
+                        },
+                        "2": {
+                            "lineWidth": 0,
+                            "enableInteractivity": false,
+                            "color": "green"
                         }
+                    }'
+                    stacked
+                    viewwindow='{
+                        "max": 5500,
+                        "min": 5120
                     }'
                 ></data-chart>
             </div>
@@ -191,37 +148,31 @@ storiesOf('Charts', module)
                     [7,  55, "nah", 0, 22],
                     [8,  54, "nah", 0, 22]
                 ]'
-                options='{
-                    "seriesType": "area",
-                    "tooltip": { "isHtml": true },
-                    "isStacked": true,
-                    "hAxis": {"title": "Iteration", "titleTextStyle": {"italic": false}},
-                    "vAxis": {
-                        "title": "Mean Metric Value", 
-                        "titleTextStyle": {"italic": false},
-                        "viewWindow": {
-                            "min": 0
-                        }
+                showtooltip
+                haxistitle='Iteration'
+                vaxistitle='Mean Metric Value'
+                seriestype='area'
+                series='{
+                    "0": {
+                        "type": "line",
+                        "enableInteractivity": true
                     },
-                    "legend": {"position": "none"},
-                    "series": {
-                        "0": {
-                            "type": "line",
-                            "enableInteractivity": true
-                        },
-                        "1": {
-                            "lineWidth": 0,
-                            "enableInteractivity": false,
-                            "color": "transparent"
-                        },
-                        "2": {
-                            "lineWidth": 0,
-                            "type": "area",
-                            "enableInteractivity": false,
-                            "color": "green"
-                        }
+                    "1": {
+                        "lineWidth": 0,
+                        "enableInteractivity": false,
+                        "color": "transparent"
+                    },
+                    "2": {
+                        "lineWidth": 0,
+                        "type": "area",
+                        "enableInteractivity": false,
+                        "color": "green"
                     }
                 }'
+                viewwindow='{
+                    "min": 0
+                }'
+                stacked
             ></data-chart>
         </div>
         <h3>Metric Chart (Metric with Goal >=5200, calibrated)</h3>
@@ -244,42 +195,31 @@ storiesOf('Charts', module)
                     [7,  5500, "nah", 5200, 300],
                     [8,  5400, "nah", 5200, 300]
                 ]'
-                options='{
-                    "seriesType": "area",
-                    "tooltip": { "isHtml": true },
-                    "isStacked": true,
-                    "hAxis": {
-                        "title": "Iteration", 
-                        "titleTextStyle": {"italic": false}
+                showtooltip
+                haxistitle='Iteration'
+                vaxistitle='Mean Metric Value'
+                seriestype='area'
+                series='{
+                    "0": {
+                        "type": "line",
+                        "enableInteractivity": true
                     },
-                    "vAxis": {
-                        "title": "Mean Metric Value", 
-                        "titleTextStyle": {"italic": false},
-                        "viewWindow": {
-                            "min": 5120
-                        }
+                    "1": {
+                        "lineWidth": 0,
+                        "enableInteractivity": false,
+                        "color": "transparent"
                     },
-                    "legend": {"position": "none"},
-                    "series": {
-                        "0": {
-                            "type": "line",
-                            "enableInteractivity": true
-                        },
-                        "1": {
-                            "lineWidth": 0,
-                            "enableInteractivity": false,
-                            "color": "transparent"
-                        },
-                        "2": {
-                            "lineWidth": 0,
-                            "enableInteractivity": false,
-                            "color": "green"
-                        }
+                    "2": {
+                        "lineWidth": 0,
+                        "enableInteractivity": false,
+                        "color": "green"
                     }
                 }'
+                viewwindow='{
+                    "min": 5120
+                }'
+                stacked
             ></data-chart>
         </div>
     </div>
 `, storyParamConfig);
-
-// "viewWindowMode": "maximized"
