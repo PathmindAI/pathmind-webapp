@@ -44,7 +44,6 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -231,7 +230,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private void handleRewardVariablesClicked() {
 	    if (rewardVariablesPanel.canSaveChanges()) {
-	        rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
+	        rewardVariablesDAO.updateModelAndRewardVariables(model, rewardVariables);
 	        saveAndNavigateToNewExperiment();
 	    }
     }
@@ -313,7 +312,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");
 			copyGoalsFromPreviousModel(rewardVariables, model.getProjectId(), model.getId());
-			rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
+			rewardVariablesDAO.updateModelAndRewardVariables(model, rewardVariables);
 			observationDAO.updateModelObservations(model.getId(), observationList);
 			segmentIntegrator.modelImported(true);
 		}));

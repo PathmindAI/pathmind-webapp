@@ -29,11 +29,6 @@ public class Sequences {
     public static final Sequence<Long> EXPERIMENT_ID_SEQ = new SequenceImpl<Long>("experiment_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
 
     /**
-     * The sequence <code>public.experiment_observation_id_seq</code>
-     */
-    public static final Sequence<Long> EXPERIMENT_OBSERVATION_ID_SEQ = new SequenceImpl<Long>("experiment_observation_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
-
-    /**
      * The sequence <code>public.model_id_seq</code>
      */
     public static final Sequence<Long> MODEL_ID_SEQ = new SequenceImpl<Long>("model_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));

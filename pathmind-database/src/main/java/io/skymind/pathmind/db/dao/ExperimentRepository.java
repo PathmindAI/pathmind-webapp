@@ -111,17 +111,18 @@ class ExperimentRepository
 				.execute();
 	}
 
-	protected static Experiment createNewExperiment(DSLContext ctx, long modelId) {
-        return createNewExperiment(ctx, modelId, "1", "");
+	protected static Experiment createNewExperiment(DSLContext ctx, long modelId, boolean hasGoals) {
+        return createNewExperiment(ctx, modelId, "1", "", hasGoals);
 	}
 	
-	protected static Experiment createNewExperiment(DSLContext ctx, long modelId, String experimentName, String rewardFunction) {
+	protected static Experiment createNewExperiment(DSLContext ctx, long modelId, String experimentName, String rewardFunction, boolean hasGoals) {
 		final ExperimentRecord ex = EXPERIMENT.newRecord();
 		ex.attach(ctx.configuration());
 		ex.setDateCreated(LocalDateTime.now());
 		ex.setModelId(modelId);
 		ex.setName(experimentName);
 		ex.setRewardFunction(rewardFunction);
+		ex.setHasGoals(hasGoals);
 		ex.store();
         return ex.into(EXPERIMENT).into(Experiment.class);
 	}
@@ -218,7 +219,7 @@ class ExperimentRepository
 		final Field<LocalDateTime> itemLastActivityDate = DSL.ifnull(DSL.field(EXPERIMENT.LAST_ACTIVITY_DATE),
 				DSL.greatest(MODEL.LAST_ACTIVITY_DATE,PROJECT.LAST_ACTIVITY_DATE));
 
-		final Result<?> result = ctx.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.USER_NOTES, EXPERIMENT.IS_FAVORITE, EXPERIMENT.GOALS_REACHED,
+		final Result<?> result = ctx.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.USER_NOTES, EXPERIMENT.IS_FAVORITE, EXPERIMENT.HAS_GOALS, EXPERIMENT.GOALS_REACHED,
 				MODEL.ID, MODEL.NAME, MODEL.DRAFT, MODEL.PACKAGE_NAME,
 				PROJECT.ID, PROJECT.NAME,
 				latestRun.asterisk(),

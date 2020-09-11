@@ -46,7 +46,9 @@ public class Indexes {
 
     public static final Index EXPERIMENT_MODEL_FK_INDEX = Indexes0.EXPERIMENT_MODEL_FK_INDEX;
     public static final Index EXPERIMENT_PKEY = Indexes0.EXPERIMENT_PKEY;
-    public static final Index EXPERIMENT_OBSERVATION_PKEY = Indexes0.EXPERIMENT_OBSERVATION_PKEY;
+    public static final Index EXPERIMENT_OBSERVATION_EXPERIMENT_ID_INDEX = Indexes0.EXPERIMENT_OBSERVATION_EXPERIMENT_ID_INDEX;
+    public static final Index EXPERIMENT_OBSERVATION_OBSERVATION_ID_INDEX = Indexes0.EXPERIMENT_OBSERVATION_OBSERVATION_ID_INDEX;
+    public static final Index PK_EXPERIMENT_OBSERVATION = Indexes0.PK_EXPERIMENT_OBSERVATION;
     public static final Index METRICS_POLICY_ID_INDEX = Indexes0.METRICS_POLICY_ID_INDEX;
     public static final Index METRICS_RAW_POLICY_ID_INDEX = Indexes0.METRICS_RAW_POLICY_ID_INDEX;
     public static final Index MODEL_PKEY = Indexes0.MODEL_PKEY;
@@ -80,7 +82,9 @@ public class Indexes {
     private static class Indexes0 {
         public static Index EXPERIMENT_MODEL_FK_INDEX = Internal.createIndex("experiment_model_fk_index", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.MODEL_ID }, false);
         public static Index EXPERIMENT_PKEY = Internal.createIndex("experiment_pkey", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.ID }, true);
-        public static Index EXPERIMENT_OBSERVATION_PKEY = Internal.createIndex("experiment_observation_pkey", ExperimentObservation.EXPERIMENT_OBSERVATION, new OrderField[] { ExperimentObservation.EXPERIMENT_OBSERVATION.ID }, true);
+        public static Index EXPERIMENT_OBSERVATION_EXPERIMENT_ID_INDEX = Internal.createIndex("experiment_observation_experiment_id_index", ExperimentObservation.EXPERIMENT_OBSERVATION, new OrderField[] { ExperimentObservation.EXPERIMENT_OBSERVATION.EXPERIMENT_ID }, false);
+        public static Index EXPERIMENT_OBSERVATION_OBSERVATION_ID_INDEX = Internal.createIndex("experiment_observation_observation_id_index", ExperimentObservation.EXPERIMENT_OBSERVATION, new OrderField[] { ExperimentObservation.EXPERIMENT_OBSERVATION.OBSERVATION_ID }, false);
+        public static Index PK_EXPERIMENT_OBSERVATION = Internal.createIndex("pk_experiment_observation", ExperimentObservation.EXPERIMENT_OBSERVATION, new OrderField[] { ExperimentObservation.EXPERIMENT_OBSERVATION.EXPERIMENT_ID, ExperimentObservation.EXPERIMENT_OBSERVATION.OBSERVATION_ID }, true);
         public static Index METRICS_POLICY_ID_INDEX = Internal.createIndex("metrics_policy_id_index", Metrics.METRICS, new OrderField[] { Metrics.METRICS.POLICY_ID }, false);
         public static Index METRICS_RAW_POLICY_ID_INDEX = Internal.createIndex("metrics_raw_policy_id_index", MetricsRaw.METRICS_RAW, new OrderField[] { MetricsRaw.METRICS_RAW.POLICY_ID }, false);
         public static Index MODEL_PKEY = Internal.createIndex("model_pkey", Model.MODEL, new OrderField[] { Model.MODEL.ID }, true);

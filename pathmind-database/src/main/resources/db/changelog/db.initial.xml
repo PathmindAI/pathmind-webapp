@@ -1723,4 +1723,21 @@
         </addColumn>
     </changeSet>
 
+
+    <changeSet id="20200911-01" author="bruno.rezende@ext.vaadin.com">
+        <comment>
+            Add a has goals flag to model and experiment table
+        </comment>
+        <addColumn tableName="MODEL">
+            <column name="HAS_GOALS" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="EXPERIMENT">
+            <column name="HAS_GOALS" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
