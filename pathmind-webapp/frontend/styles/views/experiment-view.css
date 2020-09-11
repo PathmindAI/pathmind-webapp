@@ -113,6 +113,7 @@
 
 .experiment-view .sparklines-wrapper .sparkline {
     position: relative;
+    width: 100px;
     height: 2rem !important;
     padding: var(--lumo-space-xxs) 0;
     margin-left: var(--lumo-space-s);
