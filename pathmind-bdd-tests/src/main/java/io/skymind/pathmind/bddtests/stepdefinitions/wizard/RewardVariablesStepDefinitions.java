@@ -28,4 +28,8 @@ public class RewardVariablesStepDefinitions {
         rewardVariablesSteps.checkThatThereIsAVariableNamed(variableName);
     }
 
+    @When("^Input reward variable '(.*)' goal '(.*)' value '(.*)'$")
+    public void inputRewardVariableGoalValue(String rewardVariable, String goalSign, String goal) {
+        rewardVariablesSteps.inputRewardVariableGoalValue(rewardVariable, goalSign, goal);
+    }
 }

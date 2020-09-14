@@ -16,4 +16,9 @@ public class RewardVariablesSteps {
     public void checkThatThereIsAVariableNamed(String variableName) {
         rewardVariablesPage.checkThatThereIsAVariableNamed(variableName);
     }
+
+    @Step
+    public void inputRewardVariableGoalValue(String rewardVariable, String goalSign, String goal) {
+        rewardVariablesPage.inputRewardVariableGoalValue(rewardVariable, goalSign, goal);
+    }
 }
