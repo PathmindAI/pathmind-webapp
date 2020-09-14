@@ -115,8 +115,13 @@
     position: relative;
     width: 100px;
     height: 2rem !important;
-    padding: var(--lumo-space-xxs) 0;
+    /* padding: var(--lumo-space-xxs) 0; */
     margin-left: var(--lumo-space-s);
+}
+
+.experiment-view .sparklines-wrapper .sparkline data-chart {
+    width: 100%;
+    height: 100%;
 }
 
 .experiment-view .sparklines-wrapper .sparkline vaadin-button {

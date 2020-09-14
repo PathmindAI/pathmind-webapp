@@ -90,14 +90,15 @@ class DataChart extends PolymerElement {
             "tooltip": showtooltip ? { "isHtml": true } : { "trigger": "none" },
             "curveType": curvelines ? "function" : null,
             "isStacked": stacked,
-            "hAxis": haxistitle ? {
-                    "title": haxistitle,
-                    "titleTextStyle": {"italic": false},
-                    "format": "0"
-                } : {
-                    "textPosition": "none",
-                    "ticks": []
-                },
+            "hAxis": {
+                "title": haxistitle,
+                "titleTextStyle": {"italic": false},
+                "textPosition": haxistitle ? "none" : "out",
+                "ticks": haxistitle ? "auto" : [],
+                "format": "0",
+                "baselineColor": haxistitle ? "black" : "#FFF",
+                "gridlineColor": haxistitle ? "#CCC" : "#FFF"
+            },
             "vAxis": {
                 "title": vaxistitle,
                 "titleTextStyle": {"italic": false},
@@ -105,10 +106,13 @@ class DataChart extends PolymerElement {
                 "ticks": vaxistitle ? "auto" : [],
                 "viewWindow": viewwindow,
                 "viewWindowMode": viewwindow ? "pretty" : "maximized",
+                "baselineColor": vaxistitle ? "black" : "#FFF",
+                "gridlineColor": vaxistitle ? "#CCC" : "#FFF"
             },
             "legend": {"position": "none"},  // true for all usages
             "seriesType": seriestype,
             "series": series,
+            "chartArea": !vaxistitle && !haxistitle ? {"left": 0, "top": 0, "width": "100%", "height": "75%"} : null
         };
     }
     

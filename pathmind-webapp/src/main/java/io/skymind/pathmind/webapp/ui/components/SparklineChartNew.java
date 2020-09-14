@@ -1,15 +1,11 @@
 package io.skymind.pathmind.webapp.ui.components;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.OptionalDouble;
 
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.server.Command;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
@@ -17,19 +13,13 @@ import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
 
 public class SparklineChartNew extends DataChart {
 
-    private Button enlargeButton = new Button("Show");
-    
-    private int WIDTH = 100;
-    private int HEIGHT = 32;
-
     public SparklineChartNew() {
         super();
-        addClassName("sparkline");
     }
 
     private JsonObject createSeries() {
         JsonObject series = Json.createObject();
-        series.put("0", Json.parse("{'type': 'line','enableInteractivity': false}"));
+        series.put("0", Json.parse("{'type': 'line','enableInteractivity': false,'color': '#1a2949'}"));
         series.put("1", Json.parse("{'lineWidth': 0,'enableInteractivity': false,'color': 'transparent'}"));
         series.put("2", Json.parse("{'lineWidth': 0,'enableInteractivity': false,'color': 'green'}"));
         return series;
@@ -81,11 +71,6 @@ public class SparklineChartNew extends DataChart {
             rowItem.set(3, goal);
         }
         return rowItem;
-    }
-
-    public void setupButton(Command clickHandler) {
-        enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-        enlargeButton.addClickListener(event -> clickHandler.execute());
     }
 
     public void setSparkLine(double[] sparklineData, int index, RewardVariable rewardVariable) {
