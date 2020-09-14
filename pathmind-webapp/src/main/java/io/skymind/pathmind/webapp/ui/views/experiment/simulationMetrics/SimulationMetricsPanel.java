@@ -134,6 +134,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                     SparklineChart sparkLine = new SparklineChart();
                     SparklineChartNew sparkLineNew = new SparklineChartNew();
                     sparkLine.setSparkLine(policy.getSparklinesData().get(idx), idx, rewardVariables.get(idx));
+                    sparkLineNew.setSparkLine(policy.getSparklinesData().get(idx), idx, rewardVariables.get(idx));
                     sparkLine.setupButton(() -> {
                         MetricChartPanel metricChartPanel = new MetricChartPanel();
                         metricChartPanel.setLines(policy.getSparklinesData().get(idx), idx, rewardVariables.get(idx));
