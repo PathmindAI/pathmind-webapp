@@ -142,12 +142,9 @@ public class DashboardLine extends HorizontalLayout {
 			item = LabelFactory.createLabel(stage.getName(), "stage-next");
         }
         if (stage.equals(Stage.TrainPolicy)) {
-            Boolean trainingNotCompleted = 
-                    stage.getValue() == currentStage.getValue() && DashboardUtils.isTrainingInProgress(stage, dashboardItem.getLatestRun()) ||
-                    stage.getValue() > currentStage.getValue();
-            if (!trainingNotCompleted) {
-                GoalsReachedStatus goalStatusComponent = new GoalsReachedStatus(dashboardItem.getExperiment().isGoalsReached());
-                goalStatusComponent.setVisible(!trainingNotCompleted);
+            Experiment experiment = dashboardItem.getExperiment();
+            if (experiment != null && experiment.isHasGoals() && !ExperimentUtils.isDraftRunType(experiment)) {
+                GoalsReachedStatus goalStatusComponent = new GoalsReachedStatus(experiment.isGoalsReached());
                 goalStatusComponent.setSize("large");
                 item.add(goalStatusComponent);
             }

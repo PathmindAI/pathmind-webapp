@@ -150,12 +150,13 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
             experimentNameWrapper.remove(goalStatusComponent);
             goalStatusComponent = null;
         }
-        if (goalStatus != null) {
-            goalStatusComponent = new GoalsReachedStatus(goalStatus);
-            experimentNameWrapper.add(goalStatusComponent);
+        if (experiment.isHasGoals()) {
+            if (goalStatus != null) {
+                goalStatusComponent = new GoalsReachedStatus(goalStatus);
+                experimentNameWrapper.add(goalStatusComponent);
+            }
+            goalStatusComponent.setVisible(!ExperimentUtils.isDraftRunType(experiment));
         }
-        Boolean trainingNotCompleted = ExperimentUtils.getTrainingStatus(experiment).getValue() < RunStatus.Completed.getValue();
-        goalStatusComponent.setVisible(!trainingNotCompleted);
     }
 
     private void handleRowClicked(Consumer<Experiment> selectExperimentConsumer) {
