@@ -4,6 +4,7 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -17,7 +18,6 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.ui.components.SparklineChart;
 import io.skymind.pathmind.webapp.ui.components.SparklineChartNew;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.MetricChartPanel;
@@ -131,18 +131,22 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
         IntStream.range(0, policy.getSimulationMetrics().size())
                 .forEach(idx -> {
-                    SparklineChart sparkLine = new SparklineChart();
                     SparklineChartNew sparkLineNew = new SparklineChartNew();
-                    sparkLine.setSparkLine(policy.getSparklinesData().get(idx), idx, rewardVariables.get(idx));
                     sparkLineNew.setSparkLine(policy.getSparklinesData().get(idx), idx, rewardVariables.get(idx));
-                    sparkLine.setupButton(() -> {
+                    Button enlargeButton = new Button("Show");
+                    enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+                    enlargeButton.addClickListener(event -> {
                         MetricChartPanel metricChartPanel = new MetricChartPanel();
                         metricChartPanel.setLines(policy.getSparklinesData().get(idx), idx, rewardVariables.get(idx));
                         addChartToDialog(metricChartPanel);
                         metricChartDialog.open();
                     });
-                    sparklinesWrapper.add(sparkLine);
-                    sparklinesWrapper.add(sparkLineNew);
+                    VerticalLayout sparkLineNewWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                        sparkLineNew,
+                        enlargeButton
+                    );
+                    sparkLineNewWrapper.addClassName("sparkline");
+                    sparklinesWrapper.add(sparkLineNewWrapper);
                     Span metricSpan = new Span();
                     if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {
                         String metricValueWithUncertainty = policy.getUncertainty().get(idx);
