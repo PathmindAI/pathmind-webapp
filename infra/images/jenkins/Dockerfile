@@ -30,17 +30,14 @@ RUN apt update && \
         pip install awscli
 
 #Install JDK
-RUN mkdir /var/cache/oracle-jdk11-installer-local/ && \
-        wget http://s3.amazonaws.com/public-pathmind.com/jdk-11.0.8_linux-x64_bin.tar.gz -P /var/cache/oracle-jdk11-installer-local/ && \
-        echo "oracle-java11-installer shared/accepted-oracle-license-v1-2 select true" | debconf-set-selections && \
-        echo "oracle-java11-installer shared/accepted-oracle-license-v1-2 seen true" | debconf-set-selections && \
-        echo "deb http://ppa.launchpad.net/linuxuprising/java/ubuntu focal main" | tee /etc/apt/sources.list.d/linuxuprising-java.list && \
-        apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 73C3DB2A && \
-        apt-get update && \
-        apt-get install oracle-java11-installer-local -y && \
-        apt install oracle-java11-set-default-local
-ENV JAVA_HOME="/usr/lib/jvm/java-11-oracle"
-ENV PATH="/usr/lib/jvm/java-11-oracle/bin:${PATH}"
+RUN  cd /tmp/ && \
+	wget https://download.java.net/openjdk/jdk11/ri/openjdk-11+28_linux-x64_bin.tar.gz && \
+	tar zxvf /tmp/openjdk-11+28_linux-x64_bin.tar.gz && \
+	mv jdk-11 /usr/lib/
+
+ENV JAVA_HOME="/usr/lib/jdk-11"
+ENV PATH="/usr/lib/jdk-11/bin:${PATH}"
+
 #Install nodejs
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
         apt-get install -y nodejs
