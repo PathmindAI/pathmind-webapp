@@ -119,8 +119,7 @@ public class UpdaterService {
             setStoppedAtForFinishedPolicies(policies, providerJobStatus.getExperimentState());
             runDAO.updatePolicyData(run, policies);
             Map<String, Boolean> dbPolicies = runDAO.getPolicies(run.getId()).stream()
-                .map(policy -> Map.entry(policy.getExternalId(), policy.hasFile()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toMap(Policy::getExternalId, Policy::hasFile));
             policies.stream().forEach(p -> p.setHasFile(dbPolicies.getOrDefault(p.getExternalId(), false)));
             return policies;
         }
