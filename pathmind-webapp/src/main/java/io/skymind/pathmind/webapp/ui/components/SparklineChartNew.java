@@ -17,9 +17,9 @@ public class SparklineChartNew extends DataChart {
         super();
     }
 
-    private JsonObject createSeries() {
+    private JsonObject createSeries(Boolean showDetails) {
         JsonObject series = Json.createObject();
-        series.put("0", Json.parse("{'type': 'line','enableInteractivity': false,'color': '#1a2949'}"));
+        series.put("0", Json.parse("{'type': 'line','enableInteractivity': "+showDetails+",'color': '#1a2949'}"));
         series.put("1", Json.parse("{'lineWidth': 0,'enableInteractivity': false,'color': 'transparent'}"));
         series.put("2", Json.parse("{'lineWidth': 0,'enableInteractivity': false,'color': 'green'}"));
         return series;
@@ -32,18 +32,22 @@ public class SparklineChartNew extends DataChart {
         return viewWindow;
     }
 
-    private JsonArray createCols(Boolean hasGoal) {
+    private JsonArray createCols(Boolean hasGoal, Boolean showDetails) {
         JsonArray cols = Json.createArray();
-        cols.set(0, Json.parse("{'label':'Iteration', 'type':'number'}"));
-        cols.set(1, Json.parse("{'label':'Mean Metric Value', 'type':'number'}"));
+        int i = -1;
+        cols.set(++i, Json.parse("{'label':'Iteration', 'type':'number'}"));
+        cols.set(++i, Json.parse("{'label':'Mean Metric Value', 'type':'number'}"));
+        if (showDetails) {
+            cols.set(++i, Json.parse("{'role': 'tooltip', 'type':'string', 'p': {'html': true}}"));
+        }
         if (hasGoal) {
-            cols.set(2, Json.parse("{'label':'goal base', 'type': 'number'}"));
-            cols.set(3, Json.parse("{'label':'goal', 'type': 'number'}"));
+            cols.set(++i, Json.parse("{'label':'goal base', 'type': 'number'}"));
+            cols.set(++i, Json.parse("{'label':'goal', 'type': 'number'}"));
         }
         return cols;
     }
 
-    private JsonArray createRows(Boolean hasGoal, double[] sparklineData, double maxValue, double minValue, RewardVariable rewardVariable) {
+    private JsonArray createRows(Boolean hasGoal, Boolean showDetails, double[] sparklineData, double maxValue, double minValue, RewardVariable rewardVariable, double metricRange) {
         JsonArray rows = Json.createArray();
         Double goalValue = rewardVariable.getGoalValue();
         GoalConditionType goalCondition = rewardVariable.getGoalConditionTypeEnum();
@@ -55,25 +59,30 @@ public class SparklineChartNew extends DataChart {
             goalRange = isGreaterThan ? maxValue - goalLowerBound : goalValue;
         }
         for (int i = 0; i < sparklineData.length; i++) {
-            rows.set(i, createRowItem(i, sparklineData[i], goalLowerBound, goalRange));
+            rows.set(i, createRowItem(i, sparklineData[i], goalLowerBound, goalRange, showDetails, metricRange));
         }
         return rows;
     }
 
-    private JsonArray createRowItem(int iteration, double metricValue, Double goalBase, Double goal) {
+    private JsonArray createRowItem(int iteration, double metricValue, Double goalBase, Double goal, Boolean showDetails, double metricRange) {
         JsonArray rowItem = Json.createArray();
-        rowItem.set(0, iteration);
-        rowItem.set(1, metricValue);
+        int i = -1;
+        rowItem.set(++i, iteration);
+        rowItem.set(++i, metricValue);
+        String metricValueFormatted = metricRange > 10 ? String.format("%.0f", metricValue) : String.format("%.2f", metricValue);
+        if (showDetails) {
+            rowItem.set(++i, "<div><b>Iteration #</b>"+iteration+"<br><b>Mean Metric</b> "+metricValueFormatted+"</div>");
+        }
         if (goalBase != null) {
-            rowItem.set(2, goalBase);
+            rowItem.set(++i, goalBase);
         }
         if (goal != null) {
-            rowItem.set(3, goal);
+            rowItem.set(++i, goal);
         }
         return rowItem;
     }
 
-    public void setSparkLine(double[] sparklineData, int index, RewardVariable rewardVariable) {
+    public void setSparkLine(double[] sparklineData, RewardVariable rewardVariable, Boolean showDetails) {
         OptionalDouble min = Arrays.stream(sparklineData).min();
         OptionalDouble max = Arrays.stream(sparklineData).max();
         
@@ -92,18 +101,18 @@ public class SparklineChartNew extends DataChart {
         }
         
         String type = "combo";
-        Boolean showTooltip = null;
-        String hAxisTitle = null;
-        String vAxisTitle = null;
+        Boolean showTooltip = showDetails ? true : null;
+        String hAxisTitle = showDetails ? "Iteration" : null;
+        String vAxisTitle = showDetails ? "Mean Metric Value" : null;
         Boolean curveLines = null;
         String seriesType = "area";
         Boolean stacked = true;
         JsonObject viewWindow = calculateViewWindow(maxVal, minVal);
-        JsonObject series = createSeries();
+        JsonObject series = createSeries(showDetails);
 
         Boolean hasGoal = rewardVariable.getGoalValue() != null && rewardVariable.getGoalConditionTypeEnum() != null;
-        JsonArray cols = createCols(hasGoal);
-        JsonArray rows = createRows(hasGoal, sparklineData, maxVal, minVal, rewardVariable);
+        JsonArray cols = createCols(hasGoal, showDetails);
+        JsonArray rows = createRows(hasGoal, showDetails, sparklineData, maxVal, minVal, rewardVariable, maxVal - minVal);
         setupChart(
             type,
             showTooltip,

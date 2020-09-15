@@ -93,7 +93,7 @@ class DataChart extends PolymerElement {
             "hAxis": {
                 "title": haxistitle,
                 "titleTextStyle": {"italic": false},
-                "textPosition": haxistitle ? "none" : "out",
+                "textPosition": haxistitle ? "out" : "none",
                 "ticks": haxistitle ? "auto" : [],
                 "format": "0",
                 "baselineColor": haxistitle ? "black" : "#FFF",
@@ -102,7 +102,7 @@ class DataChart extends PolymerElement {
             "vAxis": {
                 "title": vaxistitle,
                 "titleTextStyle": {"italic": false},
-                "textPosition": vaxistitle ? "none" : "out",
+                "textPosition": vaxistitle ? "out" : "none",
                 "ticks": vaxistitle ? "auto" : [],
                 "viewWindow": viewwindow,
                 "viewWindowMode": viewwindow ? "pretty" : "maximized",
@@ -112,7 +112,12 @@ class DataChart extends PolymerElement {
             "legend": {"position": "none"},  // true for all usages
             "seriesType": seriestype,
             "series": series,
-            "chartArea": !vaxistitle && !haxistitle ? {"left": 0, "top": 0, "width": "100%", "height": "75%"} : null
+            "chartArea": {
+                "left": !vaxistitle && !haxistitle ? 0 : null, 
+                "top": !vaxistitle && !haxistitle ? 0 : 20, 
+                "width": !vaxistitle && !haxistitle ? "100%" : null, 
+                "height": !vaxistitle && !haxistitle ? "100%" : null
+            }
         };
     }
     
@@ -131,6 +136,11 @@ class DataChart extends PolymerElement {
 
     static get template() {
         return html`
+            <style>
+                :host {
+                    width: 100%;
+                }
+            </style>
             <google-chart 
                 id="chart"
                 type=[[type]]
