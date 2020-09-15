@@ -18,7 +18,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.ui.components.SparklineChartNew;
+import io.skymind.pathmind.webapp.ui.components.SparklineChart;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.MetricChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
@@ -152,8 +152,8 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                     }
 
                     // Sparkline
-                    SparklineChartNew sparkLineNew = new SparklineChartNew();
-                    sparkLineNew.setSparkLine(sparklineData, rewardVariable, false);
+                    SparklineChart sparkLine = new SparklineChart();
+                    sparkLine.setSparkLine(sparklineData, rewardVariable, false);
                     Button enlargeButton = new Button("Show");
                     enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
                     enlargeButton.addClickListener(event -> {
@@ -162,12 +162,12 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                         addChartToDialog(metricChartPanel);
                         metricChartDialog.open();
                     });
-                    VerticalLayout sparkLineNewWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                        sparkLineNew,
+                    VerticalLayout sparkLineWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                        sparkLine,
                         enlargeButton
                     );
-                    sparkLineNewWrapper.addClassName("sparkline");
-                    sparklinesWrapper.add(sparkLineNewWrapper);
+                    sparkLineWrapper.addClassName("sparkline");
+                    sparklinesWrapper.add(sparkLineWrapper);
                 });
     }
 
