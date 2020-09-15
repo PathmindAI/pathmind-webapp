@@ -131,23 +131,11 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
         IntStream.range(0, policy.getSimulationMetrics().size())
                 .forEach(idx -> {
-                    SparklineChartNew sparkLineNew = new SparklineChartNew();
-                    sparkLineNew.setSparkLine(policy.getSparklinesData().get(idx), idx, rewardVariables.get(idx));
-                    Button enlargeButton = new Button("Show");
-                    enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-                    enlargeButton.addClickListener(event -> {
-                        MetricChartPanel metricChartPanel = new MetricChartPanel();
-                        metricChartPanel.setLines(policy.getSparklinesData().get(idx), idx, rewardVariables.get(idx));
-                        addChartToDialog(metricChartPanel);
-                        metricChartDialog.open();
-                    });
-                    VerticalLayout sparkLineNewWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                        sparkLineNew,
-                        enlargeButton
-                    );
-                    sparkLineNewWrapper.addClassName("sparkline");
-                    sparklinesWrapper.add(sparkLineNewWrapper);
                     Span metricSpan = new Span();
+                    double[] sparklineData = policy.getSparklinesData().get(idx);
+                    RewardVariable rewardVariable = rewardVariables.get(idx);
+
+                    // Metric Value
                     if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {
                         String metricValueWithUncertainty = policy.getUncertainty().get(idx);
                         metricSpan = new Span(metricValueWithUncertainty);
@@ -157,11 +145,29 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                         metricSpan = new Span(metricValueWithoutUncertainty);
                         metricsWrapper.add(metricSpan);
                     }
-                    if (rewardVariables.get(idx).getGoalConditionTypeEnum() != null){
-                        Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariables.get(idx), policy);
+                    if (rewardVariable.getGoalConditionTypeEnum() != null){
+                        Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, policy);
                         String metricSpanColorClass = reachedGoal ? "success-text" : "failure-text";
                         metricSpan.addClassName(metricSpanColorClass);
                     }
+
+                    // Sparkline
+                    SparklineChartNew sparkLineNew = new SparklineChartNew();
+                    sparkLineNew.setSparkLine(sparklineData, rewardVariable, false);
+                    Button enlargeButton = new Button("Show");
+                    enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+                    enlargeButton.addClickListener(event -> {
+                        Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, policy);
+                        MetricChartPanel metricChartPanel = new MetricChartPanel(sparklineData, rewardVariable, reachedGoal);
+                        addChartToDialog(metricChartPanel);
+                        metricChartDialog.open();
+                    });
+                    VerticalLayout sparkLineNewWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                        sparkLineNew,
+                        enlargeButton
+                    );
+                    sparkLineNewWrapper.addClassName("sparkline");
+                    sparklinesWrapper.add(sparkLineNewWrapper);
                 });
     }
 

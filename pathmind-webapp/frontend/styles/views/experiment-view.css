@@ -115,7 +115,7 @@
     position: relative;
     width: 100px;
     height: 2rem !important;
-    /* padding: var(--lumo-space-xxs) 0; */
+    padding: var(--lumo-space-xxs) 0;
     margin-left: var(--lumo-space-s);
 }
 
@@ -155,6 +155,10 @@
 
 .metric-chart-panel {
     position: relative;
+}
+
+.metric-chart-panel vaadin-horizontal-layout tag-label {
+    margin-left: var(--lumo-space-s);
 }
 
 .metric-chart-panel p {
