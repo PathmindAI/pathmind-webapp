@@ -1,7 +1,9 @@
 package io.skymind.pathmind.webapp.ui.components;
 
-import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.OptionalDouble;
+import java.util.stream.Collectors;
 
 import elemental.json.Json;
 import elemental.json.JsonArray;
@@ -47,7 +49,7 @@ public class SparklineChart extends DataChart {
         return cols;
     }
 
-    private JsonArray createRows(Boolean hasGoal, Boolean showDetails, double[] sparklineData, double maxValue, double minValue, RewardVariable rewardVariable, double metricRange) {
+    private JsonArray createRows(Boolean hasGoal, Boolean showDetails, List<Double> sparklineData, double maxValue, double minValue, RewardVariable rewardVariable, double metricRange) {
         JsonArray rows = Json.createArray();
         Double goalValue = rewardVariable.getGoalValue();
         GoalConditionType goalCondition = rewardVariable.getGoalConditionTypeEnum();
@@ -58,8 +60,8 @@ public class SparklineChart extends DataChart {
             goalLowerBound = isGreaterThan ? goalValue : minValue;
             goalRange = isGreaterThan ? maxValue - goalLowerBound : goalValue;
         }
-        for (int i = 0; i < sparklineData.length; i++) {
-            rows.set(i, createRowItem(i, sparklineData[i], goalLowerBound, goalRange, showDetails, metricRange));
+        for (int i = 0; i < sparklineData.size(); i++) {
+            rows.set(i, createRowItem(i, sparklineData.get(i), goalLowerBound, goalRange, showDetails, metricRange));
         }
         return rows;
     }
@@ -82,10 +84,20 @@ public class SparklineChart extends DataChart {
         return rowItem;
     }
 
-    public void setSparkLine(double[] sparklineData, RewardVariable rewardVariable, Boolean showDetails) {
-        OptionalDouble min = Arrays.stream(sparklineData).min();
-        OptionalDouble max = Arrays.stream(sparklineData).max();
-        
+    public void updateData(List<Double> sparklineData, Boolean hasGoal, Boolean showDetails, RewardVariable rewardVariable, double maxValue, double minValue) {
+        JsonArray cols = createCols(hasGoal, showDetails);
+        JsonArray rows = createRows(hasGoal, showDetails, sparklineData, maxValue, minValue, rewardVariable, maxValue - minValue);
+        setData(cols, rows);
+    }
+
+    public void setSparkLine(Map<Integer, Double> sparklineMap, RewardVariable rewardVariable, Boolean showDetails) {
+        if (sparklineMap == null) {
+            return;
+        }
+        List<Double> sparklineData = sparklineMap.values().stream().collect(Collectors.toList());
+        OptionalDouble min = sparklineData.stream().mapToDouble(v -> v).min();
+        OptionalDouble max = sparklineData.stream().mapToDouble(v -> v).max();
+
         double minVal = min.orElse(0);
         double maxVal = max.orElse(0);
         
@@ -122,8 +134,6 @@ public class SparklineChart extends DataChart {
         JsonObject series = createSeries(showDetails);
 
         Boolean hasGoal = rewardVariable.getGoalValue() != null && rewardVariable.getGoalConditionTypeEnum() != null;
-        JsonArray cols = createCols(hasGoal, showDetails);
-        JsonArray rows = createRows(hasGoal, showDetails, sparklineData, maxVal, minVal, rewardVariable, maxVal - minVal);
         setupChart(
             type,
             showTooltip,
@@ -133,10 +143,9 @@ public class SparklineChart extends DataChart {
             seriesType,
             series,
             stacked,
-            viewWindow,
-            cols,
-            rows
+            viewWindow
         );
+        updateData(sparklineData, hasGoal, showDetails, rewardVariable, maxVal, minVal);
     }
     
 }

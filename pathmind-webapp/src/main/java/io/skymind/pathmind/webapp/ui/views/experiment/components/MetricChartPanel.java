@@ -12,8 +12,9 @@ import io.skymind.pathmind.webapp.ui.components.SparklineChart;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
-
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
+
+import java.util.Map;
 
 public class MetricChartPanel extends VerticalLayout {
 
@@ -21,7 +22,7 @@ public class MetricChartPanel extends VerticalLayout {
     private Span chartLabel = LabelFactory.createLabel("", BOLD_LABEL);
     private Paragraph description = new Paragraph("This chart is a screenshot at the time of opening. It does not update automatically.");
 
-    public MetricChartPanel(double[] sparklineData, RewardVariable rewardVariable, Boolean reachedGoal) {
+    public MetricChartPanel(Map<Integer, Double> sparklineData, RewardVariable rewardVariable, Boolean reachedGoal) {
         setupChart(sparklineData, rewardVariable);
         HorizontalLayout titleWrapper = WrapperUtils.wrapWidthFullHorizontal(chartLabel);
         titleWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
@@ -43,7 +44,7 @@ public class MetricChartPanel extends VerticalLayout {
         addClassName("metric-chart-panel");
     }
 
-    public void setupChart(double[] sparklineData, RewardVariable rewardVariable) {
+    public void setupChart(Map<Integer, Double> sparklineData, RewardVariable rewardVariable) {
         chartLabel.setText(rewardVariable.getName());
         chart.setSparkLine(sparklineData, rewardVariable, true);
     }
