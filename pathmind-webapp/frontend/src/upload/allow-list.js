@@ -1,10 +1,10 @@
 export const ALLOW_LIST = [
-  "^model.jar",
-  "^database/db.properties",
-  "^database/db.script",
-  "^database/db.data",
+  "^model\\.jar",
+  "^database/db\\.properties",
+  "^database/db\\.script",
+  "^database/db\\.data",
   "^cache/giscache",
-  "^cache/giscache.p",
-  "^cache/giscache.t",
+  "^cache/giscache\\.p",
+  "^cache/giscache\\.t",
   "^.*\\.xls"
 ];
