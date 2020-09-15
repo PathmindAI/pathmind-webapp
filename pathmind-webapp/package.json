@@ -2,7 +2,6 @@
   "name": "no-name",
   "license": "UNLICENSED",
   "dependencies": {
-    "@fnando/sparkline": "0.3.10",
     "@google-web-components/google-chart": "^4.0.0",
     "@pickra/copy-code-block": "^1.2.0",
     "@polymer/iron-icon": "3.0.1",
@@ -132,6 +131,6 @@
       "webpack-merge": "4.2.2",
       "webpack-dev-server": "3.10.3"
     },
-    "hash": "6c7c4629f2c993c6266bce1db2cc0df2f42cae2d5ac58241f1415baf4dadfb28"
+    "hash": "0429587e5b166e0cfd8821469758433623bca893e7653d317dabe2642217f562"
   }
 }

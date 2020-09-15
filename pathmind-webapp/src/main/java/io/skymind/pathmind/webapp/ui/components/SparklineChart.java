@@ -1,73 +1,91 @@
 package io.skymind.pathmind.webapp.ui.components;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.OptionalDouble;
 
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.charts.Chart;
-import com.vaadin.flow.component.charts.model.*;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.server.Command;
+import elemental.json.Json;
+import elemental.json.JsonArray;
+import elemental.json.JsonObject;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
 
-public class SparklineChart extends VerticalLayout{
-
-    private Button enlargeButton = new Button("Show");
-    private Chart chart = new Chart(ChartType.AREASPLINE);
-    
-    private int WIDTH = 100;
-    private int HEIGHT = 32;
+public class SparklineChart extends DataChart {
 
     public SparklineChart() {
-        setPadding(false);
-        setSpacing(false);
-        setupChart();
-        setWidth(WIDTH + "px");
-        setHeight(HEIGHT + "px");
-        addClassName("sparkline");
-        add(chart, enlargeButton);
+        super();
     }
 
-    public void setupButton(Command clickHandler) {
-        enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-        enlargeButton.addClickListener(event -> clickHandler.execute());
+    private JsonObject createSeries(Boolean showDetails) {
+        JsonObject series = Json.createObject();
+        series.put("0", Json.parse("{'type': 'line','enableInteractivity': "+showDetails+",'color': '#1a2949'}"));
+        series.put("1", Json.parse("{'lineWidth': 0,'enableInteractivity': false,'color': 'transparent'}"));
+        series.put("2", Json.parse("{'lineWidth': 0,'enableInteractivity': false,'color': 'green'}"));
+        return series;
     }
 
-    private void setupChart() {
-        chart.getConfiguration().setAccessibility(new Accessibility(false));
-        chart.getConfiguration().getLegend().setEnabled(false);
-        chart.getConfiguration().getTitle().setText("");
-        chart.getStyle().set("backgroundColor", null);
-        chart.getStyle().set("borderWidth", "0");
-        chart.getConfiguration().getChart().setSpacing(new Number[] {0,0,0,0});
-        chart.getConfiguration().getChart().setMargin(0);
-        chart.getStyle().set("overflow", "none");
-        
-        chart.getConfiguration().getxAxis().getLabels().setEnabled(false);
-        chart.getConfiguration().getxAxis().getTitle().setText(null);
-        chart.getConfiguration().getxAxis().setStartOnTick(false);
-        chart.getConfiguration().getxAxis().setEndOnTick(false);
-        chart.getConfiguration().getxAxis().setTickPositions(new Number[0]);
-        chart.getConfiguration().getyAxis().getLabels().setEnabled(false);
-        chart.getConfiguration().getyAxis().getTitle().setText(null);
-        chart.getConfiguration().getyAxis().setStartOnTick(false);
-        chart.getConfiguration().getyAxis().setEndOnTick(false);
-        chart.getConfiguration().getyAxis().setTickPositions(new Number[0]);
-        chart.setWidth(WIDTH + "px");
-        chart.setHeight(HEIGHT + "px");
+    private JsonObject calculateViewWindow(double maxValue, double minValue) {
+        JsonObject viewWindow = Json.createObject();
+        viewWindow.put("max", maxValue);
+        viewWindow.put("min", minValue);
+        return viewWindow;
     }
 
-    public void setSparkLine(double[] sparklineData, int index, RewardVariable rewardVariable) {
-        ArrayList<Number> data = new ArrayList<>();
-        for (int i = 0; i < sparklineData.length; i++) {
-            data.add(sparklineData[i]);
+    private JsonArray createCols(Boolean hasGoal, Boolean showDetails) {
+        JsonArray cols = Json.createArray();
+        int i = -1;
+        cols.set(++i, Json.parse("{'label':'Iteration', 'type':'number'}"));
+        cols.set(++i, Json.parse("{'label':'Mean Metric Value', 'type':'number'}"));
+        if (showDetails) {
+            cols.set(++i, Json.parse("{'role': 'tooltip', 'type':'string', 'p': {'html': true}}"));
         }
-        OptionalDouble min = data.stream().mapToDouble(Number::doubleValue).min();
-        OptionalDouble max = data.stream().mapToDouble(Number::doubleValue).max();
+        if (hasGoal) {
+            cols.set(++i, Json.parse("{'label':'goal base', 'type': 'number'}"));
+            cols.set(++i, Json.parse("{'label':'goal', 'type': 'number'}"));
+        }
+        return cols;
+    }
 
+    private JsonArray createRows(Boolean hasGoal, Boolean showDetails, double[] sparklineData, double maxValue, double minValue, RewardVariable rewardVariable, double metricRange) {
+        JsonArray rows = Json.createArray();
+        Double goalValue = rewardVariable.getGoalValue();
+        GoalConditionType goalCondition = rewardVariable.getGoalConditionTypeEnum();
+        Double goalLowerBound = null;
+        Double goalRange = null;
+        if (goalValue != null && goalCondition != null) {
+            Boolean isGreaterThan = goalCondition.equals(GoalConditionType.GREATER_THAN_OR_EQUAL);
+            goalLowerBound = isGreaterThan ? goalValue : minValue;
+            goalRange = isGreaterThan ? maxValue - goalLowerBound : goalValue;
+        }
+        for (int i = 0; i < sparklineData.length; i++) {
+            rows.set(i, createRowItem(i, sparklineData[i], goalLowerBound, goalRange, showDetails, metricRange));
+        }
+        return rows;
+    }
+
+    private JsonArray createRowItem(int iteration, double metricValue, Double goalBase, Double goal, Boolean showDetails, double metricRange) {
+        JsonArray rowItem = Json.createArray();
+        int i = -1;
+        rowItem.set(++i, iteration);
+        rowItem.set(++i, metricValue);
+        String metricValueFormatted = metricRange > 10 ? String.format("%.0f", metricValue) : String.format("%.2f", metricValue);
+        if (showDetails) {
+            rowItem.set(++i, "<div><b>Iteration #</b>"+iteration+"<br><b>Mean Metric</b> "+metricValueFormatted+"</div>");
+        }
+        if (goalBase != null) {
+            rowItem.set(++i, goalBase);
+        }
+        if (goal != null) {
+            rowItem.set(++i, goal);
+        }
+        return rowItem;
+    }
+
+    public void setSparkLine(double[] sparklineData, RewardVariable rewardVariable, Boolean showDetails) {
+        OptionalDouble min = Arrays.stream(sparklineData).min();
+        OptionalDouble max = Arrays.stream(sparklineData).max();
+        
         double minVal = min.orElse(0);
         double maxVal = max.orElse(0);
         
@@ -93,31 +111,32 @@ public class SparklineChart extends VerticalLayout{
             }
         }
         
-        chart.getConfiguration().getyAxis().setMin(minVal);
-        chart.getConfiguration().getyAxis().setMax(maxVal);
+        String type = "combo";
+        Boolean showTooltip = showDetails ? true : null;
+        String hAxisTitle = showDetails ? "Iteration" : null;
+        String vAxisTitle = showDetails ? "Mean Metric Value" : null;
+        Boolean curveLines = null;
+        String seriesType = "area";
+        Boolean stacked = true;
+        JsonObject viewWindow = calculateViewWindow(maxVal, minVal);
+        JsonObject series = createSeries(showDetails);
 
-        ListSeries series = new ListSeries(data);
-        PlotOptionsSeries plotOptions = new PlotOptionsSeries();
-        plotOptions.setMarker(new Marker(false));
-        plotOptions.setColorIndex(index);
-
-        series.setPlotOptions(plotOptions);
-        chart.getConfiguration().addSeries(series);
-
-        if (goalValue != null && goalCondition != null) {
-            PlotBand target = new PlotBand();
-            target.setFrom(goalValue);
-            if (goalCondition.equals(GoalConditionType.GREATER_THAN_OR_EQUAL)) {
-                target.setTo(maxVal);
-            } else {
-                target.setTo(0);
-            }
-            target.setZIndex(10);
-            target.setClassName("target");
-            chart.getConfiguration().getyAxis().addPlotBand(target);
-        }
-
-        chart.drawChart(true);
+        Boolean hasGoal = rewardVariable.getGoalValue() != null && rewardVariable.getGoalConditionTypeEnum() != null;
+        JsonArray cols = createCols(hasGoal, showDetails);
+        JsonArray rows = createRows(hasGoal, showDetails, sparklineData, maxVal, minVal, rewardVariable, maxVal - minVal);
+        setupChart(
+            type,
+            showTooltip,
+            hAxisTitle,
+            vAxisTitle,
+            curveLines,
+            seriesType,
+            series,
+            stacked,
+            viewWindow,
+            cols,
+            rows
+        );
     }
     
 }

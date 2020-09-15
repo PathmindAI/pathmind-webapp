@@ -8,7 +8,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.components.SparklineChartNew;
+import io.skymind.pathmind.webapp.ui.components.SparklineChart;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
@@ -17,7 +17,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LAB
 
 public class MetricChartPanel extends VerticalLayout {
 
-    private SparklineChartNew chart = new SparklineChartNew();
+    private SparklineChart chart = new SparklineChart();
     private Span chartLabel = LabelFactory.createLabel("", BOLD_LABEL);
     private Paragraph description = new Paragraph("This chart is a screenshot at the time of opening. It does not update automatically.");
 
