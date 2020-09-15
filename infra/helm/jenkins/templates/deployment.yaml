@@ -45,7 +45,7 @@ spec:
                   name: jenkinspassword
                   key: JENKINSPASSWORD
             - name: JAVA_OPTS
-              value: -Dhudson.model.DirectoryBrowserSupport.CSP="sandbox allow-same-origin allow-scripts; default-src 'self'; script-src * 'unsafe-inline'; img-src *; style-src * 'unsafe-inline'; font-src *"
+              value: -Dhudson.model.DirectoryBrowserSupport.CSP="sandbox allow-same-origin allow-scripts; default-src 'self'; script-src * 'unsafe-inline'; img-src *; style-src * 'unsafe-inline'; font-src *" -Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=86400
             - name: DOCKER_HOST
               value: tcp://localhost:2375
             - name: S3BUCKET

@@ -12,8 +12,6 @@ Feature: Check Model Details package name field
     When Click wizard reward variables next btn
     Then Check that new experiment <project name> page is opened
     Then Check model page model breadcrumb package name is <package name>
-    Then Input from file reward function <reward function file>
-    When Click project save draft btn
     When Open dashboard page
     Then Check dashboard <project name> model breadcrumb <package name>
     When Open projects page
@@ -24,9 +22,9 @@ Feature: Check Model Details package name field
     Then Check model page model breadcrumb package name is <package name>
 
     Examples:
-      | project name    | model                             | reward function file                                                        | package name            |
-      | AutotestProject | tuple_models/MoonLanding.zip      | tuple_models/MoonLandingRewardFunction.txt                                  | moonLanding             |
-      | AutotestProject | tuple_models/CoffeeShopTuple.zip  | Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt | coffeeshop              |
-      | AutotestProject | tuple_models/SimpleStochastic.zip | tuple_models/SimpleStochasticRewardFunction.txt                             | simple_stochastic_model |
-      | AutotestProject | tuple_models/ProductDelivery.zip  | tuple_models/ProductDeliveryRewardFunction.txt                              | product_delivery        |
-      | AutotestProject | tuple_models/Warehouse.zip        | tuple_models/WarehouseRewardFunction.txt                                    | warehouse_pathmind_demo |
+      | project name    | model                             | package name            |
+      | AutotestProject | tuple_models/MoonLanding.zip      | moonLanding             |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip  | coffeeshop              |
+      | AutotestProject | tuple_models/SimpleStochastic.zip | simple_stochastic_model |
+      | AutotestProject | tuple_models/ProductDelivery.zip  | product_delivery        |
+      | AutotestProject | tuple_models/Warehouse.zip        | warehouse_pathmind_demo |

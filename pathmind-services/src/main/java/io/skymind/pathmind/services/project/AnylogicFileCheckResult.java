@@ -9,10 +9,10 @@ public class AnylogicFileCheckResult implements FileCheckResult {
     private boolean modelJarFilePresent;
     private List<String> zipContentFileNames;
     private List<String> definedHelpers;
-    private int numAction;
     private int numObservation;
     private String rewardVariableFunction;
     private List<String> rewardVariables;
+    private List<String> observationNames;
 
     @Override
     public boolean isFileCheckComplete() {
@@ -89,14 +89,6 @@ public class AnylogicFileCheckResult implements FileCheckResult {
         this.definedHelpers = definedHelpers;
     }
 
-    public int getNumAction() {
-        return numAction;
-    }
-
-    public void setNumAction(int numAction) {
-        this.numAction = numAction;
-    }
-
     public int getNumObservation() {
         return numObservation;
     }
@@ -119,5 +111,13 @@ public class AnylogicFileCheckResult implements FileCheckResult {
 
     public void setRewardVariables(List<String> rewardVariables) {
         this.rewardVariables = rewardVariables;
+    }
+
+    public List<String> getObservationNames() {
+        return observationNames;
+    }
+
+    public void setObservationNames(List<String> observationNames) {
+        this.observationNames = observationNames;
     }
 }

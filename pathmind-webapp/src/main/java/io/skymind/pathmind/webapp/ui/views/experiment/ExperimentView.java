@@ -17,6 +17,7 @@ import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.TrainingError;
@@ -57,6 +58,8 @@ import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.Simulati
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
+import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
+import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import lombok.extern.slf4j.Slf4j;
@@ -93,6 +96,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
 
+    private List<Observation> modelObservations = new ArrayList<>();
+    private List<Observation> experimentObservations = new ArrayList<>();
+
     private UserCaps userCaps;
 
     private HorizontalLayout middlePanel;
@@ -106,12 +112,18 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private PolicyChartPanel policyChartPanel;
     private ExperimentsNavBar experimentsNavbar;
     private NotesField notesField;
+
+    private ObservationsPanel observationsPanel;
+
     private StoppedTrainingNotification stoppedTrainingNotification;
+    private SimulationMetricsPanel simulationMetricsPanel;
 
     @Autowired
     private ExperimentDAO experimentDAO;
     @Autowired
     private RewardVariableDAO rewardVariableDAO;
+	@Autowired
+	private ObservationDAO observationDAO;
     @Autowired
     private PolicyDAO policyDAO;
     @Autowired
@@ -206,15 +218,18 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         );
 
         boolean showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
-        SimulationMetricsPanel simulationMetricsPanel = new SimulationMetricsPanel(experiment, showSimulationMetrics, rewardVariables, () -> getUI());
+        simulationMetricsPanel = new SimulationMetricsPanel(experiment, showSimulationMetrics, rewardVariables, () -> getUI());
         String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
 
         rewardVariablesGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
             LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
         );
 
+        observationsPanel = new ObservationsPanel(true);
+        observationsPanel.setupObservationTable(modelObservations, experimentObservations);
+
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
-        middlePanel.add(rewardVariablesGroup, rewardFunctionGroup);
+        middlePanel.add(rewardVariablesGroup, observationsPanel, rewardFunctionGroup);
         middlePanel.addClassName("middle-panel");
         middlePanel.setPadding(false);
     }
@@ -342,6 +357,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             updateScreenComponents();
             notesField.setNotesText(experiment.getUserNotes());
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
+            simulationMetricsPanel.setExperiment(experiment);
 
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
@@ -371,6 +387,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         modelId = experiment.getModelId();
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
+		modelObservations = observationDAO.getObservationsForModel(experiment.getModelId());
+		experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
         policy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
@@ -396,6 +414,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
             experimentsNavbar.setAllowNewExperimentCreation(false);
         }
+        observationsPanel.setSelectedObservations(experimentObservations);
         policyChartPanel.setExperiment(experiment, policy);
         updateDetailsForExperiment();
     }
@@ -451,13 +470,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     .findAny()
                     .ifPresent(r -> {
                         if (StringUtils.isNotBlank(r.getSuccessMessage())) {
-                            stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(r.getSuccessMessage(), SUCCESS_LABEL, true);
+                            stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(firstLine(r.getSuccessMessage()), SUCCESS_LABEL, true);
                         }
                         else {
-                            stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(r.getWarningMessage(), WARNING_LABEL, true);
+                            stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(firstLine(r.getWarningMessage()), WARNING_LABEL, true);
                         }
                     });
         }
+    }
+
+    private String firstLine(String message) {
+        return message.split("\\n", 2)[0];
     }
 
     private void updateButtonEnablement() {

@@ -73,4 +73,9 @@ public class NewExperimentSteps {
     public void clickSideBarExperiment(String experimentName) {
         newExperimentPage.clickSideBarExperiment(experimentName);
     }
+
+    @Step
+    public void clickObservationsCheckbox(String checkbox) {
+        newExperimentPage.clickObservationsCheckbox(checkbox);
+    }
 }

@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -15,16 +14,17 @@ import java.util.concurrent.ExecutorService;
 @Slf4j
 public class ProjectFileCheckService {
 
-    private static final String INVALID_MODEL_ERROR_MESSAGE = "Model needs to be updated. You can take a look at <a target='_blank' href='%s'>this article</a> for upgrade instructions.";
+    private static final String INVALID_MODEL_ERROR_MESSAGE_WITH_INSTRUCTIONS = "Model needs to be updated. You can take a look at <a target='_blank' href='%s'>this article</a> for upgrade instructions.";
+    private static final String INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS = "Model needs to be uploaded again.";
 
     private final ExecutorService checkerExecutorService;
     private final ModelAnalyzerApiClient client;
-    private final String convertModelsToSupportRewardVariablesURL;
+    private final String convertModelsToSupportLastestVersionURL;
 
-    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportRewardVariablesURL) {
+    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportLastestVersionURL) {
         this.checkerExecutorService = checkerExecutorService;
         this.client = client;
-        this.convertModelsToSupportRewardVariablesURL = convertModelsToSupportRewardVariablesURL;
+        this.convertModelsToSupportLastestVersionURL = convertModelsToSupportLastestVersionURL;
     }
 
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
@@ -72,42 +72,43 @@ public class ProjectFileCheckService {
         if (analysisResult != null && analysisResult.isOldVersionFound()) {
             return Optional.of(getErrorMessage(InvalidModelType.OLD_REWARD_VARIABLES));
         }
-        else if (analysisResult == null || analysisResult.getActions() == null || analysisResult.getObservations() == null
-                || analysisResult.getRewardVariables() == null) {
+        else if (analysisResult == null || analysisResult.getObservationsNames() == null || analysisResult.getRewardVariables() == null) {
             return Optional.of("Unable to analyze the model.");
         }
-        else if (analysisResult.getActions() != null && Integer.parseInt(analysisResult.getActions()) == 0) {
-            return Optional.of("Number of actions found to be zero.");
-        }
-        else if (analysisResult.getObservations() != null && Integer.parseInt(analysisResult.getObservations()) == 0) {
-            return Optional.of("Number of observations found to be zero.");
-        }
         else if (analysisResult.getRewardVariables().isEmpty()) {
-            return Optional.of("Reward variables list is empty.");
+            return Optional.of("Failed to read reward variables.");
+        }
+        else if (analysisResult.getObservationsNames().isEmpty()) {
+            return Optional.of("Failed to read observations.");
         }
         return Optional.empty();
     }
 
     private void setHyperparams(FileCheckResult result, HyperparametersDTO params) {
     	AnylogicFileCheckResult fileCheckResult = AnylogicFileCheckResult.class.cast(result);
-        fileCheckResult.setNumAction(Integer.parseInt(params.getActions()));
     	fileCheckResult.setNumObservation(Integer.parseInt(params.getObservations()));
     	fileCheckResult.setRewardVariableFunction(params.getRewardFunction());
     	fileCheckResult.setRewardVariables(params.getRewardVariables());
+    	fileCheckResult.setObservationNames(params.getObservationsNames());
     }
 
     public String getErrorMessage(InvalidModelType invalidModelType) {
-        String articleUrl = getArticleUrlForInvalidReason(invalidModelType);
-        return String.format(INVALID_MODEL_ERROR_MESSAGE, articleUrl);
+        switch (invalidModelType) {
+            case MISSING_OBSERVATIONS :
+                return INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
+            default:
+                String articleUrl = getArticleUrlForInvalidReason(invalidModelType);
+                return String.format(INVALID_MODEL_ERROR_MESSAGE_WITH_INSTRUCTIONS, articleUrl);
+        }
     }
 
     private String getArticleUrlForInvalidReason(InvalidModelType invalidModelType) {
         switch (invalidModelType) {
             case OLD_REWARD_VARIABLES :
-                return convertModelsToSupportRewardVariablesURL;
+                return convertModelsToSupportLastestVersionURL;
             default :
                 // Currently only invalid model reason is reward variables 
-                return convertModelsToSupportRewardVariablesURL;
+                return convertModelsToSupportLastestVersionURL;
         }
     }
 }

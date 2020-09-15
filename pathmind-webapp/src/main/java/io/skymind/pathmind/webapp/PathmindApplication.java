@@ -64,8 +64,8 @@ public class PathmindApplication
 
     @Bean
     public ProjectFileCheckService projectFileCheckService(ExecutorService executorService, ModelAnalyzerApiClient modelAnalyzerApiClient,
-                                                           @Value("${pathmind.convert-models-to-support-reward-variables.url}") String convertModelsToSupportRewardVariablesURL) {
-        return new ProjectFileCheckService(executorService, modelAnalyzerApiClient, convertModelsToSupportRewardVariablesURL);
+                                                           @Value("${pathmind.convert-models-to-latest-version.url}") String convertModelsToSupportLastestVersionURL) {
+        return new ProjectFileCheckService(executorService, modelAnalyzerApiClient, convertModelsToSupportLastestVersionURL);
     }
 
 	@EventListener(ApplicationReadyEvent.class)

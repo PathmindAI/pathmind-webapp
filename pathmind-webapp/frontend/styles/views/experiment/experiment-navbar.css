@@ -56,7 +56,6 @@
     height: var(--lumo-size-xs);
 }
 
-.experiment-view .training-starting-placeholder span::before,
 .icon-loading-spinner::after {
     box-sizing: border-box;
     content: "";

@@ -1,11 +1,9 @@
 package io.skymind.pathmind.services.model;
 
-import io.skymind.pathmind.db.dao.ActionDAO;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.services.PolicyServerFilesCreator;
 import io.skymind.pathmind.services.PolicyServerService;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
-import io.skymind.pathmind.shared.data.Action;
 import io.skymind.pathmind.shared.data.Observation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,34 +25,14 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     private final ObservationDAO observationDAO;
 
-    private final ActionDAO actionDAO;
-
     private final AWSApiClient awsApiClient;
 
     @Autowired
     public AwsPolicyServerServiceImpl(
-            PolicyServerFilesCreator filesCreator, ObservationDAO observationDAO, ActionDAO actionDAO,
-            AWSApiClient awsApiClient) {
+            PolicyServerFilesCreator filesCreator, ObservationDAO observationDAO, AWSApiClient awsApiClient) {
         this.filesCreator = filesCreator;
         this.observationDAO = observationDAO;
-        this.actionDAO = actionDAO;
         this.awsApiClient = awsApiClient;
-    }
-
-    @Override
-    public String createOutputYaml(long modelId) {
-        List<Action> actionsForModel = actionDAO.getActionsForModel(modelId);
-        return filesCreator.createOutputYaml(actionsForModel);
-    }
-
-    @Override
-    public void saveOutputYamlFile(long modelId, byte[] outputYaml) {
-        awsApiClient.fileUpload(OUTPUTS_PATH + modelId, outputYaml);
-    }
-
-    @Override
-    public byte[] getOutputYamlFile(long modelId) {
-        return awsApiClient.fileContents(OUTPUTS_PATH + modelId, true);
     }
 
     @Override

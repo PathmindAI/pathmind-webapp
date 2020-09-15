@@ -1,0 +1,16 @@
+:host(.select-all:not([checked]):not([indeterminate]):not([disabled])) [part="checkbox"] {
+    background-color: var(--lumo-primary-color-25pct);
+}
+
+:host(:not([disabled])) [part="checkbox"] {
+    pointer-events: initial;
+    cursor: pointer;
+}
+
+:host([disabled]) [part="checkbox"]::after {
+    border-color: var(--lumo-body-text-color);
+}
+
+:host([disabled][checked]) {
+    color: var(--lumo-body-text-color);
+}

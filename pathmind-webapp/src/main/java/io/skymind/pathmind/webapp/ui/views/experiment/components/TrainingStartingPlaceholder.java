@@ -1,19 +1,11 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
+import com.vaadin.flow.templatemodel.TemplateModel;
 
-import io.skymind.pathmind.webapp.ui.components.ChartPlaceholder;
-
-public class TrainingStartingPlaceholder extends VerticalLayout {
-    public TrainingStartingPlaceholder() {
-        add(new ChartPlaceholder(),
-            new VerticalLayout(
-                new Span("Starting the training…"),
-                new Paragraph("You’ll see the first results here within a few minutes."),
-                new Paragraph("The Pathmind training process starts a cluster to explore multiple combinations of hyperparameters automatically. We train the policy for your simulation using the best configuration."),
-                new Paragraph("Training may take up to a few hours. We’ll send you an email when it’s complete!")));
-        addClassName("training-starting-placeholder");
-    }
+@Tag("training-starting-placeholder")
+@JsModule("/src/experiment/training-starting-placeholder.js")
+public class TrainingStartingPlaceholder extends PolymerTemplate<TemplateModel> {
 }
