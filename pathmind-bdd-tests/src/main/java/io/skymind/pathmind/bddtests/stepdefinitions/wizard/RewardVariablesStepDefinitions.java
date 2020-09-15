@@ -1,6 +1,7 @@
 package io.skymind.pathmind.bddtests.stepdefinitions.wizard;
 
 import cucumber.api.java.en.And;
+import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.NewExperimentSteps;
 import io.skymind.pathmind.bddtests.steps.wizard.RewardVariablesSteps;
@@ -31,5 +32,10 @@ public class RewardVariablesStepDefinitions {
     @When("^Input reward variable '(.*)' goal '(.*)' value '(.*)'$")
     public void inputRewardVariableGoalValue(String rewardVariable, String goalSign, String goal) {
         rewardVariablesSteps.inputRewardVariableGoalValue(rewardVariable, goalSign, goal);
+    }
+
+    @Then("^Check wizard reward variable '(.*)' error is shown '(.*)'$")
+    public void checkWizardRewardVariableErrorIsShown(String variable, String error) {
+        rewardVariablesSteps.checkWizardRewardVariableErrorIsShown(variable, error);
     }
 }

@@ -10,6 +10,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 
 public class RewardVariablesPage extends PageObject {
 
@@ -32,5 +33,10 @@ public class RewardVariablesPage extends PageObject {
         getDriver().findElement(By.xpath("//span[text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/descendant::vaadin-select")).click();
         getDriver().findElement(By.xpath("//vaadin-item[@label='" + goalSign + "']")).click();
         getDriver().findElement(By.xpath("//span[text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/descendant::vaadin-number-field")).sendKeys(goal);
+    }
+
+    public void checkWizardRewardVariableErrorIsShown(String variable, String error) {
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//span[text()='"+variable+"']/parent::vaadin-horizontal-layout/descendant::vaadin-number-field")));
+        assertThat(e.findElement(By.cssSelector("div[part='error-message']")).getText(), is(error));
     }
 }
