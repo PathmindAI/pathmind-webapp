@@ -103,6 +103,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private ObservationsPanel observationsPanel;
     private ExperimentsNavBar experimentsNavbar;
     private NotesField notesField;
+    private Span panelTitleText;
     private Span unsavedChanges;
     private Span notesSavedHint;
     private Span rewardEditorErrorLabel;
@@ -191,9 +192,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         mainPanel.setSpacing(true);
+        panelTitleText = LabelFactory.createLabel("Experiment #"+experiment.getName(), CssPathmindStyles.SECTION_TITLE_LABEL);
         VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 WrapperUtils.wrapWidthFullHorizontal(
-                    LabelFactory.createLabel("Experiment #"+experiment.getName(), CssPathmindStyles.SECTION_TITLE_LABEL),
+                    panelTitleText,
                     downloadModelAlpLink
                 ),
                 LabelFactory.createLabel(
@@ -454,6 +456,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	private void updateScreenComponents() {
 		binder.setBean(experiment);
 		experimentsNavbar.setVisible(!experiment.isArchived());
+        panelTitleText.setText("Experiment #"+experiment.getName());
 		startRunButton.setVisible(!experiment.isArchived());
 		saveDraftButton.setVisible(!experiment.isArchived());
 		rewardFunctionEditor.setValue(experiment.getRewardFunction());
