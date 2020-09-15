@@ -106,7 +106,7 @@ public class RewardVariablesTable extends VerticalLayout {
             goalField.addClassName("goal-field");
             goalField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_RIGHT);
             
-            String goalDisplayText = rv.getGoalConditionType() == null ? "—" : String.format("%s%.0f", rv.getGoalConditionTypeEnum().toString(), rv.getGoalValue());
+            String goalDisplayText = rv.getGoalConditionType() == null ? "—" : String.format(rv.getGoalConditionTypeEnum().toString()+rv.getGoalValue());
             goalSpan = LabelFactory.createLabel(goalDisplayText, "goal-display-span");
             
             goalFieldsWrapper = WrapperUtils.wrapWidthFullHorizontal(conditionType, goalField, goalSpan);
