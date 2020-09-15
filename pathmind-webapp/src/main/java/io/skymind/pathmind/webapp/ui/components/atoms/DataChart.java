@@ -25,9 +25,7 @@ public class DataChart extends PolymerTemplate<DataChart.Model> implements HasSt
             String seriesType,
             JsonObject series,
             Boolean stacked,
-            JsonObject viewWindow,
-            JsonArray cols,
-            JsonArray rows
+            JsonObject viewWindow
         ) {
         getModel().setType(type);
         getModel().setShowtooltip(showTooltip);
@@ -39,9 +37,14 @@ public class DataChart extends PolymerTemplate<DataChart.Model> implements HasSt
 
         // JsonObject and JsonArray are not allowed types for TemplateModel methods
         // So we have to set it through calling the JS function
-        getElement().callJsFunction("setData", cols, rows);
         getElement().callJsFunction("setSeries", series);
         getElement().callJsFunction("setViewWindow", viewWindow);
+    }
+
+    public void setData(JsonArray cols, JsonArray rows) {
+        // JsonObject and JsonArray are not allowed types for TemplateModel methods
+        // So we have to set it through calling the JS function
+        getElement().callJsFunction("setData", cols, rows);
     }
     
 	public interface Model extends TemplateModel {
