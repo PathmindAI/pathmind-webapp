@@ -535,7 +535,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     if (policy != null) {
                         policyChartPanel.highlightPolicy(policy);
                     }
-
                     updateDetailsForExperiment();
                 });
             }

@@ -13,13 +13,15 @@ public enum RunStatus {
 	Error(4, "Error"),
 	Killed(5, "Stopped"),
 	Restarting(6, "Restarting") ,
-	Stopping(7, "Stopping");
+	Stopping(7, "Stopping"),
+    Completing(8, "Completing");
 
 	private int id;
 	private String name;
 
 	private static final Map<Integer,RunStatus> STATUS_BY_ID;
-	private static final EnumSet<RunStatus> RUNNING_STATES = EnumSet.of(Starting, Running, Restarting);
+	private static final EnumSet<RunStatus> RUNNING_STATES = EnumSet.of(Starting, Running, Restarting, Completing);
+    private static final EnumSet<RunStatus> COMPLETING_STATES = EnumSet.of(Completing, Completed);
 	private static final EnumSet<RunStatus> FINISHED_STATES = EnumSet.of(Completed, Error, Killed);
 
 	RunStatus(int id, String name) {
@@ -54,4 +56,8 @@ public enum RunStatus {
 	public static boolean isFinished(RunStatus status){
 		return FINISHED_STATES.contains(status);
 	}
+
+	public static boolean isCompleting(RunStatus status) {
+	    return COMPLETING_STATES.contains(status);
+    }
 }

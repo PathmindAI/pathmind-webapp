@@ -101,7 +101,8 @@ class RunRepository
     					RunStatus.Starting.getValue(), 
     					RunStatus.Running.getValue(),
     					RunStatus.Restarting.getValue(),
-    					RunStatus.Stopping.getValue())
+    					RunStatus.Stopping.getValue(),
+                        RunStatus.Completing.getValue())
 					.or(RUN.ID.in(
 						DSL.select(POLICY.RUN_ID)
 							.from(POLICY)
