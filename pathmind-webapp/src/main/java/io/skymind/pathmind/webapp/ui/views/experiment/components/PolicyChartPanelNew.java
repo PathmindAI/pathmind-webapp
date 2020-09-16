@@ -3,7 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -21,19 +20,16 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
-import static io.skymind.pathmind.webapp.utils.ChartUtils.createActiveSeriesPlotOptions;
-import static io.skymind.pathmind.webapp.utils.ChartUtils.createPassiveSeriesPlotOptions;
 
-public class PolicyChartPanel extends VerticalLayout
+public class PolicyChartPanelNew extends VerticalLayout
 {
     private Object experimentLock = new Object();
 
-    private Chart chart = new Chart(ChartType.SPLINE);
+    private PolicyChart chart = new PolicyChart();
 
     private Experiment experiment;
 
-    public PolicyChartPanel() {
-        setupChart();
+    public PolicyChartPanelNew() {
         add(LabelFactory.createLabel("Learning Progress", BOLD_LABEL), chart);
         setPadding(false);
         setSpacing(false);
@@ -47,40 +43,20 @@ public class PolicyChartPanel extends VerticalLayout
 
         // We cannot add the last item because there is no guarantee that the updates are in sequence
     	updatedPolicies.forEach(updatedPolicy -> {
-    		chart.getConfiguration().getSeries().stream()
-    		.filter(series -> series.getId().equals(Long.toString(updatedPolicy.getId())))
-    		.findAny()
-    		.ifPresentOrElse(
-    				series -> {
-    					DataSeries dataSeries = (DataSeries) series;
-                        dataSeries.setData(ChartUtils.getRewardScoreSeriesItems(updatedPolicy));
-                        if (!series.getName().equals(updatedPolicy.getName())) {
-                        	dataSeries.setName(updatedPolicy.getName());
-                        }
-    				},
-    				() -> addPolicyToChart(updatedPolicy));
-    	});
-        chart.drawChart();
-    }
-
-    private void setupChart() {
-        XAxis xAxis = new XAxis();
-        xAxis.setTitle("Iteration");
-        xAxis.setAllowDecimals(false);
-
-        YAxis yAxis = new YAxis();
-        yAxis.setTitle("Mean Reward Score over All Episodes");
-
-        chart.getConfiguration().setAccessibility(new Accessibility(false));
-        chart.getConfiguration().getLegend().setEnabled(false);
-        chart.getConfiguration().addxAxis(xAxis);
-        chart.getConfiguration().addyAxis(yAxis);
-        chart.getConfiguration().getTooltip().setFormatter(
-                "return "
-                + "'<b>Iteration </b>#' + this.x + '<br/>' + "
-                + "'<b>Mean Reward </b>' + this.y.toFixed(Math.abs(this.y) > 1 ? 1 : 6) + '<br/>' + "
-                + "(this.point.episodeCount != null ? '<b>Episode Count </b>' + this.point.episodeCount : '')");
-        chart.setSizeFull();
+    		// chart.getConfiguration().getSeries().stream()
+    		// .filter(series -> series.getId().equals(Long.toString(updatedPolicy.getId())))
+    		// .findAny()
+    		// .ifPresentOrElse(
+    		// 		series -> {
+    		// 			DataSeries dataSeries = (DataSeries) series;
+            //             dataSeries.setData(ChartUtils.getRewardScoreSeriesItems(updatedPolicy));
+            //             if (!series.getName().equals(updatedPolicy.getName())) {
+            //             	dataSeries.setName(updatedPolicy.getName());
+            //             }
+    		// 		},
+    		// 		() -> addPolicyToChart(updatedPolicy));
+        });
+        chart.setPolicyChart(updatedPolicies);
     }
 
     public void setExperiment(Experiment experiment, Policy bestPolicy) {
@@ -92,38 +68,31 @@ public class PolicyChartPanel extends VerticalLayout
 
     private void updateChart(List<Policy> policies, Policy bestPolicy) {
         // As we cannot clear the chart's ListSeries we need to do things a bit differently.
-        chart.getConfiguration().setSeries(
-                policies.stream()
-                        .map(policy -> createDataSeriesForPolicy(policy, policy.equals(bestPolicy)))
-                        .collect(Collectors.toList()));
-        chart.drawChart(true);
+        policies.stream()
+                .map(policy -> createDataSeriesForPolicy(policy, policy.equals(bestPolicy)))
+                .collect(Collectors.toList());
+        chart.setPolicyChart(policies);
     }
 
     private void addPolicyToChart(Policy policy) {
         DataSeries dataSeries = createDataSeriesForPolicy(policy, false);
-        chart.getConfiguration().addSeries(dataSeries);
     }
     
     private DataSeries createDataSeriesForPolicy(Policy policy, boolean isBestPolicy) {
+        String highlightColor = "#1a2949";
     	DataSeries dataSeries = new DataSeries(policy.getName());
         dataSeries.setData(ChartUtils.getRewardScoreSeriesItems(policy));
         dataSeries.setId(Long.toString(policy.getId()));
-        PlotOptionsSeries plotOptions = isBestPolicy ? createActiveSeriesPlotOptions() : createPassiveSeriesPlotOptions();
-        plotOptions.setMarker(new Marker(false));
-        dataSeries.setPlotOptions(plotOptions);
         return dataSeries;
     }
 
     // TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/129 -> Does not seem possible yet: https://vaadin.com/forum/thread/17856633/is-it-possible-to-highlight-a-series-in-a-chart-programmatically
     public void highlightPolicy(Policy policy) {
-    	chart.getConfiguration().getSeries().stream().forEach(series -> {
-    		if (series.getId().equals(Long.toString(policy.getId()))) {
-    			series.setPlotOptions(createActiveSeriesPlotOptions());
-    		} else {
-    			series.setPlotOptions(createPassiveSeriesPlotOptions());
-    		}
-    		DataSeries.class.cast(series).updateSeries();
-    	});
+    	// chart.getConfiguration().getSeries().stream().forEach(series -> {
+    	// 	if (series.getId().equals(Long.toString(policy.getId()))) {
+    	// 		series.setPlotOptions(createActiveSeriesPlotOptions());
+    	// 	}
+    	// });
     }
 
     @Override
