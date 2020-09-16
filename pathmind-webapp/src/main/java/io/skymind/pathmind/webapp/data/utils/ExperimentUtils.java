@@ -9,10 +9,12 @@ import java.util.stream.IntStream;
 
 import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.TrainingError;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
@@ -20,6 +22,11 @@ import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
 
 public class ExperimentUtils
 {
@@ -236,5 +243,60 @@ public class ExperimentUtils
                 .findFirst().orElse(-1);
         if(index > -1)
             experiments.set(index, experiment);
+    }
+
+    public static Optional<Pair<TrainingError, String>> getTrainingErrorAndMessage(TrainingErrorDAO trainingErrorDAO, Experiment experiment) {
+        return experiment.getRuns().stream()
+                .filter(r -> RunStatus.isError(r.getStatusEnum()))
+                .findAny()
+                .flatMap(run -> trainingErrorDAO.getErrorById(run.getTrainingErrorId())
+                        .map(trainingError -> {
+                            if (run.getRllibError() != null) {
+                                return Pair.of(trainingError, run.getRllibError());
+                            } else {
+                                return Pair.of(trainingError, trainingError.getDescription());
+                            }
+                        }));
+    }
+
+    public static Optional<EarlyStopReason> getEarlyStopReason(Experiment experiment) {
+        return experiment.getRuns().stream()
+                .filter(r -> StringUtils.isNotBlank(r.getSuccessMessage()) || StringUtils.isNotBlank(r.getWarningMessage()))
+                .findAny()
+                .flatMap(r -> {
+                    if (StringUtils.isNotBlank(r.getSuccessMessage())) {
+                        return Optional.of(new EarlyStopReason(true, firstLine(r.getSuccessMessage())));
+                    }
+                    else {
+                        return Optional.of(new EarlyStopReason(true, firstLine(r.getWarningMessage())));
+                    }
+                });
+    }
+
+    private static String firstLine(String message) {
+        return message.split("\\n", 2)[0];
+    }
+
+
+    public static class EarlyStopReason {
+        private final boolean success;
+        private final String message;
+
+        public EarlyStopReason(boolean success, String message) {
+            this.success = success;
+            this.message = message;
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public boolean isWarning() {
+            return !success;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }

@@ -471,32 +471,24 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
         RunStatus status = experiment.getTrainingStatusEnum();
         if (status == RunStatus.Error || status == RunStatus.Killed) {
-            experiment.getRuns().stream()
-                    .filter(r -> r.getStatusEnum() == RunStatus.Error || r.getStatusEnum() == RunStatus.Killed)
-                    .findAny()
-                    .ifPresent(run -> {
-                        trainingErrorDAO.getErrorById(run.getTrainingErrorId())
-                                .ifPresent(trainingError -> this.updateUIForError(trainingError, run.getRllibError() != null ?
-                                        run.getRllibError() : trainingError.getDescription()));
+            ExperimentUtils.getTrainingErrorAndMessage(trainingErrorDAO, experiment)
+                    .ifPresent(pair -> {
+                        this.updateUIForError(pair.getLeft(), pair.getRight());
                     });
         }
         else {
-            experiment.getRuns().stream()
-                    .filter(r -> StringUtils.isNotBlank(r.getSuccessMessage()) || StringUtils.isNotBlank(r.getWarningMessage()))
-                    .findAny()
-                    .ifPresent(r -> {
-                        if (StringUtils.isNotBlank(r.getSuccessMessage())) {
-                            stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(firstLine(r.getSuccessMessage()), SUCCESS_LABEL, true);
+            ExperimentUtils.getEarlyStopReason(experiment)
+                    .ifPresent(reason -> {
+                        String label;
+                        if (reason.isSuccess()) {
+                            label = SUCCESS_LABEL;
                         }
                         else {
-                            stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(firstLine(r.getWarningMessage()), WARNING_LABEL, true);
+                            label = WARNING_LABEL;
                         }
+                        stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(reason.getMessage(), label, true);
                     });
         }
-    }
-
-    private String firstLine(String message) {
-        return message.split("\\n", 2)[0];
     }
 
     private void updateButtonEnablement() {

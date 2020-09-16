@@ -45,6 +45,14 @@ public class NotesField extends HorizontalLayout {
         addClassName("notes-field-wrapper");
     }
 
+    public NotesField(String title, String notesText) {
+        this(title, notesText, null);
+    }
+
+    private boolean isReadOnly() {
+        return saveConsumer == null;
+    }
+
     private void updateInformationShownToUser(String notesValue) {
         warningWrapper.setVisible(false);
         hintWrapper.setVisible(false);
@@ -59,6 +67,7 @@ public class NotesField extends HorizontalLayout {
 
     private void createEditableField() {
         blockEditableField = new TextArea("", StringUtils.defaultString(notesText), "Add Notes");
+        blockEditableField.setEnabled(!isReadOnly());
         // make sure the value change event will be triggered whenever the user type something
         blockEditableField.setValueChangeMode(ValueChangeMode.EAGER);
         blockEditableField.addThemeName("notes");
@@ -104,6 +113,7 @@ public class NotesField extends HorizontalLayout {
         saveButton.addClickListener(e -> {
             saveButtonOnClick();
         });
+        saveButton.setVisible(!isReadOnly());
     }
 
     public void setNotesText(String notesText) {

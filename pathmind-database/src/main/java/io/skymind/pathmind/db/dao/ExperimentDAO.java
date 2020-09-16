@@ -54,6 +54,10 @@ public class ExperimentDAO
 		return Optional.ofNullable(ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId));
 	}
 
+    public Optional<Experiment> getSharedExperiment(long experimentId, long userId) {
+        return Optional.ofNullable(ExperimentRepository.getSharedExperiment(ctx, experimentId, userId));
+    }
+
     public List<Experiment> getExperimentsForModel(long modelId) {
 		List<Experiment> experiments = ExperimentRepository.getExperimentsForModel(ctx, modelId);
 		Map<Long, List<Run>> runsGroupedByExperiment = RunRepository.getRunsForExperiments(ctx, DataUtils.convertToIds(experiments));
