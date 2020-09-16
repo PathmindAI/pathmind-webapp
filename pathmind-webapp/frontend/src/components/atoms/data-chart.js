@@ -69,7 +69,14 @@ class DataChart extends PolymerElement {
                     height: 100% !important;
                 }
                 .google-visualization-tooltip div {
+                    line-height: 1.2;
                     padding: var(--lumo-space-xxs);
+                }
+                :host([type~="line"]) #chartdiv path {
+                    opacity: 0.4;
+                }
+                :host([type~="line"]) #chartdiv path[stroke~="#1a2949"] {
+                    opacity: 1;
                 }`;
             this.$.chart.shadowRoot.appendChild(style);
             if (isInit) {
@@ -113,9 +120,9 @@ class DataChart extends PolymerElement {
             "seriesType": seriestype,
             "series": series,
             "chartArea": {
-                "left": !vaxistitle && !haxistitle ? 0 : null, 
+                "left": !vaxistitle && !haxistitle ? 0 : "10%", 
                 "top": !vaxistitle && !haxistitle ? 0 : 20, 
-                "width": !vaxistitle && !haxistitle ? "100%" : null, 
+                "width": !vaxistitle && !haxistitle ? "100%" : "88%", 
                 "height": !vaxistitle && !haxistitle ? "100%" : null
             }
         };

@@ -15,6 +15,10 @@ storiesOf('Charts', module)
     <div class="block-wrapper">
         <h3>Line Chart (Reward Score Chart)</h3>
         <div class="col-wrapper">
+        
+        <!-- [6,  -2.1, "nah", -69.4, "what"],
+        [7,  9.3, "nah", -70.3, "what"],
+        [8,  18.4, "nah", -69.0, "what"] -->
             <data-chart
                 type='line'
                 cols='[
@@ -28,9 +32,9 @@ storiesOf('Charts', module)
                     [3,  -13.7, "nah", -8.4, "what"],
                     [4,  -23.0, "nah", -45.5, "what"],
                     [5,  -14.5, "nah", -60.4, "what"],
-                    [6,  -2.1, "nah", -69.4, "what"],
-                    [7,  9.3, "nah", -70.3, "what"],
-                    [8,  18.4, "nah", -69.0, "what"]
+                    [6,  null, null, -69.4, "what"],
+                    [7,  null, null, -70.3, "what"],
+                    [8,  null, null, -69.0, "what"]
                 ]'
                 showtooltip
                 curvelines
