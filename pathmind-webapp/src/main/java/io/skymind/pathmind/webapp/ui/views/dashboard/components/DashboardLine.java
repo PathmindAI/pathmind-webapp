@@ -3,13 +3,13 @@ package io.skymind.pathmind.webapp.ui.views.dashboard.components;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.PROJECT_TITLE;
 
 import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -116,7 +116,9 @@ public class DashboardLine extends HorizontalLayout {
 	private Span createStageItem(Stage stage) {
 		Span item = null; 
 		if (stage.getValue() < currentStage.getValue()) {
-			item = new Span(new Span(VaadinIcon.CHECK_CIRCLE.create(), new Text(stage.getNameAfterDone())));
+            Icon successIcon = VaadinIcon.CHECK_CIRCLE.create();
+            successIcon.getElement().setAttribute("title", "Done");
+            item = new Span(new Span(successIcon, new Text(stage.getNameAfterDone())));
 			item.setClassName("stage-done");
 		} else if (stage.getValue() == currentStage.getValue()) {
 			if (DashboardUtils.isTrainingInProgress(stage, dashboardItem.getLatestRun())) {
@@ -127,12 +129,15 @@ public class DashboardLine extends HorizontalLayout {
 				item.setClassName("stage-active");
             } else if (DashboardUtils.isTrainingStopped(stage, dashboardItem.getLatestRun()) || DashboardUtils.isTrainingInFailed(stage, dashboardItem.getLatestRun())) {
                 if (ExperimentUtils.getTrainingStatus(dashboardItem.getExperiment()) == RunStatus.Error) {
-                    item = new Span(VaadinIcon.EXCLAMATION_CIRCLE_O.create(), new Span(new Text(stage.getNameAfterDone()), new Html("<br/>"), LabelFactory.createLabel("Failed", "hint-label")));
+                    Icon errorIcon = VaadinIcon.EXCLAMATION_CIRCLE_O.create();
+                    errorIcon.getElement().setAttribute("title", "Failed");
+                    item = new Span(new Span(errorIcon, new Span(stage.getNameAfterDone())));
                     item.setClassName("stage-failed");
                 } else {
                     String trainingStatusText = dashboardItem.getLatestRun().getStatusEnum() == RunStatus.Stopping ? "Stopping" : "Stopped";
                     Span stoppedIcon = LabelFactory.createLabel("", "icon-stopped");
-                    item = new Span(stoppedIcon, new Span(new Text(stage.getNameAfterDone()), new Html("<br/>"), LabelFactory.createLabel(trainingStatusText, "hint-label")));
+                    stoppedIcon.setTitle(trainingStatusText);
+                    item = new Span(new Span(stoppedIcon, new Span(stage.getNameAfterDone())));
                     item.setClassName("stage-stopped");
                 }
 			} else {
