@@ -133,10 +133,10 @@ Create PG dump
 def createPgDump() {
     // Get db url ans pass
     dbpass = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n dev | base64 --decode | rev | cut -f1 -d\'=\' | rev')
-    dburl = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n dev | base64 --decode | sed \'s@password=.*@@g\' | sed \'s@ @ --@g\'')
+    dburl = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n dev | base64 --decode | sed \'s@ *password=.*@@g\' | sed \'s@ @ --@g\'')
     sh """
         set -x
-        PGPASSWORD="${dbpass}" /usr/lib/postgresql/11/bin/pg_dump -C -w --format=c --blobs ${dburl} > /tmp/dev_dump_${env.BUILD_NUMBER}.sql 
+        PGPASSWORD="${dbpass}" /usr/lib/postgresql/11/bin/pg_dump -C -w --format=c --blobs --${dburl} > /tmp/dev_dump_${env.BUILD_NUMBER}.sql 
     """
 }
 
@@ -204,6 +204,7 @@ pipeline {
                 setGitHubStatus("PENDING")
                 echo "Check out code"
                 checkout scm
+                createPgDump()
                 script {
                     // Define a unique name for the tests container and helm release
                     RELEASE_ID = "${IMAGE_NAME}-${env.BUILD_NUMBER}"
