@@ -27,6 +27,7 @@ RUN apt update && \
         apt-get install jq -y && \
         apt-get install -y unzip xvfb libxi6 libgconf-2-4 && \
         apt install python-pip -y && \
+        apt install nawk -y && \
         pip install awscli
 
 #Install JDK

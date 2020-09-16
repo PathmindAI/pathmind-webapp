@@ -219,47 +219,6 @@ pipeline {
             }
         }
 
-        stage('Testing') {
-            when {
-                anyOf {
-                    environment name: 'GIT_BRANCH', value: 'dev'
-                    environment name: 'GIT_BRANCH', value: 'test'
-                }
-            }
-            steps {
-                script {
-                    try {
-                        echo "CLean s3 bucket for tests"
-                        sh "aws s3 rm s3://${DOCKER_TAG}-training-dynamic-files.pathmind.com/id2 --recursive"
-                        sh "aws s3 rm s3://${DOCKER_TAG}-training-dynamic-files.pathmind.com/id3 --recursive"
-                        sh "aws s3 rm s3://${DOCKER_TAG}-training-dynamic-files.pathmind.com/id4 --recursive"
-                        sh "aws s3 rm s3://${DOCKER_TAG}-training-dynamic-files.pathmind.com/id5 --recursive"
-                        sh "aws s3 rm s3://${DOCKER_TAG}-training-dynamic-files.pathmind.com/id6 --recursive"
-                        sh "aws s3 rm s3://${DOCKER_TAG}-training-dynamic-files.pathmind.com/id7 --recursive"
-                        echo "Running tests"
-                        TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true  -Denvironments.default.base.url=https://${DOCKER_TAG}.devpathmind.com/ -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dfailsafe.rerunFailingTestsCount=3 -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n dev |  base64 --decode` -f pom.xml -P bdd-tests")
-                        script {
-                            if (TEST_STATUS != 0) {
-                                echo "Some bdd tests failed ${TEST_STATUS}"
-                                currentBuild.result = 'UNSTABLE'
-                            }
-                        }
-                    } catch (err) {
-                    } finally {
-                        publishHTML(target: [
-                            reportDir: 'pathmind-bdd-tests/target/site/serenity',
-                            reportFiles: 'index.html',
-                            reportName: "Tests",
-                            keepAll: true,
-                            alwaysLinkToLastBuild: true,
-                            allowMissing: false
-                        ])
-                        junit 'pathmind-bdd-tests/target/site/serenity/SERENITY-JUNIT*xml'
-                    }
-                }
-            }
-        }
-
         // Waif for user manual approval, or proceed automatically if DEPLOY_TO_PROD is true
         stage('Go for Production?') {
             when {
