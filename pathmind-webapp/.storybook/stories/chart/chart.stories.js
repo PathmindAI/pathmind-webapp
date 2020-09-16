@@ -1,11 +1,7 @@
 import { storiesOf } from "@storybook/polymer";
-import { hljs, hlJava, hlConfig, copyCodeBlock, storyParamConfig } from "../../utils";
+import { storyParamConfig } from "../../utils";
 
 import "../../../frontend/src/components/atoms/data-chart.js";
-
-// import code from "./codeSnippets";
-
-hljs.registerLanguage('java', hlJava);
 
 storiesOf('Charts', module)
 .addDecorator(storyFn => `<div class="story-wrapper">

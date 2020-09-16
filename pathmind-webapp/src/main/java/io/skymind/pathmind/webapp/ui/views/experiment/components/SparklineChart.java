@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.components;
+package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
 import java.util.List;
 import java.util.Map;
@@ -71,7 +71,7 @@ public class SparklineChart extends DataChart {
         int i = -1;
         rowItem.set(++i, iteration);
         rowItem.set(++i, metricValue);
-        String metricValueFormatted = metricRange > 10 ? String.format("%.0f", metricValue) : String.format("%.2f", metricValue);
+        String metricValueFormatted = metricRange > 10 ? String.format("%.0f", metricValue) : String.format("%.4f", metricValue);
         if (showDetails) {
             rowItem.set(++i, "<div><b>Iteration #</b>"+iteration+"<br><b>Mean Metric</b> "+metricValueFormatted+"</div>");
         }
