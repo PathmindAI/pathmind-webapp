@@ -136,7 +136,8 @@ def createPgDump() {
     dburl = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n dev | base64 --decode | sed \'s@ *password=.*@@g\' | sed \'s@ @ --@g\'')
     sh """
         set -x
-        PGPASSWORD="${dbpass}" /usr/lib/postgresql/11/bin/pg_dump -C -w --format=c --blobs --${dburl} > /tmp/dev_dump_${env.BUILD_NUMBER}.sql 
+        export PGPASSWORD="${dbpass}" 
+        /usr/lib/postgresql/11/bin/pg_dump -C -w --format=c --blobs --${dburl} > /tmp/dev_dump_${env.BUILD_NUMBER}.sql 
     """
 }
 
