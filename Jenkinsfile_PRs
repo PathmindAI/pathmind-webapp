@@ -146,9 +146,9 @@ Load PG dump
 */
 def loadPgDump() {
     // Get db url
-    dburl = "--host=postgres.${env.BUILD_NUMBER} --port=5432 --dbname=pathminddb --user=pathmind"
+    dburl = "--host=postgres.${env.BUILD_NUMBER} --port=5432 --dbname=pathminddb --user=pathminddb"
     sh """
-        set +x
+        set -x
         PGPASSWORD="Asdf1234" /usr/lib/postgresql/11/bin/pg_restore ${dburl} < /tmp/dev_dump_${env.BUILD_NUMBER}.sql
     """
 }
