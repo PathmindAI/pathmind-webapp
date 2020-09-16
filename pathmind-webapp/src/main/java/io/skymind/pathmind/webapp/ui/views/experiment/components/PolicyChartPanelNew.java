@@ -29,34 +29,12 @@ public class PolicyChartPanelNew extends VerticalLayout
 
     private Experiment experiment;
 
+    private Policy bestPolicy;
+
     public PolicyChartPanelNew() {
         add(LabelFactory.createLabel("Learning Progress", BOLD_LABEL), chart);
         setPadding(false);
         setSpacing(false);
-    }
-
-    private void updatePolicyChart(List<Policy> updatedPolicies) {
-        // TODO -> Do we need to keep experiment up to date if there are new policies, etc.? I don't believe it's necessary
-        // but we should confirm it.
-        // During a training run, additional policies will be created, i.e. for a discovery run, the policies will
-        // be created as they actually start training. -- pdubs, 20190927
-
-        // We cannot add the last item because there is no guarantee that the updates are in sequence
-    	updatedPolicies.forEach(updatedPolicy -> {
-    		// chart.getConfiguration().getSeries().stream()
-    		// .filter(series -> series.getId().equals(Long.toString(updatedPolicy.getId())))
-    		// .findAny()
-    		// .ifPresentOrElse(
-    		// 		series -> {
-    		// 			DataSeries dataSeries = (DataSeries) series;
-            //             dataSeries.setData(ChartUtils.getRewardScoreSeriesItems(updatedPolicy));
-            //             if (!series.getName().equals(updatedPolicy.getName())) {
-            //             	dataSeries.setName(updatedPolicy.getName());
-            //             }
-    		// 		},
-    		// 		() -> addPolicyToChart(updatedPolicy));
-        });
-        chart.setPolicyChart(updatedPolicies);
     }
 
     public void setExperiment(Experiment experiment, Policy bestPolicy) {
@@ -67,23 +45,14 @@ public class PolicyChartPanelNew extends VerticalLayout
     }
 
     private void updateChart(List<Policy> policies, Policy bestPolicy) {
-        // As we cannot clear the chart's ListSeries we need to do things a bit differently.
-        policies.stream()
-                .map(policy -> createDataSeriesForPolicy(policy, policy.equals(bestPolicy)))
-                .collect(Collectors.toList());
-        chart.setPolicyChart(policies);
-    }
-
-    private void addPolicyToChart(Policy policy) {
-        DataSeries dataSeries = createDataSeriesForPolicy(policy, false);
-    }
-    
-    private DataSeries createDataSeriesForPolicy(Policy policy, boolean isBestPolicy) {
-        String highlightColor = "#1a2949";
-    	DataSeries dataSeries = new DataSeries(policy.getName());
-        dataSeries.setData(ChartUtils.getRewardScoreSeriesItems(policy));
-        dataSeries.setId(Long.toString(policy.getId()));
-        return dataSeries;
+        // TODO -> Do we need to keep experiment up to date if there are new policies, etc.? I don't believe it's necessary
+        // but we should confirm it.
+        // During a training run, additional policies will be created, i.e. for a discovery run, the policies will
+        // be created as they actually start training. -- pdubs, 20190927
+        if (bestPolicy != null) {
+            this.bestPolicy = bestPolicy;
+        }
+        chart.setPolicyChart(policies, bestPolicy);
     }
 
     // TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/129 -> Does not seem possible yet: https://vaadin.com/forum/thread/17856633/is-it-possible-to-highlight-a-series-in-a-chart-programmatically
@@ -117,7 +86,7 @@ public class PolicyChartPanelNew extends VerticalLayout
                 // We need to check after the lock is acquired as changing experiments can take up to several seconds.
                 if (event.getExperimentId() != experiment.getId())
                     return;
-                PushUtils.push(getUiSupplier(), () -> updatePolicyChart(event.getPolicies()));
+                PushUtils.push(getUiSupplier(), () -> updateChart(event.getPolicies(), null));
             }
         }
 

@@ -153,6 +153,12 @@
     font-size: var(--lumo-font-size-xs);
 }
 
+.experiment-view .bold-label + data-chart {
+    border: 1px solid var(--pm-gray-color);
+    border-radius: var(--lumo-border-radius);
+    overflow: hidden;
+}
+
 .metric-chart-panel {
     position: relative;
 }
