@@ -132,7 +132,7 @@ Create PG dump
 */
 def createPgDump() {
     // Get db url ans pass
-    dbpass = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n dev | base64 --decode | nawk \'FS="password="{print $2}\' | nawk \'{print $1}\'')
+    dbpass = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n dev | base64 --decode | rev | cut -f1 -d\'=\' | rev')
     dburl = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n dev | base64 --decode | sed \'s@password=.*@@g\' | sed \'s@ @ --@g\'')
     sh """
         set +x
