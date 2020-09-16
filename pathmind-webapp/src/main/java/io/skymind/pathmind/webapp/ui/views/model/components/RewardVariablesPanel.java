@@ -52,7 +52,9 @@ public class RewardVariablesPanel extends VerticalLayout
 	}
 
 	private void setupForm() {
-        rewardVariablesTable = new RewardVariablesTable();
+        rewardVariablesTable = new RewardVariablesTable(() -> {
+            nextStepButton.setEnabled(canSaveChanges());
+        });
 		formPanel.setPadding(false);
         formPanel.add(rewardVariablesTable);
 	}
