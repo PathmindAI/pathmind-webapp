@@ -61,7 +61,7 @@ public class SparklineChart extends DataChart {
             goalRange = isGreaterThan ? maxValue - goalLowerBound : goalValue - goalLowerBound;
         }
         for (int i = 0; i < sparklineData.size(); i++) {
-            rows.set(i, createRowItem(i, sparklineData.get(i), goalLowerBound, goalRange, showDetails, metricRange));
+            rows.set(i, createRowItem(i+1, sparklineData.get(i), goalLowerBound, goalRange, showDetails, metricRange));
         }
         return rows;
     }

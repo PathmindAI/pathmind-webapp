@@ -77,7 +77,7 @@ public class PolicyChart extends DataChart {
                 Double meanRewardScoreValue = rewardScore.getMean();
                 int episodeCount = rewardScore.getEpisodeCount();
                 rowItem.set(index, meanRewardScoreValue);
-                String meanRewardScoreValueFormatted = meanRewardScoreValue > 1 ? String.format("%.2f", meanRewardScoreValue) : String.format("%.4f", meanRewardScoreValue);
+                String meanRewardScoreValueFormatted = Math.abs(meanRewardScoreValue) > 1 ? String.format("%.2f", meanRewardScoreValue) : String.format("%.4f", meanRewardScoreValue);
                 rowItem.set(index+1, "<div><b>Iteration #</b>"+iteration+"<br><b>Mean Reward</b> "+meanRewardScoreValueFormatted+"<br><b>Episode Count</b> "+episodeCount+"</div>");
             } else {
                 rowItem.set(index, Json.createNull());
