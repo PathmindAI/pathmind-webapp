@@ -3,6 +3,7 @@ package io.skymind.pathmind.bddtests.page.wizard;
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class RewardVariablesPage extends PageObject {
         getDriver().findElement(By.xpath("//span[text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/descendant::vaadin-select")).click();
         getDriver().findElement(By.xpath("//vaadin-item[@label='" + goalSign + "']")).click();
         getDriver().findElement(By.xpath("//span[text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/descendant::vaadin-number-field")).sendKeys(goal);
+        getDriver().findElement(By.xpath("//span[text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/descendant::vaadin-number-field")).sendKeys(Keys.ENTER);
     }
 
     public void checkWizardRewardVariableErrorIsShown(String variable, String error) {
