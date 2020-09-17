@@ -8,6 +8,7 @@ Feature: Check Model Details package name field
     When Input name of the new project <project name> and click Create project button
     When Upload model <model>
     Then Check that model successfully uploaded
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment <project name> page is opened

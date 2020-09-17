@@ -54,4 +54,10 @@ public class ModelUploadPage extends PageObject {
         upload(System.getProperty("user.dir") + "/models/" + alpFile).fromLocalMachine().to(projectNameInputField);
         waitABit(3000);
     }
+
+    public void checkThatWizardUploadAlpFilePageIsOpened() {
+        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']"))));
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']/following-sibling::div/p[1]")).getText(), is("Upload your model's ALP file to easily keep track of the version of your model that was used for training each policy."));
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']/following-sibling::div/p[2]")).getText(), is("You'll be able to download this ALP file with your trained policy from an experiment."));
+    }
 }

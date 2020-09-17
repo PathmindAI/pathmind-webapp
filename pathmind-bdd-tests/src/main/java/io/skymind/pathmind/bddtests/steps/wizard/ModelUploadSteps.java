@@ -31,4 +31,9 @@ public class ModelUploadSteps {
     public void uploadALPFile(String alpFile) {
         modelUploadPage.uploadALPFile(alpFile);
     }
+
+    @Step
+    public void checkThatWizardUploadAlpFilePageIsOpened() {
+        modelUploadPage.checkThatWizardUploadAlpFilePageIsOpened();
+    }
 }

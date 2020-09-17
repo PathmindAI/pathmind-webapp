@@ -37,4 +37,9 @@ public class ModelUploadStepDefinitions {
     public void clickWizardUploadALPNextBtn() {
         modelUploadSteps.clickAlpUploadStepNextBtn();
     }
+
+    @Then("^Check that wizard upload alp file page is opened$")
+    public void checkThatWizardUploadAlpFilePageIsOpened() {
+        modelUploadSteps.checkThatWizardUploadAlpFilePageIsOpened();
+    }
 }
