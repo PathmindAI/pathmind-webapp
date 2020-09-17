@@ -26,4 +26,9 @@ public class RewardVariablesSteps {
     public void checkWizardRewardVariableErrorIsShown(String variable, String error) {
         rewardVariablesPage.checkWizardRewardVariableErrorIsShown(variable, error);
     }
+
+    @Step
+    public void checkWizardNextButtonIsDisabled() {
+        rewardVariablesPage.checkWizardNextButtonIsDisabled();
+    }
 }

@@ -74,11 +74,7 @@ Feature: Wizard page
     Then Check wizard reward variable 'successful_customers' error is shown 'Enter a goal value'
     Then Check wizard reward variable 'balked_customers' error is shown 'Enter a goal value'
     Then Check wizard reward variable 'service_time' error is shown 'Enter a goal value'
-    When Click wizard reward variables next btn
-    Then Check wizard reward variable 'kitchen_cleanliness' error is shown 'Enter a goal value'
-    Then Check wizard reward variable 'successful_customers' error is shown 'Enter a goal value'
-    Then Check wizard reward variable 'balked_customers' error is shown 'Enter a goal value'
-    Then Check wizard reward variable 'service_time' error is shown 'Enter a goal value'
+    When Check wizard next button is disabled
     When Input reward variable 'kitchen_cleanliness' goal '≤' value '1'
     When Input reward variable 'successful_customers' goal '≥' value '2'
     When Input reward variable 'balked_customers' goal '≤' value '3'

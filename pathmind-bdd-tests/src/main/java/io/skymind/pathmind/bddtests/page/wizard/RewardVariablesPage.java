@@ -38,7 +38,11 @@ public class RewardVariablesPage extends PageObject {
     }
 
     public void checkWizardRewardVariableErrorIsShown(String variable, String error) {
-        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//span[text()='"+variable+"']/parent::vaadin-horizontal-layout/descendant::vaadin-number-field")));
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//span[text()='" + variable + "']/parent::vaadin-horizontal-layout/descendant::vaadin-number-field")));
         assertThat(e.findElement(By.cssSelector("div[part='error-message']")).getText(), is(error));
+    }
+
+    public void checkWizardNextButtonIsDisabled() {
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::vaadin-button")).getAttribute("aria-disabled"), is("true"));
     }
 }

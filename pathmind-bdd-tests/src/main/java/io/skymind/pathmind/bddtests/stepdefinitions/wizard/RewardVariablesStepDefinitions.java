@@ -38,4 +38,9 @@ public class RewardVariablesStepDefinitions {
     public void checkWizardRewardVariableErrorIsShown(String variable, String error) {
         rewardVariablesSteps.checkWizardRewardVariableErrorIsShown(variable, error);
     }
+
+    @When("^Check wizard next button is disabled$")
+    public void checkWizardNextButtonIsDisabled() {
+        rewardVariablesSteps.checkWizardNextButtonIsDisabled();
+    }
 }
