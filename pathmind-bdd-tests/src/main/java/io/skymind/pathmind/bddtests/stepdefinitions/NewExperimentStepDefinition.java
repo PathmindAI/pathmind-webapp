@@ -91,4 +91,9 @@ public class NewExperimentStepDefinition {
     public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign, String goal) {
         newExperimentSteps.checkThatNewExperimentRewardVariableGoalAndValue(rewardVariable, goalSign, goal);
     }
+
+    @Then("^Check that experiment page title is '(.*)'$")
+    public void checkThatExperimentPageTitleIs(String experiment) {
+        newExperimentSteps.checkThatExperimentPageTitleIs(experiment);
+    }
 }

@@ -109,7 +109,6 @@ public class ModelPage extends PageObject {
 
     public void clickProjectPageNewExperimentButton() {
         getDriver().findElement(By.xpath("//vaadin-button[text()='New Experiment']")).click();
-        waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[text()='Write your reward function']")));
     }
 
     public void checkModelPageElements() {

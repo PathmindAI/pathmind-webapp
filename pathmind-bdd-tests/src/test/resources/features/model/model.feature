@@ -9,6 +9,7 @@ Feature: Model page
     When Open project AutotestProject on projects page
     Then Click the model name 1
     When Click project page new experiment button
+    Then Check that experiment page title is 'Experiment #2'
     When Click back button
     Then Check that model/experiment name '2 Draft' exist in archived/not archived tab
 
