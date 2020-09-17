@@ -58,7 +58,7 @@ public class SparklineChart extends DataChart {
         if (goalValue != null && goalCondition != null) {
             Boolean isGreaterThan = goalCondition.equals(GoalConditionType.GREATER_THAN_OR_EQUAL);
             goalLowerBound = isGreaterThan ? goalValue : minValue;
-            goalRange = isGreaterThan ? maxValue - goalLowerBound : goalValue;
+            goalRange = isGreaterThan ? maxValue - goalLowerBound : goalValue - goalLowerBound;
         }
         for (int i = 0; i < sparklineData.size(); i++) {
             rows.set(i, createRowItem(i, sparklineData.get(i), goalLowerBound, goalRange, showDetails, metricRange));
