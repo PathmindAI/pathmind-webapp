@@ -121,7 +121,7 @@ class DataChart extends PolymerElement {
             "series": series,
             "chartArea": {
                 "left": !vaxistitle && !haxistitle ? 0 : "10%", 
-                "top": !vaxistitle && !haxistitle ? 0 : 20, 
+                "top": !vaxistitle && !haxistitle ? 0 : "5%", 
                 "width": !vaxistitle && !haxistitle ? "100%" : "88%", 
                 "height": !vaxistitle && !haxistitle ? "100%" : "80%"
             }

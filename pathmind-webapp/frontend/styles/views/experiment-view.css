@@ -182,7 +182,7 @@
 .experiment-view .bottom-panel,
 .experiment-view .row-2-of-3 vaadin-vertical-layout {
     flex: 1;
-    max-height: calc(100vh - 26rem);
+    max-height: calc(100vh - 24rem);
 }
 
 .experiment-view .buttons-wrapper {
