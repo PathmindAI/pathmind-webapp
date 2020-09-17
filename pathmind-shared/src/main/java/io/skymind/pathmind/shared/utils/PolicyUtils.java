@@ -1,28 +1,18 @@
 package io.skymind.pathmind.shared.utils;
 
-import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
-import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.ObjectUtils;
-
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.shared.data.Metrics;
-import io.skymind.pathmind.shared.data.MetricsRaw;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
+
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
+import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
 
 @Slf4j
 public class PolicyUtils
@@ -154,7 +144,9 @@ public class PolicyUtils
             String metricValueWithUncertainty = policy.getUncertainty().get(rv.getArrayIndex());
             Double[] metricAndUncertainity = parseMetricAndUncertainity(metricValueWithUncertainty);
             metricValue = metricAndUncertainity[0];
-            uncertaintyValue = metricAndUncertainity[1];
+            // todo https://github.com/SkymindIO/pathmind-webapp/pull/2063#issuecomment-693542915
+            // https://github.com/SkymindIO/pathmind-webapp/issues/2108
+            // uncertaintyValue = metricAndUncertainity[1];
         } else {
             // No data to calculate yet
             if (policy.getSimulationMetrics().size() <= rv.getArrayIndex()) {
