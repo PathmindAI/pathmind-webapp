@@ -9,8 +9,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class ModelUploadPage extends PageObject {
 
@@ -47,5 +46,12 @@ public class ModelUploadPage extends PageObject {
 
     public void clickAlpUploadStepNextBtn() {
         getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']/following-sibling::vaadin-horizontal-layout/vaadin-button")).click();
+    }
+
+    public void uploadALPFile(String alpFile) {
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']/parent::vaadin-vertical-layout/descendant::vaadin-upload")));
+        WebElement projectNameInputField = e.findElement(byInput);
+        upload(System.getProperty("user.dir") + "/models/" + alpFile).fromLocalMachine().to(projectNameInputField);
+        waitABit(3000);
     }
 }

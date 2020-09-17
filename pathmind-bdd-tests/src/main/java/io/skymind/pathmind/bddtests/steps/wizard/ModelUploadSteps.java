@@ -26,4 +26,9 @@ public class ModelUploadSteps {
     public void clickAlpUploadStepNextBtn() {
         modelUploadPage.clickAlpUploadStepNextBtn();
     }
+
+    @Step
+    public void uploadALPFile(String alpFile) {
+        modelUploadPage.uploadALPFile(alpFile);
+    }
 }

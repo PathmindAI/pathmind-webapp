@@ -154,4 +154,9 @@ public class GenericPageStepDefinitions {
     public void checkTitleLabelTagIsArchived(String tag) {
         genericPageSteps.checkTitleLabelTagIsArchived(tag);
     }
+
+    @Then("^Compare '(.*)' file with downloaded file$")
+    public void compareALPFileWithDownloadedFile(String alpFile) {
+        genericPageSteps.compareALPFileWithDownloadedFile(alpFile);
+    }
 }
