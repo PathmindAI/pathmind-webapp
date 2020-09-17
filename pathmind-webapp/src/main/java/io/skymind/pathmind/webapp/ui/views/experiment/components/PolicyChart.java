@@ -91,7 +91,7 @@ public class PolicyChart extends DataChart {
         List<List<RewardScore>> allRewardScoresLists = new ArrayList<>();
         Map<Integer, List<RewardScore>> allLinesData = new LinkedHashMap<>();
         List<Integer> iterationNumbers = new ArrayList<>();
-        int maxIteration = -1;
+        int maxIteration = 0;
         policyData.forEach(policy -> {
             List<RewardScore> rewardScoresList = policy.getScores().stream()
                     .filter(score -> !Double.isNaN(score.getMean()))

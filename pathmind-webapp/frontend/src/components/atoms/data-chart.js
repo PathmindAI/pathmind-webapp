@@ -123,7 +123,7 @@ class DataChart extends PolymerElement {
                 "left": !vaxistitle && !haxistitle ? 0 : "10%", 
                 "top": !vaxistitle && !haxistitle ? 0 : 20, 
                 "width": !vaxistitle && !haxistitle ? "100%" : "88%", 
-                "height": !vaxistitle && !haxistitle ? "100%" : null
+                "height": !vaxistitle && !haxistitle ? "100%" : "80%"
             }
         };
     }

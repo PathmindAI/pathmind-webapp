@@ -79,7 +79,6 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanelNew;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
@@ -129,7 +128,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private CodeViewer codeViewer;
     private TrainingStartingPlaceholder trainingStartingPlaceholder;
     private PolicyChartPanel policyChartPanel;
-    private PolicyChartPanelNew policyChartPanelNew;
     private ExperimentsNavBar experimentsNavbar;
     private NotesField notesField;
 
@@ -303,13 +301,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private HorizontalLayout getBottomPanel() {
         policyChartPanel = new PolicyChartPanel();
-        policyChartPanelNew = new PolicyChartPanelNew();
         trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 
         VerticalLayout chartWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                         trainingStartingPlaceholder,
-                        policyChartPanel,
-                        policyChartPanelNew);
+                        policyChartPanel);
         chartWrapper.addClassName("row-2-of-3");
 
         HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
@@ -383,15 +379,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentViewRunUpdateSubscriber.setExperiment(experiment);
             experimentId = selectedExperiment.getId();
             loadExperimentData();
-            updateScreenComponents();
             notesField.setNotesText(experiment.getUserNotes());
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-            simulationMetricsPanel.setExperiment(experiment);
 
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
             } else {
                 getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
+                updateScreenComponents();
+                simulationMetricsPanel.setExperiment(experiment);
             }
         }
     }
@@ -445,7 +441,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
         observationsPanel.setSelectedObservations(experimentObservations);
         policyChartPanel.setExperiment(experiment, policy);
-        policyChartPanelNew.setExperiment(experiment, policy);
         updateDetailsForExperiment();
     }
 
@@ -453,7 +448,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         RunStatus trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
         trainingStartingPlaceholder.setVisible(trainingStatus == RunStatus.Starting);
         policyChartPanel.setVisible(trainingStatus != RunStatus.Starting);
-        policyChartPanelNew.setVisible(trainingStatus != RunStatus.Starting);
     }
 
     private void updateUIForError(TrainingError error, String errorText) {
@@ -561,11 +555,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 addOrUpdatePolicies(event.getPolicies());
 
                 // Calculate the best policy again
-                policy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
+                List<Policy> policies = experiment.getPolicies();
+                policy = PolicyUtils.selectBestPolicy(policies);
                 PushUtils.push(getUI(), () -> {
                     if (policy != null) {
-                        policyChartPanel.highlightPolicy(policy);
-                        policyChartPanelNew.highlightPolicy(policy);
+                        policyChartPanel.updateChart(policies, policy);
                     }
                     updateDetailsForExperiment();
                 });
