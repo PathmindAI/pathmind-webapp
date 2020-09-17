@@ -95,7 +95,8 @@ public class PolicyUtils
     }
 
     public static void updateSimulationMetricsData(Policy policy) {
-        List<Metrics> metricsList = policy == null ? null : policy.getMetrics();
+        if (policy == null) return;
+        List<Metrics> metricsList = policy.getMetrics();
         policy.getSparklinesData().clear();
         policy.getSimulationMetrics().clear();
         policy.getUncertainty().clear();
@@ -104,6 +105,7 @@ public class PolicyUtils
             // The Simulation Metric value shown is the mean value of the metric in the last iteration
             // Below sets the mean value of the metrics at the latest iteration into the list `simulationMetrics`
             Metrics lastMetrics = metricsList.get(metricsList.size() - 1);
+
             lastMetrics.getMetricsThisIter().stream()
                     .forEach(metricsThisIter -> policy.getSimulationMetrics().add(metricsThisIter.getMean()));
 
@@ -126,7 +128,7 @@ public class PolicyUtils
             policy.setSparklinesData(sparkLineMap);
         }
 
-        List<MetricsRaw> metricsRawList = policy == null ? null : policy.getMetricsRaws();
+        List<MetricsRaw> metricsRawList = policy.getMetricsRaws();
         if (metricsRawList != null && metricsRawList.size() > 0) {
             Collections.sort(metricsRawList, Comparator.comparingInt(MetricsRaw::getIteration));
             Map<Integer, List<Double>> uncertaintyMap = MetricsRawUtils.toIndexAndMetricRawData(metricsRawList);

@@ -106,8 +106,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
         Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
-        if(bestPolicy != null)
-            updateSimulationMetrics(bestPolicy, true);
+        updateSimulationMetrics(bestPolicy, true);
     }
 
     public boolean isShowSimulationMetrics() {
@@ -119,14 +118,16 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         // Needed to convert the raw metrics to a format the UI can use.
         PolicyUtils.updateSimulationMetricsData(policy);
 
-        if(policy.getSimulationMetrics() == null && policy.getSimulationMetrics().isEmpty())
-            return;
-
-
         if (createElementsFromScratch) {
             metricsWrapper.removeAll();
             sparklinesWrapper.removeAll();
+        }
 
+        if (policy == null || policy.getSimulationMetrics() == null || policy.getSimulationMetrics().isEmpty()) {
+            return;
+        }
+
+        if (createElementsFromScratch) {
             Div sparklineHeader = new Div(new Span("Overview"), new SimulationMetricsInfoLink());
             sparklineHeader.addClassName("header");
             sparklinesWrapper.add(sparklineHeader);
