@@ -151,8 +151,10 @@
 .stage-done {
     color: var(--lumo-body-text-color);
 }
-.stage-failed,
-.stage-failed .hint-label {
+.stage-done iron-icon[icon~="vaadin:check-circle"] {
+    color: var(--lumo-success-color);
+}
+.stage-failed {
     color: var(--lumo-error-text-color);
 }
 .stage-stopped {
@@ -163,9 +165,6 @@
 .stage-stopped icon-stopped {
     --icon-size: 20px;
     margin-right: 4px;
-}
-.stage-stopped .hint-label {
-    color: var(--lumo-body-text-color);
 }
 .stage-failed span,
 .stage-stopped span {

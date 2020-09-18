@@ -27,7 +27,7 @@ class IconStopped extends PolymerElement {
                     border: 1px solid white;
                 }
             </style>
-            <div></div>
+            <div title="Stopped"></div>
         `;
     }
 }
