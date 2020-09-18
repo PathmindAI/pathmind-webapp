@@ -1,22 +1,15 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.shared.constants.ObservationDataType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.JobSpec;
@@ -24,6 +17,8 @@ import io.skymind.pathmind.shared.services.training.environment.ExecutionEnviron
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static io.skymind.pathmind.shared.constants.RunType.DiscoveryRun;
 
@@ -64,7 +59,7 @@ public class AWSTrainingService extends TrainingService {
                 DiscoveryRun,
                 maxTimeInSec,
                 numSamples,
-                featureManager.isEnabled(Feature.MULTI_AGENT_TRAINING),
+                false,
                 false,
                 50,
                 false,
