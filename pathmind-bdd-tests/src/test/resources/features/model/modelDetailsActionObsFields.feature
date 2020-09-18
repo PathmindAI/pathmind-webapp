@@ -8,6 +8,7 @@ Feature: Check Model Details Actions/Observations fields
     When Input name of the new project <project name> and click Create project button
     When Upload model <model>
     When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment <project name> page is opened

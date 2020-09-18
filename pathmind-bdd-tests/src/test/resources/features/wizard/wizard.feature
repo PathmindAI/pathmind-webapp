@@ -34,6 +34,7 @@ Feature: Wizard page
     When Input name of the new project AutotestProject and click Create project button
     When Upload model CoffeeShop/CoffeeShop.zip
     When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
@@ -57,6 +58,7 @@ Feature: Wizard page
     When Input name of the new project AutotestProject and click Create project button
     When Upload model CoffeeShop/CoffeeShop.zip
     When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
@@ -65,6 +67,7 @@ Feature: Wizard page
   Scenario: Check goals error msg
     Given Login to the pathmind
     When Create new CoffeeShop project with draft model
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Input reward variable 'kitchen_cleanliness' goal '≥' value ' '
     When Input reward variable 'successful_customers' goal '≤' value ' '
