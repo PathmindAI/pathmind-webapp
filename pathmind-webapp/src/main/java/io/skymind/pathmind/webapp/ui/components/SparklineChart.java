@@ -71,14 +71,25 @@ public class SparklineChart extends VerticalLayout{
         double minVal = min.orElse(0);
         double maxVal = max.orElse(0);
         
-        if (rewardVariable.getGoalValue() != null) {
-            double goalValue = rewardVariable.getGoalValue();
+        Double goalValue = rewardVariable.getGoalValue();
+        GoalConditionType goalCondition = rewardVariable.getGoalConditionTypeEnum();
+        if (goalValue != null && goalCondition != null) {
+            double valuesRange = maxVal - minVal > 0 ? maxVal - minVal : goalValue*0.1;
+            Boolean isGreaterThan = goalCondition.equals(GoalConditionType.GREATER_THAN_OR_EQUAL);
             if (minVal > goalValue) {
-                minVal = goalValue;
+                if (isGreaterThan) {
+                    minVal = goalValue;
+                } else {
+                    minVal = goalValue - valuesRange <= 0 ? 0 : goalValue - valuesRange;
+                }
             }
-            
+
             if (maxVal < goalValue) {
-                maxVal = goalValue;
+                if (isGreaterThan) {
+                    maxVal = goalValue + valuesRange;
+                } else {
+                    maxVal = goalValue;
+                }
             }
         }
         
@@ -93,10 +104,9 @@ public class SparklineChart extends VerticalLayout{
         series.setPlotOptions(plotOptions);
         chart.getConfiguration().addSeries(series);
 
-        if (rewardVariable.getGoalValue() != null && rewardVariable.getGoalConditionTypeEnum() != null) {
-            GoalConditionType goalCondition = rewardVariable.getGoalConditionTypeEnum();
+        if (goalValue != null && goalCondition != null) {
             PlotBand target = new PlotBand();
-            target.setFrom(rewardVariable.getGoalValue());
+            target.setFrom(goalValue);
             if (goalCondition.equals(GoalConditionType.GREATER_THAN_OR_EQUAL)) {
                 target.setTo(maxVal);
             } else {

@@ -54,9 +54,37 @@ public class MetricChartPanel extends VerticalLayout
         for (int i = 0; i < sparklineData.length; i++) {
             data.add(sparklineData[i]);
         }
+        OptionalDouble min = data.stream().mapToDouble(Number::doubleValue).min();
         OptionalDouble max = data.stream().mapToDouble(Number::doubleValue).max();
 
+        double minVal = min.orElse(0);
         double maxVal = max.orElse(0);
+        
+        Double goalValue = rewardVariable.getGoalValue();
+        GoalConditionType goalCondition = rewardVariable.getGoalConditionTypeEnum();
+        if (goalValue != null && goalCondition != null) {
+            double valuesRange = maxVal - minVal > 0 ? maxVal - minVal : goalValue*0.1;
+            Boolean isGreaterThan = goalCondition.equals(GoalConditionType.GREATER_THAN_OR_EQUAL);
+            if (minVal > goalValue) {
+                if (isGreaterThan) {
+                    minVal = goalValue;
+                } else {
+                    minVal = goalValue - valuesRange <= 0 ? 0 : goalValue - valuesRange;
+                }
+            }
+
+            if (maxVal < goalValue) {
+                if (isGreaterThan) {
+                    maxVal = goalValue + valuesRange;
+                } else {
+                    maxVal = goalValue;
+                }
+            }
+        }
+
+        chart.getConfiguration().getyAxis().setMin(minVal);
+        chart.getConfiguration().getyAxis().setMax(maxVal);
+        chart.getConfiguration().getyAxis().setEndOnTick(false);
 
         ListSeries series = new ListSeries(data);
         PlotOptionsSeries plotOptions = new PlotOptionsSeries();
@@ -66,12 +94,11 @@ public class MetricChartPanel extends VerticalLayout
         series.setPlotOptions(plotOptions);
         chart.getConfiguration().addSeries(series);
 
-        if (rewardVariable.getGoalValue() != null && rewardVariable.getGoalConditionTypeEnum() != null) {
-            GoalConditionType goalCondition = rewardVariable.getGoalConditionTypeEnum();
+        if (goalValue != null && goalCondition != null) {
             PlotBand target = new PlotBand();
             Label targetLabel = new Label("Goal: "+goalCondition.toString()+rewardVariable.getGoalValue());
             targetLabel.setAlign(HorizontalAlign.CENTER);
-            target.setFrom(rewardVariable.getGoalValue());
+            target.setFrom(goalValue);
             if (goalCondition.equals(GoalConditionType.GREATER_THAN_OR_EQUAL)) {
                 target.setTo(maxVal);
             } else {
@@ -86,4 +113,3 @@ public class MetricChartPanel extends VerticalLayout
         chart.drawChart(true);
     }
 }
-
