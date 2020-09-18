@@ -129,12 +129,14 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
 
     private Div createExperimentText(String experimentNumber, String experimentDateCreated, FavoriteStar favoriteStar) {
         Paragraph experimentNameLine = new Paragraph("Experiment #" + experimentNumber);
+        goalStatusComponent = new GoalsReachedStatus(experiment.isGoalsReached());
+        goalStatusComponent.setVisible(!ExperimentUtils.isDraftRunType(experiment));
 
         experimentNameLine.add(favoriteStar);
         experimentNameWrapper = new Div();
         experimentNameWrapper.add(experimentNameLine);
         experimentNameWrapper.add(new Paragraph("Created " + experimentDateCreated));
-        updateGoalStatus(experiment.isGoalsReached());
+        experimentNameWrapper.add(goalStatusComponent);
         experimentNameWrapper.addClassName("experiment-name");
         return experimentNameWrapper;
     }
@@ -146,15 +148,8 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
 
     // Part of this will need to be moved to the javascript part of the refactored Nav Bar Item
     private void updateGoalStatus(Boolean goalStatus) {
-        if (goalStatusComponent != null) {
-            experimentNameWrapper.remove(goalStatusComponent);
-            goalStatusComponent = null;
-        }
         if (experiment.isHasGoals()) {
-            if (goalStatus != null) {
-                goalStatusComponent = new GoalsReachedStatus(goalStatus);
-                experimentNameWrapper.add(goalStatusComponent);
-            }
+            goalStatusComponent.setValue(goalStatus);
             goalStatusComponent.setVisible(!ExperimentUtils.isDraftRunType(experiment));
         }
     }

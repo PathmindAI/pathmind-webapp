@@ -10,9 +10,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.internal.Pair;
 
-import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
@@ -44,6 +42,8 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
     private Experiment experiment;
     private List<RewardVariable> rewardVariables;
+    private Dialog metricChartDialog;
+    private Button metricChartDialogCloseButton;
 
     public SimulationMetricsPanel(Experiment experiment, boolean showSimulationMetrics, List<RewardVariable> rewardVariables, Supplier<Optional<UI>> getUISupplier) {
 
@@ -55,6 +55,9 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
         setSpacing(false);
         addClassName("simulation-metrics-table-wrapper");
+
+        createEnlargedChartDialog();
+        createEnlargedChartDialogCloseButton();
 
         rewardVariablesTable = new RewardVariablesTable();
         rewardVariablesTable.setCodeEditorMode();
@@ -132,8 +135,8 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                     sparkLine.setupButton(() -> {
                         MetricChartPanel metricChartPanel = new MetricChartPanel();
                         metricChartPanel.setLines(policy.getSparklinesData().get(idx), idx, rewardVariables.get(idx));
-                        Dialog dialog = createEnlargedChartDialog(metricChartPanel);
-                        dialog.open();
+                        addChartToDialog(metricChartPanel);
+                        metricChartDialog.open();
                     });
                     sparklinesWrapper.add(sparkLine);
                     Span metricSpan = new Span();
@@ -154,12 +157,18 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                 });
     }
 
-    private Dialog createEnlargedChartDialog(MetricChartPanel chartPanel) {
-        Dialog dialog = new Dialog();
-        Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
-        closeButton.addClickListener(event -> dialog.close());
-        dialog.setWidth("60vw");
-        dialog.add(chartPanel, closeButton);
-        return dialog;
+    private void createEnlargedChartDialog() {
+        metricChartDialog = new Dialog();
+        metricChartDialog.setWidth("60vw");
+    }
+
+    private void createEnlargedChartDialogCloseButton() {
+        metricChartDialogCloseButton = new Button(VaadinIcon.CLOSE_SMALL.create());
+        metricChartDialogCloseButton.addClickListener(event -> metricChartDialog.close());
+    }
+
+    private void addChartToDialog(MetricChartPanel chartPanel) {
+        metricChartDialog.removeAll();
+        metricChartDialog.add(chartPanel, metricChartDialogCloseButton);
     }
 }
