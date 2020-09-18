@@ -61,7 +61,7 @@ public class CreateProjectStepDefinitions {
     @When("^Create new CoffeeShop project with single reward function$")
     public void createNewProjectWithModel() {
         createNewProjectWithModelAndDraftExperiment();
-        newExperimentSteps.inputRewardFunctionFile("CoffeeShop/CoffeeShopRewardFunction.txt");
+        newExperimentSteps.inputRewardFunctionFile("CoffeeShop/CoffeeShopRewardFunctionOneFunction.txt");
         newExperimentSteps.clickObservationsCheckbox("Select All");
         newExperimentSteps.clickProjectSaveDraftBtn();
     }

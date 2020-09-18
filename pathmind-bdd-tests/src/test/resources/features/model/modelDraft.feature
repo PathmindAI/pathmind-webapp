@@ -44,6 +44,7 @@ Feature: Save Model draft
     When Open project AutotestProject on projects page
     Then Check that there are 1 model(s) with 'Draft' tag in project page
     When Click the model name 2
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
     And Check that there is a variable named kitchen_cleanliness
     When Click wizard reward variables next btn

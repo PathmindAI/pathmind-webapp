@@ -6,6 +6,6 @@ Feature: New experiment page
     When Create new CoffeeShop project with single reward function
     When Click project page new experiment button
     Then Check that experiment page title is 'Experiment #2'
-    Then Check experiment page reward variables is kitchen_cleanliness,successful_customers,balked_customers,service_time
+    Then Check experiment page reward variables is kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
     When Click side bar experiment Experiment #1
-    Then Check experiment page reward variables is kitchen_cleanliness,successful_customers,balked_customers,service_time
+    Then Check experiment page reward variables is kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime

@@ -106,6 +106,7 @@ Feature: Model page
     When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
     When Click the model name 1
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     When Click model breadcrumb btn

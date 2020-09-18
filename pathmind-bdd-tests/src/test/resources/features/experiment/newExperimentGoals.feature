@@ -4,6 +4,7 @@ Feature: New Experiment page goals
   Scenario: Create experiment with goals
     Given Login to the pathmind
     When Create new CoffeeShop project with draft model
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Input reward variable 'kitchen_cleanliness' goal '≥' value '1'
     When Input reward variable 'successful_customers' goal '≤' value '2'
@@ -19,6 +20,7 @@ Feature: New Experiment page goals
   Scenario: Create experiment with partial goals
     Given Login to the pathmind
     When Create new CoffeeShop project with draft model
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Input reward variable 'kitchen_cleanliness' goal '≥' value '0'
     When Input reward variable 'balked_customers' goal '≥' value '1485.12'
