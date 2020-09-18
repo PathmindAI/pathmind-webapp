@@ -25,5 +25,5 @@ public class Model extends ArchivableData
 	private int rewardVariablesCount;
 	private String packageName;
 	private int invalidModel;
-
+	private int modelType;
 }

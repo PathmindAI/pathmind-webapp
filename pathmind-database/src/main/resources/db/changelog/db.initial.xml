@@ -1702,4 +1702,16 @@
         </update>
     </changeSet>
 
+    <changeSet id="20200918-01" author="daehyun@skymind.io">
+        <comment>
+            Add model type(single or multi) for MODEL
+        </comment>
+        <addColumn tableName="MODEL">
+            <column name="MODEL_TYPE" type="INT" defaultValue="0"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="MODEL" columnName="MODEL_TYPE"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

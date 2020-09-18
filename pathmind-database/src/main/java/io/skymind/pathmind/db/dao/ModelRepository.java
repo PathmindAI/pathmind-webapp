@@ -42,7 +42,7 @@ class ModelRepository
 	 */
 	protected static Model getModel(DSLContext ctx, long modelId) {
 		return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.PACKAGE_NAME, MODEL.NUMBER_OF_OBSERVATIONS,
-				MODEL.USER_NOTES, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT, MODEL.ACTION_TUPLE_SIZE, MODEL.INVALID_MODEL)
+				MODEL.USER_NOTES, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT, MODEL.ACTION_TUPLE_SIZE, MODEL.INVALID_MODEL, MODEL.MODEL_TYPE)
 				.from(MODEL)
 				.where(MODEL.ID.eq(modelId))
 				.fetchOneInto(Model.class);
@@ -61,6 +61,7 @@ class ModelRepository
 		mod.setUserNotes(userNotes);
 		mod.setPackageName(model.getPackageName());
 		mod.setActionTupleSize(-1);
+		mod.setModelType(model.getModelType());
 		mod.store();
 		return mod.key().get(MODEL.ID);
 	}

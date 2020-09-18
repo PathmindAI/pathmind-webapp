@@ -16,11 +16,10 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row3;
+import org.jooq.Row2;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ExperimentObservation extends TableImpl<ExperimentObservationRecord> {
 
-    private static final long serialVersionUID = 35976158;
+    private static final long serialVersionUID = -2070128095;
 
     /**
      * The reference instance of <code>public.experiment_observation</code>
@@ -56,11 +55,6 @@ public class ExperimentObservation extends TableImpl<ExperimentObservationRecord
     public Class<ExperimentObservationRecord> getRecordType() {
         return ExperimentObservationRecord.class;
     }
-
-    /**
-     * The column <code>public.experiment_observation.id</code>.
-     */
-    public final TableField<ExperimentObservationRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('experiment_observation_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.experiment_observation.experiment_id</code>.
@@ -112,22 +106,17 @@ public class ExperimentObservation extends TableImpl<ExperimentObservationRecord
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.EXPERIMENT_OBSERVATION_PKEY);
-    }
-
-    @Override
-    public Identity<ExperimentObservationRecord, Long> getIdentity() {
-        return Keys.IDENTITY_EXPERIMENT_OBSERVATION;
+        return Arrays.<Index>asList(Indexes.EXPERIMENT_OBSERVATION_EXPERIMENT_ID_INDEX, Indexes.EXPERIMENT_OBSERVATION_OBSERVATION_ID_INDEX, Indexes.PK_EXPERIMENT_OBSERVATION);
     }
 
     @Override
     public UniqueKey<ExperimentObservationRecord> getPrimaryKey() {
-        return Keys.EXPERIMENT_OBSERVATION_PKEY;
+        return Keys.PK_EXPERIMENT_OBSERVATION;
     }
 
     @Override
     public List<UniqueKey<ExperimentObservationRecord>> getKeys() {
-        return Arrays.<UniqueKey<ExperimentObservationRecord>>asList(Keys.EXPERIMENT_OBSERVATION_PKEY);
+        return Arrays.<UniqueKey<ExperimentObservationRecord>>asList(Keys.PK_EXPERIMENT_OBSERVATION);
     }
 
     @Override
@@ -170,11 +159,11 @@ public class ExperimentObservation extends TableImpl<ExperimentObservationRecord
     }
 
     // -------------------------------------------------------------------------
-    // Row3 type methods
+    // Row2 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<Long, Long, Long> fieldsRow() {
-        return (Row3) super.fieldsRow();
+    public Row2<Long, Long> fieldsRow() {
+        return (Row2) super.fieldsRow();
     }
 }

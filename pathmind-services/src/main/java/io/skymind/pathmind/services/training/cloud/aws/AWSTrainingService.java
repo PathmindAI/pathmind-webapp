@@ -6,6 +6,7 @@ import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
+import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Observation;
@@ -59,7 +60,7 @@ public class AWSTrainingService extends TrainingService {
                 DiscoveryRun,
                 maxTimeInSec,
                 numSamples,
-                false,
+                model.getModelType() == ModelType.MULTI.getValue(),
                 false,
                 50,
                 false,
