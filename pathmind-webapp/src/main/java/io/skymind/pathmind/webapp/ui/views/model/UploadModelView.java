@@ -15,6 +15,7 @@ import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.shared.utils.VariableParserUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -311,27 +312,12 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");
-			copyGoalsFromPreviousModel(rewardVariables, model.getProjectId(), model.getId());
+            RewardVariablesUtils.copyGoalsFromPreviousModel(rewardVariablesDAO, modelDAO, model.getProjectId(), model.getId(), rewardVariables);
 			rewardVariablesDAO.updateModelAndRewardVariables(model, rewardVariables);
 			observationDAO.updateModelObservations(model.getId(), observationList);
 			segmentIntegrator.modelImported(true);
 		}));
 	}
-
-	private void copyGoalsFromPreviousModel(List<RewardVariable> rewardVariables, long projectId, long currentModelId) {
-        Optional<Model> prevModel = modelDAO.getPrevModelForProject(projectId, currentModelId);
-        prevModel.ifPresent(pm -> {
-            List<RewardVariable> previousRewardVariables = rewardVariablesDAO.getRewardVariablesForModel(pm.getId());
-            rewardVariables.forEach(rv -> {
-                Optional<RewardVariable> rvFromPrevModel = previousRewardVariables.stream().filter(prv -> prv.getName().equals(rv.getName())).findAny();
-                rvFromPrevModel.ifPresent(prv -> {
-                    rv.setGoalConditionType(prv.getGoalConditionType());
-                    rv.setGoalValue(prv.getGoalValue());
-                });
-            });
-        });
-        
-    }
 
     private List<Observation> convertToObservations(List<String> observationNames) {
         Map<String, Observation> auxObservations = new LinkedHashMap<>();
