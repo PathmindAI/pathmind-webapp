@@ -1,5 +1,6 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "../components/atoms/status-icon.js";
+import "../components/atoms/goals-reached-status.js";
 
 class ExperimentNavbarItem extends PolymerElement {
     static get is() {
@@ -34,7 +35,7 @@ class ExperimentNavbarItem extends PolymerElement {
                 .experiment-name p {
                     margin: 0;
                 }
-                .experiment-name p:last-child {
+                .experiment-name p:nth-child(2) {
                     font-size: var(--lumo-font-size-xs);
                     font-family: var(--lumo-font-family-header); /* This font should usually be used on a header. This is an exception. */
                     color: var(--pm-gray-color-dark);
@@ -50,11 +51,15 @@ class ExperimentNavbarItem extends PolymerElement {
                     height: var(--lumo-font-size-xs);
                     padding: 0;
                 }
+                status-icon[status~="pencil"] ~ div goals-reached-status {
+                    display: none;
+                }
             </style>
             <status-icon status=[[status]]></status-icon>
             <div class="experiment-name">
                 <p>Experiment #[[experimentName]]<favorite-star is-favorite="{{isFavorite}}"></favorite-star></p>
                 <p>Created [[createdDate]]</p>
+                <goals-reached-status reached=[[goalsReached]] hidden=[[!hasGoals]]></goals-reached-status>
             </div>
             <vaadin-button
                 class="action-button"
@@ -92,6 +97,13 @@ class ExperimentNavbarItem extends PolymerElement {
             },
             status: {
                 type: String,
+            },
+            hasGoals: {
+                type: Boolean,
+                value: false,
+            },
+            goalsReached: {
+                type: Boolean,
             }
         }
     }

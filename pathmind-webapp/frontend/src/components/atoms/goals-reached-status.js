@@ -7,7 +7,7 @@ class GoalsReachedStatus extends PolymerElement {
 
     static get properties() {
         return {
-            goalsReached: {
+            reached: {
                 type: Boolean,
                 reflectToAttribute: true,
             }
@@ -35,16 +35,16 @@ class GoalsReachedStatus extends PolymerElement {
                     --iron-icon-height: var(--lumo-font-size-m);
                     margin-right: 4px;
                 }
-                :host(:not([goals-reached])) {
+                :host(:not([reached])) {
                     color: var(--pm-danger-color);
                 }
-                :host(:not([goals-reached])) iron-icon[icon~="vaadin:close"] {
+                :host(:not([reached])) iron-icon[icon~="vaadin:close"] {
                     display: block;
                 }
-                :host([goals-reached]) {
+                :host([reached]) {
                     color: var(--pm-friendly-color);
                 }
-                :host([goals-reached]) iron-icon[icon~="vaadin:check"] {
+                :host([reached]) iron-icon[icon~="vaadin:check"] {
                     display: block;
                 }
             </style>

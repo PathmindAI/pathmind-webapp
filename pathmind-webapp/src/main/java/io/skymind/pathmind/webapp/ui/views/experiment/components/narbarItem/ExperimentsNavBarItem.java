@@ -15,7 +15,6 @@ import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.ui.components.atoms.GoalsReachedStatus;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemExperimentUpdatedSubscriber;
@@ -36,13 +35,13 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     private ExperimentDAO experimentDAO;
 
     private Experiment experiment;
-    private GoalsReachedStatus goalStatusComponent;
 	private Consumer<Experiment> selectExperimentConsumer;
 
     private SegmentIntegrator segmentIntegrator;
 
     public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator) {
         this.getUISupplier = getUISupplier;
+        this.experimentsNavbar = experimentsNavbar;
         this.experimentDAO = experimentDAO;
         this.experiment = experiment;
         this.segmentIntegrator = segmentIntegrator;
@@ -66,7 +65,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         ConfirmationUtils.archive("Experiment #"+experiment.getName(), () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experiment, true);
             segmentIntegrator.archived(Experiment.class, true);
-            // ExperimentUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
+            ExperimentUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
         });
     }
 
@@ -76,6 +75,8 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         getModel().setIsDraft(ExperimentUtils.isDraftRunType(experiment));
         getModel().setIsFavorite(experiment.isFavorite());
         getModel().setExperimentName(experiment.getName());
+        getModel().setHasGoals(experiment.isHasGoals());
+        updateGoalStatus(experiment.isGoalsReached());
         VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
             getModel().setCreatedDate(DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId));
         });
@@ -108,14 +109,9 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         return "exclamation";
     }
 
-    // Part of this will need to be moved to the javascript part of the refactored Nav Bar Item
-    // Part of this will need to be moved to the javascript part of the refactored Nav Bar Item
-    // private void updateGoalStatus(Boolean goalStatus) {
-    //     if (experiment.isHasGoals()) {
-    //         goalStatusComponent.setValue(goalStatus);
-    //         goalStatusComponent.setVisible(!ExperimentUtils.isDraftRunType(experiment));
-    //     }
-    // }
+    private void updateGoalStatus(Boolean goalStatus) {
+        getModel().setGoalsReached(goalStatus);
+    }
 
     public void setAsCurrent() {
         getModel().setIsCurrent(true);
@@ -136,14 +132,14 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     public void updateExperiment(Experiment experiment) {
         this.experiment = experiment;
         updateStatus(ExperimentUtils.getTrainingStatus(experiment));
-        // updateGoalStatus(experiment.isGoalsReached());
+        updateGoalStatus(experiment.isGoalsReached());
         getModel().setIsFavorite(experiment.isFavorite());
     }
 
     public void updateRun(Run run) {
         experiment.updateRun(run);
         updateStatus(ExperimentUtils.getTrainingStatus(experiment));
-        // updateGoalStatus(run.getExperiment().isGoalsReached());
+        updateGoalStatus(run.getExperiment().isGoalsReached());
     }
 
 	public interface Model extends TemplateModel {
@@ -154,5 +150,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         void setIsDraft(boolean isDraft);
         void setIsFavorite(boolean isFavorite);
         void setStatus(String IconStatus);
+        void setHasGoals(boolean hasGoals);
+        void setGoalsReached(boolean goalsReached);
     }
 }
