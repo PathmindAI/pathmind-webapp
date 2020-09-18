@@ -36,8 +36,8 @@ public class ModelPage extends PageObject {
         getDriver().findElement(By.xpath("//vaadin-grid-cell-content[normalize-space(text())='" + modelName + "']")).click();
     }
 
-    public void checkModelPageModelDetailsPackageNameIs(String packageName) {
-        assertThat(utils.getTextRootElement(getDriver().findElement(By.xpath("//span[text()='Package Name']/ancestor::p"))), is(packageName));
+    public void checkModelPageModelTitlePackageNameIs(String packageName) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='page-content-header']/descendant::span[@class='section-title-label']")).getText().split("[()]")[1], is(packageName));
     }
 
     public void checkModelPageModelDetailsActionsIs(String actions) {
