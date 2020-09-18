@@ -130,7 +130,7 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
     private Div createExperimentText(String experimentNumber, String experimentDateCreated, FavoriteStar favoriteStar) {
         Paragraph experimentNameLine = new Paragraph("Experiment #" + experimentNumber);
         goalStatusComponent = new GoalsReachedStatus(experiment.isGoalsReached());
-        goalStatusComponent.setVisible(!ExperimentUtils.isDraftRunType(experiment));
+        goalStatusComponent.setVisible(!ExperimentUtils.isDraftRunType(experiment) && experiment.isHasGoals());
 
         experimentNameLine.add(favoriteStar);
         experimentNameWrapper = new Div();
