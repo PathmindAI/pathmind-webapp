@@ -16,11 +16,7 @@ import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Observation;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.data.TrainingError;
+import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
@@ -32,6 +28,7 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.ExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.ExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
@@ -71,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -305,7 +303,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         confirmDialog.setConfirmButton(
                 "Stop Training",
                 (e) -> {
-                    trainingService.stopRun(experiment, EventBus::fireEventBusUpdates);
+                    trainingService.stopRun(experiment);
+                    fireEvents();
                     confirmDialog.close();
                 },
                 StringUtils.join(
@@ -315,6 +314,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         confirmDialog.setCancelText("Cancel");
         confirmDialog.setCancelable(true);
         confirmDialog.open();
+    }
+
+    private void fireEvents() {
+        // An event for each policy since we only need to update some of the policies in a run.
+        if(experiment.getPolicies() != null && !experiment.getPolicies().isEmpty())
+            EventBus.post(new PolicyUpdateBusEvent(experiment.getPolicies()));
+        // Send run updated event, meaning that all policies under the run is updated.
+        // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
+        experiment.getRuns().stream().forEach(
+                run -> EventBus.post(new RunUpdateBusEvent(run)));
+        EventBus.post(new ExperimentUpdatedBusEvent(experiment));
     }
 
     private void unarchiveExperiment() {

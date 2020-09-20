@@ -2,13 +2,14 @@ package io.skymind.pathmind.webapp.bus.events;
 
 import java.util.List;
 
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 import io.skymind.pathmind.shared.data.Policy;
 
 public class PolicyUpdateBusEvent implements PathmindBusEvent {
     private List<Policy> policies;
-    private long experimentId;
+    private Experiment experiment;
 
     public PolicyUpdateBusEvent(List<Policy> policies) {
         if (policies == null || policies.isEmpty()) {
@@ -25,7 +26,7 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent {
                 throw new IllegalStateException("Project is null");
         });
 
-        experimentId = policies.get(0).getExperiment().getId();
+        experiment = policies.get(0).getExperiment();
         this.policies = policies;
     }
 
@@ -39,6 +40,10 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent {
     }
 
     public long getExperimentId() {
-        return experimentId;
+        return experiment.getId();
+    }
+
+    public Experiment getExperiment() {
+        return experiment;
     }
 }
