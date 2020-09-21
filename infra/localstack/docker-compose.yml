@@ -1,0 +1,81 @@
+version: '3.7'
+services:
+  pathmind-postgres:
+    image: postgres:10
+    hostname: postgres
+    container_name: pathmind-postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: pathmind
+      POSTGRES_PASSWORD: pathmind
+    networks:
+      - pathmind-network
+
+  localstack:
+    container_name: pathmind-localstack
+    hostname: localstack
+    image: localstack/localstack
+    ports:
+      - 4566:4566
+      - 4571:4571
+      - "${PORT_WEB_UI-3514}:${PORT_WEB_UI-3514}"
+    environment:
+      - SERVICES=s3,sqs,sns
+      - HOSTNAME_EXTERNAL=localstack
+      - DEBUG=${DEBUG- }
+      - DATA_DIR=/tmp/localdata
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOST_TMP_FOLDER=${TMPDIR}
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - pathmind-network
+
+  trigger-init:
+    depends_on:
+      - localstack
+    build:
+      context: init
+    container_name: pathmind-init-container
+    image: pathmind/init-localstack
+    volumes:
+      - "./init/script:/script"
+      - "../../pathmind-database:/pathmind-database"
+      - "$HOME/.m2:/root/.m2"
+      - "./data:/fixture-files"
+    environment:
+      - DB_URL=jdbc:postgresql://pathmind-postgres/pathmind?user=pathmind&password=pathmind
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=X
+      - AWS_SECRET_ACCESS_KEY=Y
+    networks:
+      - pathmind-network
+
+  trigger:
+    image: pathmind/trigger
+    container_name: pathmind-trigger
+    build:
+      context: ../images/trainer
+    environment:
+      - MOCK_ONLY=True
+      - AWS_ENDPOINT_URL=http://localstack:4566
+      - SQS_URL=http://localstack:4566/000000000000/local.fifo
+      - DB_URL_CLI=user=pathmind password=pathmind host=postgres port=5432 dbanme=pathmind
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=X
+      - AWS_SECRET_ACCESS_KEY=Y
+    depends_on:
+      - localstack
+      - trigger-init
+    restart: unless-stopped
+    volumes:
+      - ./init:/scripts
+    networks:
+      - pathmind-network
+
+networks:
+  pathmind-network:
+    name: pathmind-network
+    driver: bridge

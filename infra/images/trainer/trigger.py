@@ -79,17 +79,20 @@ def send_mockup_data(s3bucket, s3path, cycle, maxMin):
     """
     sends the mockup data to the s3 bucket every cycle
     """
+
     global mockup_status
     folder_list=set()
     src_bucket=S3_BUCKET_STATIC
-    s3 = boto3.resource('s3')
-    my_bucket = s3.Bucket(src_bucket)
+    aws_endpoint_url = os.getenv('AWS_ENDPOINT_URL')
+    s3_resource = boto3.resource('s3') if len(aws_endpoint_url) == 0 else boto3.resource('s3', endpoint_url = aws_endpoint_url)
+    my_bucket = s3_resource.Bucket(src_bucket)
     for my_bucket_object in my_bucket.objects.filter(Prefix='mockup/', Delimiter=''):
         if not my_bucket_object.key.endswith("/"):
             folder_list.add(int(my_bucket_object.key.split('/')[1]))
     folder_list=sorted(folder_list)
     offset = max(int(len(folder_list) * cycle / (60 * maxMin)), 1)
     folder_list = [x for x in folder_list if x == folder_list[-1] or x % offset == 0]
+    s3_client = boto3.client('s3') if len(aws_endpoint_url) == 0 else boto3.client('s3', endpoint_url = aws_endpoint_url)
     for folder in folder_list:
         if mockup_status[s3bucket+'/'+s3path]['destroy']==True:
             app_logger.info('Killing mockup {s3bucket}/{s3path}'\
@@ -97,8 +100,7 @@ def send_mockup_data(s3bucket, s3path, cycle, maxMin):
             app_logger.info('Uploading killed file for {s3path}'\
                 .format(s3path=s3path))
             open('killed', 'w').close()
-            s3 = boto3.client('s3')
-            s3.upload_file('killed', \
+            s3_client.upload_file('killed', \
                 s3bucket, \
                 s3path+'/output/killed')
             return True
@@ -110,7 +112,7 @@ def send_mockup_data(s3bucket, s3path, cycle, maxMin):
             key=my_bucket_object.key
             copy_source = { 'Bucket': src_bucket, 'Key': key }
             target_key='/'.join(key.split('/')[2:])
-            s3.Object(s3bucket, s3path+'/output/'+target_key).put(Metadata={'path':src_bucket+'/'+key})
+            s3_resource.Object(s3bucket, s3path+'/output/'+target_key).put(Metadata={'path':src_bucket+'/'+key})
         time.sleep(cycle)
 
 def th_monitor_job():
@@ -299,19 +301,15 @@ def process_message(message):
         except Exception as e:
             app_logger.error(traceback.format_exc())
 
-    #Delete message
-    sqs = boto3.client('sqs')
-    response = sqs.delete_message(
-        QueueUrl=SQS_URL,
-        ReceiptHandle=ReceiptHandle
-    )
-
+    return ReceiptHandle
 
 def main():
     """
     main function listens on sqs queue defined in SQS_URL env variable
     """
-    sqs = boto3.client('sqs')
+    aws_endpoint_url = os.getenv('AWS_ENDPOINT_URL')
+    sqs = boto3.client('sqs') if len(aws_endpoint_url) == 0 else boto3.client("sqs", endpoint_url = aws_endpoint_url)
+
     while True:
         app_logger.info('Waiting for messages in {SQS_URL}'\
             .format(SQS_URL=SQS_URL))
@@ -324,34 +322,46 @@ def main():
         )
         if ('Messages' in resp):
             for message in resp['Messages']:
-                process_message(message)
+                receipt_handle = process_message(message)
+                sqs.delete_message(
+                    QueueUrl=SQS_URL,
+                    ReceiptHandle=receipt_handle
+                )
 
 if __name__ == "__main__":
-    #Get env variables
-    SQS_URL=os.environ['SQS_URL']
-    NAME=os.environ['NAME']
-    ENVIRONMENT=os.environ['ENVIRONMENT']
-    S3_BUCKET_STATIC=os.environ['S3_BUCKET_STATIC']
-    if ENVIRONMENT=='prod':
-        NAMESPACE='default'
-    else:
-        NAMESPACE=ENVIRONMENT
-    RL_IMAGE=os.environ['RL_IMAGE']
-    DEPLOYMENT_TEMPLATE="rl_training_deployment.yaml"
-    DEPLOYMENT_FILE=DEPLOYMENT_TEMPLATE.replace('_template','')
-    psql_con_details={}
-    mockup_status={}
+
     logger=LoggerInit()
     app_logger=logger.get_logger("trainer")
-    #Main thread
+
+    psql_con_details={}
+    mockup_status={}
+
     parse_dburl()
+
+    SQS_URL=os.environ['SQS_URL']
+
+    MOCK_ONLY= os.getenv('MOCK_ONLY', "False").lower() == "true"
+    if MOCK_ONLY:
+        ENVIRONMENT='MOCK'
+    else:
+        NAME=os.environ['NAME']
+        ENVIRONMENT=os.environ['ENVIRONMENT']
+        S3_BUCKET_STATIC=os.environ['S3_BUCKET_STATIC']if ENVIRONMENT=='prod':
+            NAMESPACE='default'
+        else:
+            NAMESPACE=ENVIRONMENT
+        RL_IMAGE=os.environ['RL_IMAGE']
+        DEPLOYMENT_TEMPLATE="rl_training_deployment.yaml"
+        DEPLOYMENT_FILE=DEPLOYMENT_TEMPLATE.replace('_template','')
+    #Main thread
     worker1 = Thread(target=main, args=())
     worker1.setDaemon(True)
     worker1.start()
     #start monitoring
-    worker2 = Thread(target=th_monitor_job, args=())
-    worker2.setDaemon(True)
-    worker2.start()
+    if not MOCK_ONLY:
+        worker2 = Thread(target=th_monitor_job, args=())
+        worker2.setDaemon(True)
+        worker2.start()
+        worker2.join()
     worker1.join()
-    worker2.join()
 

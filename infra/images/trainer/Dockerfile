@@ -12,11 +12,13 @@ COPY rl_training_deployment*.yaml ./
 #env
 ENV DEBIAN_FRONTEND=noninteractive
 
+ENV TZ=UTC
+
 #basic packages
 RUN apt-get update && \
-	apt-get install postgresql -y && \
+	apt-get install postgresql-client -y && \
         apt-get install python3 -y && \
-        apt-get install python3-pip -y && \
+	apt-get install python3-pip -y && \
 	apt-get install curl -y && \
 	apt-get install vim -y && \
 	apt-get install jq -y && \
