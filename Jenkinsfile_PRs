@@ -169,8 +169,8 @@ pipeline {
     environment {
         IMAGE_NAME = 'pathmind'
         DOCKER_REG = "839270835622.dkr.ecr.us-east-1.amazonaws.com"
-        HELM_FILE = 'values_${env.ghprbTargetBranch}.yaml'
-        HELM_FILE_UPDATER = 'values_${env.ghprbTargetBranch}-updater.yaml'
+        HELM_FILE = "values_${env.ghprbTargetBranch}.yaml"
+        HELM_FILE_UPDATER = "values_${env.ghprbTargetBranch}-updater.yaml"
         DEPLOY_PROD = false
     }
     
