@@ -66,6 +66,18 @@ public class ExperimentDAO
 		return experiments;
 	}
 
+	public List<Experiment> getExperimentsForProject(long projectId) {
+		List<Experiment> experiments = ExperimentRepository.getExperimentsForProject(ctx, projectId);
+		Map<Long, List<Run>> runsGroupedByExperiment = RunRepository.getRunsForExperiments(ctx, DataUtils.convertToIds(experiments));
+		experiments.stream().forEach(experiment ->
+				experiment.setRuns(runsGroupedByExperiment.get(experiment.getId())));
+		// A quick solution to fix a bug due to null checks bot being implemented throughout the app.
+		experiments.stream()
+				.filter(experiment -> experiment.getRuns() == null)
+				.forEach(experiment -> experiment.setRuns(new ArrayList<Run>()));
+		return experiments;
+	}
+
 	public void updateExperiment(Experiment experiment) {
 		ExperimentRepository.updateExperiment(ctx, experiment);
 	}

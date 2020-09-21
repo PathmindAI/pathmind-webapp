@@ -91,6 +91,25 @@ class ExperimentRepository
 		}).collect(Collectors.toList());
 	}
 
+	protected static List<Experiment> getExperimentsForProject(DSLContext ctx, long projectId) {
+		Result<?> result = ctx
+				.select(EXPERIMENT.asterisk())
+				.select(MODEL.ID, MODEL.NAME, MODEL.PACKAGE_NAME)
+				.select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
+				.from(EXPERIMENT)
+				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+				.where(PROJECT.ID.eq(projectId))
+                .orderBy(EXPERIMENT.DATE_CREATED.desc())
+				.fetch();
+
+		return result.stream().map(record -> {
+			Experiment experiment = record.into(EXPERIMENT).into(Experiment.class);
+			addParentDataModelObjects(record, experiment);
+			return experiment;
+		}).collect(Collectors.toList());
+	}
+
 	private static void addParentDataModelObjects(Record record, Experiment experiment) {
 		experiment.setModel(record.into(MODEL).into(Model.class));
 		experiment.setProject(record.into(PROJECT).into(Project.class));
